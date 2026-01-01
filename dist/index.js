@@ -1,643 +1,766 @@
-// server/_core/index.ts
-import "dotenv/config";
-import express2 from "express";
-import { createServer } from "http";
-import net from "net";
-import helmet from "helmet";
-import rateLimit from "express-rate-limit";
-import { createExpressMiddleware } from "@trpc/server/adapters/express";
-
-// shared/const.ts
-var COOKIE_NAME = "app_session_id";
-var ONE_YEAR_MS = 1e3 * 60 * 60 * 24 * 365;
-var AXIOS_TIMEOUT_MS = 3e4;
-var UNAUTHED_ERR_MSG = "Please login (10001)";
-var NOT_ADMIN_ERR_MSG = "You do not have required permission (10002)";
-
-// server/db.ts
-import { eq, and, desc, sql, gte, lte } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+var __defProp = Object.defineProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 
 // drizzle/schema.ts
 import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, date } from "drizzle-orm/mysql-core";
-var users = mysqlTable("users", {
-  id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
-  name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
-  // Subscription fields
-  subscriptionStatus: mysqlEnum("subscriptionStatus", ["trial", "active", "cancelled", "overdue", "expired"]).default("trial").notNull(),
-  subscriptionPlan: mysqlEnum("subscriptionPlan", ["monthly", "yearly"]).default("monthly"),
-  stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
-  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
-  trialEndsAt: timestamp("trialEndsAt"),
-  subscriptionEndsAt: timestamp("subscriptionEndsAt"),
-  lastPaymentAt: timestamp("lastPaymentAt"),
-  // Account status
-  isActive: boolean("isActive").default(true).notNull(),
-  isSuspended: boolean("isSuspended").default(false).notNull(),
-  suspendedReason: text("suspendedReason"),
-  // Profile
-  phone: varchar("phone", { length: 20 }),
-  location: varchar("location", { length: 255 }),
-  profileImageUrl: text("profileImageUrl"),
-  // User preferences and settings
-  preferences: text("preferences"),
-  // JSON: theme, language, dashboard layout
-  language: varchar("language", { length: 10 }).default("en"),
-  theme: mysqlEnum("theme", ["light", "dark", "system"]).default("system"),
-  // Timestamps
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull()
-});
-var horses = mysqlTable("horses", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  name: varchar("name", { length: 100 }).notNull(),
-  breed: varchar("breed", { length: 100 }),
-  age: int("age"),
-  dateOfBirth: date("dateOfBirth"),
-  height: int("height"),
-  // in centimeters
-  weight: int("weight"),
-  // in kilograms
-  color: varchar("color", { length: 50 }),
-  gender: mysqlEnum("gender", ["stallion", "mare", "gelding"]),
-  discipline: varchar("discipline", { length: 100 }),
-  // dressage, jumping, eventing, etc.
-  level: varchar("level", { length: 50 }),
-  // beginner, intermediate, advanced, competition
-  registrationNumber: varchar("registrationNumber", { length: 100 }),
-  microchipNumber: varchar("microchipNumber", { length: 100 }),
-  notes: text("notes"),
-  photoUrl: text("photoUrl"),
-  isActive: boolean("isActive").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var healthRecords = mysqlTable("healthRecords", {
-  id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  recordType: mysqlEnum("recordType", ["vaccination", "deworming", "dental", "farrier", "veterinary", "injury", "medication", "other"]).notNull(),
-  title: varchar("title", { length: 200 }).notNull(),
-  description: text("description"),
-  recordDate: date("recordDate").notNull(),
-  nextDueDate: date("nextDueDate"),
-  vetName: varchar("vetName", { length: 100 }),
-  vetPhone: varchar("vetPhone", { length: 20 }),
-  vetClinic: varchar("vetClinic", { length: 200 }),
-  cost: int("cost"),
-  // in pence/cents
-  documentUrl: text("documentUrl"),
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var trainingSessions = mysqlTable("trainingSessions", {
-  id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  sessionDate: date("sessionDate").notNull(),
-  startTime: varchar("startTime", { length: 10 }),
-  // HH:MM format
-  endTime: varchar("endTime", { length: 10 }),
-  duration: int("duration"),
-  // in minutes
-  sessionType: mysqlEnum("sessionType", ["flatwork", "jumping", "hacking", "lunging", "groundwork", "competition", "lesson", "other"]).notNull(),
-  discipline: varchar("discipline", { length: 100 }),
-  trainer: varchar("trainer", { length: 100 }),
-  location: varchar("location", { length: 200 }),
-  goals: text("goals"),
-  exercises: text("exercises"),
-  notes: text("notes"),
-  performance: mysqlEnum("performance", ["excellent", "good", "average", "poor"]),
-  weather: varchar("weather", { length: 100 }),
-  temperature: int("temperature"),
-  // in celsius
-  isCompleted: boolean("isCompleted").default(false).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var feedingPlans = mysqlTable("feedingPlans", {
-  id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  feedType: varchar("feedType", { length: 100 }).notNull(),
-  // hay, grain, supplements, etc.
-  brandName: varchar("brandName", { length: 100 }),
-  quantity: varchar("quantity", { length: 50 }).notNull(),
-  // e.g., "2kg", "1 scoop"
-  unit: varchar("unit", { length: 20 }),
-  // kg, lbs, scoops, flakes
-  mealTime: mysqlEnum("mealTime", ["morning", "midday", "evening", "night"]).notNull(),
-  frequency: varchar("frequency", { length: 50 }).default("daily"),
-  // daily, twice daily, etc.
-  specialInstructions: text("specialInstructions"),
-  isActive: boolean("isActive").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var documents = mysqlTable("documents", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  horseId: int("horseId"),
-  healthRecordId: int("healthRecordId"),
-  fileName: varchar("fileName", { length: 255 }).notNull(),
-  fileType: varchar("fileType", { length: 50 }).notNull(),
-  // pdf, image, etc.
-  fileSize: int("fileSize"),
-  // in bytes
-  fileUrl: text("fileUrl").notNull(),
-  fileKey: varchar("fileKey", { length: 500 }).notNull(),
-  category: mysqlEnum("category", ["health", "registration", "insurance", "competition", "other"]).default("other"),
-  description: text("description"),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var weatherLogs = mysqlTable("weatherLogs", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  location: varchar("location", { length: 255 }).notNull(),
-  temperature: int("temperature"),
-  // celsius
-  humidity: int("humidity"),
-  // percentage
-  windSpeed: int("windSpeed"),
-  // km/h
-  precipitation: int("precipitation"),
-  // mm
-  conditions: varchar("conditions", { length: 100 }),
-  // sunny, cloudy, rainy, etc.
-  uvIndex: int("uvIndex"),
-  visibility: int("visibility"),
-  // km
-  ridingRecommendation: mysqlEnum("ridingRecommendation", ["excellent", "good", "fair", "poor", "not_recommended"]),
-  aiAnalysis: text("aiAnalysis"),
-  checkedAt: timestamp("checkedAt").defaultNow().notNull()
-});
-var systemSettings = mysqlTable("systemSettings", {
-  id: int("id").autoincrement().primaryKey(),
-  settingKey: varchar("settingKey", { length: 100 }).notNull().unique(),
-  settingValue: text("settingValue"),
-  settingType: mysqlEnum("settingType", ["string", "number", "boolean", "json"]).default("string"),
-  description: text("description"),
-  isEncrypted: boolean("isEncrypted").default(false),
-  updatedBy: int("updatedBy"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var adminSessions = mysqlTable("adminSessions", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  expiresAt: timestamp("expiresAt").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var adminUnlockAttempts = mysqlTable("adminUnlockAttempts", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull().unique(),
-  attempts: int("attempts").default(0).notNull(),
-  lockedUntil: timestamp("lockedUntil"),
-  lastAttemptAt: timestamp("lastAttemptAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var activityLogs = mysqlTable("activityLogs", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId"),
-  action: varchar("action", { length: 100 }).notNull(),
-  entityType: varchar("entityType", { length: 50 }),
-  // user, horse, health_record, etc.
-  entityId: int("entityId"),
-  details: text("details"),
-  ipAddress: varchar("ipAddress", { length: 45 }),
-  userAgent: text("userAgent"),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var backupLogs = mysqlTable("backupLogs", {
-  id: int("id").autoincrement().primaryKey(),
-  backupType: mysqlEnum("backupType", ["full", "incremental", "users", "horses"]).notNull(),
-  status: mysqlEnum("status", ["pending", "running", "completed", "failed"]).notNull(),
-  fileName: varchar("fileName", { length: 255 }),
-  fileSize: int("fileSize"),
-  fileUrl: text("fileUrl"),
-  errorMessage: text("errorMessage"),
-  startedAt: timestamp("startedAt").defaultNow().notNull(),
-  completedAt: timestamp("completedAt")
-});
-var stables = mysqlTable("stables", {
-  id: int("id").autoincrement().primaryKey(),
-  name: varchar("name", { length: 200 }).notNull(),
-  description: text("description"),
-  ownerId: int("ownerId").notNull(),
-  // The user who created the stable
-  location: varchar("location", { length: 255 }),
-  logo: text("logo"),
-  // Branding and customization
-  primaryColor: varchar("primaryColor", { length: 7 }),
-  // Hex color
-  secondaryColor: varchar("secondaryColor", { length: 7 }),
-  customDomain: varchar("customDomain", { length: 255 }),
-  branding: text("branding"),
-  // JSON: additional branding settings
-  isActive: boolean("isActive").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var stableMembers = mysqlTable("stableMembers", {
-  id: int("id").autoincrement().primaryKey(),
-  stableId: int("stableId").notNull(),
-  userId: int("userId").notNull(),
-  role: mysqlEnum("role", ["owner", "admin", "trainer", "member", "viewer"]).notNull(),
-  permissions: text("permissions"),
-  // JSON string of specific permissions
-  isActive: boolean("isActive").default(true).notNull(),
-  joinedAt: timestamp("joinedAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var stableInvites = mysqlTable("stableInvites", {
-  id: int("id").autoincrement().primaryKey(),
-  stableId: int("stableId").notNull(),
-  invitedByUserId: int("invitedByUserId").notNull(),
-  email: varchar("email", { length: 320 }).notNull(),
-  role: mysqlEnum("role", ["admin", "trainer", "member", "viewer"]).notNull(),
-  token: varchar("token", { length: 100 }).notNull().unique(),
-  status: mysqlEnum("status", ["pending", "accepted", "declined", "expired"]).default("pending").notNull(),
-  expiresAt: timestamp("expiresAt").notNull(),
-  acceptedAt: timestamp("acceptedAt"),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var events = mysqlTable("events", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  stableId: int("stableId"),
-  horseId: int("horseId"),
-  title: varchar("title", { length: 200 }).notNull(),
-  description: text("description"),
-  eventType: mysqlEnum("eventType", ["training", "competition", "veterinary", "farrier", "lesson", "meeting", "other"]).notNull(),
-  startDate: timestamp("startDate").notNull(),
-  endDate: timestamp("endDate"),
-  location: varchar("location", { length: 255 }),
-  isAllDay: boolean("isAllDay").default(false).notNull(),
-  isRecurring: boolean("isRecurring").default(false).notNull(),
-  recurrenceRule: text("recurrenceRule"),
-  // iCal RRULE format
-  color: varchar("color", { length: 7 }),
-  // Hex color code
-  isCompleted: boolean("isCompleted").default(false).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var eventReminders = mysqlTable("eventReminders", {
-  id: int("id").autoincrement().primaryKey(),
-  eventId: int("eventId").notNull(),
-  userId: int("userId").notNull(),
-  reminderTime: timestamp("reminderTime").notNull(),
-  reminderType: mysqlEnum("reminderType", ["email", "push", "sms"]).notNull(),
-  isSent: boolean("isSent").default(false).notNull(),
-  sentAt: timestamp("sentAt"),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var feedCosts = mysqlTable("feedCosts", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  horseId: int("horseId"),
-  feedType: varchar("feedType", { length: 100 }).notNull(),
-  brandName: varchar("brandName", { length: 100 }),
-  quantity: varchar("quantity", { length: 50 }).notNull(),
-  unit: varchar("unit", { length: 20 }),
-  costPerUnit: int("costPerUnit").notNull(),
-  // in pence/cents
-  purchaseDate: date("purchaseDate").notNull(),
-  supplier: varchar("supplier", { length: 200 }),
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var vaccinations = mysqlTable("vaccinations", {
-  id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  vaccineName: varchar("vaccineName", { length: 200 }).notNull(),
-  vaccineType: varchar("vaccineType", { length: 100 }),
-  // flu, tetanus, etc.
-  dateAdministered: date("dateAdministered").notNull(),
-  nextDueDate: date("nextDueDate"),
-  batchNumber: varchar("batchNumber", { length: 100 }),
-  vetName: varchar("vetName", { length: 100 }),
-  vetClinic: varchar("vetClinic", { length: 200 }),
-  cost: int("cost"),
-  // in pence/cents
-  notes: text("notes"),
-  documentUrl: text("documentUrl"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var dewormings = mysqlTable("dewormings", {
-  id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  productName: varchar("productName", { length: 200 }).notNull(),
-  activeIngredient: varchar("activeIngredient", { length: 200 }),
-  dateAdministered: date("dateAdministered").notNull(),
-  nextDueDate: date("nextDueDate"),
-  dosage: varchar("dosage", { length: 100 }),
-  weight: int("weight"),
-  // horse weight at time of treatment
-  cost: int("cost"),
-  // in pence/cents
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var shareLinks = mysqlTable("shareLinks", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  horseId: int("horseId"),
-  linkType: mysqlEnum("linkType", ["horse", "stable", "medical_passport"]).notNull(),
-  token: varchar("token", { length: 100 }).notNull().unique(),
-  isPublic: boolean("isPublic").default(false).notNull(),
-  isActive: boolean("isActive").default(true).notNull(),
-  expiresAt: timestamp("expiresAt"),
-  viewCount: int("viewCount").default(0).notNull(),
-  lastViewedAt: timestamp("lastViewedAt"),
-  settings: text("settings"),
-  // JSON string for privacy settings
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var competitions = mysqlTable("competitions", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  horseId: int("horseId").notNull(),
-  competitionName: varchar("competitionName", { length: 200 }).notNull(),
-  venue: varchar("venue", { length: 200 }),
-  date: date("date").notNull(),
-  discipline: varchar("discipline", { length: 100 }),
-  // dressage, jumping, etc.
-  level: varchar("level", { length: 50 }),
-  class: varchar("class", { length: 100 }),
-  // specific class/event name
-  placement: varchar("placement", { length: 50 }),
-  // 1st, 2nd, etc. or score
-  score: varchar("score", { length: 50 }),
-  notes: text("notes"),
-  cost: int("cost"),
-  // entry fee in pence/cents
-  winnings: int("winnings"),
-  // prize money in pence/cents
-  documentUrl: text("documentUrl"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var documentTags = mysqlTable("documentTags", {
-  id: int("id").autoincrement().primaryKey(),
-  documentId: int("documentId").notNull(),
-  tag: varchar("tag", { length: 50 }).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var stripeEvents = mysqlTable("stripeEvents", {
-  id: int("id").autoincrement().primaryKey(),
-  eventId: varchar("eventId", { length: 255 }).notNull().unique(),
-  eventType: varchar("eventType", { length: 100 }).notNull(),
-  processed: boolean("processed").default(false).notNull(),
-  payload: text("payload"),
-  // Full event payload for debugging
-  error: text("error"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  processedAt: timestamp("processedAt")
-});
-var messageThreads = mysqlTable("messageThreads", {
-  id: int("id").autoincrement().primaryKey(),
-  stableId: int("stableId").notNull(),
-  title: varchar("title", { length: 200 }),
-  isActive: boolean("isActive").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var messages = mysqlTable("messages", {
-  id: int("id").autoincrement().primaryKey(),
-  threadId: int("threadId").notNull(),
-  senderId: int("senderId").notNull(),
-  content: text("content").notNull(),
-  attachments: text("attachments"),
-  // JSON array of file URLs
-  isRead: boolean("isRead").default(false).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var competitionResults = mysqlTable("competitionResults", {
-  id: int("id").autoincrement().primaryKey(),
-  competitionId: int("competitionId").notNull(),
-  userId: int("userId").notNull(),
-  horseId: int("horseId").notNull(),
-  roundNumber: int("roundNumber").default(1),
-  score: varchar("score", { length: 50 }),
-  penalties: int("penalties"),
-  time: varchar("time", { length: 20 }),
-  judgeScores: text("judgeScores"),
-  // JSON array of judge scores
-  technicalScore: int("technicalScore"),
-  artisticScore: int("artisticScore"),
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var trainingProgramTemplates = mysqlTable("trainingProgramTemplates", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  stableId: int("stableId"),
-  name: varchar("name", { length: 200 }).notNull(),
-  description: text("description"),
-  duration: int("duration"),
-  // in weeks
-  discipline: varchar("discipline", { length: 100 }),
-  level: varchar("level", { length: 50 }),
-  goals: text("goals"),
-  programData: text("programData").notNull(),
-  // JSON: weekly schedule
-  isPublic: boolean("isPublic").default(false).notNull(),
-  isActive: boolean("isActive").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var trainingPrograms = mysqlTable("trainingPrograms", {
-  id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  templateId: int("templateId"),
-  name: varchar("name", { length: 200 }).notNull(),
-  startDate: date("startDate").notNull(),
-  endDate: date("endDate"),
-  status: mysqlEnum("status", ["active", "completed", "paused", "cancelled"]).default("active").notNull(),
-  progress: int("progress").default(0),
-  // percentage
-  programData: text("programData").notNull(),
-  // JSON: customized schedule
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var reports = mysqlTable("reports", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  stableId: int("stableId"),
-  horseId: int("horseId"),
-  reportType: mysqlEnum("reportType", ["monthly_summary", "health_report", "training_progress", "cost_analysis", "competition_summary"]).notNull(),
-  title: varchar("title", { length: 200 }).notNull(),
-  reportData: text("reportData").notNull(),
-  // JSON: report content
-  fileUrl: text("fileUrl"),
-  // PDF URL
-  generatedAt: timestamp("generatedAt").defaultNow().notNull()
-});
-var reportSchedules = mysqlTable("reportSchedules", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  stableId: int("stableId"),
-  reportType: mysqlEnum("reportType", ["monthly_summary", "health_report", "training_progress", "cost_analysis", "competition_summary"]).notNull(),
-  frequency: mysqlEnum("frequency", ["daily", "weekly", "monthly", "quarterly"]).notNull(),
-  recipients: text("recipients"),
-  // JSON array of email addresses
-  isActive: boolean("isActive").default(true).notNull(),
-  lastRunAt: timestamp("lastRunAt"),
-  nextRunAt: timestamp("nextRunAt"),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var breeding = mysqlTable("breeding", {
-  id: int("id").autoincrement().primaryKey(),
-  mareId: int("mareId").notNull(),
-  // horseId of mare
-  stallionId: int("stallionId"),
-  // horseId of stallion (if owned)
-  stallionName: varchar("stallionName", { length: 200 }),
-  breedingDate: date("breedingDate").notNull(),
-  method: mysqlEnum("method", ["natural", "artificial", "embryo_transfer"]).notNull(),
-  veterinarianName: varchar("veterinarianName", { length: 100 }),
-  cost: int("cost"),
-  pregnancyConfirmed: boolean("pregnancyConfirmed").default(false),
-  confirmationDate: date("confirmationDate"),
-  dueDate: date("dueDate"),
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var foals = mysqlTable("foals", {
-  id: int("id").autoincrement().primaryKey(),
-  breedingId: int("breedingId").notNull(),
-  horseId: int("horseId"),
-  // linked to horses table after birth
-  birthDate: date("birthDate").notNull(),
-  gender: mysqlEnum("gender", ["colt", "filly"]),
-  name: varchar("name", { length: 100 }),
-  color: varchar("color", { length: 50 }),
-  markings: text("markings"),
-  birthWeight: int("birthWeight"),
-  // in kg
-  currentWeight: int("currentWeight"),
-  healthStatus: varchar("healthStatus", { length: 100 }),
-  milestones: text("milestones"),
-  // JSON array of development milestones
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var pedigree = mysqlTable("pedigree", {
-  id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  sireId: int("sireId"),
-  // horseId of sire
-  sireName: varchar("sireName", { length: 200 }),
-  damId: int("damId"),
-  // horseId of dam
-  damName: varchar("damName", { length: 200 }),
-  sireOfSireId: int("sireOfSireId"),
-  sireOfSireName: varchar("sireOfSireName", { length: 200 }),
-  damOfSireId: int("damOfSireId"),
-  damOfSireName: varchar("damOfSireName", { length: 200 }),
-  sireOfDamId: int("sireOfDamId"),
-  sireOfDamName: varchar("sireOfDamName", { length: 200 }),
-  damOfDamId: int("damOfDamId"),
-  damOfDamName: varchar("damOfDamName", { length: 200 }),
-  geneticInfo: text("geneticInfo"),
-  // JSON: genetic markers, health predispositions
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var lessonBookings = mysqlTable("lessonBookings", {
-  id: int("id").autoincrement().primaryKey(),
-  trainerId: int("trainerId").notNull(),
-  clientId: int("clientId").notNull(),
-  horseId: int("horseId"),
-  lessonDate: timestamp("lessonDate").notNull(),
-  duration: int("duration").notNull(),
-  // in minutes
-  lessonType: varchar("lessonType", { length: 100 }),
-  location: varchar("location", { length: 200 }),
-  status: mysqlEnum("status", ["scheduled", "completed", "cancelled", "no_show"]).default("scheduled").notNull(),
-  fee: int("fee"),
-  // in pence/cents
-  paid: boolean("paid").default(false).notNull(),
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
-});
-var trainerAvailability = mysqlTable("trainerAvailability", {
-  id: int("id").autoincrement().primaryKey(),
-  trainerId: int("trainerId").notNull(),
-  dayOfWeek: int("dayOfWeek").notNull(),
-  // 0-6 (Sunday-Saturday)
-  startTime: varchar("startTime", { length: 5 }).notNull(),
-  // HH:MM
-  endTime: varchar("endTime", { length: 5 }).notNull(),
-  // HH:MM
-  isActive: boolean("isActive").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var apiKeys = mysqlTable("apiKeys", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  stableId: int("stableId"),
-  name: varchar("name", { length: 100 }).notNull(),
-  keyHash: varchar("keyHash", { length: 255 }).notNull(),
-  // bcrypt hash of key
-  keyPrefix: varchar("keyPrefix", { length: 20 }).notNull(),
-  // first few chars for identification
-  permissions: text("permissions"),
-  // JSON array of allowed endpoints
-  rateLimit: int("rateLimit").default(100).notNull(),
-  // requests per hour
-  isActive: boolean("isActive").default(true).notNull(),
-  lastUsedAt: timestamp("lastUsedAt"),
-  expiresAt: timestamp("expiresAt"),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
-});
-var webhooks = mysqlTable("webhooks", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  stableId: int("stableId"),
-  url: text("url").notNull(),
-  events: text("events").notNull(),
-  // JSON array of subscribed events
-  secret: varchar("secret", { length: 255 }).notNull(),
-  isActive: boolean("isActive").default(true).notNull(),
-  lastTriggeredAt: timestamp("lastTriggeredAt"),
-  failureCount: int("failureCount").default(0),
-  createdAt: timestamp("createdAt").defaultNow().notNull()
+var users, horses, healthRecords, trainingSessions, feedingPlans, documents, weatherLogs, systemSettings, adminSessions, adminUnlockAttempts, activityLogs, backupLogs, stables, stableMembers, stableInvites, events, eventReminders, feedCosts, vaccinations, dewormings, shareLinks, competitions, documentTags, stripeEvents, messageThreads, messages, competitionResults, trainingProgramTemplates, trainingPrograms, reports, reportSchedules, breeding, foals, pedigree, lessonBookings, trainerAvailability, apiKeys, webhooks;
+var init_schema = __esm({
+  "drizzle/schema.ts"() {
+    "use strict";
+    users = mysqlTable("users", {
+      id: int("id").autoincrement().primaryKey(),
+      openId: varchar("openId", { length: 64 }).notNull().unique(),
+      name: text("name"),
+      email: varchar("email", { length: 320 }),
+      loginMethod: varchar("loginMethod", { length: 64 }),
+      role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+      // Subscription fields
+      subscriptionStatus: mysqlEnum("subscriptionStatus", ["trial", "active", "cancelled", "overdue", "expired"]).default("trial").notNull(),
+      subscriptionPlan: mysqlEnum("subscriptionPlan", ["monthly", "yearly"]).default("monthly"),
+      stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
+      stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
+      trialEndsAt: timestamp("trialEndsAt"),
+      subscriptionEndsAt: timestamp("subscriptionEndsAt"),
+      lastPaymentAt: timestamp("lastPaymentAt"),
+      // Account status
+      isActive: boolean("isActive").default(true).notNull(),
+      isSuspended: boolean("isSuspended").default(false).notNull(),
+      suspendedReason: text("suspendedReason"),
+      // Profile
+      phone: varchar("phone", { length: 20 }),
+      location: varchar("location", { length: 255 }),
+      profileImageUrl: text("profileImageUrl"),
+      // User preferences and settings
+      preferences: text("preferences"),
+      // JSON: theme, language, dashboard layout
+      language: varchar("language", { length: 10 }).default("en"),
+      theme: mysqlEnum("theme", ["light", "dark", "system"]).default("system"),
+      // Timestamps
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+      lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull()
+    });
+    horses = mysqlTable("horses", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      name: varchar("name", { length: 100 }).notNull(),
+      breed: varchar("breed", { length: 100 }),
+      age: int("age"),
+      dateOfBirth: date("dateOfBirth"),
+      height: int("height"),
+      // in centimeters
+      weight: int("weight"),
+      // in kilograms
+      color: varchar("color", { length: 50 }),
+      gender: mysqlEnum("gender", ["stallion", "mare", "gelding"]),
+      discipline: varchar("discipline", { length: 100 }),
+      // dressage, jumping, eventing, etc.
+      level: varchar("level", { length: 50 }),
+      // beginner, intermediate, advanced, competition
+      registrationNumber: varchar("registrationNumber", { length: 100 }),
+      microchipNumber: varchar("microchipNumber", { length: 100 }),
+      notes: text("notes"),
+      photoUrl: text("photoUrl"),
+      isActive: boolean("isActive").default(true).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    healthRecords = mysqlTable("healthRecords", {
+      id: int("id").autoincrement().primaryKey(),
+      horseId: int("horseId").notNull(),
+      userId: int("userId").notNull(),
+      recordType: mysqlEnum("recordType", ["vaccination", "deworming", "dental", "farrier", "veterinary", "injury", "medication", "other"]).notNull(),
+      title: varchar("title", { length: 200 }).notNull(),
+      description: text("description"),
+      recordDate: date("recordDate").notNull(),
+      nextDueDate: date("nextDueDate"),
+      vetName: varchar("vetName", { length: 100 }),
+      vetPhone: varchar("vetPhone", { length: 20 }),
+      vetClinic: varchar("vetClinic", { length: 200 }),
+      cost: int("cost"),
+      // in pence/cents
+      documentUrl: text("documentUrl"),
+      notes: text("notes"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    trainingSessions = mysqlTable("trainingSessions", {
+      id: int("id").autoincrement().primaryKey(),
+      horseId: int("horseId").notNull(),
+      userId: int("userId").notNull(),
+      sessionDate: date("sessionDate").notNull(),
+      startTime: varchar("startTime", { length: 10 }),
+      // HH:MM format
+      endTime: varchar("endTime", { length: 10 }),
+      duration: int("duration"),
+      // in minutes
+      sessionType: mysqlEnum("sessionType", ["flatwork", "jumping", "hacking", "lunging", "groundwork", "competition", "lesson", "other"]).notNull(),
+      discipline: varchar("discipline", { length: 100 }),
+      trainer: varchar("trainer", { length: 100 }),
+      location: varchar("location", { length: 200 }),
+      goals: text("goals"),
+      exercises: text("exercises"),
+      notes: text("notes"),
+      performance: mysqlEnum("performance", ["excellent", "good", "average", "poor"]),
+      weather: varchar("weather", { length: 100 }),
+      temperature: int("temperature"),
+      // in celsius
+      isCompleted: boolean("isCompleted").default(false).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    feedingPlans = mysqlTable("feedingPlans", {
+      id: int("id").autoincrement().primaryKey(),
+      horseId: int("horseId").notNull(),
+      userId: int("userId").notNull(),
+      feedType: varchar("feedType", { length: 100 }).notNull(),
+      // hay, grain, supplements, etc.
+      brandName: varchar("brandName", { length: 100 }),
+      quantity: varchar("quantity", { length: 50 }).notNull(),
+      // e.g., "2kg", "1 scoop"
+      unit: varchar("unit", { length: 20 }),
+      // kg, lbs, scoops, flakes
+      mealTime: mysqlEnum("mealTime", ["morning", "midday", "evening", "night"]).notNull(),
+      frequency: varchar("frequency", { length: 50 }).default("daily"),
+      // daily, twice daily, etc.
+      specialInstructions: text("specialInstructions"),
+      isActive: boolean("isActive").default(true).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    documents = mysqlTable("documents", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      horseId: int("horseId"),
+      healthRecordId: int("healthRecordId"),
+      fileName: varchar("fileName", { length: 255 }).notNull(),
+      fileType: varchar("fileType", { length: 50 }).notNull(),
+      // pdf, image, etc.
+      fileSize: int("fileSize"),
+      // in bytes
+      fileUrl: text("fileUrl").notNull(),
+      fileKey: varchar("fileKey", { length: 500 }).notNull(),
+      category: mysqlEnum("category", ["health", "registration", "insurance", "competition", "other"]).default("other"),
+      description: text("description"),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    weatherLogs = mysqlTable("weatherLogs", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      location: varchar("location", { length: 255 }).notNull(),
+      temperature: int("temperature"),
+      // celsius
+      humidity: int("humidity"),
+      // percentage
+      windSpeed: int("windSpeed"),
+      // km/h
+      precipitation: int("precipitation"),
+      // mm
+      conditions: varchar("conditions", { length: 100 }),
+      // sunny, cloudy, rainy, etc.
+      uvIndex: int("uvIndex"),
+      visibility: int("visibility"),
+      // km
+      ridingRecommendation: mysqlEnum("ridingRecommendation", ["excellent", "good", "fair", "poor", "not_recommended"]),
+      aiAnalysis: text("aiAnalysis"),
+      checkedAt: timestamp("checkedAt").defaultNow().notNull()
+    });
+    systemSettings = mysqlTable("systemSettings", {
+      id: int("id").autoincrement().primaryKey(),
+      settingKey: varchar("settingKey", { length: 100 }).notNull().unique(),
+      settingValue: text("settingValue"),
+      settingType: mysqlEnum("settingType", ["string", "number", "boolean", "json"]).default("string"),
+      description: text("description"),
+      isEncrypted: boolean("isEncrypted").default(false),
+      updatedBy: int("updatedBy"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    adminSessions = mysqlTable("adminSessions", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      expiresAt: timestamp("expiresAt").notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    adminUnlockAttempts = mysqlTable("adminUnlockAttempts", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull().unique(),
+      attempts: int("attempts").default(0).notNull(),
+      lockedUntil: timestamp("lockedUntil"),
+      lastAttemptAt: timestamp("lastAttemptAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    activityLogs = mysqlTable("activityLogs", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId"),
+      action: varchar("action", { length: 100 }).notNull(),
+      entityType: varchar("entityType", { length: 50 }),
+      // user, horse, health_record, etc.
+      entityId: int("entityId"),
+      details: text("details"),
+      ipAddress: varchar("ipAddress", { length: 45 }),
+      userAgent: text("userAgent"),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    backupLogs = mysqlTable("backupLogs", {
+      id: int("id").autoincrement().primaryKey(),
+      backupType: mysqlEnum("backupType", ["full", "incremental", "users", "horses"]).notNull(),
+      status: mysqlEnum("status", ["pending", "running", "completed", "failed"]).notNull(),
+      fileName: varchar("fileName", { length: 255 }),
+      fileSize: int("fileSize"),
+      fileUrl: text("fileUrl"),
+      errorMessage: text("errorMessage"),
+      startedAt: timestamp("startedAt").defaultNow().notNull(),
+      completedAt: timestamp("completedAt")
+    });
+    stables = mysqlTable("stables", {
+      id: int("id").autoincrement().primaryKey(),
+      name: varchar("name", { length: 200 }).notNull(),
+      description: text("description"),
+      ownerId: int("ownerId").notNull(),
+      // The user who created the stable
+      location: varchar("location", { length: 255 }),
+      logo: text("logo"),
+      // Branding and customization
+      primaryColor: varchar("primaryColor", { length: 7 }),
+      // Hex color
+      secondaryColor: varchar("secondaryColor", { length: 7 }),
+      customDomain: varchar("customDomain", { length: 255 }),
+      branding: text("branding"),
+      // JSON: additional branding settings
+      isActive: boolean("isActive").default(true).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    stableMembers = mysqlTable("stableMembers", {
+      id: int("id").autoincrement().primaryKey(),
+      stableId: int("stableId").notNull(),
+      userId: int("userId").notNull(),
+      role: mysqlEnum("role", ["owner", "admin", "trainer", "member", "viewer"]).notNull(),
+      permissions: text("permissions"),
+      // JSON string of specific permissions
+      isActive: boolean("isActive").default(true).notNull(),
+      joinedAt: timestamp("joinedAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    stableInvites = mysqlTable("stableInvites", {
+      id: int("id").autoincrement().primaryKey(),
+      stableId: int("stableId").notNull(),
+      invitedByUserId: int("invitedByUserId").notNull(),
+      email: varchar("email", { length: 320 }).notNull(),
+      role: mysqlEnum("role", ["admin", "trainer", "member", "viewer"]).notNull(),
+      token: varchar("token", { length: 100 }).notNull().unique(),
+      status: mysqlEnum("status", ["pending", "accepted", "declined", "expired"]).default("pending").notNull(),
+      expiresAt: timestamp("expiresAt").notNull(),
+      acceptedAt: timestamp("acceptedAt"),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    events = mysqlTable("events", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      stableId: int("stableId"),
+      horseId: int("horseId"),
+      title: varchar("title", { length: 200 }).notNull(),
+      description: text("description"),
+      eventType: mysqlEnum("eventType", ["training", "competition", "veterinary", "farrier", "lesson", "meeting", "other"]).notNull(),
+      startDate: timestamp("startDate").notNull(),
+      endDate: timestamp("endDate"),
+      location: varchar("location", { length: 255 }),
+      isAllDay: boolean("isAllDay").default(false).notNull(),
+      isRecurring: boolean("isRecurring").default(false).notNull(),
+      recurrenceRule: text("recurrenceRule"),
+      // iCal RRULE format
+      color: varchar("color", { length: 7 }),
+      // Hex color code
+      isCompleted: boolean("isCompleted").default(false).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    eventReminders = mysqlTable("eventReminders", {
+      id: int("id").autoincrement().primaryKey(),
+      eventId: int("eventId").notNull(),
+      userId: int("userId").notNull(),
+      reminderTime: timestamp("reminderTime").notNull(),
+      reminderType: mysqlEnum("reminderType", ["email", "push", "sms"]).notNull(),
+      isSent: boolean("isSent").default(false).notNull(),
+      sentAt: timestamp("sentAt"),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    feedCosts = mysqlTable("feedCosts", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      horseId: int("horseId"),
+      feedType: varchar("feedType", { length: 100 }).notNull(),
+      brandName: varchar("brandName", { length: 100 }),
+      quantity: varchar("quantity", { length: 50 }).notNull(),
+      unit: varchar("unit", { length: 20 }),
+      costPerUnit: int("costPerUnit").notNull(),
+      // in pence/cents
+      purchaseDate: date("purchaseDate").notNull(),
+      supplier: varchar("supplier", { length: 200 }),
+      notes: text("notes"),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    vaccinations = mysqlTable("vaccinations", {
+      id: int("id").autoincrement().primaryKey(),
+      horseId: int("horseId").notNull(),
+      userId: int("userId").notNull(),
+      vaccineName: varchar("vaccineName", { length: 200 }).notNull(),
+      vaccineType: varchar("vaccineType", { length: 100 }),
+      // flu, tetanus, etc.
+      dateAdministered: date("dateAdministered").notNull(),
+      nextDueDate: date("nextDueDate"),
+      batchNumber: varchar("batchNumber", { length: 100 }),
+      vetName: varchar("vetName", { length: 100 }),
+      vetClinic: varchar("vetClinic", { length: 200 }),
+      cost: int("cost"),
+      // in pence/cents
+      notes: text("notes"),
+      documentUrl: text("documentUrl"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    dewormings = mysqlTable("dewormings", {
+      id: int("id").autoincrement().primaryKey(),
+      horseId: int("horseId").notNull(),
+      userId: int("userId").notNull(),
+      productName: varchar("productName", { length: 200 }).notNull(),
+      activeIngredient: varchar("activeIngredient", { length: 200 }),
+      dateAdministered: date("dateAdministered").notNull(),
+      nextDueDate: date("nextDueDate"),
+      dosage: varchar("dosage", { length: 100 }),
+      weight: int("weight"),
+      // horse weight at time of treatment
+      cost: int("cost"),
+      // in pence/cents
+      notes: text("notes"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    shareLinks = mysqlTable("shareLinks", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      horseId: int("horseId"),
+      linkType: mysqlEnum("linkType", ["horse", "stable", "medical_passport"]).notNull(),
+      token: varchar("token", { length: 100 }).notNull().unique(),
+      isPublic: boolean("isPublic").default(false).notNull(),
+      isActive: boolean("isActive").default(true).notNull(),
+      expiresAt: timestamp("expiresAt"),
+      viewCount: int("viewCount").default(0).notNull(),
+      lastViewedAt: timestamp("lastViewedAt"),
+      settings: text("settings"),
+      // JSON string for privacy settings
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    competitions = mysqlTable("competitions", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      horseId: int("horseId").notNull(),
+      competitionName: varchar("competitionName", { length: 200 }).notNull(),
+      venue: varchar("venue", { length: 200 }),
+      date: date("date").notNull(),
+      discipline: varchar("discipline", { length: 100 }),
+      // dressage, jumping, etc.
+      level: varchar("level", { length: 50 }),
+      class: varchar("class", { length: 100 }),
+      // specific class/event name
+      placement: varchar("placement", { length: 50 }),
+      // 1st, 2nd, etc. or score
+      score: varchar("score", { length: 50 }),
+      notes: text("notes"),
+      cost: int("cost"),
+      // entry fee in pence/cents
+      winnings: int("winnings"),
+      // prize money in pence/cents
+      documentUrl: text("documentUrl"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    documentTags = mysqlTable("documentTags", {
+      id: int("id").autoincrement().primaryKey(),
+      documentId: int("documentId").notNull(),
+      tag: varchar("tag", { length: 50 }).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    stripeEvents = mysqlTable("stripeEvents", {
+      id: int("id").autoincrement().primaryKey(),
+      eventId: varchar("eventId", { length: 255 }).notNull().unique(),
+      eventType: varchar("eventType", { length: 100 }).notNull(),
+      processed: boolean("processed").default(false).notNull(),
+      payload: text("payload"),
+      // Full event payload for debugging
+      error: text("error"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      processedAt: timestamp("processedAt")
+    });
+    messageThreads = mysqlTable("messageThreads", {
+      id: int("id").autoincrement().primaryKey(),
+      stableId: int("stableId").notNull(),
+      title: varchar("title", { length: 200 }),
+      isActive: boolean("isActive").default(true).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    messages = mysqlTable("messages", {
+      id: int("id").autoincrement().primaryKey(),
+      threadId: int("threadId").notNull(),
+      senderId: int("senderId").notNull(),
+      content: text("content").notNull(),
+      attachments: text("attachments"),
+      // JSON array of file URLs
+      isRead: boolean("isRead").default(false).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    competitionResults = mysqlTable("competitionResults", {
+      id: int("id").autoincrement().primaryKey(),
+      competitionId: int("competitionId").notNull(),
+      userId: int("userId").notNull(),
+      horseId: int("horseId").notNull(),
+      roundNumber: int("roundNumber").default(1),
+      score: varchar("score", { length: 50 }),
+      penalties: int("penalties"),
+      time: varchar("time", { length: 20 }),
+      judgeScores: text("judgeScores"),
+      // JSON array of judge scores
+      technicalScore: int("technicalScore"),
+      artisticScore: int("artisticScore"),
+      notes: text("notes"),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    trainingProgramTemplates = mysqlTable("trainingProgramTemplates", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      stableId: int("stableId"),
+      name: varchar("name", { length: 200 }).notNull(),
+      description: text("description"),
+      duration: int("duration"),
+      // in weeks
+      discipline: varchar("discipline", { length: 100 }),
+      level: varchar("level", { length: 50 }),
+      goals: text("goals"),
+      programData: text("programData").notNull(),
+      // JSON: weekly schedule
+      isPublic: boolean("isPublic").default(false).notNull(),
+      isActive: boolean("isActive").default(true).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    trainingPrograms = mysqlTable("trainingPrograms", {
+      id: int("id").autoincrement().primaryKey(),
+      horseId: int("horseId").notNull(),
+      userId: int("userId").notNull(),
+      templateId: int("templateId"),
+      name: varchar("name", { length: 200 }).notNull(),
+      startDate: date("startDate").notNull(),
+      endDate: date("endDate"),
+      status: mysqlEnum("status", ["active", "completed", "paused", "cancelled"]).default("active").notNull(),
+      progress: int("progress").default(0),
+      // percentage
+      programData: text("programData").notNull(),
+      // JSON: customized schedule
+      notes: text("notes"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    reports = mysqlTable("reports", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      stableId: int("stableId"),
+      horseId: int("horseId"),
+      reportType: mysqlEnum("reportType", ["monthly_summary", "health_report", "training_progress", "cost_analysis", "competition_summary"]).notNull(),
+      title: varchar("title", { length: 200 }).notNull(),
+      reportData: text("reportData").notNull(),
+      // JSON: report content
+      fileUrl: text("fileUrl"),
+      // PDF URL
+      generatedAt: timestamp("generatedAt").defaultNow().notNull()
+    });
+    reportSchedules = mysqlTable("reportSchedules", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      stableId: int("stableId"),
+      reportType: mysqlEnum("reportType", ["monthly_summary", "health_report", "training_progress", "cost_analysis", "competition_summary"]).notNull(),
+      frequency: mysqlEnum("frequency", ["daily", "weekly", "monthly", "quarterly"]).notNull(),
+      recipients: text("recipients"),
+      // JSON array of email addresses
+      isActive: boolean("isActive").default(true).notNull(),
+      lastRunAt: timestamp("lastRunAt"),
+      nextRunAt: timestamp("nextRunAt"),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    breeding = mysqlTable("breeding", {
+      id: int("id").autoincrement().primaryKey(),
+      mareId: int("mareId").notNull(),
+      // horseId of mare
+      stallionId: int("stallionId"),
+      // horseId of stallion (if owned)
+      stallionName: varchar("stallionName", { length: 200 }),
+      breedingDate: date("breedingDate").notNull(),
+      method: mysqlEnum("method", ["natural", "artificial", "embryo_transfer"]).notNull(),
+      veterinarianName: varchar("veterinarianName", { length: 100 }),
+      cost: int("cost"),
+      pregnancyConfirmed: boolean("pregnancyConfirmed").default(false),
+      confirmationDate: date("confirmationDate"),
+      dueDate: date("dueDate"),
+      notes: text("notes"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    foals = mysqlTable("foals", {
+      id: int("id").autoincrement().primaryKey(),
+      breedingId: int("breedingId").notNull(),
+      horseId: int("horseId"),
+      // linked to horses table after birth
+      birthDate: date("birthDate").notNull(),
+      gender: mysqlEnum("gender", ["colt", "filly"]),
+      name: varchar("name", { length: 100 }),
+      color: varchar("color", { length: 50 }),
+      markings: text("markings"),
+      birthWeight: int("birthWeight"),
+      // in kg
+      currentWeight: int("currentWeight"),
+      healthStatus: varchar("healthStatus", { length: 100 }),
+      milestones: text("milestones"),
+      // JSON array of development milestones
+      notes: text("notes"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    pedigree = mysqlTable("pedigree", {
+      id: int("id").autoincrement().primaryKey(),
+      horseId: int("horseId").notNull(),
+      sireId: int("sireId"),
+      // horseId of sire
+      sireName: varchar("sireName", { length: 200 }),
+      damId: int("damId"),
+      // horseId of dam
+      damName: varchar("damName", { length: 200 }),
+      sireOfSireId: int("sireOfSireId"),
+      sireOfSireName: varchar("sireOfSireName", { length: 200 }),
+      damOfSireId: int("damOfSireId"),
+      damOfSireName: varchar("damOfSireName", { length: 200 }),
+      sireOfDamId: int("sireOfDamId"),
+      sireOfDamName: varchar("sireOfDamName", { length: 200 }),
+      damOfDamId: int("damOfDamId"),
+      damOfDamName: varchar("damOfDamName", { length: 200 }),
+      geneticInfo: text("geneticInfo"),
+      // JSON: genetic markers, health predispositions
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    lessonBookings = mysqlTable("lessonBookings", {
+      id: int("id").autoincrement().primaryKey(),
+      trainerId: int("trainerId").notNull(),
+      clientId: int("clientId").notNull(),
+      horseId: int("horseId"),
+      lessonDate: timestamp("lessonDate").notNull(),
+      duration: int("duration").notNull(),
+      // in minutes
+      lessonType: varchar("lessonType", { length: 100 }),
+      location: varchar("location", { length: 200 }),
+      status: mysqlEnum("status", ["scheduled", "completed", "cancelled", "no_show"]).default("scheduled").notNull(),
+      fee: int("fee"),
+      // in pence/cents
+      paid: boolean("paid").default(false).notNull(),
+      notes: text("notes"),
+      createdAt: timestamp("createdAt").defaultNow().notNull(),
+      updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
+    });
+    trainerAvailability = mysqlTable("trainerAvailability", {
+      id: int("id").autoincrement().primaryKey(),
+      trainerId: int("trainerId").notNull(),
+      dayOfWeek: int("dayOfWeek").notNull(),
+      // 0-6 (Sunday-Saturday)
+      startTime: varchar("startTime", { length: 5 }).notNull(),
+      // HH:MM
+      endTime: varchar("endTime", { length: 5 }).notNull(),
+      // HH:MM
+      isActive: boolean("isActive").default(true).notNull(),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    apiKeys = mysqlTable("apiKeys", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      stableId: int("stableId"),
+      name: varchar("name", { length: 100 }).notNull(),
+      keyHash: varchar("keyHash", { length: 255 }).notNull(),
+      // bcrypt hash of key
+      keyPrefix: varchar("keyPrefix", { length: 20 }).notNull(),
+      // first few chars for identification
+      permissions: text("permissions"),
+      // JSON array of allowed endpoints
+      rateLimit: int("rateLimit").default(100).notNull(),
+      // requests per hour
+      isActive: boolean("isActive").default(true).notNull(),
+      lastUsedAt: timestamp("lastUsedAt"),
+      expiresAt: timestamp("expiresAt"),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+    webhooks = mysqlTable("webhooks", {
+      id: int("id").autoincrement().primaryKey(),
+      userId: int("userId").notNull(),
+      stableId: int("stableId"),
+      url: text("url").notNull(),
+      events: text("events").notNull(),
+      // JSON array of subscribed events
+      secret: varchar("secret", { length: 255 }).notNull(),
+      isActive: boolean("isActive").default(true).notNull(),
+      lastTriggeredAt: timestamp("lastTriggeredAt"),
+      failureCount: int("failureCount").default(0),
+      createdAt: timestamp("createdAt").defaultNow().notNull()
+    });
+  }
 });
 
 // server/_core/env.ts
-var ENV = {
-  appId: process.env.VITE_APP_ID ?? "",
-  cookieSecret: process.env.JWT_SECRET ?? "",
-  databaseUrl: process.env.DATABASE_URL ?? "",
-  oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
-  ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
-  isProduction: process.env.NODE_ENV === "production",
-  forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
-  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? ""
-};
+var ENV;
+var init_env = __esm({
+  "server/_core/env.ts"() {
+    "use strict";
+    if (process.env.NODE_ENV === "production") {
+      const requiredVars = [
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "ADMIN_UNLOCK_PASSWORD",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_S3_BUCKET"
+      ];
+      const missing = requiredVars.filter((v) => !process.env[v]);
+      if (missing.length > 0) {
+        console.error(`\u274C PRODUCTION ERROR: Missing required environment variables: ${missing.join(", ")}`);
+        console.error("Application cannot start. Please configure all required environment variables.");
+        process.exit(1);
+      }
+      if (process.env.ADMIN_UNLOCK_PASSWORD === "ashmor12@") {
+        console.error("\u274C PRODUCTION ERROR: ADMIN_UNLOCK_PASSWORD is still set to default value!");
+        console.error("You MUST change this to a secure password before running in production.");
+        process.exit(1);
+      }
+    }
+    ENV = {
+      // App config
+      appId: process.env.VITE_APP_ID ?? "",
+      cookieSecret: process.env.JWT_SECRET ?? "",
+      databaseUrl: process.env.DATABASE_URL ?? "",
+      oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
+      ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
+      isProduction: process.env.NODE_ENV === "production",
+      forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
+      forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+      // Admin unlock
+      adminUnlockPassword: process.env.ADMIN_UNLOCK_PASSWORD ?? "ashmor12@",
+      // Security
+      baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
+      cookieDomain: process.env.COOKIE_DOMAIN ?? void 0,
+      cookieSecure: process.env.COOKIE_SECURE === "true",
+      // Stripe
+      stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+      // AWS S3
+      awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
+      awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? "",
+      awsRegion: process.env.AWS_REGION ?? "eu-west-2",
+      awsS3Bucket: process.env.AWS_S3_BUCKET ?? "",
+      // OpenAI
+      openaiApiKey: process.env.OPENAI_API_KEY ?? ""
+    };
+  }
+});
 
 // server/db.ts
-var _db = null;
+var db_exports = {};
+__export(db_exports, {
+  createAdminSession: () => createAdminSession,
+  createApiKey: () => createApiKey,
+  createBackupLog: () => createBackupLog,
+  createCompetition: () => createCompetition,
+  createDeworming: () => createDeworming,
+  createDocument: () => createDocument,
+  createFeedingPlan: () => createFeedingPlan,
+  createHealthRecord: () => createHealthRecord,
+  createHorse: () => createHorse,
+  createStripeEvent: () => createStripeEvent,
+  createTrainingSession: () => createTrainingSession,
+  createVaccination: () => createVaccination,
+  createWeatherLog: () => createWeatherLog,
+  deleteDocument: () => deleteDocument,
+  deleteFeedingPlan: () => deleteFeedingPlan,
+  deleteHealthRecord: () => deleteHealthRecord,
+  deleteHorse: () => deleteHorse,
+  deleteTrainingSession: () => deleteTrainingSession,
+  deleteUser: () => deleteUser,
+  getActivityLogs: () => getActivityLogs,
+  getAdminSession: () => getAdminSession,
+  getAllSettings: () => getAllSettings,
+  getAllUsers: () => getAllUsers,
+  getCompetitionsByHorseId: () => getCompetitionsByHorseId,
+  getCompetitionsByUserId: () => getCompetitionsByUserId,
+  getDb: () => getDb,
+  getDewormingsByHorseId: () => getDewormingsByHorseId,
+  getDocumentsByHorseId: () => getDocumentsByHorseId,
+  getDocumentsByUserId: () => getDocumentsByUserId,
+  getExpiredTrials: () => getExpiredTrials,
+  getFeedingPlansByHorseId: () => getFeedingPlansByHorseId,
+  getFeedingPlansByUserId: () => getFeedingPlansByUserId,
+  getHealthRecordById: () => getHealthRecordById,
+  getHealthRecordsByHorseId: () => getHealthRecordsByHorseId,
+  getHealthRecordsByUserId: () => getHealthRecordsByUserId,
+  getHorseById: () => getHorseById,
+  getHorsesByUserId: () => getHorsesByUserId,
+  getLatestWeatherLog: () => getLatestWeatherLog,
+  getOverdueSubscriptions: () => getOverdueSubscriptions,
+  getRecentBackups: () => getRecentBackups,
+  getSetting: () => getSetting,
+  getSystemStats: () => getSystemStats,
+  getTrainingSessionsByHorseId: () => getTrainingSessionsByHorseId,
+  getTrainingSessionsByUserId: () => getTrainingSessionsByUserId,
+  getUnlockAttempts: () => getUnlockAttempts,
+  getUnlockLockoutTime: () => getUnlockLockoutTime,
+  getUpcomingReminders: () => getUpcomingReminders,
+  getUpcomingTrainingSessions: () => getUpcomingTrainingSessions,
+  getUserActivityLogs: () => getUserActivityLogs,
+  getUserById: () => getUserById,
+  getUserByOpenId: () => getUserByOpenId,
+  getVaccinationsByHorseId: () => getVaccinationsByHorseId,
+  getWeatherHistory: () => getWeatherHistory,
+  incrementUnlockAttempts: () => incrementUnlockAttempts,
+  isStripeEventProcessed: () => isStripeEventProcessed,
+  listApiKeys: () => listApiKeys,
+  logActivity: () => logActivity,
+  markStripeEventProcessed: () => markStripeEventProcessed,
+  resetUnlockAttempts: () => resetUnlockAttempts,
+  revokeAdminSession: () => revokeAdminSession,
+  revokeApiKey: () => revokeApiKey,
+  rotateApiKey: () => rotateApiKey,
+  setUnlockLockout: () => setUnlockLockout,
+  suspendUser: () => suspendUser,
+  unsuspendUser: () => unsuspendUser,
+  updateApiKeySettings: () => updateApiKeySettings,
+  updateBackupLog: () => updateBackupLog,
+  updateFeedingPlan: () => updateFeedingPlan,
+  updateHealthRecord: () => updateHealthRecord,
+  updateHorse: () => updateHorse,
+  updateTrainingSession: () => updateTrainingSession,
+  updateUser: () => updateUser,
+  upsertSetting: () => upsertSetting,
+  upsertUser: () => upsertUser,
+  verifyApiKey: () => verifyApiKey
+});
+import { eq, and, desc, sql, gte, lte } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/mysql2";
+import bcrypt from "bcrypt";
+import { nanoid } from "nanoid";
 async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
@@ -995,6 +1118,14 @@ async function getWeatherHistory(userId, limit = 7) {
     eq(weatherLogs.userId, userId)
   ).orderBy(desc(weatherLogs.checkedAt)).limit(limit);
 }
+async function getSetting(key) {
+  const db = await getDb();
+  if (!db) return void 0;
+  const result = await db.select().from(systemSettings).where(
+    eq(systemSettings.settingKey, key)
+  ).limit(1);
+  return result.length > 0 ? result[0] : void 0;
+}
 async function upsertSetting(key, value, type = "string", description, updatedBy) {
   const db = await getDb();
   if (!db) return;
@@ -1029,6 +1160,17 @@ async function getUserActivityLogs(userId, limit = 50) {
   return db.select().from(activityLogs).where(
     eq(activityLogs.userId, userId)
   ).orderBy(desc(activityLogs.createdAt)).limit(limit);
+}
+async function createBackupLog(data) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(backupLogs).values(data);
+  return result[0].insertId;
+}
+async function updateBackupLog(id, data) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(backupLogs).set(data).where(eq(backupLogs.id, id));
 }
 async function getRecentBackups(limit = 10) {
   const db = await getDb();
@@ -1095,6 +1237,52 @@ async function isStripeEventProcessed(eventId) {
   ).limit(1);
   return result.length > 0;
 }
+async function createVaccination(data) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(vaccinations).values(data);
+  return result[0].insertId;
+}
+async function getVaccinationsByHorseId(horseId, userId) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(vaccinations).where(
+    and(eq(vaccinations.horseId, horseId), eq(vaccinations.userId, userId))
+  ).orderBy(desc(vaccinations.dateAdministered));
+}
+async function createDeworming(data) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(dewormings).values(data);
+  return result[0].insertId;
+}
+async function getDewormingsByHorseId(horseId, userId) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(dewormings).where(
+    and(eq(dewormings.horseId, horseId), eq(dewormings.userId, userId))
+  ).orderBy(desc(dewormings.dateAdministered));
+}
+async function createCompetition(data) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(competitions).values(data);
+  return result[0].insertId;
+}
+async function getCompetitionsByHorseId(horseId, userId) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(competitions).where(
+    and(eq(competitions.horseId, horseId), eq(competitions.userId, userId))
+  ).orderBy(desc(competitions.date));
+}
+async function getCompetitionsByUserId(userId) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(competitions).where(
+    eq(competitions.userId, userId)
+  ).orderBy(desc(competitions.date));
+}
 async function getAdminSession(userId) {
   const db = await getDb();
   if (!db) return null;
@@ -1159,6 +1347,126 @@ async function getUnlockLockoutTime(userId) {
   const record = await db.select().from(adminUnlockAttempts).where(eq(adminUnlockAttempts.userId, userId)).limit(1);
   return record[0]?.lockedUntil || null;
 }
+async function createApiKey(data) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const prefix = "ep_" + nanoid(4);
+  const secret = nanoid(32);
+  const fullKey = prefix + "_" + secret;
+  const keyHash = await bcrypt.hash(fullKey, 10);
+  const result = await db.insert(apiKeys).values({
+    userId: data.userId,
+    stableId: data.stableId,
+    name: data.name,
+    keyHash,
+    keyPrefix: prefix,
+    permissions: data.permissions ? JSON.stringify(data.permissions) : null,
+    rateLimit: data.rateLimit ?? 100,
+    expiresAt: data.expiresAt
+  });
+  return { id: result[0].insertId, key: fullKey };
+}
+async function listApiKeys(userId) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    id: apiKeys.id,
+    name: apiKeys.name,
+    keyPrefix: apiKeys.keyPrefix,
+    isActive: apiKeys.isActive,
+    rateLimit: apiKeys.rateLimit,
+    lastUsedAt: apiKeys.lastUsedAt,
+    expiresAt: apiKeys.expiresAt,
+    createdAt: apiKeys.createdAt
+  }).from(apiKeys).where(eq(apiKeys.userId, userId)).orderBy(desc(apiKeys.createdAt));
+}
+async function revokeApiKey(id, userId) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(apiKeys).set({ isActive: false }).where(
+    and(eq(apiKeys.id, id), eq(apiKeys.userId, userId))
+  );
+}
+async function rotateApiKey(id, userId) {
+  const db = await getDb();
+  if (!db) return null;
+  const existing = await db.select().from(apiKeys).where(
+    and(eq(apiKeys.id, id), eq(apiKeys.userId, userId))
+  ).limit(1);
+  if (!existing[0]) return null;
+  const prefix = "ep_" + nanoid(4);
+  const secret = nanoid(32);
+  const fullKey = prefix + "_" + secret;
+  const keyHash = await bcrypt.hash(fullKey, 10);
+  await db.update(apiKeys).set({
+    keyHash,
+    keyPrefix: prefix
+  }).where(and(eq(apiKeys.id, id), eq(apiKeys.userId, userId)));
+  return { key: fullKey };
+}
+async function updateApiKeySettings(id, userId, data) {
+  const db = await getDb();
+  if (!db) return;
+  const updateData = {};
+  if (data.name !== void 0) updateData.name = data.name;
+  if (data.rateLimit !== void 0) updateData.rateLimit = data.rateLimit;
+  if (data.permissions !== void 0) updateData.permissions = JSON.stringify(data.permissions);
+  if (data.isActive !== void 0) updateData.isActive = data.isActive;
+  await db.update(apiKeys).set(updateData).where(
+    and(eq(apiKeys.id, id), eq(apiKeys.userId, userId))
+  );
+}
+async function verifyApiKey(key) {
+  const db = await getDb();
+  if (!db) return null;
+  const prefix = key.substring(0, 7);
+  const keys = await db.select().from(apiKeys).where(
+    and(
+      eq(apiKeys.keyPrefix, prefix),
+      eq(apiKeys.isActive, true)
+    )
+  );
+  for (const apiKey of keys) {
+    const match = await bcrypt.compare(key, apiKey.keyHash);
+    if (match) {
+      if (apiKey.expiresAt && apiKey.expiresAt < /* @__PURE__ */ new Date()) {
+        return null;
+      }
+      await db.update(apiKeys).set({ lastUsedAt: /* @__PURE__ */ new Date() }).where(eq(apiKeys.id, apiKey.id));
+      const permissions = apiKey.permissions ? JSON.parse(apiKey.permissions) : [];
+      return { userId: apiKey.userId, permissions };
+    }
+  }
+  return null;
+}
+var _db;
+var init_db = __esm({
+  "server/db.ts"() {
+    "use strict";
+    init_schema();
+    init_env();
+    _db = null;
+  }
+});
+
+// server/_core/index.ts
+import "dotenv/config";
+import express2 from "express";
+import { createServer } from "http";
+import net from "net";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import { createExpressMiddleware } from "@trpc/server/adapters/express";
+
+// shared/const.ts
+var COOKIE_NAME = "app_session_id";
+var ONE_YEAR_MS = 1e3 * 60 * 60 * 24 * 365;
+var AXIOS_TIMEOUT_MS = 3e4;
+var UNAUTHED_ERR_MSG = "Please login (10001)";
+var NOT_ADMIN_ERR_MSG = "You do not have required permission (10002)";
+
+// server/_core/oauth.ts
+init_db();
 
 // server/_core/cookies.ts
 function isSecureRequest(req) {
@@ -1188,6 +1496,8 @@ var HttpError = class extends Error {
 var ForbiddenError = (msg) => new HttpError(403, msg);
 
 // server/_core/sdk.ts
+init_db();
+init_env();
 import axios from "axios";
 import { parse as parseCookieHeader } from "cookie";
 import { SignJWT, jwtVerify } from "jose";
@@ -1449,6 +1759,7 @@ function registerOAuthRoutes(app) {
 import { z } from "zod";
 
 // server/_core/notification.ts
+init_env();
 import { TRPCError } from "@trpc/server";
 var TITLE_MAX_LENGTH = 1200;
 var CONTENT_MAX_LENGTH = 2e4;
@@ -1551,11 +1862,19 @@ var requireUser = t.middleware(async (opts) => {
   });
 });
 var protectedProcedure = t.procedure.use(requireUser);
-var adminProcedure = t.procedure.use(
+var adminUnlockedProcedure = protectedProcedure.use(
   t.middleware(async (opts) => {
     const { ctx, next } = opts;
     if (!ctx.user || ctx.user.role !== "admin") {
       throw new TRPCError2({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+    }
+    const db = await Promise.resolve().then(() => (init_db(), db_exports));
+    const session = await db.getAdminSession(ctx.user.id);
+    if (!session || session.expiresAt < /* @__PURE__ */ new Date()) {
+      throw new TRPCError2({
+        code: "FORBIDDEN",
+        message: "Admin session expired. Please unlock admin mode in AI Chat."
+      });
     }
     return next({
       ctx: {
@@ -1575,7 +1894,7 @@ var systemRouter = router({
   ).query(() => ({
     ok: true
   })),
-  notifyOwner: adminProcedure.input(
+  notifyOwner: adminUnlockedProcedure.input(
     z.object({
       title: z.string().min(1, "title is required"),
       content: z.string().min(1, "content is required")
@@ -1589,10 +1908,12 @@ var systemRouter = router({
 });
 
 // server/routers.ts
+init_db();
 import { TRPCError as TRPCError3 } from "@trpc/server";
 import { z as z2 } from "zod";
 
 // server/_core/llm.ts
+init_env();
 var ensureArray = (value) => Array.isArray(value) ? value : [value];
 var normalizeContentPart = (part) => {
   if (typeof part === "string") {
@@ -1755,6 +2076,7 @@ async function invokeLLM(params) {
 }
 
 // server/storage.ts
+init_env();
 function getStorageConfig() {
   const baseUrl = ENV.forgeApiUrl;
   const apiKey = ENV.forgeApiKey;
@@ -1806,7 +2128,7 @@ async function storagePut(relKey, data, contentType = "application/octet-stream"
 }
 
 // server/routers.ts
-import { nanoid } from "nanoid";
+import { nanoid as nanoid2 } from "nanoid";
 
 // server/stripe.ts
 import Stripe from "stripe";
@@ -1886,20 +2208,9 @@ async function createPortalSession(customerId, returnUrl) {
 }
 
 // server/routers.ts
+init_db();
+init_schema();
 import { eq as eq2, and as and2, desc as desc2, sql as sql2, gte as gte2, lte as lte2, or as or2 } from "drizzle-orm";
-var adminProcedure2 = protectedProcedure.use(async ({ ctx, next }) => {
-  if (ctx.user.role !== "admin") {
-    throw new TRPCError3({ code: "FORBIDDEN", message: "Admin access required" });
-  }
-  const session = await getAdminSession(ctx.user.id);
-  if (!session || session.expiresAt < /* @__PURE__ */ new Date()) {
-    throw new TRPCError3({
-      code: "FORBIDDEN",
-      message: "Admin session expired. Please unlock admin mode again."
-    });
-  }
-  return next({ ctx });
-});
 var subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   const user = await getUserById(ctx.user.id);
   if (!user) {
@@ -2465,7 +2776,7 @@ var appRouter = router({
       description: z2.string().optional()
     })).mutation(async ({ ctx, input }) => {
       const buffer = Buffer.from(input.fileData, "base64");
-      const fileKey = `${ctx.user.id}/documents/${nanoid()}-${input.fileName}`;
+      const fileKey = `${ctx.user.id}/documents/${nanoid2()}-${input.fileName}`;
       const { url } = await storagePut(fileKey, buffer, input.fileType);
       const id = await createDocument({
         userId: ctx.user.id,
@@ -2577,10 +2888,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
   // Admin routes
   admin: router({
     // User management
-    getUsers: adminProcedure2.query(async () => {
+    getUsers: adminUnlockedProcedure.query(async () => {
       return getAllUsers();
     }),
-    getUserDetails: adminProcedure2.input(z2.object({ userId: z2.number() })).query(async ({ input }) => {
+    getUserDetails: adminUnlockedProcedure.input(z2.object({ userId: z2.number() })).query(async ({ input }) => {
       const user = await getUserById(input.userId);
       if (!user) {
         throw new TRPCError3({ code: "NOT_FOUND", message: "User not found" });
@@ -2589,7 +2900,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       const activity = await getUserActivityLogs(input.userId, 20);
       return { user, horses: horses2, activity };
     }),
-    suspendUser: adminProcedure2.input(z2.object({
+    suspendUser: adminUnlockedProcedure.input(z2.object({
       userId: z2.number(),
       reason: z2.string()
     })).mutation(async ({ ctx, input }) => {
@@ -2603,7 +2914,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       });
       return { success: true };
     }),
-    unsuspendUser: adminProcedure2.input(z2.object({ userId: z2.number() })).mutation(async ({ ctx, input }) => {
+    unsuspendUser: adminUnlockedProcedure.input(z2.object({ userId: z2.number() })).mutation(async ({ ctx, input }) => {
       await unsuspendUser(input.userId);
       await logActivity({
         userId: ctx.user.id,
@@ -2613,7 +2924,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       });
       return { success: true };
     }),
-    deleteUser: adminProcedure2.input(z2.object({ userId: z2.number() })).mutation(async ({ ctx, input }) => {
+    deleteUser: adminUnlockedProcedure.input(z2.object({ userId: z2.number() })).mutation(async ({ ctx, input }) => {
       await deleteUser(input.userId);
       await logActivity({
         userId: ctx.user.id,
@@ -2623,7 +2934,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       });
       return { success: true };
     }),
-    updateUserRole: adminProcedure2.input(z2.object({
+    updateUserRole: adminUnlockedProcedure.input(z2.object({
       userId: z2.number(),
       role: z2.enum(["user", "admin"])
     })).mutation(async ({ ctx, input }) => {
@@ -2638,24 +2949,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return { success: true };
     }),
     // System stats
-    getStats: adminProcedure2.query(async () => {
+    getStats: adminUnlockedProcedure.query(async () => {
       return getSystemStats();
     }),
-    getOverdueUsers: adminProcedure2.query(async () => {
+    getOverdueUsers: adminUnlockedProcedure.query(async () => {
       return getOverdueSubscriptions();
     }),
-    getExpiredTrials: adminProcedure2.query(async () => {
+    getExpiredTrials: adminUnlockedProcedure.query(async () => {
       return getExpiredTrials();
     }),
     // Activity logs
-    getActivityLogs: adminProcedure2.input(z2.object({ limit: z2.number().default(100) })).query(async ({ input }) => {
+    getActivityLogs: adminUnlockedProcedure.input(z2.object({ limit: z2.number().default(100) })).query(async ({ input }) => {
       return getActivityLogs(input.limit);
     }),
     // System settings
-    getSettings: adminProcedure2.query(async () => {
+    getSettings: adminUnlockedProcedure.query(async () => {
       return getAllSettings();
     }),
-    updateSetting: adminProcedure2.input(z2.object({
+    updateSetting: adminUnlockedProcedure.input(z2.object({
       key: z2.string(),
       value: z2.string(),
       type: z2.enum(["string", "number", "boolean", "json"]).optional(),
@@ -2671,8 +2982,98 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return { success: true };
     }),
     // Backup logs
-    getBackupLogs: adminProcedure2.input(z2.object({ limit: z2.number().default(10) })).query(async ({ input }) => {
+    getBackupLogs: adminUnlockedProcedure.input(z2.object({ limit: z2.number().default(10) })).query(async ({ input }) => {
       return getRecentBackups(input.limit);
+    }),
+    // API Key Management
+    apiKeys: router({
+      list: adminUnlockedProcedure.query(async ({ ctx }) => {
+        return listApiKeys(ctx.user.id);
+      }),
+      create: adminUnlockedProcedure.input(z2.object({
+        name: z2.string().min(1).max(100),
+        rateLimit: z2.number().min(1).max(1e4).optional(),
+        permissions: z2.array(z2.string()).optional(),
+        expiresAt: z2.string().optional()
+      })).mutation(async ({ ctx, input }) => {
+        const result = await createApiKey({
+          userId: ctx.user.id,
+          name: input.name,
+          rateLimit: input.rateLimit,
+          permissions: input.permissions,
+          expiresAt: input.expiresAt ? new Date(input.expiresAt) : void 0
+        });
+        await logActivity({
+          userId: ctx.user.id,
+          action: "api_key_created",
+          entityType: "api_key",
+          entityId: result.id,
+          details: JSON.stringify({ name: input.name })
+        });
+        return result;
+      }),
+      revoke: adminUnlockedProcedure.input(z2.object({ id: z2.number() })).mutation(async ({ ctx, input }) => {
+        await revokeApiKey(input.id, ctx.user.id);
+        await logActivity({
+          userId: ctx.user.id,
+          action: "api_key_revoked",
+          entityType: "api_key",
+          entityId: input.id
+        });
+        return { success: true };
+      }),
+      rotate: adminUnlockedProcedure.input(z2.object({ id: z2.number() })).mutation(async ({ ctx, input }) => {
+        const result = await rotateApiKey(input.id, ctx.user.id);
+        if (!result) {
+          throw new TRPCError3({ code: "NOT_FOUND", message: "API key not found" });
+        }
+        await logActivity({
+          userId: ctx.user.id,
+          action: "api_key_rotated",
+          entityType: "api_key",
+          entityId: input.id
+        });
+        return result;
+      }),
+      updateSettings: adminUnlockedProcedure.input(z2.object({
+        id: z2.number(),
+        name: z2.string().optional(),
+        rateLimit: z2.number().optional(),
+        permissions: z2.array(z2.string()).optional(),
+        isActive: z2.boolean().optional()
+      })).mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await updateApiKeySettings(id, ctx.user.id, data);
+        await logActivity({
+          userId: ctx.user.id,
+          action: "api_key_updated",
+          entityType: "api_key",
+          entityId: id
+        });
+        return { success: true };
+      })
+    }),
+    // Environment Health Check
+    getEnvHealth: adminUnlockedProcedure.query(() => {
+      const checks = [
+        { name: "DATABASE_URL", status: !!process.env.DATABASE_URL, critical: true },
+        { name: "JWT_SECRET", status: !!process.env.JWT_SECRET, critical: true },
+        { name: "ADMIN_UNLOCK_PASSWORD", status: !!process.env.ADMIN_UNLOCK_PASSWORD, critical: true },
+        { name: "STRIPE_SECRET_KEY", status: !!process.env.STRIPE_SECRET_KEY, critical: true },
+        { name: "STRIPE_WEBHOOK_SECRET", status: !!process.env.STRIPE_WEBHOOK_SECRET, critical: true },
+        { name: "AWS_ACCESS_KEY_ID", status: !!process.env.AWS_ACCESS_KEY_ID, critical: true },
+        { name: "AWS_SECRET_ACCESS_KEY", status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: true },
+        { name: "AWS_S3_BUCKET", status: !!process.env.AWS_S3_BUCKET, critical: true },
+        { name: "OPENAI_API_KEY", status: !!process.env.OPENAI_API_KEY, critical: false },
+        { name: "SMTP_HOST", status: !!process.env.SMTP_HOST, critical: false }
+      ];
+      const allCriticalOk = checks.filter((c) => c.critical).every((c) => c.status);
+      return {
+        healthy: allCriticalOk,
+        checks,
+        environment: process.env.NODE_ENV || "development",
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      };
     })
   }),
   // Stable management
@@ -2758,7 +3159,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       if (member.length === 0 || !["owner", "admin"].includes(member[0].role)) {
         throw new TRPCError3({ code: "FORBIDDEN" });
       }
-      const token = nanoid(32);
+      const token = nanoid2(32);
       const expiresAt = /* @__PURE__ */ new Date();
       expiresAt.setDate(expiresAt.getDate() + 7);
       await db.insert(stableInvites).values({
@@ -3162,7 +3563,7 @@ async function createContext(opts) {
 // server/_core/vite.ts
 import express from "express";
 import fs from "fs";
-import { nanoid as nanoid2 } from "nanoid";
+import { nanoid as nanoid3 } from "nanoid";
 import path2 from "path";
 import { createServer as createViteServer } from "vite";
 
@@ -3234,7 +3635,7 @@ async function setupVite(app, server) {
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid2()}"`
+        `src="/src/main.tsx?v=${nanoid3()}"`
       );
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
@@ -3258,7 +3659,8 @@ function serveStatic(app) {
 }
 
 // server/_core/index.ts
-import { nanoid as nanoid3 } from "nanoid";
+init_db();
+import { nanoid as nanoid4 } from "nanoid";
 function isPortAvailable(port) {
   return new Promise((resolve) => {
     const server = net.createServer();
@@ -3284,7 +3686,7 @@ async function startServer() {
     crossOriginEmbedderPolicy: false
   }));
   app.use((req, res, next) => {
-    req.headers["x-request-id"] = req.headers["x-request-id"] || nanoid3();
+    req.headers["x-request-id"] = req.headers["x-request-id"] || nanoid4();
     res.setHeader("X-Request-ID", req.headers["x-request-id"]);
     next();
   });
