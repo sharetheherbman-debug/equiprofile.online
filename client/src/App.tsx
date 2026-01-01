@@ -24,6 +24,7 @@ import Messages from "./pages/Messages";
 import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
 import Calendar from "./pages/Calendar";
+import AIChat from "./pages/AIChat";
 
 function Router() {
   useKeyboardNavigation();
@@ -74,6 +75,9 @@ function Router() {
           
           {/* Calendar */}
           <Route path="/calendar" component={Calendar} />
+          
+          {/* AI Chat */}
+          <Route path="/ai-chat" component={AIChat} />
           
           {/* Admin panel - requires admin role */}
           <Route path="/admin" component={Admin} />

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { trpc } from "@/lib/trpc";
 import { 
   Users, 
@@ -54,9 +56,38 @@ import {
 import { toast } from "sonner";
 
 function AdminContent() {
+  const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [suspendReason, setSuspendReason] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+  // Check admin session status
+  const statusQuery = trpc.adminUnlock.getStatus.useQuery();
+
+  // Redirect if admin not unlocked
+  useEffect(() => {
+    if (statusQuery.data && !statusQuery.data.isUnlocked) {
+      toast.error('Admin session expired. Please unlock admin mode.');
+      navigate('/ai-chat');
+    }
+  }, [statusQuery.data, navigate]);
+
+  if (!statusQuery.data?.isUnlocked) {
+    return (
+      <div className="container mx-auto p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Admin Access Required</AlertTitle>
+          <AlertDescription>
+            Please unlock admin mode via the AI chat by typing "show admin" and entering your password.
+          </AlertDescription>
+        </Alert>
+        <Button onClick={() => navigate('/ai-chat')} className="mt-4">
+          Go to AI Chat
+        </Button>
+      </div>
+    );
+  }
 
   const { data: stats, isLoading: statsLoading } = trpc.admin.getStats.useQuery();
   const { data: users, isLoading: usersLoading, refetch: refetchUsers } = trpc.admin.getUsers.useQuery();

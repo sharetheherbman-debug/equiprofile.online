@@ -30,11 +30,21 @@ import {
   feedCosts,
 } from "../drizzle/schema";
 
-// Admin procedure middleware
-const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+// Admin procedure middleware - checks both role AND active admin session
+const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   if (ctx.user.role !== 'admin') {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
   }
+  
+  // Check if admin session is active
+  const session = await db.getAdminSession(ctx.user.id);
+  if (!session || session.expiresAt < new Date()) {
+    throw new TRPCError({ 
+      code: 'FORBIDDEN', 
+      message: 'Admin session expired. Please unlock admin mode again.' 
+    });
+  }
+  
   return next({ ctx });
 });
 
@@ -75,6 +85,139 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+  }),
+
+  // Admin unlock system
+  adminUnlock: router({
+    // Check if admin mode is unlocked
+    getStatus: protectedProcedure.query(async ({ ctx }) => {
+      const session = await db.getAdminSession(ctx.user.id);
+      return {
+        isUnlocked: session ? session.expiresAt > new Date() : false,
+        expiresAt: session?.expiresAt,
+      };
+    }),
+
+    // Initiate unlock (returns challenge)
+    requestUnlock: protectedProcedure.mutation(async ({ ctx }) => {
+      // Check rate limit
+      const attempts = await db.getUnlockAttempts(ctx.user.id);
+      if (attempts >= 5) {
+        const lockedUntil = await db.getUnlockLockoutTime(ctx.user.id);
+        if (lockedUntil && lockedUntil > new Date()) {
+          throw new TRPCError({ 
+            code: 'TOO_MANY_REQUESTS', 
+            message: `Too many attempts. Try again after ${lockedUntil.toISOString()}` 
+          });
+        }
+      }
+      
+      return { 
+        challenge: "Admin mode requires password. Enter password:",
+        attemptsRemaining: Math.max(0, 5 - attempts)
+      };
+    }),
+
+    // Submit password
+    submitPassword: protectedProcedure
+      .input(z.object({ password: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const adminPassword = process.env.ADMIN_UNLOCK_PASSWORD || 'ashmor12@';
+        
+        // Check rate limit
+        const attempts = await db.incrementUnlockAttempts(ctx.user.id);
+        if (attempts > 5) {
+          await db.setUnlockLockout(ctx.user.id, 15); // 15 minutes
+          throw new TRPCError({ code: 'TOO_MANY_REQUESTS', message: 'Too many attempts. Account locked for 15 minutes.' });
+        }
+
+        if (input.password !== adminPassword) {
+          await db.logActivity({
+            userId: ctx.user.id,
+            action: 'admin_unlock_failed',
+            entityType: 'system',
+            details: JSON.stringify({ attempts }),
+          });
+          throw new TRPCError({ 
+            code: 'UNAUTHORIZED', 
+            message: 'Incorrect password',
+          });
+        }
+
+        // Success - create session
+        const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+        await db.createAdminSession(ctx.user.id, expiresAt);
+        await db.resetUnlockAttempts(ctx.user.id);
+        
+        await db.logActivity({
+          userId: ctx.user.id,
+          action: 'admin_unlocked',
+          entityType: 'system',
+          details: JSON.stringify({ expiresAt }),
+        });
+
+        return { success: true, expiresAt };
+      }),
+
+    // Revoke admin session
+    lock: protectedProcedure.mutation(async ({ ctx }) => {
+      await db.revokeAdminSession(ctx.user.id);
+      return { success: true };
+    }),
+  }),
+
+  // AI chat
+  ai: router({
+    chat: protectedProcedure
+      .input(z.object({
+        messages: z.array(z.object({
+          role: z.enum(['system', 'user', 'assistant']),
+          content: z.string(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const userMessage = input.messages[input.messages.length - 1]?.content.toLowerCase().trim();
+        
+        // Check for admin unlock command
+        if (userMessage === 'show admin') {
+          // Check if user has admin role
+          if (ctx.user.role !== 'admin') {
+            return {
+              role: 'assistant' as const,
+              content: 'You do not have admin privileges.',
+            };
+          }
+          
+          // Check current session
+          const session = await db.getAdminSession(ctx.user.id);
+          if (session && session.expiresAt > new Date()) {
+            return {
+              role: 'assistant' as const,
+              content: `Admin mode is already unlocked. Session expires at ${session.expiresAt.toLocaleString()}.`,
+            };
+          }
+          
+          // Return password challenge
+          return {
+            role: 'assistant' as const,
+            content: '🔐 **Admin Mode**\n\nPlease enter the admin password to unlock admin features.',
+            metadata: { adminChallenge: true },
+          };
+        }
+        
+        // Normal AI chat processing
+        const response = await invokeLLM({
+          messages: input.messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        });
+        
+        return {
+          role: 'assistant' as const,
+          content: response.choices[0]?.message?.content || 'No response',
+        };
+      }),
   }),
 
   // Billing and subscription management

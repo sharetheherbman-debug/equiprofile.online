@@ -36,7 +36,9 @@ import {
   lessonBookings, InsertLessonBooking,
   trainerAvailability, InsertTrainerAvailability,
   apiKeys, InsertApiKey,
-  webhooks, InsertWebhook
+  webhooks, InsertWebhook,
+  adminSessions, InsertAdminSession,
+  adminUnlockAttempts, InsertAdminUnlockAttempt
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -673,4 +675,115 @@ export async function getCompetitionsByUserId(userId: number) {
   return db.select().from(competitions).where(
     eq(competitions.userId, userId)
   ).orderBy(desc(competitions.date));
+}
+
+// ============ ADMIN SESSION QUERIES ============
+
+export async function getAdminSession(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const sessions = await db.select()
+    .from(adminSessions)
+    .where(and(
+      eq(adminSessions.userId, userId),
+      gte(adminSessions.expiresAt, new Date())
+    ))
+    .limit(1);
+  
+  return sessions[0] || null;
+}
+
+export async function createAdminSession(userId: number, expiresAt: Date) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  // Remove old sessions for this user
+  await db.delete(adminSessions).where(eq(adminSessions.userId, userId));
+  
+  // Create new session
+  await db.insert(adminSessions).values({ userId, expiresAt });
+}
+
+export async function revokeAdminSession(userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(adminSessions).where(eq(adminSessions.userId, userId));
+}
+
+export async function getUnlockAttempts(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const record = await db.select()
+    .from(adminUnlockAttempts)
+    .where(eq(adminUnlockAttempts.userId, userId))
+    .limit(1);
+  
+  if (!record[0]) return 0;
+  
+  // Reset if locked period expired
+  if (record[0].lockedUntil && record[0].lockedUntil < new Date()) {
+    await db.update(adminUnlockAttempts)
+      .set({ attempts: 0, lockedUntil: null })
+      .where(eq(adminUnlockAttempts.userId, userId));
+    return 0;
+  }
+  
+  return record[0].attempts;
+}
+
+export async function incrementUnlockAttempts(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const existing = await db.select()
+    .from(adminUnlockAttempts)
+    .where(eq(adminUnlockAttempts.userId, userId))
+    .limit(1);
+  
+  if (!existing[0]) {
+    await db.insert(adminUnlockAttempts).values({ 
+      userId, 
+      attempts: 1,
+      lastAttemptAt: new Date()
+    });
+    return 1;
+  }
+  
+  const newAttempts = existing[0].attempts + 1;
+  await db.update(adminUnlockAttempts)
+    .set({ attempts: newAttempts, lastAttemptAt: new Date() })
+    .where(eq(adminUnlockAttempts.userId, userId));
+  
+  return newAttempts;
+}
+
+export async function resetUnlockAttempts(userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(adminUnlockAttempts)
+    .set({ attempts: 0, lockedUntil: null })
+    .where(eq(adminUnlockAttempts.userId, userId));
+}
+
+export async function setUnlockLockout(userId: number, minutes: number) {
+  const db = await getDb();
+  if (!db) return;
+  const lockedUntil = new Date(Date.now() + minutes * 60 * 1000);
+  await db.update(adminUnlockAttempts)
+    .set({ lockedUntil })
+    .where(eq(adminUnlockAttempts.userId, userId));
+}
+
+export async function getUnlockLockoutTime(userId: number): Promise<Date | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const record = await db.select()
+    .from(adminUnlockAttempts)
+    .where(eq(adminUnlockAttempts.userId, userId))
+    .limit(1);
+  
+  return record[0]?.lockedUntil || null;
 }

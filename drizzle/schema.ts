@@ -164,6 +164,24 @@ export const systemSettings = mysqlTable("systemSettings", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
+// Admin sessions for time-limited admin access
+export const adminSessions = mysqlTable("adminSessions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// Admin unlock attempts tracking for rate limiting
+export const adminUnlockAttempts = mysqlTable("adminUnlockAttempts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  attempts: int("attempts").default(0).notNull(),
+  lockedUntil: timestamp("lockedUntil"),
+  lastAttemptAt: timestamp("lastAttemptAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
 // Activity logs for admin monitoring
 export const activityLogs = mysqlTable("activityLogs", {
   id: int("id").autoincrement().primaryKey(),
@@ -667,3 +685,7 @@ export type ApiKey = typeof apiKeys.$inferSelect;
 export type InsertApiKey = typeof apiKeys.$inferInsert;
 export type Webhook = typeof webhooks.$inferSelect;
 export type InsertWebhook = typeof webhooks.$inferInsert;
+export type AdminSession = typeof adminSessions.$inferSelect;
+export type InsertAdminSession = typeof adminSessions.$inferInsert;
+export type AdminUnlockAttempt = typeof adminUnlockAttempts.$inferSelect;
+export type InsertAdminUnlockAttempt = typeof adminUnlockAttempts.$inferInsert;

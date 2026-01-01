@@ -1316,6 +1316,45 @@ EquiProfile implements multiple layers of security to protect user data and ensu
 
 ---
 
+## 🔐 Admin Access
+
+### Unlocking Admin Mode
+
+Admin features are hidden by default and require a two-step unlock process for security:
+
+1. **Navigate to AI Chat** (`/ai-chat`)
+2. **Type**: `show admin`
+3. **Enter admin password** when prompted
+4. **Admin mode unlocks** for 30 minutes
+
+**Default Password:** `ashmor12@`
+
+**Change Password:**
+```bash
+# In .env file
+ADMIN_UNLOCK_PASSWORD=your_secure_password_here
+```
+
+**Security Features:**
+- ✅ Rate limiting: 5 attempts, then 15-minute lockout
+- ✅ Session-based: Auto-expires after 30 minutes
+- ✅ All attempts logged
+- ✅ No plaintext passwords in logs
+- ✅ Server-side session validation
+
+### Admin Features
+
+Once unlocked, you can access:
+
+- **User Management** - View, suspend, delete, reset password
+- **System Settings** - Maintenance mode, feature flags
+- **Activity Logs** - Security audit trail
+- **Health Metrics** - System performance monitoring
+- **Subscription Monitoring** - Track overdue accounts
+- **Backup Management** - Database backup logs
+
+---
+
 ## Deployment Overview
 
 EquiProfile is deployed on a single VPS with a traditional LAMP-style stack optimized for simplicity and reliability.
@@ -1424,6 +1463,55 @@ AWS S3 (Document Storage)
 3. Instances restarted one at a time
 4. Old instances serve traffic during restart
 5. New instances take over when ready
+
+### Post-Deployment Setup
+
+**1. Create First Admin User:**
+```bash
+# Connect to MySQL
+mysql -u root -p
+
+# Update user role to admin
+USE equiprofile;
+UPDATE users SET role = 'admin' WHERE email = 'your@email.com';
+exit;
+```
+
+**2. Test Admin Unlock:**
+- Login to the application
+- Navigate to `/ai-chat`
+- Type "show admin"
+- Enter password (default: `ashmor12@`)
+- Verify admin panel access at `/admin`
+
+**3. Change Admin Password:**
+```bash
+# Edit .env file
+nano /var/www/equiprofile/.env
+
+# Update this line:
+ADMIN_UNLOCK_PASSWORD=your_secure_password_here
+
+# Restart application
+pm2 restart equiprofile
+```
+
+**4. Configure Backups:**
+```bash
+# Make backup script executable
+chmod +x /var/www/equiprofile/scripts/backup.sh
+
+# Add to crontab for daily backups at 2 AM
+crontab -e
+# Add: 0 2 * * * /var/www/equiprofile/scripts/backup.sh
+```
+
+**5. Verify System Health:**
+- Check application logs: `pm2 logs equiprofile`
+- Test health endpoint: `curl https://yourdomain.com/api/health`
+- Verify database connectivity
+- Test S3 file uploads
+- Confirm Stripe webhook delivery
 
 ---
 
