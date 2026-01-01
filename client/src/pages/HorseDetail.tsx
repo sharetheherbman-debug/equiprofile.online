@@ -16,9 +16,11 @@ import {
   Plus,
   Calendar,
   Syringe,
-  Stethoscope
+  Stethoscope,
+  FileHeart
 } from "lucide-react";
 import { toast } from "sonner";
+import { MedicalPassport } from "@/components/MedicalPassport";
 
 function HorseDetailContent() {
   const params = useParams<{ id: string }>();
@@ -154,9 +156,9 @@ function HorseDetailContent() {
         </div>
       </Card>
 
-      {/* Tabs for Health, Training, Feeding */}
+      {/* Tabs for Health, Training, Feeding, Medical Passport */}
       <Tabs defaultValue="health" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="health" className="flex items-center gap-2">
             <Heart className="w-4 h-4" />
             Health
@@ -168,6 +170,10 @@ function HorseDetailContent() {
           <TabsTrigger value="feeding" className="flex items-center gap-2">
             <Utensils className="w-4 h-4" />
             Feeding
+          </TabsTrigger>
+          <TabsTrigger value="passport" className="flex items-center gap-2">
+            <FileHeart className="w-4 h-4" />
+            Medical Passport
           </TabsTrigger>
         </TabsList>
 
@@ -303,6 +309,45 @@ function HorseDetailContent() {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Medical Passport Tab */}
+        <TabsContent value="passport">
+          <Card>
+            <CardHeader>
+              <CardTitle>Medical Passport</CardTitle>
+              <CardDescription>
+                Comprehensive health record document with QR code for easy sharing
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MedicalPassport 
+                horse={{
+                  id: horse.id,
+                  name: horse.name,
+                  breed: horse.breed,
+                  age: horse.age,
+                  microchipNumber: horse.microchipNumber,
+                  registrationNumber: horse.registrationNumber,
+                }}
+                vaccinations={healthRecords?.filter(r => r.recordType === 'vaccination').map(r => ({
+                  vaccineName: r.title || 'Vaccination',
+                  dateAdministered: r.recordDate,
+                  nextDueDate: r.nextDueDate,
+                }))}
+                dewormings={healthRecords?.filter(r => r.recordType === 'deworming').map(r => ({
+                  productName: r.title || 'Deworming',
+                  dateAdministered: r.recordDate,
+                  nextDueDate: r.nextDueDate,
+                }))}
+                healthRecords={healthRecords?.map(r => ({
+                  title: r.title,
+                  recordDate: r.recordDate,
+                  recordType: r.recordType,
+                }))}
+              />
             </CardContent>
           </Card>
         </TabsContent>
