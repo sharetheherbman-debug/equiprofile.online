@@ -10,6 +10,7 @@ import "./i18n/config";
 // Pages
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
+import Pricing from "./pages/Pricing";
 import Horses from "./pages/Horses";
 import HorseForm from "./pages/HorseForm";
 import HorseDetail from "./pages/HorseDetail";
@@ -36,6 +37,9 @@ function Router() {
         <Switch>
           {/* Public landing page */}
           <Route path="/" component={Home} />
+          
+          {/* Pricing page */}
+          <Route path="/pricing" component={Pricing} />
           
           {/* Dashboard - requires auth */}
           <Route path="/dashboard" component={Dashboard} />
