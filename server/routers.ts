@@ -745,6 +745,18 @@ export const appRouter = router({
         await db.deleteFeedingPlan(input.id, ctx.user.id);
         return { success: true };
       }),
+    
+    exportCSV: subscribedProcedure.query(async ({ ctx }) => {
+      const feedPlans = await db.getFeedingPlansByUserId(ctx.user.id);
+      const csv = exportFeedCostsCSV(feedPlans);
+      const filename = generateCSVFilename('feeding_plans');
+      
+      return {
+        csv,
+        filename,
+        mimeType: 'text/csv',
+      };
+    }),
   }),
 
   // Documents
@@ -1843,6 +1855,44 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         
         return { id: result[0].insertId };
       }),
+    
+    exportCSV: subscribedProcedure.query(async ({ ctx }) => {
+      const dbInstance = await getDb();
+      if (!dbInstance) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+      }
+      
+      const breedingRecords = await dbInstance.select()
+        .from(breeding)
+        .where(eq(breeding.userId, ctx.user.id))
+        .orderBy(desc(breeding.createdAt));
+      
+      // Create CSV with breeding data
+      const headers = ['id', 'mareId', 'stallionName', 'breedingDate', 'method', 'cost', 'pregnancyConfirmed', 'dueDate', 'notes'];
+      const data = breedingRecords.map(record => ({
+        id: record.id,
+        mareId: record.mareId,
+        stallionName: record.stallionName || 'N/A',
+        breedingDate: record.breedingDate ? new Date(record.breedingDate).toISOString().split('T')[0] : '',
+        method: record.method,
+        cost: record.cost || 0,
+        pregnancyConfirmed: record.pregnancyConfirmed ? 'Yes' : 'No',
+        dueDate: record.dueDate ? new Date(record.dueDate).toISOString().split('T')[0] : '',
+        notes: record.notes || '',
+      }));
+      
+      const csv = data.length > 0 ? 
+        [headers.join(','), ...data.map(row => headers.map(h => row[h]).join(','))].join('\n') :
+        headers.join(',');
+      
+      const filename = generateCSVFilename('breeding_records');
+      
+      return {
+        csv,
+        filename,
+        mimeType: 'text/csv',
+      };
+    }),
   }),
 });
 
