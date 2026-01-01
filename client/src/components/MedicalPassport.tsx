@@ -88,7 +88,7 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
           <Download className="mr-2 h-4 w-4" />
           Export PDF
         </Button>
-        {navigator.share && (
+        {typeof navigator.share !== 'undefined' && (
           <Button onClick={handleShare} variant="outline">
             <Share2 className="mr-2 h-4 w-4" />
             Share

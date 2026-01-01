@@ -224,7 +224,7 @@ apiRouter.get("/competitions/:horseId", async (req: Request, res: Response) => {
     const comps = await dbInstance.select()
       .from(competitions)
       .where(eq(competitions.horseId, horseId))
-      .orderBy(desc(competitions.eventDate));
+      .orderBy(desc(competitions.date));
 
     res.json({
       success: true,

@@ -44,7 +44,7 @@ export default function LessonScheduling() {
   const { data: myTrainingBookings = [], refetch: refetchMyTraining } = trpc.lessonBookings.list.useQuery({ asTrainer: true });
   const { data: availability = [], refetch: refetchAvailability } = trpc.trainerAvailability.list.useQuery();
   const { data: horses = [] } = trpc.horses.list.useQuery();
-  const { data: currentUser } = trpc.user.me.useQuery();
+  const { data: currentUser } = trpc.user.getProfile.useQuery();
   // For trainer list, we'll use a placeholder or fetch from a trainers endpoint when available
   const trainers = [];
 

@@ -280,7 +280,7 @@ function BreedingManagementContent() {
                     <SelectValue placeholder="Select mare" />
                   </SelectTrigger>
                   <SelectContent>
-                    {horses?.filter(h => h.gender === 'female' || h.gender === 'mare').map((horse) => (
+                    {horses?.filter(h => h.gender === 'mare').map((horse) => (
                       <SelectItem key={horse.id} value={horse.id.toString()}>
                         {horse.name}
                       </SelectItem>

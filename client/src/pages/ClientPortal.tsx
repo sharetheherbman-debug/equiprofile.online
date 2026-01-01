@@ -14,10 +14,10 @@ export default function ClientPortal() {
   // For demo purposes, we'll show the current user's horses
   // In production, this would check share tokens or client access permissions
   const { data: horses = [] } = trpc.horses.list.useQuery();
-  const { data: healthRecords = [] } = trpc.healthRecords.list.useQuery();
-  const { data: trainingSessions = [] } = trpc.training.list.useQuery({ limit: 50 });
-  const { data: competitions = [] } = trpc.competitions.list.useQuery();
-  const { data: documents = [] } = trpc.documents.list.useQuery({});
+  const { data: healthRecords = [] } = trpc.healthRecords.listAll.useQuery();
+  const { data: trainingSessions = [] } = trpc.training.listAll.useQuery();
+  const { data: competitions = [] } = trpc.competitions.list.useQuery({ horseId: undefined });
+  const { data: documents = [] } = trpc.documents.list.useQuery({ folderId: undefined });
 
   if (!clientId) {
     return (
@@ -96,7 +96,7 @@ export default function ClientPortal() {
               {horses.map((horse) => {
                 const horseHealth = healthRecords.filter(h => h.horseId === horse.id);
                 const horseTraining = trainingSessions.filter(t => t.horseId === horse.id);
-                const horseCompetitions = competitions.filter(c => c.horseId === horse.id);
+                const horseCompetitions = competitions.filter((c: any) => c.horseId === horse.id);
 
                 return (
                   <Card key={horse.id} className="overflow-hidden">
