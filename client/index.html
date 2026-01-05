@@ -35,10 +35,24 @@
         });
       }
     </script>
-    <script
-      defer
-      src="%VITE_ANALYTICS_ENDPOINT%/umami"
-      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
+    <!-- Analytics script - only load if environment variables are properly set -->
+    <script>
+      (function() {
+        var endpoint = '%VITE_ANALYTICS_ENDPOINT%';
+        var websiteId = '%VITE_ANALYTICS_WEBSITE_ID%';
+        
+        // Only load if variables are properly replaced (not placeholders)
+        if (endpoint && websiteId && 
+            !endpoint.includes('%VITE_') && 
+            !websiteId.includes('%VITE_')) {
+          var script = document.createElement('script');
+          script.defer = true;
+          script.src = endpoint + '/umami';
+          script.setAttribute('data-website-id', websiteId);
+          document.head.appendChild(script);
+        }
+      })();
+    </script>
   </body>
 
 </html>
