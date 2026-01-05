@@ -621,25 +621,31 @@ var init_schema = __esm({
 });
 
 // server/_core/env.ts
-var ENV;
+var enableStripe, enableUploads, ENV;
 var init_env = __esm({
   "server/_core/env.ts"() {
     "use strict";
+    enableStripe = process.env.ENABLE_STRIPE === "true";
+    enableUploads = process.env.ENABLE_UPLOADS === "true";
     if (process.env.NODE_ENV === "production") {
-      const requiredVars = [
+      const coreRequiredVars = [
         "DATABASE_URL",
         "JWT_SECRET",
-        "ADMIN_UNLOCK_PASSWORD",
-        "STRIPE_SECRET_KEY",
-        "STRIPE_WEBHOOK_SECRET",
-        "AWS_ACCESS_KEY_ID",
-        "AWS_SECRET_ACCESS_KEY",
-        "AWS_S3_BUCKET"
+        "ADMIN_UNLOCK_PASSWORD"
       ];
-      const missing = requiredVars.filter((v) => !process.env[v]);
+      const missing = coreRequiredVars.filter((v) => !process.env[v]);
+      if (enableStripe) {
+        const stripeVars = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
+        missing.push(...stripeVars.filter((v) => !process.env[v]));
+      }
+      if (enableUploads) {
+        const uploadVars = ["BUILT_IN_FORGE_API_URL", "BUILT_IN_FORGE_API_KEY"];
+        missing.push(...uploadVars.filter((v) => !process.env[v]));
+      }
       if (missing.length > 0) {
         console.error(`\u274C PRODUCTION ERROR: Missing required environment variables: ${missing.join(", ")}`);
         console.error("Application cannot start. Please configure all required environment variables.");
+        console.error(`Feature flags: ENABLE_STRIPE=${enableStripe}, ENABLE_UPLOADS=${enableUploads}`);
         process.exit(1);
       }
       if (process.env.ADMIN_UNLOCK_PASSWORD === "ashmor12@") {
@@ -649,6 +655,9 @@ var init_env = __esm({
       }
     }
     ENV = {
+      // Feature flags
+      enableStripe,
+      enableUploads,
       // App config
       appId: process.env.VITE_APP_ID ?? "",
       cookieSecret: process.env.JWT_SECRET ?? "",
@@ -664,10 +673,10 @@ var init_env = __esm({
       baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
       cookieDomain: process.env.COOKIE_DOMAIN ?? void 0,
       cookieSecure: process.env.COOKIE_SECURE === "true",
-      // Stripe
+      // Stripe (only used if enableStripe is true)
       stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
-      // AWS S3
+      // AWS S3 (legacy - kept for backward compatibility)
       awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
       awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? "",
       awsRegion: process.env.AWS_REGION ?? "eu-west-2",
@@ -1886,6 +1895,7 @@ var adminUnlockedProcedure = protectedProcedure.use(
 );
 
 // server/_core/systemRouter.ts
+init_env();
 var systemRouter = router({
   health: publicProcedure.input(
     z.object({
@@ -1893,6 +1903,10 @@ var systemRouter = router({
     })
   ).query(() => ({
     ok: true
+  })),
+  getFeatureFlags: publicProcedure.query(() => ({
+    enableStripe: ENV.enableStripe,
+    enableUploads: ENV.enableUploads
   })),
   notifyOwner: adminUnlockedProcedure.input(
     z.object({
@@ -1909,7 +1923,7 @@ var systemRouter = router({
 
 // server/routers.ts
 init_db();
-import { TRPCError as TRPCError3 } from "@trpc/server";
+import { TRPCError as TRPCError4 } from "@trpc/server";
 import { z as z2 } from "zod";
 
 // server/_core/llm.ts
@@ -2078,6 +2092,9 @@ async function invokeLLM(params) {
 // server/storage.ts
 init_env();
 function getStorageConfig() {
+  if (!ENV.enableUploads) {
+    throw new Error("Uploads are disabled. Set ENABLE_UPLOADS=true to enable storage features.");
+  }
   const baseUrl = ENV.forgeApiUrl;
   const apiKey = ENV.forgeApiKey;
   if (!baseUrl || !apiKey) {
@@ -2131,8 +2148,22 @@ async function storagePut(relKey, data, contentType = "application/octet-stream"
 import { nanoid as nanoid2 } from "nanoid";
 
 // server/stripe.ts
+init_env();
 import Stripe from "stripe";
+import { TRPCError as TRPCError3 } from "@trpc/server";
+function checkStripeEnabled() {
+  if (!ENV.enableStripe) {
+    throw new TRPCError3({
+      code: "PRECONDITION_FAILED",
+      message: "Billing is disabled"
+    });
+  }
+}
 function getStripe() {
+  if (!ENV.enableStripe) {
+    console.warn("[Stripe] Billing feature is disabled");
+    return null;
+  }
   if (!process.env.STRIPE_SECRET_KEY) {
     console.warn("[Stripe] Secret key not configured");
     return null;
@@ -2159,6 +2190,7 @@ var STRIPE_PRICING = {
   }
 };
 async function createCheckoutSession(userId, userEmail, priceId, successUrl, cancelUrl, customerId) {
+  checkStripeEnabled();
   const stripe = getStripe();
   if (!stripe) return null;
   try {
@@ -2193,6 +2225,7 @@ async function createCheckoutSession(userId, userEmail, priceId, successUrl, can
   }
 }
 async function createPortalSession(customerId, returnUrl) {
+  checkStripeEnabled();
   const stripe = getStripe();
   if (!stripe) return null;
   try {
@@ -2209,23 +2242,24 @@ async function createPortalSession(customerId, returnUrl) {
 
 // server/routers.ts
 init_db();
+init_env();
 init_schema();
 import { eq as eq2, and as and2, desc as desc2, sql as sql2, gte as gte2, lte as lte2, or as or2 } from "drizzle-orm";
 var subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   const user = await getUserById(ctx.user.id);
   if (!user) {
-    throw new TRPCError3({ code: "UNAUTHORIZED", message: "User not found" });
+    throw new TRPCError4({ code: "UNAUTHORIZED", message: "User not found" });
   }
   if (user.isSuspended) {
-    throw new TRPCError3({ code: "FORBIDDEN", message: "Your account has been suspended. Please contact support." });
+    throw new TRPCError4({ code: "FORBIDDEN", message: "Your account has been suspended. Please contact support." });
   }
   const validStatuses = ["trial", "active"];
   if (!validStatuses.includes(user.subscriptionStatus)) {
     if (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) < /* @__PURE__ */ new Date()) {
-      throw new TRPCError3({ code: "FORBIDDEN", message: "Your free trial has expired. Please subscribe to continue." });
+      throw new TRPCError4({ code: "FORBIDDEN", message: "Your free trial has expired. Please subscribe to continue." });
     }
     if (user.subscriptionStatus === "overdue" || user.subscriptionStatus === "expired") {
-      throw new TRPCError3({ code: "FORBIDDEN", message: "Your subscription has expired. Please renew to continue." });
+      throw new TRPCError4({ code: "FORBIDDEN", message: "Your subscription has expired. Please renew to continue." });
     }
   }
   return next({ ctx });
@@ -2256,7 +2290,7 @@ var appRouter = router({
       if (attempts >= 5) {
         const lockedUntil = await getUnlockLockoutTime(ctx.user.id);
         if (lockedUntil && lockedUntil > /* @__PURE__ */ new Date()) {
-          throw new TRPCError3({
+          throw new TRPCError4({
             code: "TOO_MANY_REQUESTS",
             message: `Too many attempts. Try again after ${lockedUntil.toISOString()}`
           });
@@ -2273,7 +2307,7 @@ var appRouter = router({
       const attempts = await incrementUnlockAttempts(ctx.user.id);
       if (attempts > 5) {
         await setUnlockLockout(ctx.user.id, 15);
-        throw new TRPCError3({ code: "TOO_MANY_REQUESTS", message: "Too many attempts. Account locked for 15 minutes." });
+        throw new TRPCError4({ code: "TOO_MANY_REQUESTS", message: "Too many attempts. Account locked for 15 minutes." });
       }
       if (input.password !== adminPassword) {
         await logActivity({
@@ -2282,7 +2316,7 @@ var appRouter = router({
           entityType: "system",
           details: JSON.stringify({ attempts })
         });
-        throw new TRPCError3({
+        throw new TRPCError4({
           code: "UNAUTHORIZED",
           message: "Incorrect password"
         });
@@ -2348,7 +2382,16 @@ var appRouter = router({
   // Billing and subscription management
   billing: router({
     getPricing: publicProcedure.query(() => {
+      if (!ENV.enableStripe) {
+        return {
+          enabled: false,
+          message: "Billing is disabled",
+          monthly: null,
+          yearly: null
+        };
+      }
       return {
+        enabled: true,
         monthly: {
           amount: STRIPE_PRICING.monthly.amount,
           currency: STRIPE_PRICING.monthly.currency,
@@ -2364,13 +2407,19 @@ var appRouter = router({
     createCheckout: protectedProcedure.input(z2.object({
       plan: z2.enum(["monthly", "yearly"])
     })).mutation(async ({ ctx, input }) => {
+      if (!ENV.enableStripe) {
+        throw new TRPCError4({
+          code: "PRECONDITION_FAILED",
+          message: "Billing is disabled"
+        });
+      }
       const user = await getUserById(ctx.user.id);
       if (!user) {
-        throw new TRPCError3({ code: "NOT_FOUND", message: "User not found" });
+        throw new TRPCError4({ code: "NOT_FOUND", message: "User not found" });
       }
       const priceId = input.plan === "monthly" ? STRIPE_PRICING.monthly.priceId : STRIPE_PRICING.yearly.priceId;
       if (!priceId) {
-        throw new TRPCError3({
+        throw new TRPCError4({
           code: "INTERNAL_SERVER_ERROR",
           message: "Stripe price ID not configured"
         });
@@ -2387,7 +2436,7 @@ var appRouter = router({
         user.stripeCustomerId || void 0
       );
       if (!session) {
-        throw new TRPCError3({
+        throw new TRPCError4({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create checkout session"
         });
@@ -2395,9 +2444,15 @@ var appRouter = router({
       return { url: session.url };
     }),
     createPortal: protectedProcedure.mutation(async ({ ctx }) => {
+      if (!ENV.enableStripe) {
+        throw new TRPCError4({
+          code: "PRECONDITION_FAILED",
+          message: "Billing is disabled"
+        });
+      }
       const user = await getUserById(ctx.user.id);
       if (!user || !user.stripeCustomerId) {
-        throw new TRPCError3({
+        throw new TRPCError4({
           code: "BAD_REQUEST",
           message: "No active subscription found"
         });
@@ -2410,7 +2465,7 @@ var appRouter = router({
         `${baseUrl}/dashboard`
       );
       if (!portalUrl) {
-        throw new TRPCError3({
+        throw new TRPCError4({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create portal session"
         });
@@ -2484,7 +2539,7 @@ var appRouter = router({
     get: subscribedProcedure.input(z2.object({ id: z2.number() })).query(async ({ ctx, input }) => {
       const horse = await getHorseById(input.id, ctx.user.id);
       if (!horse) {
-        throw new TRPCError3({ code: "NOT_FOUND", message: "Horse not found" });
+        throw new TRPCError4({ code: "NOT_FOUND", message: "Horse not found" });
       }
       return horse;
     }),
@@ -2570,7 +2625,7 @@ var appRouter = router({
     get: subscribedProcedure.input(z2.object({ id: z2.number() })).query(async ({ ctx, input }) => {
       const record = await getHealthRecordById(input.id, ctx.user.id);
       if (!record) {
-        throw new TRPCError3({ code: "NOT_FOUND", message: "Health record not found" });
+        throw new TRPCError4({ code: "NOT_FOUND", message: "Health record not found" });
       }
       return record;
     }),
@@ -2775,6 +2830,12 @@ var appRouter = router({
       category: z2.enum(["health", "registration", "insurance", "competition", "other"]).optional(),
       description: z2.string().optional()
     })).mutation(async ({ ctx, input }) => {
+      if (!ENV.enableUploads) {
+        throw new TRPCError4({
+          code: "PRECONDITION_FAILED",
+          message: "Uploads are disabled"
+        });
+      }
       const buffer = Buffer.from(input.fileData, "base64");
       const fileKey = `${ctx.user.id}/documents/${nanoid2()}-${input.fileName}`;
       const { url } = await storagePut(fileKey, buffer, input.fileType);
@@ -2894,7 +2955,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     getUserDetails: adminUnlockedProcedure.input(z2.object({ userId: z2.number() })).query(async ({ input }) => {
       const user = await getUserById(input.userId);
       if (!user) {
-        throw new TRPCError3({ code: "NOT_FOUND", message: "User not found" });
+        throw new TRPCError4({ code: "NOT_FOUND", message: "User not found" });
       }
       const horses2 = await getHorsesByUserId(input.userId);
       const activity = await getUserActivityLogs(input.userId, 20);
@@ -3025,7 +3086,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       rotate: adminUnlockedProcedure.input(z2.object({ id: z2.number() })).mutation(async ({ ctx, input }) => {
         const result = await rotateApiKey(input.id, ctx.user.id);
         if (!result) {
-          throw new TRPCError3({ code: "NOT_FOUND", message: "API key not found" });
+          throw new TRPCError4({ code: "NOT_FOUND", message: "API key not found" });
         }
         await logActivity({
           userId: ctx.user.id,
@@ -3056,21 +3117,32 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // Environment Health Check
     getEnvHealth: adminUnlockedProcedure.query(() => {
       const checks = [
-        { name: "DATABASE_URL", status: !!process.env.DATABASE_URL, critical: true },
-        { name: "JWT_SECRET", status: !!process.env.JWT_SECRET, critical: true },
-        { name: "ADMIN_UNLOCK_PASSWORD", status: !!process.env.ADMIN_UNLOCK_PASSWORD, critical: true },
-        { name: "STRIPE_SECRET_KEY", status: !!process.env.STRIPE_SECRET_KEY, critical: true },
-        { name: "STRIPE_WEBHOOK_SECRET", status: !!process.env.STRIPE_WEBHOOK_SECRET, critical: true },
-        { name: "AWS_ACCESS_KEY_ID", status: !!process.env.AWS_ACCESS_KEY_ID, critical: true },
-        { name: "AWS_SECRET_ACCESS_KEY", status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: true },
-        { name: "AWS_S3_BUCKET", status: !!process.env.AWS_S3_BUCKET, critical: true },
-        { name: "OPENAI_API_KEY", status: !!process.env.OPENAI_API_KEY, critical: false },
-        { name: "SMTP_HOST", status: !!process.env.SMTP_HOST, critical: false }
+        // Core required vars (always critical)
+        { name: "DATABASE_URL", status: !!process.env.DATABASE_URL, critical: true, conditional: false },
+        { name: "JWT_SECRET", status: !!process.env.JWT_SECRET, critical: true, conditional: false },
+        { name: "ADMIN_UNLOCK_PASSWORD", status: !!process.env.ADMIN_UNLOCK_PASSWORD, critical: true, conditional: false },
+        // Stripe vars (critical only if ENABLE_STRIPE=true)
+        { name: "STRIPE_SECRET_KEY", status: !!process.env.STRIPE_SECRET_KEY, critical: ENV.enableStripe, conditional: true, requiredWhen: "ENABLE_STRIPE=true" },
+        { name: "STRIPE_WEBHOOK_SECRET", status: !!process.env.STRIPE_WEBHOOK_SECRET, critical: ENV.enableStripe, conditional: true, requiredWhen: "ENABLE_STRIPE=true" },
+        // Upload/Storage vars (critical only if ENABLE_UPLOADS=true)
+        { name: "BUILT_IN_FORGE_API_URL", status: !!process.env.BUILT_IN_FORGE_API_URL, critical: ENV.enableUploads, conditional: true, requiredWhen: "ENABLE_UPLOADS=true" },
+        { name: "BUILT_IN_FORGE_API_KEY", status: !!process.env.BUILT_IN_FORGE_API_KEY, critical: ENV.enableUploads, conditional: true, requiredWhen: "ENABLE_UPLOADS=true" },
+        // Legacy AWS vars (optional - kept for backward compatibility)
+        { name: "AWS_ACCESS_KEY_ID", status: !!process.env.AWS_ACCESS_KEY_ID, critical: false, conditional: false },
+        { name: "AWS_SECRET_ACCESS_KEY", status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: false, conditional: false },
+        { name: "AWS_S3_BUCKET", status: !!process.env.AWS_S3_BUCKET, critical: false, conditional: false },
+        // Optional features
+        { name: "OPENAI_API_KEY", status: !!process.env.OPENAI_API_KEY, critical: false, conditional: false },
+        { name: "SMTP_HOST", status: !!process.env.SMTP_HOST, critical: false, conditional: false }
       ];
       const allCriticalOk = checks.filter((c) => c.critical).every((c) => c.status);
       return {
         healthy: allCriticalOk,
         checks,
+        featureFlags: {
+          enableStripe: ENV.enableStripe,
+          enableUploads: ENV.enableUploads
+        },
         environment: process.env.NODE_ENV || "development",
         timestamp: (/* @__PURE__ */ new Date()).toISOString()
       };
@@ -3087,7 +3159,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       secondaryColor: z2.string().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
       const result = await db.insert(stables).values({
         ...input,
         ownerId: ctx.user.id
@@ -3118,7 +3190,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         eq2(stableMembers.userId, ctx.user.id)
       )).limit(1);
       if (member.length === 0) {
-        throw new TRPCError3({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError4({ code: "FORBIDDEN", message: "Access denied" });
       }
       const stable = await db.select().from(stables).where(eq2(stables.id, input.id)).limit(1);
       return stable[0] || null;
@@ -3133,13 +3205,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       secondaryColor: z2.string().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const member = await db.select().from(stableMembers).where(and2(
         eq2(stableMembers.stableId, input.id),
         eq2(stableMembers.userId, ctx.user.id)
       )).limit(1);
       if (member.length === 0 || !["owner", "admin"].includes(member[0].role)) {
-        throw new TRPCError3({ code: "FORBIDDEN" });
+        throw new TRPCError4({ code: "FORBIDDEN" });
       }
       const { id, ...updateData } = input;
       await db.update(stables).set({ ...updateData, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(stables.id, id));
@@ -3151,13 +3223,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       role: z2.enum(["admin", "trainer", "member", "viewer"])
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const member = await db.select().from(stableMembers).where(and2(
         eq2(stableMembers.stableId, input.stableId),
         eq2(stableMembers.userId, ctx.user.id)
       )).limit(1);
       if (member.length === 0 || !["owner", "admin"].includes(member[0].role)) {
-        throw new TRPCError3({ code: "FORBIDDEN" });
+        throw new TRPCError4({ code: "FORBIDDEN" });
       }
       const token = nanoid2(32);
       const expiresAt = /* @__PURE__ */ new Date();
@@ -3180,7 +3252,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         eq2(stableMembers.userId, ctx.user.id)
       )).limit(1);
       if (isMember.length === 0) {
-        throw new TRPCError3({ code: "FORBIDDEN" });
+        throw new TRPCError4({ code: "FORBIDDEN" });
       }
       return db.select().from(stableMembers).where(and2(
         eq2(stableMembers.stableId, input.stableId),
@@ -3212,7 +3284,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       attachments: z2.array(z2.string()).optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const result = await db.insert(messages).values({
         threadId: input.threadId,
         senderId: ctx.user.id,
@@ -3226,7 +3298,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       title: z2.string().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const result = await db.insert(messageThreads).values({
         stableId: input.stableId,
         title: input.title
@@ -3302,7 +3374,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       endDate: z2.string().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       let reportData = {};
       const result = await db.insert(reports).values({
         userId: ctx.user.id,
@@ -3328,7 +3400,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       stableId: z2.number().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const result = await db.insert(reportSchedules).values({
         userId: ctx.user.id,
         stableId: input.stableId,
@@ -3368,7 +3440,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       color: z2.string().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const result = await db.insert(events).values({
         ...input,
         userId: ctx.user.id,
@@ -3386,7 +3458,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       isCompleted: z2.boolean().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const { id, ...updateData } = input;
       await db.update(events).set({
         ...updateData,
@@ -3401,7 +3473,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     }),
     deleteEvent: subscribedProcedure.input(z2.object({ id: z2.number() })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       await db.delete(events).where(and2(
         eq2(events.id, input.id),
         eq2(events.userId, ctx.user.id)
@@ -3426,7 +3498,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       winnings: z2.number().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const result = await db.insert(competitions).values({
         ...input,
         userId: ctx.user.id,
@@ -3466,7 +3538,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       isPublic: z2.boolean().default(false)
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const result = await db.insert(trainingProgramTemplates).values({
         ...input,
         userId: ctx.user.id
@@ -3479,10 +3551,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       startDate: z2.string()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const template = await db.select().from(trainingProgramTemplates).where(eq2(trainingProgramTemplates.id, input.templateId)).limit(1);
       if (template.length === 0) {
-        throw new TRPCError3({ code: "NOT_FOUND" });
+        throw new TRPCError4({ code: "NOT_FOUND" });
       }
       const result = await db.insert(trainingPrograms).values({
         horseId: input.horseId,
@@ -3508,7 +3580,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       notes: z2.string().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const result = await db.insert(breeding).values({
         ...input,
         breedingDate: new Date(input.breedingDate)
@@ -3535,7 +3607,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       birthWeight: z2.number().optional()
     })).mutation(async ({ ctx, input }) => {
       const db = await getDb();
-      if (!db) throw new TRPCError3({ code: "INTERNAL_SERVER_ERROR" });
+      if (!db) throw new TRPCError4({ code: "INTERNAL_SERVER_ERROR" });
       const result = await db.insert(foals).values({
         ...input,
         birthDate: new Date(input.birthDate)
