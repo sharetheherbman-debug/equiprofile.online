@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
+import { TrialBanner } from "./TrialBanner";
 import { 
   LayoutDashboard, 
   LogOut, 
@@ -317,7 +318,10 @@ function DashboardLayoutContent({
             </div>
           </div>
         )}
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 p-4">
+          <TrialBanner />
+          {children}
+        </main>
       </SidebarInset>
     </>
   );
