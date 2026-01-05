@@ -7,6 +7,7 @@ import rateLimit from "express-rate-limit";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import authRouter from "./authRouter";
+import billingRouter from "./billingRouter";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -246,6 +247,9 @@ async function startServer() {
 
   // Local auth routes
   app.use("/api/auth", authRouter);
+
+  // Billing routes (Stripe)
+  app.use("/api/billing", billingRouter);
 
   // Test email endpoint (admin only)
   app.post("/api/admin/send-test-email", async (req, res) => {

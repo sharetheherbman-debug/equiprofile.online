@@ -1468,7 +1468,7 @@ var init_db = __esm({
 
 // server/_core/index.ts
 import "dotenv/config";
-import express3 from "express";
+import express4 from "express";
 import { createServer } from "http";
 import net from "net";
 import helmet from "helmet";
@@ -1659,7 +1659,17 @@ var SDKServer = class {
       const { payload } = await jwtVerify(cookieValue, secretKey, {
         algorithms: ["HS256"]
       });
-      const { openId, appId, name } = payload;
+      const { openId, appId, name, userId } = payload;
+      if (typeof userId === "number") {
+        return {
+          openId: "",
+          // Will be filled from DB
+          appId: ENV.appId,
+          name: "",
+          // Will be filled from DB
+          userId
+        };
+      }
       if (!isNonEmptyString(openId) || !isNonEmptyString(appId) || !isNonEmptyString(name)) {
         console.warn("[Auth] Session payload missing required fields");
         return null;
@@ -1700,30 +1710,37 @@ var SDKServer = class {
     if (!session) {
       throw ForbiddenError("Invalid session cookie");
     }
-    const sessionUserId = session.openId;
     const signedInAt = /* @__PURE__ */ new Date();
-    let user = await getUserByOpenId(sessionUserId);
-    if (!user) {
-      try {
-        const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
-        await upsertUser({
-          openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email ?? null,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: signedInAt
-        });
-        user = await getUserByOpenId(userInfo.openId);
-      } catch (error) {
-        console.error("[Auth] Failed to sync user from OAuth:", error);
-        throw ForbiddenError("Failed to sync user info");
+    let user;
+    if (session.userId) {
+      user = await getUserById(session.userId);
+      if (!user) {
+        throw ForbiddenError("User not found");
+      }
+    } else {
+      const sessionUserId = session.openId;
+      user = await getUserByOpenId(sessionUserId);
+      if (!user) {
+        try {
+          const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
+          await upsertUser({
+            openId: userInfo.openId,
+            name: userInfo.name || null,
+            email: userInfo.email ?? null,
+            loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
+            lastSignedIn: signedInAt
+          });
+          user = await getUserByOpenId(userInfo.openId);
+        } catch (error) {
+          console.error("[Auth] Failed to sync user from OAuth:", error);
+          throw ForbiddenError("Failed to sync user info");
+        }
       }
     }
     if (!user) {
       throw ForbiddenError("User not found");
     }
-    await upsertUser({
-      openId: user.openId,
+    await updateUser(user.id, {
       lastSignedIn: signedInAt
     });
     return user;
@@ -2175,12 +2192,166 @@ router.post("/logout", (req, res) => {
 });
 var authRouter_default = router;
 
+// server/_core/billingRouter.ts
+import express2 from "express";
+
+// server/stripe.ts
+init_env();
+import Stripe from "stripe";
+import { TRPCError } from "@trpc/server";
+function checkStripeEnabled() {
+  if (!ENV.enableStripe) {
+    throw new TRPCError({
+      code: "PRECONDITION_FAILED",
+      message: "Billing is disabled"
+    });
+  }
+}
+function getStripe() {
+  if (!ENV.enableStripe) {
+    console.warn("[Stripe] Billing feature is disabled");
+    return null;
+  }
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.warn("[Stripe] Secret key not configured");
+    return null;
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2025-12-15.clover",
+    typescript: true
+  });
+}
+var STRIPE_PRICING = {
+  monthly: {
+    priceId: process.env.STRIPE_MONTHLY_PRICE_ID || "",
+    amount: 799,
+    // £7.99 in pence
+    currency: "gbp",
+    interval: "month"
+  },
+  yearly: {
+    priceId: process.env.STRIPE_YEARLY_PRICE_ID || "",
+    amount: 7990,
+    // £79.90 in pence (equivalent to ~£6.66/month)
+    currency: "gbp",
+    interval: "year"
+  }
+};
+async function createCheckoutSession(userId, userEmail, priceId, successUrl, cancelUrl, customerId) {
+  checkStripeEnabled();
+  const stripe = getStripe();
+  if (!stripe) return null;
+  try {
+    const sessionParams = {
+      mode: "subscription",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1
+        }
+      ],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata: {
+        userId: userId.toString()
+      },
+      customer_email: customerId ? void 0 : userEmail,
+      allow_promotion_codes: true
+    };
+    if (customerId) {
+      sessionParams.customer = customerId;
+    }
+    const session = await stripe.checkout.sessions.create(sessionParams);
+    return {
+      sessionId: session.id,
+      url: session.url
+    };
+  } catch (error) {
+    console.error("[Stripe] Failed to create checkout session:", error);
+    return null;
+  }
+}
+async function createPortalSession(customerId, returnUrl) {
+  checkStripeEnabled();
+  const stripe = getStripe();
+  if (!stripe) return null;
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: returnUrl
+    });
+    return session.url;
+  } catch (error) {
+    console.error("[Stripe] Failed to create portal session:", error);
+    return null;
+  }
+}
+
+// server/_core/billingRouter.ts
+init_env();
+var router2 = express2.Router();
+router2.get("/checkout", async (req, res) => {
+  try {
+    const user = await sdk.authenticateRequest(req);
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const plan = req.query.plan;
+    if (!plan || plan !== "monthly" && plan !== "yearly") {
+      return res.status(400).json({ error: "Invalid plan. Must be 'monthly' or 'yearly'" });
+    }
+    const priceId = plan === "monthly" ? STRIPE_PRICING.monthly.priceId : STRIPE_PRICING.yearly.priceId;
+    if (!priceId) {
+      return res.status(500).json({ error: "Stripe price ID not configured" });
+    }
+    const session = await createCheckoutSession(
+      user.id,
+      user.email || "",
+      priceId,
+      `${ENV.baseUrl}/billing?success=true`,
+      `${ENV.baseUrl}/billing?canceled=true`,
+      user.stripeCustomerId || void 0
+    );
+    if (!session) {
+      return res.status(500).json({ error: "Failed to create checkout session" });
+    }
+    res.redirect(303, session.url);
+  } catch (error) {
+    console.error("[Billing] Checkout error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+router2.get("/portal", async (req, res) => {
+  try {
+    const user = await sdk.authenticateRequest(req);
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    if (!user.stripeCustomerId) {
+      return res.status(400).json({ error: "No Stripe customer ID found" });
+    }
+    const portalUrl = await createPortalSession(
+      user.stripeCustomerId,
+      `${ENV.baseUrl}/billing`
+    );
+    if (!portalUrl) {
+      return res.status(500).json({ error: "Failed to create portal session" });
+    }
+    res.redirect(303, portalUrl);
+  } catch (error) {
+    console.error("[Billing] Portal error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+var billingRouter_default = router2;
+
 // server/_core/systemRouter.ts
 import { z } from "zod";
 
 // server/_core/notification.ts
 init_env();
-import { TRPCError } from "@trpc/server";
+import { TRPCError as TRPCError2 } from "@trpc/server";
 var TITLE_MAX_LENGTH = 1200;
 var CONTENT_MAX_LENGTH = 2e4;
 var trimValue = (value) => value.trim();
@@ -2194,13 +2365,13 @@ var buildEndpointUrl = (baseUrl) => {
 };
 var validatePayload = (input) => {
   if (!isNonEmptyString2(input.title)) {
-    throw new TRPCError({
+    throw new TRPCError2({
       code: "BAD_REQUEST",
       message: "Notification title is required."
     });
   }
   if (!isNonEmptyString2(input.content)) {
-    throw new TRPCError({
+    throw new TRPCError2({
       code: "BAD_REQUEST",
       message: "Notification content is required."
     });
@@ -2208,13 +2379,13 @@ var validatePayload = (input) => {
   const title = trimValue(input.title);
   const content = trimValue(input.content);
   if (title.length > TITLE_MAX_LENGTH) {
-    throw new TRPCError({
+    throw new TRPCError2({
       code: "BAD_REQUEST",
       message: `Notification title must be at most ${TITLE_MAX_LENGTH} characters.`
     });
   }
   if (content.length > CONTENT_MAX_LENGTH) {
-    throw new TRPCError({
+    throw new TRPCError2({
       code: "BAD_REQUEST",
       message: `Notification content must be at most ${CONTENT_MAX_LENGTH} characters.`
     });
@@ -2224,13 +2395,13 @@ var validatePayload = (input) => {
 async function notifyOwner(payload) {
   const { title, content } = validatePayload(payload);
   if (!ENV.forgeApiUrl) {
-    throw new TRPCError({
+    throw new TRPCError2({
       code: "INTERNAL_SERVER_ERROR",
       message: "Notification service URL is not configured."
     });
   }
   if (!ENV.forgeApiKey) {
-    throw new TRPCError({
+    throw new TRPCError2({
       code: "INTERNAL_SERVER_ERROR",
       message: "Notification service API key is not configured."
     });
@@ -2262,17 +2433,17 @@ async function notifyOwner(payload) {
 }
 
 // server/_core/trpc.ts
-import { initTRPC, TRPCError as TRPCError2 } from "@trpc/server";
+import { initTRPC, TRPCError as TRPCError3 } from "@trpc/server";
 import superjson from "superjson";
 var t = initTRPC.context().create({
   transformer: superjson
 });
-var router2 = t.router;
+var router3 = t.router;
 var publicProcedure = t.procedure;
 var requireUser = t.middleware(async (opts) => {
   const { ctx, next } = opts;
   if (!ctx.user) {
-    throw new TRPCError2({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    throw new TRPCError3({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
   }
   return next({
     ctx: {
@@ -2286,12 +2457,12 @@ var adminUnlockedProcedure = protectedProcedure.use(
   t.middleware(async (opts) => {
     const { ctx, next } = opts;
     if (!ctx.user || ctx.user.role !== "admin") {
-      throw new TRPCError2({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+      throw new TRPCError3({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
     }
     const db = await Promise.resolve().then(() => (init_db(), db_exports));
     const session = await db.getAdminSession(ctx.user.id);
     if (!session || session.expiresAt < /* @__PURE__ */ new Date()) {
-      throw new TRPCError2({
+      throw new TRPCError3({
         code: "FORBIDDEN",
         message: "Admin session expired. Please unlock admin mode in AI Chat."
       });
@@ -2307,7 +2478,7 @@ var adminUnlockedProcedure = protectedProcedure.use(
 
 // server/_core/systemRouter.ts
 init_env();
-var systemRouter = router2({
+var systemRouter = router3({
   health: publicProcedure.input(
     z.object({
       timestamp: z.number().min(0, "timestamp cannot be negative")
@@ -2557,101 +2728,6 @@ async function storagePut(relKey, data, contentType = "application/octet-stream"
 
 // server/routers.ts
 import { nanoid as nanoid3 } from "nanoid";
-
-// server/stripe.ts
-init_env();
-import Stripe from "stripe";
-import { TRPCError as TRPCError3 } from "@trpc/server";
-function checkStripeEnabled() {
-  if (!ENV.enableStripe) {
-    throw new TRPCError3({
-      code: "PRECONDITION_FAILED",
-      message: "Billing is disabled"
-    });
-  }
-}
-function getStripe() {
-  if (!ENV.enableStripe) {
-    console.warn("[Stripe] Billing feature is disabled");
-    return null;
-  }
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.warn("[Stripe] Secret key not configured");
-    return null;
-  }
-  return new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-12-15.clover",
-    typescript: true
-  });
-}
-var STRIPE_PRICING = {
-  monthly: {
-    priceId: process.env.STRIPE_MONTHLY_PRICE_ID || "",
-    amount: 799,
-    // £7.99 in pence
-    currency: "gbp",
-    interval: "month"
-  },
-  yearly: {
-    priceId: process.env.STRIPE_YEARLY_PRICE_ID || "",
-    amount: 7990,
-    // £79.90 in pence (equivalent to ~£6.66/month)
-    currency: "gbp",
-    interval: "year"
-  }
-};
-async function createCheckoutSession(userId, userEmail, priceId, successUrl, cancelUrl, customerId) {
-  checkStripeEnabled();
-  const stripe = getStripe();
-  if (!stripe) return null;
-  try {
-    const sessionParams = {
-      mode: "subscription",
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1
-        }
-      ],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      metadata: {
-        userId: userId.toString()
-      },
-      customer_email: customerId ? void 0 : userEmail,
-      allow_promotion_codes: true
-    };
-    if (customerId) {
-      sessionParams.customer = customerId;
-    }
-    const session = await stripe.checkout.sessions.create(sessionParams);
-    return {
-      sessionId: session.id,
-      url: session.url
-    };
-  } catch (error) {
-    console.error("[Stripe] Failed to create checkout session:", error);
-    return null;
-  }
-}
-async function createPortalSession(customerId, returnUrl) {
-  checkStripeEnabled();
-  const stripe = getStripe();
-  if (!stripe) return null;
-  try {
-    const session = await stripe.billingPortal.sessions.create({
-      customer: customerId,
-      return_url: returnUrl
-    });
-    return session.url;
-  } catch (error) {
-    console.error("[Stripe] Failed to create portal session:", error);
-    return null;
-  }
-}
-
-// server/routers.ts
 init_db();
 init_env();
 init_schema();
@@ -2675,9 +2751,9 @@ var subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   }
   return next({ ctx });
 });
-var appRouter = router2({
+var appRouter = router3({
   system: systemRouter,
-  auth: router2({
+  auth: router3({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
@@ -2686,7 +2762,7 @@ var appRouter = router2({
     })
   }),
   // Admin unlock system
-  adminUnlock: router2({
+  adminUnlock: router3({
     // Check if admin mode is unlocked
     getStatus: protectedProcedure.query(async ({ ctx }) => {
       const session = await getAdminSession(ctx.user.id);
@@ -2750,7 +2826,7 @@ var appRouter = router2({
     })
   }),
   // AI chat
-  ai: router2({
+  ai: router3({
     chat: protectedProcedure.input(z2.object({
       messages: z2.array(z2.object({
         role: z2.enum(["system", "user", "assistant"]),
@@ -2791,7 +2867,7 @@ var appRouter = router2({
     })
   }),
   // Billing and subscription management
-  billing: router2({
+  billing: router3({
     getPricing: publicProcedure.query(() => {
       if (!ENV.enableStripe) {
         return {
@@ -2897,7 +2973,7 @@ var appRouter = router2({
     })
   }),
   // User profile and subscription
-  user: router2({
+  user: router3({
     getProfile: protectedProcedure.query(async ({ ctx }) => {
       const user = await getUserById(ctx.user.id);
       return user;
@@ -2943,7 +3019,7 @@ var appRouter = router2({
     })
   }),
   // Horse management
-  horses: router2({
+  horses: router3({
     list: subscribedProcedure.query(async ({ ctx }) => {
       return getHorsesByUserId(ctx.user.id);
     }),
@@ -3026,7 +3102,7 @@ var appRouter = router2({
     })
   }),
   // Health records
-  healthRecords: router2({
+  healthRecords: router3({
     listAll: subscribedProcedure.query(async ({ ctx }) => {
       return getHealthRecordsByUserId(ctx.user.id);
     }),
@@ -3099,7 +3175,7 @@ var appRouter = router2({
     })
   }),
   // Training sessions
-  training: router2({
+  training: router3({
     listByHorse: subscribedProcedure.input(z2.object({ horseId: z2.number() })).query(async ({ ctx, input }) => {
       return getTrainingSessionsByHorseId(input.horseId, ctx.user.id);
     }),
@@ -3179,7 +3255,7 @@ var appRouter = router2({
     })
   }),
   // Feeding plans
-  feeding: router2({
+  feeding: router3({
     listAll: subscribedProcedure.query(async ({ ctx }) => {
       return getFeedingPlansByUserId(ctx.user.id);
     }),
@@ -3223,7 +3299,7 @@ var appRouter = router2({
     })
   }),
   // Documents
-  documents: router2({
+  documents: router3({
     list: subscribedProcedure.query(async ({ ctx }) => {
       return getDocumentsByUserId(ctx.user.id);
     }),
@@ -3277,7 +3353,7 @@ var appRouter = router2({
     })
   }),
   // Weather and AI analysis
-  weather: router2({
+  weather: router3({
     analyze: subscribedProcedure.input(z2.object({
       location: z2.string(),
       temperature: z2.number(),
@@ -3358,7 +3434,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     })
   }),
   // Admin routes
-  admin: router2({
+  admin: router3({
     // User management
     getUsers: adminUnlockedProcedure.query(async () => {
       return getAllUsers();
@@ -3458,7 +3534,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return getRecentBackups(input.limit);
     }),
     // API Key Management
-    apiKeys: router2({
+    apiKeys: router3({
       list: adminUnlockedProcedure.query(async ({ ctx }) => {
         return listApiKeys(ctx.user.id);
       }),
@@ -3560,7 +3636,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     })
   }),
   // Stable management
-  stables: router2({
+  stables: router3({
     create: subscribedProcedure.input(z2.object({
       name: z2.string().min(1).max(200),
       description: z2.string().optional(),
@@ -3672,7 +3748,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     })
   }),
   // Messages
-  messages: router2({
+  messages: router3({
     getThreads: protectedProcedure.input(z2.object({ stableId: z2.number() })).query(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) return [];
@@ -3718,7 +3794,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     })
   }),
   // Analytics
-  analytics: router2({
+  analytics: router3({
     getTrainingStats: protectedProcedure.input(z2.object({
       horseId: z2.number().optional(),
       startDate: z2.string().optional(),
@@ -3776,7 +3852,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     })
   }),
   // Reports
-  reports: router2({
+  reports: router3({
     generate: subscribedProcedure.input(z2.object({
       reportType: z2.enum(["monthly_summary", "health_report", "training_progress", "cost_analysis", "competition_summary"]),
       horseId: z2.number().optional(),
@@ -3824,7 +3900,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     })
   }),
   // Calendar and Events
-  calendar: router2({
+  calendar: router3({
     getEvents: protectedProcedure.input(z2.object({
       startDate: z2.string(),
       endDate: z2.string(),
@@ -3893,7 +3969,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     })
   }),
   // Competition Management
-  competitions: router2({
+  competitions: router3({
     create: subscribedProcedure.input(z2.object({
       horseId: z2.number(),
       competitionName: z2.string().min(1).max(200),
@@ -3929,7 +4005,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     })
   }),
   // Training Program Templates
-  trainingPrograms: router2({
+  trainingPrograms: router3({
     listTemplates: protectedProcedure.query(async ({ ctx }) => {
       const db = await getDb();
       if (!db) return [];
@@ -3979,7 +4055,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     })
   }),
   // Breeding Management
-  breeding: router2({
+  breeding: router3({
     createRecord: subscribedProcedure.input(z2.object({
       mareId: z2.number(),
       stallionId: z2.number().optional(),
@@ -4029,6 +4105,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 });
 
 // server/_core/context.ts
+function checkUserAccess(user) {
+  if (!user) return false;
+  if (user.role === "admin") return true;
+  if (user.subscriptionStatus === "active") return true;
+  if (user.subscriptionStatus === "trial" && user.trialEndsAt) {
+    const now = /* @__PURE__ */ new Date();
+    const trialEnd = new Date(user.trialEndsAt);
+    if (trialEnd > now) {
+      return true;
+    }
+  }
+  return false;
+}
 async function createContext(opts) {
   let user = null;
   try {
@@ -4039,12 +4128,13 @@ async function createContext(opts) {
   return {
     req: opts.req,
     res: opts.res,
-    user
+    user,
+    hasAccess: checkUserAccess(user)
   };
 }
 
 // server/_core/vite.ts
-import express2 from "express";
+import express3 from "express";
 import fs from "fs";
 import { nanoid as nanoid4 } from "nanoid";
 import path2 from "path";
@@ -4135,7 +4225,7 @@ function serveStatic(app) {
       `Could not find the build directory: ${distPath}, make sure to build the client first`
     );
   }
-  app.use(express2.static(distPath));
+  app.use(express3.static(distPath));
   app.use("*", (_req, res) => {
     res.sendFile(path2.resolve(distPath, "index.html"));
   });
@@ -4162,7 +4252,7 @@ async function findAvailablePort(startPort = 3e3) {
   throw new Error(`No available port found starting from ${startPort}`);
 }
 async function startServer() {
-  const app = express3();
+  const app = express4();
   const server = createServer(app);
   app.use(helmet({
     contentSecurityPolicy: process.env.NODE_ENV === "production" ? void 0 : false,
@@ -4190,7 +4280,7 @@ async function startServer() {
     legacyHeaders: false
   });
   app.use("/api", limiter);
-  app.post("/api/webhooks/stripe", express3.raw({ type: "application/json" }), async (req, res) => {
+  app.post("/api/webhooks/stripe", express4.raw({ type: "application/json" }), async (req, res) => {
     const stripe = getStripe();
     if (!stripe) {
       return res.status(500).json({ error: "Stripe not configured" });
@@ -4311,8 +4401,8 @@ async function startServer() {
     const user = users2.find((u) => u.stripeSubscriptionId === subscriptionId);
     return user?.id || null;
   }
-  app.use(express3.json({ limit: "50mb" }));
-  app.use(express3.urlencoded({ limit: "50mb", extended: true }));
+  app.use(express4.json({ limit: "50mb" }));
+  app.use(express4.urlencoded({ limit: "50mb", extended: true }));
   app.get("/api/health", async (req, res) => {
     const dbConnected = !!await getDb();
     const stripeConfigured = !!getStripe();
@@ -4328,6 +4418,7 @@ async function startServer() {
   });
   registerOAuthRoutes(app);
   app.use("/api/auth", authRouter_default);
+  app.use("/api/billing", billingRouter_default);
   app.post("/api/admin/send-test-email", async (req, res) => {
     try {
       const { to } = req.body;

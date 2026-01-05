@@ -40,6 +40,7 @@ import Reports from "./pages/Reports";
 import Calendar from "./pages/Calendar";
 import AIChat from "./pages/AIChat";
 import Settings from "./pages/Settings";
+import BillingPage from "./pages/BillingPage";
 
 function Router() {
   useKeyboardNavigation();
@@ -105,6 +106,9 @@ function Router() {
           
           {/* Settings */}
           <Route path="/settings" component={Settings} />
+          
+          {/* Billing */}
+          <Route path="/billing" component={BillingPage} />
           
           {/* AI Chat */}
           <Route path="/ai-chat" component={AIChat} />
