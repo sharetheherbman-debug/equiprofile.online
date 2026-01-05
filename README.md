@@ -2144,4 +2144,339 @@ Full Privacy Policy available at: https://equiprofile.online/privacy
 
 ---
 
+## 🎨 Design System
+
+EquiProfile features a modern, accessible design system built with premium colors and consistent spacing.
+
+### Color Palette
+
+The application uses a vibrant, modern color scheme:
+
+- **Primary**: Vibrant Blue (`oklch(0.55 0.25 250)`) - Professional & trustworthy
+- **Secondary**: Purple (`oklch(0.55 0.20 280)`) - Premium & modern  
+- **Accent**: Teal (`oklch(0.55 0.20 190)`) - Fresh & energetic
+- **Success**: Green - Positive actions
+- **Warning**: Amber - Caution states
+- **Danger**: Red - Critical alerts
+
+**NO BROWN COLORS** - The design explicitly avoids brown tones for a fresh, modern aesthetic.
+
+### Design Tokens
+
+All design decisions are centralized in `client/src/lib/design-system.ts`:
+
+- Typography scale with proper hierarchy
+- Spacing system based on 4px grid
+- Border radius tokens for consistent roundness
+- Shadow system for depth and elevation
+- Transition timing for smooth animations
+- Z-index layers for proper stacking
+
+### Typography
+
+- **Sans Serif**: Inter - Body text and UI elements
+- **Serif**: Playfair Display - Headings and emphasis
+- Font sizes range from 12px to 128px with proper line heights
+- Responsive scaling on smaller screens
+
+### Accessibility
+
+- WCAG AA contrast ratios for all text
+- Focus indicators on interactive elements
+- Keyboard navigation support
+- Screen reader optimizations
+- Skip-to-content links
+- Semantic HTML throughout
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- **Framework**: React 19.2 with TypeScript
+- **Routing**: Wouter (lightweight React router)
+- **Styling**: Tailwind CSS 4 with custom design tokens
+- **UI Components**: Radix UI primitives + shadcn/ui
+- **Animations**: Framer Motion for smooth transitions
+- **Forms**: React Hook Form + Zod validation
+- **State Management**: TanStack Query (React Query)
+- **API Client**: tRPC for end-to-end type safety
+- **Internationalization**: i18next + react-i18next
+- **Charts**: Recharts for data visualization
+- **Icons**: Lucide React
+
+### Backend
+
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js
+- **API**: tRPC for type-safe APIs
+- **Database**: MySQL with Drizzle ORM
+- **Authentication**: OAuth + JWT sessions
+- **File Storage**: AWS S3 or local filesystem
+- **Payment Processing**: Stripe
+- **Email**: SendGrid (or similar service)
+
+### DevOps & Build
+
+- **Build Tool**: Vite 7 (Lightning fast)
+- **Package Manager**: npm with legacy peer deps
+- **Process Manager**: systemd (production)
+- **Web Server**: Nginx
+- **SSL**: Let's Encrypt (Certbot)
+- **Version Control**: Git + GitHub
+
+---
+
+## 🚀 Development
+
+### Prerequisites
+
+- Node.js 18.x or higher
+- MySQL 8.0 or higher
+- npm or pnpm
+- Git
+
+### Local Setup
+
+1. **Clone repository**:
+   ```bash
+   git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+   cd Equiprofile.online
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+3. **Configure environment**:
+   ```bash
+   # Copy environment files
+   cp .env.example .env
+   cp client/.env.example client/.env
+   
+   # Edit with your local settings
+   nano .env
+   nano client/.env
+   ```
+
+4. **Set up database**:
+   ```bash
+   # Create database
+   mysql -u root -p
+   CREATE DATABASE equiprofile_dev;
+   EXIT;
+   
+   # Run migrations
+   npm run db:push
+   ```
+
+5. **Start development server**:
+   ```bash
+   npm run dev
+   ```
+
+   Application will be available at `http://localhost:5173`
+
+### Development Scripts
+
+```bash
+# Start dev server (frontend + backend)
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm run start
+
+# Type checking
+npm run check
+
+# Format code
+npm run format
+
+# Run tests
+npm run test
+
+# Database migrations
+npm run db:push
+```
+
+### Project Structure
+
+```
+Equiprofile.online/
+├── client/                    # Frontend React application
+│   ├── public/               # Static assets
+│   │   ├── images/          # Image assets
+│   │   └── icons/           # Icon assets
+│   ├── src/
+│   │   ├── _core/           # Core utilities and hooks
+│   │   ├── components/      # Reusable UI components
+│   │   │   ├── ui/         # Base UI components (shadcn)
+│   │   │   ├── MarketingNav.tsx
+│   │   │   ├── AppLayout.tsx
+│   │   │   ├── ProtectedRoute.tsx
+│   │   │   ├── PageTransition.tsx
+│   │   │   └── ScrollReveal.tsx
+│   │   ├── pages/           # Page components
+│   │   │   ├── auth/       # Auth pages (Login, Register)
+│   │   │   ├── Home.tsx
+│   │   │   ├── Features.tsx
+│   │   │   ├── Pricing.tsx
+│   │   │   ├── About.tsx
+│   │   │   ├── Contact.tsx
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── Settings.tsx
+│   │   │   └── ... (other app pages)
+│   │   ├── contexts/        # React contexts
+│   │   ├── hooks/           # Custom React hooks
+│   │   ├── lib/             # Utility libraries
+│   │   │   ├── design-system.ts
+│   │   │   ├── env.ts
+│   │   │   └── trpc.ts
+│   │   ├── i18n/            # Internationalization
+│   │   ├── App.tsx          # Main app component
+│   │   ├── main.tsx         # Entry point
+│   │   └── index.css        # Global styles
+│   ├── index.html           # HTML template
+│   └── .env.example         # Frontend env template
+├── server/                   # Backend Node.js application
+│   ├── _core/               # Core server utilities
+│   ├── db.ts                # Database operations
+│   ├── routers.ts           # tRPC routers
+│   └── storage.ts           # File storage
+├── shared/                   # Shared types and constants
+├── scripts/                  # Deployment and utility scripts
+├── DEPLOY.md                # Deployment documentation
+├── README.md                # This file
+└── .env.example             # Backend env template
+```
+
+### Environment Variables
+
+See [Environment Configuration](#environment-configuration) in DEPLOY.md for complete list.
+
+Key development variables:
+
+**Backend** (`.env`):
+- `DATABASE_URL` - MySQL connection string
+- `JWT_SECRET` - Session signing key
+- `NODE_ENV=development`
+
+**Frontend** (`client/.env`):
+- `VITE_API_BASE_URL` - Leave empty for same-origin
+- `VITE_ENV=development`
+
+---
+
+## 📦 Build & Deploy
+
+See **[DEPLOY.md](./DEPLOY.md)** for comprehensive deployment instructions including:
+
+- Server setup and configuration
+- Database setup
+- Nginx configuration
+- SSL certificate setup
+- Process management with systemd
+- Automated deployment scripts
+- Troubleshooting guide
+
+### Quick Deploy
+
+```bash
+# Build application
+npm install --legacy-peer-deps
+npm run build
+
+# Output:
+# - dist/public/ - Frontend static files
+# - dist/index.js - Backend server
+```
+
+---
+
+## 🧪 Testing
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+Test coverage:
+- Unit tests for utilities and helpers
+- Integration tests for API endpoints
+- Component tests for React components
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Build fails with peer dependency errors**:
+```bash
+npm install --legacy-peer-deps
+```
+
+**Blank page after deployment**:
+- Check browser console (F12)
+- Verify Nginx configuration
+- Check that environment variables are set
+
+**API calls fail**:
+- Ensure backend is running
+- Check CORS configuration
+- Verify API base URL
+
+**Database connection errors**:
+- Check DATABASE_URL format
+- Verify MySQL is running
+- Confirm database exists
+
+See [DEPLOY.md](./DEPLOY.md) for more troubleshooting tips.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Write or update tests
+5. Submit a pull request
+
+---
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## 📧 Contact & Support
+
+**Customer Support:**
+- Email: support@equiprofile.online
+- Response time: 24-48 hours (business days)
+- Priority support for Stable plan subscribers
+
+**Business Inquiries:**
+- Email: hello@equiprofile.online
+
+**Security Issues:**
+- Email: security@equiprofile.online
+- Responsible disclosure appreciated
+
+**Documentation:**
+- Online: https://docs.equiprofile.online
+- In-app help center
+
+---
+
 **EquiProfile** - Professional equine management for the modern equestrian.
