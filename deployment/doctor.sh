@@ -86,14 +86,13 @@ echo "Checking environment variables..."
 if [ -f "/var/equiprofile/app/.env" ]; then
   pass ".env file exists at /var/equiprofile/app/.env"
   
-  # Source the .env file and check required vars
-  export $(grep -v '^#' /var/equiprofile/app/.env | xargs)
-  
+  # Safely parse .env file without executing it
   required_vars=("DATABASE_URL" "JWT_SECRET" "ADMIN_UNLOCK_PASSWORD")
   missing_vars=()
   
   for var in "${required_vars[@]}"; do
-    if [ -z "${!var}" ]; then
+    # Use grep to check if variable is defined in .env file
+    if ! grep -q "^${var}=" /var/equiprofile/app/.env 2>/dev/null; then
       missing_vars+=("$var")
     fi
   done

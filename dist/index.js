@@ -1869,7 +1869,10 @@ function registerOAuthRoutes(app) {
       res.redirect(302, "/");
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const escapeHtml = (str) => {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      };
+      const errorMessage = error instanceof Error ? escapeHtml(error.message) : "Unknown error";
       res.status(500).send(`
         <html>
           <body>

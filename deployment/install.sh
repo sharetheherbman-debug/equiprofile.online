@@ -120,10 +120,16 @@ if [ ! -f "$APP_DIR/.env" ]; then
   warn "   Required: DATABASE_URL, JWT_SECRET, ADMIN_UNLOCK_PASSWORD"
   warn "   Optional: OAUTH_SERVER_URL, STRIPE keys, etc."
   echo ""
-  echo "Do you want to edit .env now? (y/n)"
-  read -r response
-  if [[ "$response" =~ ^[Yy]$ ]]; then
-    ${EDITOR:-nano} "$APP_DIR/.env"
+  
+  # Check if running interactively
+  if [ -t 0 ]; then
+    echo "Do you want to edit .env now? (y/n)"
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+      ${EDITOR:-nano} "$APP_DIR/.env"
+    fi
+  else
+    warn "Running non-interactively, skipping .env editor prompt"
   fi
 else
   success ".env file already exists"
@@ -175,18 +181,24 @@ info "Installing nginx configuration..."
 if [ ! -f /etc/nginx/sites-available/equiprofile ]; then
   cp "$APP_DIR/deployment/nginx-webdock.conf" /etc/nginx/sites-available/equiprofile
   
-  echo ""
-  warn "⚠️  IMPORTANT: Update /etc/nginx/sites-available/equiprofile"
-  warn "   Replace DOMAIN_NAME with your actual domain"
-  echo ""
-  echo "Enter your domain name (e.g., equiprofile.online):"
-  read -r domain
-  
-  if [ -n "$domain" ]; then
-    sed -i "s/DOMAIN_NAME/$domain/g" /etc/nginx/sites-available/equiprofile
-    success "Domain name updated to: $domain"
+  # Check if running interactively
+  if [ -t 0 ]; then
+    echo ""
+    warn "⚠️  IMPORTANT: Update /etc/nginx/sites-available/equiprofile"
+    warn "   Replace DOMAIN_NAME with your actual domain"
+    echo ""
+    echo "Enter your domain name (e.g., equiprofile.online):"
+    read -r domain
+    
+    if [ -n "$domain" ]; then
+      sed -i "s/DOMAIN_NAME/$domain/g" /etc/nginx/sites-available/equiprofile
+      success "Domain name updated to: $domain"
+    else
+      warn "No domain provided, you'll need to edit manually"
+    fi
   else
-    warn "No domain provided, you'll need to edit manually"
+    warn "Running non-interactively, skipping domain prompt"
+    warn "Please manually update DOMAIN_NAME in /etc/nginx/sites-available/equiprofile"
   fi
   
   # Enable site

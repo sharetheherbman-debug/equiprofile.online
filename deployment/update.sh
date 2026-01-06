@@ -128,7 +128,7 @@ success "Application rebuilt"
 echo ""
 
 # Step 7: Update systemd service if changed
-if ! diff -q "$APP_DIR/deployment/equiprofile.service" /etc/systemd/system/equiprofile.service >/dev/null 2>&1; then
+if ! diff -q "$APP_DIR/deployment/equiprofile.service" /etc/systemd/system/equiprofile.service >/dev/null 2>&1 || [ $? -eq 2 ]; then
   info "Updating systemd service..."
   cp "$APP_DIR/deployment/equiprofile.service" /etc/systemd/system/equiprofile.service
   systemctl daemon-reload
