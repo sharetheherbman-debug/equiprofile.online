@@ -2,43 +2,102 @@
 const enableStripe = process.env.ENABLE_STRIPE === 'true';
 const enableUploads = process.env.ENABLE_UPLOADS === 'true';
 
-// Production startup validation
-if (process.env.NODE_ENV === 'production') {
+// Startup validation helper
+function validateEnvironment() {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   // Core required vars (always needed)
   const coreRequiredVars = [
-    'DATABASE_URL',
-    'JWT_SECRET',
-    'ADMIN_UNLOCK_PASSWORD',
+    { name: 'DATABASE_URL', description: 'Database connection string' },
+    { name: 'JWT_SECRET', description: 'JWT secret for token signing' },
+    { name: 'ADMIN_UNLOCK_PASSWORD', description: 'Admin unlock password' },
   ];
   
-  const missing = coreRequiredVars.filter(v => !process.env[v]);
+  const missing: Array<{ name: string; description: string }> = [];
+  
+  // Check core required variables
+  coreRequiredVars.forEach(v => {
+    if (!process.env[v.name]) {
+      missing.push(v);
+    }
+  });
   
   // Conditionally require Stripe vars if enabled
   if (enableStripe) {
-    const stripeVars = ['STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET'];
-    missing.push(...stripeVars.filter(v => !process.env[v]));
+    const stripeVars = [
+      { name: 'STRIPE_SECRET_KEY', description: 'Stripe secret key' },
+      { name: 'STRIPE_WEBHOOK_SECRET', description: 'Stripe webhook secret' },
+    ];
+    stripeVars.forEach(v => {
+      if (!process.env[v.name]) {
+        missing.push(v);
+      }
+    });
   }
   
   // Conditionally require upload/storage vars if enabled
   if (enableUploads) {
-    const uploadVars = ['BUILT_IN_FORGE_API_URL', 'BUILT_IN_FORGE_API_KEY'];
-    missing.push(...uploadVars.filter(v => !process.env[v]));
+    const uploadVars = [
+      { name: 'BUILT_IN_FORGE_API_URL', description: 'Forge API URL' },
+      { name: 'BUILT_IN_FORGE_API_KEY', description: 'Forge API key' },
+    ];
+    uploadVars.forEach(v => {
+      if (!process.env[v.name]) {
+        missing.push(v);
+      }
+    });
   }
   
+  // Report missing variables and exit if any
   if (missing.length > 0) {
-    console.error(`❌ PRODUCTION ERROR: Missing required environment variables: ${missing.join(', ')}`);
-    console.error('Application cannot start. Please configure all required environment variables.');
-    console.error(`Feature flags: ENABLE_STRIPE=${enableStripe}, ENABLE_UPLOADS=${enableUploads}`);
+    console.error('❌ STARTUP ERROR: Missing required environment variables\n');
+    console.error('The following required environment variables are not set:\n');
+    missing.forEach(v => {
+      console.error(`  • ${v.name} - ${v.description}`);
+    });
+    console.error('\nFeature flags:');
+    console.error(`  • ENABLE_STRIPE=${enableStripe}`);
+    console.error(`  • ENABLE_UPLOADS=${enableUploads}`);
+    console.error('\nPlease configure all required environment variables in your .env file.');
+    console.error('See .env.example for a complete list of available options.\n');
     process.exit(1);
   }
   
   // Validate no hardcoded fallbacks in production
-  if (process.env.ADMIN_UNLOCK_PASSWORD === 'ashmor12@') {
+  if (isProduction && process.env.ADMIN_UNLOCK_PASSWORD === 'ashmor12@') {
     console.error('❌ PRODUCTION ERROR: ADMIN_UNLOCK_PASSWORD is still set to default value!');
     console.error('You MUST change this to a secure password before running in production.');
+    console.error('Generate a secure password and update your .env file.\n');
+    process.exit(1);
+  }
+  
+  // Log OAuth configuration status
+  if (process.env.OAUTH_SERVER_URL) {
+    if (!process.env.VITE_APP_ID) {
+      console.warn('⚠️  WARNING: OAUTH_SERVER_URL is set but VITE_APP_ID is missing.');
+      console.warn('   OAuth login will not work correctly without an app ID.\n');
+    } else {
+      console.log('✅ OAuth configured:', process.env.OAUTH_SERVER_URL);
+    }
+  } else {
+    console.log('ℹ️  OAuth not configured - using email/password authentication only');
+  }
+  
+  // Log feature status
+  console.log('ℹ️  Feature flags:');
+  console.log(`   • Stripe billing: ${enableStripe ? '✅ enabled' : '❌ disabled'}`);
+  console.log(`   • Document uploads: ${enableUploads ? '✅ enabled' : '❌ disabled'}`);
+  
+  // Validate JWT secret length in production
+  if (isProduction && process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
+    console.error('❌ PRODUCTION ERROR: JWT_SECRET must be at least 32 characters long!');
+    console.error('Generate a secure secret with: openssl rand -base64 32\n');
     process.exit(1);
   }
 }
+
+// Run validation
+validateEnvironment();
 
 export const ENV = {
   // Feature flags

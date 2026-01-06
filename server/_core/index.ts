@@ -16,6 +16,7 @@ import Stripe from "stripe";
 import * as db from "../db";
 import { getStripe } from "../stripe";
 import * as email from "./email";
+import { ENV } from "./env";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -39,6 +40,11 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+
+  // Trust proxy - CRITICAL for correct IP detection behind nginx reverse proxy
+  // Must be set BEFORE rate limiter and any middleware that reads req.ip
+  app.set("trust proxy", 1);
+  console.log("✅ Trust proxy enabled for reverse proxy support");
 
   // Security middleware
   app.use(helmet({
@@ -64,6 +70,7 @@ async function startServer() {
   });
 
   // Rate limiting
+  // Trust proxy is already set globally via app.set("trust proxy", 1)
   const limiter = rateLimit({
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000"), // 15 minutes
     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100"),
@@ -230,15 +237,28 @@ async function startServer() {
   app.get("/api/health", async (req, res) => {
     const dbConnected = !!(await db.getDb());
     const stripeConfigured = !!getStripe();
+    const oauthConfigured = !!(ENV.oAuthServerUrl && ENV.appId);
+    const version = process.env.npm_package_version || "1.0.0";
     
     res.json({
       status: "healthy",
       timestamp: new Date().toISOString(),
-      version: "1.0.0",
+      version,
       services: {
         database: dbConnected,
         stripe: stripeConfigured,
+        oauth: oauthConfigured,
       },
+    });
+  });
+
+  // OAuth status endpoint
+  app.get("/api/oauth/status", (req, res) => {
+    const configured = !!(ENV.oAuthServerUrl && ENV.appId);
+    res.json({
+      configured,
+      baseUrl: ENV.baseUrl,
+      oauthServerUrl: configured ? ENV.oAuthServerUrl : null,
     });
   });
 
