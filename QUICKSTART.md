@@ -1,0 +1,289 @@
+# EquiProfile Quick Start Guide
+
+Get EquiProfile up and running in minutes!
+
+## Prerequisites
+
+- Node.js 22.x or higher
+- pnpm 10.x or higher  
+- MySQL 8.0 or higher
+- AWS S3 account (for file uploads)
+- OpenAI API key (for weather analysis)
+
+## 5-Minute Setup
+
+### 1. Clone and Install
+
+```bash
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+pnpm install
+```
+
+### 2. Configure Environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set at minimum:
+```env
+DATABASE_URL=mysql://user:password@localhost:3306/equiprofile
+JWT_SECRET=your_random_32_char_string
+```
+
+### 3. Setup Database
+
+```bash
+# Create database
+mysql -u root -p -e "CREATE DATABASE equiprofile;"
+
+# Run migrations
+pnpm db:push
+```
+
+### 4. Start Development Server
+
+```bash
+pnpm dev
+```
+
+Visit http://localhost:3000 🎉
+
+## Admin Access
+
+### Enable Admin Section
+
+1. Open browser console (F12)
+2. Type: `showAdmin()`
+3. Enter password: `equi2024!admin` (change in production!)
+4. Navigate to `/admin`
+
+### Disable Admin Section
+
+```javascript
+hideAdmin()
+```
+
+## Available Scripts
+
+```bash
+pnpm dev        # Start development server
+pnpm build      # Build for production
+pnpm start      # Start production server
+pnpm test       # Run tests
+pnpm check      # TypeScript type checking
+pnpm format     # Format code with Prettier
+pnpm db:push    # Run database migrations
+```
+
+## Project Structure
+
+```
+Equiprofile.online/
+├── client/                 # React frontend
+│   ├── src/
+│   │   ├── components/    # UI components
+│   │   ├── pages/         # Page components
+│   │   ├── hooks/         # Custom hooks
+│   │   └── lib/           # Utilities
+│   └── public/            # Static files
+│
+├── server/                # Node.js backend
+│   ├── _core/            # Core functionality
+│   ├── routers.ts        # API routes
+│   ├── db.ts             # Database queries
+│   └── *.test.ts         # Tests
+│
+├── drizzle/              # Database
+│   ├── schema.ts         # Schema definitions
+│   └── migrations/       # Migration files
+│
+└── docs/                 # Documentation
+    ├── README.md
+    ├── API.md
+    ├── DEPLOYMENT.md
+    ├── SECURITY.md
+    └── CONTRIBUTING.md
+```
+
+## API Endpoints
+
+All endpoints available at `/api/trpc`:
+
+### Public
+- `auth.me` - Get current user
+- `auth.logout` - Logout
+
+### User (Authenticated)
+- `user.getProfile` - Get profile
+- `user.updateProfile` - Update profile
+- `user.getSubscriptionStatus` - Get subscription
+
+### Horses (Active Subscription)
+- `horses.list` - List horses
+- `horses.get` - Get horse by ID
+- `horses.create` - Create horse
+- `horses.update` - Update horse
+- `horses.delete` - Delete horse
+
+### Health Records
+- `healthRecords.listAll` - List all records
+- `healthRecords.create` - Create record
+- More endpoints in API.md...
+
+### Training
+- `training.listAll` - List sessions
+- `training.create` - Create session
+- More endpoints in API.md...
+
+### Admin (Admin Role Only)
+- `admin.getUsers` - List all users
+- `admin.getStats` - System statistics
+- `admin.suspendUser` - Suspend user
+- More endpoints in API.md...
+
+See [API.md](./API.md) for complete endpoint documentation.
+
+## Configuration
+
+### Required Environment Variables
+
+```env
+# Database (Required)
+DATABASE_URL=mysql://...
+
+# Authentication (Required)
+JWT_SECRET=random_secret_here
+
+# OpenAI for Weather (Optional)
+OPENAI_API_KEY=sk-...
+
+# AWS S3 for Files (Optional)
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_S3_BUCKET=equiprofile-uploads
+
+# Stripe Payments (Optional)
+STRIPE_SECRET_KEY=sk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+See [.env.example](./.env.example) for all options.
+
+## Testing
+
+Run the test suite:
+
+```bash
+pnpm test
+```
+
+Test coverage includes:
+- ✅ 34 passing tests
+- ✅ Authentication flows
+- ✅ Horse management
+- ✅ Health records
+- ✅ Training sessions
+- ✅ Admin functions
+
+## Production Deployment
+
+### Quick Deploy
+
+```bash
+# Build
+pnpm build
+
+# Start with PM2
+pm2 start dist/index.js --name equiprofile
+```
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for full deployment guide including:
+- Nginx configuration
+- SSL setup
+- Database configuration
+- Automated backups
+- Monitoring
+
+## Common Issues
+
+### Port Already in Use
+Server automatically finds an available port. Check console output for actual port.
+
+### Database Connection Failed
+- Verify DATABASE_URL is correct
+- Check MySQL is running: `systemctl status mysql`
+- Test connection: `mysql -u user -p`
+
+### Build Errors
+```bash
+# Clear cache and rebuild
+rm -rf node_modules dist .pnpm-store
+pnpm install
+pnpm build
+```
+
+### Tests Failing
+```bash
+# Make sure database is accessible
+# Mock functions should prevent database calls in tests
+pnpm test
+```
+
+## Getting Help
+
+- 📖 Documentation: See [README.md](./README.md)
+- 🔒 Security: See [SECURITY.md](./SECURITY.md)
+- 🤝 Contributing: See [CONTRIBUTING.md](./CONTRIBUTING.md)
+- 🚀 Deployment: See [DEPLOYMENT.md](./DEPLOYMENT.md)
+- 📡 API: See [API.md](./API.md)
+- 🐛 Issues: [GitHub Issues](https://github.com/amarktainetwork-blip/Equiprofile.online/issues)
+
+## Key Features
+
+✅ **Horse Management**
+- Complete profiles with photos
+- Multiple horses per user
+- Detailed information tracking
+
+✅ **Health Records**
+- Vaccination tracking
+- Vet visit logs
+- Medical history
+- Document uploads
+- Automatic reminders
+
+✅ **Training Scheduler**
+- Session planning
+- Progress tracking
+- Performance notes
+- Calendar view
+
+✅ **AI Weather Analysis**
+- Real-time conditions
+- Riding recommendations
+- Safety alerts
+
+✅ **Admin Dashboard**
+- User management
+- System analytics
+- Settings configuration
+- Activity monitoring
+
+✅ **Security**
+- OAuth authentication
+- Role-based access
+- Rate limiting
+- Input validation
+- Session management
+
+## Next Steps
+
+1. ✅ Complete this quick start
+2. 📖 Read [API.md](./API.md) for API details
+3. 🔒 Review [SECURITY.md](./SECURITY.md) for security
+4. 🚀 Deploy using [DEPLOYMENT.md](./DEPLOYMENT.md)
+5. 🤝 Contribute via [CONTRIBUTING.md](./CONTRIBUTING.md)
+
+Welcome to EquiProfile! 🐴

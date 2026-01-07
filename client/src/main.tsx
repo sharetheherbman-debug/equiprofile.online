@@ -8,6 +8,10 @@ import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
 
+// Initialize admin toggle system - sets up console commands
+// This must be imported to register showAdmin() and hideAdmin() functions
+import "@/lib/adminToggle";
+
 const queryClient = new QueryClient();
 
 const redirectToLoginIfUnauthorized = (error: unknown) => {

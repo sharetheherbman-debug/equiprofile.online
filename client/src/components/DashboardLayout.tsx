@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useAdminToggle } from "@/hooks/useAdminToggle";
 import { TrialBanner } from "./TrialBanner";
 import { 
   LayoutDashboard, 
@@ -139,6 +140,7 @@ function DashboardLayoutContent({
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
+  const { isAdminVisible } = useAdminToggle();
 
   // Check admin unlock status
   const { data: adminStatus } = trpc.adminUnlock.getStatus.useQuery(
@@ -233,6 +235,8 @@ function DashboardLayoutContent({
                   </SidebarMenuItem>
                 );
               })}
+              {/* Admin menu items - shown to admin users when toggle is active */}
+              {user?.role === 'admin' && isAdminVisible && (
               {/* Admin menu items - shown to admin users who have unlocked admin mode */}
               {user?.role === 'admin' && adminStatus?.isUnlocked && (
                 <>
