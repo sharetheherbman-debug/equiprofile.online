@@ -24,8 +24,8 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Register service worker for PWA
-      if ('serviceWorker' in navigator) {
+      // Register service worker for PWA (controlled by VITE_PWA_ENABLED)
+      if ('serviceWorker' in navigator && '%VITE_PWA_ENABLED%' === 'true') {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
@@ -35,6 +35,8 @@
               console.log('ServiceWorker registration failed: ', err);
             });
         });
+      } else if ('%VITE_PWA_ENABLED%' !== 'true' && process.env.NODE_ENV === 'development') {
+        console.log('PWA disabled (VITE_PWA_ENABLED not set to true)');
       }
     </script>
     <!-- Analytics script - only load if environment variables are properly set -->

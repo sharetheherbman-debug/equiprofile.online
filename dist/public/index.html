@@ -10,13 +10,15 @@
     <meta name="theme-color" content="#3b82f6" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    <!-- Theme override CSS - loads custom branding without rebuild -->
+    <link rel="stylesheet" href="/theme-override.css" />
     <title>EquiProfile - Professional Horse Management System</title>    
     <!-- THIS IS THE START OF A COMMENT BLOCK, BLOCK TO BE DELETED: Google Fonts here, example:
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     THIS IS THE END OF A COMMENT BLOCK, BLOCK TO BE DELETED -->
-    <script type="module" crossorigin src="/assets/index-CL3VqabL.js"></script>
+    <script type="module" crossorigin src="/assets/index-GrqLceMN.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-BDPdy8Rv.css">
   </head>
 
@@ -83,8 +85,8 @@ Error generating stack: `+l.message+`
 
     <div id="root"></div>
     <script>
-      // Register service worker for PWA
-      if ('serviceWorker' in navigator) {
+      // Register service worker for PWA (controlled by VITE_PWA_ENABLED)
+      if ('serviceWorker' in navigator && '%VITE_PWA_ENABLED%' === 'true') {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
@@ -94,6 +96,8 @@ Error generating stack: `+l.message+`
               console.log('ServiceWorker registration failed: ', err);
             });
         });
+      } else if ('%VITE_PWA_ENABLED%' !== 'true' && process.env.NODE_ENV === 'development') {
+        console.log('PWA disabled (VITE_PWA_ENABLED not set to true)');
       }
     </script>
     <!-- Analytics script - only load if environment variables are properly set -->

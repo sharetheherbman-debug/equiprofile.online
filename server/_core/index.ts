@@ -18,6 +18,7 @@ import * as db from "../db";
 import { getStripe } from "../stripe";
 import * as email from "./email";
 import { ENV } from "./env";
+import { resolve } from "path";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -80,6 +81,15 @@ async function startServer() {
     legacyHeaders: false,
   });
   app.use("/api", limiter);
+
+  // Health/build endpoints rate limiter (more permissive for monitoring)
+  const healthLimiter = rateLimit({
+    windowMs: 60000, // 1 minute
+    max: 60, // 60 requests per minute (1 per second average)
+    message: "Too many health check requests",
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
 
   // Stripe webhook - must be before body parser
   app.post("/api/webhooks/stripe", express.raw({ type: "application/json" }), async (req, res) => {
@@ -234,7 +244,53 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-  // Health check endpoint
+  // Cache build info at startup to avoid blocking on every request
+  let cachedBuildInfo: any = null;
+  try {
+    const packageJsonPath = resolve(process.cwd(), 'package.json');
+    const packageJson = JSON.parse(require('fs').readFileSync(packageJsonPath, 'utf-8'));
+    
+    // Try to get git commit (only once at startup)
+    let commit = 'unknown';
+    try {
+      const { execSync } = require('child_process');
+      commit = execSync('git rev-parse HEAD', { encoding: 'utf-8', timeout: 1000 }).trim().slice(0, 7);
+    } catch {
+      // Git not available, that's okay
+    }
+
+    cachedBuildInfo = {
+      version: packageJson.version || '1.0.0',
+      buildId: process.env.BUILD_ID || 'dev',
+      commit,
+      buildTime: process.env.BUILD_TIME || new Date().toISOString(),
+      nodeVersion: process.version
+    };
+  } catch (err) {
+    console.warn('⚠️  Could not generate build info:', err);
+    cachedBuildInfo = {
+      version: '1.0.0',
+      buildId: 'unknown',
+      commit: 'unknown',
+      buildTime: new Date().toISOString(),
+      nodeVersion: process.version
+    };
+  }
+
+  // Simple health check endpoint (production-friendly) with rate limiting
+  app.get("/healthz", healthLimiter, (req, res) => {
+    res.json({
+      ok: true,
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  // Build info endpoint (cached) with rate limiting
+  app.get("/build", healthLimiter, (req, res) => {
+    res.json(cachedBuildInfo);
+  });
+
+  // Health check endpoint (detailed)
   app.get("/api/health", async (req, res) => {
     const dbConnected = !!(await db.getDb());
     const stripeConfigured = !!getStripe();

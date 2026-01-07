@@ -1,7 +1,8 @@
 // Service Worker with proper caching strategy
 // Version based on package.json version
 // NOTE: Update CACHE_VERSION when deploying new versions to force cache refresh
-// TODO: Consider automating this via build script (e.g., inject from package.json)
+// Version automatically synced from package.json via scripts/update-sw-version.js
+// Runs as part of the build process (npm run build:sw)
 const CACHE_VERSION = '1.0.0';
 const CACHE_NAME = `equiprofile-v${CACHE_VERSION}`;
 

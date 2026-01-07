@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx watch server/_core/index.ts",
     "build:sw": "node scripts/update-sw-version.js",
-    "build": "npm run build:sw && vite build && esbuild server/_core/index.ts --platform=node --bundle --format=esm --outdir=dist --minify --external:bcrypt",
+    "build": "npm run build:sw && vite build && esbuild server/_core/index.ts --platform=node --bundle --format=esm --outdir=dist --minify --packages=external",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
     "format": "prettier --write .",
