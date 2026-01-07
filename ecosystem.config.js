@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'equiprofile',
       script: 'dist/index.js',
-      instances: 2,
+      instances: process.env.PM2_INSTANCES || 1,
       exec_mode: 'cluster',
       autorestart: true,
       watch: false,

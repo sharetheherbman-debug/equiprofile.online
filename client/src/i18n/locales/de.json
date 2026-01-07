@@ -1,0 +1,62 @@
+{
+  "common": {
+    "loading": "Wird geladen...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "export": "Exportieren",
+    "import": "Importieren",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "submit": "Senden",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "horses": "Pferde",
+    "health": "Gesundheit",
+    "training": "Training",
+    "feeding": "Fütterung",
+    "documents": "Dokumente",
+    "calendar": "Kalender",
+    "stable": "Stall",
+    "messages": "Nachrichten",
+    "analytics": "Analytik",
+    "reports": "Berichte",
+    "settings": "Einstellungen"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Willkommen zurück!",
+    "quickActions": "Schnellaktionen",
+    "addHorse": "Pferd hinzufügen",
+    "scheduleTraining": "Training planen",
+    "logHealth": "Gesundheit protokollieren",
+    "activityFeed": "Aktivitätsfeed",
+    "upcomingEvents": "Bevorstehende Ereignisse",
+    "recentActivity": "Letzte Aktivität"
+  },
+  "horses": {
+    "title": "Pferde",
+    "addHorse": "Pferd hinzufügen",
+    "editHorse": "Pferd bearbeiten",
+    "deleteHorse": "Pferd löschen",
+    "horseDetails": "Pferdedetails",
+    "noHorses": "Keine Pferde gefunden"
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "signUp": "Registrieren",
+    "welcomeBack": "Willkommen zurück!",
+    "continueWith": "Weiter mit"
+  }
+}

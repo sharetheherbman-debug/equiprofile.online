@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { trpc } from "@/lib/trpc";
 import { 
   Users, 
@@ -49,20 +51,62 @@ import {
   Shield,
   RefreshCw,
   Search,
-  Eye
+  Eye,
+  Copy,
+  Key,
+  Plus,
+  RotateCw,
+  Server
 } from "lucide-react";
 import { toast } from "sonner";
+import { formatDistanceToNow } from "date-fns";
 
 function AdminContent() {
+  const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [suspendReason, setSuspendReason] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [newApiKeyData, setNewApiKeyData] = useState<{ id: number; key: string } | null>(null);
+
+  // Check admin session status
+  const statusQuery = trpc.adminUnlock.getStatus.useQuery();
+
+  // Redirect if admin not unlocked
+  useEffect(() => {
+    if (statusQuery.data && !statusQuery.data.isUnlocked) {
+      toast.error('Admin session expired. Please unlock admin mode.');
+      navigate('/ai-chat');
+    }
+  }, [statusQuery.data, navigate]);
+
+  if (!statusQuery.data?.isUnlocked) {
+    return (
+      <div className="container mx-auto p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Admin Access Required</AlertTitle>
+          <AlertDescription>
+            Please unlock admin mode via the AI chat by typing "show admin" and entering your password.
+          </AlertDescription>
+        </Alert>
+        <Button onClick={() => navigate('/ai-chat')} className="mt-4">
+          Go to AI Chat
+        </Button>
+      </div>
+    );
+  }
 
   const { data: stats, isLoading: statsLoading } = trpc.admin.getStats.useQuery();
   const { data: users, isLoading: usersLoading, refetch: refetchUsers } = trpc.admin.getUsers.useQuery();
   const { data: overdueUsers } = trpc.admin.getOverdueUsers.useQuery();
   const { data: activityLogs } = trpc.admin.getActivityLogs.useQuery({ limit: 50 });
   const { data: settings } = trpc.admin.getSettings.useQuery();
+  
+  // API Key queries
+  const apiKeysQuery = trpc.admin.apiKeys.list.useQuery();
+  const envHealthQuery = trpc.admin.getEnvHealth.useQuery(undefined, {
+    refetchInterval: 30000, // Refresh every 30s
+  });
 
   const suspendMutation = trpc.admin.suspendUser.useMutation({
     onSuccess: () => {
@@ -92,6 +136,33 @@ function AdminContent() {
     onSuccess: () => {
       toast.success("User role updated successfully");
       refetchUsers();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+  
+  // API Key mutations
+  const createApiKeyMutation = trpc.admin.apiKeys.create.useMutation({
+    onSuccess: (data) => {
+      setNewApiKeyData(data);
+      apiKeysQuery.refetch();
+      toast.success('API key created successfully');
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const revokeApiKeyMutation = trpc.admin.apiKeys.revoke.useMutation({
+    onSuccess: () => {
+      apiKeysQuery.refetch();
+      toast.success('API key revoked');
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const rotateApiKeyMutation = trpc.admin.apiKeys.rotate.useMutation({
+    onSuccess: (data, variables) => {
+      setNewApiKeyData({ id: variables.id, key: data.key });
+      apiKeysQuery.refetch();
+      toast.success('API key rotated. Save the new key now!');
     },
     onError: (error) => toast.error(error.message),
   });
@@ -218,6 +289,14 @@ function AdminContent() {
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
             Settings
+          </TabsTrigger>
+          <TabsTrigger value="api-keys" className="flex items-center gap-2">
+            <Key className="w-4 h-4" />
+            API Keys
+          </TabsTrigger>
+          <TabsTrigger value="system" className="flex items-center gap-2">
+            <Server className="w-4 h-4" />
+            System
           </TabsTrigger>
         </TabsList>
 
@@ -513,6 +592,174 @@ function AdminContent() {
                   </div>
                 )}
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* API Keys Tab */}
+        <TabsContent value="api-keys" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>API Key Management</CardTitle>
+                  <CardDescription>Create and manage API keys for third-party integrations</CardDescription>
+                </div>
+                <Button onClick={() => {
+                  const name = prompt('Enter API key name:');
+                  if (name) {
+                    createApiKeyMutation.mutate({ name, rateLimit: 100 });
+                  }
+                }}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Key
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {newApiKeyData && (
+                <Alert className="mb-4 border-yellow-500 bg-yellow-50">
+                  <Key className="h-4 w-4" />
+                  <AlertTitle>Save Your API Key Now!</AlertTitle>
+                  <AlertDescription className="mt-2 space-y-2">
+                    <p className="text-sm">This is the only time you'll see this key:</p>
+                    <div className="flex items-center gap-2 bg-white p-2 rounded border font-mono text-sm">
+                      <code className="flex-1">{newApiKeyData.key}</code>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          navigator.clipboard.writeText(newApiKeyData.key);
+                          toast.success('Copied to clipboard');
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => setNewApiKeyData(null)}>
+                      I've saved it
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              {apiKeysQuery.data && apiKeysQuery.data.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Key Prefix</TableHead>
+                      <TableHead>Rate Limit</TableHead>
+                      <TableHead>Last Used</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {apiKeysQuery.data.map((key) => (
+                      <TableRow key={key.id}>
+                        <TableCell className="font-medium">{key.name}</TableCell>
+                        <TableCell>
+                          <code className="text-xs">{key.keyPrefix}_...</code>
+                        </TableCell>
+                        <TableCell>{key.rateLimit}/hr</TableCell>
+                        <TableCell>
+                          {key.lastUsedAt ? formatDistanceToNow(new Date(key.lastUsedAt), { addSuffix: true }) : 'Never'}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={key.isActive ? 'default' : 'secondary'}>
+                            {key.isActive ? 'Active' : 'Revoked'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                if (confirm('Rotate this API key? The old key will stop working immediately.')) {
+                                  rotateApiKeyMutation.mutate({ id: key.id });
+                                }
+                              }}
+                              disabled={!key.isActive}
+                            >
+                              <RotateCw className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => {
+                                if (confirm('Revoke this API key? This cannot be undone.')) {
+                                  revokeApiKeyMutation.mutate({ id: key.id });
+                                }
+                              }}
+                              disabled={!key.isActive}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Key className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                  <p>No API keys created yet</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* System Health Tab */}
+        <TabsContent value="system" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Environment Health</CardTitle>
+              <CardDescription>System configuration status</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {envHealthQuery.data && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Badge variant={envHealthQuery.data.healthy ? 'default' : 'destructive'}>
+                      {envHealthQuery.data.healthy ? '✓ All Critical OK' : '✗ Issues Detected'}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      Environment: {envHealthQuery.data.environment}
+                    </span>
+                  </div>
+                  
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Variable</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Priority</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {envHealthQuery.data.checks.map((check) => (
+                        <TableRow key={check.name}>
+                          <TableCell className="font-mono text-sm">{check.name}</TableCell>
+                          <TableCell>
+                            <Badge variant={check.status ? 'default' : 'destructive'}>
+                              {check.status ? '✓ Set' : '✗ Missing'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={check.critical ? 'destructive' : 'secondary'}>
+                              {check.critical ? 'Critical' : 'Optional'}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

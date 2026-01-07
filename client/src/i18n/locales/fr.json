@@ -1,0 +1,62 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Soumettre",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "horses": "Chevaux",
+    "health": "Santé",
+    "training": "Entraînement",
+    "feeding": "Alimentation",
+    "documents": "Documents",
+    "calendar": "Calendrier",
+    "stable": "Écurie",
+    "messages": "Messages",
+    "analytics": "Analytique",
+    "reports": "Rapports",
+    "settings": "Paramètres"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bon retour!",
+    "quickActions": "Actions rapides",
+    "addHorse": "Ajouter un cheval",
+    "scheduleTraining": "Planifier l'entraînement",
+    "logHealth": "Enregistrer la santé",
+    "activityFeed": "Fil d'activité",
+    "upcomingEvents": "Événements à venir",
+    "recentActivity": "Activité récente"
+  },
+  "horses": {
+    "title": "Chevaux",
+    "addHorse": "Ajouter un cheval",
+    "editHorse": "Modifier le cheval",
+    "deleteHorse": "Supprimer le cheval",
+    "horseDetails": "Détails du cheval",
+    "noHorses": "Aucun cheval trouvé"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "signUp": "S'inscrire",
+    "welcomeBack": "Bon retour!",
+    "continueWith": "Continuer avec"
+  }
+}

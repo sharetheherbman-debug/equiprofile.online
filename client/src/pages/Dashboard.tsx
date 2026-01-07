@@ -4,6 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { QuickActionsWidget } from "@/components/QuickActionsWidget";
+import { ActivityFeed } from "@/components/ActivityFeed";
+import { StatsOverview } from "@/components/StatsOverview";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import { 
@@ -68,68 +71,21 @@ function DashboardContent() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Horses</CardTitle>
-            <Heart className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {statsLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{stats?.horseCount || 0}</div>
-            )}
-          </CardContent>
-        </Card>
+      <StatsOverview
+        totalHorses={stats?.horseCount || 0}
+        trainingHours={0}
+        upcomingEvents={stats?.upcomingSessionCount || 0}
+        healthReminders={stats?.reminderCount || 0}
+      />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Upcoming Sessions</CardTitle>
-            <Calendar className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {statsLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{stats?.upcomingSessionCount || 0}</div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Health Reminders</CardTitle>
-            <AlertCircle className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {statsLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{stats?.reminderCount || 0}</div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Riding Conditions</CardTitle>
-            <CloudSun className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {statsLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold capitalize">
-                {stats?.latestWeather?.ridingRecommendation || 'Check'}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {/* Quick Actions */}
+      <QuickActionsWidget />
 
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-3 gap-6">
+        {/* Activity Feed */}
+        <ActivityFeed maxHeight="500px" />
+        
         {/* Horses List */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">

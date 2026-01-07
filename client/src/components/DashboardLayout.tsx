@@ -22,6 +22,7 @@ import {
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useAdminToggle } from "@/hooks/useAdminToggle";
+import { TrialBanner } from "./TrialBanner";
 import { 
   LayoutDashboard, 
   LogOut, 
@@ -33,12 +34,14 @@ import {
   Cloud,
   FileText,
   Settings,
-  Shield
+  Shield,
+  MessageSquare
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
+import { trpc } from "@/lib/trpc";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -48,6 +51,7 @@ const menuItems = [
   { icon: Utensils, label: "Feeding Plans", path: "/feeding" },
   { icon: Cloud, label: "Weather", path: "/weather" },
   { icon: FileText, label: "Documents", path: "/documents" },
+  { icon: MessageSquare, label: "AI Chat", path: "/ai-chat" },
 ];
 
 const adminMenuItems = [
@@ -138,6 +142,16 @@ function DashboardLayoutContent({
   const isMobile = useIsMobile();
   const { isAdminVisible } = useAdminToggle();
 
+  // Check admin unlock status
+  const { data: adminStatus } = trpc.adminUnlock.getStatus.useQuery(
+    undefined,
+    {
+      enabled: user?.role === 'admin', // Only fetch if admin
+      staleTime: 60 * 1000, // Cache for 1 minute
+      refetchInterval: 60 * 1000, // Refresh every minute
+    }
+  );
+
   useEffect(() => {
     if (isCollapsed) {
       setIsResizing(false);
@@ -223,6 +237,8 @@ function DashboardLayoutContent({
               })}
               {/* Admin menu items - shown to admin users when toggle is active */}
               {user?.role === 'admin' && isAdminVisible && (
+              {/* Admin menu items - shown to admin users who have unlocked admin mode */}
+              {user?.role === 'admin' && adminStatus?.isUnlocked && (
                 <>
                   <div className="my-2 px-2">
                     <div className="h-px bg-border" />
@@ -235,7 +251,7 @@ function DashboardLayoutContent({
                           isActive={isActive}
                           onClick={() => setLocation(item.path)}
                           tooltip={item.label}
-                          className={`h-10 transition-all font-normal`}
+                          className="h-10 transition-all font-normal"
                         >
                           <item.icon
                             className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
@@ -306,7 +322,10 @@ function DashboardLayoutContent({
             </div>
           </div>
         )}
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 p-4">
+          <TrialBanner />
+          {children}
+        </main>
       </SidebarInset>
     </>
   );

@@ -1,0 +1,62 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "import": "Importar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "nav": {
+    "dashboard": "Panel de control",
+    "horses": "Caballos",
+    "health": "Salud",
+    "training": "Entrenamiento",
+    "feeding": "Alimentación",
+    "documents": "Documentos",
+    "calendar": "Calendario",
+    "stable": "Establo",
+    "messages": "Mensajes",
+    "analytics": "Analítica",
+    "reports": "Informes",
+    "settings": "Configuración"
+  },
+  "dashboard": {
+    "title": "Panel de control",
+    "welcome": "¡Bienvenido de nuevo!",
+    "quickActions": "Acciones rápidas",
+    "addHorse": "Agregar caballo",
+    "scheduleTraining": "Programar entrenamiento",
+    "logHealth": "Registrar salud",
+    "activityFeed": "Feed de actividad",
+    "upcomingEvents": "Próximos eventos",
+    "recentActivity": "Actividad reciente"
+  },
+  "horses": {
+    "title": "Caballos",
+    "addHorse": "Agregar caballo",
+    "editHorse": "Editar caballo",
+    "deleteHorse": "Eliminar caballo",
+    "horseDetails": "Detalles del caballo",
+    "noHorses": "No se encontraron caballos"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "signUp": "Registrarse",
+    "welcomeBack": "¡Bienvenido de nuevo!",
+    "continueWith": "Continuar con"
+  }
+}

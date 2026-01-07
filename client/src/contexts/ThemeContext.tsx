@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark";
+type Theme = "light" | "dark" | "system";
 
 interface ThemeContextType {
   theme: Theme;
-  toggleTheme?: () => void;
+  resolvedTheme: "light" | "dark";
+  setTheme: (theme: Theme) => void;
   switchable: boolean;
 }
 
@@ -18,38 +19,55 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  defaultTheme = "light",
-  switchable = false,
+  defaultTheme = "system",
+  switchable = true,
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (switchable) {
-      const stored = localStorage.getItem("theme");
-      return (stored as Theme) || defaultTheme;
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (switchable && typeof window !== 'undefined') {
+      const stored = localStorage.getItem("theme") as Theme;
+      return stored || defaultTheme;
     }
     return defaultTheme;
   });
 
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
+
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    const getSystemTheme = (): "light" | "dark" => {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    };
 
-    if (switchable) {
-      localStorage.setItem("theme", theme);
-    }
-  }, [theme, switchable]);
+    const updateResolvedTheme = () => {
+      const resolved = theme === "system" ? getSystemTheme() : theme;
+      setResolvedTheme(resolved);
 
-  const toggleTheme = switchable
-    ? () => {
-        setTheme(prev => (prev === "light" ? "dark" : "light"));
-      }
-    : undefined;
+      const root = document.documentElement;
+      root.classList.remove("light", "dark");
+      root.classList.add(resolved);
+      root.style.colorScheme = resolved;
+    };
+
+    updateResolvedTheme();
+
+    if (theme === "system") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const handler = () => updateResolvedTheme();
+      mediaQuery.addEventListener("change", handler);
+      return () => mediaQuery.removeEventListener("change", handler);
+    }
+  }, [theme]);
+
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    if (switchable && typeof window !== 'undefined') {
+      localStorage.setItem("theme", newTheme);
+    }
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, switchable }}>
+    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, switchable }}>
       {children}
     </ThemeContext.Provider>
   );

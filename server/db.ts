@@ -1,5 +1,7 @@
 import { eq, and, desc, sql, gte, lte, isNull, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import bcrypt from "bcrypt";
+import { nanoid } from "nanoid";
 import { 
   InsertUser, users, 
   horses, InsertHorse,
@@ -10,7 +12,35 @@ import {
   weatherLogs, InsertWeatherLog,
   systemSettings, InsertSystemSetting,
   activityLogs, InsertActivityLog,
-  backupLogs, InsertBackupLog
+  backupLogs, InsertBackupLog,
+  stables, InsertStable,
+  stableMembers, InsertStableMember,
+  stableInvites, InsertStableInvite,
+  events, InsertEvent,
+  eventReminders, InsertEventReminder,
+  feedCosts, InsertFeedCost,
+  vaccinations, InsertVaccination,
+  dewormings, InsertDeworming,
+  shareLinks, InsertShareLink,
+  competitions, InsertCompetition,
+  documentTags, InsertDocumentTag,
+  stripeEvents, InsertStripeEvent,
+  messageThreads, InsertMessageThread,
+  messages, InsertMessage,
+  competitionResults, InsertCompetitionResult,
+  trainingProgramTemplates, InsertTrainingProgramTemplate,
+  trainingPrograms, InsertTrainingProgram,
+  reports, InsertReport,
+  reportSchedules, InsertReportSchedule,
+  breeding, InsertBreeding,
+  foals, InsertFoal,
+  pedigree, InsertPedigree,
+  lessonBookings, InsertLessonBooking,
+  trainerAvailability, InsertTrainerAvailability,
+  apiKeys, InsertApiKey,
+  webhooks, InsertWebhook,
+  adminSessions, InsertAdminSession,
+  adminUnlockAttempts, InsertAdminUnlockAttempt
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -108,6 +138,13 @@ export async function getUserById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
   const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
@@ -551,4 +588,352 @@ export async function getSystemStats() {
     healthRecords: recordStats,
     trainingSessions: sessionStats,
   };
+}
+
+// ============ STRIPE EVENT QUERIES ============
+
+export async function createStripeEvent(eventId: string, eventType: string, payload?: string) {
+  const db = await getDb();
+  if (!db) return null;
+  try {
+    const result = await db.insert(stripeEvents).values({
+      eventId,
+      eventType,
+      payload,
+    });
+    return result[0].insertId;
+  } catch (error) {
+    // If duplicate, event already processed
+    return null;
+  }
+}
+
+export async function markStripeEventProcessed(eventId: string, error?: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(stripeEvents).set({
+    processed: true,
+    processedAt: new Date(),
+    error,
+  }).where(eq(stripeEvents.eventId, eventId));
+}
+
+export async function isStripeEventProcessed(eventId: string) {
+  const db = await getDb();
+  if (!db) return false;
+  const result = await db.select().from(stripeEvents).where(
+    eq(stripeEvents.eventId, eventId)
+  ).limit(1);
+  return result.length > 0;
+}
+
+// ============ VACCINATION QUERIES ============
+
+export async function createVaccination(data: InsertVaccination) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(vaccinations).values(data);
+  return result[0].insertId;
+}
+
+export async function getVaccinationsByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(vaccinations).where(
+    and(eq(vaccinations.horseId, horseId), eq(vaccinations.userId, userId))
+  ).orderBy(desc(vaccinations.dateAdministered));
+}
+
+// ============ DEWORMING QUERIES ============
+
+export async function createDeworming(data: InsertDeworming) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(dewormings).values(data);
+  return result[0].insertId;
+}
+
+export async function getDewormingsByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(dewormings).where(
+    and(eq(dewormings.horseId, horseId), eq(dewormings.userId, userId))
+  ).orderBy(desc(dewormings.dateAdministered));
+}
+
+// ============ COMPETITION QUERIES ============
+
+export async function createCompetition(data: InsertCompetition) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(competitions).values(data);
+  return result[0].insertId;
+}
+
+export async function getCompetitionsByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(competitions).where(
+    and(eq(competitions.horseId, horseId), eq(competitions.userId, userId))
+  ).orderBy(desc(competitions.date));
+}
+
+export async function getCompetitionsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(competitions).where(
+    eq(competitions.userId, userId)
+  ).orderBy(desc(competitions.date));
+}
+
+// ============ ADMIN SESSION QUERIES ============
+
+export async function getAdminSession(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const sessions = await db.select()
+    .from(adminSessions)
+    .where(and(
+      eq(adminSessions.userId, userId),
+      gte(adminSessions.expiresAt, new Date())
+    ))
+    .limit(1);
+  
+  return sessions[0] || null;
+}
+
+export async function createAdminSession(userId: number, expiresAt: Date) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  // Remove old sessions for this user
+  await db.delete(adminSessions).where(eq(adminSessions.userId, userId));
+  
+  // Create new session
+  await db.insert(adminSessions).values({ userId, expiresAt });
+}
+
+export async function revokeAdminSession(userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(adminSessions).where(eq(adminSessions.userId, userId));
+}
+
+export async function getUnlockAttempts(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const record = await db.select()
+    .from(adminUnlockAttempts)
+    .where(eq(adminUnlockAttempts.userId, userId))
+    .limit(1);
+  
+  if (!record[0]) return 0;
+  
+  // Reset if locked period expired
+  if (record[0].lockedUntil && record[0].lockedUntil < new Date()) {
+    await db.update(adminUnlockAttempts)
+      .set({ attempts: 0, lockedUntil: null })
+      .where(eq(adminUnlockAttempts.userId, userId));
+    return 0;
+  }
+  
+  return record[0].attempts;
+}
+
+export async function incrementUnlockAttempts(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const existing = await db.select()
+    .from(adminUnlockAttempts)
+    .where(eq(adminUnlockAttempts.userId, userId))
+    .limit(1);
+  
+  if (!existing[0]) {
+    await db.insert(adminUnlockAttempts).values({ 
+      userId, 
+      attempts: 1,
+      lastAttemptAt: new Date()
+    });
+    return 1;
+  }
+  
+  const newAttempts = existing[0].attempts + 1;
+  await db.update(adminUnlockAttempts)
+    .set({ attempts: newAttempts, lastAttemptAt: new Date() })
+    .where(eq(adminUnlockAttempts.userId, userId));
+  
+  return newAttempts;
+}
+
+export async function resetUnlockAttempts(userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(adminUnlockAttempts)
+    .set({ attempts: 0, lockedUntil: null })
+    .where(eq(adminUnlockAttempts.userId, userId));
+}
+
+export async function setUnlockLockout(userId: number, minutes: number) {
+  const db = await getDb();
+  if (!db) return;
+  const lockedUntil = new Date(Date.now() + minutes * 60 * 1000);
+  await db.update(adminUnlockAttempts)
+    .set({ lockedUntil })
+    .where(eq(adminUnlockAttempts.userId, userId));
+}
+
+export async function getUnlockLockoutTime(userId: number): Promise<Date | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const record = await db.select()
+    .from(adminUnlockAttempts)
+    .where(eq(adminUnlockAttempts.userId, userId))
+    .limit(1);
+  
+  return record[0]?.lockedUntil || null;
+}
+
+// ============ API KEY QUERIES ============
+
+export async function createApiKey(data: {
+  userId: number;
+  stableId?: number;
+  name: string;
+  permissions?: string[];
+  rateLimit?: number;
+  expiresAt?: Date;
+}): Promise<{ id: number; key: string }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Generate secure API key: prefix + random string
+  const prefix = 'ep_' + nanoid(4);
+  const secret = nanoid(32);
+  const fullKey = prefix + '_' + secret;
+  
+  // Hash the full key for storage
+  const keyHash = await bcrypt.hash(fullKey, 10);
+  
+  const result = await db.insert(apiKeys).values({
+    userId: data.userId,
+    stableId: data.stableId,
+    name: data.name,
+    keyHash,
+    keyPrefix: prefix,
+    permissions: data.permissions ? JSON.stringify(data.permissions) : null,
+    rateLimit: data.rateLimit ?? 100,
+    expiresAt: data.expiresAt,
+  });
+  
+  // Return the PLAIN KEY only once (never stored)
+  return { id: result[0].insertId, key: fullKey };
+}
+
+export async function listApiKeys(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    id: apiKeys.id,
+    name: apiKeys.name,
+    keyPrefix: apiKeys.keyPrefix,
+    isActive: apiKeys.isActive,
+    rateLimit: apiKeys.rateLimit,
+    lastUsedAt: apiKeys.lastUsedAt,
+    expiresAt: apiKeys.expiresAt,
+    createdAt: apiKeys.createdAt,
+  }).from(apiKeys).where(eq(apiKeys.userId, userId)).orderBy(desc(apiKeys.createdAt));
+}
+
+export async function revokeApiKey(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(apiKeys).set({ isActive: false }).where(
+    and(eq(apiKeys.id, id), eq(apiKeys.userId, userId))
+  );
+}
+
+export async function rotateApiKey(id: number, userId: number): Promise<{ key: string } | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  // Get existing key
+  const existing = await db.select().from(apiKeys).where(
+    and(eq(apiKeys.id, id), eq(apiKeys.userId, userId))
+  ).limit(1);
+  
+  if (!existing[0]) return null;
+  
+  // Generate new key
+  const prefix = 'ep_' + nanoid(4);
+  const secret = nanoid(32);
+  const fullKey = prefix + '_' + secret;
+  const keyHash = await bcrypt.hash(fullKey, 10);
+  
+  // Update
+  await db.update(apiKeys).set({
+    keyHash,
+    keyPrefix: prefix,
+  }).where(and(eq(apiKeys.id, id), eq(apiKeys.userId, userId)));
+  
+  return { key: fullKey };
+}
+
+export async function updateApiKeySettings(id: number, userId: number, data: {
+  name?: string;
+  rateLimit?: number;
+  permissions?: string[];
+  isActive?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return;
+  
+  const updateData: any = {};
+  if (data.name !== undefined) updateData.name = data.name;
+  if (data.rateLimit !== undefined) updateData.rateLimit = data.rateLimit;
+  if (data.permissions !== undefined) updateData.permissions = JSON.stringify(data.permissions);
+  if (data.isActive !== undefined) updateData.isActive = data.isActive;
+  
+  await db.update(apiKeys).set(updateData).where(
+    and(eq(apiKeys.id, id), eq(apiKeys.userId, userId))
+  );
+}
+
+export async function verifyApiKey(key: string): Promise<{ userId: number; permissions: string[] } | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  // Extract prefix
+  const prefix = key.substring(0, 7); // "ep_xxxx"
+  
+  // Find keys with this prefix
+  const keys = await db.select().from(apiKeys).where(
+    and(
+      eq(apiKeys.keyPrefix, prefix),
+      eq(apiKeys.isActive, true)
+    )
+  );
+  
+  // Check each key with bcrypt
+  for (const apiKey of keys) {
+    const match = await bcrypt.compare(key, apiKey.keyHash);
+    if (match) {
+      // Check expiration
+      if (apiKey.expiresAt && apiKey.expiresAt < new Date()) {
+        return null; // Expired
+      }
+      
+      // Update last used
+      await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.id, apiKey.id));
+      
+      // Parse permissions
+      const permissions = apiKey.permissions ? JSON.parse(apiKey.permissions) : [];
+      return { userId: apiKey.userId, permissions };
+    }
+  }
+  
+  return null;
 }

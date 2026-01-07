@@ -1,21 +1,35 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, adminUnlockedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM } from "./_core/llm";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
-
-// Admin procedure middleware
-const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.user.role !== 'admin') {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
-  }
-  return next({ ctx });
-});
+import { createCheckoutSession, createPortalSession, STRIPE_PRICING } from "./stripe";
+import { eq, and, desc, sql, gte, lte, or } from "drizzle-orm";
+import { getDb } from "./db";
+import { ENV } from "./_core/env";
+import {
+  stables,
+  stableMembers,
+  stableInvites,
+  messageThreads,
+  messages,
+  reports,
+  reportSchedules,
+  events,
+  competitions,
+  trainingProgramTemplates,
+  trainingPrograms,
+  breeding,
+  foals,
+  trainingSessions,
+  healthRecords,
+  feedCosts,
+} from "../drizzle/schema";
 
 // Subscription check middleware
 const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
@@ -56,6 +70,270 @@ export const appRouter = router({
     }),
   }),
 
+  // Admin unlock system
+  adminUnlock: router({
+    // Check if admin mode is unlocked
+    getStatus: protectedProcedure.query(async ({ ctx }) => {
+      const session = await db.getAdminSession(ctx.user.id);
+      return {
+        isUnlocked: session ? session.expiresAt > new Date() : false,
+        expiresAt: session?.expiresAt,
+      };
+    }),
+
+    // Initiate unlock (returns challenge)
+    requestUnlock: protectedProcedure.mutation(async ({ ctx }) => {
+      // Check rate limit
+      const attempts = await db.getUnlockAttempts(ctx.user.id);
+      if (attempts >= 5) {
+        const lockedUntil = await db.getUnlockLockoutTime(ctx.user.id);
+        if (lockedUntil && lockedUntil > new Date()) {
+          throw new TRPCError({ 
+            code: 'TOO_MANY_REQUESTS', 
+            message: `Too many attempts. Try again after ${lockedUntil.toISOString()}` 
+          });
+        }
+      }
+      
+      return { 
+        challenge: "Admin mode requires password. Enter password:",
+        attemptsRemaining: Math.max(0, 5 - attempts)
+      };
+    }),
+
+    // Submit password
+    submitPassword: protectedProcedure
+      .input(z.object({ password: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const adminPassword = process.env.ADMIN_UNLOCK_PASSWORD || 'ashmor12@';
+        
+        // Check rate limit
+        const attempts = await db.incrementUnlockAttempts(ctx.user.id);
+        if (attempts > 5) {
+          await db.setUnlockLockout(ctx.user.id, 15); // 15 minutes
+          throw new TRPCError({ code: 'TOO_MANY_REQUESTS', message: 'Too many attempts. Account locked for 15 minutes.' });
+        }
+
+        if (input.password !== adminPassword) {
+          await db.logActivity({
+            userId: ctx.user!.id,
+            action: 'admin_unlock_failed',
+            entityType: 'system',
+            details: JSON.stringify({ attempts }),
+          });
+          throw new TRPCError({ 
+            code: 'UNAUTHORIZED', 
+            message: 'Incorrect password',
+          });
+        }
+
+        // Success - create session
+        const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+        await db.createAdminSession(ctx.user.id, expiresAt);
+        await db.resetUnlockAttempts(ctx.user.id);
+        
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'admin_unlocked',
+          entityType: 'system',
+          details: JSON.stringify({ expiresAt }),
+        });
+
+        return { success: true, expiresAt };
+      }),
+
+    // Revoke admin session
+    lock: protectedProcedure.mutation(async ({ ctx }) => {
+      await db.revokeAdminSession(ctx.user.id);
+      return { success: true };
+    }),
+  }),
+
+  // AI chat
+  ai: router({
+    chat: protectedProcedure
+      .input(z.object({
+        messages: z.array(z.object({
+          role: z.enum(['system', 'user', 'assistant']),
+          content: z.string(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const userMessage = input.messages[input.messages.length - 1]?.content.toLowerCase().trim();
+        
+        // Check for admin unlock command
+        if (userMessage === 'show admin') {
+          // Check if user has admin role
+          if (ctx.user.role !== 'admin') {
+            return {
+              role: 'assistant' as const,
+              content: 'You do not have admin privileges.',
+            };
+          }
+          
+          // Check current session
+          const session = await db.getAdminSession(ctx.user.id);
+          if (session && session.expiresAt > new Date()) {
+            return {
+              role: 'assistant' as const,
+              content: `Admin mode is already unlocked. Session expires at ${session.expiresAt.toLocaleString()}.`,
+            };
+          }
+          
+          // Return password challenge
+          return {
+            role: 'assistant' as const,
+            content: '🔐 **Admin Mode**\n\nPlease enter the admin password to unlock admin features.',
+            metadata: { adminChallenge: true },
+          };
+        }
+        
+        // Normal AI chat processing
+        const response = await invokeLLM({
+          messages: input.messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        });
+        
+        return {
+          role: 'assistant' as const,
+          content: response.choices[0]?.message?.content || 'No response',
+        };
+      }),
+  }),
+
+  // Billing and subscription management
+  billing: router({
+    getPricing: publicProcedure.query(() => {
+      // Return disabled state if billing is disabled
+      if (!ENV.enableStripe) {
+        return {
+          enabled: false,
+          message: 'Billing is disabled',
+          monthly: null,
+          yearly: null,
+        };
+      }
+      
+      return {
+        enabled: true,
+        monthly: {
+          amount: STRIPE_PRICING.monthly.amount,
+          currency: STRIPE_PRICING.monthly.currency,
+          interval: STRIPE_PRICING.monthly.interval,
+        },
+        yearly: {
+          amount: STRIPE_PRICING.yearly.amount,
+          currency: STRIPE_PRICING.yearly.currency,
+          interval: STRIPE_PRICING.yearly.interval,
+        },
+      };
+    }),
+
+    createCheckout: protectedProcedure
+      .input(z.object({
+        plan: z.enum(['monthly', 'yearly']),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if billing is enabled
+        if (!ENV.enableStripe) {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: 'Billing is disabled'
+          });
+        }
+        
+        const user = await db.getUserById(ctx.user.id);
+        if (!user) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+        }
+
+        const priceId = input.plan === 'monthly' 
+          ? STRIPE_PRICING.monthly.priceId 
+          : STRIPE_PRICING.yearly.priceId;
+
+        if (!priceId) {
+          throw new TRPCError({ 
+            code: 'INTERNAL_SERVER_ERROR', 
+            message: 'Stripe price ID not configured' 
+          });
+        }
+
+        const protocol = ctx.req.protocol || 'https';
+        const host = ctx.req.headers.host || 'equiprofile.online';
+        const baseUrl = `${protocol}://${host}`;
+
+        const session = await createCheckoutSession(
+          user.id,
+          user.email || '',
+          priceId,
+          `${baseUrl}/dashboard?success=true`,
+          `${baseUrl}/pricing?cancelled=true`,
+          user.stripeCustomerId || undefined
+        );
+
+        if (!session) {
+          throw new TRPCError({ 
+            code: 'INTERNAL_SERVER_ERROR', 
+            message: 'Failed to create checkout session' 
+          });
+        }
+
+        return { url: session.url };
+      }),
+
+    createPortal: protectedProcedure.mutation(async ({ ctx }) => {
+      // Check if billing is enabled
+      if (!ENV.enableStripe) {
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: 'Billing is disabled'
+        });
+      }
+      
+      const user = await db.getUserById(ctx.user.id);
+      if (!user || !user.stripeCustomerId) {
+        throw new TRPCError({ 
+          code: 'BAD_REQUEST', 
+          message: 'No active subscription found' 
+        });
+      }
+
+      const protocol = ctx.req.protocol || 'https';
+      const host = ctx.req.headers.host || 'equiprofile.online';
+      const baseUrl = `${protocol}://${host}`;
+
+      const portalUrl = await createPortalSession(
+        user.stripeCustomerId,
+        `${baseUrl}/dashboard`
+      );
+
+      if (!portalUrl) {
+        throw new TRPCError({ 
+          code: 'INTERNAL_SERVER_ERROR', 
+          message: 'Failed to create portal session' 
+        });
+      }
+
+      return { url: portalUrl };
+    }),
+
+    getStatus: protectedProcedure.query(async ({ ctx }) => {
+      const user = await db.getUserById(ctx.user.id);
+      if (!user) return null;
+
+      return {
+        status: user.subscriptionStatus,
+        plan: user.subscriptionPlan,
+        trialEndsAt: user.trialEndsAt,
+        subscriptionEndsAt: user.subscriptionEndsAt,
+        lastPaymentAt: user.lastPaymentAt,
+        hasActiveSubscription: ['trial', 'active'].includes(user.subscriptionStatus),
+      };
+    }),
+  }),
+
   // User profile and subscription
   user: router({
     getProfile: protectedProcedure.query(async ({ ctx }) => {
@@ -73,7 +351,7 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         await db.updateUser(ctx.user.id, input);
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'profile_updated',
           entityType: 'user',
           entityId: ctx.user.id,
@@ -146,11 +424,11 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const id = await db.createHorse({
           ...input,
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           dateOfBirth: input.dateOfBirth ? new Date(input.dateOfBirth) : undefined,
         });
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'horse_created',
           entityType: 'horse',
           entityId: id,
@@ -184,7 +462,7 @@ export const appRouter = router({
           dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
         });
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'horse_updated',
           entityType: 'horse',
           entityId: id,
@@ -197,7 +475,7 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         await db.deleteHorse(input.id, ctx.user.id);
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'horse_deleted',
           entityType: 'horse',
           entityId: input.id,
@@ -246,12 +524,12 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const id = await db.createHealthRecord({
           ...input,
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           recordDate: new Date(input.recordDate),
           nextDueDate: input.nextDueDate ? new Date(input.nextDueDate) : undefined,
         });
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'health_record_created',
           entityType: 'health_record',
           entityId: id,
@@ -332,11 +610,11 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const id = await db.createTrainingSession({
           ...input,
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           sessionDate: new Date(input.sessionDate),
         });
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'training_session_created',
           entityType: 'training_session',
           entityId: id,
@@ -421,7 +699,7 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const id = await db.createFeedingPlan({
           ...input,
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
         });
         return { id };
       }),
@@ -476,13 +754,21 @@ export const appRouter = router({
         description: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        // Check if uploads are enabled
+        if (!ENV.enableUploads) {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: 'Uploads are disabled'
+          });
+        }
+        
         // Decode base64 and upload to S3
         const buffer = Buffer.from(input.fileData, 'base64');
         const fileKey = `${ctx.user.id}/documents/${nanoid()}-${input.fileName}`;
         const { url } = await storagePut(fileKey, buffer, input.fileType);
         
         const id = await db.createDocument({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           horseId: input.horseId,
           healthRecordId: input.healthRecordId,
           fileName: input.fileName,
@@ -495,7 +781,7 @@ export const appRouter = router({
         });
         
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'document_uploaded',
           entityType: 'document',
           entityId: id,
@@ -579,7 +865,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // Save weather log
         await db.createWeatherLog({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           location: input.location,
           temperature: input.temperature,
           humidity: input.humidity,
@@ -612,11 +898,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
   // Admin routes
   admin: router({
     // User management
-    getUsers: adminProcedure.query(async () => {
+    getUsers: adminUnlockedProcedure.query(async () => {
       return db.getAllUsers();
     }),
     
-    getUserDetails: adminProcedure
+    getUserDetails: adminUnlockedProcedure
       .input(z.object({ userId: z.number() }))
       .query(async ({ input }) => {
         const user = await db.getUserById(input.userId);
@@ -628,7 +914,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return { user, horses, activity };
       }),
     
-    suspendUser: adminProcedure
+    suspendUser: adminUnlockedProcedure
       .input(z.object({
         userId: z.number(),
         reason: z.string(),
@@ -636,7 +922,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ ctx, input }) => {
         await db.suspendUser(input.userId, input.reason);
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'user_suspended',
           entityType: 'user',
           entityId: input.userId,
@@ -645,12 +931,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return { success: true };
       }),
     
-    unsuspendUser: adminProcedure
+    unsuspendUser: adminUnlockedProcedure
       .input(z.object({ userId: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.unsuspendUser(input.userId);
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'user_unsuspended',
           entityType: 'user',
           entityId: input.userId,
@@ -658,12 +944,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return { success: true };
       }),
     
-    deleteUser: adminProcedure
+    deleteUser: adminUnlockedProcedure
       .input(z.object({ userId: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.deleteUser(input.userId);
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'user_deleted',
           entityType: 'user',
           entityId: input.userId,
@@ -671,7 +957,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return { success: true };
       }),
     
-    updateUserRole: adminProcedure
+    updateUserRole: adminUnlockedProcedure
       .input(z.object({
         userId: z.number(),
         role: z.enum(['user', 'admin']),
@@ -679,7 +965,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ ctx, input }) => {
         await db.updateUser(input.userId, { role: input.role });
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'user_role_updated',
           entityType: 'user',
           entityId: input.userId,
@@ -689,31 +975,31 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
     
     // System stats
-    getStats: adminProcedure.query(async () => {
+    getStats: adminUnlockedProcedure.query(async () => {
       return db.getSystemStats();
     }),
     
-    getOverdueUsers: adminProcedure.query(async () => {
+    getOverdueUsers: adminUnlockedProcedure.query(async () => {
       return db.getOverdueSubscriptions();
     }),
     
-    getExpiredTrials: adminProcedure.query(async () => {
+    getExpiredTrials: adminUnlockedProcedure.query(async () => {
       return db.getExpiredTrials();
     }),
     
     // Activity logs
-    getActivityLogs: adminProcedure
+    getActivityLogs: adminUnlockedProcedure
       .input(z.object({ limit: z.number().default(100) }))
       .query(async ({ input }) => {
         return db.getActivityLogs(input.limit);
       }),
     
     // System settings
-    getSettings: adminProcedure.query(async () => {
+    getSettings: adminUnlockedProcedure.query(async () => {
       return db.getAllSettings();
     }),
     
-    updateSetting: adminProcedure
+    updateSetting: adminUnlockedProcedure
       .input(z.object({
         key: z.string(),
         value: z.string(),
@@ -721,9 +1007,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         description: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        await db.upsertSetting(input.key, input.value, input.type, input.description, ctx.user.id);
+        await db.upsertSetting(input.key, input.value, input.type, input.description, ctx.user!.id);
         await db.logActivity({
-          userId: ctx.user.id,
+          userId: ctx.user!.id,
           action: 'setting_updated',
           entityType: 'setting',
           details: JSON.stringify({ key: input.key }),
@@ -732,10 +1018,807 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
     
     // Backup logs
-    getBackupLogs: adminProcedure
+    getBackupLogs: adminUnlockedProcedure
       .input(z.object({ limit: z.number().default(10) }))
       .query(async ({ input }) => {
         return db.getRecentBackups(input.limit);
+      }),
+    
+    // API Key Management
+    apiKeys: router({
+      list: adminUnlockedProcedure.query(async ({ ctx }) => {
+        return db.listApiKeys(ctx.user.id);
+      }),
+      
+      create: adminUnlockedProcedure
+        .input(z.object({
+          name: z.string().min(1).max(100),
+          rateLimit: z.number().min(1).max(10000).optional(),
+          permissions: z.array(z.string()).optional(),
+          expiresAt: z.string().optional(),
+        }))
+        .mutation(async ({ ctx, input }) => {
+          const result = await db.createApiKey({
+            userId: ctx.user!.id,
+            name: input.name,
+            rateLimit: input.rateLimit,
+            permissions: input.permissions,
+            expiresAt: input.expiresAt ? new Date(input.expiresAt) : undefined,
+          });
+          
+          await db.logActivity({
+            userId: ctx.user!.id,
+            action: 'api_key_created',
+            entityType: 'api_key',
+            entityId: result.id,
+            details: JSON.stringify({ name: input.name }),
+          });
+          
+          return result; // Contains { id, key }
+        }),
+      
+      revoke: adminUnlockedProcedure
+        .input(z.object({ id: z.number() }))
+        .mutation(async ({ ctx, input }) => {
+          await db.revokeApiKey(input.id, ctx.user.id);
+          await db.logActivity({
+            userId: ctx.user!.id,
+            action: 'api_key_revoked',
+            entityType: 'api_key',
+            entityId: input.id,
+          });
+          return { success: true };
+        }),
+      
+      rotate: adminUnlockedProcedure
+        .input(z.object({ id: z.number() }))
+        .mutation(async ({ ctx, input }) => {
+          const result = await db.rotateApiKey(input.id, ctx.user.id);
+          if (!result) {
+            throw new TRPCError({ code: 'NOT_FOUND', message: 'API key not found' });
+          }
+          
+          await db.logActivity({
+            userId: ctx.user!.id,
+            action: 'api_key_rotated',
+            entityType: 'api_key',
+            entityId: input.id,
+          });
+          
+          return result; // Contains { key }
+        }),
+      
+      updateSettings: adminUnlockedProcedure
+        .input(z.object({
+          id: z.number(),
+          name: z.string().optional(),
+          rateLimit: z.number().optional(),
+          permissions: z.array(z.string()).optional(),
+          isActive: z.boolean().optional(),
+        }))
+        .mutation(async ({ ctx, input }) => {
+          const { id, ...data } = input;
+          await db.updateApiKeySettings(id, ctx.user.id, data);
+          await db.logActivity({
+            userId: ctx.user!.id,
+            action: 'api_key_updated',
+            entityType: 'api_key',
+            entityId: id,
+          });
+          return { success: true };
+        }),
+    }),
+    
+    // Environment Health Check
+    getEnvHealth: adminUnlockedProcedure.query(() => {
+      const checks = [
+        // Core required vars (always critical)
+        { name: 'DATABASE_URL', status: !!process.env.DATABASE_URL, critical: true, conditional: false },
+        { name: 'JWT_SECRET', status: !!process.env.JWT_SECRET, critical: true, conditional: false },
+        { name: 'ADMIN_UNLOCK_PASSWORD', status: !!process.env.ADMIN_UNLOCK_PASSWORD, critical: true, conditional: false },
+        
+        // Stripe vars (critical only if ENABLE_STRIPE=true)
+        { name: 'STRIPE_SECRET_KEY', status: !!process.env.STRIPE_SECRET_KEY, critical: ENV.enableStripe, conditional: true, requiredWhen: 'ENABLE_STRIPE=true' },
+        { name: 'STRIPE_WEBHOOK_SECRET', status: !!process.env.STRIPE_WEBHOOK_SECRET, critical: ENV.enableStripe, conditional: true, requiredWhen: 'ENABLE_STRIPE=true' },
+        
+        // Upload/Storage vars (critical only if ENABLE_UPLOADS=true)
+        { name: 'BUILT_IN_FORGE_API_URL', status: !!process.env.BUILT_IN_FORGE_API_URL, critical: ENV.enableUploads, conditional: true, requiredWhen: 'ENABLE_UPLOADS=true' },
+        { name: 'BUILT_IN_FORGE_API_KEY', status: !!process.env.BUILT_IN_FORGE_API_KEY, critical: ENV.enableUploads, conditional: true, requiredWhen: 'ENABLE_UPLOADS=true' },
+        
+        // Legacy AWS vars (optional - kept for backward compatibility)
+        { name: 'AWS_ACCESS_KEY_ID', status: !!process.env.AWS_ACCESS_KEY_ID, critical: false, conditional: false },
+        { name: 'AWS_SECRET_ACCESS_KEY', status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: false, conditional: false },
+        { name: 'AWS_S3_BUCKET', status: !!process.env.AWS_S3_BUCKET, critical: false, conditional: false },
+        
+        // Optional features
+        { name: 'OPENAI_API_KEY', status: !!process.env.OPENAI_API_KEY, critical: false, conditional: false },
+        { name: 'SMTP_HOST', status: !!process.env.SMTP_HOST, critical: false, conditional: false },
+      ];
+      
+      const allCriticalOk = checks.filter(c => c.critical).every(c => c.status);
+      
+      return {
+        healthy: allCriticalOk,
+        checks,
+        featureFlags: {
+          enableStripe: ENV.enableStripe,
+          enableUploads: ENV.enableUploads,
+        },
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date().toISOString(),
+      };
+    }),
+  }),
+
+  // Stable management
+  stables: router({
+    create: subscribedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(200),
+        description: z.string().optional(),
+        location: z.string().optional(),
+        logo: z.string().optional(),
+        primaryColor: z.string().optional(),
+        secondaryColor: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
+        
+        const result = await db.insert(stables).values({
+          ...input,
+          ownerId: ctx.user.id,
+        });
+        
+        // Add creator as owner member
+        await db.insert(stableMembers).values({
+          stableId: result[0].insertId,
+          userId: ctx.user!.id,
+          role: 'owner',
+        });
+        
+        return { id: result[0].insertId };
+      }),
+
+    list: protectedProcedure.query(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) return [];
+      
+      // Get stables where user is a member
+      const members = await db.select()
+        .from(stableMembers)
+        .where(eq(stableMembers.userId, ctx.user.id));
+      
+      if (members.length === 0) return [];
+      
+      const stableIds = members.map(m => m.stableId);
+      return db.select()
+        .from(stables)
+        .where(and(
+          sql`id IN (${stableIds.join(',')})`,
+          eq(stables.isActive, true)
+        ));
+    }),
+
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        
+        // Check if user is a member
+        const member = await db.select()
+          .from(stableMembers)
+          .where(and(
+            eq(stableMembers.stableId, input.id),
+            eq(stableMembers.userId, ctx.user.id)
+          ))
+          .limit(1);
+        
+        if (member.length === 0) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Access denied' });
+        }
+        
+        const stable = await db.select()
+          .from(stables)
+          .where(eq(stables.id, input.id))
+          .limit(1);
+        
+        return stable[0] || null;
+      }),
+
+    update: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        description: z.string().optional(),
+        location: z.string().optional(),
+        logo: z.string().optional(),
+        primaryColor: z.string().optional(),
+        secondaryColor: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        // Check if user is owner or admin
+        const member = await db.select()
+          .from(stableMembers)
+          .where(and(
+            eq(stableMembers.stableId, input.id),
+            eq(stableMembers.userId, ctx.user.id)
+          ))
+          .limit(1);
+        
+        if (member.length === 0 || !['owner', 'admin'].includes(member[0].role)) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+        
+        const { id, ...updateData } = input;
+        await db.update(stables)
+          .set({ ...updateData, updatedAt: new Date() })
+          .where(eq(stables.id, id));
+        
+        return { success: true };
+      }),
+
+    inviteMember: subscribedProcedure
+      .input(z.object({
+        stableId: z.number(),
+        email: z.string().email(),
+        role: z.enum(['admin', 'trainer', 'member', 'viewer']),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        // Check permissions
+        const member = await db.select()
+          .from(stableMembers)
+          .where(and(
+            eq(stableMembers.stableId, input.stableId),
+            eq(stableMembers.userId, ctx.user.id)
+          ))
+          .limit(1);
+        
+        if (member.length === 0 || !['owner', 'admin'].includes(member[0].role)) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+        
+        const token = nanoid(32);
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
+        
+        await db.insert(stableInvites).values({
+          stableId: input.stableId,
+          invitedByUserId: ctx.user.id,
+          email: input.email,
+          role: input.role,
+          token,
+          expiresAt,
+        });
+        
+        return { token, expiresAt };
+      }),
+
+    getMembers: protectedProcedure
+      .input(z.object({ stableId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        // Verify user is a member
+        const isMember = await db.select()
+          .from(stableMembers)
+          .where(and(
+            eq(stableMembers.stableId, input.stableId),
+            eq(stableMembers.userId, ctx.user.id)
+          ))
+          .limit(1);
+        
+        if (isMember.length === 0) {
+          throw new TRPCError({ code: 'FORBIDDEN' });
+        }
+        
+        return db.select()
+          .from(stableMembers)
+          .where(and(
+            eq(stableMembers.stableId, input.stableId),
+            eq(stableMembers.isActive, true)
+          ));
+      }),
+  }),
+
+  // Messages
+  messages: router({
+    getThreads: protectedProcedure
+      .input(z.object({ stableId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        return db.select()
+          .from(messageThreads)
+          .where(and(
+            eq(messageThreads.stableId, input.stableId),
+            eq(messageThreads.isActive, true)
+          ))
+          .orderBy(desc(messageThreads.updatedAt));
+      }),
+
+    getMessages: protectedProcedure
+      .input(z.object({ 
+        threadId: z.number(),
+        limit: z.number().default(50),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        return db.select()
+          .from(messages)
+          .where(eq(messages.threadId, input.threadId))
+          .orderBy(desc(messages.createdAt))
+          .limit(input.limit);
+      }),
+
+    sendMessage: protectedProcedure
+      .input(z.object({
+        threadId: z.number(),
+        content: z.string().min(1),
+        attachments: z.array(z.string()).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const result = await db.insert(messages).values({
+          threadId: input.threadId,
+          senderId: ctx.user.id,
+          content: input.content,
+          attachments: input.attachments ? JSON.stringify(input.attachments) : null,
+        });
+        
+        return { id: result[0].insertId };
+      }),
+
+    createThread: protectedProcedure
+      .input(z.object({
+        stableId: z.number(),
+        title: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const result = await db.insert(messageThreads).values({
+          stableId: input.stableId,
+          title: input.title,
+        });
+        
+        return { id: result[0].insertId };
+      }),
+  }),
+
+  // Analytics
+  analytics: router({
+    getTrainingStats: protectedProcedure
+      .input(z.object({
+        horseId: z.number().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        
+        let query = db.select({
+          totalSessions: sql<number>`COUNT(*)`,
+          completedSessions: sql<number>`SUM(CASE WHEN isCompleted = 1 THEN 1 ELSE 0 END)`,
+          totalDuration: sql<number>`SUM(duration)`,
+          avgPerformance: sql<number>`AVG(CASE 
+            WHEN performance = 'excellent' THEN 4
+            WHEN performance = 'good' THEN 3
+            WHEN performance = 'average' THEN 2
+            WHEN performance = 'poor' THEN 1
+            ELSE 0 END)`,
+        }).from(trainingSessions)
+        .where(eq(trainingSessions.userId, ctx.user.id));
+        
+        if (input.horseId) {
+          query = query.where(eq(trainingSessions.horseId, input.horseId));
+        }
+        
+        const result = await query;
+        return result[0] || null;
+      }),
+
+    getHealthStats: protectedProcedure
+      .input(z.object({
+        horseId: z.number().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        
+        const result = await db.select({
+          totalRecords: sql<number>`COUNT(*)`,
+          upcomingReminders: sql<number>`SUM(CASE WHEN nextDueDate >= CURDATE() THEN 1 ELSE 0 END)`,
+          overdueReminders: sql<number>`SUM(CASE WHEN nextDueDate < CURDATE() THEN 1 ELSE 0 END)`,
+        }).from(healthRecords)
+        .where(eq(healthRecords.userId, ctx.user.id));
+        
+        return result[0] || null;
+      }),
+
+    getCostAnalysis: protectedProcedure
+      .input(z.object({
+        horseId: z.number().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        
+        const feedCostsResult = await db.select({
+          totalCost: sql<number>`SUM(costPerUnit)`,
+        }).from(feedCosts)
+        .where(eq(feedCosts.userId, ctx.user.id));
+        
+        const healthCostsResult = await db.select({
+          totalCost: sql<number>`SUM(cost)`,
+        }).from(healthRecords)
+        .where(eq(healthRecords.userId, ctx.user.id));
+        
+        return {
+          feedCosts: feedCostsResult[0]?.totalCost || 0,
+          healthCosts: healthCostsResult[0]?.totalCost || 0,
+          totalCosts: (feedCostsResult[0]?.totalCost || 0) + (healthCostsResult[0]?.totalCost || 0),
+        };
+      }),
+  }),
+
+  // Reports
+  reports: router({
+    generate: subscribedProcedure
+      .input(z.object({
+        reportType: z.enum(['monthly_summary', 'health_report', 'training_progress', 'cost_analysis', 'competition_summary']),
+        horseId: z.number().optional(),
+        stableId: z.number().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        // Generate report data based on type
+        let reportData = {};
+        
+        const result = await db.insert(reports).values({
+          userId: ctx.user!.id,
+          stableId: input.stableId,
+          horseId: input.horseId,
+          reportType: input.reportType,
+          title: `${input.reportType.replace('_', ' ')} Report`,
+          reportData: JSON.stringify(reportData),
+        });
+        
+        return { id: result[0].insertId };
+      }),
+
+    list: protectedProcedure
+      .input(z.object({
+        limit: z.number().default(20),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        return db.select()
+          .from(reports)
+          .where(eq(reports.userId, ctx.user.id))
+          .orderBy(desc(reports.generatedAt))
+          .limit(input.limit);
+      }),
+
+    scheduleReport: subscribedProcedure
+      .input(z.object({
+        reportType: z.enum(['monthly_summary', 'health_report', 'training_progress', 'cost_analysis', 'competition_summary']),
+        frequency: z.enum(['daily', 'weekly', 'monthly', 'quarterly']),
+        recipients: z.array(z.string().email()),
+        stableId: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const result = await db.insert(reportSchedules).values({
+          userId: ctx.user!.id,
+          stableId: input.stableId,
+          reportType: input.reportType,
+          frequency: input.frequency,
+          recipients: JSON.stringify(input.recipients),
+          nextRunAt: new Date(),
+        });
+        
+        return { id: result[0].insertId };
+      }),
+  }),
+
+  // Calendar and Events
+  calendar: router({
+    getEvents: protectedProcedure
+      .input(z.object({
+        startDate: z.string(),
+        endDate: z.string(),
+        stableId: z.number().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        return db.select()
+          .from(events)
+          .where(and(
+            eq(events.userId, ctx.user.id),
+            gte(events.startDate, new Date(input.startDate)),
+            lte(events.startDate, new Date(input.endDate))
+          ))
+          .orderBy(events.startDate);
+      }),
+
+    createEvent: subscribedProcedure
+      .input(z.object({
+        title: z.string().min(1).max(200),
+        description: z.string().optional(),
+        eventType: z.enum(['training', 'competition', 'veterinary', 'farrier', 'lesson', 'meeting', 'other']),
+        startDate: z.string(),
+        endDate: z.string().optional(),
+        horseId: z.number().optional(),
+        stableId: z.number().optional(),
+        location: z.string().optional(),
+        isAllDay: z.boolean().default(false),
+        color: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const result = await db.insert(events).values({
+          ...input,
+          userId: ctx.user!.id,
+          startDate: new Date(input.startDate),
+          endDate: input.endDate ? new Date(input.endDate) : null,
+        });
+        
+        return { id: result[0].insertId };
+      }),
+
+    updateEvent: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        isCompleted: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const { id, ...updateData } = input;
+        await db.update(events)
+          .set({ 
+            ...updateData,
+            startDate: updateData.startDate ? new Date(updateData.startDate) : undefined,
+            endDate: updateData.endDate ? new Date(updateData.endDate) : undefined,
+            updatedAt: new Date(),
+          })
+          .where(and(
+            eq(events.id, id),
+            eq(events.userId, ctx.user.id)
+          ));
+        
+        return { success: true };
+      }),
+
+    deleteEvent: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        await db.delete(events)
+          .where(and(
+            eq(events.id, input.id),
+            eq(events.userId, ctx.user.id)
+          ));
+        
+        return { success: true };
+      }),
+  }),
+
+  // Competition Management
+  competitions: router({
+    create: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        competitionName: z.string().min(1).max(200),
+        venue: z.string().optional(),
+        date: z.string(),
+        discipline: z.string().optional(),
+        level: z.string().optional(),
+        class: z.string().optional(),
+        placement: z.string().optional(),
+        score: z.string().optional(),
+        notes: z.string().optional(),
+        cost: z.number().optional(),
+        winnings: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const result = await db.insert(competitions).values({
+          ...input,
+          userId: ctx.user!.id,
+          date: new Date(input.date),
+        });
+        
+        return { id: result[0].insertId };
+      }),
+
+    list: protectedProcedure
+      .input(z.object({
+        horseId: z.number().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        if (input.horseId) {
+          return db.getCompetitionsByHorseId(input.horseId, ctx.user.id);
+        }
+        return db.getCompetitionsByUserId(ctx.user.id);
+      }),
+  }),
+
+  // Training Program Templates
+  trainingPrograms: router({
+    listTemplates: protectedProcedure.query(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) return [];
+      
+      return db.select()
+        .from(trainingProgramTemplates)
+        .where(or(
+          eq(trainingProgramTemplates.userId, ctx.user.id),
+          eq(trainingProgramTemplates.isPublic, true)
+        ))
+        .orderBy(desc(trainingProgramTemplates.createdAt));
+    }),
+
+    createTemplate: subscribedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(200),
+        description: z.string().optional(),
+        duration: z.number().optional(),
+        discipline: z.string().optional(),
+        level: z.string().optional(),
+        goals: z.string().optional(),
+        programData: z.string(),
+        isPublic: z.boolean().default(false),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const result = await db.insert(trainingProgramTemplates).values({
+          ...input,
+          userId: ctx.user!.id,
+        });
+        
+        return { id: result[0].insertId };
+      }),
+
+    applyTemplate: subscribedProcedure
+      .input(z.object({
+        templateId: z.number(),
+        horseId: z.number(),
+        startDate: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        // Get template
+        const template = await db.select()
+          .from(trainingProgramTemplates)
+          .where(eq(trainingProgramTemplates.id, input.templateId))
+          .limit(1);
+        
+        if (template.length === 0) {
+          throw new TRPCError({ code: 'NOT_FOUND' });
+        }
+        
+        // Create program instance
+        const result = await db.insert(trainingPrograms).values({
+          horseId: input.horseId,
+          userId: ctx.user!.id,
+          templateId: input.templateId,
+          name: template[0].name,
+          startDate: new Date(input.startDate),
+          programData: template[0].programData,
+        });
+        
+        return { id: result[0].insertId };
+      }),
+  }),
+
+  // Breeding Management
+  breeding: router({
+    createRecord: subscribedProcedure
+      .input(z.object({
+        mareId: z.number(),
+        stallionId: z.number().optional(),
+        stallionName: z.string().optional(),
+        breedingDate: z.string(),
+        method: z.enum(['natural', 'artificial', 'embryo_transfer']),
+        veterinarianName: z.string().optional(),
+        cost: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const result = await db.insert(breeding).values({
+          ...input,
+          breedingDate: new Date(input.breedingDate),
+        });
+        
+        return { id: result[0].insertId };
+      }),
+
+    list: protectedProcedure
+      .input(z.object({
+        mareId: z.number().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        let query = db.select().from(breeding);
+        
+        if (input.mareId) {
+          query = query.where(eq(breeding.mareId, input.mareId));
+        }
+        
+        return query.orderBy(desc(breeding.breedingDate));
+      }),
+
+    addFoal: subscribedProcedure
+      .input(z.object({
+        breedingId: z.number(),
+        birthDate: z.string(),
+        gender: z.enum(['colt', 'filly']),
+        name: z.string().optional(),
+        color: z.string().optional(),
+        birthWeight: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const result = await db.insert(foals).values({
+          ...input,
+          birthDate: new Date(input.birthDate),
+        });
+        
+        return { id: result[0].insertId };
       }),
   }),
 });

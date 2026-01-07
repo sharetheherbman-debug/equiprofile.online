@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { notifyOwner } from "./notification";
-import { adminProcedure, publicProcedure, router } from "./trpc";
+import { adminUnlockedProcedure, publicProcedure, router } from "./trpc";
+import { ENV } from "./env";
 
 export const systemRouter = router({
   health: publicProcedure
@@ -13,7 +14,12 @@ export const systemRouter = router({
       ok: true,
     })),
 
-  notifyOwner: adminProcedure
+  getFeatureFlags: publicProcedure.query(() => ({
+    enableStripe: ENV.enableStripe,
+    enableUploads: ENV.enableUploads,
+  })),
+
+  notifyOwner: adminUnlockedProcedure
     .input(
       z.object({
         title: z.string().min(1, "title is required"),

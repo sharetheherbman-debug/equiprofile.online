@@ -1,0 +1,158 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "horses": "Horses",
+    "health": "Health",
+    "training": "Training",
+    "feeding": "Feeding",
+    "documents": "Documents",
+    "calendar": "Calendar",
+    "stable": "Stable",
+    "messages": "Messages",
+    "analytics": "Analytics",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back!",
+    "quickActions": "Quick Actions",
+    "addHorse": "Add Horse",
+    "scheduleTraining": "Schedule Training",
+    "logHealth": "Log Health Record",
+    "activityFeed": "Activity Feed",
+    "upcomingEvents": "Upcoming Events",
+    "recentActivity": "Recent Activity",
+    "stats": {
+      "totalHorses": "Total Horses",
+      "trainingHours": "Training Hours",
+      "upcomingEvents": "Upcoming Events",
+      "healthReminders": "Health Reminders"
+    }
+  },
+  "horses": {
+    "title": "Horses",
+    "addHorse": "Add Horse",
+    "editHorse": "Edit Horse",
+    "deleteHorse": "Delete Horse",
+    "horseDetails": "Horse Details",
+    "noHorses": "No horses found",
+    "fields": {
+      "name": "Name",
+      "breed": "Breed",
+      "age": "Age",
+      "gender": "Gender",
+      "color": "Color",
+      "height": "Height",
+      "weight": "Weight",
+      "discipline": "Discipline",
+      "level": "Level",
+      "registration": "Registration Number",
+      "microchip": "Microchip Number"
+    }
+  },
+  "health": {
+    "title": "Health Records",
+    "addRecord": "Add Health Record",
+    "editRecord": "Edit Health Record",
+    "deleteRecord": "Delete Health Record",
+    "vaccinations": "Vaccinations",
+    "deworming": "Deworming",
+    "dental": "Dental",
+    "farrier": "Farrier",
+    "veterinary": "Veterinary",
+    "medicalPassport": "Medical Passport",
+    "nextDue": "Next Due",
+    "overdue": "Overdue"
+  },
+  "training": {
+    "title": "Training Sessions",
+    "addSession": "Add Training Session",
+    "editSession": "Edit Training Session",
+    "deleteSession": "Delete Training Session",
+    "trainingPrograms": "Training Programs",
+    "templates": "Templates",
+    "applyTemplate": "Apply Template",
+    "createTemplate": "Create Template",
+    "sessionType": {
+      "flatwork": "Flatwork",
+      "jumping": "Jumping",
+      "hacking": "Hacking",
+      "lunging": "Lunging",
+      "groundwork": "Groundwork",
+      "competition": "Competition",
+      "lesson": "Lesson"
+    }
+  },
+  "stable": {
+    "title": "Stable",
+    "createStable": "Create Stable",
+    "editStable": "Edit Stable",
+    "inviteMembers": "Invite Members",
+    "members": "Members",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "trainer": "Trainer",
+      "member": "Member",
+      "viewer": "Viewer"
+    },
+    "settings": "Stable Settings",
+    "activityFeed": "Stable Activity",
+    "calendar": "Stable Calendar"
+  },
+  "messages": {
+    "title": "Messages",
+    "newMessage": "New Message",
+    "noMessages": "No messages yet",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "unread": "Unread"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "trainingAnalytics": "Training Analytics",
+    "healthAnalytics": "Health Analytics",
+    "performanceMetrics": "Performance Metrics",
+    "costAnalysis": "Cost Analysis",
+    "comparisonView": "Comparison View",
+    "customReports": "Custom Reports"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "account": "Account",
+    "notifications": "Notifications",
+    "language": "Language",
+    "theme": "Theme",
+    "subscription": "Subscription",
+    "apiKeys": "API Keys"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signUp": "Sign Up",
+    "welcomeBack": "Welcome back!",
+    "continueWith": "Continue with"
+  }
+}

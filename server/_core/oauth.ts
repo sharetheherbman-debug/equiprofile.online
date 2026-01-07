@@ -14,8 +14,31 @@ export function registerOAuthRoutes(app: Express) {
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
 
-    if (!code || !state) {
-      res.status(400).json({ error: "code and state are required" });
+    if (!code) {
+      console.error("[OAuth] Missing authorization code");
+      res.status(400).send(`
+        <html>
+          <body>
+            <h1>OAuth Error</h1>
+            <p>Missing authorization code. The OAuth callback requires a 'code' parameter.</p>
+            <p><a href="/">Return to home</a></p>
+          </body>
+        </html>
+      `);
+      return;
+    }
+
+    if (!state) {
+      console.error("[OAuth] Missing state parameter");
+      res.status(400).send(`
+        <html>
+          <body>
+            <h1>OAuth Error</h1>
+            <p>Missing state parameter. The OAuth callback requires a 'state' parameter for security.</p>
+            <p><a href="/">Return to home</a></p>
+          </body>
+        </html>
+      `);
       return;
     }
 
@@ -24,7 +47,16 @@ export function registerOAuthRoutes(app: Express) {
       const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
 
       if (!userInfo.openId) {
-        res.status(400).json({ error: "openId missing from user info" });
+        console.error("[OAuth] Missing openId in user info");
+        res.status(400).send(`
+          <html>
+            <body>
+              <h1>OAuth Error</h1>
+              <p>Unable to retrieve user identification from OAuth provider.</p>
+              <p><a href="/">Return to home</a></p>
+            </body>
+          </html>
+        `);
         return;
       }
 
@@ -47,7 +79,26 @@ export function registerOAuthRoutes(app: Express) {
       res.redirect(302, "/");
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
-      res.status(500).json({ error: "OAuth callback failed" });
+      // Escape HTML to prevent XSS
+      const escapeHtml = (str: string) => {
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      };
+      const errorMessage = error instanceof Error ? escapeHtml(error.message) : "Unknown error";
+      res.status(500).send(`
+        <html>
+          <body>
+            <h1>OAuth Authentication Failed</h1>
+            <p>Failed to complete OAuth authentication: ${errorMessage}</p>
+            <p>Please try logging in again or contact support if the problem persists.</p>
+            <p><a href="/">Return to home</a></p>
+          </body>
+        </html>
+      `);
     }
   });
 }
