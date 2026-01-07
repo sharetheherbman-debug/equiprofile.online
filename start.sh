@@ -61,10 +61,14 @@ info "pnpm version: $PNPM_VERSION"
 # Load environment variables
 if [ -f ".env" ]; then
   info "Loading environment from .env"
-  export $(grep -v '^#' .env | xargs)
+  set -a
+  source .env
+  set +a
 elif [ -f ".env.default" ]; then
   info "No .env found, using .env.default"
-  export $(grep -v '^#' .env.default | xargs)
+  set -a
+  source .env.default
+  set +a
   warn "Using default configuration. Create .env for production."
 else
   error "No .env or .env.default file found!"

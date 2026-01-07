@@ -6,6 +6,8 @@ services:
     container_name: equiprofile-db
     restart: unless-stopped
     environment:
+      # SECURITY WARNING: These are default credentials for development only.
+      # For production, use Docker secrets or override with secure values.
       MYSQL_ROOT_PASSWORD: equiprofile_root
       MYSQL_DATABASE: equiprofile
       MYSQL_USER: equiprofile

@@ -81,13 +81,13 @@ DB_USER="${DB_USER:-equiprofile}"
 # Parse DATABASE_URL if available
 if [ -n "$DATABASE_URL" ]; then
   # Extract credentials from DATABASE_URL
-  # Format: mysql://user:password@host:port/database
-  if [[ "$DATABASE_URL" =~ mysql://([^:]+):([^@]+)@([^:]+):([0-9]+)/(.+) ]]; then
+  # Format: mysql://user:password@host:port/database or mysql://user:password@host/database
+  if [[ "$DATABASE_URL" =~ mysql://([^:]+):([^@]+)@([^:/?]+)(:([0-9]+))?/(.+) ]]; then
     DB_USER="${BASH_REMATCH[1]}"
     DB_PASSWORD="${BASH_REMATCH[2]}"
     DB_HOST="${BASH_REMATCH[3]}"
-    DB_PORT="${BASH_REMATCH[4]}"
-    DB_NAME="${BASH_REMATCH[5]}"
+    DB_PORT="${BASH_REMATCH[5]:-3306}"  # Default to 3306 if not specified
+    DB_NAME="${BASH_REMATCH[6]}"
     info "Parsed DATABASE_URL: $DB_USER@$DB_HOST:$DB_PORT/$DB_NAME"
   fi
 fi
