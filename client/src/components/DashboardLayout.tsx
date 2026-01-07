@@ -242,8 +242,6 @@ function DashboardLayoutContent({
                   </SidebarMenuItem>
                 );
               })}
-              {/* Admin menu items - shown to admin users when toggle is active */}
-              {user?.role === 'admin' && isAdminVisible && (
               {/* Admin menu items - shown to admin users who have unlocked admin mode */}
               {user?.role === 'admin' && adminStatus?.isUnlocked && (
                 <>

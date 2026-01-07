@@ -32,7 +32,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    # Environment file configuration with fallback support
+    # Docker Compose loads .env.default first for default values,
+    # then .env overrides any duplicate keys for custom configuration
     env_file:
+      - .env.default
       - .env
     environment:
       # Override DATABASE_URL to use Docker service name

@@ -131,17 +131,6 @@ if [ ! -f "$APP_DIR/.env" ]; then
   warn "   Required: DATABASE_URL, JWT_SECRET, ADMIN_UNLOCK_PASSWORD"
   warn "   Optional: OAUTH_SERVER_URL, STRIPE keys, etc."
   echo ""
-  
-  # Check if running interactively
-  if [ -t 0 ]; then
-    echo "Do you want to edit .env now? (y/n)"
-    read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-      ${EDITOR:-nano} "$APP_DIR/.env"
-    fi
-  else
-    warn "Running non-interactively, skipping .env editor prompt"
-  fi
 else
   success ".env file already exists"
 fi
@@ -198,26 +187,15 @@ if [ ! -f /etc/nginx/sites-available/equiprofile ]; then
     DOMAIN=$(grep "^BASE_URL=" "$APP_DIR/.env" | cut -d'=' -f2 | sed 's|https\?://||' | sed 's|/.*||' | tr -d '"' | tr -d "'")
   fi
   
-  # Check if running interactively and BASE_URL not set
-  if [ -z "$DOMAIN" ] && [ -t 0 ]; then
-    echo ""
-    warn "⚠️  IMPORTANT: Update /etc/nginx/sites-available/equiprofile"
-    warn "   Replace DOMAIN_NAME with your actual domain"
-    echo ""
-    echo "Enter your domain name (e.g., equiprofile.online) or press Enter for localhost:"
-    read -r domain
-    DOMAIN="${domain:-localhost}"
-  elif [ -z "$DOMAIN" ]; then
-    # Non-interactive and no BASE_URL, default to localhost
+  # If no BASE_URL set, default to localhost
+  if [ -z "$DOMAIN" ]; then
     DOMAIN="localhost"
-    warn "Running non-interactively without BASE_URL, using 'localhost'"
+    warn "BASE_URL not found in .env, using 'localhost' as domain"
   fi
   
   if [ -n "$DOMAIN" ]; then
     sed -i "s/DOMAIN_NAME/$DOMAIN/g" /etc/nginx/sites-available/equiprofile
     success "Domain name updated to: $DOMAIN"
-  else
-    warn "No domain provided, you'll need to edit manually"
   fi
   
   # Enable site

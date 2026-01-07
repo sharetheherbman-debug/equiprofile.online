@@ -329,9 +329,18 @@ This starts:
 
 Access at `http://localhost:3000`
 
+**Environment Variables:**
+- Docker Compose uses a layered approach for environment configuration:
+  1. First, it loads defaults from `.env.default` (development-ready values)
+  2. Then, it overlays values from `.env` (if it exists)
+  3. Finally, `environment` section in `docker-compose.yml` can override specific values
+- This means you can run `docker-compose up` immediately without creating a `.env` file
+- To customize, copy `.env.default` to `.env` and modify as needed
+
 **Customization:**
 - Copy `.env.default` to `.env` and modify as needed
-- Docker Compose will use your `.env` file automatically
+- Values in `.env` override those in `.env.default`
+- Docker Compose will automatically load both files
 
 ### Option 3: Production Deployment (Ubuntu VPS)
 

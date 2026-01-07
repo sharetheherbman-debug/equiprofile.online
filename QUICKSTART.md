@@ -77,6 +77,82 @@ pnpm format     # Format code with Prettier
 pnpm db:push    # Run database migrations
 ```
 
+## Service Worker Cache Management
+
+EquiProfile uses a service worker to cache static assets for better performance and offline functionality. Understanding how it works can help you debug caching issues.
+
+### How It Works
+
+The service worker automatically:
+- Caches hashed static assets (JavaScript, CSS, fonts) with a cache-first strategy
+- Uses network-first for HTML and API requests to ensure fresh content
+- Updates its cache version on every build to force cache refresh
+
+### Automated Version Control
+
+The cache version is automatically synced with your `package.json` version during builds:
+
+```bash
+# The build process runs:
+# 1. npm run build:sw  - Updates CACHE_VERSION in service-worker.js
+# 2. vite build         - Builds the frontend
+# 3. esbuild            - Builds the backend
+```
+
+This means when you deploy a new version:
+1. The service worker version changes automatically
+2. Browsers detect the new version
+3. Old caches are cleared
+4. Fresh assets are downloaded
+
+### Force Refresh Cache
+
+If you see stale content after deployment, you can manually clear the service worker:
+
+**In Chrome/Edge:**
+1. Open DevTools (F12)
+2. Go to Application tab → Service Workers
+3. Click "Unregister" next to the service worker
+4. Hard refresh the page (Ctrl+Shift+R or Cmd+Shift+R)
+
+**In Firefox:**
+1. Open DevTools (F12)
+2. Go to Application tab → Service Workers
+3. Click "Unregister"
+4. Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)
+
+**Universal Method:**
+```javascript
+// In browser console:
+navigator.serviceWorker.getRegistrations().then(registrations => {
+  registrations.forEach(registration => registration.unregister());
+}).then(() => location.reload(true));
+```
+
+### Troubleshooting Stale Content
+
+**Problem:** "I deployed a new version but users see old content"
+
+**Solution:**
+1. Verify the build ran successfully and `CACHE_VERSION` was updated
+2. Check `client/public/service-worker.js` - the version should match `package.json`
+3. Users may need to close all tabs and reopen to activate the new service worker
+4. For immediate update, users can hard refresh (Ctrl+Shift+R)
+
+**Problem:** "Development changes aren't showing up"
+
+**Solution:**
+- Use `pnpm dev` which bypasses service worker caching
+- Or disable service worker in DevTools during development
+- In DevTools: Application → Service Workers → Check "Bypass for network"
+
+### Best Practices
+
+- Always bump the version in `package.json` before production deployments
+- Run `pnpm build` to ensure the service worker version is updated
+- Test deployments in incognito/private browsing to see fresh cache behavior
+- Document version changes in your deployment notes
+
 ## Project Structure
 
 ```
