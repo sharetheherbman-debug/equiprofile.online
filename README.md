@@ -2,7 +2,8 @@
 
 ![EquiProfile](https://img.shields.io/badge/status-production-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Node](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen)
+![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
 
 > **A comprehensive, modern web application for equestrian professionals to manage horses' health records, training schedules, feeding plans, and more.**
 
@@ -11,6 +12,7 @@
 ## 📖 Table of Contents
 
 - [Quick Start](#-quick-start)
+- [Production Installation (Ubuntu 24)](#-production-installation-ubuntu-24) ⭐ NEW
 - [Features](#-features)
 - [Installation](#-installation)
 - [Configuration](#-configuration)
@@ -48,6 +50,43 @@ pnpm dev
 The application will be available at `http://localhost:3000`
 
 > **Note**: The default configuration uses SQLite for easy local development. For production, configure MySQL in your `.env` file.
+
+---
+
+## 🚢 Production Installation (Ubuntu 24)
+
+### One-Command Deployment
+
+For fresh Ubuntu 24.04 VPS servers, we provide a complete automated deployment system:
+
+```bash
+# 1. Clone repository
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online/deployment/ubuntu24
+
+# 2. Run installation
+sudo bash install.sh
+```
+
+The installer will:
+- ✅ Install Node.js LTS, pnpm, and nginx
+- ✅ Create system user and directories
+- ✅ Build and configure the application
+- ✅ Install systemd service
+- ✅ Configure nginx reverse proxy
+- ✅ Verify installation with health checks
+
+**Complete guide**: See [deployment/ubuntu24/README.md](deployment/ubuntu24/README.md)
+
+### What's New in v2.0
+
+- **Zero-config optional features**: OAuth, Stripe, and uploads are now optional
+- **PWA control**: Service worker can be disabled via environment variable
+- **Health endpoints**: `/healthz` and `/build` for monitoring
+- **Production scripts**: Runtime verification and native module rebuilding
+- **Enhanced security**: Validates secrets in production
+
+For detailed changes, see [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
