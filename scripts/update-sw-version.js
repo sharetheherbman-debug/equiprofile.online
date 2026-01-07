@@ -37,12 +37,12 @@ try {
   
   // Replace the CACHE_VERSION constant
   // Match: const CACHE_VERSION = 'any version string';
-  const versionRegex = /const CACHE_VERSION = ['"][\d.]+['"];/;
+  const versionRegex = /const CACHE_VERSION = ['"][^'"]+['"];/;
   const newVersionLine = `const CACHE_VERSION = '${version}';`;
   
   if (!versionRegex.test(serviceWorkerContent)) {
     console.error('❌ Error: Could not find CACHE_VERSION constant in service-worker.js');
-    console.error('   Expected format: const CACHE_VERSION = \'x.x.x\';');
+    console.error('   Expected format: const CACHE_VERSION = "version"; where version matches your package.json version');
     process.exit(1);
   }
   
