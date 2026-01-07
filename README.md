@@ -41,9 +41,13 @@ cd Equiprofile.online
 pnpm install
 
 # 3. Copy environment configuration
-cp .env.default .env
+cp .env.example .env
 
-# 4. Start development server
+# 4. Edit .env file with your configuration
+# CRITICAL: Change JWT_SECRET and ADMIN_UNLOCK_PASSWORD!
+nano .env
+
+# 5. Start development server
 pnpm dev
 ```
 
@@ -53,40 +57,71 @@ The application will be available at `http://localhost:3000`
 
 ---
 
-## 🚢 Production Installation (Ubuntu 24)
+## 🚢 Fresh Install on Webdock / Ubuntu VPS
 
-### One-Command Deployment
+For production deployment on Ubuntu 22.04+ (Webdock, DigitalOcean, AWS, etc.):
 
-For fresh Ubuntu 24.04 VPS servers, we provide a complete automated deployment system:
+### Prerequisites
+
+- Ubuntu 22.04 LTS or 24.04 LTS
+- Node.js 20+
+- pnpm
+- nginx
+- MySQL 8.0+
+- Domain name pointed to your server
+
+### Installation Steps
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-cd Equiprofile.online/deployment/ubuntu24
+# 1. Clone repository to deployment directory
+sudo mkdir -p /var/www/equiprofile
+sudo chown -R www-data:www-data /var/www/equiprofile
+cd /var/www
+sudo -u www-data git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git equiprofile
+cd equiprofile
 
-# 2. Run installation
-sudo bash install.sh
+# 2. Copy and configure environment
+sudo -u www-data cp .env.example .env
+sudo nano .env
+
+# 3. Run one-command deployment
+sudo bash deployment/deploy.sh
+
+# 4. Configure domain in Nginx config
+sudo nano deployment/nginx-equiprofile.conf
+# Replace YOUR_DOMAIN_HERE with your actual domain
+
+# 5. Install Nginx configuration
+sudo cp deployment/nginx-equiprofile.conf /etc/nginx/sites-available/equiprofile
+sudo ln -s /etc/nginx/sites-available/equiprofile /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+
+# 6. Setup SSL with Certbot
+sudo certbot --nginx -d yourdomain.com
+
+# 7. Verify installation
+curl https://yourdomain.com/healthz
 ```
 
-The installer will:
-- ✅ Install Node.js LTS, pnpm, and nginx
-- ✅ Create system user and directories
-- ✅ Build and configure the application
-- ✅ Install systemd service
-- ✅ Configure nginx reverse proxy
-- ✅ Verify installation with health checks
+**Complete guide**: See [deployment/README_DEPLOY_WEBDOCK.md](deployment/README_DEPLOY_WEBDOCK.md)
 
-**Complete guide**: See [deployment/ubuntu24/README.md](deployment/ubuntu24/README.md)
+### Critical Environment Variables
 
-### What's New in v2.0
+```env
+# Database (MySQL for production)
+DATABASE_URL=mysql://equiprofile:password@localhost:3306/equiprofile
 
-- **Zero-config optional features**: OAuth, Stripe, and uploads are now optional
-- **PWA control**: Service worker can be disabled via environment variable
-- **Health endpoints**: `/healthz` and `/build` for monitoring
-- **Production scripts**: Runtime verification and native module rebuilding
-- **Enhanced security**: Validates secrets in production
+# Security - MUST CHANGE IN PRODUCTION!
+JWT_SECRET=<generate with: openssl rand -base64 32>
+ADMIN_UNLOCK_PASSWORD=<your_secure_admin_password>
 
-For detailed changes, see [CHANGELOG.md](CHANGELOG.md)
+# Application
+NODE_ENV=production
+PORT=3000
+BASE_URL=https://yourdomain.com
+```
+
+> **🔒 SECURITY WARNING**: The application will **refuse to start** in production if `JWT_SECRET` or `ADMIN_UNLOCK_PASSWORD` are still set to default values!
 
 ---
 
