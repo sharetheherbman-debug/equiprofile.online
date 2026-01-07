@@ -4,7 +4,52 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Node](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen)
 
-A comprehensive, modern web application for equestrian professionals to manage their horses' health records, training schedules, feeding plans, and more.
+> **A comprehensive, modern web application for equestrian professionals to manage horses' health records, training schedules, feeding plans, and more.**
+
+---
+
+## 📖 Table of Contents
+
+- [Quick Start](#-quick-start)
+- [Features](#-features)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Deployment](#-deployment)
+- [Offline/Air-Gapped Deployment](#-offlineair-gapped-deployment)
+- [Updating Visuals](#-updating-visuals-post-deployment)
+- [Security](#-security)
+- [API Documentation](#-api-documentation)
+- [Development](#-development)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
+## 🚀 Quick Start
+
+Get EquiProfile running in 5 minutes:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+
+# 2. Install dependencies
+pnpm install
+
+# 3. Copy environment configuration
+cp .env.default .env
+
+# 4. Start development server
+pnpm dev
+```
+
+The application will be available at `http://localhost:3000`
+
+> **Note**: The default configuration uses SQLite for easy local development. For production, configure MySQL in your `.env` file.
+
+---
 
 ## 🌟 Features
 
@@ -14,7 +59,7 @@ A comprehensive, modern web application for equestrian professionals to manage t
 - **Training Scheduler** - Plan and log training sessions with progress tracking
 - **Feeding Plans** - Manage feeding schedules and nutrition information
 - **AI Weather Analysis** - Get intelligent riding recommendations based on weather
-- **Document Storage** - Secure cloud storage for important documents
+- **Document Storage** - Secure storage for important documents
 - **Subscription Management** - 7-day free trial, flexible monthly/yearly plans
 
 ### Admin Features
@@ -24,107 +69,791 @@ A comprehensive, modern web application for equestrian professionals to manage t
 - **Activity Logs** - Track all system activities
 - **Automated Backups** - Daily database and file backups
 
-## 🚀 Quick Start
+### Technical Features
+- **Progressive Web App (PWA)** - Install on any device, works offline
+- **Real-time Updates** - Live notifications and updates
+- **Multi-language Support** - i18n ready (English, Spanish, more coming)
+- **Responsive Design** - Works on desktop, tablet, and mobile
+- **Dark Mode** - Easy on the eyes, automatic or manual toggle
+- **Accessibility** - WCAG 2.1 AA compliant
+
+---
+
+## 💻 Installation
 
 ### Prerequisites
 
-- **Node.js** 22.x or higher
-- **pnpm** 10.x or higher
-- **MySQL** 8.0 or higher
-- **AWS S3** account (for file storage)
-- **OpenAI API key** (for weather analysis)
+- **Node.js** 22.x or higher ([Download](https://nodejs.org/))
+- **pnpm** 10.x or higher (`npm install -g pnpm`)
+- **Database** (choose one):
+  - SQLite (default, no setup required)
+  - MySQL 8.0+ (recommended for production)
+- **Optional Services**:
+  - AWS S3 or compatible storage (for file uploads)
+  - OpenAI API key (for AI weather analysis)
+  - Stripe account (for billing features)
 
-### Installation
+### Standard Installation
 
 1. **Clone the repository**
-```bash
-git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-cd Equiprofile.online
-```
+   ```bash
+   git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+   cd Equiprofile.online
+   ```
 
 2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Configure environment** (see [Configuration](#-configuration))
+   ```bash
+   cp .env.default .env
+   nano .env  # Edit with your settings
+   ```
+
+4. **Setup database** (if using MySQL)
+   ```bash
+   # Create database
+   mysql -u root -p -e "CREATE DATABASE equiprofile CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+   
+   # Run migrations
+   pnpm db:push
+   ```
+
+5. **Build the application**
+   ```bash
+   pnpm build
+   ```
+
+6. **Start the server**
+   ```bash
+   pnpm start
+   ```
+
+### Docker Installation
+
 ```bash
-pnpm install
+# Using Docker Compose
+docker-compose up -d
+
+# Or using Docker directly
+docker build -t equiprofile .
+docker run -p 3000:3000 --env-file .env equiprofile
 ```
 
-3. **Configure environment variables**
+---
 
-Create a `.env` file in the root directory:
+## ⚙️ Configuration
+
+### Environment Variables
+
+All configuration is done through environment variables in the `.env` file. Start with `.env.default` and customize for your needs.
+
+#### Core Configuration (Required)
 
 ```env
-# Database Configuration
-DATABASE_URL=mysql://username:password@localhost:3306/equiprofile
+# Database Connection
+# SQLite (development): sqlite:./data/equiprofile.db
+# MySQL (production): mysql://username:password@host:port/database
+DATABASE_URL=sqlite:./data/equiprofile.db
 
-# Application Settings
-NODE_ENV=development
+# JWT Secret for token signing (CRITICAL - CHANGE IN PRODUCTION!)
+# Generate with: openssl rand -base64 32
+JWT_SECRET=your_secure_jwt_secret_here_min_32_chars
+
+# Admin Unlock Password (CRITICAL - CHANGE IN PRODUCTION!)
+# Used to unlock admin panel features
+ADMIN_UNLOCK_PASSWORD=your_secure_admin_password
+
+# Application Environment
+NODE_ENV=production
 PORT=3000
+BASE_URL=https://yourdomain.com
+```
 
-# Authentication
-JWT_SECRET=your_secure_jwt_secret_here
+> **🔒 SECURITY WARNING**: The application will **refuse to start** in production if `JWT_SECRET` or `ADMIN_UNLOCK_PASSWORD` are still set to default values!
 
-# Stripe Payment Integration
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+#### Feature Flags (Optional)
 
-# OpenAI for Weather Analysis
-OPENAI_API_KEY=sk-...
+```env
+# Enable/disable optional features
+ENABLE_STRIPE=false        # Set to 'true' to enable billing
+ENABLE_UPLOADS=false       # Set to 'true' to enable file uploads
+```
 
-# AWS S3 Storage
+#### Stripe Configuration (if ENABLE_STRIPE=true)
+
+```env
+STRIPE_SECRET_KEY=sk_live_xxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
+STRIPE_MONTHLY_PRICE_ID=price_xxxxx
+STRIPE_YEARLY_PRICE_ID=price_xxxxx
+```
+
+#### Upload/Storage Configuration (if ENABLE_UPLOADS=true)
+
+```env
+# Built-in Forge Storage API
+BUILT_IN_FORGE_API_URL=https://your-forge-api.com
+BUILT_IN_FORGE_API_KEY=your_forge_api_key
+
+# OR AWS S3 (legacy)
 AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
 AWS_REGION=us-east-1
 AWS_S3_BUCKET=equiprofile-uploads
-
-# Admin Configuration (optional)
-ADMIN_EMAIL=admin@equiprofile.online
 ```
 
-4. **Setup the database**
-```bash
-# Create MySQL database
-mysql -u root -p -e "CREATE DATABASE equiprofile;"
+#### OAuth Configuration (Optional)
 
-# Run migrations
-pnpm db:push
+```env
+# OAuth Server URL (leave empty to disable OAuth)
+OAUTH_SERVER_URL=https://oauth.example.com
+
+# OAuth Application ID
+VITE_APP_ID=your_app_id
+
+# Owner OpenID (gets automatic admin access)
+OWNER_OPEN_ID=user_openid_here
 ```
 
-5. **Start development server**
-```bash
-pnpm dev
+#### Additional Optional Features
+
+```env
+# OpenAI for AI features
+OPENAI_API_KEY=sk-xxxxx
+
+# Email Configuration (SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+SMTP_FROM=noreply@equiprofile.online
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000        # 15 minutes
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Cookie Security
+COOKIE_DOMAIN=.equiprofile.online
+COOKIE_SECURE=true
 ```
 
-The application will be available at `http://localhost:3000`
+---
 
-## 📦 Build & Deploy
+## 🚀 Deployment
 
-### Build for Production
+### Quick Deployment (Bundled Dependencies)
+
+The recommended approach bundles all dependencies into the production build, eliminating the need for `node_modules` in production:
 
 ```bash
-# Build frontend and backend
+# Build the application (dependencies are bundled)
 pnpm build
 
-# Start production server
+# Copy dist/ to your server
+scp -r dist/ user@server:/var/www/equiprofile/
+
+# Copy .env file
+scp .env user@server:/var/www/equiprofile/
+
+# On the server, start the application
+cd /var/www/equiprofile
+NODE_ENV=production node dist/index.js
+```
+
+> **✅ Advantage**: No need to run `pnpm install` on the server!
+
+### Alternative: External Dependencies
+
+If you prefer keeping dependencies external (uses less disk space but requires `node_modules`):
+
+1. Build with external packages:
+   ```bash
+   # Temporarily edit package.json build script to add --packages=external
+   pnpm build
+   ```
+
+2. On server:
+   ```bash
+   pnpm install --prod --frozen-lockfile
+   NODE_ENV=production node dist/index.js
+   ```
+
+### Production Server Setup (VPS/Cloud)
+
+#### 1. Prerequisites
+
+```bash
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install Node.js 22.x
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install pnpm
+npm install -g pnpm
+
+# Install MySQL (if using)
+sudo apt install -y mysql-server
+sudo mysql_secure_installation
+```
+
+#### 2. Setup Application
+
+```bash
+# Create application directory
+sudo mkdir -p /var/www/equiprofile
+sudo chown -R $USER:$USER /var/www/equiprofile
+
+# Deploy application files
+cd /var/www/equiprofile
+# Transfer dist/ and .env files here
+
+# Create data directory (for SQLite or uploads)
+mkdir -p data
+```
+
+#### 3. Process Management (PM2)
+
+```bash
+# Install PM2
+npm install -g pm2
+
+# Start application
+pm2 start dist/index.js --name equiprofile
+
+# Enable startup script
+pm2 startup
+pm2 save
+
+# Monitor application
+pm2 status
+pm2 logs equiprofile
+```
+
+#### 4. Nginx Configuration
+
+Create `/etc/nginx/sites-available/equiprofile`:
+
+```nginx
+server {
+    listen 80;
+    server_name equiprofile.online www.equiprofile.online;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # Serve static files from dist/public
+    location /assets/ {
+        alias /var/www/equiprofile/dist/public/assets/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+Enable and test:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/equiprofile /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+#### 5. SSL Certificate (Let's Encrypt)
+
+```bash
+# Install Certbot
+sudo apt install -y certbot python3-certbot-nginx
+
+# Obtain certificate
+sudo certbot --nginx -d equiprofile.online -d www.equiprofile.online
+
+# Auto-renewal is configured automatically
+sudo certbot renew --dry-run
+```
+
+---
+
+## 📦 Offline/Air-Gapped Deployment
+
+For environments without internet access (air-gapped, secure networks, etc.):
+
+### Method 1: Bundled Dependencies (Recommended)
+
+The default build bundles all dependencies, making offline deployment simple:
+
+```bash
+# On a machine with internet:
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+pnpm install
+pnpm build
+
+# Create deployment package
+tar -czf equiprofile-offline.tar.gz dist/ .env.default
+
+# Transfer to air-gapped server
+scp equiprofile-offline.tar.gz user@secure-server:/tmp/
+
+# On the air-gapped server:
+cd /var/www/equiprofile
+tar -xzf /tmp/equiprofile-offline.tar.gz
+cp .env.default .env
+nano .env  # Configure for your environment
+
+# Start (no npm/pnpm needed!)
+NODE_ENV=production node dist/index.js
+```
+
+### Method 2: Pack Dependencies
+
+If you need to use the external dependencies approach:
+
+```bash
+# On machine with internet:
+pnpm install --frozen-lockfile
+pnpm build
+
+# Create offline bundle with node_modules
+tar -czf equiprofile-full.tar.gz dist/ node_modules/ package.json pnpm-lock.yaml .env.default
+
+# Transfer and extract on air-gapped server
+# No pnpm install needed - node_modules included!
+```
+
+### Method 3: Internal NPM Registry
+
+For organizations with internal npm registries:
+
+```bash
+# Configure .npmrc on air-gapped server
+registry=https://internal-registry.company.com/
+
+# Then deploy normally
+pnpm install --frozen-lockfile
+pnpm build
 pnpm start
 ```
 
-### Run Tests
+### Offline Deployment Checklist
+
+- [ ] Build application with dependencies bundled
+- [ ] Package `dist/` directory
+- [ ] Include `.env.default` as template
+- [ ] Transfer to secure server
+- [ ] Configure `.env` with production values
+- [ ] Verify database is accessible
+- [ ] Start application
+- [ ] Test all features work
+
+---
+
+## 🎨 Updating Visuals Post-Deployment
+
+You can update your EquiProfile deployment's visual appearance without rebuilding the application!
+
+### Quick Visual Updates
+
+#### 1. Update Colors and Styles
+
+Edit `/var/www/equiprofile/dist/public/theme-override.css`:
 
 ```bash
-# Run all tests
-pnpm test
+nano /var/www/equiprofile/dist/public/theme-override.css
+```
 
-# Run tests in watch mode
-pnpm test:watch
+Example customizations:
 
-# Type checking
+```css
+:root {
+  /* Change primary brand color */
+  --primary: 220 90% 56%;           /* Blue theme */
+  --primary-foreground: 0 0% 100%;
+  
+  /* Or use your brand colors */
+  --primary: 142 71% 45%;           /* Green theme */
+}
+
+/* Custom button style */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Custom header */
+header {
+  background: #1a202c;
+}
+```
+
+**Changes take effect immediately** - just reload the page!
+
+#### 2. Update Branding Configuration
+
+Edit `/var/www/equiprofile/dist/public/visual-config.json`:
+
+```bash
+nano /var/www/equiprofile/dist/public/visual-config.json
+```
+
+Example configuration:
+
+```json
+{
+  "branding": {
+    "siteName": "MyEquineApp",
+    "tagline": "Professional Horse Care",
+    "description": "Your custom description"
+  },
+  
+  "colors": {
+    "primary": "#2563eb",
+    "secondary": "#7c3aed"
+  },
+  
+  "logos": {
+    "header": "/images/my-logo.png",
+    "footer": "/images/my-logo-white.png"
+  },
+  
+  "hero": {
+    "title": "Your Custom Title",
+    "subtitle": "Your custom subtitle",
+    "backgroundGradient": "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)"
+  }
+}
+```
+
+**Changes take effect on page reload** - no rebuild needed!
+
+#### 3. Replace Images and Logos
+
+Simply replace files in `/var/www/equiprofile/dist/public/images/`:
+
+```bash
+# Upload your custom logo
+scp my-logo.png user@server:/var/www/equiprofile/dist/public/images/logo.png
+
+# Upload custom hero background
+scp hero-bg.jpg user@server:/var/www/equiprofile/dist/public/images/hero-bg.jpg
+```
+
+### Advanced Visual Customization
+
+#### Custom Fonts
+
+Add to `theme-override.css`:
+
+```css
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+:root {
+  --font-sans: 'Poppins', sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+```
+
+#### Custom Components
+
+Override specific component styles:
+
+```css
+/* Customize cards */
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Customize navigation */
+nav {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Customize buttons */
+button.primary {
+  background: #667eea;
+  border-radius: 8px;
+  padding: 12px 24px;
+}
+```
+
+### Visual Update Workflow
+
+```bash
+# 1. Edit theme or config files
+nano /var/www/equiprofile/dist/public/theme-override.css
+nano /var/www/equiprofile/dist/public/visual-config.json
+
+# 2. No restart needed! Just refresh browser
+# Changes are visible immediately
+
+# 3. Test in browser
+# Open https://yourdomain.com and verify changes
+
+# 4. Backup your customizations
+cp dist/public/theme-override.css backups/theme-override-$(date +%Y%m%d).css
+cp dist/public/visual-config.json backups/visual-config-$(date +%Y%m%d).json
+```
+
+---
+
+## 🔒 Security
+
+### Security Best Practices
+
+#### Critical Security Requirements
+
+1. **Change Default Secrets** ⚠️
+   
+   The application **will not start** in production with default secrets:
+   
+   ```bash
+   # Generate secure JWT secret
+   openssl rand -base64 32
+   
+   # Use a strong admin password (min 12 characters)
+   # Include uppercase, lowercase, numbers, and symbols
+   ```
+
+2. **Use HTTPS in Production** ⚠️
+   
+   Always use SSL/TLS encryption:
+   
+   ```bash
+   # Get free SSL certificate from Let's Encrypt
+   sudo certbot --nginx -d yourdomain.com
+   ```
+
+3. **Keep Dependencies Updated**
+   
+   ```bash
+   # Check for updates
+   pnpm outdated
+   
+   # Update dependencies
+   pnpm update
+   
+   # Audit for vulnerabilities
+   pnpm audit
+   ```
+
+4. **Configure Firewall**
+   
+   ```bash
+   # Allow only necessary ports
+   sudo ufw allow 22    # SSH
+   sudo ufw allow 80    # HTTP
+   sudo ufw allow 443   # HTTPS
+   sudo ufw enable
+   ```
+
+### Authentication & Authorization
+
+- **Email/Password Authentication** - bcrypt hashing with salting
+- **OAuth 2.0 Support** - Optional integration with external providers
+- **Session-based Authentication** - HTTP-only cookies
+- **Role-Based Access Control** - User and Admin roles
+- **Admin Panel** - Protected by unlock password
+
+### Data Protection
+
+- **Encryption in Transit** - TLS 1.2+ required
+- **Encryption at Rest** - Database supports encryption
+- **Input Validation** - All inputs validated with Zod schemas
+- **SQL Injection Prevention** - Drizzle ORM with parameterized queries
+- **XSS Protection** - React's built-in escaping
+- **CSRF Protection** - Automatic token validation
+
+### Rate Limiting
+
+- **Public endpoints**: 100 requests per 15 minutes
+- **Authenticated endpoints**: 1000 requests per 15 minutes
+- **File uploads**: 50 requests per hour
+- **AI endpoints**: 20 requests per hour
+
+### Security Headers
+
+Recommended Nginx configuration:
+
+```nginx
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" always;
+```
+
+### Reporting Security Vulnerabilities
+
+If you discover a security vulnerability:
+
+1. **DO NOT** open a public GitHub issue
+2. Email: security@equiprofile.online
+3. Include:
+   - Description of vulnerability
+   - Steps to reproduce
+   - Potential impact
+   - Suggested fix (if any)
+
+We will respond within 48 hours.
+
+### Security Checklist for Production
+
+- [ ] Changed `JWT_SECRET` from default
+- [ ] Changed `ADMIN_UNLOCK_PASSWORD` from default
+- [ ] HTTPS enabled with valid SSL certificate
+- [ ] Database using encrypted connections
+- [ ] Firewall configured (ports 80, 443, 22 only)
+- [ ] Security headers configured in Nginx
+- [ ] Rate limiting enabled
+- [ ] Error monitoring configured
+- [ ] Backup system tested
+- [ ] Dependencies updated to latest secure versions
+- [ ] Fail2ban configured for SSH protection
+- [ ] Regular security updates scheduled
+
+---
+
+## 📚 API Documentation
+
+### API Overview
+
+EquiProfile uses tRPC for type-safe API communication.
+
+**Base URL**: 
+- Development: `http://localhost:3000/api/trpc`
+- Production: `https://yourdomain.com/api/trpc`
+
+**Authentication**: Session-based with HTTP-only cookies
+
+### Key API Routers
+
+#### System Router (`system.*`)
+
+- `system.status` - Get system health status
+
+#### Auth Router (`auth.*`)
+
+- `auth.me` - Get current authenticated user
+- `auth.logout` - Logout current user
+- `auth.register` - Register new user (email/password)
+- `auth.login` - Login with email/password
+
+#### User Router (`user.*`)
+
+- `user.getProfile` - Get user profile
+- `user.updateProfile` - Update user profile
+- `user.getSubscriptionStatus` - Get subscription details
+- `user.getDashboardStats` - Get dashboard statistics
+
+#### Horses Router (`horses.*`)
+
+- `horses.list` - List all user's horses
+- `horses.get` - Get specific horse details
+- `horses.create` - Create new horse profile
+- `horses.update` - Update horse profile
+- `horses.delete` - Delete horse profile
+
+#### Health Router (`health.*`)
+
+- `health.list` - List health records for a horse
+- `health.create` - Create health record
+- `health.update` - Update health record
+- `health.delete` - Delete health record
+
+#### Training Router (`training.*`)
+
+- `training.list` - List training sessions
+- `training.create` - Create training session
+- `training.update` - Update training session
+- `training.delete` - Delete training session
+
+#### Feeding Router (`feeding.*`)
+
+- `feeding.list` - List feeding plans
+- `feeding.create` - Create feeding plan
+- `feeding.update` - Update feeding plan
+- `feeding.delete` - Delete feeding plan
+
+#### Admin Router (`admin.*`) - Requires Admin Role
+
+- `admin.listUsers` - List all users
+- `admin.suspendUser` - Suspend user account
+- `admin.getSystemStats` - Get system statistics
+- `admin.getActivityLogs` - Get activity logs
+
+### Example API Usage
+
+```typescript
+// Using tRPC client
+import { trpc } from '@/lib/trpc';
+
+// Query example
+const { data: horses } = trpc.horses.list.useQuery();
+
+// Mutation example
+const createHorse = trpc.horses.create.useMutation({
+  onSuccess: () => {
+    console.log('Horse created successfully!');
+  }
+});
+
+createHorse.mutate({
+  name: 'Thunder',
+  breed: 'Thoroughbred',
+  age: 5,
+  discipline: 'Show Jumping'
+});
+```
+
+For complete API documentation, see the auto-generated TypeScript types in `shared/schema.ts`.
+
+---
+
+## 👨‍💻 Development
+
+### Development Setup
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server (with hot reload)
+pnpm dev
+
+# Run type checking
 pnpm check
 
 # Format code
 pnpm format
+
+# Run tests
+pnpm test
 ```
 
-## 🏗️ Project Structure
+### Project Structure
 
 ```
 Equiprofile.online/
@@ -132,3205 +861,362 @@ Equiprofile.online/
 │   ├── src/
 │   │   ├── components/    # Reusable UI components
 │   │   ├── pages/         # Page components
-│   │   ├── hooks/         # Custom React hooks
-│   │   ├── contexts/      # React contexts
-│   │   └── lib/           # Utility functions
-│   └── public/            # Static assets
+│   │   ├── lib/           # Utilities and helpers
+│   │   └── main.tsx       # Application entry point
+│   ├── public/            # Static assets
+│   └── index.html         # HTML template
+│
 ├── server/                # Backend Node.js application
-│   ├── _core/            # Core server functionality
-│   │   ├── trpc.ts       # tRPC setup
-│   │   ├── context.ts    # Request context
-│   │   ├── oauth.ts      # OAuth integration
-│   │   └── llm.ts        # AI/LLM integration
-│   ├── routers.ts        # API route definitions
-│   ├── db.ts             # Database queries
-│   └── storage.ts        # File storage operations
-├── drizzle/              # Database schema and migrations
-│   ├── schema.ts         # Database schema
-│   └── migrations/       # Migration files
-├── shared/               # Shared types and constants
-├── scripts/              # Utility scripts
-└── dist/                 # Production build output
+│   ├── _core/             # Core server setup
+│   │   ├── index.ts       # Server entry point
+│   │   └── env.ts         # Environment configuration
+│   ├── routers/           # tRPC API routers
+│   ├── services/          # Business logic services
+│   └── middleware/        # Authentication & validation
+│
+├── shared/                # Shared code (client & server)
+│   ├── schema.ts          # Zod validation schemas
+│   └── types.ts           # TypeScript types
+│
+├── drizzle/               # Database schema and migrations
+├── scripts/               # Build and deployment scripts
+├── dist/                  # Production build output
+└── package.json           # Dependencies and scripts
 ```
 
-## 🔧 API Documentation
+### Technology Stack
 
-### Authentication
+**Frontend**:
+- React 19 - UI framework
+- TypeScript - Type safety
+- Tailwind CSS - Styling
+- Wouter - Routing
+- tRPC - Type-safe API client
+- TanStack Query - Data fetching
 
-The application uses OAuth 2.0 for authentication. Supported providers:
-- Google
-- GitHub
-- Microsoft
+**Backend**:
+- Node.js - Runtime
+- Express - Web framework
+- tRPC - Type-safe API
+- Drizzle ORM - Database
+- Jose - JWT handling
+- bcrypt - Password hashing
 
-Session management is handled via secure HTTP-only cookies.
+**Database**:
+- SQLite (development)
+- MySQL (production)
 
-### API Endpoints
+**Build Tools**:
+- Vite - Frontend bundler
+- esbuild - Backend bundler
+- TypeScript - Compiler
 
-All API endpoints are exposed via tRPC. Key routers include:
-
-#### User Routes (`/api/trpc/user.*`)
-- `getProfile` - Get current user profile
-- `updateProfile` - Update user profile
-- `getSubscriptionStatus` - Get subscription details
-- `getDashboardStats` - Get dashboard statistics
-
-#### Horse Routes (`/api/trpc/horses.*`)
-- `list` - List all horses
-- `get` - Get horse by ID
-- `create` - Create new horse
-- `update` - Update horse details
-- `delete` - Delete horse
-
-#### Health Records (`/api/trpc/healthRecords.*`)
-- `listAll` - List all health records
-- `listByHorse` - List records for specific horse
-- `create` - Create health record
-- `update` - Update health record
-- `delete` - Delete health record
-- `getReminders` - Get upcoming reminders
-
-#### Training (`/api/trpc/training.*`)
-- `listAll` - List all training sessions
-- `listByHorse` - List sessions for specific horse
-- `getUpcoming` - Get upcoming sessions
-- `create` - Create training session
-- `update` - Update session
-- `complete` - Mark session as complete
-- `delete` - Delete session
-
-#### Admin Routes (`/api/trpc/admin.*`) - Requires admin role
-- `getUsers` - List all users
-- `getUserDetails` - Get detailed user info
-- `suspendUser` - Suspend user account
-- `unsuspendUser` - Unsuspend user account
-- `deleteUser` - Delete user account
-- `getStats` - Get system statistics
-- `getSettings` - Get system settings
-- `updateSetting` - Update system setting
-
-## 🔒 Security
-
-### Authentication & Authorization
-- OAuth 2.0 authentication
-- Role-based access control (user/admin)
-- Session-based authentication with HTTP-only cookies
-- JWT tokens for API access
-
-### Data Protection
-- All passwords are hashed using bcrypt
-- Sensitive data encrypted at rest
-- HTTPS enforced in production
-- CORS protection enabled
-- Rate limiting on API endpoints
-
-### Best Practices
-- Input validation using Zod schemas
-- SQL injection prevention via Drizzle ORM
-- XSS protection via React
-- CSRF protection on state-changing operations
-
-## 🌐 Deployment
-
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions for:
-- Webdock VPS deployment
-- Nginx configuration
-- SSL certificate setup
-- PM2 process management
-- Automated backups
-- Monitoring setup
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-For support, please contact:
-- Email: support@equiprofile.online
-- Documentation: [https://docs.equiprofile.online](https://docs.equiprofile.online)
-- Issues: [GitHub Issues](https://github.com/amarktainetwork-blip/Equiprofile.online/issues)
-
-## 🙏 Acknowledgments
-
-- Built with [React](https://react.dev/), [Express](https://expressjs.com/), and [tRPC](https://trpc.io/)
-- UI components from [shadcn/ui](https://ui.shadcn.com/)
-- Icons from [Lucide](https://lucide.dev/)
-- Database ORM by [Drizzle](https://orm.drizzle.team/)
-
----
-
-Made with ❤️ for equestrian professionals worldwide.
-# EquiProfile
-
-**Professional Equine Management Platform**
-
-EquiProfile is a comprehensive, cloud-based platform designed to centralize and streamline the management of horses, stables, and equestrian operations. Built for horse owners, trainers, stable managers, and veterinary professionals, EquiProfile combines intelligent automation, secure data management, and collaborative tools to support the modern equestrian industry.
-
----
-
-## 🚀 Quickstart
-
-EquiProfile now supports multiple deployment methods for maximum flexibility:
-
-### Option 1: Simple Start Script (Recommended for Quick Testing)
-
-The fastest way to get started with EquiProfile on any system:
+### Development Scripts
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-cd Equiprofile.online
+# Development
+pnpm dev                   # Start dev server with hot reload
 
-# 2. Run the start script (handles everything automatically)
-./start.sh
+# Building
+pnpm build                 # Build for production
+pnpm build:sw              # Update service worker version
+
+# Testing
+pnpm test                  # Run all tests
+pnpm test -- health        # Run specific test file
+
+# Code Quality
+pnpm check                 # TypeScript type checking
+pnpm format                # Format code with Prettier
+
+# Database
+pnpm db:push               # Push schema changes to database
 ```
 
-The start script will:
-- Check for Node.js 20+ (install if missing)
-- Install pnpm if needed
-- Load `.env.default` for local development defaults
-- Install dependencies
-- Build the application
-- Start the server on port 3000
+### Adding New Features
 
-**Default Configuration:**
-- Database: SQLite (file-based, no setup required)
-- JWT Secret: Pre-generated secure random string
-- Admin Password: `EquiProfile2026!Admin` (change for production!)
-- Port: 3000
-- Features: Stripe and Uploads disabled (minimal dependencies)
+1. **Create database schema** in `drizzle/schema.ts`
+2. **Create tRPC router** in `server/routers/`
+3. **Create frontend pages** in `client/src/pages/`
+4. **Add routes** to `client/src/App.tsx`
+5. **Write tests** in `server/*.test.ts`
 
-### Option 2: Docker Compose (Recommended for Development)
-
-Run EquiProfile with Docker for an isolated, reproducible environment:
+### Testing
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-cd Equiprofile.online
+# Run all tests
+pnpm test
 
-# 2. Start with Docker Compose
-docker-compose up
+# Run specific test file
+pnpm test -- horses.test.ts
+
+# Watch mode
+pnpm test --watch
 ```
 
-This starts:
-- MySQL 8.0 database (persisted in Docker volume)
-- EquiProfile application on port 3000
+Tests use Vitest and follow the pattern:
+- Unit tests for business logic
+- Integration tests for API endpoints
+- Mock external services
 
-Access at `http://localhost:3000`
+### Code Style
 
-**Environment Variables:**
-- Docker Compose uses a layered approach for environment configuration:
-  1. First, it loads defaults from `.env.default` (development-ready values)
-  2. Then, it overlays values from `.env` (if it exists)
-  3. Finally, `environment` section in `docker-compose.yml` can override specific values
-- This means you can run `docker-compose up` immediately without creating a `.env` file
-- To customize, copy `.env.default` to `.env` and modify as needed
-
-**Customization:**
-- Copy `.env.default` to `.env` and modify as needed
-- Values in `.env` override those in `.env.default`
-- Docker Compose will automatically load both files
-
-### Option 3: Production Deployment (Ubuntu VPS)
-
-Get EquiProfile running on a fresh Ubuntu VPS in under 10 minutes:
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-cd Equiprofile.online
-
-# 2. Run the installation script
-sudo ./deployment/install.sh
-
-# 3. Configure your environment
-sudo nano /var/equiprofile/app/.env
-# Edit DATABASE_URL, JWT_SECRET, ADMIN_UNLOCK_PASSWORD
-
-# 4. Restart the service
-sudo systemctl restart equiprofile
-
-# 5. Check health status
-cd /var/equiprofile/app/deployment && sudo bash doctor.sh
-```
-
-Your application will be running at `http://localhost:3000` and proxied through nginx (once configured).
-
-**For SSL/HTTPS:** Run `sudo certbot --nginx -d yourdomain.com` after configuring your domain.
-
----
-
-## 📋 Environment Variables
-
-EquiProfile supports automatic fallback to `.env.default` in development. For production, create a `.env` file with your configuration.
-
-**Development Defaults (`.env.default`):**
-- SQLite database (no external database required)
-- Random JWT secret pre-generated
-- Feature flags disabled (minimal setup)
-- Admin password: `EquiProfile2026!Admin`
-
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| **Core Configuration** | | | |
-| `DATABASE_URL` | ✅ Yes | `sqlite:./data/equiprofile.db` | Database connection. SQLite for dev, MySQL for production: `mysql://user:pass@host:3306/dbname` |
-| `JWT_SECRET` | ✅ Yes | Auto-generated | JWT signing secret (min 32 chars). Generate: `openssl rand -base64 32` |
-| `ADMIN_UNLOCK_PASSWORD` | ✅ Yes | `EquiProfile2026!Admin` | Admin unlock password. **MUST change in production!** |
-| `NODE_ENV` | ✅ Yes | `development` | Node environment: `development` or `production` |
-| `PORT` | No | `3000` | Server port |
-| `BASE_URL` | ✅ Yes (prod) | `http://localhost:3000` | Application base URL (e.g., `https://equiprofile.online`) |
-| **OAuth (Optional)** | | | |
-| `OAUTH_SERVER_URL` | No | - | OAuth provider URL. Leave empty to use email/password auth only |
-| `VITE_APP_ID` | No | - | OAuth application ID (required if OAUTH_SERVER_URL is set) |
-| `OWNER_OPEN_ID` | No | - | Owner's OpenID for automatic admin access |
-| **Feature Flags** | | | |
-| `ENABLE_STRIPE` | No | `false` | Enable Stripe billing: `true` or `false` |
-| `ENABLE_UPLOADS` | No | `false` | Enable document uploads: `true` or `false` |
-| **Stripe (Required if ENABLE_STRIPE=true)** | | | |
-| `STRIPE_SECRET_KEY` | Conditional | - | Stripe secret key (`sk_live_` or `sk_test_`) |
-| `STRIPE_WEBHOOK_SECRET` | Conditional | - | Stripe webhook secret (`whsec_`) |
-| `STRIPE_PUBLISHABLE_KEY` | No | - | Stripe publishable key |
-| `STRIPE_MONTHLY_PRICE_ID` | No | - | Monthly subscription price ID |
-| `STRIPE_YEARLY_PRICE_ID` | No | - | Yearly subscription price ID |
-| **Uploads (Required if ENABLE_UPLOADS=true)** | | | |
-| `BUILT_IN_FORGE_API_URL` | Conditional | - | Forge API endpoint URL |
-| `BUILT_IN_FORGE_API_KEY` | Conditional | - | Forge API authentication key |
-| **Security & Proxy** | | | |
-| `RATE_LIMIT_WINDOW_MS` | No | `900000` | Rate limit window (15 min) |
-| `RATE_LIMIT_MAX_REQUESTS` | No | `100` | Max requests per window per IP |
-| `COOKIE_DOMAIN` | No | - | Cookie domain (e.g., `equiprofile.online`) |
-| `COOKIE_SECURE` | No | `false` | Enable secure cookies (set `true` for HTTPS) |
-| **Optional Features** | | | |
-| `OPENAI_API_KEY` | No | - | OpenAI API key for AI features |
-| `SMTP_HOST` | No | - | SMTP server for email notifications |
-| `SMTP_PORT` | No | `587` | SMTP port |
-| `SMTP_USER` | No | - | SMTP username |
-| `SMTP_PASSWORD` | No | - | SMTP password |
-
-**Important Notes:**
-- Application will **fail to start** if required variables are missing
-- In production, app will **refuse to start** if `ADMIN_UNLOCK_PASSWORD` is set to default value
-- `JWT_SECRET` must be at least 32 characters in production
-- Stripe and Upload features are **optional** - app works without them
-
----
-
-## 🚢 Deployment
-
-### Prerequisites
-
-- Ubuntu 20.04 or 24.04 LTS
-- Root or sudo access
-- 2GB+ RAM recommended
-- MySQL/MariaDB database
-
-### Fresh Installation
-
-The installation script handles all dependencies, builds, and configuration:
-
-```bash
-sudo ./deployment/install.sh
-```
-
-**What it does:**
-1. Installs Node.js 20.x, nginx, MySQL, certbot
-2. Installs pnpm package manager
-3. Creates `/var/equiprofile/app` directory
-4. Clones repository and installs dependencies
-5. Builds frontend and backend
-6. Sets up systemd service
-7. Configures nginx reverse proxy
-8. Runs health checks
-
-### Updating to Latest Version
-
-To safely update an existing installation:
-
-```bash
-cd /var/equiprofile/app/deployment
-sudo ./update.sh
-```
-
-**What it does:**
-1. Creates automatic backup
-2. Pulls latest code from repository
-3. Installs/updates dependencies
-4. Rebuilds application
-5. Restarts services safely
-6. Runs health checks
-7. Rolls back on failure
-
-### Health Monitoring
-
-Run comprehensive health checks anytime:
-
-```bash
-cd /var/equiprofile/app/deployment
-sudo bash doctor.sh
-```
-
-**Checks performed:**
-- ✅ Port 3000 availability
-- ✅ Nginx configuration validity
-- ✅ Systemd service status
-- ✅ Environment variable validation
-- ✅ Health endpoint response
-- ✅ Static assets existence
-- ✅ Database connectivity
-- ✅ Trust proxy configuration
-
-### Environment Validation
-
-Check your environment configuration (with secrets redacted):
-
-```bash
-cd /var/equiprofile/app/deployment
-sudo bash env-check.sh
-```
-
-### Managing the Service
-
-```bash
-# Start service
-sudo systemctl start equiprofile
-
-# Stop service
-sudo systemctl stop equiprofile
-
-# Restart service
-sudo systemctl restart equiprofile
-
-# Check status
-sudo systemctl status equiprofile
-
-# View logs (follow mode)
-sudo journalctl -u equiprofile -f
-
-# View last 100 lines
-sudo journalctl -u equiprofile -n 100
-```
-
-### Nginx Configuration
-
-The nginx configuration template is located at `deployment/nginx-webdock.conf`. Key features:
-
-- **Reverse proxy** to Node.js on port 3000
-- **Critical cache headers** to prevent service worker issues:
-  - `index.html` and `service-worker.js`: **NO CACHE**
-  - `/assets/*` (hashed): **1 year immutable cache**
-- **Trust proxy headers** for correct IP detection
-- **SSL/TLS ready** (commented out, enable after certbot)
-- **Security headers** included
-
-To update nginx config:
-
-```bash
-# Edit your config
-sudo nano /etc/nginx/sites-available/equiprofile
-
-# Test configuration
-sudo nginx -t
-
-# Reload if valid
-sudo systemctl reload nginx
-```
-
-### SSL Certificate Setup
-
-After configuring your domain in nginx:
-
-```bash
-# Install SSL certificate with Let's Encrypt
-sudo certbot --nginx -d yourdomain.com
-
-# Certificate auto-renewal is configured automatically
-# Test renewal:
-sudo certbot renew --dry-run
-```
+- **TypeScript**: Strict mode enabled
+- **Formatting**: Prettier with default config
+- **Linting**: ESLint for code quality
+- **Commits**: Conventional commits recommended
 
 ---
 
 ## 🔧 Troubleshooting
 
-### Service Won't Start
+### Common Issues and Solutions
 
-**Check logs:**
+#### Build Errors
+
+**Error: `Cannot find package 'drizzle-orm'`**
+
 ```bash
-sudo journalctl -u equiprofile -n 50
-```
-
-**Common issues:**
-- Missing environment variables → Check `/var/equiprofile/app/.env`
-- Database connection failed → Verify `DATABASE_URL` and MySQL is running
-- Port 3000 already in use → Check with `sudo lsof -i :3000`
-- Build artifacts missing → Run `cd /var/equiprofile/app && pnpm run build`
-
-**Validation:**
-```bash
-cd /var/equiprofile/app/deployment
-sudo bash env-check.sh
-```
-
-### Nginx Reverse Proxy Issues
-
-**Symptoms:**
-- 502 Bad Gateway
-- Connection refused errors
-- Rate limiting not working
-
-**Solutions:**
-
-1. **Verify backend is running:**
-   ```bash
-   curl http://localhost:3000/api/health
-   ```
-
-2. **Check nginx error log:**
-   ```bash
-   sudo tail -f /var/log/nginx/equiprofile-error.log
-   ```
-
-3. **Verify trust proxy headers:**
-   - Trust proxy MUST be set in Express app
-   - Check deployment/nginx-webdock.conf has X-Forwarded-* headers
-
-4. **Test nginx config:**
-   ```bash
-   sudo nginx -t
-   sudo systemctl reload nginx
-   ```
-
-### Service Worker Stuck on Old Version
-
-**Symptoms:**
-- Users see old UI after deployment
-- Changes don't appear without hard refresh
-- Console shows old version
-
-**Solutions:**
-
-1. **Force clear service worker:**
-   - Open DevTools → Application → Service Workers
-   - Click "Unregister"
-   - Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)
-
-2. **Update service worker version:**
-   - Edit `client/public/service-worker.js`
-   - Update `CACHE_VERSION` constant
-   - Rebuild and deploy
-
-3. **Check cache headers:**
-   ```bash
-   curl -I https://yourdomain.com/index.html
-   # Should show: Cache-Control: no-cache, no-store
-   
-   curl -I https://yourdomain.com/service-worker.js
-   # Should show: Cache-Control: no-cache, no-store
-   ```
-
-4. **Verify nginx cache headers:**
-   - Check `/etc/nginx/sites-available/equiprofile`
-   - Ensure `index.html` and `service-worker.js` have `no-cache` headers
-
-### OAuth Callback Errors
-
-**Symptoms:**
-- "Missing code parameter" error
-- "OAuth callback failed" message
-- Redirect loop
-
-**Solutions:**
-
-1. **Check OAuth configuration:**
-   ```bash
-   curl http://localhost:3000/api/oauth/status
-   ```
-
-2. **Verify environment variables:**
-   - `OAUTH_SERVER_URL` must be valid URL
-   - `VITE_APP_ID` must match OAuth provider
-   - `BASE_URL` must match callback URL registered with provider
-
-3. **Check callback URL:**
-   - Must be: `https://yourdomain.com/api/oauth/callback`
-   - Must match exactly in OAuth provider settings
-
-4. **Review logs:**
-   ```bash
-   sudo journalctl -u equiprofile | grep OAuth
-   ```
-
-### Cookie Domain/Secure Flag Issues
-
-**Symptoms:**
-- Login works but session not persisted
-- Logged out immediately after login
-- Cookies not set in browser
-
-**Solutions:**
-
-1. **For HTTPS (production):**
-   ```bash
-   # In .env:
-   COOKIE_SECURE=true
-   COOKIE_DOMAIN=yourdomain.com
-   BASE_URL=https://yourdomain.com
-   ```
-
-2. **For HTTP (development):**
-   ```bash
-   # In .env:
-   COOKIE_SECURE=false
-   # COOKIE_DOMAIN= (leave empty or comment out)
-   BASE_URL=http://localhost:3000
-   ```
-
-3. **After changes:**
-   ```bash
-   sudo systemctl restart equiprofile
-   ```
-
-### Trust Proxy / Rate Limiting Errors
-
-**Symptoms:**
-- Rate limit triggers for all users
-- IP address shows as 127.0.0.1 in logs
-- Rate limiting too aggressive
-
-**Solutions:**
-
-1. **Verify trust proxy is enabled:**
-   ```bash
-   # Check server logs on startup
-   sudo journalctl -u equiprofile -n 100 | grep "trust proxy"
-   # Should show: "✅ Trust proxy enabled"
-   ```
-
-2. **Check nginx headers:**
-   ```bash
-   # Should include:
-   proxy_set_header X-Real-IP $remote_addr;
-   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-   ```
-
-3. **Verify IP detection:**
-   ```bash
-   # Add temporary logging to check req.ip
-   # Check logs to see real client IP vs 127.0.0.1
-   ```
-
-4. **Adjust rate limits if needed:**
-   ```bash
-   # In .env:
-   RATE_LIMIT_WINDOW_MS=900000  # 15 minutes
-   RATE_LIMIT_MAX_REQUESTS=100   # per IP
-   ```
-
-### Database Connection Issues
-
-**Symptoms:**
-- "Database connection failed" error
-- Timeouts on startup
-- Health check shows database: false
-
-**Solutions:**
-
-1. **Verify MySQL is running:**
-   ```bash
-   sudo systemctl status mysql
-   # or
-   sudo systemctl status mariadb
-   ```
-
-2. **Test connection manually:**
-   ```bash
-   # Extract details from DATABASE_URL
-   mysql -h hostname -P 3306 -u username -p
-   ```
-
-3. **Check DATABASE_URL format:**
-   ```
-   mysql://username:password@hostname:3306/database_name
-   ```
-
-4. **Grant permissions:**
-   ```sql
-   GRANT ALL PRIVILEGES ON equiprofile.* TO 'equiprofile'@'localhost';
-   FLUSH PRIVILEGES;
-   ```
-
-### Build Failures
-
-**Symptoms:**
-- Build script fails
-- Missing dependencies
-- TypeScript errors
-
-**Solutions:**
-
-1. **Clean install:**
-   ```bash
-   cd /var/equiprofile/app
-   rm -rf node_modules pnpm-lock.yaml
-   pnpm install
-   pnpm run build
-   ```
-
-2. **Check Node version:**
-   ```bash
-   node --version  # Should be 20.x or higher
-   ```
-
-3. **Check disk space:**
-   ```bash
-   df -h /var/equiprofile
-   ```
-
----
-
-## Project Overview
-
-### What is EquiProfile?
-
-EquiProfile is an AI-assisted equine management and stable intelligence platform that provides a unified system for tracking health records, managing training schedules, monitoring costs, and facilitating team collaboration across equestrian operations of any scale.
-
-### Core Problems Solved
-
-**For Individual Horse Owners:**
-- Fragmented records across paper, spreadsheets, and multiple apps
-- Missed vaccinations, deworming, and farrier appointments
-- Difficulty tracking feed costs and veterinary expenses
-- No centralized system for sharing horse information with trainers and vets
-
-**For Professional Stables:**
-- Inefficient communication between stable staff, trainers, and owners
-- Manual scheduling and reminder systems prone to human error
-- Limited visibility into per-horse costs and operational expenses
-- Compliance challenges with health and safety documentation
-- Difficulty scaling operations as the business grows
-
-**For Trainers and Veterinary Professionals:**
-- Inconsistent access to complete horse health histories
-- Time wasted requesting basic information from owners
-- Lack of structured performance and training data
-- Inefficient collaboration with multiple stakeholders
-
-### Who is EquiProfile For?
-
-- **Individual Horse Owners** managing one or more horses
-- **Professional Stables** requiring multi-user collaboration and role-based access
-- **Trainers** needing structured performance tracking and client communication
-- **Stable Managers** coordinating operations across teams and facilities
-- **Veterinary Professionals** requiring comprehensive health history access
-- **Competition Riders** tracking results, goals, and performance analytics
-
----
-
-## Key Features Overview
-
-### Horse Management
-Complete digital profiles for each horse including breed, pedigree, registration, microchip, physical characteristics, discipline, competition level, and comprehensive notes.
-
-### Medical & Health Records
-Centralized tracking of veterinary visits, vaccinations, deworming schedules, dental care, farrier appointments, injuries, medications, and medical document storage with automated due-date reminders.
-
-### Feeding & Supplement Management
-Structured feeding plans with meal timing, quantities, brands, and special instructions. Cost tracking for feed and supplements with monthly expense summaries.
-
-### Training & Performance Tracking
-Detailed training session logs including session type, duration, exercises, performance ratings, trainer notes, and weather conditions. Competition results tracking with placement, scores, and analytics.
-
-### Scheduling & Event Management
-Calendar-based system for all horse-related events including training sessions, vet appointments, competitions, and recurring tasks. Configurable reminder system with notification support.
-
-### Document Vault
-Secure cloud storage for registration papers, insurance documents, veterinary reports, competition results, and legal documentation. Organized by category with tagging and search capabilities.
-
-### Stable & Team Collaboration
-Multi-user stable accounts with role-based permissions (Owner, Admin, Trainer, Member, Viewer). Invitation system for adding team members with granular access control.
-
-### Financial Tracking
-Per-horse and stable-level expense tracking including feed costs, veterinary bills, farrier services, competition fees, and training expenses. Exportable financial summaries.
-
-### Shareable Profiles
-Generate secure, shareable links for horse profiles with privacy controls. Useful for sales listings, sponsor presentations, trainer collaboration, and competition records.
-
-### AI-Assisted Insights
-Intelligent weather analysis for riding conditions. AI-generated summaries and recommendations based on horse health data, training patterns, and historical performance.
-
-### Weather Intelligence
-Real-time weather data integration with AI-powered riding condition analysis. Safety recommendations based on temperature, wind, precipitation, UV index, and visibility.
-
-### Admin Access & Unlock System
-EquiProfile implements a two-factor admin security system to protect sensitive administrative functions.
-
-**Admin Unlock Flow:**
-1. User must have `admin` role assigned in the database
-2. Admin must explicitly unlock admin mode via AI Chat by typing `show admin`
-3. System prompts for admin unlock password (default: `ashmor12@` - **CHANGE IN PRODUCTION**)
-4. Once unlocked, admin session is active for 30 minutes
-5. Admin panel becomes visible in sidebar with full administrative capabilities
-
-**Why This Design?**
-- Role-based access prevents unauthorized users from seeing admin features
-- Session-based unlock adds a second authentication factor
-- Time-limited sessions (30 minutes) reduce risk of unauthorized access
-- AI Chat integration hides admin unlock from UI, preventing casual discovery
-- Password-protected unlock ensures only authorized personnel can access admin functions
-
-**Admin Capabilities:**
-- ✅ View all users and their subscription details
-- ✅ Suspend/unsuspend user accounts
-- ✅ Change user roles and permissions
-- ✅ View system statistics and health metrics
-- ✅ Access activity logs and audit trails
-- ✅ Manage system settings and configuration
-- ✅ Create and manage API keys for integrations
-- ✅ Monitor environment health and configuration status
-- ✅ Access backup logs
-
-**Security Best Practices:**
-1. **Change default password immediately** - Set strong `ADMIN_UNLOCK_PASSWORD` in environment variables
-2. Rotate password regularly (recommended every 90 days)
-3. Monitor admin activity logs for suspicious access patterns
-4. Revoke admin sessions if device is lost or compromised
-5. Use strong passwords (16+ characters, mixed case, numbers, symbols)
-
----
-
-## API Key Management
-
-EquiProfile provides secure API key generation and management for third-party integrations and custom applications.
-
-**Features:**
-- **Secure Generation**: API keys use bcrypt hashing (cost factor 10) with unique prefixes
-- **One-Time Display**: Full key shown only once during creation for maximum security
-- **Rate Limiting**: Configurable request limits per key (default: 100/hour)
-- **Revocation**: Instant key deactivation with audit trail
-- **Rotation**: Generate new key while maintaining the same API key ID
-- **Activity Tracking**: Last used timestamp and usage monitoring
-- **Expiration Dates**: Optional automatic key expiration
-
-**Key Format:** `ep_Xy9z_abc123...` (prefix + unique identifier)
-
-**Access:** Admin Panel → API Keys tab (requires unlocked admin session)
-
----
-
-## Detailed Feature Breakdown
-
-### A) User Accounts & Authentication
-
-EquiProfile uses secure OAuth-based authentication, eliminating the need for password management while ensuring enterprise-grade security.
-
-**Authentication Flow:**
-- Users authenticate via trusted OAuth providers (Google, Microsoft, etc.)
-- Session management with secure, HTTP-only cookies
-- Automatic session expiration and renewal
-- Multi-device support with synchronized sessions
-
-**User Profiles:**
-- Personal information including name, email, phone, and location
-- Profile photo uploads
-- Communication preferences
-- Activity history and audit logs
-
-**Subscription Awareness:**
-- 7-day free trial for all new accounts
-- Automatic trial status tracking with expiration notifications
-- Seamless upgrade flow to paid subscriptions
-- Subscription status displayed throughout the platform
-
-### B) Stable & Team Management
-
-EquiProfile supports collaborative management through stable accounts that enable multiple users to work together while maintaining appropriate access controls.
-
-**Creating a Stable:**
-- Named stable/team entity with description and location
-- Optional logo upload for branding
-- Designated owner with full administrative rights
-- Association of horses to stable for team access
-
-**Inviting Team Members:**
-- Email-based invitation system
-- Pre-assigned roles before acceptance
-- Invitation expiration (7 days) for security
-- Resend and revoke capabilities
-- Invitation tracking (pending, accepted, declined, expired)
-
-**Roles and Permissions:**
-
-| Role | Description | Permissions |
-|------|-------------|-------------|
-| **Owner** | Stable creator | Full access: manage members, edit horses, delete stable |
-| **Admin** | Stable administrator | Manage members, edit all horses, manage documents |
-| **Trainer** | Professional trainer | View all horses, edit training sessions, view health records |
-| **Member** | Stable staff | View assigned horses, add training logs, view documents |
-| **Viewer** | Read-only access | View horses and records, no editing capabilities |
-
-**Collaboration Model:**
-- Role-based access ensures appropriate visibility
-- Activity logs track all changes with user attribution
-- Team members see only horses within their stable
-- Owners can transfer horses between personal and stable accounts
-
-### C) Horse Management
-
-Each horse in EquiProfile has a comprehensive digital profile that serves as the central hub for all related information.
-
-**Basic Information:**
-- Name, breed, age, and date of birth
-- Physical characteristics: height (hands), weight (kg), color
-- Gender: stallion, mare, gelding
-- Registration number and microchip number
-- Discipline: dressage, show jumping, eventing, racing, pleasure, etc.
-- Competition level: beginner, intermediate, advanced, professional
-- Profile photo with crop and resize capabilities
-
-**Health Summary Dashboard:**
-- Next vaccination due date with countdown
-- Last deworming date and schedule
-- Upcoming veterinary appointments
-- Recent health alerts or issues
-- Medical history at a glance
-
-**Feeding Plan Overview:**
-- Current feeding schedule by meal time
-- Active supplements and medications
-- Special dietary instructions
-- Estimated monthly feed costs
-
-**Training Records:**
-- Recent training session history
-- Performance trends and analytics
-- Upcoming scheduled sessions
-- Training goals and progress tracking
-
-**Notes and Attachments:**
-- Free-form notes field for general information
-- Behavioral observations
-- Special handling instructions
-- Owner preferences
-- Document attachments linked to horse profile
-
-**Horse Lifecycle Management:**
-- Active/inactive status toggle
-- Soft deletion (preserves historical data)
-- Horse transfer between users or stables
-- Ownership history tracking
-
-### D) Medical & Health Records
-
-EquiProfile provides comprehensive health tracking with structured data entry and intelligent reminder systems.
-
-**Record Types:**
-
-**Veterinary Visits:**
-- Date of visit
-- Veterinarian name, clinic, and contact information
-- Reason for visit and diagnosis
-- Treatment provided
-- Prescribed medications
-- Cost of visit
-- Follow-up requirements
-- Next appointment date
-- Attached documents (lab results, x-rays, reports)
-
-**Vaccinations:**
-- Vaccine name and type (influenza, tetanus, etc.)
-- Date administered
-- Batch number for traceability
-- Administering veterinarian
-- Next due date (automatic calculation)
-- Booster schedule
-- Adverse reactions (if any)
-- Cost and invoice documentation
-- Compliance tracking for competition requirements
-
-**Deworming:**
-- Product name and active ingredient
-- Date administered
-- Dosage based on horse weight
-- Weight at time of treatment (for dosage accuracy)
-- Next due date (typically 8-12 weeks)
-- Fecal egg count results (if available)
-- Rotation schedule tracking
-- Cost tracking
-
-**Dental Care:**
-- Dental examination date
-- Dental professional information
-- Findings and treatment
-- Next examination due date
-- Cost and documentation
-
-**Farrier Services:**
-- Shoeing/trimming date
-- Farrier contact information
-- Work performed (front shoes, hind shoes, trim only)
-- Special shoes or corrective work
-- Next appointment date (typically 6-8 weeks)
-- Cost per visit
-- Hoof health notes
-
-**Injuries and Illnesses:**
-- Date of onset
-- Description of injury or illness
-- Treatment protocol
-- Recovery timeline
-- Veterinary oversight
-- Return to work date
-- Long-term implications
-
-**Medication Tracking:**
-- Medication name and purpose
-- Dosage and frequency
-- Start and end dates
-- Prescribing veterinarian
-- Administration instructions
-- Withdrawal periods for competition
-- Side effects or concerns
-
-**Due-Date Tracking and Reminders:**
-- Automatic calculation of next due dates based on typical schedules
-- Dashboard alerts for upcoming deadlines
-- Configurable reminder notifications (7, 14, 30 days in advance)
-- Color-coded status indicators (due soon, overdue, up to date)
-- Email and push notification support
-
-**Medical Passport:**
-- Printable summary of complete vaccination and deworming history
-- Required for travel, competition, and facility compliance
-- Export to PDF with professional formatting
-- Shareable with veterinarians and competition organizers
-
-### E) Feeding & Supplements
-
-EquiProfile enables precise feeding management with cost tracking and nutritional monitoring.
-
-**Daily Feeding Plans:**
-
-For each horse, define multiple meal times throughout the day:
-
-| Meal Time | Feed Type | Brand | Quantity | Unit | Instructions |
-|-----------|-----------|-------|----------|------|--------------|
-| Morning | Hay | Timothy | 2 | flakes | Feed before grain |
-| Morning | Grain | Triple Crown | 1.5 | scoops | Mix with warm water |
-| Midday | Supplements | MSM | 1 | scoop | Joint support |
-| Evening | Hay | Timothy | 2 | flakes | Free choice |
-| Evening | Grain | Triple Crown | 2 | scoops | Higher evening ration |
-
-**Feeding Schedule Features:**
-- Multiple meals per day (morning, midday, evening, night)
-- Support for various feed types: hay, grain, pellets, supplements, treats
-- Quantity tracking with flexible units (kg, lbs, scoops, flakes, cups)
-- Brand/product names for consistency
-- Special instructions per meal (temperature, mixing, timing)
-- Frequency settings (daily, twice daily, as needed)
-- Active/inactive toggles for seasonal changes
-
-**Supplement Management:**
-- Separate tracking for vitamins, minerals, joint supplements
-- Dosage and administration instructions
-- Purpose and expected outcomes
-- Start and end dates
-- Cost per container and cost per dose
-
-**Cost Tracking:**
-
-**Feed Cost Entry:**
-- Date of purchase
-- Feed type and brand
-- Quantity purchased
-- Cost per unit
-- Total cost
-- Supplier information
-- Expected duration
-
-**Monthly Expense Summaries:**
-- Automatic calculation of monthly feed costs per horse
-- Stable-level summaries for multiple horses
-- Cost trends over time
-- Budget vs. actual comparisons
-- Exportable reports for accounting
-
-**Nutritional Notes:**
-- Dietary restrictions or allergies
-- Weight management goals
-- Body condition score tracking
-- Ration adjustments based on workload
-- Seasonal feeding changes
-
-### F) Scheduling & Reminders
-
-EquiProfile provides a comprehensive calendar system for managing all horse-related events and appointments.
-
-**Event Types:**
-
-**Training Sessions:**
-- Scheduled training appointments
-- Trainer assignments
-- Session type and focus areas
-- Duration and intensity
-- Location (arena, field, cross-country)
-
-**Veterinary Appointments:**
-- Routine check-ups
-- Vaccination appointments
-- Dental examinations
-- Lameness evaluations
-- Follow-up visits
-
-**Farrier Appointments:**
-- Scheduled shoeing/trimming
-- Corrective work sessions
-- Emergency calls
-
-**Physiotherapy/Bodywork:**
-- Massage therapy
-- Chiropractic adjustments
-- Acupuncture
-- Other complementary therapies
-
-**Competition Events:**
-- Show entries
-- Competition dates
-- Travel arrangements
-- Results entry after event
-
-**General Events:**
-- Lessons
-- Clinics
-- Trail rides
-- Team meetings
-- Facility maintenance
-
-**Event Details:**
-- Title and description
-- Start and end date/time
-- All-day event toggle
-- Location with address
-- Associated horse(s)
-- Team member assignments
-- Color coding for visual organization
-- Completion status tracking
-
-**Recurring Events:**
-
-Support for repeating schedules using iCal-compatible recurrence rules:
-- Daily, weekly, monthly, yearly patterns
-- Custom intervals (every 6 weeks for farrier)
-- End date or occurrence count
-- Exception handling for holidays or conflicts
-
-**Reminder System:**
-
-**Notification Types:**
-- Email notifications
-- Push notifications (browser and mobile)
-- SMS notifications (future enhancement)
-
-**Reminder Timing:**
-- Same day (morning of event)
-- 1 day in advance
-- 3 days in advance
-- 7 days in advance
-- 14 days in advance
-- Custom timing per event
-
-**Reminder Management:**
-- User preferences for notification methods
-- Per-event reminder configuration
-- Snooze and dismiss options
-- Delivery status tracking
-- Sent/failed audit logs
-
-### G) Document Vault
-
-Secure, cloud-based document storage with intelligent organization and retrieval.
-
-**Supported Document Types:**
-- PDFs
-- Images (JPEG, PNG)
-- Scanned documents
-- Veterinary reports
-- X-rays and diagnostic images
-- Insurance policies
-- Registration papers
-- Competition results
-- Bills and invoices
-
-**Storage Architecture:**
-- AWS S3 secure cloud storage
-- Encrypted at rest and in transit
-- Redundant storage for reliability
-- Pre-signed URLs for secure access
-- Automatic thumbnail generation for images
-
-**Document Organization:**
-
-**Category System:**
-- Health: Veterinary reports, lab results, x-rays
-- Registration: Breed papers, microchip certificates
-- Insurance: Policies, claims, coverage documents
-- Competition: Entry confirmations, results, qualifications
-- Other: General documents and files
-
-**Tagging System:**
-- Multiple tags per document
-- Custom tag creation
-- Tag-based filtering
-- Tag clouds for quick navigation
-- Auto-tagging suggestions
-
-**Metadata:**
-- Upload date and time
-- Uploaded by (user attribution)
-- File size and type
-- Associated horse
-- Associated health record (if applicable)
-- Description field
-- Last modified date
-
-**Search Capabilities:**
-- Full-text search in document names
-- Description field search
-- Category filtering
-- Tag filtering
-- Date range filtering
-- Horse-specific filtering
-- Combined filter searches
-
-**Document Actions:**
-- View online (in-browser PDF/image viewer)
-- Download original file
-- Share via secure link
-- Delete (with confirmation)
-- Replace with updated version
-- Print directly from viewer
-
-**Access Control:**
-- Documents inherit horse-level permissions
-- Stable team members see documents for their stable's horses
-- Individual owners see only their horse documents
-- Shareable links can be public or private
-- Link expiration options
-
-### H) Performance & Competition Tracking
-
-EquiProfile provides structured tracking of competition results, goals, and performance analytics.
-
-**Competition Records:**
-
-**Basic Information:**
-- Competition name and venue
-- Date of competition
-- Discipline (dressage, show jumping, eventing, etc.)
-- Level/height (novice, preliminary, 1.20m, etc.)
-- Class or division name
-- Entry fee cost
-
-**Results:**
-- Placement (1st, 2nd, 3rd, etc.)
-- Score or percentage
-- Penalties (if applicable)
-- Time (for timed events)
-- Qualifying status
-- Prize money or winnings
-
-**Performance Notes:**
-- Detailed description of performance
-- What went well
-- Areas for improvement
-- Horse behavior and temperament
-- Course or test analysis
-- Judge comments
-- Trainer feedback
-
-**Documentation:**
-- Test sheets or score sheets
-- Photos from competition
-- Video links
-- Prize ribbons or certificates
-
-**Goals and Objectives:**
-
-**Goal Setting:**
-- Define specific, measurable goals per horse
-- Timeline for achieving goals
-- Current progress tracking
-- Milestones and checkpoints
-
-**Goal Categories:**
-- Competition goals (qualify for championships, move up a level)
-- Training goals (master flying changes, improve collection)
-- Health goals (maintain soundness, improve fitness)
-- Financial goals (break even, earn back costs)
-
-**Progress Tracking:**
-- Regular progress updates
-- Visual progress indicators
-- Achievement celebration
-- Goal adjustment based on reality
-
-**Performance Analytics:**
-
-**Competition Statistics:**
-- Total competitions entered
-- Total placings (1st, 2nd, 3rd, etc.)
-- Average score or percentage
-- Success rate by venue
-- Success rate by discipline
-- Seasonal performance trends
-
-**Cost vs. Earnings:**
-- Total entry fees paid
-- Total prize money earned
-- Net profit/loss
-- Return on investment analysis
-
-**Performance Trends:**
-- Score improvements over time
-- Consistency analysis
-- Peak performance periods
-- Comparison against goals
-
-**Comparative Analysis:**
-- Performance at different venues
-- Performance with different riders
-- Performance in different conditions
-- Historical performance comparisons
-
-### I) Financial Tracking
-
-EquiProfile provides comprehensive expense tracking to help owners and stable managers understand the true cost of horse ownership.
-
-**Expense Categories:**
-
-**Feed and Supplements:**
-- Daily feed costs (hay, grain, pellets)
-- Supplement costs
-- Treat and reward costs
-- Feed storage and delivery fees
-
-**Veterinary Care:**
-- Routine check-ups
-- Vaccinations
-- Deworming
-- Dental care
-- Emergency visits
-- Medications and prescriptions
-- Diagnostic testing (x-rays, ultrasound, blood work)
-- Surgical procedures
-
-**Farrier Services:**
-- Regular shoeing/trimming
-- Corrective shoeing
-- Emergency calls
-- Hoof care products
-
-**Training and Lessons:**
-- Professional training fees
-- Lesson costs
-- Clinic and seminar fees
-- Trainer travel expenses
-
-**Competition Costs:**
-- Entry fees
-- Stabling at shows
-- Braiding services
-- Travel expenses (fuel, tolls)
-- Accommodation for rider/groom
-- Show-specific equipment or attire
-
-**Boarding and Facilities:**
-- Monthly board or stable fees
-- Arena rental
-- Turnout or paddock fees
-- Additional services (blanketing, feeding)
-
-**Insurance:**
-- Mortality insurance
-- Liability insurance
-- Major medical insurance
-- Loss of use insurance
-
-**Equipment and Tack:**
-- Saddles and bridles
-- Blankets and sheets
-- Boots and wraps
-- Grooming supplies
-- Replacement or repair costs
-
-**Per-Horse Tracking:**
-- All expenses tagged to specific horse
-- Monthly expense totals
-- Category breakdowns
-- Cost trends over time
-- Comparison against budget
-
-**Stable-Level Summaries:**
-- Aggregate costs across all horses
-- Average cost per horse
-- Category distribution
-- Monthly and annual totals
-- Cost allocation by owner (for shared stables)
-
-**Financial Reports:**
-
-**Monthly Summary:**
-- Total expenses by category
-- Comparison to previous month
-- Year-to-date totals
-- Budget vs. actual variance
-
-**Annual Report:**
-- Complete yearly expenses
-- Category distribution pie chart
-- Month-by-month breakdown
-- Competition earnings offset
-- Tax-ready summaries
-
-**Export Options:**
-- CSV export for Excel or accounting software
-- PDF formatted reports
-- QuickBooks-compatible formats
-- Custom date range exports
-
-### J) Shareable Horse Profiles
-
-EquiProfile enables users to generate secure, shareable links for horse profiles with configurable privacy settings.
-
-**Share Link Types:**
-
-**Horse Profile:**
-- Complete horse information
-- Health summary (configurable visibility)
-- Training and performance highlights
-- Competition results
-- Photo gallery
-
-**Medical Passport:**
-- Vaccination history
-- Deworming records
-- Veterinary contact information
-- Required for travel or competitions
-
-**Stable Profile:**
-- Overview of all horses in stable
-- Stable information and branding
-- Team introduction
-- Facility details
-
-**Link Configuration:**
-
-**Privacy Controls:**
-- Public: accessible to anyone with the link
-- Private: requires authentication or access code
-- Expiration date (optional)
-- View-only access (no data editing)
-
-**Visibility Settings:**
-
-Configure which sections are visible to link recipients:
-- Basic information (always visible)
-- Health records (toggle)
-- Training records (toggle)
-- Financial information (toggle)
-- Documents (toggle)
-- Contact information (toggle)
-
-**Link Analytics:**
-- View count tracking
-- Last viewed date
-- Unique visitor count (IP-based)
-- Geographic distribution of views (optional)
-
-**Use Cases:**
-
-**Horse Sales:**
-- Share complete profile with potential buyers
-- Professional presentation of horse's history
-- Controlled disclosure of sensitive information
-- Easy updates as horse's career progresses
-
-**Sponsor Presentations:**
-- Showcase competition results
-- Demonstrate training progress
-- Build sponsor confidence with transparent tracking
-- Regular updates without manual reports
-
-**Trainer Collaboration:**
-- Share profile with new trainers
-- Provide comprehensive background
-- Enable informed training program design
-- Maintain access as long as needed
-
-**Veterinary Coordination:**
-- Provide complete medical history to new vet
-- Enable emergency access in crisis situations
-- Facilitate specialist consultations
-- Ensure continuity of care
-
-**Insurance Applications:**
-- Provide documented history for underwriting
-- Demonstrate proper care and management
-- Support claims with comprehensive records
-- Streamline application process
-
-**Link Management:**
-- Dashboard view of all active share links
-- Easy link revocation
-- Link regeneration (new URL, old becomes invalid)
-- Usage monitoring and alerts
-- Bulk link management for stables
-
-### K) AI-Assisted Insights
-
-EquiProfile incorporates artificial intelligence to provide actionable insights and decision support.
-
-**Weather Intelligence:**
-
-**Real-Time Weather Data:**
-- Integration with weather APIs for current conditions
-- Location-based forecasts
-- Extended 7-day outlook
-- Severe weather alerts
-
-**Riding Condition Analysis:**
-
-AI analyzes multiple weather factors to generate riding recommendations:
-- Temperature (too hot, too cold, ideal)
-- Humidity (heat index, risk of dehydration)
-- Wind speed (unsafe, challenging, calm)
-- Precipitation (heavy rain, light rain, dry)
-- UV index (sun protection needs)
-- Visibility (fog, clarity)
-- Ground conditions (frozen, muddy, firm)
-
-**Safety Recommendations:**
-- Excellent: ideal conditions for all activities
-- Good: safe with minor considerations
-- Fair: proceed with caution
-- Poor: avoid strenuous work
-- Not Recommended: unsafe conditions, stay inside
-
-**AI Analysis Text:**
-Natural language summary of conditions:
-> "Temperature is 18°C with light winds and clear skies. Excellent conditions for flatwork and jumping. UV index is moderate, consider sun protection for extended rides. Ground is firm and ideal for work."
-
-**Health Data Interpretation:**
-
-**Vaccination Compliance:**
-- AI identifies horses with overdue vaccinations
-- Suggests optimal scheduling for multiple horses
-- Alerts to competition qualification requirements
-- Identifies patterns of missed appointments
-
-**Weight and Condition Monitoring:**
-- Tracks weight changes over time
-- Correlates with feeding adjustments
-- Alerts to significant changes requiring attention
-- Suggests ration modifications
-
-**Training Patterns:**
-- Identifies training frequency trends
-- Suggests rest days based on intensity
-- Recognizes overtraining indicators
-- Recommends variety in session types
-
-**Cost Optimization:**
-
-**Feed Cost Analysis:**
-- Compares costs across different brands
-- Identifies more economical alternatives
-- Suggests bulk purchase opportunities
-- Tracks price trends over time
-
-**Veterinary Spend:**
-- Highlights unusual expense spikes
-- Identifies preventive care opportunities
-- Suggests budget allocations
-- Compares costs against regional averages
-
-**Competition ROI:**
-- Calculates cost per competition
-- Analyzes entry fees vs. winnings
-- Suggests optimal competition level
-- Identifies most cost-effective venues
-
-**AI Usage Limits:**
-
-AI features are subject to usage limits based on subscription tier to manage API costs:
-
-| Feature | Trial | Pro | Stable |
-|---------|-------|-----|--------|
-| Weather Analysis | 10/day | 50/day | Unlimited |
-| Health Insights | 5/month | 20/month | 50/month |
-| Cost Analysis | Not available | 10/month | 30/month |
-
-Limits reset monthly and are tracked per account.
-
-### L) Offline-First & Mobile Support
-
-EquiProfile is designed as a Progressive Web App (PWA) to ensure reliability and accessibility across all devices.
-
-**Progressive Web App Features:**
-
-**Installation:**
-- Install to home screen on mobile devices
-- Standalone app experience (no browser chrome)
-- Native-like interface and navigation
-- App icon and splash screen
-
-**Offline Capabilities:**
-
-**Data Entry:**
-- Record training sessions without internet
-- Add health records offline
-- Create feeding plan updates offline
-- Capture notes and observations offline
-
-**Local Storage:**
-- Recently viewed horses cached
-- Recent records available offline
-- Documents downloaded for offline view
-- Forms and templates cached
-
-**Automatic Synchronization:**
-- Data syncs when connection restored
-- Conflict resolution for simultaneous edits
-- Sync status indicators
-- Manual sync trigger option
-
-**Mobile-Optimized Interface:**
-
-**Touch-Friendly Design:**
-- Large tap targets for fingers
-- Swipe gestures for navigation
-- Pull-to-refresh functionality
-- Bottom navigation for thumb reach
-
-**Responsive Layouts:**
-- Adapts to phone, tablet, and desktop screens
-- Optimized for portrait and landscape
-- Readable text sizes on all devices
-- Appropriate information density per device
-
-**Camera Integration:**
-- Direct photo capture for horse profiles
-- Document scanning via camera
-- Image compression for faster uploads
-- Batch upload support
-
-**Performance Optimization:**
-
-**Fast Initial Load:**
-- Code splitting for faster first paint
-- Lazy loading of heavy components
-- Image optimization and compression
-- Minimal bundle size
-
-**Smooth Interactions:**
-- 60fps animations
-- Instant feedback on user actions
-- Optimistic UI updates
-- Background processing for heavy tasks
-
-**Data Efficiency:**
-- Pagination for large lists
-- Incremental loading
-- Request caching
-- Minimal API calls
-
-**Cross-Device Synchronization:**
-- Real-time updates across devices
-- Session continuity
-- Notification syncing
-- Consistent experience everywhere
-
----
-
-## Subscription Plans & Access Control
-
-EquiProfile uses a freemium model with three subscription tiers, each designed for specific user needs.
-
-### Free Trial (7 Days)
-
-**Access:**
-- Full platform access for 7 days
-- All features unlocked during trial
-- Up to 3 horses
-- Single user account
-- 1GB document storage
-
-**Purpose:**
-- Evaluate platform fit
-- Test all features
-- Import existing data
-- Make informed subscription decision
-
-**Trial Expiration:**
-- Clear notifications 3 days before expiry
-- 1-day warning notification
-- Automatic downgrade to read-only access after expiry
-- Data preserved for 30 days
-- Easy upgrade flow to restore full access
-
-### Pro Plan (£7.99/month or £79.90/year)
-
-**Designed for:** Individual horse owners managing 1-5 horses personally.
-
-**Features:**
-- Unlimited horses (recommended limit: 5 for optimal experience)
-- Complete health record tracking
-- Training and competition logs
-- Feeding plan management
-- Document vault (10GB storage)
-- AI weather analysis (50 requests/day)
-- Email reminders
-- Mobile app access
-- Export reports
-
-**Limitations:**
-- Single user account (no team collaboration)
-- No stable/team features
-- Standard AI usage limits
-- Email support only
-
-**Billing:**
-- Monthly: £7.99/month (cancel anytime)
-- Yearly: £79.90/year (2 months free, 17% savings)
-- Automatic renewal
-- Secure payment via Stripe
-
-### Stable Plan (£24.99/month or £249.90/year)
-
-**Designed for:** Professional stables, trainers, and multi-user operations.
-
-**Features:**
-- All Pro features included
-- Unlimited horses
-- Unlimited team members
-- Role-based access control
-- Stable/team management
-- Shared calendars and reminders
-- 100GB document storage
-- Advanced AI insights (unlimited weather, 50 health insights/month)
-- Priority email support
-- Phone support (business hours)
-- Dedicated account manager (annual plans)
-
-**Team Collaboration:**
-- Owner, Admin, Trainer, Member, Viewer roles
-- Granular permissions
-- Team activity logs
-- Shared document access
-- Collaborative scheduling
-
-**Billing:**
-- Monthly: £24.99/month (cancel anytime)
-- Yearly: £249.90/year (2 months free, 17% savings)
-- Invoicing available for businesses
-- Multi-stable discounts available
-
-### Feature Access Control
-
-**Server-Side Enforcement:**
-
-All feature access is enforced at the API level to ensure security:
-
-```
-Subscription Check Middleware:
-1. Identify authenticated user
-2. Query current subscription status
-3. Check trial expiration date
-4. Verify feature access for requested operation
-5. Return error if access denied
-6. Proceed with request if authorized
-```
-
-**Protected Operations:**
-- Creating/editing horses (trial/expired users blocked)
-- Adding health records (requires active subscription)
-- Uploading documents (requires active subscription)
-- AI analysis requests (counted against daily/monthly limits)
-- Team invitations (Stable plan only)
-- Advanced reports (Stable plan only)
-
-**Grace Period:**
-- 3-day grace period after payment failure
-- Read-only access during grace period
-- Renewal reminders sent daily
-- Data preserved for 30 days after cancellation
-
-**Upgrade Flow:**
-- One-click upgrade from any page
-- Prorated billing for plan changes
-- Immediate feature access after payment
-- Automatic data migration (no re-entry required)
-
----
-
-## Technology Stack
-
-EquiProfile is built with modern, production-grade technologies optimized for performance, security, and maintainability.
-
-### Frontend
-
-**Core Framework:**
-- **Vite** - Build tool for fast development and optimized production builds
-- **React 19** - User interface library with latest features
-- **TypeScript** - Type safety and enhanced developer experience
-- **Wouter** - Lightweight client-side routing
-
-**UI & Styling:**
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **shadcn/ui** - High-quality, accessible component library
-- **Radix UI** - Unstyled, accessible component primitives
-- **Framer Motion** - Animation library for smooth interactions
-- **Lucide React** - Icon library with 1000+ consistent icons
-
-**State Management & Data Fetching:**
-- **tRPC** - End-to-end type-safe API client
-- **TanStack Query** - Powerful async state management
-- **React Hook Form** - Performant form handling
-- **Zod** - Schema validation for type safety
-
-**Additional Libraries:**
-- **date-fns** - Date manipulation and formatting
-- **Recharts** - Composable charting library
-- **Embla Carousel** - Touch-friendly carousel
-- **Sonner** - Toast notifications
-
-### Backend
-
-**Core Framework:**
-- **Node.js 22** - JavaScript runtime
-- **Express** - Web application framework
-- **tRPC** - Type-safe API layer
-- **TypeScript** - Full-stack type safety
-
-**Security:**
-- **Helmet** - Security headers middleware
-- **express-rate-limit** - Rate limiting and DDoS protection
-- **jose** - JWT handling for authentication
-- **cookie** - Secure cookie management
-
-**Data & Storage:**
-- **Drizzle ORM** - Type-safe database ORM
-- **MySQL 8.0** - Relational database
-- **AWS S3** - Cloud object storage for documents
-- **@aws-sdk/client-s3** - S3 integration
-
-**Payment Processing:**
-- **Stripe** - Payment gateway and subscription management
-- **Webhook signature verification** - Security for payment events
-
-**AI & External Services:**
-- **OpenAI API** - AI-powered insights and analysis
-- **Weather API** - Real-time weather data integration
-- **OAuth Providers** - Third-party authentication
-
-**Development Tools:**
-- **tsx** - TypeScript execution for development
-- **dotenv** - Environment variable management
-- **nanoid** - Unique ID generation
-- **superjson** - Enhanced JSON serialization
-
-### Database
-
-**MySQL 8.0 with Drizzle ORM:**
-
-**Schema Design:**
-- Normalized relational structure
-- Foreign key constraints
-- Indexed columns for performance
-- Soft deletes for data preservation
-
-**Core Tables:**
-- `users` - User accounts and subscriptions
-- `horses` - Horse profiles
-- `healthRecords` - Medical history
-- `trainingSessions` - Training logs
-- `feedingPlans` - Feeding schedules
-- `documents` - Document metadata
-- `weatherLogs` - Weather cache
-- `stables` - Team accounts
-- `stableMembers` - Team membership
-- `events` - Calendar events
-- `vaccinations` - Vaccine tracking
-- `dewormings` - Deworming records
-- `competitions` - Competition results
-- `stripeEvents` - Payment event logs
-
-**Migration System:**
-- Version-controlled schema changes
-- Drizzle Kit migration generation
-- Safe forward-only migrations
-- Automated deployment integration
-
-### Payment Processing
-
-**Stripe Integration:**
-- Checkout Sessions for new subscriptions
-- Customer Portal for subscription management
-- Webhook event processing
-- Subscription lifecycle management
-- Payment method updates
-- Invoice generation
-- Failed payment handling
-- Dunning management
-
-**Security:**
-- Webhook signature verification
-- Idempotency key handling
-- PCI DSS compliance (no card storage)
-- Secure API key management
-
-### Hosting & Infrastructure
-
-**Webdock VPS:**
-- 2 CPU cores
-- 8GB RAM
-- 50GB SSD storage
-- Ubuntu 22.04 LTS
-- Europe/London timezone
-
-**Reverse Proxy:**
-- **Nginx** - Load balancing and SSL termination
-- HTTP/2 support
-- Gzip compression
-- Static file caching
-- Request size limits
-
-**Process Management:**
-- **PM2** - Process supervision and monitoring
-- Automatic restarts on failure
-- Log management
-- Cluster mode for multi-core utilization
-- Zero-downtime deployments
-
-**SSL/TLS:**
-- **Certbot** - Let's Encrypt certificate management
-- Automatic renewal
-- A+ SSL Labs rating
-- HTTPS enforcement
-
-**Database:**
-- MySQL running on same VPS
-- Daily automated backups
-- 30-day backup retention
-- Point-in-time recovery capability
-
-**Monitoring:**
-- PM2 monitoring dashboard
-- Health check endpoint
-- Request logging
-- Error tracking
-- Performance metrics
-
----
-
-## Security & Reliability
-
-EquiProfile implements multiple layers of security to protect user data and ensure platform reliability.
-
-### Authentication
-
-**OAuth 2.0 Implementation:**
-- Third-party authentication (Google, Microsoft, GitHub)
-- No password storage or management
-- Secure token handling
-- Session expiration and renewal
-- Multi-device session support
-
-**Session Management:**
-- HTTP-only secure cookies
-- SameSite=Strict protection
-- 7-day session lifetime
-- Automatic renewal on activity
-- Logout clears all sessions
-
-### Role-Based Access Control (RBAC)
-
-**User Roles:**
-- System Admin (platform management)
-- Stable Owner (full stable access)
-- Stable Admin (member management)
-- Trainer (horse and training access)
-- Member (limited horse access)
-- Viewer (read-only access)
-
-**Permission System:**
-- Server-side permission checks on every request
-- Middleware enforcement before data access
-- Row-level security in database queries
-- Audit logging of permission checks
-
-**Data Isolation:**
-- Users see only their own horses
-- Stable members see only stable horses
-- Shared horses have explicit permissions
-- Document access tied to horse permissions
-
-### Secure Payments
-
-**Stripe Security:**
-- PCI DSS Level 1 compliance
-- No credit card data stored on servers
-- Tokenized payment methods
-- 3D Secure authentication support
-- Fraud detection and prevention
-
-**Webhook Security:**
-- Signature verification on all events
-- Idempotency key tracking
-- Replay attack prevention
-- IP whitelisting (optional)
-- Event audit logging
-
-### Environment Separation
-
-**Development Environment:**
-- Localhost execution
-- Test database
-- Mock payment gateway
-- Debug logging enabled
-- CORS disabled
-
-**Production Environment:**
-- VPS deployment
-- Production database
-- Live Stripe keys
-- Error-only logging
-- CORS enforced
-- Rate limiting active
-
-**Environment Variables:**
-- Sensitive data in .env files
-- Never committed to version control
-- Different values per environment
-- Secure secret storage
-- Regular credential rotation
-
-### Backups and Stability
-
-**Automated Backups:**
-- Daily database backups at 2 AM
-- 30-day retention policy
-- Compressed and encrypted
-- Stored locally and in S3 (optional)
-- Automated backup verification
-
-**Backup Contents:**
-- Complete database dump
-- Uploaded documents (S3 native redundancy)
-- Configuration files
-- Nginx configuration
-
-**Disaster Recovery:**
-- Point-in-time recovery capability
-- 15-minute RPO (Recovery Point Objective)
-- 1-hour RTO (Recovery Time Objective)
-- Documented recovery procedures
-- Regular recovery testing
-
-**High Availability:**
-- PM2 automatic restart on crash
-- Database connection pooling
-- Graceful shutdown handling
-- Zero-downtime deployment capability
-- Health check monitoring
-
-**Data Integrity:**
-- Foreign key constraints
-- Transaction support
-- Referential integrity
-- Soft deletes (no data loss)
-- Audit trails for changes
-
----
-
-## 🔐 Admin Access
-
-### Unlocking Admin Mode
-
-Admin features are hidden by default and require a two-step unlock process for security:
-
-1. **Navigate to AI Chat** (`/ai-chat`)
-2. **Type**: `show admin`
-3. **Enter admin password** when prompted
-4. **Admin mode unlocks** for 30 minutes
-
-**Default Password:** `ashmor12@`
-
-**Change Password:**
-```bash
-# In .env file
-ADMIN_UNLOCK_PASSWORD=your_secure_password_here
-```
-
-**Security Features:**
-- ✅ Rate limiting: 5 attempts, then 15-minute lockout
-- ✅ Session-based: Auto-expires after 30 minutes
-- ✅ All attempts logged
-- ✅ No plaintext passwords in logs
-- ✅ Server-side session validation
-
-### Admin Features
-
-Once unlocked, you can access:
-
-- **User Management** - View, suspend, delete, reset password
-- **System Settings** - Maintenance mode, feature flags
-- **Activity Logs** - Security audit trail
-- **Health Metrics** - System performance monitoring
-- **Subscription Monitoring** - Track overdue accounts
-- **Backup Management** - Database backup logs
-
----
-
-## Deployment Overview
-
-EquiProfile supports plug-and-play deployment with minimal configuration. Use feature flags to control which features are enabled.
-
-### Quick Deployment (Minimal Configuration)
-
-**Required Environment Variables:**
-```env
-DATABASE_URL=mysql://user:pass@host:3306/database
-JWT_SECRET=your_secret_here
-ADMIN_UNLOCK_PASSWORD=your_password_here
-ENABLE_STRIPE=false
-ENABLE_UPLOADS=false
-```
-
-**Deployment Commands:**
-```bash
-# Using pnpm (recommended)
-pnpm install
-pnpm db:push
+# Solution: Dependencies weren't bundled properly
+# Check your build script includes --bundle and doesn't have --packages=external
 pnpm build
-pm2 start ecosystem.config.js --env production
-
-# Validate environment before deploying
-./scripts/preflight.sh
 ```
 
-### Feature Flags
+**Error: `bcrypt` build fails**
 
-Control which features are enabled via environment variables:
-
-**`ENABLE_STRIPE`** (default: `false`)
-- When `true`: Enables billing, subscriptions, and payment processing
-- Requires: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
-
-**`ENABLE_UPLOADS`** (default: `false`)
-- When `true`: Enables document uploads and file storage
-- Requires: `BUILT_IN_FORGE_API_URL`, `BUILT_IN_FORGE_API_KEY`
-
-**Benefits:**
-- ✅ Deploy without payment processor initially
-- ✅ Deploy without file storage initially
-- ✅ Enable features incrementally as needed
-- ✅ Simpler initial configuration
-- ✅ Faster time to deployment
-
-### Deployment Guides
-
-- **Full Guide:** See [DEPLOYMENT_PLUG_AND_PLAY.md](docs/reports/DEPLOYMENT_PLUG_AND_PLAY.md)
-- **Audit Report:** See [AUDIT_REPORT.md](docs/reports/AUDIT_REPORT.md)
-- **Legacy Guide:** See [DEPLOYMENT.md](DEPLOYMENT.md)
-
-### Architecture
-
-```
-Internet
-    ↓
-Nginx (Port 80/443)
-    ↓
-Node.js/Express (Port 3000)
-    ↓
-MySQL Database (Port 3306)
-    ↓
-AWS S3 (Document Storage)
-```
-
-### Deployment Components
-
-**Nginx Reverse Proxy:**
-- Receives all HTTP/HTTPS traffic
-- Terminates SSL/TLS connections
-- Forwards requests to Node.js application
-- Serves static assets with caching
-- Enforces request size limits (50MB for document uploads)
-- Rate limiting at proxy level
-
-**Node.js Application:**
-- Express server running on port 3000
-- PM2 process manager for supervision
-- Cluster mode for multi-core usage
-- Automatic restart on failure
-- Log rotation and management
-
-**MySQL Database:**
-- Dedicated database server on same VPS
-- Connection pooling for efficiency
-- Automated daily backups
-- Query optimization and indexing
-
-**Environment Variables:**
-- Stored in `.env` file on server
-- Loaded at application startup
-- Contains sensitive credentials
-- Different values per environment
-- Never exposed to client
-
-**Critical Environment Variables:**
-
-EquiProfile uses feature flags to control which environment variables are required. The application will **refuse to start** in production mode if critical variables are missing.
-
-**Always Required (Core):**
-- `DATABASE_URL` - MySQL connection string (format: `mysql://user:pass@host:port/database`)
-- `JWT_SECRET` - Session token signing key (generate with: `openssl rand -base64 32`)
-- `ADMIN_UNLOCK_PASSWORD` - Admin mode unlock password (**NOT** default `ashmor12@`)
-
-**Required if `ENABLE_STRIPE=true`:**
-- `STRIPE_SECRET_KEY` - Stripe API key for payment processing
-- `STRIPE_WEBHOOK_SECRET` - Webhook signature verification key
-
-**Required if `ENABLE_UPLOADS=true`:**
-- `BUILT_IN_FORGE_API_URL` - Storage API endpoint
-- `BUILT_IN_FORGE_API_KEY` - Storage API authentication key
-**Optional (Features may be degraded without these):**
-- `OPENAI_API_KEY` - AI service access for chat and insights
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` - Email notifications
-- `BASE_URL` - Application base URL (for emails and links)
-- `COOKIE_DOMAIN`, `COOKIE_SECURE` - Cookie configuration
-- `OWNER_OPEN_ID` - Owner account identifier for auto-admin assignment
-
-**Production Validation:**
-The application performs startup validation in production mode:
-1. ✅ Checks all critical environment variables are present
-2. ✅ Validates feature flags and required credentials
-3. ✅ Validates `ADMIN_UNLOCK_PASSWORD` is not the default value
-4. ✅ Exits with clear error message if validation fails
-5. ✅ Prevents insecure deployment configurations
-
-**Generating Secure Values:**
 ```bash
-# Generate JWT secret (64 characters)
-openssl rand -base64 48
+# Solution: Rebuild native modules
+pnpm rebuild bcrypt
 
-# Generate admin unlock password (strong)
-openssl rand -base64 24
+# Or use bcryptjs as fallback (pure JavaScript)
+pnpm add bcryptjs
+```
 
-# Generate webhook secret
+#### Runtime Errors
+
+**Error: Application refuses to start with "JWT_SECRET is still set to default value"**
+
+```bash
+# Solution: Generate and set a secure JWT secret
 openssl rand -base64 32
+
+# Add to .env file:
+JWT_SECRET=<generated_secret_here>
 ```
 
-**Environment Health Check:**
-Admins can monitor environment configuration status via:
-- Admin Panel → System tab
-- Shows all variables with Set/Missing status
-- Indicates Critical vs. Optional priority
-- Auto-refreshes every 30 seconds
+**Error: Database connection failed**
 
-### Webhook Handling
-
-**Stripe Webhooks:**
-- Endpoint: `POST /api/webhooks/stripe`
-- Raw body parsing required for signature verification
-- Webhook secret validates authenticity
-- Idempotency prevents duplicate processing
-- Event types handled:
-  - `checkout.session.completed` - New subscription
-  - `customer.subscription.updated` - Subscription change
-  - `customer.subscription.deleted` - Cancellation
-  - `invoice.payment_succeeded` - Successful payment
-  - `invoice.payment_failed` - Payment failure
-
-**Webhook Security:**
-1. Receive POST request from Stripe
-2. Extract signature from headers
-3. Verify signature using webhook secret
-4. Check idempotency (event already processed?)
-5. Process event and update database
-6. Return 200 OK to acknowledge receipt
-
-### Deployment Process
-
-**Initial Deployment:**
-1. Provision VPS and configure firewall
-2. Install Node.js, MySQL, Nginx
-3. Clone repository to `/var/www/equiprofile`
-4. Install dependencies: `pnpm install`
-5. Create `.env` file with production values
-6. Run database migrations: `pnpm db:push`
-7. Build application: `pnpm build`
-8. Configure Nginx virtual host
-9. Obtain SSL certificate via Certbot
-10. Start application with PM2
-11. Configure automated backups
-12. Set up Stripe webhook endpoint
-
-**Updates and Maintenance:**
-1. Pull latest code: `git pull origin main`
-2. Install new dependencies: `pnpm install`
-3. Run migrations if needed: `pnpm db:push`
-4. Build application: `pnpm build`
-5. Restart application: `pm2 restart equiprofile`
-6. Verify health check passes
-
-**Zero-Downtime Updates:**
-1. PM2 cluster mode runs multiple instances
-2. New code deployed to cluster
-3. Instances restarted one at a time
-4. Old instances serve traffic during restart
-5. New instances take over when ready
-
-### Post-Deployment Setup
-
-**1. Create First Admin User:**
 ```bash
-# Connect to MySQL
-mysql -u root -p
+# For SQLite: Check data directory exists
+mkdir -p data/
 
-# Update user role to admin
-USE equiprofile;
-UPDATE users SET role = 'admin' WHERE email = 'your@email.com';
-exit;
+# For MySQL: Verify connection string
+DATABASE_URL=mysql://username:password@localhost:3306/equiprofile
+
+# Test MySQL connection
+mysql -u username -p -h localhost equiprofile
 ```
 
-**2. Test Admin Unlock:**
-- Login to the application
-- Navigate to `/ai-chat`
-- Type "show admin"
-- Enter password (default: `ashmor12@`)
-- Verify admin panel access at `/admin`
+**Error: Port 3000 already in use**
 
-**3. Change Admin Password:**
 ```bash
-# Edit .env file
-nano /var/www/equiprofile/.env
+# Find process using port 3000
+lsof -i :3000
 
-# Update this line:
-ADMIN_UNLOCK_PASSWORD=your_secure_password_here
+# Kill the process
+kill -9 <PID>
+
+# Or use a different port
+PORT=3001 pnpm start
+```
+
+#### Deployment Issues
+
+**502 Bad Gateway (Nginx)**
+
+```bash
+# Check if application is running
+pm2 status
+
+# Check application logs
+pm2 logs equiprofile
 
 # Restart application
 pm2 restart equiprofile
+
+# Check Nginx configuration
+sudo nginx -t
 ```
 
-**4. Configure Backups:**
-```bash
-# Make backup script executable
-chmod +x /var/www/equiprofile/scripts/backup.sh
-
-# Add to crontab for daily backups at 2 AM
-crontab -e
-# Add: 0 2 * * * /var/www/equiprofile/scripts/backup.sh
-```
-
-**5. Verify System Health:**
-- Check application logs: `pm2 logs equiprofile`
-- Test health endpoint: `curl https://yourdomain.com/api/health`
-- Verify database connectivity
-- Test S3 file uploads
-- Confirm Stripe webhook delivery
-
----
-
-## Development Workflow
-
-### Prerequisites
-
-- **Node.js 22+** - JavaScript runtime
-- **pnpm 10+** - Package manager
-- **MySQL 8.0+** - Database server
-- **Git** - Version control
-
-### Local Setup
-
-**1. Clone Repository:**
+**SSL Certificate Issues**
 
 ```bash
-git clone https://github.com/your-org/equiprofile.git
-cd equiprofile
+# Renew certificate
+sudo certbot renew
+
+# Check certificate status
+sudo certbot certificates
+
+# Force renewal
+sudo certbot renew --force-renewal
 ```
 
-**2. Install Dependencies:**
+**File Upload Errors**
 
 ```bash
-pnpm install
+# Check uploads directory exists and is writable
+mkdir -p /var/www/equiprofile/uploads
+chmod 755 /var/www/equiprofile/uploads
+
+# Check AWS S3 credentials (if using S3)
+# Verify AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env
+
+# Check file size limits in Nginx
+# Edit /etc/nginx/nginx.conf and add:
+client_max_body_size 20M;
 ```
 
-This installs both server and client dependencies in a single command.
+#### Performance Issues
 
-**3. Configure Environment:**
-
-Create `.env` file in project root:
-
-```env
-DATABASE_URL=mysql://root:password@localhost:3306/equiprofile_dev
-JWT_SECRET=dev_secret_change_in_production
-NODE_ENV=development
-PORT=3000
-
-# Stripe (use test keys)
-STRIPE_SECRET_KEY=sk_test_xxxxx
-STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
-STRIPE_WEBHOOK_SECRET=whsec_test_xxxxx
-STRIPE_MONTHLY_PRICE_ID=price_test_xxxxx
-STRIPE_YEARLY_PRICE_ID=price_test_xxxxx
-
-# Optional for full functionality
-OPENAI_API_KEY=sk-xxxxx
-AWS_ACCESS_KEY_ID=xxxxx
-AWS_SECRET_ACCESS_KEY=xxxxx
-AWS_S3_BUCKET=equiprofile-dev
-```
-
-Create `client/.env`:
-
-```env
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
-VITE_ENV=development
-```
-
-**4. Setup Database:**
-
-Create development database:
+**Slow page loads**
 
 ```bash
-mysql -u root -p
-CREATE DATABASE equiprofile_dev;
+# Enable production mode
+NODE_ENV=production node dist/index.js
+
+# Check database indexes
+# Review slow query logs
+
+# Enable Nginx caching
+# Add to Nginx config:
+proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=my_cache:10m;
 ```
 
-Run migrations:
+**High memory usage**
 
 ```bash
+# Increase Node.js memory limit
+NODE_OPTIONS="--max-old-space-size=4096" node dist/index.js
+
+# Monitor with PM2
+pm2 monit
+
+# Check for memory leaks
+node --inspect dist/index.js
+```
+
+#### Database Issues
+
+**Migration Errors**
+
+```bash
+# Reset database (CAUTION: Deletes all data!)
+rm data/equiprofile.db
+pnpm db:push
+
+# For MySQL, recreate database:
+mysql -u root -p -e "DROP DATABASE equiprofile; CREATE DATABASE equiprofile;"
 pnpm db:push
 ```
 
-### Development Commands
-
-**Start Development Server:**
+**Connection Pool Exhausted**
 
 ```bash
-pnpm dev
+# Increase connection pool size in drizzle.config.ts
+# Or restart the application
+pm2 restart equiprofile
 ```
 
-This starts:
-- Vite development server with hot reload
-- Express API server with auto-restart
-- Available at `http://localhost:3000`
+### Getting Help
 
-**Type Checking:**
+- **GitHub Issues**: [Report bugs or request features](https://github.com/amarktainetwork-blip/Equiprofile.online/issues)
+- **Documentation**: Check docs/ folder for detailed guides
+- **Community**: Join our Discord server (link in repo)
+- **Email Support**: support@equiprofile.online
+
+### Debug Mode
+
+Enable debug logging:
 
 ```bash
-pnpm check
+# Set debug environment variable
+DEBUG=* NODE_ENV=development pnpm dev
+
+# Or for specific modules
+DEBUG=trpc:* pnpm dev
 ```
 
-Runs TypeScript compiler without emitting files. Checks for type errors across entire codebase.
-
-**Run Tests:**
+### Health Check
 
 ```bash
-pnpm test
+# Check application health
+curl http://localhost:3000/api/trpc/system.status
+
+# Should return:
+# {"status":"ok","version":"1.0.0"}
 ```
-
-Executes Vitest test suite with all unit tests.
-
-**Format Code:**
-
-```bash
-pnpm format
-```
-
-Runs Prettier to format all files according to project standards.
-
-**Build for Production:**
-
-```bash
-pnpm build
-```
-
-Creates optimized production build:
-- Client: `dist/` directory with optimized assets
-- Server: `dist/` directory with compiled server code
-
-**Start Production Build:**
-
-```bash
-pnpm start
-```
-
-Runs production build locally. Requires successful `pnpm build` first.
-
-### Database Migrations
-
-**Generate Migration:**
-
-After modifying `drizzle/schema.ts`:
-
-```bash
-pnpm db:push
-```
-
-This:
-1. Generates migration SQL files
-2. Applies migrations to database
-3. Updates schema types
-
-**Migration Files:**
-
-Located in `drizzle/` directory:
-- `schema.ts` - Source of truth for schema
-- `relations.ts` - Foreign key relationships
-- `0000_*.sql` - Generated migration files
-
-### Working with tRPC
-
-**Adding a New Endpoint:**
-
-1. Define procedure in `server/routers.ts`:
-
-```typescript
-myNewEndpoint: protectedProcedure
-  .input(z.object({ id: z.number() }))
-  .query(async ({ ctx, input }) => {
-    return db.getMyData(input.id);
-  })
-```
-
-2. TypeScript automatically generates client types
-3. Use in client:
-
-```typescript
-const { data } = trpc.myNewEndpoint.useQuery({ id: 1 });
-```
-
-**Type Safety:**
-- Server types flow to client automatically
-- Input validation via Zod schemas
-- Compile-time errors for mismatched types
-- IntelliSense support in IDE
-
-### Testing Workflow
-
-**Unit Tests:**
-
-Create test file alongside source:
-- `server/myFeature.test.ts` for server code
-- `client/src/myComponent.test.tsx` for components
-
-Run specific test file:
-
-```bash
-pnpm test myFeature.test.ts
-```
-
-**Manual Testing:**
-
-1. Start development server
-2. Use browser DevTools
-3. Check Network tab for API calls
-4. Verify React DevTools components
-5. Test responsive design
-
-### Debugging
-
-**Server Debugging:**
-- Console logs appear in terminal
-- Request logging shows all API calls
-- PM2 logs in production: `pm2 logs equiprofile`
-
-**Client Debugging:**
-- Browser DevTools Console
-- React DevTools for component inspection
-- Network tab for API request/response
-
-**Database Debugging:**
-
-Query database directly:
-
-```bash
-mysql -u root -p equiprofile_dev
-SELECT * FROM horses;
-```
-
----
-
-## Folder Structure Overview
-
-### Project Root
-
-```
-equiprofile/
-├── client/              Client application (React/Vite)
-├── server/              Backend API (Node.js/Express/tRPC)
-├── drizzle/             Database schema and migrations
-├── docs/                Documentation and reports
-├── scripts/             Utility scripts (backup, deployment)
-├── dist/                Production build output (generated)
-├── node_modules/        Dependencies (generated)
-├── .env                 Environment variables (not committed)
-├── .gitignore          Git ignore patterns
-├── package.json        Project dependencies and scripts
-├── pnpm-lock.yaml      Dependency lock file
-├── tsconfig.json       TypeScript configuration
-├── vite.config.ts      Vite build configuration
-└── README.md           This file
-```
-
-### client/
-
-Frontend React application built with Vite.
-
-```
-client/
-├── src/
-│   ├── pages/           Page components (Home, Dashboard, Horses, etc.)
-│   ├── components/      Reusable UI components
-│   │   └── ui/          shadcn/ui components
-│   ├── _core/           Core utilities and hooks
-│   │   └── hooks/       Custom React hooks
-│   ├── App.tsx          Root application component
-│   └── main.tsx         Entry point
-├── public/              Static assets (images, icons)
-│   └── images/          Image assets
-├── index.html           HTML template
-├── .env                 Client environment variables
-└── .env.example         Example environment variables
-```
-
-**Key Directories:**
-
-- **pages/** - One file per route (Home.tsx, Dashboard.tsx, Horses.tsx)
-- **components/ui/** - Reusable UI primitives (Button, Dialog, Input, etc.)
-- **_core/hooks/** - Custom hooks (useAuth, useTrpc, useLocalStorage)
-
-### server/
-
-Backend API server with tRPC endpoints.
-
-```
-server/
-├── _core/               Core server infrastructure
-│   ├── index.ts         Express server and startup
-│   ├── trpc.ts          tRPC initialization and middleware
-│   ├── context.ts       Request context creation
-│   ├── oauth.ts         OAuth authentication routes
-│   ├── env.ts           Environment variable validation
-│   └── types/           TypeScript type definitions
-├── routers.ts           tRPC API routes
-├── db.ts                Database query functions
-├── storage.ts           S3 storage integration
-├── stripe.ts            Stripe payment integration
-└── *.test.ts            Unit tests
-```
-
-**Key Files:**
-
-- **routers.ts** - All tRPC endpoints organized by feature
-- **db.ts** - Database abstraction layer with typed queries
-- **_core/index.ts** - Express setup, middleware, webhook handlers
-
-### drizzle/
-
-Database schema and migration system.
-
-```
-drizzle/
-├── schema.ts            Database schema definition (source of truth)
-├── relations.ts         Foreign key relationships
-├── 0000_*.sql           Generated migration files
-└── meta/                Migration metadata
-```
-
-**Schema Definition:**
-
-All tables defined in `schema.ts` using Drizzle ORM syntax. Running `pnpm db:push` generates SQL migrations and applies them.
-
-### docs/
-
-Comprehensive documentation.
-
-```
-docs/
-└── reports/
-    ├── AUDIT.md                     Production audit report
-    ├── CHANGELOG.md                 Version history
-    ├── DEPLOYMENT_CHECKLIST.md      Deployment guide
-    ├── SECURITY.md                  Security documentation
-    └── STRIPE_INTEGRATION.md        Payment integration guide
-```
-
-### scripts/
-
-Utility scripts for operations.
-
-```
-scripts/
-└── backup.sh            Automated database backup script
-```
-
-Run with cron for daily backups:
-
-```cron
-0 2 * * * /var/www/equiprofile/scripts/backup.sh
-```
-
-### dist/
-
-Production build output (not committed to Git).
-
-```
-dist/
-├── index.js             Compiled server code
-└── client/              Optimized client assets
-    ├── assets/          Hashed static files
-    └── index.html       Entry HTML
-```
-
-Generated by `pnpm build` command.
-
----
-
-## Roadmap & Future Enhancements
-
-The following features are under consideration for future releases. This roadmap is subject to change based on user feedback and business priorities.
-
-### Q1 2026 - UI Modernization
-
-- Modern, premium landing page redesign
-- Enhanced pricing page with feature comparison
-- Improved dashboard with quick actions
-- Mobile-optimized responsive design
-- Dark mode support
-- Accessibility improvements (WCAG 2.1 AA compliance)
-
-### Q2 2026 - Collaboration Features
-
-- Stable management UI implementation
-- Team invitation and onboarding flow
-- Shared calendar with team events
-- In-app messaging between team members
-- Activity feed for stable updates
-- Role-based dashboard views
-
-### Q3 2026 - Enhanced Features
-
-- Competition results visualization with charts
-- Medical passport printable view with QR codes
-- Feed cost optimization recommendations
-- Training program templates
-- Automated report generation
-- CSV export for all data types
-
-### Q4 2026 - Mobile App
-
-- Native iOS app (Swift/SwiftUI)
-- Native Android app (Kotlin/Jetpack Compose)
-- Push notification support
-- Camera integration for photo capture
-- Offline-first architecture
-- App Store and Google Play distribution
-
-### 2027 - Advanced Features
-
-- Multi-language support (French, German, Spanish)
-- Advanced analytics dashboard
-- Breeding management module
-- Lesson scheduling for trainers
-- Client portal for owners
-- Integration API for third-party tools
-- White-label solution for large stables
-
-### Continuous Improvements
-
-- Performance optimization
-- Security enhancements
-- Bug fixes and stability
-- User experience refinements
-- Infrastructure scaling
-- Regular dependency updates
-
-**Note:** This roadmap is indicative and not a commitment. Features may be added, removed, or rescheduled based on user needs, technical feasibility, and business priorities.
-
----
-
-## License & Legal
-
-### License
-
-This software is proprietary and confidential. All rights reserved.
-
-Copyright © 2026 EquiProfile Ltd. Unauthorized copying, distribution, or modification of this software is strictly prohibited.
-
-### Data Ownership
-
-**User Data:**
-- All data entered by users remains the property of the user
-- EquiProfile does not claim ownership of user-generated content
-- Users retain full rights to export their data at any time
-- Account deletion removes all personal data within 30 days
-
-**Platform Data:**
-- Usage analytics and aggregated statistics are property of EquiProfile
-- No personally identifiable information is included in analytics
-- Aggregated data may be used for platform improvement
-
-### Terms of Service
-
-By using EquiProfile, users agree to:
-- Provide accurate information during registration
-- Use the platform for lawful purposes only
-- Not attempt to circumvent security measures
-- Not share account credentials
-- Comply with subscription payment terms
-- Accept reasonable use policies for AI features
-
-Full Terms of Service available at: https://equiprofile.online/terms
-
-### Privacy Policy
-
-EquiProfile is committed to protecting user privacy:
-- Personal data processed in accordance with GDPR
-- No selling of user data to third parties
-- Transparent data collection and usage
-- User rights to access, modify, and delete data
-- Secure data storage and transmission
-- Cookie usage for essential functionality only
-
-Full Privacy Policy available at: https://equiprofile.online/privacy
-
-### Support & Contact
-
-**Technical Support:**
-- Email: support@equiprofile.online
-- Response time: 24-48 hours (business days)
-- Priority support for Stable plan subscribers
-
-**Business Inquiries:**
-- Email: hello@equiprofile.online
-
-**Security Issues:**
-- Email: security@equiprofile.online
-- Responsible disclosure appreciated
-
-**Documentation:**
-- Online: https://docs.equiprofile.online
-- In-app help center
-
----
-
-## 🎨 Design System
-
-EquiProfile features a modern, accessible design system built with premium colors and consistent spacing.
-
-### Color Palette
-
-The application uses a vibrant, modern color scheme:
-
-- **Primary**: Vibrant Blue (`oklch(0.55 0.25 250)`) - Professional & trustworthy
-- **Secondary**: Purple (`oklch(0.55 0.20 280)`) - Premium & modern  
-- **Accent**: Teal (`oklch(0.55 0.20 190)`) - Fresh & energetic
-- **Success**: Green - Positive actions
-- **Warning**: Amber - Caution states
-- **Danger**: Red - Critical alerts
-
-**NO BROWN COLORS** - The design explicitly avoids brown tones for a fresh, modern aesthetic.
-
-### Design Tokens
-
-All design decisions are centralized in `client/src/lib/design-system.ts`:
-
-- Typography scale with proper hierarchy
-- Spacing system based on 4px grid
-- Border radius tokens for consistent roundness
-- Shadow system for depth and elevation
-- Transition timing for smooth animations
-- Z-index layers for proper stacking
-
-### Typography
-
-- **Sans Serif**: Inter - Body text and UI elements
-- **Serif**: Playfair Display - Headings and emphasis
-- Font sizes range from 12px to 128px with proper line heights
-- Responsive scaling on smaller screens
-
-### Accessibility
-
-- WCAG AA contrast ratios for all text
-- Focus indicators on interactive elements
-- Keyboard navigation support
-- Screen reader optimizations
-- Skip-to-content links
-- Semantic HTML throughout
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-
-- **Framework**: React 19.2 with TypeScript
-- **Routing**: Wouter (lightweight React router)
-- **Styling**: Tailwind CSS 4 with custom design tokens
-- **UI Components**: Radix UI primitives + shadcn/ui
-- **Animations**: Framer Motion for smooth transitions
-- **Forms**: React Hook Form + Zod validation
-- **State Management**: TanStack Query (React Query)
-- **API Client**: tRPC for end-to-end type safety
-- **Internationalization**: i18next + react-i18next
-- **Charts**: Recharts for data visualization
-- **Icons**: Lucide React
-
-### Backend
-
-- **Runtime**: Node.js 20+ (pinned via `.nvmrc`)
-- **Framework**: Express.js
-- **API**: tRPC for type-safe APIs
-- **Database**: MySQL with Drizzle ORM (SQLite supported for development)
-- **Authentication**: OAuth + JWT sessions
-- **File Storage**: AWS S3 or local filesystem
-- **Payment Processing**: Stripe (optional, feature-flagged)
-- **Email**: SendGrid (or similar service)
-
-### DevOps & Build
-
-- **Build Tool**: Vite 7 (Lightning fast)
-- **Package Manager**: pnpm (recommended) or npm
-- **Process Manager**: systemd (production)
-- **Web Server**: Nginx
-- **SSL**: Let's Encrypt (Certbot)
-- **Version Control**: Git + GitHub
-- **Containerization**: Docker with Docker Compose support
-
----
-
-## 🚀 Development
-
-### Prerequisites
-
-- Node.js 20.x (use `.nvmrc` with nvm: `nvm use`)
-- MySQL 8.0 or higher (optional, SQLite can be used for development)
-- pnpm (recommended) or npm
-- Git
-
-### Local Setup
-
-**Quick Start (Recommended):**
-```bash
-git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-cd Equiprofile.online
-./start.sh
-```
-
-The start script handles everything automatically, including:
-- Installing dependencies
-- Using `.env.default` for sane defaults
-- Building the application
-- Starting the server
-
-**Manual Setup:**
-
-1. **Clone repository**:
-   ```bash
-   git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-   cd Equiprofile.online
-   ```
-
-2. **Use correct Node version**:
-   ```bash
-   nvm use  # Reads from .nvmrc (Node 20)
-   # or install Node 20 manually
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pnpm install
-   # or: npm install
-   ```
-
-4. **Configure environment** (optional - defaults are provided):
-   ```bash
-   # .env.default is used automatically in development
-   # To customize, create .env:
-   cp .env.default .env
-   nano .env
-   ```
-
-5. **Set up database** (optional - SQLite is used by default):
-   ```bash
-   # For MySQL, create database and update DATABASE_URL in .env:
-   mysql -u root -p
-   CREATE DATABASE equiprofile_dev;
-   EXIT;
-   
-   # Or use the setup script:
-   ./scripts/setup-db.sh
-   
-   # Run migrations
-   pnpm run db:push
-   ```
-
-6. **Start development server**:
-   ```bash
-   pnpm run dev
-   ```
-
-   Application will be available at `http://localhost:3000`
-
-### Development Scripts
-
-```bash
-# Start dev server (frontend + backend)
-pnpm run dev
-
-# Build for production
-pnpm run build
-
-# Start production server
-pnpm run start
-
-# Quick start (install, build, run)
-./start.sh
-
-# Type checking
-pnpm run check
-
-# Format code
-pnpm run format
-
-# Run tests
-pnpm run test
-
-# Database migrations
-pnpm run db:push
-
-# Database setup (interactive)
-./scripts/setup-db.sh
-```
-
-### Docker Development
-
-Use Docker Compose for isolated development:
-
-```bash
-# Start services
-docker-compose up
-
-# Start in background
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-
-# Rebuild after code changes
-docker-compose up --build
-```
-
-### Project Structure
-
-```
-Equiprofile.online/
-├── .env.default               # Development environment defaults
-├── .nvmrc                     # Node version specification (20)
-├── Dockerfile                 # Docker container definition
-├── docker-compose.yml         # Docker Compose configuration
-├── start.sh                   # Quick start script
-├── client/                    # Frontend React application
-│   ├── public/               # Static assets
-│   │   ├── images/          # Image assets
-│   │   └── icons/           # Icon assets
-│   ├── src/
-│   │   ├── _core/           # Core utilities and hooks
-│   │   ├── components/      # Reusable UI components
-│   │   │   ├── ui/         # Base UI components (shadcn)
-│   │   │   ├── MarketingNav.tsx
-│   │   │   ├── AppLayout.tsx
-│   │   │   ├── ProtectedRoute.tsx
-│   │   │   ├── PageTransition.tsx
-│   │   │   └── ScrollReveal.tsx
-│   │   ├── pages/           # Page components
-│   │   │   ├── auth/       # Auth pages (Login, Register)
-│   │   │   ├── Home.tsx
-│   │   │   ├── Features.tsx
-│   │   │   ├── Pricing.tsx
-│   │   │   ├── About.tsx
-│   │   │   ├── Contact.tsx
-│   │   │   ├── Dashboard.tsx
-│   │   │   ├── Settings.tsx
-│   │   │   └── ... (other app pages)
-│   │   ├── contexts/        # React contexts
-│   │   ├── hooks/           # Custom React hooks
-│   │   ├── lib/             # Utility libraries
-│   │   │   ├── design-system.ts
-│   │   │   ├── env.ts
-│   │   │   └── trpc.ts
-│   │   ├── i18n/            # Internationalization
-│   │   ├── App.tsx          # Main app component
-│   │   ├── main.tsx         # Entry point
-│   │   └── index.css        # Global styles
-│   ├── index.html           # HTML template
-│   └── .env.example         # Frontend env template
-├── server/                   # Backend Node.js application
-│   ├── _core/               # Core server utilities
-│   │   └── env.ts           # Environment validation with fallback support
-│   ├── db.ts                # Database operations
-│   ├── routers.ts           # tRPC routers
-│   └── storage.ts           # File storage
-├── shared/                   # Shared types and constants
-├── scripts/                  # Deployment and utility scripts
-│   ├── setup-db.sh          # Database setup script (MySQL/SQLite)
-│   ├── backup.sh            # Database backup script
-│   └── preflight.sh         # Pre-deployment checks
-├── deployment/               # Production deployment scripts
-│   └── install.sh           # Automated installation script
-├── DEPLOY.md                # Deployment documentation
-├── README.md                # This file
-└── .env.example             # Backend env template
-```
-
-### Environment Variables
-
-See [Environment Configuration](#environment-configuration) in DEPLOY.md for complete list.
-
-Key development variables:
-
-**Backend** (`.env`):
-- `DATABASE_URL` - MySQL connection string
-- `JWT_SECRET` - Session signing key
-- `NODE_ENV=development`
-
-**Frontend** (`client/.env`):
-- `VITE_API_BASE_URL` - Leave empty for same-origin
-- `VITE_ENV=development`
-
----
-
-## 📦 Build & Deploy
-
-See **[DEPLOY.md](./DEPLOY.md)** for comprehensive deployment instructions including:
-
-- Server setup and configuration
-- Database setup
-- Nginx configuration
-- SSL certificate setup
-- Process management with systemd
-- Automated deployment scripts
-- Troubleshooting guide
-
-### Quick Deploy
-
-```bash
-# Build application
-npm install --legacy-peer-deps
-npm run build
-
-# Output:
-# - dist/public/ - Frontend static files
-# - dist/index.js - Backend server
-```
-
----
-
-## 🧪 Testing
-
-Run the test suite:
-
-```bash
-npm test
-```
-
-Test coverage:
-- Unit tests for utilities and helpers
-- Integration tests for API endpoints
-- Component tests for React components
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Build fails with peer dependency errors**:
-```bash
-npm install --legacy-peer-deps
-```
-
-**Blank page after deployment**:
-- Check browser console (F12)
-- Verify Nginx configuration
-- Check that environment variables are set
-
-**API calls fail**:
-- Ensure backend is running
-- Check CORS configuration
-- Verify API base URL
-
-**Database connection errors**:
-- Check DATABASE_URL format
-- Verify MySQL is running
-- Confirm database exists
-
-See [DEPLOY.md](./DEPLOY.md) for more troubleshooting tips.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please:
+We welcome contributions! Here's how to get started:
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Write or update tests
-5. Submit a pull request
+### How to Contribute
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes**
+4. **Write tests** for new features
+5. **Run tests**: `pnpm test`
+6. **Format code**: `pnpm format`
+7. **Commit changes**: `git commit -m 'Add amazing feature'`
+8. **Push to branch**: `git push origin feature/amazing-feature`
+9. **Open a Pull Request**
+
+### Development Guidelines
+
+- Follow existing code style
+- Write clear commit messages
+- Add tests for new features
+- Update documentation as needed
+- Keep PRs focused and small
+
+### Code of Conduct
+
+- Be respectful and inclusive
+- Provide constructive feedback
+- Help others learn and grow
+- Follow the [Contributor Covenant](https://www.contributor-covenant.org/)
 
 ---
 
 ## 📄 License
 
-MIT License - See LICENSE file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📧 Contact & Support
+## 📞 Contact & Support
 
-**Customer Support:**
-- Email: support@equiprofile.online
-- Response time: 24-48 hours (business days)
-- Priority support for Stable plan subscribers
-
-**Business Inquiries:**
-- Email: hello@equiprofile.online
-
-**Security Issues:**
-- Email: security@equiprofile.online
-- Responsible disclosure appreciated
-
-**Documentation:**
-- Online: https://docs.equiprofile.online
-- In-app help center
+- **Website**: https://equiprofile.online
+- **Email**: support@equiprofile.online
+- **Security**: security@equiprofile.online
+- **GitHub**: https://github.com/amarktainetwork-blip/Equiprofile.online
 
 ---
 
-**EquiProfile** - Professional equine management for the modern equestrian.
+## 🙏 Acknowledgments
+
+Built with:
+- [React](https://react.dev/)
+- [Node.js](https://nodejs.org/)
+- [tRPC](https://trpc.io/)
+- [Drizzle ORM](https://orm.drizzle.team/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Vite](https://vitejs.dev/)
+
+---
+
+<p align="center">Made with ❤️ for the equestrian community</p>
+<p align="center">© 2024 EquiProfile. All rights reserved.</p>
