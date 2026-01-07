@@ -8,6 +8,61 @@ EquiProfile is a comprehensive, cloud-based platform designed to centralize and 
 
 ## 🚀 Quickstart
 
+EquiProfile now supports multiple deployment methods for maximum flexibility:
+
+### Option 1: Simple Start Script (Recommended for Quick Testing)
+
+The fastest way to get started with EquiProfile on any system:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+
+# 2. Run the start script (handles everything automatically)
+./start.sh
+```
+
+The start script will:
+- Check for Node.js 20+ (install if missing)
+- Install pnpm if needed
+- Load `.env.default` for local development defaults
+- Install dependencies
+- Build the application
+- Start the server on port 3000
+
+**Default Configuration:**
+- Database: SQLite (file-based, no setup required)
+- JWT Secret: Pre-generated secure random string
+- Admin Password: `EquiProfile2026!Admin` (change for production!)
+- Port: 3000
+- Features: Stripe and Uploads disabled (minimal dependencies)
+
+### Option 2: Docker Compose (Recommended for Development)
+
+Run EquiProfile with Docker for an isolated, reproducible environment:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+
+# 2. Start with Docker Compose
+docker-compose up
+```
+
+This starts:
+- MySQL 8.0 database (persisted in Docker volume)
+- EquiProfile application on port 3000
+
+Access at `http://localhost:3000`
+
+**Customization:**
+- Copy `.env.default` to `.env` and modify as needed
+- Docker Compose will use your `.env` file automatically
+
+### Option 3: Production Deployment (Ubuntu VPS)
+
 Get EquiProfile running on a fresh Ubuntu VPS in under 10 minutes:
 
 ```bash
@@ -37,17 +92,23 @@ Your application will be running at `http://localhost:3000` and proxied through 
 
 ## 📋 Environment Variables
 
-EquiProfile requires specific environment variables to be configured. Copy `.env.example` to `.env` and update the values:
+EquiProfile supports automatic fallback to `.env.default` in development. For production, create a `.env` file with your configuration.
+
+**Development Defaults (`.env.default`):**
+- SQLite database (no external database required)
+- Random JWT secret pre-generated
+- Feature flags disabled (minimal setup)
+- Admin password: `EquiProfile2026!Admin`
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | **Core Configuration** | | | |
-| `DATABASE_URL` | ✅ Yes | - | MySQL connection string: `mysql://user:pass@host:3306/dbname` |
-| `JWT_SECRET` | ✅ Yes | - | JWT signing secret (min 32 chars). Generate: `openssl rand -base64 32` |
-| `ADMIN_UNLOCK_PASSWORD` | ✅ Yes | `ashmor12@` | Admin unlock password. **MUST change in production!** |
-| `NODE_ENV` | ✅ Yes | `production` | Node environment: `development` or `production` |
+| `DATABASE_URL` | ✅ Yes | `sqlite:./data/equiprofile.db` | Database connection. SQLite for dev, MySQL for production: `mysql://user:pass@host:3306/dbname` |
+| `JWT_SECRET` | ✅ Yes | Auto-generated | JWT signing secret (min 32 chars). Generate: `openssl rand -base64 32` |
+| `ADMIN_UNLOCK_PASSWORD` | ✅ Yes | `EquiProfile2026!Admin` | Admin unlock password. **MUST change in production!** |
+| `NODE_ENV` | ✅ Yes | `development` | Node environment: `development` or `production` |
 | `PORT` | No | `3000` | Server port |
-| `BASE_URL` | ✅ Yes (prod) | - | Application base URL (e.g., `https://equiprofile.online`) |
+| `BASE_URL` | ✅ Yes (prod) | `http://localhost:3000` | Application base URL (e.g., `https://equiprofile.online`) |
 | **OAuth (Optional)** | | | |
 | `OAUTH_SERVER_URL` | No | - | OAuth provider URL. Leave empty to use email/password auth only |
 | `VITE_APP_ID` | No | - | OAuth application ID (required if OAUTH_SERVER_URL is set) |
@@ -2659,23 +2720,24 @@ All design decisions are centralized in `client/src/lib/design-system.ts`:
 
 ### Backend
 
-- **Runtime**: Node.js 18+
+- **Runtime**: Node.js 20+ (pinned via `.nvmrc`)
 - **Framework**: Express.js
 - **API**: tRPC for type-safe APIs
-- **Database**: MySQL with Drizzle ORM
+- **Database**: MySQL with Drizzle ORM (SQLite supported for development)
 - **Authentication**: OAuth + JWT sessions
 - **File Storage**: AWS S3 or local filesystem
-- **Payment Processing**: Stripe
+- **Payment Processing**: Stripe (optional, feature-flagged)
 - **Email**: SendGrid (or similar service)
 
 ### DevOps & Build
 
 - **Build Tool**: Vite 7 (Lightning fast)
-- **Package Manager**: npm with legacy peer deps
+- **Package Manager**: pnpm (recommended) or npm
 - **Process Manager**: systemd (production)
 - **Web Server**: Nginx
 - **SSL**: Let's Encrypt (Certbot)
 - **Version Control**: Git + GitHub
+- **Containerization**: Docker with Docker Compose support
 
 ---
 
@@ -2683,12 +2745,27 @@ All design decisions are centralized in `client/src/lib/design-system.ts`:
 
 ### Prerequisites
 
-- Node.js 18.x or higher
-- MySQL 8.0 or higher
-- npm or pnpm
+- Node.js 20.x (use `.nvmrc` with nvm: `nvm use`)
+- MySQL 8.0 or higher (optional, SQLite can be used for development)
+- pnpm (recommended) or npm
 - Git
 
 ### Local Setup
+
+**Quick Start (Recommended):**
+```bash
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+./start.sh
+```
+
+The start script handles everything automatically, including:
+- Installing dependencies
+- Using `.env.default` for sane defaults
+- Building the application
+- Starting the server
+
+**Manual Setup:**
 
 1. **Clone repository**:
    ```bash
@@ -2696,69 +2773,108 @@ All design decisions are centralized in `client/src/lib/design-system.ts`:
    cd Equiprofile.online
    ```
 
-2. **Install dependencies**:
+2. **Use correct Node version**:
    ```bash
-   npm install --legacy-peer-deps
+   nvm use  # Reads from .nvmrc (Node 20)
+   # or install Node 20 manually
    ```
 
-3. **Configure environment**:
+3. **Install dependencies**:
    ```bash
-   # Copy environment files
-   cp .env.example .env
-   cp client/.env.example client/.env
-   
-   # Edit with your local settings
+   pnpm install
+   # or: npm install
+   ```
+
+4. **Configure environment** (optional - defaults are provided):
+   ```bash
+   # .env.default is used automatically in development
+   # To customize, create .env:
+   cp .env.default .env
    nano .env
-   nano client/.env
    ```
 
-4. **Set up database**:
+5. **Set up database** (optional - SQLite is used by default):
    ```bash
-   # Create database
+   # For MySQL, create database and update DATABASE_URL in .env:
    mysql -u root -p
    CREATE DATABASE equiprofile_dev;
    EXIT;
    
+   # Or use the setup script:
+   ./scripts/setup-db.sh
+   
    # Run migrations
-   npm run db:push
+   pnpm run db:push
    ```
 
-5. **Start development server**:
+6. **Start development server**:
    ```bash
-   npm run dev
+   pnpm run dev
    ```
 
-   Application will be available at `http://localhost:5173`
+   Application will be available at `http://localhost:3000`
 
 ### Development Scripts
 
 ```bash
 # Start dev server (frontend + backend)
-npm run dev
+pnpm run dev
 
 # Build for production
-npm run build
+pnpm run build
 
 # Start production server
-npm run start
+pnpm run start
+
+# Quick start (install, build, run)
+./start.sh
 
 # Type checking
-npm run check
+pnpm run check
 
 # Format code
-npm run format
+pnpm run format
 
 # Run tests
-npm run test
+pnpm run test
 
 # Database migrations
-npm run db:push
+pnpm run db:push
+
+# Database setup (interactive)
+./scripts/setup-db.sh
+```
+
+### Docker Development
+
+Use Docker Compose for isolated development:
+
+```bash
+# Start services
+docker-compose up
+
+# Start in background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up --build
 ```
 
 ### Project Structure
 
 ```
 Equiprofile.online/
+├── .env.default               # Development environment defaults
+├── .nvmrc                     # Node version specification (20)
+├── Dockerfile                 # Docker container definition
+├── docker-compose.yml         # Docker Compose configuration
+├── start.sh                   # Quick start script
 ├── client/                    # Frontend React application
 │   ├── public/               # Static assets
 │   │   ├── images/          # Image assets
@@ -2796,11 +2912,17 @@ Equiprofile.online/
 │   └── .env.example         # Frontend env template
 ├── server/                   # Backend Node.js application
 │   ├── _core/               # Core server utilities
+│   │   └── env.ts           # Environment validation with fallback support
 │   ├── db.ts                # Database operations
 │   ├── routers.ts           # tRPC routers
 │   └── storage.ts           # File storage
 ├── shared/                   # Shared types and constants
 ├── scripts/                  # Deployment and utility scripts
+│   ├── setup-db.sh          # Database setup script (MySQL/SQLite)
+│   ├── backup.sh            # Database backup script
+│   └── preflight.sh         # Pre-deployment checks
+├── deployment/               # Production deployment scripts
+│   └── install.sh           # Automated installation script
 ├── DEPLOY.md                # Deployment documentation
 ├── README.md                # This file
 └── .env.example             # Backend env template

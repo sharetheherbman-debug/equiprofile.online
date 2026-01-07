@@ -629,8 +629,10 @@ var init_schema = __esm({
 });
 
 // server/_core/env.ts
+import { config } from "dotenv";
+import { existsSync } from "fs";
+import { resolve } from "path";
 function validateEnvironment() {
-  const isProduction = process.env.NODE_ENV === "production";
   const coreRequiredVars = [
     { name: "DATABASE_URL", description: "Database connection string" },
     { name: "JWT_SECRET", description: "JWT secret for token signing" },
@@ -677,7 +679,7 @@ function validateEnvironment() {
     console.error("See .env.example for a complete list of available options.\n");
     process.exit(1);
   }
-  if (isProduction && process.env.ADMIN_UNLOCK_PASSWORD === "ashmor12@") {
+  if (isProduction && (process.env.ADMIN_UNLOCK_PASSWORD === "ashmor12@" || process.env.ADMIN_UNLOCK_PASSWORD === "EquiProfile2026!Admin")) {
     console.error("\u274C PRODUCTION ERROR: ADMIN_UNLOCK_PASSWORD is still set to default value!");
     console.error("You MUST change this to a secure password before running in production.");
     console.error("Generate a secure password and update your .env file.\n");
@@ -702,10 +704,20 @@ function validateEnvironment() {
     process.exit(1);
   }
 }
-var enableStripe, enableUploads, ENV;
+var isProduction, enableStripe, enableUploads, ENV;
 var init_env = __esm({
   "server/_core/env.ts"() {
     "use strict";
+    isProduction = process.env.NODE_ENV === "production";
+    if (!isProduction) {
+      config();
+      const envDefaultPath = resolve(process.cwd(), ".env.default");
+      if (existsSync(envDefaultPath)) {
+        config({ path: envDefaultPath, override: false });
+      }
+    } else {
+      config();
+    }
     enableStripe = process.env.ENABLE_STRIPE === "true";
     enableUploads = process.env.ENABLE_UPLOADS === "true";
     validateEnvironment();
@@ -4230,7 +4242,7 @@ async function createContext(opts) {
 
 // server/_core/vite.ts
 import express3 from "express";
-import fs from "fs";
+import fs2 from "fs";
 import { nanoid as nanoid4 } from "nanoid";
 import path2 from "path";
 import { createServer as createViteServer } from "vite";
@@ -4239,10 +4251,35 @@ import { createServer as createViteServer } from "vite";
 import { jsxLocPlugin } from "@builder.io/vite-plugin-jsx-loc";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
+import fs from "node:fs";
 import path from "path";
 import { defineConfig } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
-var plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime()];
+function injectServiceWorkerVersion() {
+  return {
+    name: "inject-service-worker-version",
+    apply: "build",
+    generateBundle() {
+      const packageJsonPath = path.resolve(import.meta.dirname, "package.json");
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+      const version = packageJson.version || "1.0.0";
+      const swPath = path.resolve(import.meta.dirname, "client/public/service-worker.js");
+      if (fs.existsSync(swPath)) {
+        let swContent = fs.readFileSync(swPath, "utf-8");
+        swContent = swContent.replace(
+          /const CACHE_VERSION = ['"]([^'"]+)['"]/,
+          `const CACHE_VERSION = '${version}'`
+        );
+        this.emitFile({
+          type: "asset",
+          fileName: "service-worker.js",
+          source: swContent
+        });
+      }
+    }
+  };
+}
+var plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), injectServiceWorkerVersion()];
 var vite_config_default = defineConfig({
   plugins,
   resolve: {
@@ -4300,7 +4337,7 @@ async function setupVite(app, server) {
         "client",
         "index.html"
       );
-      let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      let template = await fs2.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid4()}"`
@@ -4315,7 +4352,7 @@ async function setupVite(app, server) {
 }
 function serveStatic(app) {
   const distPath = process.env.NODE_ENV === "development" ? path2.resolve(import.meta.dirname, "../..", "dist", "public") : path2.resolve(import.meta.dirname, "public");
-  if (!fs.existsSync(distPath)) {
+  if (!fs2.existsSync(distPath)) {
     console.error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`
     );
@@ -4331,12 +4368,12 @@ init_db();
 import { nanoid as nanoid5 } from "nanoid";
 init_env();
 function isPortAvailable(port) {
-  return new Promise((resolve) => {
+  return new Promise((resolve2) => {
     const server = net.createServer();
     server.listen(port, () => {
-      server.close(() => resolve(true));
+      server.close(() => resolve2(true));
     });
-    server.on("error", () => resolve(false));
+    server.on("error", () => resolve2(false));
   });
 }
 async function findAvailablePort(startPort = 3e3) {
