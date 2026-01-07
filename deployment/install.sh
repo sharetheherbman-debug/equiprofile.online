@@ -94,7 +94,18 @@ success "Directories created"
 echo ""
 
 # Step 6: Clone or update repository
-if [ -d "$APP_DIR/.git" ]; then
+# Check if we're already in the repository (e.g., extracted from archive)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+if [ -d "$REPO_ROOT/.git" ] && [ "$REPO_ROOT" != "$APP_DIR" ]; then
+  info "Running from repository checkout, copying files to $APP_DIR..."
+  mkdir -p "$APP_DIR"
+  cp -r "$REPO_ROOT/"* "$APP_DIR/" 2>/dev/null || true
+  cp -r "$REPO_ROOT/".* "$APP_DIR/" 2>/dev/null || true
+  cd "$APP_DIR"
+  success "Repository files copied"
+elif [ -d "$APP_DIR/.git" ]; then
   info "Repository already exists, pulling latest changes..."
   cd "$APP_DIR"
   git pull origin main || git pull origin master || warn "Could not pull latest changes"
@@ -181,24 +192,32 @@ info "Installing nginx configuration..."
 if [ ! -f /etc/nginx/sites-available/equiprofile ]; then
   cp "$APP_DIR/deployment/nginx-webdock.conf" /etc/nginx/sites-available/equiprofile
   
-  # Check if running interactively
-  if [ -t 0 ]; then
+  # Try to extract domain from BASE_URL environment variable
+  DOMAIN=""
+  if [ -f "$APP_DIR/.env" ]; then
+    DOMAIN=$(grep "^BASE_URL=" "$APP_DIR/.env" | cut -d'=' -f2 | sed 's|https\?://||' | sed 's|/.*||' | tr -d '"' | tr -d "'")
+  fi
+  
+  # Check if running interactively and BASE_URL not set
+  if [ -z "$DOMAIN" ] && [ -t 0 ]; then
     echo ""
     warn "⚠️  IMPORTANT: Update /etc/nginx/sites-available/equiprofile"
     warn "   Replace DOMAIN_NAME with your actual domain"
     echo ""
-    echo "Enter your domain name (e.g., equiprofile.online):"
+    echo "Enter your domain name (e.g., equiprofile.online) or press Enter for localhost:"
     read -r domain
-    
-    if [ -n "$domain" ]; then
-      sed -i "s/DOMAIN_NAME/$domain/g" /etc/nginx/sites-available/equiprofile
-      success "Domain name updated to: $domain"
-    else
-      warn "No domain provided, you'll need to edit manually"
-    fi
+    DOMAIN="${domain:-localhost}"
+  elif [ -z "$DOMAIN" ]; then
+    # Non-interactive and no BASE_URL, default to localhost
+    DOMAIN="localhost"
+    warn "Running non-interactively without BASE_URL, using 'localhost'"
+  fi
+  
+  if [ -n "$DOMAIN" ]; then
+    sed -i "s/DOMAIN_NAME/$DOMAIN/g" /etc/nginx/sites-available/equiprofile
+    success "Domain name updated to: $DOMAIN"
   else
-    warn "Running non-interactively, skipping domain prompt"
-    warn "Please manually update DOMAIN_NAME in /etc/nginx/sites-available/equiprofile"
+    warn "No domain provided, you'll need to edit manually"
   fi
   
   # Enable site

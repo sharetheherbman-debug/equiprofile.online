@@ -1,10 +1,30 @@
+import { config } from 'dotenv';
+import { existsSync } from 'fs';
+import { resolve } from 'path';
+
+// Load environment variables with fallback to .env.default in non-production
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (!isProduction) {
+  // In development/test, load .env first, then fallback to .env.default
+  config(); // Load .env if exists
+  
+  // If .env doesn't exist or variables are missing, try .env.default
+  const envDefaultPath = resolve(process.cwd(), '.env.default');
+  if (existsSync(envDefaultPath)) {
+    config({ path: envDefaultPath, override: false }); // Don't override existing vars
+  }
+} else {
+  // In production, only load .env (no fallback)
+  config();
+}
+
 // Feature flags (default to false for plug-and-play deployment)
 const enableStripe = process.env.ENABLE_STRIPE === 'true';
 const enableUploads = process.env.ENABLE_UPLOADS === 'true';
 
 // Startup validation helper
 function validateEnvironment() {
-  const isProduction = process.env.NODE_ENV === 'production';
   
   // Core required vars (always needed)
   const coreRequiredVars = [
@@ -64,7 +84,7 @@ function validateEnvironment() {
   }
   
   // Validate no hardcoded fallbacks in production
-  if (isProduction && process.env.ADMIN_UNLOCK_PASSWORD === 'ashmor12@') {
+  if (isProduction && (process.env.ADMIN_UNLOCK_PASSWORD === 'ashmor12@' || process.env.ADMIN_UNLOCK_PASSWORD === 'EquiProfile2026!Admin')) {
     console.error('❌ PRODUCTION ERROR: ADMIN_UNLOCK_PASSWORD is still set to default value!');
     console.error('You MUST change this to a secure password before running in production.');
     console.error('Generate a secure password and update your .env file.\n');
