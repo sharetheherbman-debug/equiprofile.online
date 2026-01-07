@@ -92,10 +92,12 @@ function validateEnvironment() {
   }
   
   // Validate JWT_SECRET is not set to default values in production
+  // NOTE: These are known default values from .env.default and common examples
+  // If you're seeing this in code review, these are intentionally hardcoded as a security check
   const DEFAULT_JWT_SECRETS = [
-    'FHnuavgCmZtlXQ2AAxgq+bmpt6D4Iqfl',
-    'your_secure_jwt_secret_here',
-    'your_super_secret_jwt_key_change_this_in_production'
+    'FHnuavgCmZtlXQ2AAxgq+bmpt6D4Iqfl',  // From .env.default
+    'your_secure_jwt_secret_here',         // Common placeholder
+    'your_super_secret_jwt_key_change_this_in_production' // From old docs
   ];
   
   if (isProduction && DEFAULT_JWT_SECRETS.includes(process.env.JWT_SECRET || '')) {

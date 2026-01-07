@@ -41,12 +41,12 @@
   
   "footer": {
     "copyrightText": "© 2024 EquiProfile. All rights reserved.",
-    "showSocialLinks": true,
+    "showSocialLinks": false,
     "socialLinks": {
-      "facebook": "",
-      "twitter": "",
-      "instagram": "",
-      "linkedin": ""
+      "facebook": null,
+      "twitter": null,
+      "instagram": null,
+      "linkedin": null
     }
   },
   

@@ -27,7 +27,10 @@ fetch('/visual-config.json')
     }
   })
   .catch(err => {
-    console.log('Visual config not loaded, using defaults:', err.message);
+    // Visual config is optional - silently continue if not available
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Visual config not loaded, using defaults:', err.message);
+    }
   });
 
 const queryClient = new QueryClient();
