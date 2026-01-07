@@ -12,6 +12,24 @@ import "./index.css";
 // This must be imported to register showAdmin() and hideAdmin() functions
 import "@/lib/adminToggle";
 
+// Load visual configuration for post-deployment customization
+fetch('/visual-config.json')
+  .then(res => res.json())
+  .then(config => {
+    // Store config globally for components to access
+    (window as any).__VISUAL_CONFIG__ = config;
+    // Optionally apply colors to CSS variables
+    if (config.colors) {
+      const root = document.documentElement;
+      Object.entries(config.colors).forEach(([key, value]) => {
+        root.style.setProperty(`--visual-${key}`, value as string);
+      });
+    }
+  })
+  .catch(err => {
+    console.log('Visual config not loaded, using defaults:', err.message);
+  });
+
 const queryClient = new QueryClient();
 
 const redirectToLoginIfUnauthorized = (error: unknown) => {

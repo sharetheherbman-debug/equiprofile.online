@@ -91,6 +91,20 @@ function validateEnvironment() {
     process.exit(1);
   }
   
+  // Validate JWT_SECRET is not set to default values in production
+  const DEFAULT_JWT_SECRETS = [
+    'FHnuavgCmZtlXQ2AAxgq+bmpt6D4Iqfl',
+    'your_secure_jwt_secret_here',
+    'your_super_secret_jwt_key_change_this_in_production'
+  ];
+  
+  if (isProduction && DEFAULT_JWT_SECRETS.includes(process.env.JWT_SECRET || '')) {
+    console.error('❌ PRODUCTION ERROR: JWT_SECRET is still set to a default value!');
+    console.error('Generate a secure secret with: openssl rand -base64 32');
+    console.error('Update your .env file before running in production.\n');
+    process.exit(1);
+  }
+  
   // Log OAuth configuration status
   if (process.env.OAUTH_SERVER_URL) {
     if (!process.env.VITE_APP_ID) {
