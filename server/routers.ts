@@ -20,6 +20,7 @@ import {
 } from "./csvExport";
 import { eq, and, desc, sql, gte, lte, or, inArray } from "drizzle-orm";
 import { getDb } from "./db";
+import { ENV } from "./_core/env";
 import {
   stables,
   stableMembers,
@@ -216,7 +217,18 @@ export const appRouter = router({
   // Billing and subscription management
   billing: router({
     getPricing: publicProcedure.query(() => {
+      // Return disabled state if billing is disabled
+      if (!ENV.enableStripe) {
+        return {
+          enabled: false,
+          message: 'Billing is disabled',
+          monthly: null,
+          yearly: null,
+        };
+      }
+      
       return {
+        enabled: true,
         monthly: {
           amount: STRIPE_PRICING.monthly.amount,
           currency: STRIPE_PRICING.monthly.currency,
@@ -235,6 +247,14 @@ export const appRouter = router({
         plan: z.enum(['monthly', 'yearly']),
       }))
       .mutation(async ({ ctx, input }) => {
+        // Check if billing is enabled
+        if (!ENV.enableStripe) {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: 'Billing is disabled'
+          });
+        }
+        
         const user = await db.getUserById(ctx.user.id);
         if (!user) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
@@ -275,6 +295,14 @@ export const appRouter = router({
       }),
 
     createPortal: protectedProcedure.mutation(async ({ ctx }) => {
+      // Check if billing is enabled
+      if (!ENV.enableStripe) {
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+          message: 'Billing is disabled'
+        });
+      }
+      
       const user = await db.getUserById(ctx.user.id);
       if (!user || !user.stripeCustomerId) {
         throw new TRPCError({ 
@@ -785,6 +813,14 @@ export const appRouter = router({
         description: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        // Check if uploads are enabled
+        if (!ENV.enableUploads) {
+          throw new TRPCError({
+            code: 'PRECONDITION_FAILED',
+            message: 'Uploads are disabled'
+          });
+        }
+        
         // Decode base64 and upload to S3
         const buffer = Buffer.from(input.fileData, 'base64');
         const fileKey = `${ctx.user.id}/documents/${nanoid()}-${input.fileName}`;
@@ -1147,16 +1183,27 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // Environment Health Check
     getEnvHealth: adminUnlockedProcedure.query(() => {
       const checks = [
-        { name: 'DATABASE_URL', status: !!process.env.DATABASE_URL, critical: true },
-        { name: 'JWT_SECRET', status: !!process.env.JWT_SECRET, critical: true },
-        { name: 'ADMIN_UNLOCK_PASSWORD', status: !!process.env.ADMIN_UNLOCK_PASSWORD, critical: true },
-        { name: 'STRIPE_SECRET_KEY', status: !!process.env.STRIPE_SECRET_KEY, critical: true },
-        { name: 'STRIPE_WEBHOOK_SECRET', status: !!process.env.STRIPE_WEBHOOK_SECRET, critical: true },
-        { name: 'AWS_ACCESS_KEY_ID', status: !!process.env.AWS_ACCESS_KEY_ID, critical: true },
-        { name: 'AWS_SECRET_ACCESS_KEY', status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: true },
-        { name: 'AWS_S3_BUCKET', status: !!process.env.AWS_S3_BUCKET, critical: true },
-        { name: 'OPENAI_API_KEY', status: !!process.env.OPENAI_API_KEY, critical: false },
-        { name: 'SMTP_HOST', status: !!process.env.SMTP_HOST, critical: false },
+        // Core required vars (always critical)
+        { name: 'DATABASE_URL', status: !!process.env.DATABASE_URL, critical: true, conditional: false },
+        { name: 'JWT_SECRET', status: !!process.env.JWT_SECRET, critical: true, conditional: false },
+        { name: 'ADMIN_UNLOCK_PASSWORD', status: !!process.env.ADMIN_UNLOCK_PASSWORD, critical: true, conditional: false },
+        
+        // Stripe vars (critical only if ENABLE_STRIPE=true)
+        { name: 'STRIPE_SECRET_KEY', status: !!process.env.STRIPE_SECRET_KEY, critical: ENV.enableStripe, conditional: true, requiredWhen: 'ENABLE_STRIPE=true' },
+        { name: 'STRIPE_WEBHOOK_SECRET', status: !!process.env.STRIPE_WEBHOOK_SECRET, critical: ENV.enableStripe, conditional: true, requiredWhen: 'ENABLE_STRIPE=true' },
+        
+        // Upload/Storage vars (critical only if ENABLE_UPLOADS=true)
+        { name: 'BUILT_IN_FORGE_API_URL', status: !!process.env.BUILT_IN_FORGE_API_URL, critical: ENV.enableUploads, conditional: true, requiredWhen: 'ENABLE_UPLOADS=true' },
+        { name: 'BUILT_IN_FORGE_API_KEY', status: !!process.env.BUILT_IN_FORGE_API_KEY, critical: ENV.enableUploads, conditional: true, requiredWhen: 'ENABLE_UPLOADS=true' },
+        
+        // Legacy AWS vars (optional - kept for backward compatibility)
+        { name: 'AWS_ACCESS_KEY_ID', status: !!process.env.AWS_ACCESS_KEY_ID, critical: false, conditional: false },
+        { name: 'AWS_SECRET_ACCESS_KEY', status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: false, conditional: false },
+        { name: 'AWS_S3_BUCKET', status: !!process.env.AWS_S3_BUCKET, critical: false, conditional: false },
+        
+        // Optional features
+        { name: 'OPENAI_API_KEY', status: !!process.env.OPENAI_API_KEY, critical: false, conditional: false },
+        { name: 'SMTP_HOST', status: !!process.env.SMTP_HOST, critical: false, conditional: false },
       ];
       
       const allCriticalOk = checks.filter(c => c.critical).every(c => c.status);
@@ -1164,6 +1211,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return {
         healthy: allCriticalOk,
         checks,
+        featureFlags: {
+          enableStripe: ENV.enableStripe,
+          enableUploads: ENV.enableUploads,
+        },
         environment: process.env.NODE_ENV || 'development',
         timestamp: new Date().toISOString(),
       };

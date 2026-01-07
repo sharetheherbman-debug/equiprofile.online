@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { notifyOwner } from "./notification";
 import { adminUnlockedProcedure, publicProcedure, router } from "./trpc";
+import { ENV } from "./env";
 
 export const systemRouter = router({
   health: publicProcedure
@@ -12,6 +13,11 @@ export const systemRouter = router({
     .query(() => ({
       ok: true,
     })),
+
+  getFeatureFlags: publicProcedure.query(() => ({
+    enableStripe: ENV.enableStripe,
+    enableUploads: ENV.enableUploads,
+  })),
 
   notifyOwner: adminUnlockedProcedure
     .input(

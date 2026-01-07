@@ -7,6 +7,10 @@ dist/
 build/
 *.tsbuildinfo
 
+# Environment files
+.env
+.env.local
+.env.*.local
 # Environment variables
 .env
 .env.local
@@ -20,6 +24,20 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/var/log/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Test coverage
 
 # OS files
 .DS_Store
@@ -58,3 +76,16 @@ backups/
 
 # PM2
 .pm2/
+
+# Debug
+.vscode-test/
+
+# OS
+Thumbs.db
+
+# Uploads (if storing locally instead of S3)
+uploads/
+
+# Cache
+.cache/
+.parcel-cache/

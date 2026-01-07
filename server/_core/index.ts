@@ -6,6 +6,8 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
+import authRouter from "./authRouter";
+import billingRouter from "./billingRouter";
 import { appRouter } from "../routers";
 import { apiRouter } from "../api";
 import { createContext } from "./context";
@@ -14,6 +16,8 @@ import { nanoid } from "nanoid";
 import Stripe from "stripe";
 import * as db from "../db";
 import { getStripe } from "../stripe";
+import * as email from "./email";
+import { ENV } from "./env";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -37,6 +41,11 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+
+  // Trust proxy - CRITICAL for correct IP detection behind nginx reverse proxy
+  // Must be set BEFORE rate limiter and any middleware that reads req.ip
+  app.set("trust proxy", 1);
+  console.log("✅ Trust proxy enabled for reverse proxy support");
 
   // Security middleware
   app.use(helmet({
@@ -62,6 +71,7 @@ async function startServer() {
   });
 
   // Rate limiting
+  // Trust proxy is already set globally via app.set("trust proxy", 1)
   const limiter = rateLimit({
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000"), // 15 minutes
     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100"),
@@ -112,12 +122,25 @@ async function startServer() {
           const userId = parseInt(session.metadata?.userId || "0");
           
           if (userId && session.customer && session.subscription) {
+            const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+            const plan = subscription.items.data[0]?.price.recurring?.interval === "year" ? "yearly" : "monthly";
+            
             await db.updateUser(userId, {
               stripeCustomerId: session.customer as string,
               stripeSubscriptionId: session.subscription as string,
               subscriptionStatus: "active",
+              subscriptionPlan: plan,
               lastPaymentAt: new Date(),
             });
+            
+            // Send payment success email
+            const user = await db.getUserById(userId);
+            if (user) {
+              email.sendPaymentSuccessEmail(user, plan).catch(err => 
+                console.error("[Stripe Webhook] Failed to send payment email:", err)
+              );
+            }
+            
             console.log(`[Stripe Webhook] User ${userId} subscription activated`);
           }
           break;
@@ -215,20 +238,55 @@ async function startServer() {
   app.get("/api/health", async (req, res) => {
     const dbConnected = !!(await db.getDb());
     const stripeConfigured = !!getStripe();
+    const oauthConfigured = !!(ENV.oAuthServerUrl && ENV.appId);
+    const version = process.env.npm_package_version || "1.0.0";
     
     res.json({
       status: "healthy",
       timestamp: new Date().toISOString(),
-      version: "1.0.0",
+      version,
       services: {
         database: dbConnected,
         stripe: stripeConfigured,
+        oauth: oauthConfigured,
       },
+    });
+  });
+
+  // OAuth status endpoint
+  app.get("/api/oauth/status", (req, res) => {
+    const configured = !!(ENV.oAuthServerUrl && ENV.appId);
+    res.json({
+      configured,
+      baseUrl: ENV.baseUrl,
+      oauthServerUrl: configured ? ENV.oAuthServerUrl : null,
     });
   });
 
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+
+  // Local auth routes
+  app.use("/api/auth", authRouter);
+
+  // Billing routes (Stripe)
+  app.use("/api/billing", billingRouter);
+
+  // Test email endpoint (admin only)
+  app.post("/api/admin/send-test-email", async (req, res) => {
+    try {
+      const { to } = req.body;
+      if (!to) {
+        return res.status(400).json({ error: "Email address required" });
+      }
+      
+      const success = await email.sendTestEmail(to);
+      res.json({ success, message: success ? "Test email sent" : "Failed to send email (check SMTP config)" });
+    } catch (error) {
+      console.error("[Admin] Test email error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
 
   // tRPC API
   app.use(

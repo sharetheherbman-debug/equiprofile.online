@@ -2,10 +2,16 @@
 // Uses the Biz-provided storage proxy (Authorization: Bearer <token>)
 
 import { ENV } from './_core/env';
+import { TRPCError } from '@trpc/server';
 
 type StorageConfig = { baseUrl: string; apiKey: string };
 
 function getStorageConfig(): StorageConfig {
+  // Check if uploads are enabled
+  if (!ENV.enableUploads) {
+    throw new Error("Uploads are disabled. Set ENABLE_UPLOADS=true to enable storage features.");
+  }
+  
   const baseUrl = ENV.forgeApiUrl;
   const apiKey = ENV.forgeApiKey;
 

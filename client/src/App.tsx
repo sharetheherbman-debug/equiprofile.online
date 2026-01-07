@@ -7,8 +7,22 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { SkipToContent, useKeyboardNavigation } from "./components/AccessibilityHelpers";
 import "./i18n/config";
 
-// Pages
+// Marketing Pages (Public)
 import Home from "./pages/Home";
+import Features from "./pages/Features";
+import Pricing from "./pages/Pricing";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
+
+// Auth Pages
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+
+// App Pages (Protected)
 import Dashboard from "./pages/Dashboard";
 import Pricing from "./pages/Pricing";
 import Horses from "./pages/Horses";
@@ -30,6 +44,8 @@ import TrainingTemplates from "./pages/TrainingTemplates";
 import BreedingManagement from "./pages/BreedingManagement";
 import LessonScheduling from "./pages/LessonScheduling";
 import ClientPortal from "./pages/ClientPortal";
+import Settings from "./pages/Settings";
+import BillingPage from "./pages/BillingPage";
 
 function Router() {
   useKeyboardNavigation();
@@ -39,13 +55,26 @@ function Router() {
       <SkipToContent />
       <main id="main-content">
         <Switch>
-          {/* Public landing page */}
+          {/* Marketing Pages (Public) */}
           <Route path="/" component={Home} />
+          <Route path="/features" component={Features} />
+          <Route path="/pricing" component={Pricing} />
+          <Route path="/about" component={About} />
+          <Route path="/contact" component={Contact} />
+          <Route path="/terms" component={TermsPage} />
+          <Route path="/privacy" component={PrivacyPage} />
+          
+          {/* Auth Pages */}
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/forgot-password" component={ForgotPassword} />
+          <Route path="/reset-password" component={ResetPassword} />
           
           {/* Pricing page */}
           <Route path="/pricing" component={Pricing} />
           
           {/* Dashboard - requires auth */}
+          {/* App Pages (Protected - require auth) */}
           <Route path="/dashboard" component={Dashboard} />
           
           {/* Horse management */}
@@ -92,6 +121,12 @@ function Router() {
           
           {/* Calendar */}
           <Route path="/calendar" component={Calendar} />
+          
+          {/* Settings */}
+          <Route path="/settings" component={Settings} />
+          
+          {/* Billing */}
+          <Route path="/billing" component={BillingPage} />
           
           {/* AI Chat */}
           <Route path="/ai-chat" component={AIChat} />

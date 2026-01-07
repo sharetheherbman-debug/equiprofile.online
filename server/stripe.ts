@@ -1,8 +1,24 @@
 import Stripe from "stripe";
 import { ENV } from "./_core/env";
+import { TRPCError } from "@trpc/server";
+
+// Check if Stripe is enabled
+function checkStripeEnabled() {
+  if (!ENV.enableStripe) {
+    throw new TRPCError({
+      code: 'PRECONDITION_FAILED',
+      message: 'Billing is disabled'
+    });
+  }
+}
 
 // Initialize Stripe with API key from environment
 export function getStripe(): Stripe | null {
+  if (!ENV.enableStripe) {
+    console.warn("[Stripe] Billing feature is disabled");
+    return null;
+  }
+  
   if (!process.env.STRIPE_SECRET_KEY) {
     console.warn("[Stripe] Secret key not configured");
     return null;
@@ -39,6 +55,8 @@ export async function createCheckoutSession(
   cancelUrl: string,
   customerId?: string
 ): Promise<{ sessionId: string; url: string } | null> {
+  checkStripeEnabled();
+  
   const stripe = getStripe();
   if (!stripe) return null;
 
@@ -82,6 +100,8 @@ export async function createPortalSession(
   customerId: string,
   returnUrl: string
 ): Promise<string | null> {
+  checkStripeEnabled();
+  
   const stripe = getStripe();
   if (!stripe) return null;
 

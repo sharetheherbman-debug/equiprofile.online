@@ -199,7 +199,7 @@ class SDKServer {
 
   async verifySession(
     cookieValue: string | undefined | null
-  ): Promise<{ openId: string; appId: string; name: string } | null> {
+  ): Promise<{ openId: string; appId: string; name: string; userId?: number } | null> {
     if (!cookieValue) {
       console.warn("[Auth] Missing session cookie");
       return null;
@@ -210,8 +210,21 @@ class SDKServer {
       const { payload } = await jwtVerify(cookieValue, secretKey, {
         algorithms: ["HS256"],
       });
-      const { openId, appId, name } = payload as Record<string, unknown>;
+      
+      // Support both OAuth format (openId, appId, name) and local auth format (userId)
+      const { openId, appId, name, userId } = payload as Record<string, unknown>;
 
+      // Local auth format
+      if (typeof userId === "number") {
+        return {
+          openId: "", // Will be filled from DB
+          appId: ENV.appId,
+          name: "", // Will be filled from DB
+          userId,
+        };
+      }
+
+      // OAuth format
       if (
         !isNonEmptyString(openId) ||
         !isNonEmptyString(appId) ||
@@ -266,25 +279,36 @@ class SDKServer {
       throw ForbiddenError("Invalid session cookie");
     }
 
-    const sessionUserId = session.openId;
     const signedInAt = new Date();
-    let user = await db.getUserByOpenId(sessionUserId);
+    let user: User | undefined;
 
-    // If user not in DB, sync from OAuth server automatically
-    if (!user) {
-      try {
-        const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
-        await db.upsertUser({
-          openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email ?? null,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: signedInAt,
-        });
-        user = await db.getUserByOpenId(userInfo.openId);
-      } catch (error) {
-        console.error("[Auth] Failed to sync user from OAuth:", error);
-        throw ForbiddenError("Failed to sync user info");
+    // Handle local auth (userId-based JWT)
+    if (session.userId) {
+      user = await db.getUserById(session.userId);
+      if (!user) {
+        throw ForbiddenError("User not found");
+      }
+    } else {
+      // Handle OAuth (openId-based JWT)
+      const sessionUserId = session.openId;
+      user = await db.getUserByOpenId(sessionUserId);
+
+      // If user not in DB, sync from OAuth server automatically
+      if (!user) {
+        try {
+          const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
+          await db.upsertUser({
+            openId: userInfo.openId,
+            name: userInfo.name || null,
+            email: userInfo.email ?? null,
+            loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
+            lastSignedIn: signedInAt,
+          });
+          user = await db.getUserByOpenId(userInfo.openId);
+        } catch (error) {
+          console.error("[Auth] Failed to sync user from OAuth:", error);
+          throw ForbiddenError("Failed to sync user info");
+        }
       }
     }
 
@@ -292,8 +316,8 @@ class SDKServer {
       throw ForbiddenError("User not found");
     }
 
-    await db.upsertUser({
-      openId: user.openId,
+    // Update last signed in
+    await db.updateUser(user.id, {
       lastSignedIn: signedInAt,
     });
 

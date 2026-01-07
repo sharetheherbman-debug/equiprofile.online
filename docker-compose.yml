@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: equiprofile-db
+    restart: unless-stopped
+    environment:
+      # SECURITY WARNING: These are default credentials for development only.
+      # For production, use Docker secrets or override with secure values.
+      MYSQL_ROOT_PASSWORD: equiprofile_root
+      MYSQL_DATABASE: equiprofile
+      MYSQL_USER: equiprofile
+      MYSQL_PASSWORD: equiprofile_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: equiprofile-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      # Override DATABASE_URL to use Docker service name
+      DATABASE_URL: mysql://equiprofile:equiprofile_password@db:3306/equiprofile
+    volumes:
+      # Persist SQLite data if used instead of MySQL
+      - app_data:/app/data
+      # Mount .env file if it exists (for development)
+      - ./.env:/app/.env:ro
+
+volumes:
+  db_data:
+    driver: local
+  app_data:
+    driver: local

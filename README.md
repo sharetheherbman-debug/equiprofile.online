@@ -1,8 +1,792 @@
+# EquiProfile - Professional Horse Management Platform
+
+![EquiProfile](https://img.shields.io/badge/status-production-green)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Node](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen)
+
+A comprehensive, modern web application for equestrian professionals to manage their horses' health records, training schedules, feeding plans, and more.
+
+## 🌟 Features
+
+### Core Features
+- **Horse Profile Management** - Detailed profiles with breed, age, discipline, and photos
+- **Health Records** - Track vaccinations, vet visits, medications, and medical history
+- **Training Scheduler** - Plan and log training sessions with progress tracking
+- **Feeding Plans** - Manage feeding schedules and nutrition information
+- **AI Weather Analysis** - Get intelligent riding recommendations based on weather
+- **Document Storage** - Secure cloud storage for important documents
+- **Subscription Management** - 7-day free trial, flexible monthly/yearly plans
+
+### Admin Features
+- **User Management** - View, suspend, and manage user accounts
+- **System Analytics** - Monitor subscriptions, activity, and system health
+- **Settings Management** - Configure system-wide settings
+- **Activity Logs** - Track all system activities
+- **Automated Backups** - Daily database and file backups
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** 22.x or higher
+- **pnpm** 10.x or higher
+- **MySQL** 8.0 or higher
+- **AWS S3** account (for file storage)
+- **OpenAI API key** (for weather analysis)
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+```
+
+2. **Install dependencies**
+```bash
+pnpm install
+```
+
+3. **Configure environment variables**
+
+Create a `.env` file in the root directory:
+
+```env
+# Database Configuration
+DATABASE_URL=mysql://username:password@localhost:3306/equiprofile
+
+# Application Settings
+NODE_ENV=development
+PORT=3000
+
+# Authentication
+JWT_SECRET=your_secure_jwt_secret_here
+
+# Stripe Payment Integration
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# OpenAI for Weather Analysis
+OPENAI_API_KEY=sk-...
+
+# AWS S3 Storage
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=equiprofile-uploads
+
+# Admin Configuration (optional)
+ADMIN_EMAIL=admin@equiprofile.online
+```
+
+4. **Setup the database**
+```bash
+# Create MySQL database
+mysql -u root -p -e "CREATE DATABASE equiprofile;"
+
+# Run migrations
+pnpm db:push
+```
+
+5. **Start development server**
+```bash
+pnpm dev
+```
+
+The application will be available at `http://localhost:3000`
+
+## 📦 Build & Deploy
+
+### Build for Production
+
+```bash
+# Build frontend and backend
+pnpm build
+
+# Start production server
+pnpm start
+```
+
+### Run Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Type checking
+pnpm check
+
+# Format code
+pnpm format
+```
+
+## 🏗️ Project Structure
+
+```
+Equiprofile.online/
+├── client/                 # Frontend React application
+│   ├── src/
+│   │   ├── components/    # Reusable UI components
+│   │   ├── pages/         # Page components
+│   │   ├── hooks/         # Custom React hooks
+│   │   ├── contexts/      # React contexts
+│   │   └── lib/           # Utility functions
+│   └── public/            # Static assets
+├── server/                # Backend Node.js application
+│   ├── _core/            # Core server functionality
+│   │   ├── trpc.ts       # tRPC setup
+│   │   ├── context.ts    # Request context
+│   │   ├── oauth.ts      # OAuth integration
+│   │   └── llm.ts        # AI/LLM integration
+│   ├── routers.ts        # API route definitions
+│   ├── db.ts             # Database queries
+│   └── storage.ts        # File storage operations
+├── drizzle/              # Database schema and migrations
+│   ├── schema.ts         # Database schema
+│   └── migrations/       # Migration files
+├── shared/               # Shared types and constants
+├── scripts/              # Utility scripts
+└── dist/                 # Production build output
+```
+
+## 🔧 API Documentation
+
+### Authentication
+
+The application uses OAuth 2.0 for authentication. Supported providers:
+- Google
+- GitHub
+- Microsoft
+
+Session management is handled via secure HTTP-only cookies.
+
+### API Endpoints
+
+All API endpoints are exposed via tRPC. Key routers include:
+
+#### User Routes (`/api/trpc/user.*`)
+- `getProfile` - Get current user profile
+- `updateProfile` - Update user profile
+- `getSubscriptionStatus` - Get subscription details
+- `getDashboardStats` - Get dashboard statistics
+
+#### Horse Routes (`/api/trpc/horses.*`)
+- `list` - List all horses
+- `get` - Get horse by ID
+- `create` - Create new horse
+- `update` - Update horse details
+- `delete` - Delete horse
+
+#### Health Records (`/api/trpc/healthRecords.*`)
+- `listAll` - List all health records
+- `listByHorse` - List records for specific horse
+- `create` - Create health record
+- `update` - Update health record
+- `delete` - Delete health record
+- `getReminders` - Get upcoming reminders
+
+#### Training (`/api/trpc/training.*`)
+- `listAll` - List all training sessions
+- `listByHorse` - List sessions for specific horse
+- `getUpcoming` - Get upcoming sessions
+- `create` - Create training session
+- `update` - Update session
+- `complete` - Mark session as complete
+- `delete` - Delete session
+
+#### Admin Routes (`/api/trpc/admin.*`) - Requires admin role
+- `getUsers` - List all users
+- `getUserDetails` - Get detailed user info
+- `suspendUser` - Suspend user account
+- `unsuspendUser` - Unsuspend user account
+- `deleteUser` - Delete user account
+- `getStats` - Get system statistics
+- `getSettings` - Get system settings
+- `updateSetting` - Update system setting
+
+## 🔒 Security
+
+### Authentication & Authorization
+- OAuth 2.0 authentication
+- Role-based access control (user/admin)
+- Session-based authentication with HTTP-only cookies
+- JWT tokens for API access
+
+### Data Protection
+- All passwords are hashed using bcrypt
+- Sensitive data encrypted at rest
+- HTTPS enforced in production
+- CORS protection enabled
+- Rate limiting on API endpoints
+
+### Best Practices
+- Input validation using Zod schemas
+- SQL injection prevention via Drizzle ORM
+- XSS protection via React
+- CSRF protection on state-changing operations
+
+## 🌐 Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions for:
+- Webdock VPS deployment
+- Nginx configuration
+- SSL certificate setup
+- PM2 process management
+- Automated backups
+- Monitoring setup
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For support, please contact:
+- Email: support@equiprofile.online
+- Documentation: [https://docs.equiprofile.online](https://docs.equiprofile.online)
+- Issues: [GitHub Issues](https://github.com/amarktainetwork-blip/Equiprofile.online/issues)
+
+## 🙏 Acknowledgments
+
+- Built with [React](https://react.dev/), [Express](https://expressjs.com/), and [tRPC](https://trpc.io/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
+- Database ORM by [Drizzle](https://orm.drizzle.team/)
+
+---
+
+Made with ❤️ for equestrian professionals worldwide.
 # EquiProfile
 
 **Professional Equine Management Platform**
 
 EquiProfile is a comprehensive, cloud-based platform designed to centralize and streamline the management of horses, stables, and equestrian operations. Built for horse owners, trainers, stable managers, and veterinary professionals, EquiProfile combines intelligent automation, secure data management, and collaborative tools to support the modern equestrian industry.
+
+---
+
+## 🚀 Quickstart
+
+EquiProfile now supports multiple deployment methods for maximum flexibility:
+
+### Option 1: Simple Start Script (Recommended for Quick Testing)
+
+The fastest way to get started with EquiProfile on any system:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+
+# 2. Run the start script (handles everything automatically)
+./start.sh
+```
+
+The start script will:
+- Check for Node.js 20+ (install if missing)
+- Install pnpm if needed
+- Load `.env.default` for local development defaults
+- Install dependencies
+- Build the application
+- Start the server on port 3000
+
+**Default Configuration:**
+- Database: SQLite (file-based, no setup required)
+- JWT Secret: Pre-generated secure random string
+- Admin Password: `EquiProfile2026!Admin` (change for production!)
+- Port: 3000
+- Features: Stripe and Uploads disabled (minimal dependencies)
+
+### Option 2: Docker Compose (Recommended for Development)
+
+Run EquiProfile with Docker for an isolated, reproducible environment:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+
+# 2. Start with Docker Compose
+docker-compose up
+```
+
+This starts:
+- MySQL 8.0 database (persisted in Docker volume)
+- EquiProfile application on port 3000
+
+Access at `http://localhost:3000`
+
+**Customization:**
+- Copy `.env.default` to `.env` and modify as needed
+- Docker Compose will use your `.env` file automatically
+
+### Option 3: Production Deployment (Ubuntu VPS)
+
+Get EquiProfile running on a fresh Ubuntu VPS in under 10 minutes:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+
+# 2. Run the installation script
+sudo ./deployment/install.sh
+
+# 3. Configure your environment
+sudo nano /var/equiprofile/app/.env
+# Edit DATABASE_URL, JWT_SECRET, ADMIN_UNLOCK_PASSWORD
+
+# 4. Restart the service
+sudo systemctl restart equiprofile
+
+# 5. Check health status
+cd /var/equiprofile/app/deployment && sudo bash doctor.sh
+```
+
+Your application will be running at `http://localhost:3000` and proxied through nginx (once configured).
+
+**For SSL/HTTPS:** Run `sudo certbot --nginx -d yourdomain.com` after configuring your domain.
+
+---
+
+## 📋 Environment Variables
+
+EquiProfile supports automatic fallback to `.env.default` in development. For production, create a `.env` file with your configuration.
+
+**Development Defaults (`.env.default`):**
+- SQLite database (no external database required)
+- Random JWT secret pre-generated
+- Feature flags disabled (minimal setup)
+- Admin password: `EquiProfile2026!Admin`
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| **Core Configuration** | | | |
+| `DATABASE_URL` | ✅ Yes | `sqlite:./data/equiprofile.db` | Database connection. SQLite for dev, MySQL for production: `mysql://user:pass@host:3306/dbname` |
+| `JWT_SECRET` | ✅ Yes | Auto-generated | JWT signing secret (min 32 chars). Generate: `openssl rand -base64 32` |
+| `ADMIN_UNLOCK_PASSWORD` | ✅ Yes | `EquiProfile2026!Admin` | Admin unlock password. **MUST change in production!** |
+| `NODE_ENV` | ✅ Yes | `development` | Node environment: `development` or `production` |
+| `PORT` | No | `3000` | Server port |
+| `BASE_URL` | ✅ Yes (prod) | `http://localhost:3000` | Application base URL (e.g., `https://equiprofile.online`) |
+| **OAuth (Optional)** | | | |
+| `OAUTH_SERVER_URL` | No | - | OAuth provider URL. Leave empty to use email/password auth only |
+| `VITE_APP_ID` | No | - | OAuth application ID (required if OAUTH_SERVER_URL is set) |
+| `OWNER_OPEN_ID` | No | - | Owner's OpenID for automatic admin access |
+| **Feature Flags** | | | |
+| `ENABLE_STRIPE` | No | `false` | Enable Stripe billing: `true` or `false` |
+| `ENABLE_UPLOADS` | No | `false` | Enable document uploads: `true` or `false` |
+| **Stripe (Required if ENABLE_STRIPE=true)** | | | |
+| `STRIPE_SECRET_KEY` | Conditional | - | Stripe secret key (`sk_live_` or `sk_test_`) |
+| `STRIPE_WEBHOOK_SECRET` | Conditional | - | Stripe webhook secret (`whsec_`) |
+| `STRIPE_PUBLISHABLE_KEY` | No | - | Stripe publishable key |
+| `STRIPE_MONTHLY_PRICE_ID` | No | - | Monthly subscription price ID |
+| `STRIPE_YEARLY_PRICE_ID` | No | - | Yearly subscription price ID |
+| **Uploads (Required if ENABLE_UPLOADS=true)** | | | |
+| `BUILT_IN_FORGE_API_URL` | Conditional | - | Forge API endpoint URL |
+| `BUILT_IN_FORGE_API_KEY` | Conditional | - | Forge API authentication key |
+| **Security & Proxy** | | | |
+| `RATE_LIMIT_WINDOW_MS` | No | `900000` | Rate limit window (15 min) |
+| `RATE_LIMIT_MAX_REQUESTS` | No | `100` | Max requests per window per IP |
+| `COOKIE_DOMAIN` | No | - | Cookie domain (e.g., `equiprofile.online`) |
+| `COOKIE_SECURE` | No | `false` | Enable secure cookies (set `true` for HTTPS) |
+| **Optional Features** | | | |
+| `OPENAI_API_KEY` | No | - | OpenAI API key for AI features |
+| `SMTP_HOST` | No | - | SMTP server for email notifications |
+| `SMTP_PORT` | No | `587` | SMTP port |
+| `SMTP_USER` | No | - | SMTP username |
+| `SMTP_PASSWORD` | No | - | SMTP password |
+
+**Important Notes:**
+- Application will **fail to start** if required variables are missing
+- In production, app will **refuse to start** if `ADMIN_UNLOCK_PASSWORD` is set to default value
+- `JWT_SECRET` must be at least 32 characters in production
+- Stripe and Upload features are **optional** - app works without them
+
+---
+
+## 🚢 Deployment
+
+### Prerequisites
+
+- Ubuntu 20.04 or 24.04 LTS
+- Root or sudo access
+- 2GB+ RAM recommended
+- MySQL/MariaDB database
+
+### Fresh Installation
+
+The installation script handles all dependencies, builds, and configuration:
+
+```bash
+sudo ./deployment/install.sh
+```
+
+**What it does:**
+1. Installs Node.js 20.x, nginx, MySQL, certbot
+2. Installs pnpm package manager
+3. Creates `/var/equiprofile/app` directory
+4. Clones repository and installs dependencies
+5. Builds frontend and backend
+6. Sets up systemd service
+7. Configures nginx reverse proxy
+8. Runs health checks
+
+### Updating to Latest Version
+
+To safely update an existing installation:
+
+```bash
+cd /var/equiprofile/app/deployment
+sudo ./update.sh
+```
+
+**What it does:**
+1. Creates automatic backup
+2. Pulls latest code from repository
+3. Installs/updates dependencies
+4. Rebuilds application
+5. Restarts services safely
+6. Runs health checks
+7. Rolls back on failure
+
+### Health Monitoring
+
+Run comprehensive health checks anytime:
+
+```bash
+cd /var/equiprofile/app/deployment
+sudo bash doctor.sh
+```
+
+**Checks performed:**
+- ✅ Port 3000 availability
+- ✅ Nginx configuration validity
+- ✅ Systemd service status
+- ✅ Environment variable validation
+- ✅ Health endpoint response
+- ✅ Static assets existence
+- ✅ Database connectivity
+- ✅ Trust proxy configuration
+
+### Environment Validation
+
+Check your environment configuration (with secrets redacted):
+
+```bash
+cd /var/equiprofile/app/deployment
+sudo bash env-check.sh
+```
+
+### Managing the Service
+
+```bash
+# Start service
+sudo systemctl start equiprofile
+
+# Stop service
+sudo systemctl stop equiprofile
+
+# Restart service
+sudo systemctl restart equiprofile
+
+# Check status
+sudo systemctl status equiprofile
+
+# View logs (follow mode)
+sudo journalctl -u equiprofile -f
+
+# View last 100 lines
+sudo journalctl -u equiprofile -n 100
+```
+
+### Nginx Configuration
+
+The nginx configuration template is located at `deployment/nginx-webdock.conf`. Key features:
+
+- **Reverse proxy** to Node.js on port 3000
+- **Critical cache headers** to prevent service worker issues:
+  - `index.html` and `service-worker.js`: **NO CACHE**
+  - `/assets/*` (hashed): **1 year immutable cache**
+- **Trust proxy headers** for correct IP detection
+- **SSL/TLS ready** (commented out, enable after certbot)
+- **Security headers** included
+
+To update nginx config:
+
+```bash
+# Edit your config
+sudo nano /etc/nginx/sites-available/equiprofile
+
+# Test configuration
+sudo nginx -t
+
+# Reload if valid
+sudo systemctl reload nginx
+```
+
+### SSL Certificate Setup
+
+After configuring your domain in nginx:
+
+```bash
+# Install SSL certificate with Let's Encrypt
+sudo certbot --nginx -d yourdomain.com
+
+# Certificate auto-renewal is configured automatically
+# Test renewal:
+sudo certbot renew --dry-run
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Service Won't Start
+
+**Check logs:**
+```bash
+sudo journalctl -u equiprofile -n 50
+```
+
+**Common issues:**
+- Missing environment variables → Check `/var/equiprofile/app/.env`
+- Database connection failed → Verify `DATABASE_URL` and MySQL is running
+- Port 3000 already in use → Check with `sudo lsof -i :3000`
+- Build artifacts missing → Run `cd /var/equiprofile/app && pnpm run build`
+
+**Validation:**
+```bash
+cd /var/equiprofile/app/deployment
+sudo bash env-check.sh
+```
+
+### Nginx Reverse Proxy Issues
+
+**Symptoms:**
+- 502 Bad Gateway
+- Connection refused errors
+- Rate limiting not working
+
+**Solutions:**
+
+1. **Verify backend is running:**
+   ```bash
+   curl http://localhost:3000/api/health
+   ```
+
+2. **Check nginx error log:**
+   ```bash
+   sudo tail -f /var/log/nginx/equiprofile-error.log
+   ```
+
+3. **Verify trust proxy headers:**
+   - Trust proxy MUST be set in Express app
+   - Check deployment/nginx-webdock.conf has X-Forwarded-* headers
+
+4. **Test nginx config:**
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
+
+### Service Worker Stuck on Old Version
+
+**Symptoms:**
+- Users see old UI after deployment
+- Changes don't appear without hard refresh
+- Console shows old version
+
+**Solutions:**
+
+1. **Force clear service worker:**
+   - Open DevTools → Application → Service Workers
+   - Click "Unregister"
+   - Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)
+
+2. **Update service worker version:**
+   - Edit `client/public/service-worker.js`
+   - Update `CACHE_VERSION` constant
+   - Rebuild and deploy
+
+3. **Check cache headers:**
+   ```bash
+   curl -I https://yourdomain.com/index.html
+   # Should show: Cache-Control: no-cache, no-store
+   
+   curl -I https://yourdomain.com/service-worker.js
+   # Should show: Cache-Control: no-cache, no-store
+   ```
+
+4. **Verify nginx cache headers:**
+   - Check `/etc/nginx/sites-available/equiprofile`
+   - Ensure `index.html` and `service-worker.js` have `no-cache` headers
+
+### OAuth Callback Errors
+
+**Symptoms:**
+- "Missing code parameter" error
+- "OAuth callback failed" message
+- Redirect loop
+
+**Solutions:**
+
+1. **Check OAuth configuration:**
+   ```bash
+   curl http://localhost:3000/api/oauth/status
+   ```
+
+2. **Verify environment variables:**
+   - `OAUTH_SERVER_URL` must be valid URL
+   - `VITE_APP_ID` must match OAuth provider
+   - `BASE_URL` must match callback URL registered with provider
+
+3. **Check callback URL:**
+   - Must be: `https://yourdomain.com/api/oauth/callback`
+   - Must match exactly in OAuth provider settings
+
+4. **Review logs:**
+   ```bash
+   sudo journalctl -u equiprofile | grep OAuth
+   ```
+
+### Cookie Domain/Secure Flag Issues
+
+**Symptoms:**
+- Login works but session not persisted
+- Logged out immediately after login
+- Cookies not set in browser
+
+**Solutions:**
+
+1. **For HTTPS (production):**
+   ```bash
+   # In .env:
+   COOKIE_SECURE=true
+   COOKIE_DOMAIN=yourdomain.com
+   BASE_URL=https://yourdomain.com
+   ```
+
+2. **For HTTP (development):**
+   ```bash
+   # In .env:
+   COOKIE_SECURE=false
+   # COOKIE_DOMAIN= (leave empty or comment out)
+   BASE_URL=http://localhost:3000
+   ```
+
+3. **After changes:**
+   ```bash
+   sudo systemctl restart equiprofile
+   ```
+
+### Trust Proxy / Rate Limiting Errors
+
+**Symptoms:**
+- Rate limit triggers for all users
+- IP address shows as 127.0.0.1 in logs
+- Rate limiting too aggressive
+
+**Solutions:**
+
+1. **Verify trust proxy is enabled:**
+   ```bash
+   # Check server logs on startup
+   sudo journalctl -u equiprofile -n 100 | grep "trust proxy"
+   # Should show: "✅ Trust proxy enabled"
+   ```
+
+2. **Check nginx headers:**
+   ```bash
+   # Should include:
+   proxy_set_header X-Real-IP $remote_addr;
+   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   ```
+
+3. **Verify IP detection:**
+   ```bash
+   # Add temporary logging to check req.ip
+   # Check logs to see real client IP vs 127.0.0.1
+   ```
+
+4. **Adjust rate limits if needed:**
+   ```bash
+   # In .env:
+   RATE_LIMIT_WINDOW_MS=900000  # 15 minutes
+   RATE_LIMIT_MAX_REQUESTS=100   # per IP
+   ```
+
+### Database Connection Issues
+
+**Symptoms:**
+- "Database connection failed" error
+- Timeouts on startup
+- Health check shows database: false
+
+**Solutions:**
+
+1. **Verify MySQL is running:**
+   ```bash
+   sudo systemctl status mysql
+   # or
+   sudo systemctl status mariadb
+   ```
+
+2. **Test connection manually:**
+   ```bash
+   # Extract details from DATABASE_URL
+   mysql -h hostname -P 3306 -u username -p
+   ```
+
+3. **Check DATABASE_URL format:**
+   ```
+   mysql://username:password@hostname:3306/database_name
+   ```
+
+4. **Grant permissions:**
+   ```sql
+   GRANT ALL PRIVILEGES ON equiprofile.* TO 'equiprofile'@'localhost';
+   FLUSH PRIVILEGES;
+   ```
+
+### Build Failures
+
+**Symptoms:**
+- Build script fails
+- Missing dependencies
+- TypeScript errors
+
+**Solutions:**
+
+1. **Clean install:**
+   ```bash
+   cd /var/equiprofile/app
+   rm -rf node_modules pnpm-lock.yaml
+   pnpm install
+   pnpm run build
+   ```
+
+2. **Check Node version:**
+   ```bash
+   node --version  # Should be 20.x or higher
+   ```
+
+3. **Check disk space:**
+   ```bash
+   df -h /var/equiprofile
+   ```
 
 ---
 
@@ -1411,7 +2195,55 @@ Once unlocked, you can access:
 
 ## Deployment Overview
 
-EquiProfile is deployed on a single VPS with a traditional LAMP-style stack optimized for simplicity and reliability.
+EquiProfile supports plug-and-play deployment with minimal configuration. Use feature flags to control which features are enabled.
+
+### Quick Deployment (Minimal Configuration)
+
+**Required Environment Variables:**
+```env
+DATABASE_URL=mysql://user:pass@host:3306/database
+JWT_SECRET=your_secret_here
+ADMIN_UNLOCK_PASSWORD=your_password_here
+ENABLE_STRIPE=false
+ENABLE_UPLOADS=false
+```
+
+**Deployment Commands:**
+```bash
+# Using pnpm (recommended)
+pnpm install
+pnpm db:push
+pnpm build
+pm2 start ecosystem.config.js --env production
+
+# Validate environment before deploying
+./scripts/preflight.sh
+```
+
+### Feature Flags
+
+Control which features are enabled via environment variables:
+
+**`ENABLE_STRIPE`** (default: `false`)
+- When `true`: Enables billing, subscriptions, and payment processing
+- Requires: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+
+**`ENABLE_UPLOADS`** (default: `false`)
+- When `true`: Enables document uploads and file storage
+- Requires: `BUILT_IN_FORGE_API_URL`, `BUILT_IN_FORGE_API_KEY`
+
+**Benefits:**
+- ✅ Deploy without payment processor initially
+- ✅ Deploy without file storage initially
+- ✅ Enable features incrementally as needed
+- ✅ Simpler initial configuration
+- ✅ Faster time to deployment
+
+### Deployment Guides
+
+- **Full Guide:** See [DEPLOYMENT_PLUG_AND_PLAY.md](docs/reports/DEPLOYMENT_PLUG_AND_PLAY.md)
+- **Audit Report:** See [AUDIT_REPORT.md](docs/reports/AUDIT_REPORT.md)
+- **Legacy Guide:** See [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ### Architecture
 
@@ -1459,39 +2291,34 @@ AWS S3 (Document Storage)
 
 **Critical Environment Variables:**
 
-EquiProfile requires specific environment variables to function correctly in production. The application will **refuse to start** in production mode if any critical variables are missing or improperly configured.
+EquiProfile uses feature flags to control which environment variables are required. The application will **refuse to start** in production mode if critical variables are missing.
 
-**Required (Application will NOT start without these):**
+**Always Required (Core):**
 - `DATABASE_URL` - MySQL connection string (format: `mysql://user:pass@host:port/database`)
-- `JWT_SECRET` - Session token signing key (64+ random characters)
-- `ADMIN_UNLOCK_PASSWORD` - Admin mode unlock password (16+ characters, **NOT** default `ashmor12@`)
+- `JWT_SECRET` - Session token signing key (generate with: `openssl rand -base64 32`)
+- `ADMIN_UNLOCK_PASSWORD` - Admin mode unlock password (**NOT** default `ashmor12@`)
+
+**Required if `ENABLE_STRIPE=true`:**
 - `STRIPE_SECRET_KEY` - Stripe API key for payment processing
 - `STRIPE_WEBHOOK_SECRET` - Webhook signature verification key
-- `AWS_ACCESS_KEY_ID` - AWS credentials for S3 file storage
-- `AWS_SECRET_ACCESS_KEY` - AWS secret key for S3
-- `AWS_S3_BUCKET` - S3 bucket name for file uploads
-- `AWS_REGION` - AWS region (default: `eu-west-2`)
 
+**Required if `ENABLE_UPLOADS=true`:**
+- `BUILT_IN_FORGE_API_URL` - Storage API endpoint
+- `BUILT_IN_FORGE_API_KEY` - Storage API authentication key
 **Optional (Features may be degraded without these):**
 - `OPENAI_API_KEY` - AI service access for chat and insights
-- `SMTP_HOST` - Email notification server
-- `SMTP_PORT` - SMTP port (usually 587)
-- `SMTP_USER` - Email account username
-- `SMTP_PASS` - Email account password
-- `SMTP_FROM` - Sender address for system emails
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` - Email notifications
 - `BASE_URL` - Application base URL (for emails and links)
-- `COOKIE_DOMAIN` - Cookie domain for session management
-- `COOKIE_SECURE` - Set to `true` in production for HTTPS-only cookies
-- `OAUTH_SERVER_URL` - External OAuth provider URL (if not using built-in)
-- `VITE_APP_ID` - Application identifier
+- `COOKIE_DOMAIN`, `COOKIE_SECURE` - Cookie configuration
 - `OWNER_OPEN_ID` - Owner account identifier for auto-admin assignment
 
 **Production Validation:**
 The application performs startup validation in production mode:
 1. ✅ Checks all critical environment variables are present
-2. ✅ Validates `ADMIN_UNLOCK_PASSWORD` is not the default value
-3. ✅ Exits with clear error message if validation fails
-4. ✅ Prevents insecure deployment configurations
+2. ✅ Validates feature flags and required credentials
+3. ✅ Validates `ADMIN_UNLOCK_PASSWORD` is not the default value
+4. ✅ Exits with clear error message if validation fails
+5. ✅ Prevents insecure deployment configurations
 
 **Generating Secure Values:**
 ```bash
@@ -2084,6 +2911,402 @@ Full Privacy Policy available at: https://equiprofile.online/privacy
 ### Support & Contact
 
 **Technical Support:**
+- Email: support@equiprofile.online
+- Response time: 24-48 hours (business days)
+- Priority support for Stable plan subscribers
+
+**Business Inquiries:**
+- Email: hello@equiprofile.online
+
+**Security Issues:**
+- Email: security@equiprofile.online
+- Responsible disclosure appreciated
+
+**Documentation:**
+- Online: https://docs.equiprofile.online
+- In-app help center
+
+---
+
+## 🎨 Design System
+
+EquiProfile features a modern, accessible design system built with premium colors and consistent spacing.
+
+### Color Palette
+
+The application uses a vibrant, modern color scheme:
+
+- **Primary**: Vibrant Blue (`oklch(0.55 0.25 250)`) - Professional & trustworthy
+- **Secondary**: Purple (`oklch(0.55 0.20 280)`) - Premium & modern  
+- **Accent**: Teal (`oklch(0.55 0.20 190)`) - Fresh & energetic
+- **Success**: Green - Positive actions
+- **Warning**: Amber - Caution states
+- **Danger**: Red - Critical alerts
+
+**NO BROWN COLORS** - The design explicitly avoids brown tones for a fresh, modern aesthetic.
+
+### Design Tokens
+
+All design decisions are centralized in `client/src/lib/design-system.ts`:
+
+- Typography scale with proper hierarchy
+- Spacing system based on 4px grid
+- Border radius tokens for consistent roundness
+- Shadow system for depth and elevation
+- Transition timing for smooth animations
+- Z-index layers for proper stacking
+
+### Typography
+
+- **Sans Serif**: Inter - Body text and UI elements
+- **Serif**: Playfair Display - Headings and emphasis
+- Font sizes range from 12px to 128px with proper line heights
+- Responsive scaling on smaller screens
+
+### Accessibility
+
+- WCAG AA contrast ratios for all text
+- Focus indicators on interactive elements
+- Keyboard navigation support
+- Screen reader optimizations
+- Skip-to-content links
+- Semantic HTML throughout
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- **Framework**: React 19.2 with TypeScript
+- **Routing**: Wouter (lightweight React router)
+- **Styling**: Tailwind CSS 4 with custom design tokens
+- **UI Components**: Radix UI primitives + shadcn/ui
+- **Animations**: Framer Motion for smooth transitions
+- **Forms**: React Hook Form + Zod validation
+- **State Management**: TanStack Query (React Query)
+- **API Client**: tRPC for end-to-end type safety
+- **Internationalization**: i18next + react-i18next
+- **Charts**: Recharts for data visualization
+- **Icons**: Lucide React
+
+### Backend
+
+- **Runtime**: Node.js 20+ (pinned via `.nvmrc`)
+- **Framework**: Express.js
+- **API**: tRPC for type-safe APIs
+- **Database**: MySQL with Drizzle ORM (SQLite supported for development)
+- **Authentication**: OAuth + JWT sessions
+- **File Storage**: AWS S3 or local filesystem
+- **Payment Processing**: Stripe (optional, feature-flagged)
+- **Email**: SendGrid (or similar service)
+
+### DevOps & Build
+
+- **Build Tool**: Vite 7 (Lightning fast)
+- **Package Manager**: pnpm (recommended) or npm
+- **Process Manager**: systemd (production)
+- **Web Server**: Nginx
+- **SSL**: Let's Encrypt (Certbot)
+- **Version Control**: Git + GitHub
+- **Containerization**: Docker with Docker Compose support
+
+---
+
+## 🚀 Development
+
+### Prerequisites
+
+- Node.js 20.x (use `.nvmrc` with nvm: `nvm use`)
+- MySQL 8.0 or higher (optional, SQLite can be used for development)
+- pnpm (recommended) or npm
+- Git
+
+### Local Setup
+
+**Quick Start (Recommended):**
+```bash
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
+./start.sh
+```
+
+The start script handles everything automatically, including:
+- Installing dependencies
+- Using `.env.default` for sane defaults
+- Building the application
+- Starting the server
+
+**Manual Setup:**
+
+1. **Clone repository**:
+   ```bash
+   git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+   cd Equiprofile.online
+   ```
+
+2. **Use correct Node version**:
+   ```bash
+   nvm use  # Reads from .nvmrc (Node 20)
+   # or install Node 20 manually
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pnpm install
+   # or: npm install
+   ```
+
+4. **Configure environment** (optional - defaults are provided):
+   ```bash
+   # .env.default is used automatically in development
+   # To customize, create .env:
+   cp .env.default .env
+   nano .env
+   ```
+
+5. **Set up database** (optional - SQLite is used by default):
+   ```bash
+   # For MySQL, create database and update DATABASE_URL in .env:
+   mysql -u root -p
+   CREATE DATABASE equiprofile_dev;
+   EXIT;
+   
+   # Or use the setup script:
+   ./scripts/setup-db.sh
+   
+   # Run migrations
+   pnpm run db:push
+   ```
+
+6. **Start development server**:
+   ```bash
+   pnpm run dev
+   ```
+
+   Application will be available at `http://localhost:3000`
+
+### Development Scripts
+
+```bash
+# Start dev server (frontend + backend)
+pnpm run dev
+
+# Build for production
+pnpm run build
+
+# Start production server
+pnpm run start
+
+# Quick start (install, build, run)
+./start.sh
+
+# Type checking
+pnpm run check
+
+# Format code
+pnpm run format
+
+# Run tests
+pnpm run test
+
+# Database migrations
+pnpm run db:push
+
+# Database setup (interactive)
+./scripts/setup-db.sh
+```
+
+### Docker Development
+
+Use Docker Compose for isolated development:
+
+```bash
+# Start services
+docker-compose up
+
+# Start in background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up --build
+```
+
+### Project Structure
+
+```
+Equiprofile.online/
+├── .env.default               # Development environment defaults
+├── .nvmrc                     # Node version specification (20)
+├── Dockerfile                 # Docker container definition
+├── docker-compose.yml         # Docker Compose configuration
+├── start.sh                   # Quick start script
+├── client/                    # Frontend React application
+│   ├── public/               # Static assets
+│   │   ├── images/          # Image assets
+│   │   └── icons/           # Icon assets
+│   ├── src/
+│   │   ├── _core/           # Core utilities and hooks
+│   │   ├── components/      # Reusable UI components
+│   │   │   ├── ui/         # Base UI components (shadcn)
+│   │   │   ├── MarketingNav.tsx
+│   │   │   ├── AppLayout.tsx
+│   │   │   ├── ProtectedRoute.tsx
+│   │   │   ├── PageTransition.tsx
+│   │   │   └── ScrollReveal.tsx
+│   │   ├── pages/           # Page components
+│   │   │   ├── auth/       # Auth pages (Login, Register)
+│   │   │   ├── Home.tsx
+│   │   │   ├── Features.tsx
+│   │   │   ├── Pricing.tsx
+│   │   │   ├── About.tsx
+│   │   │   ├── Contact.tsx
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── Settings.tsx
+│   │   │   └── ... (other app pages)
+│   │   ├── contexts/        # React contexts
+│   │   ├── hooks/           # Custom React hooks
+│   │   ├── lib/             # Utility libraries
+│   │   │   ├── design-system.ts
+│   │   │   ├── env.ts
+│   │   │   └── trpc.ts
+│   │   ├── i18n/            # Internationalization
+│   │   ├── App.tsx          # Main app component
+│   │   ├── main.tsx         # Entry point
+│   │   └── index.css        # Global styles
+│   ├── index.html           # HTML template
+│   └── .env.example         # Frontend env template
+├── server/                   # Backend Node.js application
+│   ├── _core/               # Core server utilities
+│   │   └── env.ts           # Environment validation with fallback support
+│   ├── db.ts                # Database operations
+│   ├── routers.ts           # tRPC routers
+│   └── storage.ts           # File storage
+├── shared/                   # Shared types and constants
+├── scripts/                  # Deployment and utility scripts
+│   ├── setup-db.sh          # Database setup script (MySQL/SQLite)
+│   ├── backup.sh            # Database backup script
+│   └── preflight.sh         # Pre-deployment checks
+├── deployment/               # Production deployment scripts
+│   └── install.sh           # Automated installation script
+├── DEPLOY.md                # Deployment documentation
+├── README.md                # This file
+└── .env.example             # Backend env template
+```
+
+### Environment Variables
+
+See [Environment Configuration](#environment-configuration) in DEPLOY.md for complete list.
+
+Key development variables:
+
+**Backend** (`.env`):
+- `DATABASE_URL` - MySQL connection string
+- `JWT_SECRET` - Session signing key
+- `NODE_ENV=development`
+
+**Frontend** (`client/.env`):
+- `VITE_API_BASE_URL` - Leave empty for same-origin
+- `VITE_ENV=development`
+
+---
+
+## 📦 Build & Deploy
+
+See **[DEPLOY.md](./DEPLOY.md)** for comprehensive deployment instructions including:
+
+- Server setup and configuration
+- Database setup
+- Nginx configuration
+- SSL certificate setup
+- Process management with systemd
+- Automated deployment scripts
+- Troubleshooting guide
+
+### Quick Deploy
+
+```bash
+# Build application
+npm install --legacy-peer-deps
+npm run build
+
+# Output:
+# - dist/public/ - Frontend static files
+# - dist/index.js - Backend server
+```
+
+---
+
+## 🧪 Testing
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+Test coverage:
+- Unit tests for utilities and helpers
+- Integration tests for API endpoints
+- Component tests for React components
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Build fails with peer dependency errors**:
+```bash
+npm install --legacy-peer-deps
+```
+
+**Blank page after deployment**:
+- Check browser console (F12)
+- Verify Nginx configuration
+- Check that environment variables are set
+
+**API calls fail**:
+- Ensure backend is running
+- Check CORS configuration
+- Verify API base URL
+
+**Database connection errors**:
+- Check DATABASE_URL format
+- Verify MySQL is running
+- Confirm database exists
+
+See [DEPLOY.md](./DEPLOY.md) for more troubleshooting tips.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Write or update tests
+5. Submit a pull request
+
+---
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## 📧 Contact & Support
+
+**Customer Support:**
 - Email: support@equiprofile.online
 - Response time: 24-48 hours (business days)
 - Priority support for Stable plan subscribers
