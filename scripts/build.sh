@@ -30,7 +30,7 @@ echo ""
 
 # Update service worker version
 echo "📝 Updating service worker version..."
-node scripts/update-sw-version.js
+pnpm exec node scripts/update-sw-version.js
 echo ""
 
 # Build client with Vite

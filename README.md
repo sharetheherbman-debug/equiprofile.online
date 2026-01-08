@@ -3,7 +3,7 @@
 ![EquiProfile](https://img.shields.io/badge/status-production-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-blue) <!-- Update when package.json version changes -->
 
 > **A comprehensive, modern web application for equestrian professionals to manage horses' health records, training schedules, feeding plans, and more.**
 
