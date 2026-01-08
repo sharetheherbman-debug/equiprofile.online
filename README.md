@@ -2,8 +2,8 @@
 
 ![EquiProfile](https://img.shields.io/badge/status-production-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)
+![Version](https://img.shields.io/badge/version-1.0.0-blue) <!-- Update when package.json version changes -->
 
 > **A comprehensive, modern web application for equestrian professionals to manage horses' health records, training schedules, feeding plans, and more.**
 
@@ -11,34 +11,88 @@
 
 ## 📖 Table of Contents
 
-- [Quick Start](#-quick-start)
-- [Production Installation (Ubuntu 24)](#-production-installation-ubuntu-24) ⭐ NEW
-- [Features](#-features)
-- [Installation](#-installation)
+- [Prerequisites](#-prerequisites)
+- [Quick Start (Local Development)](#-quick-start-local-development)
+- [Production Deployment](#-production-deployment)
+  - [One-Command Deployment](#one-command-deployment)
+  - [Manual Deployment Steps](#manual-deployment-steps)
+  - [Nginx Configuration](#nginx-configuration)
 - [Configuration](#-configuration)
-- [Deployment](#-deployment)
-- [Offline/Air-Gapped Deployment](#-offlineair-gapped-deployment)
-- [Updating Visuals](#-updating-visuals-post-deployment)
-- [Security](#-security)
-- [API Documentation](#-api-documentation)
-- [Development](#-development)
+- [Build Structure](#-build-structure)
+- [Features](#-features)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
 - [License](#-license)
 
 ---
 
-## 🚀 Quick Start
+## 📋 Prerequisites
 
-Get EquiProfile running in 5 minutes:
+### Required Software
+
+- **Node.js** 20.x or higher ([Download](https://nodejs.org/))
+- **pnpm** 10.x or higher
+  ```bash
+  # Install pnpm globally
+  npm install -g pnpm
+  
+  # Or using corepack (recommended)
+  corepack enable
+  corepack prepare pnpm@latest --activate
+  ```
+
+### Database (Choose One)
+
+- **SQLite** (default, no setup required) - Good for development
+- **MySQL 8.0+** (recommended for production)
+  ```bash
+  # Ubuntu/Debian
+  sudo apt-get install mysql-server
+  
+  # Create database
+  mysql -u root -p -e "CREATE DATABASE equiprofile CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+  ```
+
+### Production Server Requirements
+
+- **Ubuntu 22.04 LTS or 24.04 LTS** (or similar Linux distribution)
+- **Nginx** (for reverse proxy and SSL termination)
+  ```bash
+  sudo apt-get install nginx
+  ```
+- **Certbot** (for SSL certificates)
+  ```bash
+  sudo apt-get install certbot python3-certbot-nginx
+  ```
+- **Domain name** pointed to your server IP
+
+### Required Environment Variables
+
+**CRITICAL: Must be changed in production!**
+
+Generate secure secrets:
+```bash
+# JWT Secret (32+ characters)
+openssl rand -base64 32
+
+# Admin password (use a strong password manager)
+openssl rand -base64 16
+```
+
+---
+
+## 🚀 Quick Start (Local Development)
+
+Get EquiProfile running locally in 5 minutes:
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
 cd Equiprofile.online
 
-# 2. Install dependencies
-pnpm install
+# 2. Install dependencies with frozen lockfile
+bash scripts/install.sh
+# Or: pnpm install --frozen-lockfile
 
 # 3. Copy environment configuration
 cp .env.example .env
@@ -57,103 +111,211 @@ The application will be available at `http://localhost:3000`
 
 ---
 
-## 🚢 Fresh Install on Webdock / Ubuntu VPS
+## 🚢 Production Deployment
 
-For production deployment on Ubuntu 22.04+ (Webdock, DigitalOcean, AWS, etc.):
+### One-Command Deployment
 
-### Prerequisites
-
-- Ubuntu 22.04 LTS or 24.04 LTS
-- Node.js 20+
-- pnpm
-- nginx
-- MySQL 8.0+
-- Domain name pointed to your server
-
-### Installation Steps
+For the fastest deployment, use the automated deployment script:
 
 ```bash
-# 1. Clone repository to deployment directory
-sudo mkdir -p /var/www/equiprofile
-sudo chown -R www-data:www-data /var/www/equiprofile
-cd /var/www
-sudo -u www-data git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git equiprofile
-cd equiprofile
-
-# 2. Copy and configure environment
-sudo -u www-data cp .env.example .env
-sudo nano .env
-
-# 3. Run one-command deployment
-sudo bash deployment/deploy.sh
-
-# 4. Configure domain in Nginx config
-sudo nano deployment/nginx-equiprofile.conf
-# Replace YOUR_DOMAIN_HERE with your actual domain
-
-# 5. Install Nginx configuration
-sudo cp deployment/nginx-equiprofile.conf /etc/nginx/sites-available/equiprofile
-sudo ln -s /etc/nginx/sites-available/equiprofile /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-
-# 6. Setup SSL with Certbot
-sudo certbot --nginx -d yourdomain.com
-
-# 7. Verify installation
-curl https://yourdomain.com/healthz
+# Run from the project root
+bash scripts/deploy.sh
 ```
 
-**Complete guide**: See [deployment/README_DEPLOY_WEBDOCK.md](deployment/README_DEPLOY_WEBDOCK.md)
+This script will:
+1. ✅ Install all dependencies with frozen lockfile
+2. ✅ Build client and server for production
+3. ✅ Verify build outputs
+4. ✅ Display next steps for configuration
 
-### Critical Environment Variables
+### Manual Deployment Steps
 
+If you prefer step-by-step control:
+
+#### 1. Install Dependencies
+
+```bash
+bash scripts/install.sh
+# This runs: pnpm install --frozen-lockfile
+```
+
+#### 2. Configure Environment
+
+```bash
+# Copy example configuration
+cp .env.example .env
+
+# Edit with production values
+nano .env
+```
+
+**Required environment variables:**
 ```env
-# Database (MySQL for production)
-DATABASE_URL=mysql://equiprofile:password@localhost:3306/equiprofile
-
-# Security - MUST CHANGE IN PRODUCTION!
-JWT_SECRET=<generate with: openssl rand -base64 32>
-ADMIN_UNLOCK_PASSWORD=<your_secure_admin_password>
-
-# Application
 NODE_ENV=production
 PORT=3000
 BASE_URL=https://yourdomain.com
+
+# Database (MySQL for production)
+DATABASE_URL=mysql://equiprofile:your_password@localhost:3306/equiprofile
+
+# Security - MUST CHANGE!
+JWT_SECRET=<generate with: openssl rand -base64 32>
+ADMIN_UNLOCK_PASSWORD=<your_secure_password>
+
+# Optional features
+ENABLE_STRIPE=false
+ENABLE_UPLOADS=false
+VITE_PWA_ENABLED=false
 ```
 
-> **🔒 SECURITY WARNING**: The application will **refuse to start** in production if `JWT_SECRET` or `ADMIN_UNLOCK_PASSWORD` are still set to default values!
+> **🔒 SECURITY**: The application **refuses to start** in production with default secrets!
+
+#### 3. Build Application
+
+```bash
+bash scripts/build.sh
+```
+
+This builds:
+- **Client**: `dist/public/` (Vite-built SPA with hashed assets)
+- **Server**: `dist/index.js` (esbuild-bundled Node.js server)
+
+Build verification ensures:
+- ✅ `dist/index.js` exists (server bundle)
+- ✅ `dist/public/` exists (client static files)
+- ✅ `dist/public/index.html` exists (SPA entry point)
+
+#### 4. Setup Process Manager
+
+**Option A: systemd (recommended for production)**
+
+```bash
+# Copy service file
+sudo cp deployment/systemd/equiprofile.service /etc/systemd/system/
+
+# Edit paths if needed
+sudo nano /etc/systemd/system/equiprofile.service
+
+# Enable and start
+sudo systemctl daemon-reload
+sudo systemctl enable equiprofile
+sudo systemctl start equiprofile
+
+# Check status
+sudo systemctl status equiprofile
+
+# View logs
+sudo journalctl -u equiprofile -f
+```
+
+**Option B: PM2 (alternative)**
+
+```bash
+# Install PM2
+npm install -g pm2
+
+# Start application
+pm2 start ecosystem.config.js
+
+# Save process list
+pm2 save
+
+# Setup startup script
+pm2 startup
+# Follow the instructions displayed
+```
+
+#### 5. Configure Nginx
+
+**Choose one configuration approach:**
+
+##### Approach 1: Proxy All Requests (Recommended - Simplest)
+
+```bash
+# Edit configuration and replace YOUR_DOMAIN_HERE
+sudo nano deployment/nginx/equiprofile.conf
+
+# Copy to nginx
+sudo cp deployment/nginx/equiprofile.conf /etc/nginx/sites-available/equiprofile
+
+# Create symlink
+sudo ln -s /etc/nginx/sites-available/equiprofile /etc/nginx/sites-enabled/
+
+# Test configuration
+sudo nginx -t
+
+# Reload nginx
+sudo systemctl reload nginx
+```
+
+##### Approach 2: Nginx Serves Static Files (Advanced)
+
+```bash
+# Use this if you want Nginx to serve static files directly
+sudo cp deployment/nginx/equiprofile-static.conf /etc/nginx/sites-available/equiprofile
+
+# Edit and update paths
+sudo nano /etc/nginx/sites-available/equiprofile
+
+# Test and reload
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+#### 6. Setup SSL with Let's Encrypt
+
+```bash
+# Replace with your domain
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+# Test auto-renewal
+sudo certbot renew --dry-run
+```
+
+#### 7. Verify Deployment
+
+```bash
+# Check local health
+curl http://127.0.0.1:3000/healthz
+
+# Check public URL
+curl https://yourdomain.com/healthz
+
+# Check build info
+curl https://yourdomain.com/build
+```
+
+### Nginx Configuration
+
+Two configurations are provided:
+
+| Configuration | Description | Use Case |
+|---------------|-------------|----------|
+| `nginx/equiprofile.conf` | **Proxy-all approach** (recommended) | Simplest, most reliable. Node.js serves everything. |
+| `nginx/equiprofile-static.conf` | Nginx serves static files | Better performance for static files, more complex setup. |
+
+**Key differences:**
+
+**Proxy-all approach:**
+- ✅ Simple configuration
+- ✅ No path mismatch issues
+- ✅ Node.js sets correct cache headers
+- ⚠️ Slightly more load on Node.js
+
+**Nginx static approach:**
+- ✅ Better static file performance
+- ⚠️ Must keep paths in sync
+- ⚠️ More complex configuration
+- ⚠️ Requires correct cache headers in Nginx
+
+**Cache Strategy (Both Approaches):**
+- `index.html`: **No cache** (`no-store, no-cache, must-revalidate`)
+- `service-worker.js`: **No cache** (`no-store, no-cache, must-revalidate`)
+- `/assets/*`: **Immutable** (`public, max-age=31536000, immutable`)
+- Other static files: Moderate caching
 
 ---
 
-## 🌟 Features
-
-### Core Features
-- **Horse Profile Management** - Detailed profiles with breed, age, discipline, and photos
-- **Health Records** - Track vaccinations, vet visits, medications, and medical history
-- **Training Scheduler** - Plan and log training sessions with progress tracking
-- **Feeding Plans** - Manage feeding schedules and nutrition information
-- **AI Weather Analysis** - Get intelligent riding recommendations based on weather
-- **Document Storage** - Secure storage for important documents
-- **Subscription Management** - 7-day free trial, flexible monthly/yearly plans
-
-### Admin Features
-- **User Management** - View, suspend, and manage user accounts
-- **System Analytics** - Monitor subscriptions, activity, and system health
-- **Settings Management** - Configure system-wide settings
-- **Activity Logs** - Track all system activities
-- **Automated Backups** - Daily database and file backups
-
-### Technical Features
-- **Progressive Web App (PWA)** - Install on any device, works offline
-- **Real-time Updates** - Live notifications and updates
-- **Multi-language Support** - i18n ready (English, Spanish, more coming)
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Dark Mode** - Easy on the eyes, automatic or manual toggle
-- **Accessibility** - WCAG 2.1 AA compliant
-
----
-
-## 💻 Installation
+## ⚙️ Configuration
 
 ### Prerequisites
 
@@ -313,6 +475,127 @@ RATE_LIMIT_MAX_REQUESTS=100
 # Cookie Security
 COOKIE_DOMAIN=.equiprofile.online
 COOKIE_SECURE=true
+```
+
+---
+
+## 🏗️ Build Structure
+
+Understanding the build output structure is critical for deployment:
+
+### Directory Structure
+
+```
+Equiprofile.online/
+├── client/                    # Frontend source (React + Vite)
+│   ├── src/                   # React application source
+│   ├── public/                # Public static assets
+│   │   ├── service-worker.js  # PWA service worker (versioned)
+│   │   ├── manifest.json      # PWA manifest
+│   │   └── assets/            # Static images, icons
+│   └── index.html             # HTML entry point (NO inline scripts)
+│
+├── server/                    # Backend source (Express + tRPC)
+│   ├── _core/                 # Core server files
+│   │   ├── index.ts           # Main server entry point
+│   │   ├── vite.ts            # Static file serving logic
+│   │   └── ...                # Other core modules
+│   └── ...                    # API routers and business logic
+│
+├── dist/                      # BUILD OUTPUT (generated by `pnpm build`)
+│   ├── index.js               # Bundled server (from esbuild)
+│   └── public/                # Bundled client (from Vite)
+│       ├── index.html         # SPA entry point (NO CACHE)
+│       ├── service-worker.js  # Service worker (NO CACHE)
+│       ├── manifest.json      # PWA manifest
+│       └── assets/            # Hashed static assets (IMMUTABLE CACHE)
+│           ├── index-[hash].js
+│           ├── index-[hash].css
+│           └── ...
+│
+├── scripts/                   # Deployment scripts
+│   ├── install.sh             # Install dependencies (frozen lockfile)
+│   ├── build.sh               # Build for production
+│   ├── deploy.sh              # Orchestrate install + build
+│   └── update-sw-version.js   # Update service worker version
+│
+└── deployment/                # Deployment configurations
+    ├── nginx/                 # Nginx configurations
+    │   ├── equiprofile.conf         # Proxy-all (RECOMMENDED)
+    │   ├── equiprofile-static.conf  # Nginx serves static
+    │   └── archive/                 # Old configs (deprecated)
+    └── systemd/               # systemd service files
+        └── equiprofile.service
+```
+
+### Build Process Details
+
+**Client Build (Vite):**
+```bash
+# Input: client/
+# Output: dist/public/
+# Process:
+#   1. Update service worker version from package.json
+#   2. Bundle React app with code splitting
+#   3. Hash all assets for cache busting
+#   4. Copy public/ folder (service-worker.js, manifest.json, etc.)
+#   5. Generate index.html with hashed script/style links
+```
+
+**Server Build (esbuild):**
+```bash
+# Input: server/_core/index.ts
+# Output: dist/index.js
+# Process:
+#   1. Bundle all server code into single file
+#   2. Mark dependencies as external (requires node_modules at runtime)
+#   3. Minify for production
+#   4. Generate source maps (optional)
+```
+
+### Runtime Dependencies
+
+**IMPORTANT**: The server build uses `--packages=external`, which means:
+- ✅ All dependencies in `package.json` must be available at runtime
+- ✅ You must deploy `node_modules/` OR run `pnpm install --prod --frozen-lockfile` on server
+- ✅ `pnpm-lock.yaml` ensures identical dependency versions
+
+**Alternative** (not recommended): Remove `--packages=external` to bundle all dependencies into `dist/index.js`, but this increases build size and complexity.
+
+### Cache Strategy
+
+| File/Path | Cache-Control | Rationale |
+|-----------|---------------|-----------|
+| `index.html` | `no-store, no-cache, must-revalidate` | Always fetch latest SPA entry point |
+| `service-worker.js` | `no-store, no-cache, must-revalidate` | Force service worker updates on deployment |
+| `/assets/*` | `public, max-age=31536000, immutable` | Hashed filenames = immutable content |
+| Other static files | `public, max-age=86400` | Moderate caching for non-hashed assets |
+
+**Why this matters:**
+- ❌ Caching `index.html` = users stuck on old versions
+- ❌ Caching `service-worker.js` = service worker never updates
+- ✅ Caching `/assets/*` = blazing fast repeat visits (content never changes due to hashing)
+
+### Service Worker Versioning
+
+The service worker is automatically versioned during build:
+
+1. `scripts/update-sw-version.js` reads `package.json` version
+2. Updates `CACHE_VERSION` constant in `client/public/service-worker.js`
+3. Vite plugin copies versioned service worker to `dist/public/`
+4. Version change forces cache invalidation in users' browsers
+
+**To deploy a new version:**
+```bash
+# Bump version in package.json
+npm version patch  # or minor, major
+
+# Build (service worker version auto-updated)
+bash scripts/build.sh
+
+# Deploy and restart
+# Users' browsers will detect new service worker version
+# Old caches are automatically cleaned up
 ```
 
 ---
@@ -1044,96 +1327,395 @@ Tests use Vitest and follow the pattern:
 
 ## 🔧 Troubleshooting
 
-### Common Issues and Solutions
+### Common Deployment Issues
 
-#### Build Errors
+#### Issue 1: Old Design Still Showing After Deployment
 
-**Error: `Cannot find package 'drizzle-orm'`**
+**Symptoms:**
+- Users see old design/features after deployment
+- Changes don't appear even after hard refresh
+- Service worker serves stale content
 
+**Solutions:**
+
+1. **Clear browser cache and service worker:**
+   ```bash
+   # In browser DevTools (F12):
+   # 1. Application tab → Service Workers → Unregister
+   # 2. Application tab → Clear Storage → Clear site data
+   # 3. Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)
+   ```
+
+2. **Verify service worker version updated:**
+   ```bash
+   # Check service-worker.js has new version
+   curl https://yourdomain.com/service-worker.js | grep CACHE_VERSION
+   
+   # Should match package.json version
+   cat package.json | grep version
+   ```
+
+3. **Ensure proper cache headers:**
+   ```bash
+   # Check index.html headers (should be no-cache)
+   curl -I https://yourdomain.com/
+   # Should see: Cache-Control: no-store, no-cache, must-revalidate
+   
+   # Check service-worker.js headers (should be no-cache)
+   curl -I https://yourdomain.com/service-worker.js
+   # Should see: Cache-Control: no-store, no-cache, must-revalidate
+   ```
+
+4. **Force version bump:**
+   ```bash
+   # Bump version in package.json
+   npm version patch
+   
+   # Rebuild (service worker version auto-updates)
+   bash scripts/build.sh
+   
+   # Restart server
+   sudo systemctl restart equiprofile
+   ```
+
+#### Issue 2: CSS/JS Returning HTML (MIME Type Error)
+
+**Symptoms:**
+- Browser console shows: "Refused to apply style because its MIME type ('text/html') is not a supported stylesheet MIME type"
+- Assets return HTML (index.html) instead of actual files
+- White screen or broken styles
+
+**Root Cause:** SPA fallback incorrectly serving index.html for asset requests
+
+**Solutions:**
+
+1. **Check build output exists:**
+   ```bash
+   # Verify dist/public/ contains assets
+   ls -la dist/public/
+   ls -la dist/public/assets/
+   
+   # Verify index.js exists
+   ls -la dist/index.js
+   ```
+
+2. **Verify server static path in production:**
+   ```javascript
+   // In server/_core/vite.ts, check distPath:
+   // Should be: path.resolve(import.meta.dirname, "public")
+   // NOT: path.resolve(import.meta.dirname, "../..", "dist", "public")
+   ```
+
+3. **Check Nginx configuration:**
+   ```bash
+   # If using nginx static serving, verify root path
+   grep "root" /etc/nginx/sites-available/equiprofile
+   # Should point to correct dist/public directory
+   
+   # Test nginx config
+   sudo nginx -t
+   ```
+
+4. **Use recommended proxy-all nginx config:**
+   ```bash
+   # Switch to simpler config (avoids path issues)
+   sudo cp deployment/nginx/equiprofile.conf /etc/nginx/sites-available/equiprofile
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+
+#### Issue 3: CSP Blocking Inline Scripts (White Screen)
+
+**Symptoms:**
+- White screen after deployment
+- Browser console shows CSP errors: "Refused to execute inline script"
+- Application loads in development but not production
+
+**Root Cause:** Content Security Policy blocks inline scripts
+
+**Solution:**
+
+✅ **This should NOT happen** - `client/index.html` contains NO inline scripts!
+
+Verify:
 ```bash
-# Solution: Dependencies weren't bundled properly
-# Check your build script includes --bundle and doesn't have --packages=external
-pnpm build
+# Check index.html for inline scripts
+grep "<script" client/index.html
+# Should ONLY show: <script type="module" src="/src/main.tsx"></script>
+
+# Check built index.html
+grep "<script" dist/public/index.html
+# Should ONLY show external scripts with src="..."
 ```
 
-**Error: `bcrypt` build fails**
+If you see inline scripts:
+1. Move script content to separate `.js` file
+2. Reference with `<script src="/path/to/file.js"></script>`
+3. Rebuild application
+
+#### Issue 4: Multiple/Conflicting Nginx Configs
+
+**Symptoms:**
+- Nginx serves wrong configuration
+- Changes to nginx config don't take effect
+- Multiple server blocks listening on same port
+
+**Solutions:**
+
+1. **Check active nginx configs:**
+   ```bash
+   # List enabled sites
+   ls -la /etc/nginx/sites-enabled/
+   
+   # Check for conflicting server blocks
+   sudo nginx -T | grep "server_name"
+   ```
+
+2. **Remove conflicting configs:**
+   ```bash
+   # Remove old symlinks
+   sudo rm /etc/nginx/sites-enabled/default
+   sudo rm /etc/nginx/sites-enabled/nginx-*
+   
+   # Keep only canonical config
+   sudo ln -sf /etc/nginx/sites-available/equiprofile /etc/nginx/sites-enabled/equiprofile
+   
+   # Test and reload
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+
+3. **Use canonical configuration:**
+   ```bash
+   # Copy recommended config
+   sudo cp deployment/nginx/equiprofile.conf /etc/nginx/sites-available/equiprofile
+   
+   # Edit domain name
+   sudo nano /etc/nginx/sites-available/equiprofile
+   # Replace YOUR_DOMAIN_HERE with actual domain
+   
+   # Test and reload
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+
+#### Issue 5: Build/Runtime Module Errors
+
+**Symptoms:**
+- Error: "Cannot find module 'some-package'"
+- Application builds but crashes at runtime
+- Missing dependencies errors
+
+**Root Cause:** `--packages=external` requires dependencies at runtime
+
+**Solutions:**
+
+1. **Install production dependencies on server:**
+   ```bash
+   # Install with frozen lockfile
+   pnpm install --prod --frozen-lockfile
+   
+   # Verify node_modules exists
+   ls -la node_modules/
+   ```
+
+2. **Rebuild native modules if needed:**
+   ```bash
+   # For bcrypt, esbuild, etc.
+   pnpm rebuild
+   ```
+
+3. **Verify package.json and pnpm-lock.yaml are present:**
+   ```bash
+   ls -la package.json pnpm-lock.yaml
+   # Both must be deployed to production server
+   ```
+
+### Common Runtime Errors
+
+#### Application Refuses to Start
+
+**Error: "JWT_SECRET is still set to default value"**
 
 ```bash
-# Solution: Rebuild native modules
-pnpm rebuild bcrypt
-
-# Or use bcryptjs as fallback (pure JavaScript)
-pnpm add bcryptjs
-```
-
-#### Runtime Errors
-
-**Error: Application refuses to start with "JWT_SECRET is still set to default value"**
-
-```bash
-# Solution: Generate and set a secure JWT secret
+# Generate secure JWT secret
 openssl rand -base64 32
 
-# Add to .env file:
-JWT_SECRET=<generated_secret_here>
+# Add to .env file
+echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env
 ```
 
-**Error: Database connection failed**
+**Error: "Database connection failed"**
 
 ```bash
+# For MySQL: Test connection
+mysql -u username -p -h localhost equiprofile
+
+# Check DATABASE_URL format
+# Correct: mysql://username:password@localhost:3306/equiprofile
+# Incorrect: mysql://username@localhost/equiprofile (missing password/port)
+
 # For SQLite: Check data directory exists
 mkdir -p data/
-
-# For MySQL: Verify connection string
-DATABASE_URL=mysql://username:password@localhost:3306/equiprofile
-
-# Test MySQL connection
-mysql -u username -p -h localhost equiprofile
+chmod 755 data/
 ```
 
-**Error: Port 3000 already in use**
+**Error: "Port 3000 already in use"**
 
 ```bash
-# Find process using port 3000
+# Find process using port
 lsof -i :3000
 
-# Kill the process
+# Kill the process (replace PID)
 kill -9 <PID>
 
-# Or use a different port
-PORT=3001 pnpm start
+# Or change port in .env
+echo "PORT=3001" >> .env
 ```
 
-#### Deployment Issues
-
-**502 Bad Gateway (Nginx)**
+#### 502 Bad Gateway (Nginx)
 
 ```bash
 # Check if application is running
-pm2 status
+sudo systemctl status equiprofile
 
 # Check application logs
-pm2 logs equiprofile
+sudo journalctl -u equiprofile -n 50 --no-pager
 
 # Restart application
-pm2 restart equiprofile
+sudo systemctl restart equiprofile
 
-# Check Nginx configuration
-sudo nginx -t
+# Verify application responds locally
+curl http://127.0.0.1:3000/healthz
+
+# Check Nginx error log
+sudo tail -f /var/log/nginx/error.log
 ```
 
-**SSL Certificate Issues**
+#### SSL Certificate Issues
 
 ```bash
-# Renew certificate
-sudo certbot renew
-
 # Check certificate status
 sudo certbot certificates
 
-# Force renewal
+# Renew certificate
+sudo certbot renew
+
+# Force renewal (if near expiry)
 sudo certbot renew --force-renewal
+
+# Test renewal process
+sudo certbot renew --dry-run
 ```
+
+### Performance Issues
+
+#### Slow Initial Page Load
+
+1. **Enable compression in Nginx:**
+   ```nginx
+   gzip on;
+   gzip_types text/plain text/css application/json application/javascript;
+   gzip_min_length 1000;
+   ```
+
+2. **Verify assets are cached:**
+   ```bash
+   # Check /assets/* headers
+   curl -I https://yourdomain.com/assets/index-[hash].js
+   # Should see: Cache-Control: public, max-age=31536000, immutable
+   ```
+
+3. **Check service worker is active:**
+   ```bash
+   # In browser DevTools → Application → Service Workers
+   # Should show "activated and is running"
+   ```
+
+#### High Memory Usage
+
+```bash
+# Check Node.js memory usage
+pm2 monit
+
+# Increase memory limit if needed
+NODE_OPTIONS="--max-old-space-size=2048" node dist/index.js
+
+# Check for memory leaks
+pm2 logs --lines 100 | grep "heap"
+```
+
+### Development Issues
+
+#### Hot Module Reload Not Working
+
+```bash
+# Check Vite is running in dev mode
+NODE_ENV=development pnpm dev
+
+# Clear Vite cache
+rm -rf node_modules/.vite
+
+# Restart dev server
+pnpm dev
+```
+
+#### TypeScript Errors
+
+```bash
+# Run type checking
+pnpm check
+
+# Clear TypeScript build info
+rm -rf *.tsbuildinfo
+
+# Reinstall dependencies
+rm -rf node_modules/
+pnpm install --frozen-lockfile
+```
+
+### Getting Help
+
+If issues persist:
+
+1. **Check logs:**
+   ```bash
+   # Application logs
+   sudo journalctl -u equiprofile -n 100 --no-pager
+   
+   # Nginx access log
+   sudo tail -f /var/log/nginx/equiprofile-access.log
+   
+   # Nginx error log
+   sudo tail -f /var/log/nginx/equiprofile-error.log
+   ```
+
+2. **Run health checks:**
+   ```bash
+   # Local health check
+   curl http://127.0.0.1:3000/healthz
+   
+   # Public health check
+   curl https://yourdomain.com/healthz
+   
+   # Build info
+   curl https://yourdomain.com/build
+   ```
+
+3. **Verify configuration:**
+   ```bash
+   # Check environment variables
+   grep -v "^#" .env | grep -v "^$"
+   
+   # Test Nginx config
+   sudo nginx -t
+   
+   # Check service status
+   sudo systemctl status equiprofile
+   ```
+
+4. **Report issues:**
+   - GitHub Issues: [amarktainetwork-blip/Equiprofile.online/issues](https://github.com/amarktainetwork-blip/Equiprofile.online/issues)
+   - Include logs, error messages, and configuration (redact sensitive data!)
+
+---
 
 **File Upload Errors**
 

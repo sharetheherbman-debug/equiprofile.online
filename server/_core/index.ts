@@ -48,7 +48,10 @@ async function startServer() {
   app.set("trust proxy", 1);
   console.log("✅ Trust proxy enabled for reverse proxy support");
 
-  // Security middleware with strict CSP (no unsafe-inline for scripts)
+  // Security middleware with strict CSP
+  // NOTE: scriptSrc does NOT include 'unsafe-inline' - all scripts must be external
+  // client/index.html contains NO inline scripts, only <script type="module" src="/src/main.tsx">
+  // This prevents XSS attacks via inline script injection
   app.use(helmet({
     contentSecurityPolicy: {
       directives: {

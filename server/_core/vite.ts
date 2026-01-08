@@ -65,7 +65,7 @@ export function serveStatic(app: Express) {
     '.jpg', '.jpeg', '.gif', '.ico'
   ];
 
-  // Serve static files with explicit MIME types
+  // Serve static files with explicit MIME types and cache headers
   app.use(express.static(distPath, {
     setHeaders: (res, filePath) => {
       // Ensure correct MIME types for assets
@@ -83,10 +83,22 @@ export function serveStatic(app: Express) {
         res.setHeader('Content-Type', 'image/svg+xml');
       }
       
-      // Ensure service worker has correct MIME type
-      if (filePath.endsWith('service-worker.js')) {
+      // Cache control headers
+      // NO CACHE for index.html and service-worker.js to prevent stale versions
+      if (filePath.endsWith('index.html')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      } else if (filePath.endsWith('service-worker.js')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
         res.setHeader('Content-Type', 'application/javascript');
         res.setHeader('Service-Worker-Allowed', '/');
+      } else if (filePath.includes('/assets/')) {
+        // Hashed assets: aggressive caching (immutable)
+        // Note: filePath is resolved by express.static, so this safely matches /assets/ directory
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       }
     }
   }));
