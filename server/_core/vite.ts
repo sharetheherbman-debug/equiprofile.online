@@ -97,6 +97,7 @@ export function serveStatic(app: Express) {
         res.setHeader('Service-Worker-Allowed', '/');
       } else if (filePath.includes('/assets/')) {
         // Hashed assets: aggressive caching (immutable)
+        // Note: filePath is resolved by express.static, so this safely matches /assets/ directory
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       }
     }
