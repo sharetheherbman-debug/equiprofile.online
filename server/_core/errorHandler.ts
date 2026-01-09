@@ -40,7 +40,7 @@ export class AppError extends Error {
  * Format Zod validation errors
  */
 export function formatZodError(error: ZodError): string {
-  const errors = error.errors.map(err => {
+  const errors = error.issues.map((err) => {
     const path = err.path.join(".");
     return `${path}: ${err.message}`;
   });

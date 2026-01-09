@@ -341,3 +341,6 @@ function DashboardLayoutContent({
     </>
   );
 }
+
+// Named export for compatibility with existing imports
+export { DashboardLayout };
