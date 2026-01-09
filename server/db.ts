@@ -345,6 +345,15 @@ export async function getTrainingSessionsByUserId(userId: number) {
   ).orderBy(desc(trainingSessions.sessionDate));
 }
 
+export async function getTrainingSessionById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(trainingSessions).where(
+    and(eq(trainingSessions.id, id), eq(trainingSessions.userId, userId))
+  ).limit(1);
+  return result[0] || null;
+}
+
 export async function getUpcomingTrainingSessions(userId: number) {
   const db = await getDb();
   if (!db) return [];
@@ -406,6 +415,15 @@ export async function getFeedingPlansByHorseId(horseId: number, userId: number) 
   ).orderBy(feedingPlans.mealTime);
 }
 
+export async function getFeedingPlanById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(feedingPlans).where(
+    and(eq(feedingPlans.id, id), eq(feedingPlans.userId, userId))
+  ).limit(1);
+  return result[0] || null;
+}
+
 export async function updateFeedingPlan(id: number, userId: number, data: Partial<InsertFeedingPlan>) {
   const db = await getDb();
   if (!db) return;
@@ -443,6 +461,15 @@ export async function getDocumentsByHorseId(horseId: number, userId: number) {
   return db.select().from(documents).where(
     and(eq(documents.horseId, horseId), eq(documents.userId, userId))
   ).orderBy(desc(documents.createdAt));
+}
+
+export async function getDocumentById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(documents).where(
+    and(eq(documents.id, id), eq(documents.userId, userId))
+  ).limit(1);
+  return result[0] || null;
 }
 
 export async function deleteDocument(id: number, userId: number) {
