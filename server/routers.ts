@@ -805,6 +805,12 @@ export const appRouter = router({
           ...input,
           userId: ctx.user!.id,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const plan = await db.getFeedingPlanById(id, ctx.user!.id);
+        publishModuleEvent('feeding', 'created', plan, ctx.user!.id);
+        
         return { id };
       }),
     
@@ -823,6 +829,12 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
         await db.updateFeedingPlan(id, ctx.user.id, data);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const plan = await db.getFeedingPlanById(id, ctx.user.id);
+        publishModuleEvent('feeding', 'updated', plan, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -830,6 +842,11 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.deleteFeedingPlan(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('feeding', 'deleted', { id: input.id }, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -1125,6 +1142,11 @@ export const appRouter = router({
           details: JSON.stringify({ fileName: input.fileName }),
         });
         
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const document = await db.getDocumentById(id, ctx.user!.id);
+        publishModuleEvent('documents', 'uploaded', document, ctx.user!.id);
+        
         return { id, url };
       }),
     
@@ -1132,6 +1154,11 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.deleteDocument(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('documents', 'deleted', { id: input.id }, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -2264,7 +2291,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           breedingDate: new Date(input.breedingDate),
         });
         
-        return { id: result[0].insertId };
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const recordId = result[0].insertId;
+        const record = await db.select().from(breeding).where(eq(breeding.id, recordId)).limit(1);
+        if (record[0]) {
+          publishModuleEvent('breeding', 'created', record[0], ctx.user!.id);
+        }
+        
+        return { id: recordId };
       }),
 
     list: protectedProcedure
@@ -2365,6 +2400,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .set(dataToUpdate)
           .where(eq(breeding.id, id));
         
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const record = await db.select().from(breeding).where(eq(breeding.id, id)).limit(1);
+        if (record[0]) {
+          publishModuleEvent('breeding', 'updated', record[0], ctx.user.id);
+        }
+        
         return { success: true };
       }),
 
@@ -2395,6 +2437,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         
         await db.delete(breeding)
           .where(eq(breeding.id, input.id));
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('breeding', 'deleted', { id: input.id }, ctx.user.id);
         
         return { success: true };
       }),
