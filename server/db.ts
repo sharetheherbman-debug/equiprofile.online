@@ -937,3 +937,122 @@ export async function verifyApiKey(key: string): Promise<{ userId: number; permi
   
   return null;
 }
+
+// =====================
+// Tasks Functions
+// =====================
+
+export async function createTask(data: {
+  userId: number;
+  horseId?: number;
+  title: string;
+  description?: string;
+  taskType: string;
+  priority?: string;
+  status?: string;
+  dueDate?: Date;
+  assignedTo?: string;
+  notes?: string;
+  reminderDays?: number;
+  isRecurring?: boolean;
+  recurringInterval?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { tasks } = await import('../drizzle/schema');
+  const result = await db.insert(tasks).values(data);
+  return result.insertId;
+}
+
+export async function getTasksByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { tasks } = await import('../drizzle/schema');
+  return db.select().from(tasks).where(eq(tasks.userId, userId)).orderBy(desc(tasks.createdAt));
+}
+
+export async function getTasksByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { tasks } = await import('../drizzle/schema');
+  return db.select().from(tasks).where(
+    and(eq(tasks.horseId, horseId), eq(tasks.userId, userId))
+  ).orderBy(desc(tasks.createdAt));
+}
+
+export async function getTaskById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { tasks } = await import('../drizzle/schema');
+  const results = await db.select().from(tasks).where(
+    and(eq(tasks.id, id), eq(tasks.userId, userId))
+  );
+  return results[0] || null;
+}
+
+export async function getUpcomingTasks(userId: number, days: number = 7) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { tasks } = await import('../drizzle/schema');
+  const futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + days);
+  
+  return db.select().from(tasks).where(
+    and(
+      eq(tasks.userId, userId),
+      eq(tasks.status, 'pending'),
+      lte(tasks.dueDate, futureDate)
+    )
+  ).orderBy(tasks.dueDate);
+}
+
+export async function updateTask(id: number, userId: number, data: {
+  title?: string;
+  description?: string;
+  taskType?: string;
+  priority?: string;
+  status?: string;
+  dueDate?: Date;
+  completedAt?: Date;
+  assignedTo?: string;
+  notes?: string;
+  reminderDays?: number;
+  isRecurring?: boolean;
+  recurringInterval?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { tasks } = await import('../drizzle/schema');
+  await db.update(tasks).set(data).where(
+    and(eq(tasks.id, id), eq(tasks.userId, userId))
+  );
+}
+
+export async function deleteTask(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { tasks } = await import('../drizzle/schema');
+  await db.delete(tasks).where(
+    and(eq(tasks.id, id), eq(tasks.userId, userId))
+  );
+}
+
+export async function completeTask(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { tasks } = await import('../drizzle/schema');
+  await db.update(tasks).set({
+    status: 'completed',
+    completedAt: new Date(),
+  }).where(
+    and(eq(tasks.id, id), eq(tasks.userId, userId))
+  );
+}

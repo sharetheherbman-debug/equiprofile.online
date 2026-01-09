@@ -53,6 +53,7 @@ const menuItems = [
   { icon: Heart, label: "Health Records", path: "/health" },
   { icon: Activity, label: "Training", path: "/training" },
   { icon: ListChecks, label: "Training Templates", path: "/training-templates" },
+  { icon: ListChecks, label: "Tasks", path: "/tasks" },
   { icon: Baby, label: "Breeding", path: "/breeding" },
   { icon: Calendar, label: "Lessons", path: "/lessons" },
   { icon: Utensils, label: "Feeding Plans", path: "/feeding" },

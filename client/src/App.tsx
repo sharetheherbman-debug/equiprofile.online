@@ -33,6 +33,7 @@ import Training from "./pages/Training";
 import Feeding from "./pages/Feeding";
 import Weather from "./pages/Weather";
 import Documents from "./pages/Documents";
+import Tasks from "./pages/Tasks";
 import Admin from "./pages/Admin";
 import Stable from "./pages/Stable";
 import Messages from "./pages/Messages";
@@ -106,6 +107,9 @@ function Router() {
           
           {/* Documents */}
           <Route path="/documents" component={Documents} />
+          
+          {/* Tasks */}
+          <Route path="/tasks" component={Tasks} />
           
           {/* Stable Management */}
           <Route path="/stable" component={Stable} />

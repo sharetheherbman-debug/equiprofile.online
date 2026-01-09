@@ -717,3 +717,27 @@ export const accountFeatures = mysqlTable("accountFeatures", {
 
 export type AccountFeatures = typeof accountFeatures.$inferSelect;
 export type InsertAccountFeatures = typeof accountFeatures.$inferInsert;
+
+// Tasks system for general horse care and management
+export const tasks = mysqlTable("tasks", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  horseId: int("horseId"), // Optional - task may be for specific horse or general
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  taskType: mysqlEnum("taskType", ["hoofcare", "health_appointment", "treatment", "vaccination", "deworming", "dental", "general_care", "training", "feeding", "other"]).notNull(),
+  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).default("medium").notNull(),
+  status: mysqlEnum("status", ["pending", "in_progress", "completed", "cancelled"]).default("pending").notNull(),
+  dueDate: date("dueDate"),
+  completedAt: timestamp("completedAt"),
+  assignedTo: varchar("assignedTo", { length: 100 }), // Name of person assigned
+  notes: text("notes"),
+  reminderDays: int("reminderDays").default(1), // Days before due date to remind
+  isRecurring: boolean("isRecurring").default(false).notNull(),
+  recurringInterval: mysqlEnum("recurringInterval", ["daily", "weekly", "biweekly", "monthly", "quarterly", "yearly"]),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Task = typeof tasks.$inferSelect;
+export type InsertTask = typeof tasks.$inferInsert;

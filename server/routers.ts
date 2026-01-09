@@ -846,6 +846,126 @@ export const appRouter = router({
     }),
   }),
 
+  // Tasks management
+  tasks: router({
+    list: subscribedProcedure.query(async ({ ctx }) => {
+      return db.getTasksByUserId(ctx.user.id);
+    }),
+    
+    listByHorse: subscribedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getTasksByHorseId(input.horseId, ctx.user.id);
+      }),
+    
+    get: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const task = await db.getTaskById(input.id, ctx.user.id);
+        if (!task) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Task not found' });
+        }
+        return task;
+      }),
+    
+    getUpcoming: subscribedProcedure
+      .input(z.object({ days: z.number().default(7) }))
+      .query(async ({ ctx, input }) => {
+        return db.getUpcomingTasks(ctx.user.id, input.days);
+      }),
+    
+    create: subscribedProcedure
+      .input(z.object({
+        horseId: z.number().optional(),
+        title: z.string().min(1),
+        description: z.string().optional(),
+        taskType: z.enum(['hoofcare', 'health_appointment', 'treatment', 'vaccination', 'deworming', 'dental', 'general_care', 'training', 'feeding', 'other']),
+        priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
+        status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).default('pending'),
+        dueDate: z.string().optional(),
+        assignedTo: z.string().optional(),
+        notes: z.string().optional(),
+        reminderDays: z.number().default(1),
+        isRecurring: z.boolean().default(false),
+        recurringInterval: z.enum(['daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly']).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createTask({
+          ...input,
+          userId: ctx.user!.id,
+          dueDate: input.dueDate ? new Date(input.dueDate) : undefined,
+        });
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'task_created',
+          entityType: 'task',
+          entityId: id,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const task = await db.getTaskById(id, ctx.user!.id);
+        publishModuleEvent('tasks', 'created', task, ctx.user!.id);
+        
+        return { id };
+      }),
+    
+    update: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        taskType: z.enum(['hoofcare', 'health_appointment', 'treatment', 'vaccination', 'deworming', 'dental', 'general_care', 'training', 'feeding', 'other']).optional(),
+        priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
+        status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).optional(),
+        dueDate: z.string().optional(),
+        assignedTo: z.string().optional(),
+        notes: z.string().optional(),
+        reminderDays: z.number().optional(),
+        isRecurring: z.boolean().optional(),
+        recurringInterval: z.enum(['daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly']).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, dueDate, ...data } = input;
+        await db.updateTask(id, ctx.user.id, {
+          ...data,
+          dueDate: dueDate ? new Date(dueDate) : undefined,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const task = await db.getTaskById(id, ctx.user.id);
+        publishModuleEvent('tasks', 'updated', task, ctx.user.id);
+        
+        return { success: true };
+      }),
+    
+    delete: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteTask(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('tasks', 'deleted', { id: input.id }, ctx.user.id);
+        
+        return { success: true };
+      }),
+    
+    complete: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.completeTask(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const task = await db.getTaskById(input.id, ctx.user.id);
+        publishModuleEvent('tasks', 'completed', task, ctx.user.id);
+        
+        return { success: true };
+      }),
+  }),
+
   // Documents
   documents: router({
     list: subscribedProcedure.query(async ({ ctx }) => {
