@@ -2053,7 +2053,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           whereConditions.push(eq(trainingSessions.horseId, input.horseId));
         }
         
-        const query = db.select({
+        const result = await db.select({
           totalSessions: sql<number>`COUNT(*)`,
           completedSessions: sql<number>`SUM(CASE WHEN isCompleted = 1 THEN 1 ELSE 0 END)`,
           totalDuration: sql<number>`SUM(duration)`,
@@ -2064,9 +2064,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             WHEN performance = 'poor' THEN 1
             ELSE 0 END)`,
         }).from(trainingSessions)
-        .where(and(...whereConditions));
+        .where(whereConditions.length > 1 ? and(...whereConditions) : whereConditions[0]);
         
-        const result = await query;
         return result[0] || null;
       }),
 
