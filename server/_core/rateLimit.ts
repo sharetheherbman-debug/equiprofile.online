@@ -134,7 +134,8 @@ export function rateLimitMiddleware(
  */
 export function cleanupRateLimitStore(): void {
   const now = Date.now();
-  for (const [key, entry] of Array.from(rateLimitStore.entries())) {
+  const entries = Array.from(rateLimitStore.entries());
+  for (const [key, entry] of entries) {
     if (now > entry.resetAt) {
       rateLimitStore.delete(key);
     }

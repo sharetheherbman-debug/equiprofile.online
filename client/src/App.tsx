@@ -24,7 +24,6 @@ import ResetPassword from "./pages/auth/ResetPassword";
 
 // App Pages (Protected)
 import Dashboard from "./pages/Dashboard";
-import Pricing from "./pages/Pricing";
 import Horses from "./pages/Horses";
 import HorseForm from "./pages/HorseForm";
 import HorseDetail from "./pages/HorseDetail";
