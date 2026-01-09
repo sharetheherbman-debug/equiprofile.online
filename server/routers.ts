@@ -574,6 +574,12 @@ export const appRouter = router({
           entityType: 'health_record',
           entityId: id,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const record = await db.getHealthRecordById(id, ctx.user!.id);
+        publishModuleEvent('health', 'created', record, ctx.user!.id);
+        
         return { id };
       }),
     
@@ -599,6 +605,12 @@ export const appRouter = router({
           recordDate: recordDate ? new Date(recordDate) : undefined,
           nextDueDate: nextDueDate ? new Date(nextDueDate) : undefined,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const record = await db.getHealthRecordById(id, ctx.user.id);
+        publishModuleEvent('health', 'updated', record, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -606,6 +618,11 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.deleteHealthRecord(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('health', 'deleted', { id: input.id }, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -671,6 +688,12 @@ export const appRouter = router({
           entityType: 'training_session',
           entityId: id,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const session = await db.getTrainingSessionById(id, ctx.user!.id);
+        publishModuleEvent('training', 'created', session, ctx.user!.id);
+        
         return { id };
       }),
     
@@ -699,6 +722,12 @@ export const appRouter = router({
           ...data,
           sessionDate: sessionDate ? new Date(sessionDate) : undefined,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const session = await db.getTrainingSessionById(id, ctx.user.id);
+        publishModuleEvent('training', 'updated', session, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -706,6 +735,11 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.deleteTrainingSession(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('training', 'deleted', { id: input.id }, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -721,6 +755,12 @@ export const appRouter = router({
           performance: input.performance,
           notes: input.notes,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const session = await db.getTrainingSessionById(input.id, ctx.user.id);
+        publishModuleEvent('training', 'completed', session, ctx.user.id);
+        
         return { success: true };
       }),
     
