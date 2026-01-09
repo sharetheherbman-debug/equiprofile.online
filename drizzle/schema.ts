@@ -693,3 +693,27 @@ export type AdminSession = typeof adminSessions.$inferSelect;
 export type InsertAdminSession = typeof adminSessions.$inferInsert;
 export type AdminUnlockAttempt = typeof adminUnlockAttempts.$inferSelect;
 export type InsertAdminUnlockAttempt = typeof adminUnlockAttempts.$inferInsert;
+
+// Feature flags for account-level feature enablement
+export const accountFeatures = mysqlTable("accountFeatures", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  // Core features (always enabled)
+  horsesEnabled: boolean("horsesEnabled").default(true).notNull(),
+  healthEnabled: boolean("healthEnabled").default(true).notNull(),
+  trainingEnabled: boolean("trainingEnabled").default(true).notNull(),
+  // Add-on features (require subscription tier)
+  breedingEnabled: boolean("breedingEnabled").default(false).notNull(),
+  financeEnabled: boolean("financeEnabled").default(false).notNull(),
+  salesEnabled: boolean("salesEnabled").default(false).notNull(),
+  teamsEnabled: boolean("teamsEnabled").default(false).notNull(),
+  advancedReportsEnabled: boolean("advancedReportsEnabled").default(false).notNull(),
+  // Beta features
+  peppolEnabled: boolean("peppolEnabled").default(false).notNull(),
+  aiInvoiceScanEnabled: boolean("aiInvoiceScanEnabled").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AccountFeatures = typeof accountFeatures.$inferSelect;
+export type InsertAccountFeatures = typeof accountFeatures.$inferInsert;

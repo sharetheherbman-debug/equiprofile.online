@@ -356,6 +356,46 @@ async function startServer() {
     }
   });
 
+  // Real-time SSE endpoint
+  const { realtimeManager } = await import("./realtime");
+  app.get("/api/realtime/events", async (req, res) => {
+    try {
+      // Get user from session (reuse tRPC context logic)
+      const context = await createContext({ req, res });
+      
+      if (!context.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Register SSE client
+      const clientId = realtimeManager.addClient(context.user.id, res);
+      
+      // Subscribe to user-specific channel
+      realtimeManager.subscribe(clientId, [`user:${context.user.id}`]);
+      
+      console.log(`[SSE] User ${context.user.id} connected with client ${clientId}`);
+    } catch (error) {
+      console.error("[SSE] Connection error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // SSE stats endpoint (admin only)
+  app.get("/api/realtime/stats", async (req, res) => {
+    try {
+      const context = await createContext({ req, res });
+      if (!context.user || context.user.role !== 'admin') {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      
+      const stats = realtimeManager.getStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("[SSE] Stats error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",
