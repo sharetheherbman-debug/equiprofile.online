@@ -1056,3 +1056,95 @@ export async function completeTask(id: number, userId: number) {
     and(eq(tasks.id, id), eq(tasks.userId, userId))
   );
 }
+
+// =====================
+// Contacts Functions
+// =====================
+
+export async function createContact(data: {
+  userId: number;
+  name: string;
+  contactType: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  mobile?: string;
+  address?: string;
+  city?: string;
+  postcode?: string;
+  country?: string;
+  website?: string;
+  notes?: string;
+  isPrimary?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { contacts } = await import('../drizzle/schema');
+  const result = await db.insert(contacts).values(data);
+  return result.insertId;
+}
+
+export async function getContactsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { contacts } = await import('../drizzle/schema');
+  return db.select().from(contacts).where(eq(contacts.userId, userId)).orderBy(desc(contacts.createdAt));
+}
+
+export async function getContactById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { contacts } = await import('../drizzle/schema');
+  const results = await db.select().from(contacts).where(
+    and(eq(contacts.id, id), eq(contacts.userId, userId))
+  );
+  return results[0] || null;
+}
+
+export async function getContactsByType(userId: number, contactType: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { contacts } = await import('../drizzle/schema');
+  return db.select().from(contacts).where(
+    and(eq(contacts.userId, userId), eq(contacts.contactType, contactType))
+  ).orderBy(contacts.name);
+}
+
+export async function updateContact(id: number, userId: number, data: {
+  name?: string;
+  contactType?: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  mobile?: string;
+  address?: string;
+  city?: string;
+  postcode?: string;
+  country?: string;
+  website?: string;
+  notes?: string;
+  isPrimary?: boolean;
+  isActive?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { contacts } = await import('../drizzle/schema');
+  await db.update(contacts).set(data).where(
+    and(eq(contacts.id, id), eq(contacts.userId, userId))
+  );
+}
+
+export async function deleteContact(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { contacts } = await import('../drizzle/schema');
+  await db.delete(contacts).where(
+    and(eq(contacts.id, id), eq(contacts.userId, userId))
+  );
+}

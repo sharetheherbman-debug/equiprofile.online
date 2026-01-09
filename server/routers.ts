@@ -966,6 +966,107 @@ export const appRouter = router({
       }),
   }),
 
+  // Contacts management
+  contacts: router({
+    list: subscribedProcedure.query(async ({ ctx }) => {
+      return db.getContactsByUserId(ctx.user.id);
+    }),
+    
+    listByType: subscribedProcedure
+      .input(z.object({ contactType: z.string() }))
+      .query(async ({ ctx, input }) => {
+        return db.getContactsByType(ctx.user.id, input.contactType);
+      }),
+    
+    get: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const contact = await db.getContactById(input.id, ctx.user.id);
+        if (!contact) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Contact not found' });
+        }
+        return contact;
+      }),
+    
+    create: subscribedProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        contactType: z.enum(['vet', 'farrier', 'trainer', 'instructor', 'stable', 'breeder', 'supplier', 'emergency', 'other']),
+        company: z.string().optional(),
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        mobile: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        postcode: z.string().optional(),
+        country: z.string().optional(),
+        website: z.string().optional(),
+        notes: z.string().optional(),
+        isPrimary: z.boolean().default(false),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createContact({
+          ...input,
+          userId: ctx.user!.id,
+        });
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'contact_created',
+          entityType: 'contact',
+          entityId: id,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const contact = await db.getContactById(id, ctx.user!.id);
+        publishModuleEvent('contacts', 'created', contact, ctx.user!.id);
+        
+        return { id };
+      }),
+    
+    update: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        contactType: z.enum(['vet', 'farrier', 'trainer', 'instructor', 'stable', 'breeder', 'supplier', 'emergency', 'other']).optional(),
+        company: z.string().optional(),
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        mobile: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        postcode: z.string().optional(),
+        country: z.string().optional(),
+        website: z.string().optional(),
+        notes: z.string().optional(),
+        isPrimary: z.boolean().optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateContact(id, ctx.user.id, data);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const contact = await db.getContactById(id, ctx.user.id);
+        publishModuleEvent('contacts', 'updated', contact, ctx.user.id);
+        
+        return { success: true };
+      }),
+    
+    delete: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteContact(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('contacts', 'deleted', { id: input.id }, ctx.user.id);
+        
+        return { success: true };
+      }),
+  }),
+
   // Documents
   documents: router({
     list: subscribedProcedure.query(async ({ ctx }) => {
