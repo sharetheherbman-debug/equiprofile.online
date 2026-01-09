@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,9 +20,35 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { downloadCSV } from "@/lib/csvDownload";
+import { useRealtimeModule } from "@/hooks/useRealtime";
 
 function HorsesContent() {
   const { data: horses, isLoading, refetch } = trpc.horses.list.useQuery();
+  const [localHorses, setLocalHorses] = useState(horses || []);
+  
+  // Real-time updates
+  useRealtimeModule('horses', (action, data) => {
+    switch (action) {
+      case 'created':
+        setLocalHorses(prev => [...prev, data]);
+        toast.success(`${data.name} added`);
+        break;
+      case 'updated':
+        setLocalHorses(prev => 
+          prev.map(h => h.id === data.id ? { ...h, ...data } : h)
+        );
+        break;
+      case 'deleted':
+        setLocalHorses(prev => prev.filter(h => h.id !== data.id));
+        break;
+    }
+  });
+  
+  // Update local state when query data changes
+  useEffect(() => {
+    if (horses) setLocalHorses(horses);
+  }, [horses]);
+  
   const exportMutation = trpc.horses.exportCSV.useQuery(undefined, {
     enabled: false,
   });
@@ -29,7 +56,7 @@ function HorsesContent() {
   const deleteMutation = trpc.horses.delete.useMutation({
     onSuccess: () => {
       toast.success("Horse removed successfully");
-      refetch();
+      // Real-time will handle the UI update
     },
     onError: (error) => {
       toast.error(error.message || "Failed to remove horse");
@@ -78,7 +105,7 @@ function HorsesContent() {
           </p>
         </div>
         <div className="flex gap-2">
-          {horses && horses.length > 0 && (
+          {localHorses && localHorses.length > 0 && (
             <Button variant="outline" onClick={handleExport}>
               <Download className="w-4 h-4 mr-2" />
               Export CSV
@@ -93,7 +120,7 @@ function HorsesContent() {
         </div>
       </div>
 
-      {!horses || horses.length === 0 ? (
+      {!localHorses || localHorses.length === 0 ? (
         <Card className="text-center py-16">
           <CardContent>
             <Heart className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
@@ -111,7 +138,7 @@ function HorsesContent() {
         </Card>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {horses.map((horse) => (
+          {localHorses.map((horse) => (
             <Card key={horse.id} className="card-hover overflow-hidden">
               <div className="aspect-video bg-muted relative">
                 {horse.photoUrl ? (

@@ -12,10 +12,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { toast } from "sonner";
 import { trpc } from "../lib/trpc";
 import { format } from "date-fns";
+import DashboardLayout from "../components/DashboardLayout";
 
 const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export default function LessonScheduling() {
+function LessonSchedulingContent() {
   const [activeTab, setActiveTab] = useState<'bookings' | 'availability'>('bookings');
   
   // Bookings state
@@ -555,5 +556,13 @@ export default function LessonScheduling() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function LessonScheduling() {
+  return (
+    <DashboardLayout>
+      <LessonSchedulingContent />
+    </DashboardLayout>
   );
 }

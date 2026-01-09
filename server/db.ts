@@ -40,7 +40,15 @@ import {
   apiKeys, InsertApiKey,
   webhooks, InsertWebhook,
   adminSessions, InsertAdminSession,
-  adminUnlockAttempts, InsertAdminUnlockAttempt
+  adminUnlockAttempts, InsertAdminUnlockAttempt,
+  treatments, InsertTreatment,
+  appointments, InsertAppointment,
+  dentalCare, InsertDentalCare,
+  xrays, InsertXray,
+  tags, InsertTag,
+  hoofcare, InsertHoofcare,
+  nutritionLogs, InsertNutritionLog,
+  nutritionPlans, InsertNutritionPlan
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -345,6 +353,15 @@ export async function getTrainingSessionsByUserId(userId: number) {
   ).orderBy(desc(trainingSessions.sessionDate));
 }
 
+export async function getTrainingSessionById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(trainingSessions).where(
+    and(eq(trainingSessions.id, id), eq(trainingSessions.userId, userId))
+  ).limit(1);
+  return result[0] || null;
+}
+
 export async function getUpcomingTrainingSessions(userId: number) {
   const db = await getDb();
   if (!db) return [];
@@ -406,6 +423,15 @@ export async function getFeedingPlansByHorseId(horseId: number, userId: number) 
   ).orderBy(feedingPlans.mealTime);
 }
 
+export async function getFeedingPlanById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(feedingPlans).where(
+    and(eq(feedingPlans.id, id), eq(feedingPlans.userId, userId))
+  ).limit(1);
+  return result[0] || null;
+}
+
 export async function updateFeedingPlan(id: number, userId: number, data: Partial<InsertFeedingPlan>) {
   const db = await getDb();
   if (!db) return;
@@ -443,6 +469,15 @@ export async function getDocumentsByHorseId(horseId: number, userId: number) {
   return db.select().from(documents).where(
     and(eq(documents.horseId, horseId), eq(documents.userId, userId))
   ).orderBy(desc(documents.createdAt));
+}
+
+export async function getDocumentById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(documents).where(
+    and(eq(documents.id, id), eq(documents.userId, userId))
+  ).limit(1);
+  return result[0] || null;
 }
 
 export async function deleteDocument(id: number, userId: number) {
@@ -936,4 +971,848 @@ export async function verifyApiKey(key: string): Promise<{ userId: number; permi
   }
   
   return null;
+}
+
+// =====================
+// Tasks Functions
+// =====================
+
+export async function createTask(data: {
+  userId: number;
+  horseId?: number;
+  title: string;
+  description?: string;
+  taskType: string;
+  priority?: string;
+  status?: string;
+  dueDate?: Date;
+  assignedTo?: string;
+  notes?: string;
+  reminderDays?: number;
+  isRecurring?: boolean;
+  recurringInterval?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { tasks } = await import('../drizzle/schema');
+  const result = await db.insert(tasks).values(data);
+  return result.insertId;
+}
+
+export async function getTasksByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { tasks } = await import('../drizzle/schema');
+  return db.select().from(tasks).where(eq(tasks.userId, userId)).orderBy(desc(tasks.createdAt));
+}
+
+export async function getTasksByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { tasks } = await import('../drizzle/schema');
+  return db.select().from(tasks).where(
+    and(eq(tasks.horseId, horseId), eq(tasks.userId, userId))
+  ).orderBy(desc(tasks.createdAt));
+}
+
+export async function getTaskById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { tasks } = await import('../drizzle/schema');
+  const results = await db.select().from(tasks).where(
+    and(eq(tasks.id, id), eq(tasks.userId, userId))
+  );
+  return results[0] || null;
+}
+
+export async function getUpcomingTasks(userId: number, days: number = 7) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { tasks } = await import('../drizzle/schema');
+  const futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + days);
+  
+  return db.select().from(tasks).where(
+    and(
+      eq(tasks.userId, userId),
+      eq(tasks.status, 'pending'),
+      lte(tasks.dueDate, futureDate)
+    )
+  ).orderBy(tasks.dueDate);
+}
+
+export async function updateTask(id: number, userId: number, data: {
+  title?: string;
+  description?: string;
+  taskType?: string;
+  priority?: string;
+  status?: string;
+  dueDate?: Date;
+  completedAt?: Date;
+  assignedTo?: string;
+  notes?: string;
+  reminderDays?: number;
+  isRecurring?: boolean;
+  recurringInterval?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { tasks } = await import('../drizzle/schema');
+  await db.update(tasks).set(data).where(
+    and(eq(tasks.id, id), eq(tasks.userId, userId))
+  );
+}
+
+export async function deleteTask(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { tasks } = await import('../drizzle/schema');
+  await db.delete(tasks).where(
+    and(eq(tasks.id, id), eq(tasks.userId, userId))
+  );
+}
+
+export async function completeTask(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { tasks } = await import('../drizzle/schema');
+  await db.update(tasks).set({
+    status: 'completed',
+    completedAt: new Date(),
+  }).where(
+    and(eq(tasks.id, id), eq(tasks.userId, userId))
+  );
+}
+
+// =====================
+// Contacts Functions
+// =====================
+
+export async function createContact(data: {
+  userId: number;
+  name: string;
+  contactType: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  mobile?: string;
+  address?: string;
+  city?: string;
+  postcode?: string;
+  country?: string;
+  website?: string;
+  notes?: string;
+  isPrimary?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { contacts } = await import('../drizzle/schema');
+  const result = await db.insert(contacts).values(data);
+  return result.insertId;
+}
+
+export async function getContactsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { contacts } = await import('../drizzle/schema');
+  return db.select().from(contacts).where(eq(contacts.userId, userId)).orderBy(desc(contacts.createdAt));
+}
+
+export async function getContactById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { contacts } = await import('../drizzle/schema');
+  const results = await db.select().from(contacts).where(
+    and(eq(contacts.id, id), eq(contacts.userId, userId))
+  );
+  return results[0] || null;
+}
+
+export async function getContactsByType(userId: number, contactType: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { contacts } = await import('../drizzle/schema');
+  return db.select().from(contacts).where(
+    and(eq(contacts.userId, userId), eq(contacts.contactType, contactType))
+  ).orderBy(contacts.name);
+}
+
+export async function updateContact(id: number, userId: number, data: {
+  name?: string;
+  contactType?: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  mobile?: string;
+  address?: string;
+  city?: string;
+  postcode?: string;
+  country?: string;
+  website?: string;
+  notes?: string;
+  isPrimary?: boolean;
+  isActive?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { contacts } = await import('../drizzle/schema');
+  await db.update(contacts).set(data).where(
+    and(eq(contacts.id, id), eq(contacts.userId, userId))
+  );
+}
+
+export async function deleteContact(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { contacts } = await import('../drizzle/schema');
+  await db.delete(contacts).where(
+    and(eq(contacts.id, id), eq(contacts.userId, userId))
+  );
+}
+
+// ============ VACCINATION QUERIES ============
+
+export async function createVaccination(data: {
+  horseId: number;
+  userId: number;
+  vaccineName: string;
+  vaccineType?: string;
+  dateAdministered: Date;
+  nextDueDate?: Date;
+  batchNumber?: string;
+  vetName?: string;
+  vetClinic?: string;
+  cost?: number;
+  notes?: string;
+  documentUrl?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { vaccinations } = await import('../drizzle/schema');
+  const result = await db.insert(vaccinations).values(data);
+  return result.insertId;
+}
+
+export async function getVaccinationsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { vaccinations } = await import('../drizzle/schema');
+  return db.select().from(vaccinations).where(eq(vaccinations.userId, userId)).orderBy(desc(vaccinations.dateAdministered));
+}
+
+export async function getVaccinationsByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { vaccinations } = await import('../drizzle/schema');
+  return db.select().from(vaccinations).where(
+    and(eq(vaccinations.horseId, horseId), eq(vaccinations.userId, userId))
+  ).orderBy(desc(vaccinations.dateAdministered));
+}
+
+export async function getVaccinationById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { vaccinations } = await import('../drizzle/schema');
+  const results = await db.select().from(vaccinations).where(
+    and(eq(vaccinations.id, id), eq(vaccinations.userId, userId))
+  );
+  return results[0] || null;
+}
+
+export async function updateVaccination(id: number, userId: number, data: {
+  vaccineName?: string;
+  vaccineType?: string;
+  dateAdministered?: Date;
+  nextDueDate?: Date;
+  batchNumber?: string;
+  vetName?: string;
+  vetClinic?: string;
+  cost?: number;
+  notes?: string;
+  documentUrl?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { vaccinations } = await import('../drizzle/schema');
+  await db.update(vaccinations).set(data).where(
+    and(eq(vaccinations.id, id), eq(vaccinations.userId, userId))
+  );
+}
+
+export async function deleteVaccination(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { vaccinations } = await import('../drizzle/schema');
+  await db.delete(vaccinations).where(
+    and(eq(vaccinations.id, id), eq(vaccinations.userId, userId))
+  );
+}
+
+// ============ DEWORMING QUERIES ============
+
+export async function createDeworming(data: {
+  horseId: number;
+  userId: number;
+  productName: string;
+  activeIngredient?: string;
+  dateAdministered: Date;
+  nextDueDate?: Date;
+  dosage?: string;
+  weight?: number;
+  cost?: number;
+  notes?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { dewormings } = await import('../drizzle/schema');
+  const result = await db.insert(dewormings).values(data);
+  return result.insertId;
+}
+
+export async function getDewormingsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { dewormings } = await import('../drizzle/schema');
+  return db.select().from(dewormings).where(eq(dewormings.userId, userId)).orderBy(desc(dewormings.dateAdministered));
+}
+
+export async function getDewormingsByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { dewormings } = await import('../drizzle/schema');
+  return db.select().from(dewormings).where(
+    and(eq(dewormings.horseId, horseId), eq(dewormings.userId, userId))
+  ).orderBy(desc(dewormings.dateAdministered));
+}
+
+export async function getDewormingById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { dewormings } = await import('../drizzle/schema');
+  const results = await db.select().from(dewormings).where(
+    and(eq(dewormings.id, id), eq(dewormings.userId, userId))
+  );
+  return results[0] || null;
+}
+
+export async function updateDeworming(id: number, userId: number, data: {
+  productName?: string;
+  activeIngredient?: string;
+  dateAdministered?: Date;
+  nextDueDate?: Date;
+  dosage?: string;
+  weight?: number;
+  cost?: number;
+  notes?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { dewormings } = await import('../drizzle/schema');
+  await db.update(dewormings).set(data).where(
+    and(eq(dewormings.id, id), eq(dewormings.userId, userId))
+  );
+}
+
+export async function deleteDeworming(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { dewormings } = await import('../drizzle/schema');
+  await db.delete(dewormings).where(
+    and(eq(dewormings.id, id), eq(dewormings.userId, userId))
+  );
+}
+
+// ============ PEDIGREE QUERIES ============
+
+export async function createOrUpdatePedigree(data: {
+  horseId: number;
+  sireId?: number;
+  sireName?: string;
+  damId?: number;
+  damName?: string;
+  sireOfSireId?: number;
+  sireOfSireName?: string;
+  damOfSireId?: number;
+  damOfSireName?: string;
+  sireOfDamId?: number;
+  sireOfDamName?: string;
+  damOfDamId?: number;
+  damOfDamName?: string;
+  geneticInfo?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { pedigree } = await import('../drizzle/schema');
+  
+  // Check if pedigree exists for this horse
+  const existing = await db.select().from(pedigree).where(eq(pedigree.horseId, data.horseId));
+  
+  if (existing.length > 0) {
+    // Update existing
+    await db.update(pedigree).set(data).where(eq(pedigree.horseId, data.horseId));
+    return existing[0].id;
+  } else {
+    // Create new
+    const result = await db.insert(pedigree).values(data);
+    return result.insertId;
+  }
+}
+
+export async function getPedigreeByHorseId(horseId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const { pedigree } = await import('../drizzle/schema');
+  const results = await db.select().from(pedigree).where(eq(pedigree.horseId, horseId));
+  return results[0] || null;
+}
+
+export async function deletePedigree(horseId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const { pedigree } = await import('../drizzle/schema');
+  await db.delete(pedigree).where(eq(pedigree.horseId, horseId));
+}
+
+// ============ TREATMENTS ============
+export async function createTreatment(data: InsertTreatment) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(treatments).values(data);
+  return result.insertId;
+}
+
+export async function getTreatmentsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(treatments)
+    .where(eq(treatments.userId, userId))
+    .orderBy(desc(treatments.startDate));
+}
+
+export async function getTreatmentsByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(treatments)
+    .where(and(eq(treatments.horseId, horseId), eq(treatments.userId, userId)))
+    .orderBy(desc(treatments.startDate));
+}
+
+export async function getTreatmentById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const results = await db.select().from(treatments)
+    .where(and(eq(treatments.id, id), eq(treatments.userId, userId)));
+  return results[0] || null;
+}
+
+export async function updateTreatment(id: number, userId: number, data: Partial<InsertTreatment>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.update(treatments)
+    .set(data)
+    .where(and(eq(treatments.id, id), eq(treatments.userId, userId)));
+}
+
+export async function deleteTreatment(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.delete(treatments)
+    .where(and(eq(treatments.id, id), eq(treatments.userId, userId)));
+}
+
+// ============ APPOINTMENTS ============
+export async function createAppointment(data: InsertAppointment) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(appointments).values(data);
+  return result.insertId;
+}
+
+export async function getAppointmentsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(appointments)
+    .where(eq(appointments.userId, userId))
+    .orderBy(desc(appointments.appointmentDate));
+}
+
+export async function getAppointmentsByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(appointments)
+    .where(and(eq(appointments.horseId, horseId), eq(appointments.userId, userId)))
+    .orderBy(desc(appointments.appointmentDate));
+}
+
+export async function getAppointmentById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const results = await db.select().from(appointments)
+    .where(and(eq(appointments.id, id), eq(appointments.userId, userId)));
+  return results[0] || null;
+}
+
+export async function updateAppointment(id: number, userId: number, data: Partial<InsertAppointment>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.update(appointments)
+    .set(data)
+    .where(and(eq(appointments.id, id), eq(appointments.userId, userId)));
+}
+
+export async function deleteAppointment(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.delete(appointments)
+    .where(and(eq(appointments.id, id), eq(appointments.userId, userId)));
+}
+
+// ============ DENTAL CARE ============
+export async function createDentalCare(data: InsertDentalCare) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(dentalCare).values(data);
+  return result.insertId;
+}
+
+export async function getDentalCareByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(dentalCare)
+    .where(eq(dentalCare.userId, userId))
+    .orderBy(desc(dentalCare.examDate));
+}
+
+export async function getDentalCareByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(dentalCare)
+    .where(and(eq(dentalCare.horseId, horseId), eq(dentalCare.userId, userId)))
+    .orderBy(desc(dentalCare.examDate));
+}
+
+export async function getDentalCareById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const results = await db.select().from(dentalCare)
+    .where(and(eq(dentalCare.id, id), eq(dentalCare.userId, userId)));
+  return results[0] || null;
+}
+
+export async function updateDentalCare(id: number, userId: number, data: Partial<InsertDentalCare>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.update(dentalCare)
+    .set(data)
+    .where(and(eq(dentalCare.id, id), eq(dentalCare.userId, userId)));
+}
+
+export async function deleteDentalCare(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.delete(dentalCare)
+    .where(and(eq(dentalCare.id, id), eq(dentalCare.userId, userId)));
+}
+
+// ============ X-RAYS ============
+export async function createXray(data: InsertXray) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(xrays).values(data);
+  return result.insertId;
+}
+
+export async function getXraysByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(xrays)
+    .where(eq(xrays.userId, userId))
+    .orderBy(desc(xrays.xrayDate));
+}
+
+export async function getXraysByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(xrays)
+    .where(and(eq(xrays.horseId, horseId), eq(xrays.userId, userId)))
+    .orderBy(desc(xrays.xrayDate));
+}
+
+export async function getXrayById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const results = await db.select().from(xrays)
+    .where(and(eq(xrays.id, id), eq(xrays.userId, userId)));
+  return results[0] || null;
+}
+
+export async function updateXray(id: number, userId: number, data: Partial<InsertXray>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.update(xrays)
+    .set(data)
+    .where(and(eq(xrays.id, id), eq(xrays.userId, userId)));
+}
+
+export async function deleteXray(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.delete(xrays)
+    .where(and(eq(xrays.id, id), eq(xrays.userId, userId)));
+}
+
+// ============ TAGS ============
+export async function createTag(data: InsertTag) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(tags).values(data);
+  return result.insertId;
+}
+
+export async function getTagsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(tags)
+    .where(eq(tags.userId, userId))
+    .orderBy(tags.name);
+}
+
+export async function getTagById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const results = await db.select().from(tags)
+    .where(and(eq(tags.id, id), eq(tags.userId, userId)));
+  return results[0] || null;
+}
+
+export async function updateTag(id: number, userId: number, data: Partial<InsertTag>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.update(tags)
+    .set(data)
+    .where(and(eq(tags.id, id), eq(tags.userId, userId)));
+}
+
+export async function deleteTag(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.delete(tags)
+    .where(and(eq(tags.id, id), eq(tags.userId, userId)));
+}
+
+// ============ HOOFCARE ============
+export async function createHoofcare(data: InsertHoofcare) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(hoofcare).values(data);
+  return result.insertId;
+}
+
+export async function getHoofcareByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(hoofcare)
+    .where(eq(hoofcare.userId, userId))
+    .orderBy(desc(hoofcare.careDate));
+}
+
+export async function getHoofcareByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(hoofcare)
+    .where(and(eq(hoofcare.horseId, horseId), eq(hoofcare.userId, userId)))
+    .orderBy(desc(hoofcare.careDate));
+}
+
+export async function getHoofcareById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const results = await db.select().from(hoofcare)
+    .where(and(eq(hoofcare.id, id), eq(hoofcare.userId, userId)));
+  return results[0] || null;
+}
+
+export async function updateHoofcare(id: number, userId: number, data: Partial<InsertHoofcare>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.update(hoofcare)
+    .set(data)
+    .where(and(eq(hoofcare.id, id), eq(hoofcare.userId, userId)));
+}
+
+export async function deleteHoofcare(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.delete(hoofcare)
+    .where(and(eq(hoofcare.id, id), eq(hoofcare.userId, userId)));
+}
+
+// ============ NUTRITION LOGS ============
+export async function createNutritionLog(data: InsertNutritionLog) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(nutritionLogs).values(data);
+  return result.insertId;
+}
+
+export async function getNutritionLogsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(nutritionLogs)
+    .where(eq(nutritionLogs.userId, userId))
+    .orderBy(desc(nutritionLogs.logDate));
+}
+
+export async function getNutritionLogsByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(nutritionLogs)
+    .where(and(eq(nutritionLogs.horseId, horseId), eq(nutritionLogs.userId, userId)))
+    .orderBy(desc(nutritionLogs.logDate));
+}
+
+export async function getNutritionLogById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const results = await db.select().from(nutritionLogs)
+    .where(and(eq(nutritionLogs.id, id), eq(nutritionLogs.userId, userId)));
+  return results[0] || null;
+}
+
+export async function updateNutritionLog(id: number, userId: number, data: Partial<InsertNutritionLog>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.update(nutritionLogs)
+    .set(data)
+    .where(and(eq(nutritionLogs.id, id), eq(nutritionLogs.userId, userId)));
+}
+
+export async function deleteNutritionLog(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.delete(nutritionLogs)
+    .where(and(eq(nutritionLogs.id, id), eq(nutritionLogs.userId, userId)));
+}
+
+// ============ NUTRITION PLANS ============
+export async function createNutritionPlan(data: InsertNutritionPlan) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  const result = await db.insert(nutritionPlans).values(data);
+  return result.insertId;
+}
+
+export async function getNutritionPlansByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(nutritionPlans)
+    .where(eq(nutritionPlans.userId, userId))
+    .orderBy(desc(nutritionPlans.startDate));
+}
+
+export async function getNutritionPlansByHorseId(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(nutritionPlans)
+    .where(and(eq(nutritionPlans.horseId, horseId), eq(nutritionPlans.userId, userId)))
+    .orderBy(desc(nutritionPlans.startDate));
+}
+
+export async function getNutritionPlanById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const results = await db.select().from(nutritionPlans)
+    .where(and(eq(nutritionPlans.id, id), eq(nutritionPlans.userId, userId)));
+  return results[0] || null;
+}
+
+export async function updateNutritionPlan(id: number, userId: number, data: Partial<InsertNutritionPlan>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.update(nutritionPlans)
+    .set(data)
+    .where(and(eq(nutritionPlans.id, id), eq(nutritionPlans.userId, userId)));
+}
+
+export async function deleteNutritionPlan(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  
+  await db.delete(nutritionPlans)
+    .where(and(eq(nutritionPlans.id, id), eq(nutritionPlans.userId, userId)));
 }

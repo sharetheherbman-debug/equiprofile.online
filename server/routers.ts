@@ -445,6 +445,12 @@ export const appRouter = router({
           entityId: id,
           details: JSON.stringify({ name: input.name }),
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const horse = await db.getHorseById(id, ctx.user!.id);
+        publishModuleEvent('horses', 'created', horse, ctx.user!.id);
+        
         return { id };
       }),
     
@@ -478,6 +484,12 @@ export const appRouter = router({
           entityType: 'horse',
           entityId: id,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const horse = await db.getHorseById(id, ctx.user.id);
+        publishModuleEvent('horses', 'updated', horse, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -491,6 +503,11 @@ export const appRouter = router({
           entityType: 'horse',
           entityId: input.id,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('horses', 'deleted', { id: input.id }, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -557,6 +574,12 @@ export const appRouter = router({
           entityType: 'health_record',
           entityId: id,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const record = await db.getHealthRecordById(id, ctx.user!.id);
+        publishModuleEvent('health', 'created', record, ctx.user!.id);
+        
         return { id };
       }),
     
@@ -582,6 +605,12 @@ export const appRouter = router({
           recordDate: recordDate ? new Date(recordDate) : undefined,
           nextDueDate: nextDueDate ? new Date(nextDueDate) : undefined,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const record = await db.getHealthRecordById(id, ctx.user.id);
+        publishModuleEvent('health', 'updated', record, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -589,6 +618,11 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.deleteHealthRecord(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('health', 'deleted', { id: input.id }, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -654,6 +688,12 @@ export const appRouter = router({
           entityType: 'training_session',
           entityId: id,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const session = await db.getTrainingSessionById(id, ctx.user!.id);
+        publishModuleEvent('training', 'created', session, ctx.user!.id);
+        
         return { id };
       }),
     
@@ -682,6 +722,12 @@ export const appRouter = router({
           ...data,
           sessionDate: sessionDate ? new Date(sessionDate) : undefined,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const session = await db.getTrainingSessionById(id, ctx.user.id);
+        publishModuleEvent('training', 'updated', session, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -689,6 +735,11 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.deleteTrainingSession(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('training', 'deleted', { id: input.id }, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -704,6 +755,12 @@ export const appRouter = router({
           performance: input.performance,
           notes: input.notes,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const session = await db.getTrainingSessionById(input.id, ctx.user.id);
+        publishModuleEvent('training', 'completed', session, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -748,6 +805,12 @@ export const appRouter = router({
           ...input,
           userId: ctx.user!.id,
         });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const plan = await db.getFeedingPlanById(id, ctx.user!.id);
+        publishModuleEvent('feeding', 'created', plan, ctx.user!.id);
+        
         return { id };
       }),
     
@@ -766,6 +829,12 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
         await db.updateFeedingPlan(id, ctx.user.id, data);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const plan = await db.getFeedingPlanById(id, ctx.user.id);
+        publishModuleEvent('feeding', 'updated', plan, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -773,6 +842,11 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.deleteFeedingPlan(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('feeding', 'deleted', { id: input.id }, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -787,6 +861,486 @@ export const appRouter = router({
         mimeType: 'text/csv',
       };
     }),
+  }),
+
+  // Tasks management
+  tasks: router({
+    list: subscribedProcedure.query(async ({ ctx }) => {
+      return db.getTasksByUserId(ctx.user.id);
+    }),
+    
+    listByHorse: subscribedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getTasksByHorseId(input.horseId, ctx.user.id);
+      }),
+    
+    get: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const task = await db.getTaskById(input.id, ctx.user.id);
+        if (!task) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Task not found' });
+        }
+        return task;
+      }),
+    
+    getUpcoming: subscribedProcedure
+      .input(z.object({ days: z.number().default(7) }))
+      .query(async ({ ctx, input }) => {
+        return db.getUpcomingTasks(ctx.user.id, input.days);
+      }),
+    
+    create: subscribedProcedure
+      .input(z.object({
+        horseId: z.number().optional(),
+        title: z.string().min(1),
+        description: z.string().optional(),
+        taskType: z.enum(['hoofcare', 'health_appointment', 'treatment', 'vaccination', 'deworming', 'dental', 'general_care', 'training', 'feeding', 'other']),
+        priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
+        status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).default('pending'),
+        dueDate: z.string().optional(),
+        assignedTo: z.string().optional(),
+        notes: z.string().optional(),
+        reminderDays: z.number().default(1),
+        isRecurring: z.boolean().default(false),
+        recurringInterval: z.enum(['daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly']).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createTask({
+          ...input,
+          userId: ctx.user!.id,
+          dueDate: input.dueDate ? new Date(input.dueDate) : undefined,
+        });
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'task_created',
+          entityType: 'task',
+          entityId: id,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const task = await db.getTaskById(id, ctx.user!.id);
+        publishModuleEvent('tasks', 'created', task, ctx.user!.id);
+        
+        return { id };
+      }),
+    
+    update: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        taskType: z.enum(['hoofcare', 'health_appointment', 'treatment', 'vaccination', 'deworming', 'dental', 'general_care', 'training', 'feeding', 'other']).optional(),
+        priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
+        status: z.enum(['pending', 'in_progress', 'completed', 'cancelled']).optional(),
+        dueDate: z.string().optional(),
+        assignedTo: z.string().optional(),
+        notes: z.string().optional(),
+        reminderDays: z.number().optional(),
+        isRecurring: z.boolean().optional(),
+        recurringInterval: z.enum(['daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly']).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, dueDate, ...data } = input;
+        await db.updateTask(id, ctx.user.id, {
+          ...data,
+          dueDate: dueDate ? new Date(dueDate) : undefined,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const task = await db.getTaskById(id, ctx.user.id);
+        publishModuleEvent('tasks', 'updated', task, ctx.user.id);
+        
+        return { success: true };
+      }),
+    
+    delete: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteTask(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('tasks', 'deleted', { id: input.id }, ctx.user.id);
+        
+        return { success: true };
+      }),
+    
+    complete: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.completeTask(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const task = await db.getTaskById(input.id, ctx.user.id);
+        publishModuleEvent('tasks', 'completed', task, ctx.user.id);
+        
+        return { success: true };
+      }),
+  }),
+
+  // Contacts management
+  contacts: router({
+    list: subscribedProcedure.query(async ({ ctx }) => {
+      return db.getContactsByUserId(ctx.user.id);
+    }),
+    
+    listByType: subscribedProcedure
+      .input(z.object({ contactType: z.string() }))
+      .query(async ({ ctx, input }) => {
+        return db.getContactsByType(ctx.user.id, input.contactType);
+      }),
+    
+    get: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const contact = await db.getContactById(input.id, ctx.user.id);
+        if (!contact) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Contact not found' });
+        }
+        return contact;
+      }),
+    
+    create: subscribedProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        contactType: z.enum(['vet', 'farrier', 'trainer', 'instructor', 'stable', 'breeder', 'supplier', 'emergency', 'other']),
+        company: z.string().optional(),
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        mobile: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        postcode: z.string().optional(),
+        country: z.string().optional(),
+        website: z.string().optional(),
+        notes: z.string().optional(),
+        isPrimary: z.boolean().default(false),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createContact({
+          ...input,
+          userId: ctx.user!.id,
+        });
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'contact_created',
+          entityType: 'contact',
+          entityId: id,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const contact = await db.getContactById(id, ctx.user!.id);
+        publishModuleEvent('contacts', 'created', contact, ctx.user!.id);
+        
+        return { id };
+      }),
+    
+    update: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        contactType: z.enum(['vet', 'farrier', 'trainer', 'instructor', 'stable', 'breeder', 'supplier', 'emergency', 'other']).optional(),
+        company: z.string().optional(),
+        email: z.string().email().optional(),
+        phone: z.string().optional(),
+        mobile: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        postcode: z.string().optional(),
+        country: z.string().optional(),
+        website: z.string().optional(),
+        notes: z.string().optional(),
+        isPrimary: z.boolean().optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateContact(id, ctx.user.id, data);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const contact = await db.getContactById(id, ctx.user.id);
+        publishModuleEvent('contacts', 'updated', contact, ctx.user.id);
+        
+        return { success: true };
+      }),
+    
+    delete: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteContact(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('contacts', 'deleted', { id: input.id }, ctx.user.id);
+        
+        return { success: true };
+      }),
+  }),
+
+  // Vaccinations management
+  vaccinations: router({
+    list: subscribedProcedure.query(async ({ ctx }) => {
+      return db.getVaccinationsByUserId(ctx.user.id);
+    }),
+    
+    listByHorse: subscribedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getVaccinationsByHorseId(input.horseId, ctx.user.id);
+      }),
+    
+    get: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const vaccination = await db.getVaccinationById(input.id, ctx.user.id);
+        if (!vaccination) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Vaccination not found' });
+        }
+        return vaccination;
+      }),
+    
+    create: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        vaccineName: z.string().min(1),
+        vaccineType: z.string().optional(),
+        dateAdministered: z.date(),
+        nextDueDate: z.date().optional(),
+        batchNumber: z.string().optional(),
+        vetName: z.string().optional(),
+        vetClinic: z.string().optional(),
+        cost: z.number().optional(),
+        notes: z.string().optional(),
+        documentUrl: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createVaccination({
+          ...input,
+          userId: ctx.user!.id,
+        });
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'vaccination_created',
+          entityType: 'vaccination',
+          entityId: id,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const vaccination = await db.getVaccinationById(id, ctx.user!.id);
+        publishModuleEvent('vaccinations', 'created', vaccination, ctx.user!.id);
+        
+        return { id };
+      }),
+    
+    update: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        vaccineName: z.string().optional(),
+        vaccineType: z.string().optional(),
+        dateAdministered: z.date().optional(),
+        nextDueDate: z.date().optional(),
+        batchNumber: z.string().optional(),
+        vetName: z.string().optional(),
+        vetClinic: z.string().optional(),
+        cost: z.number().optional(),
+        notes: z.string().optional(),
+        documentUrl: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateVaccination(id, ctx.user.id, data);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const vaccination = await db.getVaccinationById(id, ctx.user.id);
+        publishModuleEvent('vaccinations', 'updated', vaccination, ctx.user.id);
+        
+        return { success: true };
+      }),
+    
+    delete: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteVaccination(input.id, ctx.user.id);
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'vaccination_deleted',
+          entityType: 'vaccination',
+          entityId: input.id,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('vaccinations', 'deleted', { id: input.id }, ctx.user.id);
+        
+        return { success: true };
+      }),
+  }),
+
+  // Dewormings management
+  dewormings: router({
+    list: subscribedProcedure.query(async ({ ctx }) => {
+      return db.getDewormingsByUserId(ctx.user.id);
+    }),
+    
+    listByHorse: subscribedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getDewormingsByHorseId(input.horseId, ctx.user.id);
+      }),
+    
+    get: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const deworming = await db.getDewormingById(input.id, ctx.user.id);
+        if (!deworming) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Deworming record not found' });
+        }
+        return deworming;
+      }),
+    
+    create: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        productName: z.string().min(1),
+        activeIngredient: z.string().optional(),
+        dateAdministered: z.date(),
+        nextDueDate: z.date().optional(),
+        dosage: z.string().optional(),
+        weight: z.number().optional(),
+        cost: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createDeworming({
+          ...input,
+          userId: ctx.user!.id,
+        });
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'deworming_created',
+          entityType: 'deworming',
+          entityId: id,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const deworming = await db.getDewormingById(id, ctx.user!.id);
+        publishModuleEvent('dewormings', 'created', deworming, ctx.user!.id);
+        
+        return { id };
+      }),
+    
+    update: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        productName: z.string().optional(),
+        activeIngredient: z.string().optional(),
+        dateAdministered: z.date().optional(),
+        nextDueDate: z.date().optional(),
+        dosage: z.string().optional(),
+        weight: z.number().optional(),
+        cost: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateDeworming(id, ctx.user.id, data);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const deworming = await db.getDewormingById(id, ctx.user.id);
+        publishModuleEvent('dewormings', 'updated', deworming, ctx.user.id);
+        
+        return { success: true };
+      }),
+    
+    delete: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteDeworming(input.id, ctx.user.id);
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'deworming_deleted',
+          entityType: 'deworming',
+          entityId: input.id,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('dewormings', 'deleted', { id: input.id }, ctx.user.id);
+        
+        return { success: true };
+      }),
+  }),
+
+  // Pedigree management
+  pedigree: router({
+    get: subscribedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getPedigreeByHorseId(input.horseId);
+      }),
+    
+    createOrUpdate: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        sireId: z.number().optional(),
+        sireName: z.string().optional(),
+        damId: z.number().optional(),
+        damName: z.string().optional(),
+        sireOfSireId: z.number().optional(),
+        sireOfSireName: z.string().optional(),
+        damOfSireId: z.number().optional(),
+        damOfSireName: z.string().optional(),
+        sireOfDamId: z.number().optional(),
+        sireOfDamName: z.string().optional(),
+        damOfDamId: z.number().optional(),
+        damOfDamName: z.string().optional(),
+        geneticInfo: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createOrUpdatePedigree(input);
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'pedigree_updated',
+          entityType: 'pedigree',
+          entityId: id,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const pedigree = await db.getPedigreeByHorseId(input.horseId);
+        publishModuleEvent('pedigree', 'updated', pedigree, ctx.user!.id);
+        
+        return { id };
+      }),
+    
+    delete: subscribedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deletePedigree(input.horseId);
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'pedigree_deleted',
+          entityType: 'pedigree',
+          entityId: input.horseId,
+        });
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('pedigree', 'deleted', { horseId: input.horseId }, ctx.user!.id);
+        
+        return { success: true };
+      }),
   }),
 
   // Documents
@@ -847,6 +1401,11 @@ export const appRouter = router({
           details: JSON.stringify({ fileName: input.fileName }),
         });
         
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const document = await db.getDocumentById(id, ctx.user!.id);
+        publishModuleEvent('documents', 'uploaded', document, ctx.user!.id);
+        
         return { id, url };
       }),
     
@@ -854,6 +1413,11 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ ctx, input }) => {
         await db.deleteDocument(input.id, ctx.user.id);
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('documents', 'deleted', { id: input.id }, ctx.user.id);
+        
         return { success: true };
       }),
     
@@ -1986,7 +2550,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           breedingDate: new Date(input.breedingDate),
         });
         
-        return { id: result[0].insertId };
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const recordId = result[0].insertId;
+        const record = await db.select().from(breeding).where(eq(breeding.id, recordId)).limit(1);
+        if (record[0]) {
+          publishModuleEvent('breeding', 'created', record[0], ctx.user!.id);
+        }
+        
+        return { id: recordId };
       }),
 
     list: protectedProcedure
@@ -2087,6 +2659,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .set(dataToUpdate)
           .where(eq(breeding.id, id));
         
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const record = await db.select().from(breeding).where(eq(breeding.id, id)).limit(1);
+        if (record[0]) {
+          publishModuleEvent('breeding', 'updated', record[0], ctx.user.id);
+        }
+        
         return { success: true };
       }),
 
@@ -2117,6 +2696,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         
         await db.delete(breeding)
           .where(eq(breeding.id, input.id));
+        
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('breeding', 'deleted', { id: input.id }, ctx.user.id);
         
         return { success: true };
       }),
@@ -2556,6 +3139,948 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         await db.update(lessonBookings)
           .set({ status: 'cancelled' })
           .where(eq(lessonBookings.id, input.id));
+
+        return { success: true };
+      }),
+  }),
+
+  // ============ TREATMENTS ROUTER ============
+  treatments: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getTreatmentsByUserId(ctx.user.id);
+    }),
+
+    listByHorse: protectedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getTreatmentsByHorseId(input.horseId, ctx.user.id);
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getTreatmentById(input.id, ctx.user.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        treatmentType: z.string().min(1),
+        treatmentName: z.string().min(1).max(200),
+        description: z.string().optional(),
+        startDate: z.string(), // ISO date string
+        endDate: z.string().optional(),
+        frequency: z.string().optional(),
+        dosage: z.string().optional(),
+        administeredBy: z.string().optional(),
+        vetName: z.string().optional(),
+        vetClinic: z.string().optional(),
+        cost: z.number().optional(),
+        status: z.enum(['active', 'completed', 'discontinued']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createTreatment({
+          ...input,
+          userId: ctx.user.id,
+        });
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const treatment = await db.getTreatmentById(id, ctx.user.id);
+        if (treatment) {
+          publishModuleEvent('treatments', 'created', treatment, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'treatment_created',
+          entityType: 'treatment',
+          entityId: id,
+          details: `Created treatment: ${input.treatmentName}`,
+        });
+
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        treatmentType: z.string().optional(),
+        treatmentName: z.string().optional(),
+        description: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        frequency: z.string().optional(),
+        dosage: z.string().optional(),
+        administeredBy: z.string().optional(),
+        vetName: z.string().optional(),
+        vetClinic: z.string().optional(),
+        cost: z.number().optional(),
+        status: z.enum(['active', 'completed', 'discontinued']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateTreatment(id, ctx.user.id, data);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const treatment = await db.getTreatmentById(id, ctx.user.id);
+        if (treatment) {
+          publishModuleEvent('treatments', 'updated', treatment, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'treatment_updated',
+          entityType: 'treatment',
+          entityId: id,
+          details: `Updated treatment`,
+        });
+
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteTreatment(input.id, ctx.user.id);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('treatments', 'deleted', { id: input.id }, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'treatment_deleted',
+          entityType: 'treatment',
+          entityId: input.id,
+          details: `Deleted treatment`,
+        });
+
+        return { success: true };
+      }),
+  }),
+
+  // ============ APPOINTMENTS ROUTER ============
+  appointments: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getAppointmentsByUserId(ctx.user.id);
+    }),
+
+    listByHorse: protectedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getAppointmentsByHorseId(input.horseId, ctx.user.id);
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getAppointmentById(input.id, ctx.user.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        appointmentType: z.string().min(1).max(100),
+        title: z.string().min(1).max(200),
+        description: z.string().optional(),
+        appointmentDate: z.string(), // ISO date string
+        appointmentTime: z.string().optional(),
+        duration: z.number().optional(),
+        providerName: z.string().optional(),
+        providerPhone: z.string().optional(),
+        providerClinic: z.string().optional(),
+        location: z.string().optional(),
+        cost: z.number().optional(),
+        status: z.enum(['scheduled', 'confirmed', 'completed', 'cancelled']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createAppointment({
+          ...input,
+          userId: ctx.user.id,
+          reminderSent: false,
+        });
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const appointment = await db.getAppointmentById(id, ctx.user.id);
+        if (appointment) {
+          publishModuleEvent('appointments', 'created', appointment, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'appointment_created',
+          entityType: 'appointment',
+          entityId: id,
+          details: `Created appointment: ${input.title}`,
+        });
+
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        appointmentType: z.string().optional(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        appointmentDate: z.string().optional(),
+        appointmentTime: z.string().optional(),
+        duration: z.number().optional(),
+        providerName: z.string().optional(),
+        providerPhone: z.string().optional(),
+        providerClinic: z.string().optional(),
+        location: z.string().optional(),
+        cost: z.number().optional(),
+        status: z.enum(['scheduled', 'confirmed', 'completed', 'cancelled']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateAppointment(id, ctx.user.id, data);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const appointment = await db.getAppointmentById(id, ctx.user.id);
+        if (appointment) {
+          publishModuleEvent('appointments', 'updated', appointment, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'appointment_updated',
+          entityType: 'appointment',
+          entityId: id,
+          details: `Updated appointment`,
+        });
+
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteAppointment(input.id, ctx.user.id);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('appointments', 'deleted', { id: input.id }, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'appointment_deleted',
+          entityType: 'appointment',
+          entityId: input.id,
+          details: `Deleted appointment`,
+        });
+
+        return { success: true };
+      }),
+  }),
+
+  // ============ DENTAL CARE ROUTER ============
+  dentalCare: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getDentalCareByUserId(ctx.user.id);
+    }),
+
+    listByHorse: protectedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getDentalCareByHorseId(input.horseId, ctx.user.id);
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getDentalCareById(input.id, ctx.user.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        examDate: z.string(), // ISO date string
+        dentistName: z.string().optional(),
+        dentistClinic: z.string().optional(),
+        procedureType: z.string().optional(),
+        findings: z.string().optional(),
+        treatmentPerformed: z.string().optional(),
+        nextDueDate: z.string().optional(),
+        cost: z.number().optional(),
+        sedationUsed: z.boolean().optional(),
+        teethCondition: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createDentalCare({
+          ...input,
+          userId: ctx.user.id,
+        });
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const dental = await db.getDentalCareById(id, ctx.user.id);
+        if (dental) {
+          publishModuleEvent('dentalCare', 'created', dental, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'dental_care_created',
+          entityType: 'dental_care',
+          entityId: id,
+          details: `Created dental care record`,
+        });
+
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        examDate: z.string().optional(),
+        dentistName: z.string().optional(),
+        dentistClinic: z.string().optional(),
+        procedureType: z.string().optional(),
+        findings: z.string().optional(),
+        treatmentPerformed: z.string().optional(),
+        nextDueDate: z.string().optional(),
+        cost: z.number().optional(),
+        sedationUsed: z.boolean().optional(),
+        teethCondition: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateDentalCare(id, ctx.user.id, data);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const dental = await db.getDentalCareById(id, ctx.user.id);
+        if (dental) {
+          publishModuleEvent('dentalCare', 'updated', dental, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'dental_care_updated',
+          entityType: 'dental_care',
+          entityId: id,
+          details: `Updated dental care record`,
+        });
+
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteDentalCare(input.id, ctx.user.id);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('dentalCare', 'deleted', { id: input.id }, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'dental_care_deleted',
+          entityType: 'dental_care',
+          entityId: input.id,
+          details: `Deleted dental care record`,
+        });
+
+        return { success: true };
+      }),
+  }),
+
+  // ============ X-RAYS ROUTER ============
+  xrays: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getXraysByUserId(ctx.user.id);
+    }),
+
+    listByHorse: protectedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getXraysByHorseId(input.horseId, ctx.user.id);
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getXrayById(input.id, ctx.user.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        xrayDate: z.string(), // ISO date string
+        bodyPart: z.string().min(1).max(100),
+        reason: z.string().optional(),
+        vetName: z.string().optional(),
+        vetClinic: z.string().optional(),
+        findings: z.string().optional(),
+        diagnosis: z.string().optional(),
+        fileUrl: z.string().optional(),
+        fileName: z.string().optional(),
+        fileSize: z.number().optional(),
+        mimeType: z.string().optional(),
+        cost: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createXray({
+          ...input,
+          userId: ctx.user.id,
+        });
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const xray = await db.getXrayById(id, ctx.user.id);
+        if (xray) {
+          publishModuleEvent('xrays', 'created', xray, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'xray_created',
+          entityType: 'xray',
+          entityId: id,
+          details: `Created x-ray record for ${input.bodyPart}`,
+        });
+
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        xrayDate: z.string().optional(),
+        bodyPart: z.string().optional(),
+        reason: z.string().optional(),
+        vetName: z.string().optional(),
+        vetClinic: z.string().optional(),
+        findings: z.string().optional(),
+        diagnosis: z.string().optional(),
+        fileUrl: z.string().optional(),
+        fileName: z.string().optional(),
+        fileSize: z.number().optional(),
+        mimeType: z.string().optional(),
+        cost: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateXray(id, ctx.user.id, data);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const xray = await db.getXrayById(id, ctx.user.id);
+        if (xray) {
+          publishModuleEvent('xrays', 'updated', xray, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'xray_updated',
+          entityType: 'xray',
+          entityId: id,
+          details: `Updated x-ray record`,
+        });
+
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteXray(input.id, ctx.user.id);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('xrays', 'deleted', { id: input.id }, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'xray_deleted',
+          entityType: 'xray',
+          entityId: input.id,
+          details: `Deleted x-ray record`,
+        });
+
+        return { success: true };
+      }),
+  }),
+
+  // ============ TAGS ROUTER ============
+  tags: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getTagsByUserId(ctx.user.id);
+    }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getTagById(input.id, ctx.user.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(100),
+        color: z.string().optional(),
+        category: z.string().optional(),
+        description: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createTag({
+          ...input,
+          userId: ctx.user.id,
+        });
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const tag = await db.getTagById(id, ctx.user.id);
+        if (tag) {
+          publishModuleEvent('tags', 'created', tag, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'tag_created',
+          entityType: 'tag',
+          entityId: id,
+          details: `Created tag: ${input.name}`,
+        });
+
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        color: z.string().optional(),
+        category: z.string().optional(),
+        description: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateTag(id, ctx.user.id, data);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const tag = await db.getTagById(id, ctx.user.id);
+        if (tag) {
+          publishModuleEvent('tags', 'updated', tag, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'tag_updated',
+          entityType: 'tag',
+          entityId: id,
+          details: `Updated tag`,
+        });
+
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteTag(input.id, ctx.user.id);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('tags', 'deleted', { id: input.id }, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'tag_deleted',
+          entityType: 'tag',
+          entityId: input.id,
+          details: `Deleted tag`,
+        });
+
+        return { success: true };
+      }),
+  }),
+
+  // ============ HOOFCARE ROUTER ============
+  hoofcare: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getHoofcareByUserId(ctx.user.id);
+    }),
+
+    listByHorse: protectedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getHoofcareByHorseId(input.horseId, ctx.user.id);
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getHoofcareById(input.id, ctx.user.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        careDate: z.string(), // ISO date string
+        careType: z.enum(['shoeing', 'trimming', 'remedial', 'inspection', 'other']),
+        farrierName: z.string().optional(),
+        farrierPhone: z.string().optional(),
+        hoofCondition: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+        shoesType: z.string().optional(),
+        findings: z.string().optional(),
+        workPerformed: z.string().optional(),
+        nextDueDate: z.string().optional(),
+        cost: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createHoofcare({
+          ...input,
+          userId: ctx.user.id,
+        });
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const hoofcare = await db.getHoofcareById(id, ctx.user.id);
+        if (hoofcare) {
+          publishModuleEvent('hoofcare', 'created', hoofcare, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'hoofcare_created',
+          entityType: 'hoofcare',
+          entityId: id,
+          details: `Created hoofcare record`,
+        });
+
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        careDate: z.string().optional(),
+        careType: z.enum(['shoeing', 'trimming', 'remedial', 'inspection', 'other']).optional(),
+        farrierName: z.string().optional(),
+        farrierPhone: z.string().optional(),
+        hoofCondition: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+        shoesType: z.string().optional(),
+        findings: z.string().optional(),
+        workPerformed: z.string().optional(),
+        nextDueDate: z.string().optional(),
+        cost: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateHoofcare(id, ctx.user.id, data);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const hoofcare = await db.getHoofcareById(id, ctx.user.id);
+        if (hoofcare) {
+          publishModuleEvent('hoofcare', 'updated', hoofcare, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'hoofcare_updated',
+          entityType: 'hoofcare',
+          entityId: id,
+          details: `Updated hoofcare record`,
+        });
+
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteHoofcare(input.id, ctx.user.id);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('hoofcare', 'deleted', { id: input.id }, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'hoofcare_deleted',
+          entityType: 'hoofcare',
+          entityId: input.id,
+          details: `Deleted hoofcare record`,
+        });
+
+        return { success: true };
+      }),
+  }),
+
+  // ============ NUTRITION LOGS ROUTER ============
+  nutritionLogs: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getNutritionLogsByUserId(ctx.user.id);
+    }),
+
+    listByHorse: protectedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getNutritionLogsByHorseId(input.horseId, ctx.user.id);
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getNutritionLogById(input.id, ctx.user.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        logDate: z.string(), // ISO date string
+        feedType: z.string().min(1).max(100),
+        feedName: z.string().optional(),
+        amount: z.string().optional(),
+        mealTime: z.string().optional(),
+        supplements: z.string().optional(),
+        hay: z.string().optional(),
+        water: z.string().optional(),
+        bodyConditionScore: z.number().optional(),
+        weight: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createNutritionLog({
+          ...input,
+          userId: ctx.user.id,
+        });
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const log = await db.getNutritionLogById(id, ctx.user.id);
+        if (log) {
+          publishModuleEvent('nutritionLogs', 'created', log, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'nutrition_log_created',
+          entityType: 'nutrition_log',
+          entityId: id,
+          details: `Created nutrition log`,
+        });
+
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        logDate: z.string().optional(),
+        feedType: z.string().optional(),
+        feedName: z.string().optional(),
+        amount: z.string().optional(),
+        mealTime: z.string().optional(),
+        supplements: z.string().optional(),
+        hay: z.string().optional(),
+        water: z.string().optional(),
+        bodyConditionScore: z.number().optional(),
+        weight: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateNutritionLog(id, ctx.user.id, data);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const log = await db.getNutritionLogById(id, ctx.user.id);
+        if (log) {
+          publishModuleEvent('nutritionLogs', 'updated', log, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'nutrition_log_updated',
+          entityType: 'nutrition_log',
+          entityId: id,
+          details: `Updated nutrition log`,
+        });
+
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteNutritionLog(input.id, ctx.user.id);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('nutritionLogs', 'deleted', { id: input.id }, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'nutrition_log_deleted',
+          entityType: 'nutrition_log',
+          entityId: input.id,
+          details: `Deleted nutrition log`,
+        });
+
+        return { success: true };
+      }),
+  }),
+
+  // ============ NUTRITION PLANS ROUTER ============
+  nutritionPlans: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getNutritionPlansByUserId(ctx.user.id);
+    }),
+
+    listByHorse: protectedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getNutritionPlansByHorseId(input.horseId, ctx.user.id);
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getNutritionPlanById(input.id, ctx.user.id);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        planName: z.string().min(1).max(200),
+        startDate: z.string(), // ISO date string
+        endDate: z.string().optional(),
+        targetWeight: z.number().optional(),
+        targetBodyCondition: z.number().optional(),
+        dailyHay: z.string().optional(),
+        dailyConcentrates: z.string().optional(),
+        supplements: z.string().optional(),
+        specialInstructions: z.string().optional(),
+        feedingSchedule: z.string().optional(),
+        caloriesPerDay: z.number().optional(),
+        proteinPerDay: z.string().optional(),
+        isActive: z.boolean().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createNutritionPlan({
+          ...input,
+          userId: ctx.user.id,
+        });
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const plan = await db.getNutritionPlanById(id, ctx.user.id);
+        if (plan) {
+          publishModuleEvent('nutritionPlans', 'created', plan, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'nutrition_plan_created',
+          entityType: 'nutrition_plan',
+          entityId: id,
+          details: `Created nutrition plan: ${input.planName}`,
+        });
+
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        planName: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        targetWeight: z.number().optional(),
+        targetBodyCondition: z.number().optional(),
+        dailyHay: z.string().optional(),
+        dailyConcentrates: z.string().optional(),
+        supplements: z.string().optional(),
+        specialInstructions: z.string().optional(),
+        feedingSchedule: z.string().optional(),
+        caloriesPerDay: z.number().optional(),
+        proteinPerDay: z.string().optional(),
+        isActive: z.boolean().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await db.updateNutritionPlan(id, ctx.user.id, data);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        const plan = await db.getNutritionPlanById(id, ctx.user.id);
+        if (plan) {
+          publishModuleEvent('nutritionPlans', 'updated', plan, ctx.user.id);
+        }
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'nutrition_plan_updated',
+          entityType: 'nutrition_plan',
+          entityId: id,
+          details: `Updated nutrition plan`,
+        });
+
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteNutritionPlan(input.id, ctx.user.id);
+
+        // Publish real-time event
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('nutritionPlans', 'deleted', { id: input.id }, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'nutrition_plan_deleted',
+          entityType: 'nutrition_plan',
+          entityId: input.id,
+          details: `Deleted nutrition plan`,
+        });
 
         return { success: true };
       }),

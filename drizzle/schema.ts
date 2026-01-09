@@ -693,3 +693,262 @@ export type AdminSession = typeof adminSessions.$inferSelect;
 export type InsertAdminSession = typeof adminSessions.$inferInsert;
 export type AdminUnlockAttempt = typeof adminUnlockAttempts.$inferSelect;
 export type InsertAdminUnlockAttempt = typeof adminUnlockAttempts.$inferInsert;
+
+// Feature flags for account-level feature enablement
+export const accountFeatures = mysqlTable("accountFeatures", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  // Core features (always enabled)
+  horsesEnabled: boolean("horsesEnabled").default(true).notNull(),
+  healthEnabled: boolean("healthEnabled").default(true).notNull(),
+  trainingEnabled: boolean("trainingEnabled").default(true).notNull(),
+  // Add-on features (require subscription tier)
+  breedingEnabled: boolean("breedingEnabled").default(false).notNull(),
+  financeEnabled: boolean("financeEnabled").default(false).notNull(),
+  salesEnabled: boolean("salesEnabled").default(false).notNull(),
+  teamsEnabled: boolean("teamsEnabled").default(false).notNull(),
+  advancedReportsEnabled: boolean("advancedReportsEnabled").default(false).notNull(),
+  // Beta features
+  peppolEnabled: boolean("peppolEnabled").default(false).notNull(),
+  aiInvoiceScanEnabled: boolean("aiInvoiceScanEnabled").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AccountFeatures = typeof accountFeatures.$inferSelect;
+export type InsertAccountFeatures = typeof accountFeatures.$inferInsert;
+
+// Tasks system for general horse care and management
+export const tasks = mysqlTable("tasks", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  horseId: int("horseId"), // Optional - task may be for specific horse or general
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  taskType: mysqlEnum("taskType", ["hoofcare", "health_appointment", "treatment", "vaccination", "deworming", "dental", "general_care", "training", "feeding", "other"]).notNull(),
+  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).default("medium").notNull(),
+  status: mysqlEnum("status", ["pending", "in_progress", "completed", "cancelled"]).default("pending").notNull(),
+  dueDate: date("dueDate"),
+  completedAt: timestamp("completedAt"),
+  assignedTo: varchar("assignedTo", { length: 100 }), // Name of person assigned
+  notes: text("notes"),
+  reminderDays: int("reminderDays").default(1), // Days before due date to remind
+  isRecurring: boolean("isRecurring").default(false).notNull(),
+  recurringInterval: mysqlEnum("recurringInterval", ["daily", "weekly", "biweekly", "monthly", "quarterly", "yearly"]),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Task = typeof tasks.$inferSelect;
+export type InsertTask = typeof tasks.$inferInsert;
+
+// Contacts for vets, farriers, trainers, etc.
+export const contacts = mysqlTable("contacts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  name: varchar("name", { length: 200 }).notNull(),
+  contactType: mysqlEnum("contactType", ["vet", "farrier", "trainer", "instructor", "stable", "breeder", "supplier", "emergency", "other"]).notNull(),
+  company: varchar("company", { length: 200 }),
+  email: varchar("email", { length: 320 }),
+  phone: varchar("phone", { length: 20 }),
+  mobile: varchar("mobile", { length: 20 }),
+  address: text("address"),
+  city: varchar("city", { length: 100 }),
+  postcode: varchar("postcode", { length: 20 }),
+  country: varchar("country", { length: 100 }).default("United Kingdom"),
+  website: varchar("website", { length: 500 }),
+  notes: text("notes"),
+  isPrimary: boolean("isPrimary").default(false).notNull(), // Primary contact for this type
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Contact = typeof contacts.$inferSelect;
+export type InsertContact = typeof contacts.$inferInsert;
+
+// Treatments module
+export const treatments = mysqlTable("treatments", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  treatmentType: varchar("treatmentType", { length: 100 }).notNull(), // medication, therapy, procedure, etc.
+  treatmentName: varchar("treatmentName", { length: 200 }).notNull(),
+  description: text("description"),
+  startDate: date("startDate").notNull(),
+  endDate: date("endDate"),
+  frequency: varchar("frequency", { length: 100 }), // daily, twice daily, weekly, etc.
+  dosage: varchar("dosage", { length: 200 }),
+  administeredBy: varchar("administeredBy", { length: 100 }),
+  vetName: varchar("vetName", { length: 100 }),
+  vetClinic: varchar("vetClinic", { length: 200 }),
+  cost: int("cost"), // in pence
+  status: mysqlEnum("status", ["active", "completed", "discontinued"]).default("active").notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Treatment = typeof treatments.$inferSelect;
+export type InsertTreatment = typeof treatments.$inferInsert;
+
+// Health appointments module
+export const appointments = mysqlTable("appointments", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  appointmentType: varchar("appointmentType", { length: 100 }).notNull(), // vet, farrier, dentist, physio, etc.
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  appointmentDate: date("appointmentDate").notNull(),
+  appointmentTime: varchar("appointmentTime", { length: 10 }), // HH:MM format
+  duration: int("duration"), // in minutes
+  providerName: varchar("providerName", { length: 100 }),
+  providerPhone: varchar("providerPhone", { length: 20 }),
+  providerClinic: varchar("providerClinic", { length: 200 }),
+  location: varchar("location", { length: 200 }),
+  cost: int("cost"), // in pence
+  status: mysqlEnum("status", ["scheduled", "confirmed", "completed", "cancelled"]).default("scheduled").notNull(),
+  reminderSent: boolean("reminderSent").default(false).notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Appointment = typeof appointments.$inferSelect;
+export type InsertAppointment = typeof appointments.$inferInsert;
+
+// Dental care module
+export const dentalCare = mysqlTable("dentalCare", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  examDate: date("examDate").notNull(),
+  dentistName: varchar("dentistName", { length: 100 }),
+  dentistClinic: varchar("dentistClinic", { length: 200 }),
+  procedureType: varchar("procedureType", { length: 200 }), // routine exam, floating, extraction, etc.
+  findings: text("findings"),
+  treatmentPerformed: text("treatmentPerformed"),
+  nextDueDate: date("nextDueDate"),
+  cost: int("cost"), // in pence
+  sedationUsed: boolean("sedationUsed").default(false).notNull(),
+  teethCondition: mysqlEnum("teethCondition", ["excellent", "good", "fair", "poor"]),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type DentalCare = typeof dentalCare.$inferSelect;
+export type InsertDentalCare = typeof dentalCare.$inferInsert;
+
+// X-rays module
+export const xrays = mysqlTable("xrays", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  xrayDate: date("xrayDate").notNull(),
+  bodyPart: varchar("bodyPart", { length: 100 }).notNull(), // front left hoof, hock, stifle, etc.
+  reason: varchar("reason", { length: 200 }),
+  vetName: varchar("vetName", { length: 100 }),
+  vetClinic: varchar("vetClinic", { length: 200 }),
+  findings: text("findings"),
+  diagnosis: text("diagnosis"),
+  fileUrl: text("fileUrl"), // Path to stored x-ray image
+  fileName: varchar("fileName", { length: 255 }),
+  fileSize: int("fileSize"), // in bytes
+  mimeType: varchar("mimeType", { length: 100 }),
+  cost: int("cost"), // in pence
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Xray = typeof xrays.$inferSelect;
+export type InsertXray = typeof xrays.$inferInsert;
+
+// Tags module (for organizing horses, documents, etc.)
+export const tags = mysqlTable("tags", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
+  color: varchar("color", { length: 20 }), // hex color code
+  category: varchar("category", { length: 50 }), // horse, document, task, etc.
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Tag = typeof tags.$inferSelect;
+export type InsertTag = typeof tags.$inferInsert;
+
+// Hoofcare module
+export const hoofcare = mysqlTable("hoofcare", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  careDate: date("careDate").notNull(),
+  careType: mysqlEnum("careType", ["shoeing", "trimming", "remedial", "inspection", "other"]).notNull(),
+  farrierName: varchar("farrierName", { length: 100 }),
+  farrierPhone: varchar("farrierPhone", { length: 20 }),
+  hoofCondition: mysqlEnum("hoofCondition", ["excellent", "good", "fair", "poor"]),
+  shoesType: varchar("shoesType", { length: 100 }), // e.g., front only, all four, barefoot
+  findings: text("findings"),
+  work Performed: text("workPerformed"),
+  nextDueDate: date("nextDueDate"),
+  cost: int("cost"), // in pence
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Hoofcare = typeof hoofcare.$inferSelect;
+export type InsertHoofcare = typeof hoofcare.$inferInsert;
+
+// Nutrition logs module
+export const nutritionLogs = mysqlTable("nutritionLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  logDate: date("logDate").notNull(),
+  feedType: varchar("feedType", { length: 100 }).notNull(),
+  feedName: varchar("feedName", { length: 200 }),
+  amount: varchar("amount", { length: 100 }), // e.g., "2 kg", "3 scoops"
+  mealTime: varchar("mealTime", { length: 50 }), // morning, midday, evening
+  supplements: text("supplements"),
+  hay: varchar("hay", { length: 100 }),
+  water: varchar("water", { length: 100 }),
+  bodyConditionScore: int("bodyConditionScore"), // 1-9 scale
+  weight: int("weight"), // in kg
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NutritionLog = typeof nutritionLogs.$inferSelect;
+export type InsertNutritionLog = typeof nutritionLogs.$inferInsert;
+
+// Nutrition plans module (enhanced feeding plans)
+export const nutritionPlans = mysqlTable("nutritionPlans", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  planName: varchar("planName", { length: 200 }).notNull(),
+  startDate: date("startDate").notNull(),
+  endDate: date("endDate"),
+  targetWeight: int("targetWeight"), // in kg
+  targetBodyCondition: int("targetBodyCondition"), // 1-9 scale
+  dailyHay: varchar("dailyHay", { length: 100 }),
+  dailyConcentrates: varchar("dailyConcentrates", { length: 200 }),
+  supplements: text("supplements"),
+  specialInstructions: text("specialInstructions"),
+  feedingSchedule: text("feedingSchedule"), // JSON with meal times and amounts
+  caloriesPerDay: int("caloriesPerDay"),
+  proteinPerDay: varchar("proteinPerDay", { length: 50 }),
+  isActive: boolean("isActive").default(true).notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NutritionPlan = typeof nutritionPlans.$inferSelect;
+export type InsertNutritionPlan = typeof nutritionPlans.$inferInsert;

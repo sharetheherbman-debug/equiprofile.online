@@ -86,11 +86,11 @@ function AdminContent() {
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Admin Access Required</AlertTitle>
           <AlertDescription>
-            Please unlock admin mode via the AI chat by typing "show admin" and entering your password.
+            Your admin session has expired or you don't have admin access.
           </AlertDescription>
         </Alert>
-        <Button onClick={() => navigate('/ai-chat')} className="mt-4">
-          Go to AI Chat
+        <Button onClick={() => navigate('/dashboard')} className="mt-4">
+          Return to Dashboard
         </Button>
       </div>
     );
@@ -292,7 +292,7 @@ function AdminContent() {
           </TabsTrigger>
           <TabsTrigger value="api-keys" className="flex items-center gap-2">
             <Key className="w-4 h-4" />
-            API Keys
+            System Secrets
           </TabsTrigger>
           <TabsTrigger value="system" className="flex items-center gap-2">
             <Server className="w-4 h-4" />
@@ -596,23 +596,23 @@ function AdminContent() {
           </Card>
         </TabsContent>
         
-        {/* API Keys Tab */}
+        {/* System Secrets Tab */}
         <TabsContent value="api-keys" className="space-y-4">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>API Key Management</CardTitle>
-                  <CardDescription>Create and manage API keys for third-party integrations</CardDescription>
+                  <CardTitle>System Integration Keys</CardTitle>
+                  <CardDescription>Configure global API keys for platform integrations (OpenAI, SMTP, weather providers). These are system-wide settings, not user-specific.</CardDescription>
                 </div>
                 <Button onClick={() => {
-                  const name = prompt('Enter API key name:');
+                  const name = prompt('Enter integration name (e.g., "OpenAI API", "Weather API"):');
                   if (name) {
                     createApiKeyMutation.mutate({ name, rateLimit: 100 });
                   }
                 }}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Key
+                  Add Integration
                 </Button>
               </div>
             </CardHeader>
@@ -620,7 +620,7 @@ function AdminContent() {
               {newApiKeyData && (
                 <Alert className="mb-4 border-yellow-500 bg-yellow-50">
                   <Key className="h-4 w-4" />
-                  <AlertTitle>Save Your API Key Now!</AlertTitle>
+                  <AlertTitle>Save This Key Now!</AlertTitle>
                   <AlertDescription className="mt-2 space-y-2">
                     <p className="text-sm">This is the only time you'll see this key:</p>
                     <div className="flex items-center gap-2 bg-white p-2 rounded border font-mono text-sm">
