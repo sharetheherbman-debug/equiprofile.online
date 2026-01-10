@@ -315,6 +315,42 @@ export async function sendPasswordResetEmail(email: string, resetToken: string, 
 }
 
 /**
+ * Send contact form submission to support
+ */
+export async function sendContactFormEmail(data: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): Promise<void> {
+  const contactEmail = process.env.CONTACT_TO_EMAIL || "support@equiprofile.com";
+
+  const subject = `Contact Form: ${data.subject}`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #1e40af;">New Contact Form Submission</h1>
+      
+      <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p><strong>From:</strong> ${data.name}</p>
+        <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+        <p><strong>Subject:</strong> ${data.subject}</p>
+      </div>
+      
+      <div style="background: white; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="margin-top: 0;">Message:</h3>
+        <p style="white-space: pre-wrap;">${data.message}</p>
+      </div>
+      
+      <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+        To reply, send an email to: <a href="mailto:${data.email}">${data.email}</a>
+      </p>
+    </div>
+  `;
+
+  await sendEmail(contactEmail, subject, html);
+}
+
+/**
  * Test email endpoint (for admin testing)
  */
 export async function sendTestEmail(to: string): Promise<boolean> {

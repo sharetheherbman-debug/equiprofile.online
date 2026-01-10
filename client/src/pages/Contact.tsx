@@ -6,9 +6,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { MarketingNav } from "@/components/MarketingNav";
 import { PageTransition } from "@/components/PageTransition";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "";
 
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,28 +19,49 @@ export default function Contact() {
     email: "",
     subject: "",
     message: "",
+    company: "", // honeypot field
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    toast.success("Message sent successfully!", {
-      description: "We'll get back to you as soon as possible.",
-    });
+      const data = await response.json();
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
-
-    setIsSubmitting(false);
+      if (response.ok) {
+        toast.success("Message sent successfully!", {
+          description: "We'll get back to you as soon as possible.",
+        });
+        
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+          company: "",
+        });
+      } else {
+        toast.error("Failed to send message", {
+          description: data.error || "Please try again later.",
+        });
+      }
+    } catch (error) {
+      toast.error("Network error", {
+        description: "Failed to send message. Please check your connection and try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -143,6 +166,19 @@ export default function Contact() {
                         />
                       </div>
 
+                      {/* Honeypot field - hidden from users */}
+                      <div className="hidden">
+                        <Label htmlFor="company">Company</Label>
+                        <Input
+                          id="company"
+                          type="text"
+                          value={formData.company}
+                          onChange={handleChange}
+                          tabIndex={-1}
+                          autoComplete="off"
+                        />
+                      </div>
+
                       <Button
                         type="submit"
                         size="lg"
@@ -169,62 +205,44 @@ export default function Contact() {
                         Send us an email anytime
                       </p>
                       <a
-                        href="mailto:support@equiprofile.online"
+                        href="mailto:support@equiprofile.com"
                         className="text-sm text-primary hover:underline"
                       >
-                        support@equiprofile.online
+                        support@equiprofile.com
                       </a>
                     </div>
                   </div>
                 </Card>
 
-                <Card className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 text-primary">
-                      <Phone className="w-6 h-6" />
+                {WHATSAPP_NUMBER && (
+                  <Card className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-lg bg-primary/10 text-primary">
+                        <MessageSquare className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold mb-1">WhatsApp</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Chat with us on WhatsApp
+                        </p>
+                        <a
+                          href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          {WHATSAPP_NUMBER}
+                        </a>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold mb-1">Phone</h3>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Call us during business hours
-                      </p>
-                      <a
-                        href="tel:+1234567890"
-                        className="text-sm text-primary hover:underline"
-                      >
-                        +1 (234) 567-890
-                      </a>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Mon-Fri: 9am - 6pm EST
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 text-primary">
-                      <MapPin className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1">Office</h3>
-                      <p className="text-sm text-muted-foreground">
-                        123 Equestrian Way
-                        <br />
-                        Horse Country, HC 12345
-                        <br />
-                        United States
-                      </p>
-                    </div>
-                  </div>
-                </Card>
+                  </Card>
+                )}
 
                 <Card className="p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
                   <h3 className="font-semibold mb-2">Response Time</h3>
                   <p className="text-sm text-muted-foreground">
                     We typically respond to all inquiries within 24 hours during
-                    business days. For urgent matters, please call our support
-                    line.
+                    business days. For urgent matters, please email us directly.
                   </p>
                 </Card>
               </ScrollReveal>

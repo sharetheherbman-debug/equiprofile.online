@@ -418,6 +418,76 @@ async function startServer() {
     }
   });
 
+  // Contact form endpoint with rate limiting
+  const contactLimiter = rateLimit({
+    windowMs: 60000, // 1 minute
+    max: 5, // 5 requests per minute per IP
+    message: "Too many contact requests from this IP, please try again later.",
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  app.post("/api/contact", contactLimiter, async (req, res) => {
+    try {
+      const { name, email, subject, message, company } = req.body;
+
+      // Honeypot check - if company field is filled, it's likely a bot
+      if (company) {
+        console.log("[Contact] Honeypot triggered, likely bot submission");
+        // Return success to avoid revealing the honeypot
+        return res.json({ success: true });
+      }
+
+      // Validation
+      if (!name || !email || !subject || !message) {
+        return res.status(400).json({ 
+          error: "All fields are required" 
+        });
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ 
+          error: "Invalid email format" 
+        });
+      }
+
+      // Message length check
+      if (message.length > 5000) {
+        return res.status(400).json({ 
+          error: "Message is too long (max 5000 characters)" 
+        });
+      }
+
+      // Send email
+      try {
+        await email.sendContactFormEmail({
+          name,
+          email,
+          subject,
+          message,
+        });
+
+        console.log(`[Contact] Email sent successfully from ${email}`);
+        res.json({ 
+          success: true, 
+          message: "Your message has been sent successfully" 
+        });
+      } catch (emailError) {
+        console.error("[Contact] Failed to send email:", emailError);
+        res.status(500).json({ 
+          error: "Failed to send email. Please try again later or contact us directly at support@equiprofile.com" 
+        });
+      }
+    } catch (error) {
+      console.error("[Contact] Error:", error);
+      res.status(500).json({ 
+        error: "Internal server error" 
+      });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",
