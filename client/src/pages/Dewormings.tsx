@@ -61,7 +61,7 @@ export default function Dewormings() {
     try {
       const payload = {
         horseId: parseInt(formData.horseId),
-        product: formData.product,
+        productName: formData.product,
         activeIngredient: formData.activeIngredient,
         dosage: formData.dosage,
         weight: formData.weight ? parseFloat(formData.weight) : undefined,

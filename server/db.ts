@@ -1,5 +1,6 @@
 import { eq, and, desc, sql, gte, lte, isNull, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import type { ResultSetHeader } from "mysql2";
 import bcrypt from "bcrypt";
 import { nanoid } from "nanoid";
 import { 
@@ -226,7 +227,7 @@ export async function createHorse(data: InsertHorse) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(horses).values(data);
-  return result[0].insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getHorsesByUserId(userId: number) {
@@ -268,7 +269,7 @@ export async function createHealthRecord(data: InsertHealthRecord) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(healthRecords).values(data);
-  return result[0].insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getHealthRecordsByUserId(userId: number) {
@@ -334,7 +335,7 @@ export async function createTrainingSession(data: InsertTrainingSession) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(trainingSessions).values(data);
-  return result[0].insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getTrainingSessionsByHorseId(horseId: number, userId: number) {
@@ -397,7 +398,7 @@ export async function createFeedingPlan(data: InsertFeedingPlan) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(feedingPlans).values(data);
-  return result[0].insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getFeedingPlansByUserId(userId: number) {
@@ -454,7 +455,7 @@ export async function createDocument(data: InsertDocument) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(documents).values(data);
-  return result[0].insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getDocumentsByUserId(userId: number) {
@@ -494,7 +495,7 @@ export async function createWeatherLog(data: InsertWeatherLog) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(weatherLogs).values(data);
-  return result[0].insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getLatestWeatherLog(userId: number) {
@@ -553,6 +554,9 @@ export async function logActivity(data: InsertActivityLog) {
   await db.insert(activityLogs).values(data);
 }
 
+// Alias for compatibility
+export const createActivityLog = logActivity;
+
 export async function getActivityLogs(limit: number = 100) {
   const db = await getDb();
   if (!db) return [];
@@ -573,7 +577,7 @@ export async function createBackupLog(data: InsertBackupLog) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(backupLogs).values(data);
-  return result[0].insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function updateBackupLog(id: number, data: Partial<InsertBackupLog>) {
@@ -636,7 +640,7 @@ export async function createStripeEvent(eventId: string, eventType: string, payl
       eventType,
       payload,
     });
-    return result[0].insertId;
+    return (result[0] as ResultSetHeader).insertId as number;
   } catch (error) {
     // If duplicate, event already processed
     return null;
@@ -662,47 +666,13 @@ export async function isStripeEventProcessed(eventId: string) {
   return result.length > 0;
 }
 
-// ============ VACCINATION QUERIES ============
-
-export async function createVaccination(data: InsertVaccination) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  const result = await db.insert(vaccinations).values(data);
-  return result[0].insertId;
-}
-
-export async function getVaccinationsByHorseId(horseId: number, userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(vaccinations).where(
-    and(eq(vaccinations.horseId, horseId), eq(vaccinations.userId, userId))
-  ).orderBy(desc(vaccinations.dateAdministered));
-}
-
-// ============ DEWORMING QUERIES ============
-
-export async function createDeworming(data: InsertDeworming) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  const result = await db.insert(dewormings).values(data);
-  return result[0].insertId;
-}
-
-export async function getDewormingsByHorseId(horseId: number, userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(dewormings).where(
-    and(eq(dewormings.horseId, horseId), eq(dewormings.userId, userId))
-  ).orderBy(desc(dewormings.dateAdministered));
-}
-
 // ============ COMPETITION QUERIES ============
 
 export async function createCompetition(data: InsertCompetition) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(competitions).values(data);
-  return result[0].insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getCompetitionsByHorseId(horseId: number, userId: number) {
@@ -865,7 +835,7 @@ export async function createApiKey(data: {
   });
   
   // Return the PLAIN KEY only once (never stored)
-  return { id: result[0].insertId, key: fullKey };
+  return { id: (result[0] as ResultSetHeader).insertId as number, key: fullKey };
 }
 
 export async function listApiKeys(userId: number) {
@@ -996,8 +966,8 @@ export async function createTask(data: {
   if (!db) throw new Error('Database not available');
   
   const { tasks } = await import('../drizzle/schema');
-  const result = await db.insert(tasks).values(data);
-  return result.insertId;
+  const result = await db.insert(tasks).values(data as any);
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getTasksByUserId(userId: number) {
@@ -1064,7 +1034,7 @@ export async function updateTask(id: number, userId: number, data: {
   if (!db) throw new Error('Database not available');
   
   const { tasks } = await import('../drizzle/schema');
-  await db.update(tasks).set(data).where(
+  await db.update(tasks).set(data as any).where(
     and(eq(tasks.id, id), eq(tasks.userId, userId))
   );
 }
@@ -1116,8 +1086,8 @@ export async function createContact(data: {
   if (!db) throw new Error('Database not available');
   
   const { contacts } = await import('../drizzle/schema');
-  const result = await db.insert(contacts).values(data);
-  return result.insertId;
+  const result = await db.insert(contacts).values(data as any);
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getContactsByUserId(userId: number) {
@@ -1145,7 +1115,7 @@ export async function getContactsByType(userId: number, contactType: string) {
   
   const { contacts } = await import('../drizzle/schema');
   return db.select().from(contacts).where(
-    and(eq(contacts.userId, userId), eq(contacts.contactType, contactType))
+    and(eq(contacts.userId, userId), eq(contacts.contactType, contactType as any))
   ).orderBy(contacts.name);
 }
 
@@ -1169,7 +1139,7 @@ export async function updateContact(id: number, userId: number, data: {
   if (!db) throw new Error('Database not available');
   
   const { contacts } = await import('../drizzle/schema');
-  await db.update(contacts).set(data).where(
+  await db.update(contacts).set(data as any).where(
     and(eq(contacts.id, id), eq(contacts.userId, userId))
   );
 }
@@ -1205,7 +1175,7 @@ export async function createVaccination(data: {
   
   const { vaccinations } = await import('../drizzle/schema');
   const result = await db.insert(vaccinations).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getVaccinationsByUserId(userId: number) {
@@ -1287,7 +1257,7 @@ export async function createDeworming(data: {
   
   const { dewormings } = await import('../drizzle/schema');
   const result = await db.insert(dewormings).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getDewormingsByUserId(userId: number) {
@@ -1381,7 +1351,7 @@ export async function createOrUpdatePedigree(data: {
   } else {
     // Create new
     const result = await db.insert(pedigree).values(data);
-    return result.insertId;
+    return (result[0] as ResultSetHeader).insertId as number;
   }
 }
 
@@ -1408,7 +1378,7 @@ export async function createTreatment(data: InsertTreatment) {
   if (!db) throw new Error('Database not available');
   
   const result = await db.insert(treatments).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getTreatmentsByUserId(userId: number) {
@@ -1461,7 +1431,7 @@ export async function createAppointment(data: InsertAppointment) {
   if (!db) throw new Error('Database not available');
   
   const result = await db.insert(appointments).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getAppointmentsByUserId(userId: number) {
@@ -1514,7 +1484,7 @@ export async function createDentalCare(data: InsertDentalCare) {
   if (!db) throw new Error('Database not available');
   
   const result = await db.insert(dentalCare).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getDentalCareByUserId(userId: number) {
@@ -1567,7 +1537,7 @@ export async function createXray(data: InsertXray) {
   if (!db) throw new Error('Database not available');
   
   const result = await db.insert(xrays).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getXraysByUserId(userId: number) {
@@ -1620,7 +1590,7 @@ export async function createTag(data: InsertTag) {
   if (!db) throw new Error('Database not available');
   
   const result = await db.insert(tags).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getTagsByUserId(userId: number) {
@@ -1664,7 +1634,7 @@ export async function createHoofcare(data: InsertHoofcare) {
   if (!db) throw new Error('Database not available');
   
   const result = await db.insert(hoofcare).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getHoofcareByUserId(userId: number) {
@@ -1717,7 +1687,7 @@ export async function createNutritionLog(data: InsertNutritionLog) {
   if (!db) throw new Error('Database not available');
   
   const result = await db.insert(nutritionLogs).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getNutritionLogsByUserId(userId: number) {
@@ -1770,7 +1740,7 @@ export async function createNutritionPlan(data: InsertNutritionPlan) {
   if (!db) throw new Error('Database not available');
   
   const result = await db.insert(nutritionPlans).values(data);
-  return result.insertId;
+  return (result[0] as ResultSetHeader).insertId as number;
 }
 
 export async function getNutritionPlansByUserId(userId: number) {

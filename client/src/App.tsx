@@ -24,7 +24,6 @@ import ResetPassword from "./pages/auth/ResetPassword";
 
 // App Pages (Protected)
 import Dashboard from "./pages/Dashboard";
-import Pricing from "./pages/Pricing";
 import Horses from "./pages/Horses";
 import HorseForm from "./pages/HorseForm";
 import HorseDetail from "./pages/HorseDetail";
@@ -71,9 +70,6 @@ function Router() {
           <Route path="/register" component={Register} />
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password" component={ResetPassword} />
-          
-          {/* Pricing page */}
-          <Route path="/pricing" component={Pricing} />
           
           {/* Dashboard - requires auth */}
           {/* App Pages (Protected - require auth) */}

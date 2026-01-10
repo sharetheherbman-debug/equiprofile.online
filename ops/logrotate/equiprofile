@@ -1,0 +1,34 @@
+# Log rotation configuration for EquiProfile
+# Location: /etc/logrotate.d/equiprofile
+
+/var/log/equiprofile/*.log {
+    # Rotate daily
+    daily
+    
+    # Keep 14 days of logs
+    rotate 14
+    
+    # Compress old log files
+    compress
+    
+    # Delay compression until next rotation (keeps most recent backup uncompressed)
+    delaycompress
+    
+    # Don't rotate if log is empty
+    notifempty
+    
+    # Don't error if log file is missing
+    missingok
+    
+    # Create new log file with these permissions after rotation
+    create 0640 www-data www-data
+    
+    # Run postrotate script only once for all logs
+    sharedscripts
+    
+    # After rotation, reload application to release old log file handles
+    postrotate
+        # Reload systemd service to reopen log files
+        /bin/systemctl reload equiprofile > /dev/null 2>&1 || true
+    endscript
+}

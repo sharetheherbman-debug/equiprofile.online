@@ -6,12 +6,22 @@ import path from "path";
 import { defineConfig, Plugin } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 
-// Plugin to inject version into service worker
+// Check if PWA is enabled via environment variable
+const PWA_ENABLED = process.env.VITE_PWA_ENABLED === 'true' || process.env.ENABLE_PWA === 'true';
+
+// Plugin to inject version into service worker (only if PWA is enabled)
 function injectServiceWorkerVersion(): Plugin {
   return {
     name: 'inject-service-worker-version',
     apply: 'build',
     generateBundle() {
+      // Only generate service worker if PWA is enabled
+      if (!PWA_ENABLED) {
+        console.log('⚠️  PWA disabled - service worker will NOT be generated');
+        console.log('   To enable: set ENABLE_PWA=true in .env');
+        return;
+      }
+
       const packageJsonPath = path.resolve(import.meta.dirname, 'package.json');
       const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
       const version = packageJson.version || '1.0.0';
@@ -31,6 +41,10 @@ function injectServiceWorkerVersion(): Plugin {
           fileName: 'service-worker.js',
           source: swContent
         });
+        
+        console.log(`✓ Service worker generated (version: ${version})`);
+      } else {
+        console.log('⚠️  Service worker source not found at:', swPath);
       }
     }
   };

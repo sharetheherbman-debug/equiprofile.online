@@ -1,0 +1,45 @@
+[Unit]
+Description=EquiProfile Node.js Application
+Documentation=https://github.com/amarktainetwork-blip/Equiprofile.online
+After=network.target mysql.service mariadb.service
+Wants=mysql.service mariadb.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/equiprofile/app
+EnvironmentFile=/var/equiprofile/app/.env
+
+# Main process
+ExecStart=/usr/bin/node dist/index.js
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=3
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=equiprofile
+
+# Timeouts
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/equiprofile/app
+ReadWritePaths=/var/log/equiprofile
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=512
+
+[Install]
+WantedBy=multi-user.target

@@ -38,7 +38,8 @@ import {
   MessageSquare,
   ListChecks,
   Baby,
-  Calendar
+  Calendar,
+  Users
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -341,3 +342,6 @@ function DashboardLayoutContent({
     </>
   );
 }
+
+// Named export for compatibility with existing imports
+export { DashboardLayout };

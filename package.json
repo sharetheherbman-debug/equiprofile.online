@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx watch server/_core/index.ts",
     "build:sw": "node scripts/update-sw-version.js",
-    "build": "npm run build:sw && vite build && esbuild server/_core/index.ts --platform=node --bundle --format=esm --outdir=dist --minify --packages=external",
+    "build": "NODE_OPTIONS='--max_old_space_size=2048' npm run build:sw && NODE_OPTIONS='--max_old_space_size=2048' vite build && NODE_OPTIONS='--max_old_space_size=2048' esbuild server/_core/index.ts --platform=node --bundle --format=esm --outdir=dist --minify --packages=external",
+    "build:safe": "NODE_OPTIONS='--max_old_space_size=2048' pnpm run build",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
     "format": "prettier --write .",

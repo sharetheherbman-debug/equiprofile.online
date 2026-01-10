@@ -113,205 +113,78 @@ The application will be available at `http://localhost:3000`
 
 ## 🚢 Production Deployment
 
-### One-Command Deployment
+EquiProfile includes a **100% plug-and-play production deployment system** for Ubuntu 24.04 VPS with Nginx + systemd.
 
-For the fastest deployment, use the automated deployment script:
+### Quick Deployment (20 minutes)
 
-```bash
-# Run from the project root
-bash scripts/deploy.sh
-```
-
-This script will:
-1. ✅ Install all dependencies with frozen lockfile
-2. ✅ Build client and server for production
-3. ✅ Verify build outputs
-4. ✅ Display next steps for configuration
-
-### Manual Deployment Steps
-
-If you prefer step-by-step control:
-
-#### 1. Install Dependencies
+Deploy to a fresh Ubuntu 24.04 server in under 20 minutes:
 
 ```bash
-bash scripts/install.sh
-# This runs: pnpm install --frozen-lockfile
-```
+# 1. Clone repository
+git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
+cd Equiprofile.online
 
-#### 2. Configure Environment
-
-```bash
-# Copy example configuration
+# 2. Configure environment
 cp .env.example .env
+nano .env  # Update DATABASE_URL, JWT_SECRET, ADMIN_UNLOCK_PASSWORD, BASE_URL
 
-# Edit with production values
-nano .env
+# 3. Run pre-flight checks
+bash ops/preflight.sh
+
+# 4. Deploy (as root)
+sudo bash ops/deploy.sh --domain equiprofile.online
+
+# 5. Verify
+bash ops/verify.sh --domain equiprofile.online
 ```
 
-**Required environment variables:**
-```env
-NODE_ENV=production
-PORT=3000
-BASE_URL=https://yourdomain.com
+**That's it!** Your production instance is now running with:
+- ✅ Nginx configured with SSL (via Let's Encrypt)
+- ✅ systemd service (single, deterministic)
+- ✅ Proper cache headers and 404 handling
+- ✅ Log rotation
+- ✅ Health checks
+- ✅ No manual configuration required
 
-# Database (MySQL for production)
-DATABASE_URL=mysql://equiprofile:your_password@localhost:3306/equiprofile
+### Deployment Features
 
-# Security - MUST CHANGE!
-JWT_SECRET=<generate with: openssl rand -base64 32>
-ADMIN_UNLOCK_PASSWORD=<your_secure_password>
+The `ops/deploy.sh` script provides:
 
-# Optional features
-ENABLE_STRIPE=false
-ENABLE_UPLOADS=false
-VITE_PWA_ENABLED=false
-```
+- **Idempotent**: Safe to run multiple times
+- **Resumable**: `--resume` flag to continue after failure
+- **Configurable**: Flags for domain, path, user, port
+- **Validated**: Pre-flight checks ensure system readiness
+- **Automatic**: Handles dependencies, builds, systemd, nginx, SSL
+- **Verified**: Post-deployment checks confirm success
 
-> **🔒 SECURITY**: The application **refuses to start** in production with default secrets!
-
-#### 3. Build Application
+### Deployment Options
 
 ```bash
-bash scripts/build.sh
+sudo bash ops/deploy.sh \
+  --domain your-domain.com \    # Domain name (required for SSL)
+  --root /var/app \             # Installation path (default: /var/equiprofile/app)
+  --user www-data \             # Service user (default: www-data)
+  --port 3000 \                 # Backend port (default: 3000)
+  --no-ssl                      # Skip SSL setup (HTTP only)
 ```
 
-This builds:
-- **Client**: `dist/public/` (Vite-built SPA with hashed assets)
-- **Server**: `dist/index.js` (esbuild-bundled Node.js server)
+### Complete Documentation
 
-Build verification ensures:
-- ✅ `dist/index.js` exists (server bundle)
-- ✅ `dist/public/` exists (client static files)
-- ✅ `dist/public/index.html` exists (SPA entry point)
+For detailed instructions, troubleshooting, and maintenance:
 
-#### 4. Setup Process Manager
+👉 **See [DEPLOYMENT.md](DEPLOYMENT.md)** for the complete production deployment guide.
 
-**Option A: systemd (recommended for production)**
+The guide includes:
+- Server prerequisites and setup
+- Detailed step-by-step installation
+- Environment configuration
+- SSL certificate setup
+- Troubleshooting common issues
+- Maintenance and updates
+- Security best practices
+- Monitoring and performance tuning
 
-```bash
-# Copy service file
-sudo cp deployment/systemd/equiprofile.service /etc/systemd/system/
-
-# Edit paths if needed
-sudo nano /etc/systemd/system/equiprofile.service
-
-# Enable and start
-sudo systemctl daemon-reload
-sudo systemctl enable equiprofile
-sudo systemctl start equiprofile
-
-# Check status
-sudo systemctl status equiprofile
-
-# View logs
-sudo journalctl -u equiprofile -f
-```
-
-**Option B: PM2 (alternative)**
-
-```bash
-# Install PM2
-npm install -g pm2
-
-# Start application
-pm2 start ecosystem.config.js
-
-# Save process list
-pm2 save
-
-# Setup startup script
-pm2 startup
-# Follow the instructions displayed
-```
-
-#### 5. Configure Nginx
-
-**Choose one configuration approach:**
-
-##### Approach 1: Proxy All Requests (Recommended - Simplest)
-
-```bash
-# Edit configuration and replace YOUR_DOMAIN_HERE
-sudo nano deployment/nginx/equiprofile.conf
-
-# Copy to nginx
-sudo cp deployment/nginx/equiprofile.conf /etc/nginx/sites-available/equiprofile
-
-# Create symlink
-sudo ln -s /etc/nginx/sites-available/equiprofile /etc/nginx/sites-enabled/
-
-# Test configuration
-sudo nginx -t
-
-# Reload nginx
-sudo systemctl reload nginx
-```
-
-##### Approach 2: Nginx Serves Static Files (Advanced)
-
-```bash
-# Use this if you want Nginx to serve static files directly
-sudo cp deployment/nginx/equiprofile-static.conf /etc/nginx/sites-available/equiprofile
-
-# Edit and update paths
-sudo nano /etc/nginx/sites-available/equiprofile
-
-# Test and reload
-sudo nginx -t && sudo systemctl reload nginx
-```
-
-#### 6. Setup SSL with Let's Encrypt
-
-```bash
-# Replace with your domain
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
-
-# Test auto-renewal
-sudo certbot renew --dry-run
-```
-
-#### 7. Verify Deployment
-
-```bash
-# Check local health
-curl http://127.0.0.1:3000/healthz
-
-# Check public URL
-curl https://yourdomain.com/healthz
-
-# Check build info
-curl https://yourdomain.com/build
-```
-
-### Nginx Configuration
-
-Two configurations are provided:
-
-| Configuration | Description | Use Case |
-|---------------|-------------|----------|
-| `nginx/equiprofile.conf` | **Proxy-all approach** (recommended) | Simplest, most reliable. Node.js serves everything. |
-| `nginx/equiprofile-static.conf` | Nginx serves static files | Better performance for static files, more complex setup. |
-
-**Key differences:**
-
-**Proxy-all approach:**
-- ✅ Simple configuration
-- ✅ No path mismatch issues
-- ✅ Node.js sets correct cache headers
-- ⚠️ Slightly more load on Node.js
-
-**Nginx static approach:**
-- ✅ Better static file performance
-- ⚠️ Must keep paths in sync
-- ⚠️ More complex configuration
-- ⚠️ Requires correct cache headers in Nginx
-
-**Cache Strategy (Both Approaches):**
-- `index.html`: **No cache** (`no-store, no-cache, must-revalidate`)
-- `service-worker.js`: **No cache** (`no-store, no-cache, must-revalidate`)
-- `/assets/*`: **Immutable** (`public, max-age=31536000, immutable`)
-- Other static files: Moderate caching
+---
 
 ---
 

@@ -15,7 +15,9 @@ export function useAdminToggle() {
       setIsAdminVisible(adminToggle.isAdminVisible());
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return { isAdminVisible };

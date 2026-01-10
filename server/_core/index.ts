@@ -20,24 +20,8 @@ import * as email from "./email";
 import { ENV } from "./env";
 import { resolve } from "path";
 
-function isPortAvailable(port: number): Promise<boolean> {
-  return new Promise(resolve => {
-    const server = net.createServer();
-    server.listen(port, () => {
-      server.close(() => resolve(true));
-    });
-    server.on("error", () => resolve(false));
-  });
-}
-
-async function findAvailablePort(startPort: number = 3000): Promise<number> {
-  for (let port = startPort; port < startPort + 20; port++) {
-    if (await isPortAvailable(port)) {
-      return port;
-    }
-  }
-  throw new Error(`No available port found starting from ${startPort}`);
-}
+// Port checking functions removed - now using deterministic port binding
+// If port is in use, server will fail with clear error message instead of auto-switching
 
 async function startServer() {
   const app = express();
@@ -321,6 +305,11 @@ async function startServer() {
     });
   });
 
+  // Simple ping endpoint (minimal response for monitoring)
+  app.get("/api/health/ping", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // OAuth status endpoint
   app.get("/api/oauth/status", (req, res) => {
     const configured = !!(ENV.oAuthServerUrl && ENV.appId);
@@ -361,7 +350,7 @@ async function startServer() {
   app.get("/api/realtime/events", async (req, res) => {
     try {
       // Get user from session (reuse tRPC context logic)
-      const context = await createContext({ req, res });
+      const context = await createContext({ req, res, info: { isBatchCall: false, calls: [] } });
       
       if (!context.user) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -383,7 +372,7 @@ async function startServer() {
   // SSE stats endpoint (admin only)
   app.get("/api/realtime/stats", async (req, res) => {
     try {
-      const context = await createContext({ req, res });
+      const context = await createContext({ req, res, info: { isBatchCall: false, calls: [] } });
       if (!context.user || context.user.role !== 'admin') {
         return res.status(403).json({ error: "Admin access required" });
       }
@@ -415,15 +404,34 @@ async function startServer() {
     serveStatic(app);
   }
 
-  const preferredPort = parseInt(process.env.PORT || "3000");
-  const port = await findAvailablePort(preferredPort);
+  // Deterministic port binding - fail if port is in use (no auto-switching)
+  const host = process.env.HOST || "127.0.0.1";
+  const port = parseInt(process.env.PORT || "3000");
+  
+  console.log(`Starting server on ${host}:${port}...`);
 
-  if (port !== preferredPort) {
-    console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
-  }
+  server.listen(port, host, () => {
+    console.log(`✓ Server running on http://${host}:${port}/`);
+    console.log(`✓ Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(`✓ Health check: http://${host}:${port}/api/health`);
+  });
 
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
+  // Handle port binding errors
+  server.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(`\n❌ ERROR: Port ${port} is already in use!`);
+      console.error(`\nTo fix this issue:`);
+      console.error(`  1. Find process using port: lsof -i :${port}`);
+      console.error(`  2. Kill the process: kill -9 <PID>`);
+      console.error(`  3. Or use a different port: PORT=${port + 1} npm start`);
+      console.error(`\nIf running via systemd:`);
+      console.error(`  sudo systemctl stop equiprofile`);
+      console.error(`  sudo systemctl start equiprofile\n`);
+      process.exit(1);
+    } else {
+      console.error("Server error:", err);
+      process.exit(1);
+    }
   });
 }
 

@@ -40,6 +40,7 @@ import {
   feedCosts,
   lessonBookings,
   trainerAvailability,
+  horses,
 } from "../drizzle/schema";
 
 // Subscription check middleware
@@ -2047,7 +2048,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const db = await getDb();
         if (!db) return null;
         
-        let query = db.select({
+        const whereConditions = [eq(trainingSessions.userId, ctx.user.id)];
+        if (input.horseId) {
+          whereConditions.push(eq(trainingSessions.horseId, input.horseId));
+        }
+        
+        const result = await db.select({
           totalSessions: sql<number>`COUNT(*)`,
           completedSessions: sql<number>`SUM(CASE WHEN isCompleted = 1 THEN 1 ELSE 0 END)`,
           totalDuration: sql<number>`SUM(duration)`,
@@ -2058,13 +2064,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             WHEN performance = 'poor' THEN 1
             ELSE 0 END)`,
         }).from(trainingSessions)
-        .where(eq(trainingSessions.userId, ctx.user.id));
+        .where(whereConditions.length > 1 ? and(...whereConditions) : whereConditions[0]);
         
-        if (input.horseId) {
-          query = query.where(eq(trainingSessions.horseId, input.horseId));
-        }
-        
-        const result = await query;
         return result[0] || null;
       }),
 
@@ -2311,9 +2312,6 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         horseId: z.number().optional(),
       }))
       .query(async ({ ctx, input }) => {
-        const db = await getDb();
-        if (!db) return [];
-        
         if (input.horseId) {
           return db.getCompetitionsByHorseId(input.horseId, ctx.user.id);
         }
@@ -2321,12 +2319,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
     
     exportCSV: subscribedProcedure.query(async ({ ctx }) => {
-      const dbInstance = await getDb();
-      if (!dbInstance) {
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
-      }
-      
-      const competitionData = await dbInstance.getCompetitionsByUserId(ctx.user.id);
+      const competitionData = await db.getCompetitionsByUserId(ctx.user.id);
       const csv = exportCompetitionsCSV(competitionData);
       const filename = generateCSVFilename('competitions');
       
@@ -2797,9 +2790,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
       }
       
+      // Get user's horses first
+      const userHorses = await dbInstance.select({ id: horses.id })
+        .from(horses)
+        .where(eq(horses.userId, ctx.user.id));
+      
+      const horseIds = userHorses.map(h => h.id);
+      if (horseIds.length === 0) {
+        // No horses, return empty CSV
+        const headers = ['id', 'mareId', 'stallionName', 'breedingDate', 'method', 'cost', 'pregnancyConfirmed', 'dueDate', 'notes'];
+        const csv = [headers.join(',')].join('\n');
+        return {
+          csv,
+          filename: generateCSVFilename('breeding'),
+          mimeType: 'text/csv',
+        };
+      }
+      
       const breedingRecords = await dbInstance.select()
         .from(breeding)
-        .where(eq(breeding.userId, ctx.user.id))
+        .where(inArray(breeding.mareId, horseIds))
         .orderBy(desc(breeding.createdAt));
       
       // Create CSV with breeding data
@@ -2817,7 +2827,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }));
       
       const csv = data.length > 0 ? 
-        [headers.join(','), ...data.map(row => headers.map(h => row[h]).join(','))].join('\n') :
+        [headers.join(','), ...data.map(row => headers.map(h => (row as any)[h]).join(','))].join('\n') :
         headers.join(',');
       
       const filename = generateCSVFilename('breeding_records');
@@ -3180,9 +3190,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { startDate, endDate, ...rest } = input;
         const id = await db.createTreatment({
-          ...input,
+          ...rest,
           userId: ctx.user.id,
+          startDate: new Date(startDate),
+          endDate: endDate ? new Date(endDate) : undefined,
         });
 
         // Publish real-time event
@@ -3222,8 +3235,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, ...data } = input;
-        await db.updateTreatment(id, ctx.user.id, data);
+        const { id, startDate, endDate, ...data } = input;
+        await db.updateTreatment(id, ctx.user.id, {
+          ...data,
+          startDate: startDate ? new Date(startDate) : undefined,
+          endDate: endDate ? new Date(endDate) : undefined,
+        });
 
         // Publish real-time event
         const { publishModuleEvent } = await import('./_core/realtime');
@@ -3302,9 +3319,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { appointmentDate, ...rest } = input;
         const id = await db.createAppointment({
-          ...input,
+          ...rest,
           userId: ctx.user.id,
+          appointmentDate: new Date(appointmentDate),
           reminderSent: false,
         });
 
@@ -3345,8 +3364,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, ...data } = input;
-        await db.updateAppointment(id, ctx.user.id, data);
+        const { id, appointmentDate, ...data } = input;
+        await db.updateAppointment(id, ctx.user.id, {
+          ...data,
+          appointmentDate: appointmentDate ? new Date(appointmentDate) : undefined,
+        });
 
         // Publish real-time event
         const { publishModuleEvent } = await import('./_core/realtime');
@@ -3423,9 +3445,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { examDate, nextDueDate, ...rest } = input;
         const id = await db.createDentalCare({
-          ...input,
+          ...rest,
           userId: ctx.user.id,
+          examDate: new Date(examDate),
+          nextDueDate: nextDueDate ? new Date(nextDueDate) : undefined,
         });
 
         // Publish real-time event
@@ -3463,8 +3488,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, ...data } = input;
-        await db.updateDentalCare(id, ctx.user.id, data);
+        const { id, examDate, nextDueDate, ...data } = input;
+        await db.updateDentalCare(id, ctx.user.id, {
+          ...data,
+          examDate: examDate ? new Date(examDate) : undefined,
+          nextDueDate: nextDueDate ? new Date(nextDueDate) : undefined,
+        });
 
         // Publish real-time event
         const { publishModuleEvent } = await import('./_core/realtime');
@@ -3543,9 +3572,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { xrayDate, ...rest } = input;
         const id = await db.createXray({
-          ...input,
+          ...rest,
           userId: ctx.user.id,
+          xrayDate: new Date(xrayDate),
         });
 
         // Publish real-time event
@@ -3585,8 +3616,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, ...data } = input;
-        await db.updateXray(id, ctx.user.id, data);
+        const { id, xrayDate, ...data } = input;
+        await db.updateXray(id, ctx.user.id, {
+          ...data,
+          xrayDate: xrayDate ? new Date(xrayDate) : undefined,
+        });
 
         // Publish real-time event
         const { publishModuleEvent } = await import('./_core/realtime');
@@ -3760,9 +3794,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { careDate, nextDueDate, ...rest } = input;
         const id = await db.createHoofcare({
-          ...input,
+          ...rest,
           userId: ctx.user.id,
+          careDate: new Date(careDate),
+          nextDueDate: nextDueDate ? new Date(nextDueDate) : undefined,
         });
 
         // Publish real-time event
@@ -3800,8 +3837,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, ...data } = input;
-        await db.updateHoofcare(id, ctx.user.id, data);
+        const { id, careDate, nextDueDate, ...data } = input;
+        await db.updateHoofcare(id, ctx.user.id, {
+          ...data,
+          careDate: careDate ? new Date(careDate) : undefined,
+          nextDueDate: nextDueDate ? new Date(nextDueDate) : undefined,
+        });
 
         // Publish real-time event
         const { publishModuleEvent } = await import('./_core/realtime');
@@ -3878,9 +3919,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { logDate, ...rest } = input;
         const id = await db.createNutritionLog({
-          ...input,
+          ...rest,
           userId: ctx.user.id,
+          logDate: new Date(logDate),
         });
 
         // Publish real-time event
@@ -3918,8 +3961,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, ...data } = input;
-        await db.updateNutritionLog(id, ctx.user.id, data);
+        const { id, logDate, ...data } = input;
+        await db.updateNutritionLog(id, ctx.user.id, {
+          ...data,
+          logDate: logDate ? new Date(logDate) : undefined,
+        });
 
         // Publish real-time event
         const { publishModuleEvent } = await import('./_core/realtime');
@@ -3999,9 +4045,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        const { startDate, endDate, ...rest } = input;
         const id = await db.createNutritionPlan({
-          ...input,
+          ...rest,
           userId: ctx.user.id,
+          startDate: new Date(startDate),
+          endDate: endDate ? new Date(endDate) : undefined,
         });
 
         // Publish real-time event
@@ -4042,8 +4091,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, ...data } = input;
-        await db.updateNutritionPlan(id, ctx.user.id, data);
+        const { id, startDate, endDate, ...data } = input;
+        await db.updateNutritionPlan(id, ctx.user.id, {
+          ...data,
+          startDate: startDate ? new Date(startDate) : undefined,
+          endDate: endDate ? new Date(endDate) : undefined,
+        });
 
         // Publish real-time event
         const { publishModuleEvent } = await import('./_core/realtime');

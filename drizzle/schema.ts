@@ -893,7 +893,7 @@ export const hoofcare = mysqlTable("hoofcare", {
   hoofCondition: mysqlEnum("hoofCondition", ["excellent", "good", "fair", "poor"]),
   shoesType: varchar("shoesType", { length: 100 }), // e.g., front only, all four, barefoot
   findings: text("findings"),
-  work Performed: text("workPerformed"),
+  workPerformed: text("workPerformed"),
   nextDueDate: date("nextDueDate"),
   cost: int("cost"), // in pence
   notes: text("notes"),
