@@ -1,264 +1,195 @@
 import { MarketingNav } from "@/components/MarketingNav";
 import { Footer } from "@/components/Footer";
 import { PageTransition } from "@/components/PageTransition";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function PrivacyPage() {
   return (
     <>
       <MarketingNav />
       <PageTransition>
-        <div className="min-h-screen bg-background">
-          <div className="container mx-auto px-4 py-24">
-            <div className="max-w-4xl mx-auto">
-              <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-              <p className="text-muted-foreground mb-8">Last updated: January 5, 2026</p>
+        <div className="min-h-screen bg-background py-24">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto">
+              <h1 className="text-4xl font-bold mb-4">Privacy Policy</h1>
+              <p className="text-muted-foreground mb-12">Last updated: January 10, 2026</p>
 
-              <div className="space-y-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>1. Introduction</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      EquiProfile ("we", "our", or "us") is committed to protecting your privacy. This Privacy
-                      Policy explains how we collect, use, disclose, and safeguard your information when you use
-                      our Service.
-                    </p>
-                    <p>
-                      Please read this privacy policy carefully. If you do not agree with the terms of this
-                      privacy policy, please do not access the Service.
-                    </p>
-                  </CardContent>
-                </Card>
+              <div className="space-y-8 prose prose-slate dark:prose-invert max-w-none">
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">1. Introduction</h2>
+                  <p>
+                    EquiProfile ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy 
+                    explains how we collect, use, and protect your personal information in accordance with the UK GDPR 
+                    and the Data Protection Act 2018.
+                  </p>
+                  <p>
+                    If you do not agree with this policy, please do not use our Service.
+                  </p>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>2. Information We Collect</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <h4>Personal Information</h4>
-                    <p>
-                      We collect information that you voluntarily provide when using the Service, including:
-                    </p>
-                    <ul>
-                      <li>Name and email address</li>
-                      <li>Account credentials</li>
-                      <li>Payment information (processed securely through Stripe)</li>
-                      <li>Horse profiles and related data</li>
-                      <li>Health records and training information</li>
-                      <li>Documents you upload</li>
-                    </ul>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">2. Information We Collect</h2>
+                  
+                  <h3 className="text-xl font-semibold mb-2 mt-4">Personal Information</h3>
+                  <p>We collect information you provide, including:</p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Name and email address</li>
+                    <li>Account credentials</li>
+                    <li>Payment information (processed securely via Stripe)</li>
+                    <li>Horse profiles and related data</li>
+                    <li>Health records and training information</li>
+                    <li>Documents you upload</li>
+                  </ul>
 
-                    <h4>Automatically Collected Information</h4>
-                    <p>
-                      When you access the Service, we automatically collect certain information, including:
-                    </p>
-                    <ul>
-                      <li>Device information (browser type, operating system)</li>
-                      <li>IP address and location data</li>
-                      <li>Usage data (pages viewed, features used)</li>
-                      <li>Cookies and similar tracking technologies</li>
-                    </ul>
-                  </CardContent>
-                </Card>
+                  <h3 className="text-xl font-semibold mb-2 mt-4">Automatically Collected Information</h3>
+                  <p>We automatically collect:</p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Device and browser information</li>
+                    <li>IP address</li>
+                    <li>Usage data (pages viewed, features used)</li>
+                    <li>Cookies and similar technologies</li>
+                  </ul>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>3. How We Use Your Information</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      We use the information we collect to:
-                    </p>
-                    <ul>
-                      <li>Provide, maintain, and improve the Service</li>
-                      <li>Process your transactions and manage subscriptions</li>
-                      <li>Send you transactional emails (account updates, reminders)</li>
-                      <li>Respond to your comments and questions</li>
-                      <li>Monitor and analyze usage patterns</li>
-                      <li>Detect and prevent fraud or abuse</li>
-                      <li>Comply with legal obligations</li>
-                    </ul>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">3. Legal Basis for Processing (UK GDPR)</h2>
+                  <p>We process your personal data on the following legal bases:</p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li><strong>Contract:</strong> Processing necessary to provide the Service</li>
+                    <li><strong>Consent:</strong> Where you have given explicit consent</li>
+                    <li><strong>Legitimate Interests:</strong> For improving our Service and business operations</li>
+                    <li><strong>Legal Obligation:</strong> Where required by law</li>
+                  </ul>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>4. Information Sharing and Disclosure</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      We do not sell your personal information. We may share your information in the following
-                      circumstances:
-                    </p>
-                    <ul>
-                      <li><strong>Service Providers:</strong> We use third-party services (Stripe for payments,
-                        cloud hosting providers) who process data on our behalf</li>
-                      <li><strong>Legal Requirements:</strong> We may disclose information if required by law or
-                        in response to valid legal requests</li>
-                      <li><strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of
-                        assets, your information may be transferred</li>
-                      <li><strong>With Your Consent:</strong> We may share information with your explicit permission</li>
-                    </ul>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">4. How We Use Your Information</h2>
+                  <p>We use your information to:</p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Provide and maintain the Service</li>
+                    <li>Process transactions and manage subscriptions</li>
+                    <li>Send transactional emails and reminders</li>
+                    <li>Respond to your enquiries</li>
+                    <li>Improve and optimize the Service</li>
+                    <li>Detect and prevent fraud</li>
+                    <li>Comply with legal obligations</li>
+                  </ul>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>5. Data Security</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      We implement appropriate technical and organizational measures to protect your personal
-                      information, including:
-                    </p>
-                    <ul>
-                      <li>Encryption of data in transit and at rest</li>
-                      <li>Secure password hashing</li>
-                      <li>Regular security assessments</li>
-                      <li>Access controls and authentication</li>
-                      <li>Secure backup procedures</li>
-                    </ul>
-                    <p>
-                      However, no method of transmission over the Internet is 100% secure. While we strive to
-                      protect your information, we cannot guarantee absolute security.
-                    </p>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">5. Information Sharing</h2>
+                  <p>
+                    We do not sell your personal information. We may share information with:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li><strong>Service Providers:</strong> Such as Stripe for payment processing and cloud hosting providers</li>
+                    <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
+                    <li><strong>With Your Consent:</strong> When you explicitly agree</li>
+                  </ul>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>6. Data Retention</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      We retain your personal information for as long as necessary to provide the Service and
-                      comply with legal obligations. You can request deletion of your account and data at any time.
-                    </p>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">6. Data Security</h2>
+                  <p>
+                    We implement appropriate technical and organizational measures to protect your data, including:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Encryption of data in transit and at rest</li>
+                    <li>Secure password hashing</li>
+                    <li>Regular security assessments</li>
+                    <li>Access controls and authentication</li>
+                    <li>Regular backups</li>
+                  </ul>
+                  <p className="mt-3">
+                    However, no method of transmission over the Internet is completely secure. We cannot guarantee 
+                    absolute security.
+                  </p>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>7. Your Privacy Rights</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      Depending on your location, you may have certain rights regarding your personal information:
-                    </p>
-                    <ul>
-                      <li><strong>Access:</strong> Request a copy of the personal information we hold about you</li>
-                      <li><strong>Correction:</strong> Request correction of inaccurate information</li>
-                      <li><strong>Deletion:</strong> Request deletion of your personal information</li>
-                      <li><strong>Data Portability:</strong> Request a copy of your data in a machine-readable format</li>
-                      <li><strong>Opt-Out:</strong> Unsubscribe from marketing emails</li>
-                      <li><strong>Object:</strong> Object to processing of your information</li>
-                    </ul>
-                    <p>
-                      To exercise these rights, please contact us at privacy@equiprofile.online
-                    </p>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">7. Data Retention</h2>
+                  <p>
+                    We retain your personal information for as long as necessary to provide the Service and comply 
+                    with legal obligations. You can request deletion of your account and data at any time.
+                  </p>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>8. Cookies and Tracking</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      We use cookies and similar tracking technologies to:
-                    </p>
-                    <ul>
-                      <li>Maintain your login session</li>
-                      <li>Remember your preferences</li>
-                      <li>Analyze usage patterns</li>
-                      <li>Improve the Service</li>
-                    </ul>
-                    <p>
-                      You can control cookies through your browser settings, but disabling cookies may affect
-                      functionality of the Service.
-                    </p>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">8. Your Rights Under UK GDPR</h2>
+                  <p>You have the right to:</p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li><strong>Access:</strong> Request a copy of your personal data</li>
+                    <li><strong>Rectification:</strong> Request correction of inaccurate data</li>
+                    <li><strong>Erasure:</strong> Request deletion of your personal data</li>
+                    <li><strong>Restriction:</strong> Request restriction of processing</li>
+                    <li><strong>Data Portability:</strong> Receive your data in a machine-readable format</li>
+                    <li><strong>Object:</strong> Object to processing of your data</li>
+                    <li><strong>Withdraw Consent:</strong> Where processing is based on consent</li>
+                  </ul>
+                  <p className="mt-3">
+                    To exercise these rights, contact us at: <a href="mailto:support@equiprofile.com" className="text-primary hover:underline">support@equiprofile.com</a>
+                  </p>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>9. Children's Privacy</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      The Service is not intended for children under 13 years of age. We do not knowingly collect
-                      personal information from children under 13. If you believe we have collected information
-                      from a child under 13, please contact us immediately.
-                    </p>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">9. Cookies</h2>
+                  <p>We use cookies and similar technologies to:</p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Maintain your login session</li>
+                    <li>Remember your preferences</li>
+                    <li>Analyze usage patterns</li>
+                  </ul>
+                  <p className="mt-3">
+                    You can control cookies through your browser settings.
+                  </p>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>10. International Data Transfers</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      Your information may be transferred to and processed in countries other than your country of
-                      residence. These countries may have different data protection laws. By using the Service,
-                      you consent to such transfers.
-                    </p>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">10. International Data Transfers</h2>
+                  <p>
+                    Your information may be processed in countries outside the UK. We ensure appropriate safeguards 
+                    are in place for such transfers in accordance with UK GDPR requirements.
+                  </p>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>11. Changes to This Privacy Policy</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      We may update this Privacy Policy from time to time. We will notify you of any material
-                      changes by email or through a notice on the Service. The "Last updated" date at the top
-                      indicates when this policy was last revised.
-                    </p>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">11. Children's Privacy</h2>
+                  <p>
+                    The Service is not intended for children under 13 years of age. We do not knowingly collect 
+                    personal information from children under 13.
+                  </p>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>12. Contact Us</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      If you have questions or concerns about this Privacy Policy, please contact us at:
-                    </p>
-                    <p>
-                      <strong>Email:</strong> privacy@equiprofile.online<br />
-                      <strong>Support:</strong> support@equiprofile.online<br />
-                      <strong>Website:</strong> https://equiprofile.online
-                    </p>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">12. Changes to This Policy</h2>
+                  <p>
+                    We may update this Privacy Policy from time to time. We will notify you of material changes via 
+                    email or through the Service. The "Last updated" date indicates when this policy was last revised.
+                  </p>
+                </section>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>13. GDPR Compliance (European Users)</CardTitle>
-                  </CardHeader>
-                  <CardContent className="prose prose-slate dark:prose-invert max-w-none">
-                    <p>
-                      If you are located in the European Economic Area (EEA), we process your personal data based
-                      on the following legal grounds:
-                    </p>
-                    <ul>
-                      <li><strong>Contract:</strong> Processing necessary to provide the Service you've requested</li>
-                      <li><strong>Consent:</strong> You have given explicit consent</li>
-                      <li><strong>Legitimate Interests:</strong> Processing necessary for our legitimate business interests</li>
-                      <li><strong>Legal Obligation:</strong> Processing required by law</li>
-                    </ul>
-                  </CardContent>
-                </Card>
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">13. Contact Us</h2>
+                  <p>
+                    For questions about this Privacy Policy or to exercise your rights, contact us at:
+                  </p>
+                  <p>
+                    Email: <a href="mailto:support@equiprofile.com" className="text-primary hover:underline">support@equiprofile.com</a>
+                  </p>
+                </section>
+
+                <section>
+                  <h2 className="text-2xl font-semibold mb-3">14. Supervisory Authority</h2>
+                  <p>
+                    If you have concerns about how we handle your personal data, you have the right to lodge a 
+                    complaint with the Information Commissioner's Office (ICO), the UK's supervisory authority for 
+                    data protection.
+                  </p>
+                </section>
               </div>
             </div>
           </div>
-          <Footer />
         </div>
+        <Footer />
       </PageTransition>
     </>
   );
