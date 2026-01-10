@@ -90,95 +90,68 @@ export default function Home() {
       <PageTransition>
         <div className="min-h-screen">
           {/* Hero Section */}
-          <section className="relative pt-24 lg:pt-32 pb-16 lg:pb-24 overflow-hidden">
-            {/* Background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
+          <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+            {/* Full-width hero image with dark overlay */}
+            <div className="absolute inset-0">
+              <img 
+                src="/images/hero-horse.jpg" 
+                alt="Professional horse management" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/60" />
+            </div>
             
-            <div className="container relative z-10">
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <Badge className="mb-6 inline-flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" />
-                    7-Day Free Trial
-                  </Badge>
-                  
-                  <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6">
-                    Professional Horse Management Made{" "}
-                    <span className="text-gradient">Simple</span>
-                  </h1>
-                  
-                  <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
-                    The complete digital platform for horse owners, trainers, and equestrian professionals. 
-                    Track health records, manage training, and provide exceptional care—all in one place.
-                  </p>
-                  
-                  <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                    <Link href={isAuthenticated ? "/dashboard" : "/register"}>
-                      <Button size="lg" className="text-lg w-full sm:w-auto">
-                        {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
-                        <ChevronRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    </Link>
-                    <Link href="/features">
-                      <Button size="lg" variant="outline" className="text-lg w-full sm:w-auto">
-                        Explore Features
-                      </Button>
-                    </Link>
-                  </div>
+            <div className="container relative z-10 py-24">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="max-w-3xl"
+              >
+                <Badge className="mb-6 inline-flex items-center gap-1 bg-primary/90">
+                  <Sparkles className="w-3 h-3" />
+                  7-Day Free Trial
+                </Badge>
+                
+                <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6 text-white">
+                  Professional Horse Management Made{" "}
+                  <span className="text-primary">Simple</span>
+                </h1>
+                
+                <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed">
+                  The complete digital platform for horse owners, trainers, and equestrian professionals. 
+                  Track health records, manage training, and provide exceptional care—all in one place.
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                  <Link href={isAuthenticated ? "/dashboard" : "/register"}>
+                    <Button size="lg" className="text-lg w-full sm:w-auto">
+                      {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </Link>
+                  <Link href="/features">
+                    <Button size="lg" variant="outline" className="text-lg w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20">
+                      Explore Features
+                    </Button>
+                  </Link>
+                </div>
 
-                  <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>No credit card required</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>Cancel anytime</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>Free support</span>
-                    </div>
+                <div className="flex flex-wrap items-center gap-6 text-sm text-white/80">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>No credit card required</span>
                   </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="relative"
-                >
-                  <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl">
-                    <img 
-                      src="/assets/horse-1.svg" 
-                      alt="Professional horse care" 
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>Cancel anytime</span>
                   </div>
-                  {/* Floating card */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="absolute -bottom-6 -left-6 bg-card p-4 rounded-xl shadow-xl border"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Heart className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <div className="font-semibold">Health Tracking</div>
-                        <div className="text-sm text-muted-foreground">Never miss a checkup</div>
-                      </div>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>Free support</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </section>
 
