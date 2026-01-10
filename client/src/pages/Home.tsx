@@ -78,10 +78,10 @@ export default function Home() {
   ];
 
   const stats = [
-    { value: "5,000+", label: "Active Users" },
-    { value: "15,000+", label: "Horses Managed" },
-    { value: "99.9%", label: "Uptime" },
-    { value: "4.9/5", label: "User Rating" },
+    { value: "Professional", label: "Built for stables" },
+    { value: "Daily", label: "Workflow tools" },
+    { value: "Trusted", label: "By equine professionals" },
+    { value: "Complete", label: "Management solution" },
   ];
 
   return (
@@ -103,7 +103,7 @@ export default function Home() {
                 >
                   <Badge className="mb-6 inline-flex items-center gap-1">
                     <Sparkles className="w-3 h-3" />
-                    14-Day Free Trial
+                    7-Day Free Trial
                   </Badge>
                   
                   <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6">
@@ -302,7 +302,7 @@ export default function Home() {
                       Simple, Transparent Pricing
                     </h2>
                     <p className="text-lg md:text-xl text-muted-foreground mb-8">
-                      Start with a 14-day free trial. Plans start at just $9/month. 
+                      Start with a 7-day free trial. Plans start at just $9/month. 
                       No credit card required to get started.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
