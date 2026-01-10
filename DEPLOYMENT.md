@@ -1,6 +1,6 @@
 # EquiProfile Production Deployment Guide
 
-Complete guide to deploying EquiProfile on Ubuntu 24.04 VPS with Nginx + systemd.
+Complete guide to deploying EquiProfile on Ubuntu 24.04 VPS (optimized for Webdock) with Nginx + systemd.
 
 ## Table of Contents
 
@@ -8,6 +8,8 @@ Complete guide to deploying EquiProfile on Ubuntu 24.04 VPS with Nginx + systemd
 - [Quick Start](#quick-start)
 - [Detailed Installation](#detailed-installation)
 - [Configuration](#configuration)
+- [Deployment](#deployment)
+- [Verification](#verification)
 - [Troubleshooting](#troubleshooting)
 - [Maintenance](#maintenance)
 
@@ -18,62 +20,62 @@ Complete guide to deploying EquiProfile on Ubuntu 24.04 VPS with Nginx + systemd
 ### Server Requirements
 
 - **OS**: Ubuntu 24.04 LTS (or 22.04 LTS)
-- **RAM**: 2GB minimum (for builds)
+- **RAM**: 2GB minimum (4GB recommended for builds)
 - **Disk**: 10GB available
-- **CPU**: 1 core minimum
+- **CPU**: 1 core minimum (2 cores recommended)
 
 ### Software Requirements
 
-- **Node.js**: v20.x or higher
-- **pnpm**: v10.x or higher
+- **Node.js**: v20.x or higher (LTS)
+- **npm**: v10.x or higher
 - **Nginx**: Latest stable
-- **MySQL**: 8.0+ (optional, SQLite works for small deployments)
+- **MySQL**: 8.0+ (or MariaDB 10.6+)
 - **Certbot**: For SSL certificates
+- **Git**: For deployment automation
 
 ### Domain Requirements
 
 - Domain name pointing to your server IP
 - DNS A records configured:
-  - `yourdomain.com` → `your-server-ip`
-  - `www.yourdomain.com` → `your-server-ip`
+  - `equiprofile.online` → `your-server-ip`
+  - `www.equiprofile.online` → `your-server-ip`
 
 ---
 
 ## Quick Start
 
-Deploy EquiProfile in under 20 minutes:
+Deploy EquiProfile in under 20 minutes on a fresh Webdock VPS:
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-cd Equiprofile.online
+# 1. Clone repository to deployment directory
+sudo mkdir -p /var/equiprofile
+cd /var/equiprofile
+sudo git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git app
+cd app
 
 # 2. Create environment file
-cp .env.example .env
-nano .env
-# Update: DATABASE_URL, JWT_SECRET, ADMIN_UNLOCK_PASSWORD, BASE_URL
+sudo cp .env.example .env
+sudo nano .env
+# REQUIRED: Set these variables:
+#   DATABASE_URL=mysql://user:password@localhost:3306/equiprofile
+#   JWT_SECRET=<generate-random-64-char-string>
+#   ADMIN_UNLOCK_PASSWORD=<secure-password>
+#   BASE_URL=https://equiprofile.online
 
-# 3. Run pre-flight checks
-bash ops/preflight.sh
+# 3. Run deployment script
+sudo bash ops/deploy.sh --domain equiprofile.online
 
-# 4. Deploy (as root)
-sudo bash ops/deploy.sh \
-  --domain equiprofile.online \
-  --root /var/equiprofile/app \
-  --user www-data \
-  --port 3000
-
-# 5. Verify deployment
-bash ops/verify.sh --domain equiprofile.online
+# 4. Verify deployment
+sudo bash ops/verify.sh --domain equiprofile.online
 ```
 
-That's it! Your EquiProfile instance is now running.
+Your EquiProfile instance is now running at `https://equiprofile.online`!
 
 ---
 
 ## Detailed Installation
 
-### Step 1: Server Setup
+### Step 1: Server Preparation
 
 #### 1.1. Update System
 
@@ -90,14 +92,450 @@ sudo apt-get install -y nodejs
 
 # Verify installation
 node --version  # Should be v20.x or higher
-npm --version
+npm --version   # Should be v10.x or higher
 ```
 
-#### 1.3. Install pnpm
+#### 1.3. Install Required Packages
 
 ```bash
-# Option 1: Install globally
-npm install -g pnpm@latest
+sudo apt install -y nginx mysql-server git curl certbot python3-certbot-nginx
+```
+
+#### 1.4. Configure MySQL
+
+```bash
+# Secure MySQL installation
+sudo mysql_secure_installation
+
+# Create database and user
+sudo mysql
+```
+
+```sql
+CREATE DATABASE equiprofile CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'equiprofile'@'localhost' IDENTIFIED BY 'your_secure_password';
+GRANT ALL PRIVILEGES ON equiprofile.* TO 'equiprofile'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+### Step 2: Deploy Application
+
+#### 2.1. Clone Repository
+
+```bash
+# Create deployment directory
+sudo mkdir -p /var/equiprofile
+cd /var/equiprofile
+
+# Clone repository
+sudo git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git app
+cd app
+```
+
+#### 2.2. Configure Environment
+
+```bash
+# Copy example environment file
+sudo cp .env.example .env
+
+# Edit environment file
+sudo nano .env
+```
+
+**Required environment variables:**
+
+```bash
+# Database
+DATABASE_URL=mysql://equiprofile:your_password@localhost:3306/equiprofile
+
+# Authentication
+JWT_SECRET=<generate-with: openssl rand -hex 32>
+ADMIN_UNLOCK_PASSWORD=<secure-password>
+
+# Application
+BASE_URL=https://equiprofile.online
+NODE_ENV=production
+
+# PWA (leave OFF for production)
+VITE_PWA_ENABLED=false
+ENABLE_PWA=false
+
+# Optional: Email (for notifications)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=noreply@equiprofile.online
+SMTP_PASSWORD=your_smtp_password
+EMAIL_FROM=EquiProfile <noreply@equiprofile.online>
+
+# Optional: Stripe (for billing)
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Optional: OAuth (for external auth)
+OAUTH_SERVER_URL=https://auth.example.com
+APP_ID=equiprofile
+APP_SECRET=<oauth-app-secret>
+```
+
+#### 2.3. Run Deployment Script
+
+```bash
+# Full deployment with SSL
+sudo bash ops/deploy.sh --domain equiprofile.online
+
+# Or specify custom options
+sudo bash ops/deploy.sh \
+  --domain equiprofile.online \
+  --root /var/equiprofile/app \
+  --user www-data \
+  --port 3000
+```
+
+The deployment script will:
+1. ✓ Run pre-flight checks
+2. ✓ Install Node.js and dependencies
+3. ✓ Setup deployment directory
+4. ✓ Set proper ownership
+5. ✓ Stop old services
+6. ✓ Install dependencies (npm ci)
+7. ✓ Build application
+8. ✓ Configure systemd service
+9. ✓ Configure nginx with SSL
+10. ✓ Setup log rotation
+11. ✓ Start application
+12. ✓ Run health checks
+
+### Step 3: Verify Deployment
+
+```bash
+# Run verification script
+sudo bash ops/verify.sh --domain equiprofile.online
+```
+
+Verification checks:
+- ✓ Service status
+- ✓ Health endpoints
+- ✓ Frontend assets
+- ✓ Nginx configuration
+- ✓ Port bindings
+- ✓ PWA blocking (service-worker.js and manifest.json return 404)
+- ✓ Build SHA verification
+- ✓ SSL/HTTPS status
+
+---
+
+## Deployment
+
+### Updating to Latest Version
+
+```bash
+cd /var/equiprofile/app
+
+# Deploy latest from main branch
+sudo bash ops/deploy.sh --domain equiprofile.online main
+
+# Or deploy from specific branch
+sudo bash ops/deploy.sh --domain equiprofile.online develop
+```
+
+### Deployment Logs
+
+All deployment logs are saved to `/var/equiprofile/_ops/deploy_YYYYMMDD_HHMMSS.log`
+
+```bash
+# View latest deployment log
+ls -lt /var/equiprofile/_ops/deploy_*.log | head -1 | xargs cat
+
+# Follow deployment in real-time (in another terminal)
+tail -f /var/equiprofile/_ops/deploy_*.log
+```
+
+### SSH-Disconnect-Safe Deployment
+
+To run deployment that continues even if SSH disconnects:
+
+```bash
+# Option 1: Use screen
+screen -S deploy
+sudo bash ops/deploy.sh --domain equiprofile.online
+# Press Ctrl+A then D to detach
+# Reattach with: screen -r deploy
+
+# Option 2: Use nohup
+nohup sudo bash ops/deploy.sh --domain equiprofile.online > /tmp/deploy.log 2>&1 &
+tail -f /tmp/deploy.log
+```
+
+---
+
+## Verification
+
+### Manual Verification Steps
+
+```bash
+# 1. Check service status
+systemctl status equiprofile
+
+# 2. Check application logs
+journalctl -u equiprofile -f
+
+# 3. Check nginx logs
+tail -f /var/log/nginx/equiprofile-error.log
+
+# 4. Test health endpoint
+curl http://127.0.0.1:3000/api/health
+curl https://equiprofile.online/api/health
+
+# 5. Check version/build info
+curl http://127.0.0.1:3000/api/version
+
+# 6. Verify PWA blocking
+curl -I https://equiprofile.online/service-worker.js  # Should return 404
+curl -I https://equiprofile.online/manifest.json      # Should return 404
+
+# 7. Check listening ports
+ss -tlnp | grep -E ':(80|443|3000)'
+```
+
+---
+
+## Troubleshooting
+
+### Service Won't Start
+
+```bash
+# Check service logs
+journalctl -u equiprofile -n 100 --no-pager
+
+# Check if port is already in use
+lsof -i :3000
+
+# Verify environment file
+sudo cat /var/equiprofile/app/.env | grep -v PASSWORD
+
+# Try manual start for debugging
+cd /var/equiprofile/app
+sudo -u www-data node dist/index.js
+```
+
+### Build Fails
+
+```bash
+# Check Node.js version
+node --version  # Must be v20.x or higher
+
+# Clean rebuild
+cd /var/equiprofile/app
+sudo rm -rf dist node_modules
+sudo -u www-data npm ci
+sudo -u www-data npm run build
+
+# Check for disk space
+df -h
+
+# Check for memory
+free -h
+```
+
+### Database Connection Issues
+
+```bash
+# Test MySQL connection
+mysql -u equiprofile -p -e "SELECT 1;"
+
+# Check DATABASE_URL format
+# mysql://username:password@localhost:3306/database_name
+
+# Verify MySQL is running
+systemctl status mysql
+```
+
+### SSL/HTTPS Issues
+
+```bash
+# Check SSL certificate status
+sudo certbot certificates
+
+# Renew certificates
+sudo certbot renew
+
+# Test nginx configuration
+sudo nginx -t
+
+# Check nginx logs
+tail -f /var/log/nginx/error.log
+```
+
+### PWA Caching Issues
+
+If users report seeing old versions:
+
+```bash
+# 1. Verify PWA is blocked at nginx level
+curl -I https://equiprofile.online/service-worker.js
+# Must return 404
+
+# 2. Check nginx config
+sudo cat /etc/nginx/sites-enabled/equiprofile | grep -A 2 "service-worker"
+
+# 3. Verify index.html cache headers
+curl -I https://equiprofile.online/ | grep Cache-Control
+# Should show: no-store
+
+# 4. Clear browser cache and hard refresh
+# Users: Press Ctrl+Shift+R (or Cmd+Shift+R on Mac)
+```
+
+---
+
+## Maintenance
+
+### Regular Tasks
+
+#### Daily
+- Monitor application logs: `journalctl -u equiprofile --since "1 hour ago"`
+- Check disk space: `df -h`
+
+#### Weekly
+- Review access logs: `tail -100 /var/log/nginx/equiprofile-access.log`
+- Check for updates: `cd /var/equiprofile/app && git fetch`
+
+#### Monthly
+- Update system packages: `sudo apt update && sudo apt upgrade`
+- Rotate old deployment logs: `find /var/equiprofile/_ops -name "deploy_*.log" -mtime +30 -delete`
+
+### Backup
+
+```bash
+# Backup database
+mysqldump -u equiprofile -p equiprofile > /backup/equiprofile_$(date +%Y%m%d).sql
+
+# Backup environment file
+sudo cp /var/equiprofile/app/.env /backup/.env_$(date +%Y%m%d)
+
+# Backup uploaded files (if any)
+tar -czf /backup/uploads_$(date +%Y%m%d).tar.gz /var/equiprofile/app/uploads
+```
+
+### Monitoring
+
+```bash
+# Check application health
+watch -n 5 'curl -s http://127.0.0.1:3000/api/health | jq'
+
+# Monitor resource usage
+htop
+
+# Check nginx status
+systemctl status nginx
+
+# Check application status
+systemctl status equiprofile
+```
+
+### Useful Commands
+
+```bash
+# Restart application
+sudo systemctl restart equiprofile
+
+# Reload nginx (without downtime)
+sudo systemctl reload nginx
+
+# View recent logs
+journalctl -u equiprofile -n 50
+
+# Follow logs in real-time
+journalctl -u equiprofile -f
+
+# Check deployed version
+curl http://127.0.0.1:3000/api/version
+
+# Run verification
+sudo bash /var/equiprofile/app/ops/verify.sh --domain equiprofile.online
+```
+
+---
+
+## Advanced Configuration
+
+### Custom Port
+
+```bash
+# Deploy on different port
+sudo bash ops/deploy.sh --domain equiprofile.online --port 3001
+
+# Update .env
+sudo nano /var/equiprofile/app/.env
+# Set PORT=3001
+```
+
+### Multiple Environments
+
+```bash
+# Production
+sudo bash ops/deploy.sh --domain equiprofile.online --root /var/equiprofile/prod main
+
+# Staging
+sudo bash ops/deploy.sh --domain staging.equiprofile.online --root /var/equiprofile/staging --port 3001 develop
+```
+
+### Resource Limits
+
+Edit systemd service to add resource limits:
+
+```bash
+sudo nano /etc/systemd/system/equiprofile.service
+```
+
+Add under `[Service]`:
+```ini
+LimitNOFILE=65536
+LimitNPROC=512
+MemoryMax=2G
+CPUQuota=200%
+```
+
+Then reload:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart equiprofile
+```
+
+---
+
+## Security Best Practices
+
+1. **Keep secrets secure**: Never commit `.env` to version control
+2. **Use strong passwords**: Generate with `openssl rand -hex 32`
+3. **Keep system updated**: Regular `apt update && apt upgrade`
+4. **Monitor logs**: Check for suspicious activity
+5. **Use HTTPS only**: Always run with SSL certificates
+6. **Restrict database access**: Database user should only access equiprofile DB
+7. **Regular backups**: Automate database and config backups
+8. **Firewall**: Use `ufw` to restrict ports
+   ```bash
+   sudo ufw allow 22/tcp
+   sudo ufw allow 80/tcp
+   sudo ufw allow 443/tcp
+   sudo ufw enable
+   ```
+
+---
+
+## Support
+
+For issues or questions:
+- GitHub Issues: https://github.com/amarktainetwork-blip/Equiprofile.online/issues
+- Documentation: See `docs/` directory
+- Deployment Recovery: See `RECOVERY.md`
+
+---
+
+## License
+
+MIT License - See LICENSE file for details
 
 # Option 2: Use corepack (recommended)
 corepack enable
