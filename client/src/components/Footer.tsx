@@ -1,4 +1,7 @@
 import { Link } from "wouter";
+import { Mail, MessageSquare } from "lucide-react";
+
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "";
 
 export function Footer() {
   return (
@@ -32,7 +35,32 @@ export function Footer() {
           </div>
           
           <div>
-            <h4 className="font-semibold mb-4">Legal</h4>
+            <h4 className="font-semibold mb-4">Support</h4>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <a 
+                  href="mailto:support@equiprofile.com" 
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span>support@equiprofile.com</span>
+                </a>
+              </li>
+              {WHATSAPP_NUMBER && (
+                <li>
+                  <a 
+                    href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>WhatsApp</span>
+                  </a>
+                </li>
+              )}
+            </ul>
+            <h4 className="font-semibold mb-4 mt-6">Legal</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/privacy"><a className="hover:text-foreground transition-colors">Privacy</a></Link></li>
               <li><Link href="/terms"><a className="hover:text-foreground transition-colors">Terms</a></Link></li>

@@ -82,7 +82,7 @@ export function MarketingNav() {
                   <Button variant="ghost">Log In</Button>
                 </Link>
                 <Link href="/register">
-                  <Button>Get Started</Button>
+                  <Button>Start 7-Day Trial</Button>
                 </Link>
               </>
             )}
@@ -152,7 +152,7 @@ export function MarketingNav() {
                         className="w-full"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        Get Started
+                        Start 7-Day Trial
                       </Button>
                     </Link>
                   </>
