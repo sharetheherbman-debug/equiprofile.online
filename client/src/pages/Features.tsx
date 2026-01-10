@@ -1,167 +1,112 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MarketingNav } from "@/components/MarketingNav";
 import { PageTransition } from "@/components/PageTransition";
-import { ScrollReveal, Stagger, StaggerItem } from "@/components/ScrollReveal";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Heart,
   Activity,
   Utensils,
   Calendar,
   FileText,
-  Cloud,
   BarChart3,
   Users,
-  Shield,
-  Smartphone,
-  Bell,
-  Download,
+  CreditCard,
+  Stethoscope,
+  ClipboardList,
 } from "lucide-react";
 import { Link } from "wouter";
 
-const features = [
+// 6 category sections as per requirements
+const categories = [
   {
-    icon: Heart,
-    title: "Health Records",
-    description:
-      "Comprehensive health tracking with vaccination schedules, vet visits, medications, and medical history. Upload documents and set automatic reminders for important health checkups.",
-    points: [
-      "Vaccination tracking with auto-reminders",
-      "Medical document storage",
-      "Vet visit history and notes",
-      "Medication schedules",
-    ],
-  },
-  {
-    icon: Activity,
-    title: "Training Management",
-    description:
-      "Plan, log, and track training sessions with detailed notes, performance ratings, and progress analytics. Monitor improvement over time with visual charts and insights.",
-    points: [
-      "Session planning and logging",
-      "Performance tracking",
-      "Progress analytics",
-      "Trainer collaboration",
-    ],
-  },
-  {
-    icon: Utensils,
-    title: "Feeding Schedules",
-    description:
-      "Create detailed feeding plans with meal timing, quantities, supplements, and special instructions. Track costs and monitor dietary changes with ease.",
-    points: [
-      "Custom feeding plans",
-      "Supplement tracking",
-      "Cost management",
-      "Dietary notes and allergies",
-    ],
-  },
-  {
-    icon: Calendar,
-    title: "Calendar & Reminders",
-    description:
-      "Never miss an appointment with integrated calendar for all horse-related events. Set reminders for farrier visits, competitions, vet appointments, and training sessions.",
-    points: [
-      "Unified event calendar",
-      "Customizable reminders",
-      "Recurring appointments",
-      "Mobile notifications",
-    ],
-  },
-  {
-    icon: FileText,
-    title: "Document Storage",
-    description:
-      "Securely store all horse-related documents in one place. Registration papers, insurance documents, competition records, and more with organized categorization and search.",
-    points: [
-      "Cloud storage for documents",
-      "Category organization",
-      "Full-text search",
-      "Secure access controls",
-    ],
-  },
-  {
-    icon: BarChart3,
-    title: "Reports & Analytics",
-    description:
-      "Generate detailed reports on health trends, training progress, expenses, and more. Export data for sharing with trainers, vets, or for personal records.",
-    points: [
-      "Health trend analysis",
-      "Expense reports",
-      "Training progress charts",
-      "Export to PDF/Excel",
-    ],
-  },
-  {
-    icon: Cloud,
-    title: "AI Weather Analysis",
-    description:
-      "Get intelligent riding condition recommendations based on real-time weather data. Safety alerts for extreme conditions and optimal training times.",
-    points: [
-      "Real-time weather data",
-      "AI-powered recommendations",
-      "Safety alerts",
-      "Historical weather tracking",
-    ],
-  },
-  {
+    id: "stable-management",
     icon: Users,
-    title: "Team Collaboration",
+    title: "Stable Management",
+    image: "/images/stable.jpg",
     description:
-      "Invite trainers, stable staff, and vets to collaborate. Role-based permissions ensure everyone has the right level of access to horse information.",
+      "Comprehensive tools to manage your entire stable operation efficiently. Track multiple horses, coordinate staff, and oversee daily operations from a single dashboard.",
     points: [
-      "Multi-user accounts",
-      "Role-based access",
-      "Team messaging",
-      "Activity logs",
+      "Multi-horse management with unlimited horses",
+      "Staff role-based access and permissions",
+      "Stable-wide calendar and scheduling",
+      "Team collaboration and messaging",
+      "Activity logs and audit trails",
     ],
   },
   {
-    icon: Shield,
-    title: "Data Security",
+    id: "horse-health",
+    icon: Heart,
+    title: "Horse Profiles & Health",
+    image: "/images/hero-horse.jpg",
     description:
-      "Your data is protected with enterprise-grade encryption and security. Regular backups ensure your horse information is never lost.",
+      "Maintain detailed health records for each horse. Track vaccinations, vet visits, medications, and medical history with automated reminders to ensure nothing is missed.",
     points: [
-      "End-to-end encryption",
-      "Automatic backups",
-      "GDPR compliant",
-      "Secure cloud storage",
+      "Complete horse profiles with photos and details",
+      "Vaccination schedules with auto-reminders",
+      "Vet visit history and notes",
+      "Medication tracking and dosage schedules",
+      "Medical document storage",
     ],
   },
   {
-    icon: Smartphone,
-    title: "Mobile-Friendly",
+    id: "training-scheduling",
+    icon: Activity,
+    title: "Training & Scheduling",
+    image: "/images/training.jpg",
     description:
-      "Access your horse information anywhere, anytime. Responsive design works perfectly on desktop, tablet, and mobile devices.",
+      "Plan, log, and analyze training sessions with detailed performance tracking. Schedule lessons, track progress, and monitor improvement over time with visual analytics.",
     points: [
-      "Responsive design",
-      "Progressive Web App",
-      "Offline access",
-      "Touch-optimized interface",
+      "Training session planning and logging",
+      "Performance ratings and progress tracking",
+      "Lesson scheduling and management",
+      "Feeding schedules with custom plans",
+      "Calendar integration for all activities",
     ],
   },
   {
-    icon: Bell,
-    title: "Smart Notifications",
+    id: "documents-xrays",
+    icon: FileText,
+    title: "Documents & X-rays",
+    image: "/images/horse-stable.jpg",
     description:
-      "Stay informed with intelligent notifications for upcoming events, health reminders, and important updates. Customize notification preferences to your needs.",
+      "Securely store and organize all horse-related documents in one central location. Upload registration papers, insurance documents, X-rays, competition records, and more with powerful search capabilities.",
     points: [
-      "Customizable alerts",
-      "Email & push notifications",
-      "Important event reminders",
-      "Digest summaries",
+      "Cloud storage for all documents",
+      "X-ray and medical imaging storage",
+      "Category-based organization",
+      "Full-text search functionality",
+      "Secure access controls and sharing",
     ],
   },
   {
-    icon: Download,
-    title: "Data Export",
+    id: "reporting-analytics",
+    icon: BarChart3,
+    title: "Reporting & Analytics",
+    image: "/images/riding-lesson.jpg",
     description:
-      "Own your data. Export all horse information, records, and documents at any time. Generate reports in multiple formats for sharing or archiving.",
+      "Generate comprehensive reports and gain insights into health trends, training progress, and expenses. Export data in multiple formats for sharing with vets, trainers, or for your own records.",
     points: [
-      "Full data export",
-      "Multiple file formats",
-      "Shareable profiles",
-      "Backup downloads",
+      "Health trend analysis and charts",
+      "Training progress visualization",
+      "Expense tracking and reports",
+      "Export to PDF, CSV, and Excel",
+      "Custom report generation",
+    ],
+  },
+  {
+    id: "billing-admin",
+    icon: CreditCard,
+    title: "Billing & Admin",
+    image: "/images/stable.jpg",
+    description:
+      "Manage subscriptions, billing, and administrative tasks effortlessly. Track expenses, handle payments, and maintain complete control over your account settings.",
+    points: [
+      "Flexible subscription plans",
+      "Expense tracking and categorization",
+      "Invoice generation and management",
+      "Secure payment processing via Stripe",
+      "User and team management",
     ],
   },
 ];
@@ -181,8 +126,8 @@ export default function Features() {
                   <span className="text-gradient">Horse Management</span>
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground mb-8">
-                  EquiProfile combines powerful features with an intuitive
-                  interface to provide the ultimate equine management platform.
+                  Designed for daily workflows: health, training, documents, scheduling. 
+                  Built for professional stables and equine teams.
                 </p>
                 <div className="flex items-center justify-center gap-4">
                   <Link href="/register">
@@ -200,41 +145,59 @@ export default function Features() {
             </ScrollReveal>
           </section>
 
-          {/* Features Grid */}
-          <section className="container mx-auto px-4">
-            <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <StaggerItem key={index}>
-                  <Card className="p-6 h-full hover:shadow-lg transition-all duration-300 card-hover">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="p-3 rounded-lg bg-primary/10 text-primary">
-                        <feature.icon className="w-6 h-6" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold mb-2">
-                          {feature.title}
-                        </h3>
-                      </div>
+          {/* Category Sections */}
+          <section className="container mx-auto px-4 space-y-24">
+            {categories.map((category, index) => (
+              <ScrollReveal key={category.id}>
+                <div className={`grid lg:grid-cols-2 gap-12 items-center ${
+                  index % 2 === 1 ? "lg:flex-row-reverse" : ""
+                }`}>
+                  {/* Image */}
+                  <div className={`${index % 2 === 1 ? "lg:order-2" : ""}`}>
+                    <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg">
+                      <img
+                        src={category.image}
+                        alt={category.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                    <p className="text-muted-foreground mb-4">
-                      {feature.description}
-                    </p>
-                    <ul className="space-y-2">
-                      {feature.points.map((point, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-sm">
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </Card>
-                </StaggerItem>
-              ))}
-            </Stagger>
+                  </div>
+
+                  {/* Content */}
+                  <div className={`${index % 2 === 1 ? "lg:order-1" : ""}`}>
+                    <Card className="p-8 border-2">
+                      <CardHeader className="p-0 mb-6">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="p-3 rounded-xl bg-primary/10 text-primary">
+                            <category.icon className="w-8 h-8" />
+                          </div>
+                          <CardTitle className="text-3xl font-bold">
+                            {category.title}
+                          </CardTitle>
+                        </div>
+                        <CardDescription className="text-base leading-relaxed">
+                          {category.description}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <ul className="space-y-3">
+                          {category.points.map((point, idx) => (
+                            <li key={idx} className="flex items-start gap-3">
+                              <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                              <span className="text-foreground">{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
           </section>
 
           {/* CTA Section */}
-          <section className="container mx-auto px-4 mt-20">
+          <section className="container mx-auto px-4 mt-24">
             <ScrollReveal>
               <Card className="p-8 md:p-12 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2">
                 <div className="text-center max-w-2xl mx-auto">
@@ -242,8 +205,8 @@ export default function Features() {
                     Ready to Transform Your Horse Management?
                   </h2>
                   <p className="text-lg text-muted-foreground mb-8">
-                    Join thousands of horse owners who trust EquiProfile for their
-                    equine management needs.
+                    Join equine professionals who trust EquiProfile for their daily workflows. 
+                    Start your 7-day free trial today.
                   </p>
                   <Link href="/register">
                     <Button size="lg" className="text-lg">
