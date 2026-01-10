@@ -14,6 +14,7 @@
 #   --port PORT       Backend port (default: 3000)
 #   --no-ssl          Skip SSL configuration (HTTP only mode)
 #   --resume          Resume failed deployment
+#   --unit            Run via systemd-run (SSH disconnect-safe)
 #   BRANCH            Git branch to deploy (default: main)
 
 set -e
@@ -26,6 +27,7 @@ BACKEND_PORT=3000
 ENABLE_SSL=true
 RESUME_MODE=false
 BRANCH="main"
+USE_SYSTEMD_RUN=false
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -63,9 +65,13 @@ while [[ $# -gt 0 ]]; do
             RESUME_MODE=true
             shift
             ;;
+        --unit)
+            USE_SYSTEMD_RUN=true
+            shift
+            ;;
         --*)
             echo "Unknown option: $1"
-            echo "Usage: sudo bash ops/deploy.sh [--root PATH] [--domain DOMAIN] [--user USER] [--port PORT] [--no-ssl] [--resume] [BRANCH]"
+            echo "Usage: sudo bash ops/deploy.sh [--root PATH] [--domain DOMAIN] [--user USER] [--port PORT] [--no-ssl] [--resume] [--unit] [BRANCH]"
             exit 1
             ;;
         *)
@@ -75,6 +81,45 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# If --unit mode requested, re-exec via systemd-run
+if [ "$USE_SYSTEMD_RUN" = true ]; then
+    echo "======================================"
+    echo "Starting SSH-disconnect-safe deployment via systemd-run"
+    echo "======================================"
+    
+    # Create log directory
+    mkdir -p /var/equiprofile/_ops
+    LOG_FILE="/var/equiprofile/_ops/deploy_$(date +%Y%m%d_%H%M%S).log"
+    
+    # Build command to run
+    CMD="cd $(pwd) && bash $0"
+    [ -n "$DEPLOY_ROOT" ] && [ "$DEPLOY_ROOT" != "/var/equiprofile/app" ] && CMD="$CMD --root $DEPLOY_ROOT"
+    [ -n "$DOMAIN" ] && CMD="$CMD --domain $DOMAIN"
+    [ -n "$SERVICE_USER" ] && [ "$SERVICE_USER" != "www-data" ] && CMD="$CMD --user $SERVICE_USER"
+    [ "$BACKEND_PORT" != "3000" ] && CMD="$CMD --port $BACKEND_PORT"
+    [ "$ENABLE_SSL" = false ] && CMD="$CMD --no-ssl"
+    [ "$RESUME_MODE" = true ] && CMD="$CMD --resume"
+    [ "$BRANCH" != "main" ] && CMD="$CMD $BRANCH"
+    CMD="$CMD > $LOG_FILE 2>&1"
+    
+    echo "Log file: $LOG_FILE"
+    echo "Command: systemd-run --unit=equiprofile-deploy --property=RemainAfterExit=yes /bin/bash -c \"$CMD\""
+    echo ""
+    echo "To monitor progress:"
+    echo "  tail -f $LOG_FILE"
+    echo ""
+    echo "To check systemd unit status:"
+    echo "  systemctl status equiprofile-deploy"
+    echo ""
+    
+    # Execute via systemd-run
+    systemd-run --unit=equiprofile-deploy --property=RemainAfterExit=yes /bin/bash -c "$CMD"
+    
+    echo "Deployment started in background. Monitor with:"
+    echo "  tail -f $LOG_FILE"
+    exit 0
+fi
 
 # Validate required parameters
 if [ -z "$DOMAIN" ] && [ "$ENABLE_SSL" = true ]; then
