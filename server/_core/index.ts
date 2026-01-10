@@ -380,6 +380,31 @@ async function startServer() {
 
   // Real-time SSE endpoint
   const { realtimeManager } = await import("./realtime");
+  // SSE endpoint for real-time updates
+  // Primary endpoint
+  app.get("/events", async (req, res) => {
+    try {
+      // Get user from session (reuse tRPC context logic)
+      const context = await createContext({ req, res, info: { isBatchCall: false, calls: [] } });
+      
+      if (!context.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Register SSE client
+      const clientId = realtimeManager.addClient(context.user.id, res);
+      
+      // Subscribe to user-specific channel
+      realtimeManager.subscribe(clientId, [`user:${context.user.id}`]);
+      
+      console.log(`[SSE] User ${context.user.id} connected with client ${clientId}`);
+    } catch (error) {
+      console.error("[SSE] Connection error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Alias for backward compatibility
   app.get("/api/realtime/events", async (req, res) => {
     try {
       // Get user from session (reuse tRPC context logic)
