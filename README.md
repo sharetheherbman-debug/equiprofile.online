@@ -397,6 +397,12 @@ SMTP_USER=your-email@gmail.com
 SMTP_PASSWORD=your-app-password
 SMTP_FROM=noreply@equiprofile.online
 
+# Contact Form Configuration
+CONTACT_TO_EMAIL=support@equiprofile.com  # Where contact form submissions are sent
+
+# Frontend Configuration
+VITE_WHATSAPP_NUMBER=+44xxxxxxxxxx  # WhatsApp number for support (optional)
+
 # Rate Limiting
 RATE_LIMIT_WINDOW_MS=900000        # 15 minutes
 RATE_LIMIT_MAX_REQUESTS=100
@@ -404,6 +410,48 @@ RATE_LIMIT_MAX_REQUESTS=100
 # Cookie Security
 COOKIE_DOMAIN=.equiprofile.online
 COOKIE_SECURE=true
+```
+
+#### Nginx Configuration for Server-Sent Events (SSE)
+
+For real-time features (LiveBadge, dashboard updates), configure Nginx to support SSE:
+
+```nginx
+# In your Nginx site configuration
+location /events {
+    proxy_pass http://localhost:3000;
+    
+    # SSE-specific settings
+    proxy_buffering off;
+    proxy_cache off;
+    proxy_set_header Connection '';
+    proxy_http_version 1.1;
+    chunked_transfer_encoding off;
+    
+    # Standard proxy headers
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    # Timeout settings
+    proxy_read_timeout 86400;  # 24 hours
+}
+
+# Also apply to legacy endpoint
+location /api/realtime/events {
+    proxy_pass http://localhost:3000;
+    proxy_buffering off;
+    proxy_cache off;
+    proxy_set_header Connection '';
+    proxy_http_version 1.1;
+    chunked_transfer_encoding off;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_read_timeout 86400;
+}
 ```
 
 ---

@@ -119,13 +119,13 @@ export default function About() {
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center p-8">
                       <div className="text-6xl font-bold text-primary mb-4">
-                        5,000+
+                        Trusted
                       </div>
                       <div className="text-xl font-semibold mb-2">
-                        Happy Users
+                        By Equine Professionals
                       </div>
                       <div className="text-muted-foreground">
-                        Trusting EquiProfile for their horse management needs
+                        Built for professional stables and equine teams
                       </div>
                     </div>
                   </div>
