@@ -310,6 +310,39 @@ async function startServer() {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // Version endpoint with build fingerprint
+  app.get("/api/version", (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    
+    // Try to read build.txt for build fingerprint
+    let buildInfo: any = {
+      version: cachedBuildInfo.version,
+      sha: cachedBuildInfo.commit,
+      buildTime: cachedBuildInfo.buildTime
+    };
+    
+    try {
+      const buildTxtPath = path.resolve(process.cwd(), 'dist/public/build.txt');
+      if (fs.existsSync(buildTxtPath)) {
+        const buildTxt = fs.readFileSync(buildTxtPath, 'utf-8');
+        const lines = buildTxt.split('\n');
+        lines.forEach((line: string) => {
+          const [key, value] = line.split('=');
+          if (key && value) {
+            if (key === 'BUILD_SHA') buildInfo.sha = value.trim();
+            if (key === 'BUILD_TIME') buildInfo.buildTime = value.trim();
+            if (key === 'VERSION') buildInfo.version = value.trim();
+          }
+        });
+      }
+    } catch (err) {
+      // If build.txt doesn't exist, use cached info
+    }
+    
+    res.json(buildInfo);
+  });
+
   // OAuth status endpoint
   app.get("/api/oauth/status", (req, res) => {
     const configured = !!(ENV.oAuthServerUrl && ENV.appId);

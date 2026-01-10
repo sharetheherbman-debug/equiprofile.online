@@ -5,7 +5,7 @@
 # Idempotent, safe, and rerunnable deployment
 # Handles complete setup from fresh Ubuntu 24.04 VPS to production
 #
-# Usage: sudo bash ops/deploy.sh [OPTIONS]
+# Usage: sudo bash ops/deploy.sh [OPTIONS] [BRANCH]
 #
 # Options:
 #   --root PATH       Deployment path (default: /var/equiprofile/app)
@@ -14,6 +14,7 @@
 #   --port PORT       Backend port (default: 3000)
 #   --no-ssl          Skip SSL configuration (HTTP only mode)
 #   --resume          Resume failed deployment
+#   BRANCH            Git branch to deploy (default: main)
 
 set -e
 
@@ -24,6 +25,7 @@ SERVICE_USER="www-data"
 BACKEND_PORT=3000
 ENABLE_SSL=true
 RESUME_MODE=false
+BRANCH="main"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -61,10 +63,15 @@ while [[ $# -gt 0 ]]; do
             RESUME_MODE=true
             shift
             ;;
-        *)
+        --*)
             echo "Unknown option: $1"
-            echo "Usage: sudo bash ops/deploy.sh [--root PATH] [--domain DOMAIN] [--user USER] [--port PORT] [--no-ssl] [--resume]"
+            echo "Usage: sudo bash ops/deploy.sh [--root PATH] [--domain DOMAIN] [--user USER] [--port PORT] [--no-ssl] [--resume] [BRANCH]"
             exit 1
+            ;;
+        *)
+            # Positional argument - treat as branch name
+            BRANCH="$1"
+            shift
             ;;
     esac
 done
