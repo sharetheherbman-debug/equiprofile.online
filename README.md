@@ -113,78 +113,134 @@ The application will be available at `http://localhost:3000`
 
 ## 🚢 Production Deployment
 
-EquiProfile includes a **100% plug-and-play production deployment system** for Ubuntu 24.04 VPS with Nginx + systemd.
+EquiProfile includes a **plug-and-play production deployment system** for Ubuntu 24.04 VPS (optimized for Webdock).
 
-### Quick Deployment (20 minutes)
+### One-Command Deployment
 
-Deploy to a fresh Ubuntu 24.04 server in under 20 minutes:
-
-```bash
-# 1. Clone repository
-git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-cd Equiprofile.online
-
-# 2. Configure environment
-cp .env.example .env
-nano .env  # Update DATABASE_URL, JWT_SECRET, ADMIN_UNLOCK_PASSWORD, BASE_URL
-
-# 3. Run pre-flight checks
-bash ops/preflight.sh
-
-# 4. Deploy (as root)
-sudo bash ops/deploy.sh --domain equiprofile.online
-
-# 5. Verify
-bash ops/verify.sh --domain equiprofile.online
-```
-
-**That's it!** Your production instance is now running with:
-- ✅ Nginx configured with SSL (via Let's Encrypt)
-- ✅ systemd service (single, deterministic)
-- ✅ Proper cache headers and 404 handling
-- ✅ Log rotation
-- ✅ Health checks
-- ✅ No manual configuration required
-
-### Deployment Features
-
-The `ops/deploy.sh` script provides:
-
-- **Idempotent**: Safe to run multiple times
-- **Resumable**: `--resume` flag to continue after failure
-- **Configurable**: Flags for domain, path, user, port
-- **Validated**: Pre-flight checks ensure system readiness
-- **Automatic**: Handles dependencies, builds, systemd, nginx, SSL
-- **Verified**: Post-deployment checks confirm success
-
-### Deployment Options
+Deploy to production in under 20 minutes:
 
 ```bash
-sudo bash ops/deploy.sh \
-  --domain your-domain.com \    # Domain name (required for SSL)
-  --root /var/app \             # Installation path (default: /var/equiprofile/app)
-  --user www-data \             # Service user (default: www-data)
-  --port 3000 \                 # Backend port (default: 3000)
-  --no-ssl                      # Skip SSL setup (HTTP only)
+# 1. SSH into your server
+ssh root@your-server-ip
+
+# 2. Clone to deployment directory
+sudo mkdir -p /var/equiprofile
+cd /var/equiprofile
+sudo git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git app
+cd app
+
+# 3. Configure environment
+sudo cp .env.example .env
+sudo nano .env
+# REQUIRED: Set DATABASE_URL, JWT_SECRET, ADMIN_UNLOCK_PASSWORD, BASE_URL
+
+# 4. Deploy with SSH-disconnect-safe mode
+sudo bash ops/deploy.sh --unit --domain equiprofile.online
+
+# 5. Monitor deployment
+tail -f /var/equiprofile/_ops/deploy_*.log
+
+# 6. Verify after deployment completes
+sudo bash ops/verify.sh --domain equiprofile.online
 ```
 
-### Complete Documentation
+**Features:**
+- ✅ **Idempotent & deterministic** - safe to run multiple times
+- ✅ **SSH disconnect-safe** - continues running if connection drops
+- ✅ **Git-based** - fetch/checkout/reset for clean deploys
+- ✅ **Build verification** - validates all outputs before restart
+- ✅ **Health checks** - confirms API responds before exit
+- ✅ **PWA blocked** - service worker and manifest return 404
+- ✅ **Full logs** - everything logged to `/var/equiprofile/_ops/`
 
-For detailed instructions, troubleshooting, and maintenance:
+### Prerequisites
 
-👉 **See [DEPLOYMENT.md](DEPLOYMENT.md)** for the complete production deployment guide.
+**Server requirements:**
+- Ubuntu 24.04 LTS (or 22.04 LTS)
+- Node.js 20.x or higher
+- 2GB RAM minimum (4GB recommended)
+- 10GB disk space
+- Domain name pointed to server IP
 
-The guide includes:
-- Server prerequisites and setup
-- Detailed step-by-step installation
-- Environment configuration
-- SSL certificate setup
-- Troubleshooting common issues
-- Maintenance and updates
-- Security best practices
-- Monitoring and performance tuning
+**Required environment variables:**
+```bash
+DATABASE_URL=mysql://user:password@localhost:3306/equiprofile
+JWT_SECRET=<generate-with-openssl-rand-hex-32>
+ADMIN_UNLOCK_PASSWORD=<secure-password>
+BASE_URL=https://equiprofile.online
+NODE_ENV=production
 
----
+# PWA disabled by default (recommended for production)
+VITE_PWA_ENABLED=false
+ENABLE_PWA=false
+```
+
+### Deployment Workflow
+
+The deployment script performs these steps automatically:
+
+1. **Pre-flight checks** - validates system requirements
+2. **Git operations** - fetch/checkout/reset to target branch
+3. **Clean install** - `npm ci` for reproducible builds
+4. **Build** - clean dist, build with verification
+5. **Configure services** - updates nginx + systemd if needed
+6. **Restart** - stops old service, starts new one
+7. **Health checks** - verifies endpoints respond
+8. **PWA verification** - confirms service worker blocked
+
+### Updating Production
+
+To deploy latest changes:
+
+```bash
+# Update to latest main branch (SSH-safe)
+sudo bash ops/deploy.sh --unit --domain equiprofile.online main
+
+# Or deploy specific branch
+sudo bash ops/deploy.sh --unit --domain equiprofile.online develop
+
+# View deployment log
+tail -f $(ls -t /var/equiprofile/_ops/deploy_*.log | head -1)
+```
+
+### Verification
+
+After any deployment, run the verification script:
+
+```bash
+sudo bash ops/verify.sh --domain equiprofile.online
+```
+
+Checks performed:
+- ✓ Git SHA and build SHA
+- ✓ Service status (single service, no duplicates)
+- ✓ Health endpoints (200 OK)
+- ✓ Nginx listening on 80/443
+- ✓ PWA files return 404
+- ✓ Build SHA in HTML meta tag
+
+### Troubleshooting & Recovery
+
+If anything goes wrong:
+
+```bash
+# View service logs
+journalctl -u equiprofile -n 100 --no-pager
+
+# View deployment logs
+ls -lt /var/equiprofile/_ops/deploy_*.log | head -1 | xargs tail -200
+
+# Restore nginx config from repo
+sudo cp ops/nginx/equiprofile.webdock.conf /etc/nginx/sites-available/equiprofile
+sudo nginx -t && sudo systemctl reload nginx
+
+# Restore systemd service from repo
+sudo cp ops/systemd/equiprofile.service /etc/systemd/system/equiprofile.service
+sudo systemctl daemon-reload && sudo systemctl restart equiprofile
+```
+
+👉 **See [DEPLOYMENT.md](DEPLOYMENT.md)** for complete deployment guide.  
+👉 **See [RECOVERY.md](RECOVERY.md)** for detailed recovery procedures.
 
 ---
 

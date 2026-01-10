@@ -5,7 +5,7 @@
 # Idempotent, safe, and rerunnable deployment
 # Handles complete setup from fresh Ubuntu 24.04 VPS to production
 #
-# Usage: sudo bash ops/deploy.sh [OPTIONS]
+# Usage: sudo bash ops/deploy.sh [OPTIONS] [BRANCH]
 #
 # Options:
 #   --root PATH       Deployment path (default: /var/equiprofile/app)
@@ -14,6 +14,8 @@
 #   --port PORT       Backend port (default: 3000)
 #   --no-ssl          Skip SSL configuration (HTTP only mode)
 #   --resume          Resume failed deployment
+#   --unit            Run via systemd-run (SSH disconnect-safe)
+#   BRANCH            Git branch to deploy (default: main)
 
 set -e
 
@@ -24,6 +26,8 @@ SERVICE_USER="www-data"
 BACKEND_PORT=3000
 ENABLE_SSL=true
 RESUME_MODE=false
+BRANCH="main"
+USE_SYSTEMD_RUN=false
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -61,13 +65,61 @@ while [[ $# -gt 0 ]]; do
             RESUME_MODE=true
             shift
             ;;
-        *)
+        --unit)
+            USE_SYSTEMD_RUN=true
+            shift
+            ;;
+        --*)
             echo "Unknown option: $1"
-            echo "Usage: sudo bash ops/deploy.sh [--root PATH] [--domain DOMAIN] [--user USER] [--port PORT] [--no-ssl] [--resume]"
+            echo "Usage: sudo bash ops/deploy.sh [--root PATH] [--domain DOMAIN] [--user USER] [--port PORT] [--no-ssl] [--resume] [--unit] [BRANCH]"
             exit 1
+            ;;
+        *)
+            # Positional argument - treat as branch name
+            BRANCH="$1"
+            shift
             ;;
     esac
 done
+
+# If --unit mode requested, re-exec via systemd-run
+if [ "$USE_SYSTEMD_RUN" = true ]; then
+    echo "======================================"
+    echo "Starting SSH-disconnect-safe deployment via systemd-run"
+    echo "======================================"
+    
+    # Create log directory
+    mkdir -p /var/equiprofile/_ops
+    LOG_FILE="/var/equiprofile/_ops/deploy_$(date +%Y%m%d_%H%M%S).log"
+    
+    # Build command to run
+    CMD="cd $(pwd) && bash $0"
+    [ -n "$DEPLOY_ROOT" ] && [ "$DEPLOY_ROOT" != "/var/equiprofile/app" ] && CMD="$CMD --root $DEPLOY_ROOT"
+    [ -n "$DOMAIN" ] && CMD="$CMD --domain $DOMAIN"
+    [ -n "$SERVICE_USER" ] && [ "$SERVICE_USER" != "www-data" ] && CMD="$CMD --user $SERVICE_USER"
+    [ "$BACKEND_PORT" != "3000" ] && CMD="$CMD --port $BACKEND_PORT"
+    [ "$ENABLE_SSL" = false ] && CMD="$CMD --no-ssl"
+    [ "$RESUME_MODE" = true ] && CMD="$CMD --resume"
+    [ "$BRANCH" != "main" ] && CMD="$CMD $BRANCH"
+    CMD="$CMD > $LOG_FILE 2>&1"
+    
+    echo "Log file: $LOG_FILE"
+    echo "Command: systemd-run --unit=equiprofile-deploy --property=RemainAfterExit=yes /bin/bash -c \"$CMD\""
+    echo ""
+    echo "To monitor progress:"
+    echo "  tail -f $LOG_FILE"
+    echo ""
+    echo "To check systemd unit status:"
+    echo "  systemctl status equiprofile-deploy"
+    echo ""
+    
+    # Execute via systemd-run
+    systemd-run --unit=equiprofile-deploy --property=RemainAfterExit=yes /bin/bash -c "$CMD"
+    
+    echo "Deployment started in background. Monitor with:"
+    echo "  tail -f $LOG_FILE"
+    exit 0
+fi
 
 # Validate required parameters
 if [ -z "$DOMAIN" ] && [ "$ENABLE_SSL" = true ]; then
@@ -84,13 +136,16 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-LOG_FILE="/var/log/equiprofile-deploy-$(date +%Y%m%d-%H%M%S).log"
+# Create ops log directory
+mkdir -p /var/equiprofile/_ops
+LOG_FILE="/var/equiprofile/_ops/deploy_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "======================================"
 echo "EquiProfile Production Deployment"
 echo "======================================"
 echo "Started: $(date)"
+echo "Branch: $BRANCH"
 echo "Domain: ${DOMAIN:-HTTP-only mode}"
 echo "Deploy root: $DEPLOY_ROOT"
 echo "User: $SERVICE_USER"
@@ -135,16 +190,48 @@ PNPM_VERSION=$(pnpm --version)
 echo "pnpm: v$PNPM_VERSION"
 echo ""
 
-# Step 3: Setup deployment directory
+# Step 3: Setup deployment directory and git operations
 echo -e "${BLUE}[3/12] Setting up deployment directory...${NC}"
 mkdir -p "$DEPLOY_ROOT"
 mkdir -p /var/log/equiprofile
 
-# If deploying from current directory, copy files
-if [ "$PROJECT_ROOT" != "$DEPLOY_ROOT" ]; then
-    echo "Copying application files to $DEPLOY_ROOT..."
-    rsync -av --exclude 'node_modules' --exclude 'dist' --exclude '.git' \
-          "$PROJECT_ROOT/" "$DEPLOY_ROOT/"
+# Check if deployment directory is a git repository
+cd "$DEPLOY_ROOT"
+
+if [ -d ".git" ]; then
+    echo "Git repository found, performing git operations..."
+    
+    # Fetch latest changes
+    echo "Fetching from remote..."
+    sudo -u "$SERVICE_USER" git fetch --all --prune || {
+        echo -e "${RED}ERROR: git fetch failed${NC}"
+        exit 1
+    }
+    
+    # Checkout target branch
+    echo "Checking out branch: $BRANCH"
+    sudo -u "$SERVICE_USER" git checkout "$BRANCH" || {
+        echo -e "${RED}ERROR: Failed to checkout branch $BRANCH${NC}"
+        exit 1
+    }
+    
+    # Reset to origin
+    echo "Resetting to origin/$BRANCH..."
+    sudo -u "$SERVICE_USER" git reset --hard "origin/$BRANCH" || {
+        echo -e "${RED}ERROR: git reset failed${NC}"
+        exit 1
+    }
+    
+    # Show current commit
+    CURRENT_SHA=$(git rev-parse --short HEAD)
+    echo -e "${GREEN}Deployed commit: $CURRENT_SHA${NC}"
+else
+    # If deploying from current directory and not a git repo, copy files
+    if [ "$PROJECT_ROOT" != "$DEPLOY_ROOT" ]; then
+        echo "Copying application files to $DEPLOY_ROOT..."
+        rsync -av --exclude 'node_modules' --exclude 'dist' --exclude '.git' \
+              "$PROJECT_ROOT/" "$DEPLOY_ROOT/"
+    fi
 fi
 
 cd "$DEPLOY_ROOT"
@@ -180,36 +267,61 @@ if lsof -ti:"$BACKEND_PORT" >/dev/null 2>&1; then
 fi
 echo ""
 
-# Step 6: Install dependencies
+# Step 6: Install dependencies with clean install
 echo -e "${BLUE}[6/12] Installing dependencies...${NC}"
-echo "Running: pnpm install --frozen-lockfile"
-sudo -u "$SERVICE_USER" pnpm install --frozen-lockfile
+echo "Running: npm ci (clean install)"
+
+# Clean npm cache if needed
+if [ "$RESUME_MODE" = false ]; then
+    echo "Cleaning build cache..."
+    rm -rf node_modules/.cache 2>/dev/null || true
+fi
+
+sudo -u "$SERVICE_USER" npm ci
 echo ""
 
-# Step 7: Build application with memory-safe flags
+# Step 7: Clean and build application
 echo -e "${BLUE}[7/12] Building application...${NC}"
 echo "This may take 5-10 minutes..."
-export NODE_OPTIONS="--max_old_space_size=2048"
-sudo -u "$SERVICE_USER" NODE_OPTIONS="--max_old_space_size=2048" pnpm build
 
-# Verify build output
+# Clean dist directory
+echo "Cleaning dist directory..."
+rm -rf "$DEPLOY_ROOT/dist"
+
+# Build with memory-safe flags
+export NODE_OPTIONS="--max_old_space_size=2048"
+sudo -u "$SERVICE_USER" NODE_OPTIONS="--max_old_space_size=2048" npm run build
+
+# Verify build outputs
+echo "Verifying build outputs..."
+BUILD_ERRORS=0
+
 if [ ! -f "$DEPLOY_ROOT/dist/index.js" ]; then
     echo -e "${RED}ERROR: Build failed - dist/index.js not found${NC}"
-    exit 1
+    BUILD_ERRORS=$((BUILD_ERRORS + 1))
 fi
 
 if [ ! -d "$DEPLOY_ROOT/dist/public" ]; then
     echo -e "${RED}ERROR: Build failed - dist/public/ not found${NC}"
-    exit 1
+    BUILD_ERRORS=$((BUILD_ERRORS + 1))
 fi
 
 if [ ! -f "$DEPLOY_ROOT/dist/public/index.html" ]; then
     echo -e "${RED}ERROR: Build failed - dist/public/index.html not found${NC}"
+    BUILD_ERRORS=$((BUILD_ERRORS + 1))
+fi
+
+if [ ! -f "$DEPLOY_ROOT/dist/public/build.txt" ]; then
+    echo -e "${YELLOW}WARNING: build.txt not found (build fingerprinting may have failed)${NC}"
+fi
+
+if [ $BUILD_ERRORS -gt 0 ]; then
+    echo -e "${RED}Build verification failed with $BUILD_ERRORS errors${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}Build successful!${NC}"
-ls -lh "$DEPLOY_ROOT/dist/"
+echo -e "${GREEN}Build successful and verified!${NC}"
+ls -lh "$DEPLOY_ROOT/dist/" | head -20
 echo ""
 
 # Step 8: Configure systemd service
@@ -383,6 +495,51 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
         fi
     fi
 done
+
+# Check version endpoint
+if curl -sf http://127.0.0.1:$BACKEND_PORT/api/version > /dev/null 2>&1; then
+    VERSION_INFO=$(curl -s http://127.0.0.1:$BACKEND_PORT/api/version)
+    echo -e "${GREEN}✓ Version endpoint accessible${NC}"
+    echo "  $VERSION_INFO"
+else
+    echo -e "${YELLOW}! Version endpoint not accessible${NC}"
+fi
+
+# Check public domain if available
+if [ -n "$DOMAIN" ]; then
+    echo ""
+    echo "Checking public domain..."
+    
+    # Check HTTPS health endpoint
+    if curl -sf -k https://$DOMAIN/api/health > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ HTTPS health check passed (https://$DOMAIN/api/health)${NC}"
+    else
+        echo -e "${YELLOW}! HTTPS health check failed${NC}"
+        
+        # Try HTTP as fallback
+        if curl -sf http://$DOMAIN/api/health > /dev/null 2>&1; then
+            echo -e "${YELLOW}! HTTP health check works (HTTPS may not be configured)${NC}"
+        fi
+    fi
+    
+    # Verify PWA files return 404
+    echo ""
+    echo "Verifying PWA blocking..."
+    SW_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://$DOMAIN/service-worker.js 2>/dev/null || echo "000")
+    MANIFEST_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://$DOMAIN/manifest.json 2>/dev/null || echo "000")
+    
+    if [ "$SW_STATUS" = "404" ]; then
+        echo -e "${GREEN}✓ service-worker.js returns 404${NC}"
+    else
+        echo -e "${RED}✗ service-worker.js returns $SW_STATUS (expected 404)${NC}"
+    fi
+    
+    if [ "$MANIFEST_STATUS" = "404" ]; then
+        echo -e "${GREEN}✓ manifest.json returns 404${NC}"
+    else
+        echo -e "${RED}✗ manifest.json returns $MANIFEST_STATUS (expected 404)${NC}"
+    fi
+fi
 
 # Setup SSL if requested
 if [ "$ENABLE_SSL" = true ] && [ -n "$DOMAIN" ]; then
