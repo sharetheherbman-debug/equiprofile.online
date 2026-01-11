@@ -24,7 +24,7 @@ const categories = [
     id: "stable-management",
     icon: Users,
     title: "Stable Management",
-    image: "/images/stable.jpg",
+    image: "/images/stable-management.jpg",
     description:
       "Comprehensive tools to manage your entire stable operation efficiently. Track multiple horses, coordinate staff, and oversee daily operations from a single dashboard.",
     points: [
@@ -54,7 +54,7 @@ const categories = [
     id: "training-scheduling",
     icon: Activity,
     title: "Training & Scheduling",
-    image: "/images/training.jpg",
+    image: "/images/training-session.jpg",
     description:
       "Plan, log, and analyze training sessions with detailed performance tracking. Schedule lessons, track progress, and monitor improvement over time with visual analytics.",
     points: [
@@ -99,7 +99,7 @@ const categories = [
     id: "scheduling-reminders",
     icon: Bell,
     title: "Care Scheduling & Reminders",
-    image: "/images/training.jpg",
+    image: "/images/training-session.jpg",
     description:
       "Never miss important care tasks. Set up automated reminders for farrier visits, dental appointments, worming schedules, and daily routines.",
     points: [

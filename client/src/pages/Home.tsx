@@ -221,7 +221,7 @@ export default function Home() {
                 <ScrollReveal direction="left">
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                     <img 
-                      src="/images/horse-stable.jpg" 
+                      src="/images/stable-management.jpg" 
                       alt="Professional horse care and management" 
                       className="w-full h-full object-cover"
                     />

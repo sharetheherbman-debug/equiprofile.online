@@ -131,7 +131,7 @@ export default function About() {
               <ScrollReveal direction="right">
                 <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl">
                   <img 
-                    src="/images/riding-lesson.jpg" 
+                    src="/images/about-story.jpg" 
                     alt="Professional stable and equine care" 
                     className="w-full h-full object-cover"
                   />
