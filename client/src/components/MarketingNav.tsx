@@ -8,7 +8,6 @@ import { useAuth } from "@/_core/hooks/useAuth";
 const navLinks = [
   { label: "Features", path: "/features" },
   { label: "Pricing", path: "/pricing" },
-  { label: "About", path: "/about" },
   { label: "Contact", path: "/contact" },
 ];
 
@@ -61,7 +60,9 @@ export function MarketingNav() {
                   className={`text-sm font-medium transition-colors hover:text-primary ${
                     location === link.path
                       ? "text-primary"
-                      : "text-foreground/80"
+                      : isScrolled
+                      ? "text-foreground/80"
+                      : "text-white/90 hover:text-white"
                   }`}
                 >
                   {link.label}
@@ -72,17 +73,17 @@ export function MarketingNav() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {isAuthenticated ? (
-              <Link href="/dashboard">
-                <Button>Go to Dashboard</Button>
-              </Link>
-            ) : (
+            {!isAuthenticated && (
               <>
                 <Link href="/login">
-                  <Button variant="ghost">Log In</Button>
+                  <Button variant={isScrolled ? "ghost" : "outline"} className={!isScrolled ? "text-white border-white/30 hover:bg-white/10" : ""}>
+                    Log In
+                  </Button>
                 </Link>
                 <Link href="/register">
-                  <Button>Start 7-Day Trial</Button>
+                  <Button className={!isScrolled ? "bg-accent hover:bg-accent/90" : ""}>
+                    Start 7-Day Trial
+                  </Button>
                 </Link>
               </>
             )}
@@ -90,7 +91,7 @@ export function MarketingNav() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 hover:bg-accent rounded-lg transition-colors"
+            className={`md:hidden p-2 hover:bg-accent rounded-lg transition-colors ${!isScrolled ? "text-white" : ""}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle mobile menu"
           >
@@ -129,35 +130,27 @@ export function MarketingNav() {
                 </Link>
               ))}
               
-              <div className="pt-4 border-t flex flex-col gap-2">
-                {isAuthenticated ? (
-                  <Link href="/dashboard">
-                    <Button className="w-full" onClick={() => setMobileMenuOpen(false)}>
-                      Go to Dashboard
+              {!isAuthenticated && (
+                <div className="pt-4 border-t flex flex-col gap-2">
+                  <Link href="/login">
+                    <Button
+                      variant="ghost"
+                      className="w-full"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Log In
                     </Button>
                   </Link>
-                ) : (
-                  <>
-                    <Link href="/login">
-                      <Button
-                        variant="ghost"
-                        className="w-full"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Log In
-                      </Button>
-                    </Link>
-                    <Link href="/register">
-                      <Button
-                        className="w-full"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Start 7-Day Trial
-                      </Button>
-                    </Link>
-                  </>
-                )}
-              </div>
+                  <Link href="/register">
+                    <Button
+                      className="w-full"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Start 7-Day Trial
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

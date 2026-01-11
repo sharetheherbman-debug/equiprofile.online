@@ -10,6 +10,7 @@ import { Loader2, ArrowLeft, AlertCircle } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { PageTransition } from "@/components/PageTransition";
 import { MarketingNav } from "@/components/MarketingNav";
+import { Footer } from "@/components/Footer";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 /**
@@ -77,8 +78,12 @@ export default function Login() {
     <>
       <MarketingNav />
       <PageTransition>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 px-4 pt-20">
-          <div className="w-full max-w-md">
+        <div className="min-h-screen flex items-center justify-center px-4 pt-20 pb-8 relative">
+          {/* Background with gradient and subtle image */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-white to-accent/5" />
+          <div className="absolute inset-0 bg-[url('/images/horse-stable.jpg')] bg-cover bg-center opacity-5" />
+          
+          <div className="relative z-10 w-full max-w-md">
             {/* Back button */}
             <Link href="/">
               <a className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
@@ -234,6 +239,7 @@ export default function Login() {
           </div>
         </div>
       </PageTransition>
+      <Footer />
     </>
   );
 }

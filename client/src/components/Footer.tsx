@@ -1,7 +1,8 @@
 import { Link } from "wouter";
 import { Mail, MessageSquare } from "lucide-react";
 
-const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "";
+const WHATSAPP_NUMBER = "+447700900000";
+const SUPPORT_EMAIL = "support@equiprofile.online";
 
 export function Footer() {
   return (
@@ -12,6 +13,9 @@ export function Footer() {
             <div className="text-2xl font-bold font-serif mb-4">
               <span className="text-gradient">EquiProfile</span>
             </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              Built for equine professionals
+            </p>
             <p className="text-muted-foreground text-sm">
               Professional horse management for the modern equestrian.
             </p>
@@ -22,7 +26,6 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/features"><a className="hover:text-foreground transition-colors">Features</a></Link></li>
               <li><Link href="/pricing"><a className="hover:text-foreground transition-colors">Pricing</a></Link></li>
-              <li><Link href="/dashboard"><a className="hover:text-foreground transition-colors">Dashboard</a></Link></li>
             </ul>
           </div>
           
@@ -39,26 +42,24 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li>
                 <a 
-                  href="mailto:support@equiprofile.com" 
+                  href={`mailto:${SUPPORT_EMAIL}`}
                   className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <Mail className="w-4 h-4" />
-                  <span>support@equiprofile.com</span>
+                  <span>{SUPPORT_EMAIL}</span>
                 </a>
               </li>
-              {WHATSAPP_NUMBER && (
-                <li>
-                  <a 
-                    href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    <span>WhatsApp</span>
-                  </a>
-                </li>
-              )}
+              <li>
+                <a 
+                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>{WHATSAPP_NUMBER}</span>
+                </a>
+              </li>
             </ul>
             <h4 className="font-semibold mb-4 mt-6">Legal</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
