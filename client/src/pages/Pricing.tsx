@@ -159,8 +159,10 @@ export default function Pricing() {
     <>
       <MarketingNav />
       <PageTransition>
-        <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-24">
-          <div className="container mx-auto px-4">
+        <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-24 relative">
+          {/* Background image behind pricing blocks */}
+          <div className="absolute inset-0 bg-[url('/images/stable.jpg')] bg-cover bg-center opacity-5" />
+          <div className="container mx-auto px-4 relative z-10">
             {/* Header */}
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold tracking-tight mb-4">

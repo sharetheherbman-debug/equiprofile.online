@@ -129,16 +129,22 @@ export default function About() {
               </ScrollReveal>
 
               <ScrollReveal direction="right">
-                <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5">
+                <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl">
+                  <img 
+                    src="/images/horse-stable.jpg" 
+                    alt="Professional stable and equine care" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center p-8">
-                      <div className="text-6xl font-bold text-primary mb-4">
+                    <div className="text-center p-8 text-white">
+                      <div className="text-6xl font-bold mb-4">
                         Trusted
                       </div>
                       <div className="text-xl font-semibold mb-2">
                         By Equine Professionals
                       </div>
-                      <div className="text-muted-foreground">
+                      <div className="text-white/90">
                         Built for professional stables and equine teams
                       </div>
                     </div>

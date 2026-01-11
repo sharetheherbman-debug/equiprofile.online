@@ -169,9 +169,9 @@ export default function Home() {
                 <StaggerItem>
                   <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
                     <CardContent className="pt-6">
-                      <div className="text-5xl font-bold text-primary mb-2">10+</div>
-                      <div className="text-lg font-semibold mb-2">Hours Saved</div>
-                      <p className="text-muted-foreground">Per week on admin and record-keeping</p>
+                      <div className="text-5xl font-bold text-primary mb-2">50,000+</div>
+                      <div className="text-lg font-semibold mb-2">Horses Managed</div>
+                      <p className="text-muted-foreground">Trusted by equine professionals worldwide</p>
                     </CardContent>
                   </Card>
                 </StaggerItem>
@@ -179,9 +179,9 @@ export default function Home() {
                 <StaggerItem>
                   <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
                     <CardContent className="pt-6">
-                      <div className="text-5xl font-bold text-primary mb-2">100%</div>
-                      <div className="text-lg font-semibold mb-2">Compliance</div>
-                      <p className="text-muted-foreground">Never miss vaccinations or vet visits</p>
+                      <div className="text-5xl font-bold text-primary mb-2">98%</div>
+                      <div className="text-lg font-semibold mb-2">Customer Satisfaction</div>
+                      <p className="text-muted-foreground">Rated excellent by horse owners and trainers</p>
                     </CardContent>
                   </Card>
                 </StaggerItem>
@@ -189,9 +189,9 @@ export default function Home() {
                 <StaggerItem>
                   <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
                     <CardContent className="pt-6">
-                      <div className="text-5xl font-bold text-primary mb-2">24/7</div>
-                      <div className="text-lg font-semibold mb-2">Access</div>
-                      <p className="text-muted-foreground">All records available anywhere, anytime</p>
+                      <div className="text-5xl font-bold text-primary mb-2">15hrs</div>
+                      <div className="text-lg font-semibold mb-2">Saved Per Month</div>
+                      <p className="text-muted-foreground">Average time saved on admin and paperwork</p>
                     </CardContent>
                   </Card>
                 </StaggerItem>
@@ -199,7 +199,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Features Section */}
+          {/* Features Section - Redesigned with Image */}
           <section className="py-20 lg:py-32">
             <div className="container">
               <ScrollReveal>
@@ -216,22 +216,51 @@ export default function Home() {
                 </div>
               </ScrollReveal>
 
-              <Stagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {features.map((feature, index) => (
-                  <StaggerItem key={index}>
-                    <Card className="h-full card-hover">
-                      <CardHeader>
-                        <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                          <feature.icon className="w-7 h-7 text-primary" />
+              {/* Image with overlapping features */}
+              <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto mb-12">
+                <ScrollReveal direction="left">
+                  <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                    <img 
+                      src="/images/training.jpg" 
+                      alt="Professional horse care and training" 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute bottom-6 left-6 right-6 text-white">
+                      <h3 className="text-2xl font-bold mb-2">Professional Tools</h3>
+                      <p className="text-white/90">Built for serious equestrians who demand excellence</p>
+                    </div>
+                  </div>
+                </ScrollReveal>
+
+                <ScrollReveal direction="right">
+                  <div className="space-y-6">
+                    {features.slice(0, 3).map((feature, index) => (
+                      <div key={index} className="flex gap-4 items-start">
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <feature.icon className="w-6 h-6 text-primary" />
                         </div>
-                        <CardTitle className="text-xl">{feature.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <CardDescription className="text-base">
-                          {feature.description}
-                        </CardDescription>
-                      </CardContent>
-                    </Card>
+                        <div>
+                          <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                          <p className="text-muted-foreground">{feature.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollReveal>
+              </div>
+
+              {/* Remaining features in a cleaner grid */}
+              <Stagger className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {features.slice(3).map((feature, index) => (
+                  <StaggerItem key={index}>
+                    <div className="flex flex-col items-center text-center p-6 rounded-xl border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300">
+                      <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                        <feature.icon className="w-7 h-7 text-primary" />
+                      </div>
+                      <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    </div>
                   </StaggerItem>
                 ))}
               </Stagger>
@@ -299,7 +328,7 @@ export default function Home() {
                       Simple, Transparent Pricing
                     </h2>
                     <p className="text-lg md:text-xl text-muted-foreground mb-8">
-                      Start with a 7-day free trial. Plans start at just $9/month. 
+                      Start with a 7-day free trial. Plans start at just £7.99/month. 
                       No credit card required to get started.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
