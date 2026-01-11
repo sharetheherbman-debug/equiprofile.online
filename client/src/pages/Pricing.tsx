@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { MarketingNav } from "@/components/MarketingNav";
 import { PageTransition } from "@/components/PageTransition";
+import { Footer } from "@/components/Footer";
 
 export default function Pricing() {
   const { user } = useAuth();
@@ -148,9 +149,11 @@ export default function Pricing() {
 
   const hasActiveSubscription = subscriptionStatus?.status === 'active';
 
-  // Fallback prices if backend unavailable
+  // Fallback prices if backend unavailable - now in GBP
   const monthlyPrice = pricing?.monthly?.amount ? (pricing.monthly.amount / 100).toFixed(2) : '7.99';
-  const yearlyPrice = pricing?.yearly?.amount ? (pricing.yearly.amount / 100).toFixed(2) : '79.90';
+  const yearlyPrice = pricing?.yearly?.amount ? (pricing.yearly.amount / 100).toFixed(2) : '79';
+  const stableMonthlyPrice = '24.99';
+  const stableYearlyPrice = '249';
 
   return (
     <>
@@ -321,12 +324,18 @@ export default function Pricing() {
               <CardTitle>Stable</CardTitle>
               <CardDescription>For professional operations</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold">£24.99</span>
-                <span className="text-muted-foreground">/month</span>
+                <span className="text-4xl font-bold">
+                  £{billingPeriod === "monthly" ? stableMonthlyPrice : stableYearlyPrice}
+                </span>
+                <span className="text-muted-foreground">
+                  /{billingPeriod === "monthly" ? "month" : "year"}
+                </span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                or £249.90/year <span className="text-green-600 font-semibold">(Save 17%)</span>
-              </p>
+              {billingPeriod === "yearly" && (
+                <p className="text-sm text-green-600 font-semibold">
+                  Save 17% with annual billing
+                </p>
+              )}
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
@@ -383,6 +392,7 @@ export default function Pricing() {
           </div>
         </div>
       </PageTransition>
+      <Footer />
     </>
   );
 }

@@ -6,11 +6,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { MarketingNav } from "@/components/MarketingNav";
 import { PageTransition } from "@/components/PageTransition";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { Footer } from "@/components/Footer";
 import { Mail, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "";
+const WHATSAPP_NUMBER = "+447700900000";
+const SUPPORT_EMAIL = "support@equiprofile.online";
 
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -205,38 +207,36 @@ export default function Contact() {
                         Send us an email anytime
                       </p>
                       <a
-                        href="mailto:support@equiprofile.com"
+                        href={`mailto:${SUPPORT_EMAIL}`}
                         className="text-sm text-primary hover:underline"
                       >
-                        support@equiprofile.com
+                        {SUPPORT_EMAIL}
                       </a>
                     </div>
                   </div>
                 </Card>
 
-                {WHATSAPP_NUMBER && (
-                  <Card className="p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-lg bg-primary/10 text-primary">
-                        <MessageSquare className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-1">WhatsApp</h3>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Chat with us on WhatsApp
-                        </p>
-                        <a
-                          href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline"
-                        >
-                          {WHATSAPP_NUMBER}
-                        </a>
-                      </div>
+                <Card className="p-6 border-2 border-primary/20">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-lg bg-primary/10 text-primary">
+                      <MessageSquare className="w-6 h-6" />
                     </div>
-                  </Card>
-                )}
+                    <div>
+                      <h3 className="font-semibold mb-1">WhatsApp</h3>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Get instant support via WhatsApp
+                      </p>
+                      <a
+                        href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline font-semibold"
+                      >
+                        {WHATSAPP_NUMBER}
+                      </a>
+                    </div>
+                  </div>
+                </Card>
 
                 <Card className="p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
                   <h3 className="font-semibold mb-2">Response Time</h3>
@@ -250,6 +250,7 @@ export default function Contact() {
           </div>
         </div>
       </PageTransition>
+      <Footer />
     </>
   );
 }

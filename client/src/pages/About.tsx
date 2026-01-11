@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { MarketingNav } from "@/components/MarketingNav";
 import { PageTransition } from "@/components/PageTransition";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { Footer } from "@/components/Footer";
 import { Heart, Target, Users, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 
@@ -38,15 +39,28 @@ export default function About() {
     <>
       <MarketingNav />
       <PageTransition>
-        <div className="min-h-screen pt-24 pb-16">
-          {/* Hero Section */}
-          <section className="container mx-auto px-4 mb-20">
+        <div className="min-h-screen">
+          {/* Hero Section with Image */}
+          <section className="relative h-64 md:h-96 mb-12">
+            <div className="absolute inset-0">
+              <img 
+                src="/images/horse-stable.jpg" 
+                alt="About EquiProfile" 
+                className="w-full h-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-black/50" />
+            </div>
+            <div className="relative z-10 container mx-auto px-4 h-full flex items-center justify-center">
+              <h1 className="text-5xl md:text-6xl font-bold font-serif text-white text-center">
+                About <span className="text-accent-400">EquiProfile</span>
+              </h1>
+            </div>
+          </section>
+
+          {/* Intro Section */}
+          <section className="container mx-auto px-4 mb-20 pt-8">
             <ScrollReveal>
               <div className="text-center max-w-3xl mx-auto">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-6">
-                  About{" "}
-                  <span className="text-gradient">EquiProfile</span>
-                </h1>
                 <p className="text-lg md:text-xl text-muted-foreground">
                   We're on a mission to revolutionize horse management with
                   technology that empowers horse owners, trainers, and
@@ -191,6 +205,7 @@ export default function About() {
           </section>
         </div>
       </PageTransition>
+      <Footer />
     </>
   );
 }

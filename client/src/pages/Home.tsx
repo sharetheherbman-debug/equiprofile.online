@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { MarketingNav } from "@/components/MarketingNav";
 import { PageTransition } from "@/components/PageTransition";
 import { ScrollReveal, Stagger, StaggerItem } from "@/components/ScrollReveal";
+import { Footer } from "@/components/Footer";
 import { Link } from "wouter";
 import { 
   Heart, 
@@ -77,13 +78,6 @@ export default function Home() {
     },
   ];
 
-  const stats = [
-    { value: "Professional", label: "Built for stables" },
-    { value: "Daily", label: "Workflow tools" },
-    { value: "Trusted", label: "By equine professionals" },
-    { value: "Complete", label: "Management solution" },
-  ];
-
   return (
     <>
       <MarketingNav />
@@ -91,14 +85,15 @@ export default function Home() {
         <div className="min-h-screen">
           {/* Hero Section */}
           <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-            {/* Full-width hero image with dark overlay */}
+            {/* Full-width hero image with dark overlay and proper positioning */}
             <div className="absolute inset-0">
               <img 
                 src="/images/hero-horse.jpg" 
                 alt="Professional horse management" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-center"
+                style={{ objectPosition: "50% 40%" }}
               />
-              <div className="absolute inset-0 bg-black/60" />
+              <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/50" />
             </div>
             
             <div className="container relative z-10 py-24">
@@ -115,7 +110,7 @@ export default function Home() {
                 
                 <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6 text-white">
                   Professional Horse Management Made{" "}
-                  <span className="text-primary">Simple</span>
+                  <span className="text-accent-400">Simple</span>
                 </h1>
                 
                 <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed">
@@ -155,23 +150,52 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Stats Section */}
-          <section className="py-12 border-y bg-muted/30">
+          {/* New CTA Section - Everything in One Place */}
+          <section className="py-20 bg-gradient-to-b from-primary/5 to-white">
             <div className="container">
               <ScrollReveal>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                  {stats.map((stat, index) => (
-                    <div key={index} className="text-center">
-                      <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
-                        {stat.value}
-                      </div>
-                      <div className="text-sm md:text-base text-muted-foreground">
-                        {stat.label}
-                      </div>
-                    </div>
-                  ))}
+                <div className="text-center max-w-3xl mx-auto mb-16">
+                  <h2 className="text-4xl font-bold font-serif mb-4">
+                    Everything in <span className="text-gradient">One Place</span>
+                  </h2>
+                  <p className="text-lg text-muted-foreground">
+                    Stop juggling spreadsheets, paper records, and multiple apps. 
+                    EquiProfile brings your entire equine operation together.
+                  </p>
                 </div>
               </ScrollReveal>
+
+              <Stagger className="grid md:grid-cols-3 gap-8">
+                <StaggerItem>
+                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
+                    <CardContent className="pt-6">
+                      <div className="text-5xl font-bold text-primary mb-2">10+</div>
+                      <div className="text-lg font-semibold mb-2">Hours Saved</div>
+                      <p className="text-muted-foreground">Per week on admin and record-keeping</p>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+                
+                <StaggerItem>
+                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
+                    <CardContent className="pt-6">
+                      <div className="text-5xl font-bold text-primary mb-2">100%</div>
+                      <div className="text-lg font-semibold mb-2">Compliance</div>
+                      <p className="text-muted-foreground">Never miss vaccinations or vet visits</p>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+                
+                <StaggerItem>
+                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
+                    <CardContent className="pt-6">
+                      <div className="text-5xl font-bold text-primary mb-2">24/7</div>
+                      <div className="text-lg font-semibold mb-2">Access</div>
+                      <p className="text-muted-foreground">All records available anywhere, anytime</p>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+              </Stagger>
             </div>
           </section>
 
@@ -320,49 +344,7 @@ export default function Home() {
           </section>
 
           {/* Footer */}
-          <footer className="py-12 lg:py-16 border-t bg-card">
-            <div className="container">
-              <div className="grid md:grid-cols-4 gap-8 mb-8">
-                <div>
-                  <div className="text-2xl font-bold font-serif mb-4">
-                    <span className="text-gradient">EquiProfile</span>
-                  </div>
-                  <p className="text-muted-foreground text-sm">
-                    Professional horse management for the modern equestrian.
-                  </p>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold mb-4">Product</h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li><Link href="/features"><a className="hover:text-foreground transition-colors">Features</a></Link></li>
-                    <li><Link href="/pricing"><a className="hover:text-foreground transition-colors">Pricing</a></Link></li>
-                    <li><Link href="/dashboard"><a className="hover:text-foreground transition-colors">Dashboard</a></Link></li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold mb-4">Company</h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li><Link href="/about"><a className="hover:text-foreground transition-colors">About</a></Link></li>
-                    <li><Link href="/contact"><a className="hover:text-foreground transition-colors">Contact</a></Link></li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold mb-4">Legal</h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
-                    <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
-                  </ul>
-                </div>
-              </div>
-              
-              <div className="border-t pt-8 text-center text-sm text-muted-foreground">
-                <p>© {new Date().getFullYear()} EquiProfile. All rights reserved.</p>
-              </div>
-            </div>
-          </footer>
+          <Footer />
         </div>
       </PageTransition>
     </>

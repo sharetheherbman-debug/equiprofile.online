@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { MarketingNav } from "@/components/MarketingNav";
 import { PageTransition } from "@/components/PageTransition";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { Footer } from "@/components/Footer";
 import {
   Heart,
   Activity,
@@ -11,7 +12,7 @@ import {
   FileText,
   BarChart3,
   Users,
-  CreditCard,
+  Bell,
   Stethoscope,
   ClipboardList,
 } from "lucide-react";
@@ -95,18 +96,18 @@ const categories = [
     ],
   },
   {
-    id: "billing-admin",
-    icon: CreditCard,
-    title: "Billing & Admin",
+    id: "scheduling-reminders",
+    icon: Bell,
+    title: "Care Scheduling & Reminders",
     image: "/images/stable.jpg",
     description:
-      "Manage subscriptions, billing, and administrative tasks effortlessly. Track expenses, handle payments, and maintain complete control over your account settings.",
+      "Never miss important care tasks. Set up automated reminders for farrier visits, dental appointments, worming schedules, and daily routines.",
     points: [
-      "Flexible subscription plans",
-      "Expense tracking and categorization",
-      "Invoice generation and management",
-      "Secure payment processing via Stripe",
-      "User and team management",
+      "Automated email and push reminders",
+      "Recurring task scheduling",
+      "Farrier and dental appointment tracking",
+      "Worming and medication schedules",
+      "Custom care routine templates",
     ],
   },
 ];
@@ -154,11 +155,11 @@ export default function Features() {
                 }`}>
                   {/* Image */}
                   <div className={`${index % 2 === 1 ? "lg:order-2" : ""}`}>
-                    <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg">
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-lg">
                       <img
                         src={category.image}
                         alt={category.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center"
                       />
                     </div>
                   </div>
@@ -219,6 +220,7 @@ export default function Features() {
           </section>
         </div>
       </PageTransition>
+      <Footer />
     </>
   );
 }
