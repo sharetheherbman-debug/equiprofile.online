@@ -39,7 +39,7 @@ const categories = [
     id: "horse-health",
     icon: Heart,
     title: "Horse Profiles & Health",
-    image: "/images/hero-horse.jpg",
+    image: "/images/horse-profiles.jpg",
     description:
       "Maintain detailed health records for each horse. Track vaccinations, vet visits, medications, and medical history with automated reminders to ensure nothing is missed.",
     points: [
@@ -69,7 +69,7 @@ const categories = [
     id: "documents-xrays",
     icon: FileText,
     title: "Documents & X-rays",
-    image: "/images/horse-stable.jpg",
+    image: "/images/documents-xrays.jpg",
     description:
       "Securely store and organize all horse-related documents in one central location. Upload registration papers, insurance documents, X-rays, competition records, and more with powerful search capabilities.",
     points: [

@@ -88,7 +88,7 @@ export default function Home() {
             {/* Full-width hero image with dark overlay and proper positioning */}
             <div className="absolute inset-0">
               <img 
-                src="/images/hero-horse.jpg" 
+                src="/images/hero-auth.jpg" 
                 alt="Professional horse management" 
                 className="w-full h-full object-cover object-center"
                 style={{ objectPosition: "50% 40%" }}
