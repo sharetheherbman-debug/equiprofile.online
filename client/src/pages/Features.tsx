@@ -39,7 +39,7 @@ const categories = [
     id: "horse-health",
     icon: Heart,
     title: "Horse Profiles & Health",
-    image: "/images/hero-horse.jpg",
+    image: "/images/horse-profiles.jpg",
     description:
       "Maintain detailed health records for each horse. Track vaccinations, vet visits, medications, and medical history with automated reminders to ensure nothing is missed.",
     points: [
