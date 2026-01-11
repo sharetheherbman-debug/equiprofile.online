@@ -93,7 +93,7 @@ export default function Home() {
                 className="w-full h-full object-cover object-center"
                 style={{ objectPosition: "50% 40%" }}
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/50" />
+              <div className="absolute inset-0 bg-black/50" />
             </div>
             
             <div className="container relative z-10 py-24">
@@ -150,17 +150,17 @@ export default function Home() {
             </div>
           </section>
 
-          {/* New CTA Section - Everything in One Place */}
+          {/* Benefits Section - How EquiProfile Makes Life Easier */}
           <section className="py-20 bg-gradient-to-b from-primary/5 to-white">
             <div className="container">
               <ScrollReveal>
                 <div className="text-center max-w-3xl mx-auto mb-16">
                   <h2 className="text-4xl font-bold font-serif mb-4">
-                    Everything in <span className="text-gradient">One Place</span>
+                    How EquiProfile Makes <span className="text-gradient">Your Life Easier</span>
                   </h2>
                   <p className="text-lg text-muted-foreground">
                     Stop juggling spreadsheets, paper records, and multiple apps. 
-                    EquiProfile brings your entire equine operation together.
+                    EquiProfile brings your entire equine operation together, saving you time and reducing stress.
                   </p>
                 </div>
               </ScrollReveal>
@@ -169,9 +169,9 @@ export default function Home() {
                 <StaggerItem>
                   <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
                     <CardContent className="pt-6">
-                      <div className="text-5xl font-bold text-primary mb-2">50,000+</div>
-                      <div className="text-lg font-semibold mb-2">Horses Managed</div>
-                      <p className="text-muted-foreground">Trusted by equine professionals worldwide</p>
+                      <div className="text-5xl mb-4">📱</div>
+                      <div className="text-lg font-semibold mb-2">Access Anywhere</div>
+                      <p className="text-muted-foreground">Manage your horses from your phone, tablet, or computer - whether you're at the stable or on the go</p>
                     </CardContent>
                   </Card>
                 </StaggerItem>
@@ -179,9 +179,9 @@ export default function Home() {
                 <StaggerItem>
                   <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
                     <CardContent className="pt-6">
-                      <div className="text-5xl font-bold text-primary mb-2">98%</div>
-                      <div className="text-lg font-semibold mb-2">Customer Satisfaction</div>
-                      <p className="text-muted-foreground">Rated excellent by horse owners and trainers</p>
+                      <div className="text-5xl mb-4">⏰</div>
+                      <div className="text-lg font-semibold mb-2">Never Miss a Thing</div>
+                      <p className="text-muted-foreground">Automated reminders ensure you never forget vet appointments, medications, or important care tasks</p>
                     </CardContent>
                   </Card>
                 </StaggerItem>
@@ -189,9 +189,9 @@ export default function Home() {
                 <StaggerItem>
                   <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
                     <CardContent className="pt-6">
-                      <div className="text-5xl font-bold text-primary mb-2">15 hours</div>
-                      <div className="text-lg font-semibold mb-2">Saved Per Month</div>
-                      <p className="text-muted-foreground">Average time saved on admin and paperwork</p>
+                      <div className="text-5xl mb-4">🎯</div>
+                      <div className="text-lg font-semibold mb-2">Stay Organized</div>
+                      <p className="text-muted-foreground">All your horse records, documents, and schedules in one secure place - no more searching through files</p>
                     </CardContent>
                   </Card>
                 </StaggerItem>
@@ -221,11 +221,11 @@ export default function Home() {
                 <ScrollReveal direction="left">
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                     <img 
-                      src="/images/training.jpg" 
-                      alt="Professional horse care and training" 
+                      src="/images/horse-stable.jpg" 
+                      alt="Professional horse care and management" 
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-black/50" />
                     <div className="absolute bottom-6 left-6 right-6 text-white">
                       <h3 className="text-2xl font-bold mb-2">Professional Tools</h3>
                       <p className="text-white/90">Built for serious equestrians who demand excellence</p>

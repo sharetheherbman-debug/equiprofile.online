@@ -99,7 +99,7 @@ const categories = [
     id: "scheduling-reminders",
     icon: Bell,
     title: "Care Scheduling & Reminders",
-    image: "/images/stable.jpg",
+    image: "/images/training.jpg",
     description:
       "Never miss important care tasks. Set up automated reminders for farrier visits, dental appointments, worming schedules, and daily routines.",
     points: [
