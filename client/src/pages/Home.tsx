@@ -88,7 +88,7 @@ export default function Home() {
             {/* Full-width hero image with dark overlay and proper positioning */}
             <div className="absolute inset-0">
               <img 
-                src="/images/hero-horse.jpg" 
+                src="/images/hero-auth.jpg" 
                 alt="Professional horse management" 
                 className="w-full h-full object-cover object-center"
                 style={{ objectPosition: "50% 40%" }}
@@ -221,7 +221,7 @@ export default function Home() {
                 <ScrollReveal direction="left">
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                     <img 
-                      src="/images/horse-stable.jpg" 
+                      src="/images/stable-management.jpg" 
                       alt="Professional horse care and management" 
                       className="w-full h-full object-cover"
                     />

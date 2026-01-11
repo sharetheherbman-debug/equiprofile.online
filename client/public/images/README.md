@@ -12,31 +12,25 @@ This directory contains all visual assets for the EquiProfile application.
 - `icon-speed.svg` - Performance/speed icon
 - `icon-support.svg` - Support/help icon
 
-**Note**: These are placeholder SVG icons. For production, consider:
-- Using your brand's icon style
-- Ensuring consistent stroke width and sizing
-- Optimizing SVGs with SVGO
-- Adding proper aria-labels in components
+### Active Hero & Marketing Images
+- `hero-auth.jpg` (675KB, 1920x1280) - Hero image for Home, Login, and Register pages
+- `about-hero.jpg` (255KB, 1920x1280) - About page hero section
+- `documents-xrays.jpg` (668KB, 1920x1280) - Documents & X-rays feature
+- `horse-profiles.jpg` (329KB, 1920x1272) - Horse Profiles & Health feature
+- `stable-management.jpg` (648KB, 1277x1920) - Stable Management feature
+- `training-session.jpg` (289KB, 1275x1920) - Training & Scheduling feature
+- `about-story.jpg` (613KB, 1280x1920) - About page story section
 
-### Hero Images (To Be Added)
-
-**hero.webp** (Required for new design)
-- **Recommended size**: 1920x1080px
-- **Format**: WebP (for optimal loading)
-- **Content suggestions**:
-  - Modern professional equestrian setting
-  - Horse care or stable management scene
-  - Abstract tech visual with equestrian theme
-  - Professional photography showing the app in use
-- **Optimization**: Use tools like `squoosh.app` or `sharp` to optimize
-- **Fallback**: Can temporarily use `hero-horse.jpg` (exists in directory)
-
-### Current Images (May be replaced)
-- `hero-horse.jpg` (245KB) - Current hero image
+### Legacy Images (Available for other uses)
 - `horse-stable.jpg` (70KB) - Stable scene
 - `riding-lesson.jpg` (110KB) - Training scene
 - `stable.jpg` (127KB) - Stable exterior
 - `training.jpg` (203KB) - Training activity
+
+### Stock Images (Backups)
+- `extra-animal.jpg` (648KB) - Stock horse image (source for stable-management.jpg)
+- `extra-horse.jpg` (289KB) - Stock horse image (source for training-session.jpg)
+- `extra-wild-horse.jpg` (613KB) - Stock horse image (source for about-story.jpg)
 
 ## Image Guidelines
 

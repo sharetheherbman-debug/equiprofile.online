@@ -24,7 +24,7 @@ const categories = [
     id: "stable-management",
     icon: Users,
     title: "Stable Management",
-    image: "/images/stable.jpg",
+    image: "/images/stable-management.jpg",
     description:
       "Comprehensive tools to manage your entire stable operation efficiently. Track multiple horses, coordinate staff, and oversee daily operations from a single dashboard.",
     points: [
@@ -39,7 +39,7 @@ const categories = [
     id: "horse-health",
     icon: Heart,
     title: "Horse Profiles & Health",
-    image: "/images/hero-horse.jpg",
+    image: "/images/horse-profiles.jpg",
     description:
       "Maintain detailed health records for each horse. Track vaccinations, vet visits, medications, and medical history with automated reminders to ensure nothing is missed.",
     points: [
@@ -54,7 +54,7 @@ const categories = [
     id: "training-scheduling",
     icon: Activity,
     title: "Training & Scheduling",
-    image: "/images/training.jpg",
+    image: "/images/training-session.jpg",
     description:
       "Plan, log, and analyze training sessions with detailed performance tracking. Schedule lessons, track progress, and monitor improvement over time with visual analytics.",
     points: [
@@ -69,7 +69,7 @@ const categories = [
     id: "documents-xrays",
     icon: FileText,
     title: "Documents & X-rays",
-    image: "/images/horse-stable.jpg",
+    image: "/images/documents-xrays.jpg",
     description:
       "Securely store and organize all horse-related documents in one central location. Upload registration papers, insurance documents, X-rays, competition records, and more with powerful search capabilities.",
     points: [

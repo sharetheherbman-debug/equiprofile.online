@@ -44,7 +44,7 @@ export default function About() {
           <section className="relative h-64 md:h-96 mb-12">
             <div className="absolute inset-0">
               <img 
-                src="/images/horse-stable.jpg" 
+                src="/images/about-hero.jpg" 
                 alt="About EquiProfile" 
                 className="w-full h-full object-cover object-center"
               />
@@ -131,7 +131,7 @@ export default function About() {
               <ScrollReveal direction="right">
                 <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl">
                   <img 
-                    src="/images/riding-lesson.jpg" 
+                    src="/images/about-story.jpg" 
                     alt="Professional stable and equine care" 
                     className="w-full h-full object-cover"
                   />
