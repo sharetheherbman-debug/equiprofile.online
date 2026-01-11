@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 const navLinks = [
+  { label: "About", path: "/about" },
   { label: "Features", path: "/features" },
   { label: "Pricing", path: "/pricing" },
   { label: "Contact", path: "/contact" },
