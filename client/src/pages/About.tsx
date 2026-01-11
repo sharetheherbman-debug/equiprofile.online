@@ -44,7 +44,7 @@ export default function About() {
           <section className="relative h-64 md:h-96 mb-12">
             <div className="absolute inset-0">
               <img 
-                src="/images/horse-stable.jpg" 
+                src="/images/about-hero.jpg" 
                 alt="About EquiProfile" 
                 className="w-full h-full object-cover object-center"
               />

@@ -97,13 +97,27 @@ function HorsesContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-3xl font-bold text-foreground">Your Horses</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage profiles for all your equine companions
-          </p>
+      {/* Header Section with Hero Image */}
+      <div className="relative h-48 md:h-64 -mx-6 -mt-6 mb-6 rounded-lg overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src="/images/horse-profiles.jpg" 
+            alt="Your Horses" 
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-black/40" />
         </div>
+        <div className="relative z-10 h-full flex items-end p-6">
+          <div className="text-white">
+            <h1 className="font-serif text-3xl md:text-4xl font-bold">Your Horses</h1>
+            <p className="text-white/90 mt-1">
+              Manage profiles for all your equine companions
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex gap-2">
           {localHorses && localHorses.length > 0 && (
             <Button variant="outline" onClick={handleExport}>
