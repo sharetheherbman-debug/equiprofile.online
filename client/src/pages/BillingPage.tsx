@@ -174,7 +174,7 @@ export default function BillingPage() {
                     <ul className="space-y-3 mb-6">
                       <li className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Unlimited horse profiles</span>
+                        <span className="text-sm">Up to 10 horse profiles</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -186,7 +186,7 @@ export default function BillingPage() {
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Document storage (5GB)</span>
+                        <span className="text-sm">Document storage</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -239,7 +239,7 @@ export default function BillingPage() {
                     <ul className="space-y-3 mb-6">
                       <li className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Unlimited horse profiles</span>
+                        <span className="text-sm">Up to 10 horse profiles</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -251,7 +251,7 @@ export default function BillingPage() {
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Document storage (5GB)</span>
+                        <span className="text-sm">Document storage</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
