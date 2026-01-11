@@ -111,6 +111,7 @@ export default function Pricing() {
       "Basic health records",
       "Training session logging",
       "Document storage",
+      "Document management",
       "Email support",
     ],
     pro: [
@@ -119,6 +120,7 @@ export default function Pricing() {
       "Advanced training logs",
       "Competition results",
       "Document storage",
+      "Document management",
       "AI weather analysis (50/day)",
       "Email reminders",
       "Mobile app access",
@@ -131,6 +133,7 @@ export default function Pricing() {
       "Role-based permissions",
       "Stable management",
       "Document storage",
+      "Advanced document management",
       "Unlimited AI weather",
       "Advanced analytics",
       "Priority email support",
