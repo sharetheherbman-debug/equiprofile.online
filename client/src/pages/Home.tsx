@@ -189,7 +189,7 @@ export default function Home() {
                 <StaggerItem>
                   <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
                     <CardContent className="pt-6">
-                      <div className="text-5xl font-bold text-primary mb-2">15hrs</div>
+                      <div className="text-5xl font-bold text-primary mb-2">15 hours</div>
                       <div className="text-lg font-semibold mb-2">Saved Per Month</div>
                       <p className="text-muted-foreground">Average time saved on admin and paperwork</p>
                     </CardContent>
