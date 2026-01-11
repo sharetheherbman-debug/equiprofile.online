@@ -79,9 +79,9 @@ export default function Login() {
       <MarketingNav />
       <PageTransition>
         <div className="min-h-screen flex items-center justify-center px-4 pt-20 pb-8 relative">
-          {/* Background with gradient and subtle image */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-white to-accent/5" />
-          <div className="absolute inset-0 bg-[url('/images/horse-stable.jpg')] bg-cover bg-center opacity-5" />
+          {/* Background with image and light overlay */}
+          <div className="absolute inset-0 bg-[url('/images/hero-horse.jpg')] bg-cover bg-center" />
+          <div className="absolute inset-0 bg-black/10" />
           
           <div className="relative z-10 w-full max-w-md">
             {/* Back button */}

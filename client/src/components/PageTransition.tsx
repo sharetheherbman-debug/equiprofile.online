@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -11,8 +11,16 @@ interface PageTransitionProps {
  * 
  * Provides smooth fade + slide up animations when pages load
  * Use this to wrap page components for consistent transitions
+ * Also scrolls to top when component mounts (respects reduced motion)
  */
 export function PageTransition({ children, className = "" }: PageTransitionProps) {
+  // Scroll to top when component mounts
+  useEffect(() => {
+    // Use instant scroll for page navigation to avoid jarring experience
+    // when users click navigation links (smooth scroll is for same-page anchors)
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
