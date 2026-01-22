@@ -100,7 +100,7 @@ export default function Register() {
         <div className="min-h-screen flex items-center justify-center px-4 pt-20 pb-8 relative">
           {/* Background with image and black transparent overlay */}
           <div className="absolute inset-0 bg-[url('/images/hero-auth.jpg')] bg-cover bg-center" />
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-black/20" />
           
           <div className="relative z-10 w-full max-w-md">
             {/* Back button */}
