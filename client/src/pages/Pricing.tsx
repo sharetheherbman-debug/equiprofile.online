@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Loader2, AlertCircle } from "lucide-react";
+import { Check, Loader2, AlertCircle, HelpCircle } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { MarketingNav } from "@/components/MarketingNav";
 import { PageTransition } from "@/components/PageTransition";
 import { Footer } from "@/components/Footer";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 export default function Pricing() {
   const { user } = useAuth();
@@ -364,33 +365,129 @@ export default function Pricing() {
           </Card>
         </div>
 
-        {/* FAQ or Additional Info */}
-        <div className="mt-16 text-center">
-          <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
-          <div className="max-w-3xl mx-auto text-left space-y-4">
-            <div>
-              <h3 className="font-semibold mb-1">Can I cancel anytime?</h3>
-              <p className="text-muted-foreground">
-                Yes! You can cancel your subscription at any time. Your access continues until the end of your billing period.
-              </p>
+        {/* FAQ Section - Modern Accordion */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
+              <HelpCircle className="w-6 h-6 text-primary" />
             </div>
-            <div>
-              <h3 className="font-semibold mb-1">What happens after the free trial?</h3>
-              <p className="text-muted-foreground">
-                Your account becomes read-only. You can upgrade to a paid plan anytime to regain full access.
+            <h2 className="text-3xl md:text-4xl font-bold font-serif mb-3">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Everything you need to know about EquiProfile
+            </p>
+          </div>
+          
+          <div className="max-w-3xl mx-auto">
+            <Card className="border-2">
+              <CardContent className="p-6">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="trial">
+                    <AccordionTrigger className="text-left">
+                      How long is the free trial?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      Your free trial lasts 7 days and includes full access to all features. No credit card required to start.
+                      You can upgrade to a paid plan at any time during or after the trial.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="cancel">
+                    <AccordionTrigger className="text-left">
+                      Can I cancel anytime?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      Yes! You can cancel your subscription at any time with no questions asked. Your access continues until
+                      the end of your current billing period. No cancellation fees, ever.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="features">
+                    <AccordionTrigger className="text-left">
+                      What's included in each plan?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      <div className="space-y-3">
+                        <p>All plans include:</p>
+                        <ul className="list-disc pl-6 space-y-1">
+                          <li>Unlimited horses and profiles</li>
+                          <li>Health records & vaccination tracking</li>
+                          <li>Training logs & scheduling</li>
+                          <li>Feeding plans & nutrition tracking</li>
+                          <li>Document storage & management</li>
+                          <li>AI-powered weather insights</li>
+                          <li>Mobile app access</li>
+                          <li>Email support</li>
+                        </ul>
+                        <p className="mt-3">
+                          Yearly plans save you 17% compared to monthly billing.
+                        </p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="switch">
+                    <AccordionTrigger className="text-left">
+                      Can I switch between plans?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      Yes! You can upgrade or downgrade your plan at any time. When upgrading, you'll be charged a prorated
+                      amount for the remainder of your billing period. When downgrading, the change takes effect at the end
+                      of your current billing period.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="security">
+                    <AccordionTrigger className="text-left">
+                      Is my data secure?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      Absolutely. We use bank-level encryption to protect your data. All information is stored securely on
+                      UK-based servers with regular backups. We never sell or share your personal information with third parties.
+                      Your privacy and data security are our top priorities.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="payment">
+                    <AccordionTrigger className="text-left">
+                      What payment methods do you accept?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      We accept all major credit and debit cards via Stripe, the world's leading payment processor. Your
+                      payment information is securely processed by Stripe and never stored on our servers. Look for the
+                      "Secure payments by Stripe" badge at checkout.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="support">
+                    <AccordionTrigger className="text-left">
+                      How do I get help if I have billing issues?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      Our support team is here to help! Contact us at{" "}
+                      <a href="mailto:support@equiprofile.online" className="text-primary hover:underline font-medium">
+                        support@equiprofile.online
+                      </a>{" "}
+                      or call us at{" "}
+                      <a href="tel:+447347258089" className="text-primary hover:underline font-medium">
+                        +44 7347 258089
+                      </a>.
+                      We typically respond within 24 hours during business days.
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </CardContent>
+            </Card>
+
+            {/* Additional Support CTA */}
+            <div className="mt-8 text-center">
+              <p className="text-muted-foreground mb-4">
+                Still have questions?
               </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-1">Can I switch plans?</h3>
-              <p className="text-muted-foreground">
-                Yes! You can upgrade or downgrade your plan at any time. Changes are prorated automatically.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-1">What payment methods do you accept?</h3>
-              <p className="text-muted-foreground">
-                We accept all major credit cards via Stripe. Your payment information is securely processed and never stored on our servers.
-              </p>
+              <Button variant="outline" asChild>
+                <a href="/contact">Contact Support</a>
+              </Button>
             </div>
           </div>
         </div>
