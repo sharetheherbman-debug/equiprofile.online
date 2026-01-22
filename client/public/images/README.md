@@ -13,15 +13,19 @@ This directory contains all visual assets for the EquiProfile application.
 - `icon-support.svg` - Support/help icon
 
 ### Active Hero & Marketing Images
-- `hero-auth.jpg` (675KB, 1920x1280) - Hero image for Home, Login, and Register pages
-- `about-hero.jpg` (255KB, 1920x1280) - About page hero section
-- `documents-xrays.jpg` (668KB, 1920x1280) - Documents & X-rays feature
-- `horse-profiles.jpg` (329KB, 1920x1272) - Horse Profiles & Health feature
-- `stable-management.jpg` (648KB, 1277x1920) - Stable Management feature
-- `training-session.jpg` (289KB, 1275x1920) - Training & Scheduling feature
-- `about-story.jpg` (613KB, 1280x1920) - About page story section
+- `hero-auth.jpg` (675KB) - Hero image for Login and Register pages (50/50 split layout)
+- `hero-horse-riding.jpg` (675KB) - Hero image for Home page  
+- `about-hero.jpg` (255KB) - About page hero section (moved from root)
+- `stable-interior.jpg` (255KB) - About page interior section (moved from root)
+- `documents-xrays.jpg` (668KB) - Documents & X-rays feature page (moved from root)
+- `horse-profiles.jpg` (329KB) - Horse Profiles & Health feature page (moved from root)
+- `horse-portrait.jpg` (648KB) - Horse portrait for various uses (moved from root)
+- `stable-management.jpg` (648KB) - Stable Management feature
+- `training-session.jpg` (289KB) - Training & Scheduling feature
+- `about-story.jpg` (613KB) - About page story section
 
 ### Legacy Images (Available for other uses)
+- `equipment-detail.jpg` - Equipment/tack detail image
 - `horse-stable.jpg` (70KB) - Stable scene
 - `riding-lesson.jpg` (110KB) - Training scene
 - `stable.jpg` (127KB) - Stable exterior

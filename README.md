@@ -239,8 +239,9 @@ sudo cp ops/systemd/equiprofile.service /etc/systemd/system/equiprofile.service
 sudo systemctl daemon-reload && sudo systemctl restart equiprofile
 ```
 
-👉 **See [DEPLOYMENT.md](DEPLOYMENT.md)** for complete deployment guide.  
-👉 **See [RECOVERY.md](RECOVERY.md)** for detailed recovery procedures.
+👉 **See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** for complete deployment guide.  
+👉 **See [docs/RECOVERY.md](docs/RECOVERY.md)** for detailed recovery procedures.  
+👉 **See [docs/FEATURES.md](docs/FEATURES.md)** for complete feature list and status.
 
 ---
 

@@ -99,9 +99,47 @@ None at this time.
 
 ---
 
-## [1.0.0] - Previous Release
+## [1.0.0] - 2026-01-22
 
-### Features
+### Added
+
+#### Infrastructure & Deployment
+- **Feature Flag System**: Added `ENABLE_FORGE` environment variable (default: `false`) to make Forge API configuration optional
+- **Health Endpoints**: Created `/api/health` endpoint (always returns 200, no DB required) for basic health checks
+- **Readiness Endpoint**: Created `/api/ready` endpoint that checks database connectivity and returns 200/503 status
+- **Admin Diagnostics**: Added `/api/diagnostics/env` endpoint (admin-only) for environment variable verification
+- **Production Startup Script**: Created `scripts/start-prod.sh` with proper environment variable loading for PM2
+- **User Management**: Created `scripts/create-user.mjs` for creating users via CLI
+- **Smoke Testing**: Created `scripts/smoke-local.sh` for local deployment verification
+- **MariaDB Diagnostics**: Added dual-host setup diagnostics for database connectivity troubleshooting
+
+#### UI Components
+- **Split-Screen Authentication**: New `AuthSplitLayout` component for modern login/register pages
+  - 50/50 split screen on desktop (form left, hero image right)
+  - Full-width responsive mobile layout
+  - Shared layout for Login and Register pages
+  - Professional marketing copy overlay
+  - Back to home navigation
+- **FAQ Section**: Enhanced Pricing page with interactive accordion-based FAQ
+  - 7 comprehensive questions covering trials, cancellation, plans, security, payments, and support
+  - Expandable/collapsible card-based design
+  - HelpCircle icon header
+  - Support CTA at bottom with correct contact details
+
+#### Assets
+- **Professional Photography**: Added 4 high-quality equestrian images
+  - `hero-horse-riding.jpg` - Landing page hero
+  - `equipment-detail.jpg` - Features section
+  - `stable-interior.jpg` - About page
+  - `horse-portrait.jpg` - Additional marketing imagery
+  - Total size: 1.9 MB
+
+#### Documentation
+- `.env.example` with `ENABLE_FORGE` flag documentation
+- `.env.production.example` for production deployments
+- Updated `DEPLOYMENT.md` with PM2, MariaDB, and health endpoints documentation
+
+#### Core Features (Initial Release)
 - Complete horse profile management system
 - Health records tracking
 - Training session planning and logging
@@ -116,14 +154,109 @@ None at this time.
 - Dark mode support
 - Mobile-responsive design
 
+### Changed
+
+#### Pricing Structure
+- **Trial Plan**: Changed from "Up to 3 horses" to **"1 horse profile"** to encourage upgrades
+- **Trial Plan**: Changed from "1GB document storage" to "Document storage" (no specific limit)
+- **Pro Plan**: Changed from "Unlimited horses" to **"Up to 10 horse profiles"** for realistic individual user limits
+- **Pro Plan**: Changed from "10GB document storage" to "Document storage" (no specific limit)
+- **Stable Plan**: Kept unlimited horses but changed from "100GB document storage" to "Document storage" (no specific limit)
+- Storage limits removed from user-facing messaging to reduce confusion and support questions
+- Clearer tier differentiation and more accurate representation of typical use cases
+
+#### Visual Design
+- **Image Overlays**: Changed from `bg-black/50` (50% opacity) to `bg-black/40` for main overlays and `bg-black/20` for auth pages
+  - Applied to: Home hero, Home features, About hero, About story, Login, Register
+  - Creates more premium, lighter feel with better image visibility
+- **Authentication Pages**: Complete redesign from full-screen overlay to split-screen layout
+  - Desktop: Form content on left, hero image with marketing copy on right
+  - Mobile: Stacked full-width form with visible background
+  - Softer overlay (20% instead of 50%) for premium aesthetic
+- **Card Design**: Enhanced card shadows for modern appearance
+- **Feature Cards**: Added minimum height for content block standardization
+- **Transitions**: Maintained smooth transitions across all interactive elements
+
+#### Contact Information
+- **Email**: Updated from `support@equiprofile.com` to `support@equiprofile.online`
+  - Updated in: Privacy page (2×), Terms page (1×), Footer, Contact page, Pricing FAQ
+- **Phone**: Updated from `+447700900000` to `+44 7347 258089`
+  - Updated in: Footer, Contact page, Pricing FAQ
+- **WhatsApp**: Added prefilled message - "Hello, I'm contacting you from EquiProfile…"
+  - Updated in: Footer, Contact page
+
+#### Environment Configuration
+- `env.ts` now conditionally validates Forge variables based on `ENABLE_FORGE` flag
+- All Forge-dependent modules now include feature flag guards
+- PM2 ecosystem configuration updated to use `start-prod.sh` for proper environment loading
+
+#### Admin System
+- Removed console hint messages on page load
+- Removed success/error console logs
+- Removed UI discovery hints
+- `showAdmin()` function still works with password protection intact
+- Admin panel functionality fully preserved with session management
+
+### Fixed
+
+#### Mobile Responsiveness
+- Fixed About page button overflow on small screens
+- Added proper margin to mobile menu icon for better touch targets
+- Improved form layouts on mobile devices
+
+#### Deployment Issues
+- Fixed PM2 environment variable loading issues
+- Resolved MariaDB connectivity problems with dual-host setup
+- Fixed health check reliability for VPS deployments
+- Ensured proper Forge API configuration handling when disabled
+
+### Technical Details
+
+#### Files Changed
+- **Total**: 24 files
+- **Code Additions**: ~350 lines
+- **New Components**: AuthSplitLayout.tsx
+- **Updated Components**: Login.tsx, Register.tsx, Pricing.tsx, Footer.tsx, Contact.tsx, Privacy.tsx, Terms.tsx, BillingPage.tsx
+- **Configuration**: env.ts, ecosystem.config.js, .env.example, .env.production.example
+- **Scripts**: start-prod.sh, create-user.mjs, smoke-local.sh
+
+#### Responsive Breakpoints
+- **Desktop** (≥1024px): 50/50 split auth pages, full-width overlays, accordion FAQ cards
+- **Tablet** (768-1023px): Stacked layout, adjusted padding, full-width forms
+- **Mobile** (<768px): Full-width forms, background visible above form, touch-friendly accordions
+
+#### User Experience Impact
+- **Modern Aesthetic**: More premium, professional appearance with soft overlays
+- **Better Mobile Experience**: Improved layouts and touch targets
+- **Comprehensive FAQ**: 7 questions covering all common concerns
+- **Consistent Branding**: UK-focused contact information throughout
+- **Professional Split-Screen Auth**: Enhanced conversion potential with better UX
+- **Reduced Support Queries**: Better FAQ content and clearer messaging
+- **Premium Positioning**: Visual design reinforces professional brand perception
+
+#### Developer Impact
+- **Code Organization**: Cleaner component structure with reusable AuthSplitLayout
+- **Consistent Styling**: Unified overlay approach across all pages
+- **Better Component Reusability**: Shared layout reduces code duplication
+- **TypeScript Compliance**: All changes fully typed
+- **Performance**: No impact on load times or runtime performance
+- **Accessibility**: ARIA compliant components maintained
+- **No Breaking Changes**: Backward compatible updates
+
+### Security
+- Admin panel remains password-protected with full session management
+- Environment diagnostics endpoint restricted to admin users only
+- Database credentials properly handled in production environment
+- No sensitive data exposed in health check endpoints
+
 ---
 
 ## Upgrade Guide
 
-### Upgrading from 1.x to 2.0
+### Upgrading from 1.0 to 2.0
 
 #### Breaking Changes
-None. Version 2.0 is fully backward compatible with 1.x configurations.
+None. Version 2.0 is fully backward compatible with 1.0 configurations.
 
 #### New Required Steps
 1. **Review environment variables**: The `.env` file structure has been reorganized for clarity. Compare your existing `.env` with the new `.env.example`.
@@ -152,10 +285,49 @@ None. Version 2.0 is fully backward compatible with 1.x configurations.
 
 ---
 
+### Installing or Upgrading to 1.0
+
+#### Environment Variables
+If you're deploying EquiProfile 1.0, add the following to your `.env` file:
+
+```bash
+# Forge API (optional)
+ENABLE_FORGE=false
+
+# Only required if ENABLE_FORGE=true:
+# FORGE_API_KEY=your_key_here
+# FORGE_API_SECRET=your_secret_here
+```
+
+#### Health Checks
+Update your monitoring/orchestration tools to use the new endpoints:
+- **Basic Health**: `GET /api/health` - Always returns 200
+- **Readiness**: `GET /api/ready` - Returns 200 if DB connected, 503 otherwise
+- **Diagnostics** (admin): `GET /api/diagnostics/env` - Requires admin authentication
+
+#### PM2 Deployment
+If using PM2, ensure you're using the updated startup script:
+```bash
+npm run start:prod
+```
+
+This uses `scripts/start-prod.sh` which properly loads environment variables.
+
+---
+
 ## Version History
 
 - **2.0.0** (2026-01-07) - Production deployment system, enhanced safety, PWA control
-- **1.0.0** (Previous) - Initial release with core features
+- **1.0.0** (2026-01-22) - UI/UX modernization, deployment fixes, pricing refinement, professional assets
+
+---
+
+## Support
+
+For questions, issues, or support:
+- **Email**: support@equiprofile.online
+- **WhatsApp**: +44 7347 258089
+- **Documentation**: See DEPLOYMENT.md for deployment guides
 
 ---
 
@@ -166,3 +338,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on contributing to this pr
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+*This changelog consolidates information from CHANGES_SUMMARY.md, VISUAL_CHANGELOG.md, and PRICING_COMPARISON.md (for version 1.0.0)*

@@ -441,8 +441,9 @@ WHERE userId = (SELECT id FROM users WHERE email = 'admin@example.com');
 ## 📚 Additional Resources
 
 - **Main Documentation**: `/README.md`
-- **Deployment Guide**: `/DEPLOYMENT.md`
-- **API Documentation**: `/docs/API.md`
+- **Deployment Guide**: `/docs/DEPLOYMENT.md`
+- **Features**: `/docs/FEATURES.md`
+- **API Documentation**: `/docs/API_REFERENCE.md`
 - **Security Policy**: `/SECURITY.md`
 
 ---
