@@ -22,6 +22,7 @@ if (!isProduction) {
 // Feature flags (default to false for plug-and-play deployment)
 const enableStripe = process.env.ENABLE_STRIPE === 'true';
 const enableUploads = process.env.ENABLE_UPLOADS === 'true';
+const enableForge = process.env.ENABLE_FORGE === 'true';
 
 // Startup validation helper
 function validateEnvironment() {
@@ -55,18 +56,21 @@ function validateEnvironment() {
     });
   }
   
-  // Conditionally require upload/storage vars if enabled
-  if (enableUploads) {
-    const uploadVars = [
+  // Conditionally require Forge vars if enabled
+  if (enableForge) {
+    const forgeVars = [
       { name: 'BUILT_IN_FORGE_API_URL', description: 'Forge API URL' },
       { name: 'BUILT_IN_FORGE_API_KEY', description: 'Forge API key' },
     ];
-    uploadVars.forEach(v => {
+    forgeVars.forEach(v => {
       if (!process.env[v.name]) {
         missing.push(v);
       }
     });
   }
+  
+  // Note: ENABLE_UPLOADS can work independently (for local file storage)
+  // but if Forge features are needed, enable ENABLE_FORGE
   
   // Report missing variables and exit if any
   if (missing.length > 0) {
@@ -78,6 +82,7 @@ function validateEnvironment() {
     console.error('\nFeature flags:');
     console.error(`  • ENABLE_STRIPE=${enableStripe}`);
     console.error(`  • ENABLE_UPLOADS=${enableUploads}`);
+    console.error(`  • ENABLE_FORGE=${enableForge}`);
     console.error('\nPlease configure all required environment variables in your .env file.');
     console.error('See .env.example for a complete list of available options.\n');
     process.exit(1);
@@ -123,6 +128,7 @@ function validateEnvironment() {
   console.log('ℹ️  Feature flags:');
   console.log(`   • Stripe billing: ${enableStripe ? '✅ enabled' : '❌ disabled'}`);
   console.log(`   • Document uploads: ${enableUploads ? '✅ enabled' : '❌ disabled'}`);
+  console.log(`   • Forge API: ${enableForge ? '✅ enabled' : '❌ disabled'}`);
   
   // Validate JWT secret length in production
   if (isProduction && process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
@@ -139,6 +145,7 @@ export const ENV = {
   // Feature flags
   enableStripe,
   enableUploads,
+  enableForge,
   
   // App config
   appId: process.env.VITE_APP_ID ?? "",

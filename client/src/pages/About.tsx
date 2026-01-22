@@ -44,11 +44,11 @@ export default function About() {
           <section className="relative h-64 md:h-96 mb-12">
             <div className="absolute inset-0">
               <img 
-                src="/images/about-hero.jpg" 
+                src="/images/stable-interior.jpg" 
                 alt="About EquiProfile" 
                 className="w-full h-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-black/20" />
+              <div className="absolute inset-0 bg-black/40" />
             </div>
             <div className="relative z-10 container mx-auto px-4 h-full flex items-center justify-center">
               <h1 className="text-5xl md:text-6xl font-bold font-serif text-white text-center">
@@ -135,7 +135,7 @@ export default function About() {
                     alt="Professional stable and equine care" 
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute inset-0 bg-black/40" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center p-8 text-white">
                       <div className="text-6xl font-bold mb-4">
@@ -186,21 +186,21 @@ export default function About() {
             <ScrollReveal>
               <Card className="p-8 md:p-12 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2">
                 <div className="text-center max-w-2xl mx-auto">
-                  <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">
+                  <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 break-words">
                     Join Our Community
                   </h2>
-                  <p className="text-lg text-muted-foreground mb-8">
+                  <p className="text-lg text-muted-foreground mb-8 break-words">
                     Be part of a growing community of horse enthusiasts who are
                     transforming the way they manage their equine companions.
                   </p>
-                  <div className="flex items-center justify-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href="/register">
-                      <Button size="lg" className="text-lg">
+                      <Button size="lg" className="text-lg w-full sm:w-auto">
                         Get Started Free
                       </Button>
                     </Link>
                     <Link href="/contact">
-                      <Button size="lg" variant="outline" className="text-lg">
+                      <Button size="lg" variant="outline" className="text-lg w-full sm:w-auto">
                         Contact Us
                       </Button>
                     </Link>
