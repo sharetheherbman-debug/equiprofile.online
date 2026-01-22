@@ -1302,6 +1302,63 @@ Tests use Vitest and follow the pattern:
 
 ---
 
+## 🛠️ Operational Scripts
+
+EquiProfile includes several utility scripts for deployment, testing, and user management.
+
+### Health & Smoke Tests
+
+Test that your deployment is working correctly:
+
+```bash
+# Run smoke tests (tests health, ready, and build endpoints)
+bash scripts/smoke-local.sh
+
+# Test specific endpoints
+curl http://localhost:3000/api/health   # Liveness check (always 200)
+curl http://localhost:3000/api/ready    # Readiness check (200 if DB connected)
+curl http://localhost:3000/build        # Build info
+```
+
+### User Management
+
+Create users from the command line (useful for initial setup or scripts):
+
+```bash
+# Create a new user
+node scripts/create-user.mjs \
+  --email admin@equiprofile.online \
+  --password "your-secure-password" \
+  --name "Admin User"
+
+# Output: "created" or "already exists"
+# Exit code: 0 on success, 1 on error
+```
+
+**Notes:**
+- Password is hashed with bcrypt (same as register endpoint)
+- Requires `DATABASE_URL` environment variable
+- Safe to run multiple times (idempotent)
+
+### Production Startup
+
+Start the application with proper environment loading:
+
+```bash
+# PM2 method (recommended)
+pm2 start ecosystem.config.js --env production
+
+# Direct method (uses scripts/start-prod.sh)
+bash scripts/start-prod.sh
+
+# The script automatically:
+# - Loads .env file
+# - Exports all environment variables
+# - Starts node dist/index.js
+```
+
+---
+
 ## 🔧 Troubleshooting
 
 ### Common Deployment Issues
