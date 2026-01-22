@@ -11,8 +11,9 @@ import { Mail, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const WHATSAPP_NUMBER = "+447700900000";
+const WHATSAPP_NUMBER = "+447347258089";
 const SUPPORT_EMAIL = "support@equiprofile.online";
+const WHATSAPP_MESSAGE = "Hello, I'm contacting you from EquiProfile…";
 
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -227,7 +228,7 @@ export default function Contact() {
                         Get instant support via WhatsApp
                       </p>
                       <a
-                        href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
+                        href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-primary hover:underline font-semibold"

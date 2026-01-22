@@ -133,7 +133,7 @@ export default function TermsPage() {
                     If you have questions about these Terms, please contact us at:
                   </p>
                   <p>
-                    Email: <a href="mailto:support@equiprofile.com" className="text-primary hover:underline">support@equiprofile.com</a>
+                    Email: <a href="mailto:support@equiprofile.online" className="text-primary hover:underline">support@equiprofile.online</a>
                   </p>
                 </section>
               </div>

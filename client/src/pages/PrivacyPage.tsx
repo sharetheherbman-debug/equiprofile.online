@@ -126,7 +126,7 @@ export default function PrivacyPage() {
                     <li><strong>Withdraw Consent:</strong> Where processing is based on consent</li>
                   </ul>
                   <p className="mt-3">
-                    To exercise these rights, contact us at: <a href="mailto:support@equiprofile.com" className="text-primary hover:underline">support@equiprofile.com</a>
+                    To exercise these rights, contact us at: <a href="mailto:support@equiprofile.online" className="text-primary hover:underline">support@equiprofile.online</a>
                   </p>
                 </section>
 
@@ -173,7 +173,7 @@ export default function PrivacyPage() {
                     For questions about this Privacy Policy or to exercise your rights, contact us at:
                   </p>
                   <p>
-                    Email: <a href="mailto:support@equiprofile.com" className="text-primary hover:underline">support@equiprofile.com</a>
+                    Email: <a href="mailto:support@equiprofile.online" className="text-primary hover:underline">support@equiprofile.online</a>
                   </p>
                 </section>
 
