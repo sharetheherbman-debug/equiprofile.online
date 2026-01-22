@@ -275,7 +275,7 @@ pnpm build
 pm2 start dist/index.js --name equiprofile
 ```
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for full deployment guide including:
+See [docs/DEPLOYMENT.md](./DEPLOYMENT.md) for full deployment guide including:
 - Nginx configuration
 - SSL setup
 - Database configuration
@@ -309,11 +309,11 @@ pnpm test
 
 ## Getting Help
 
-- 📖 Documentation: See [README.md](./README.md)
+- 📖 Documentation: See [README.md](../README.md)
 - 🔒 Security: See [SECURITY.md](./SECURITY.md)
 - 🤝 Contributing: See [CONTRIBUTING.md](./CONTRIBUTING.md)
 - 🚀 Deployment: See [DEPLOYMENT.md](./DEPLOYMENT.md)
-- 📡 API: See [API.md](./API.md)
+- 📡 API: See [API_REFERENCE.md](./API_REFERENCE.md)
 - 🐛 Issues: [GitHub Issues](https://github.com/amarktainetwork-blip/Equiprofile.online/issues)
 
 ## Key Features
@@ -357,7 +357,7 @@ pnpm test
 ## Next Steps
 
 1. ✅ Complete this quick start
-2. 📖 Read [API.md](./API.md) for API details
+2. 📖 Read [API_REFERENCE.md](./API_REFERENCE.md) for API details
 3. 🔒 Review [SECURITY.md](./SECURITY.md) for security
 4. 🚀 Deploy using [DEPLOYMENT.md](./DEPLOYMENT.md)
 5. 🤝 Contribute via [CONTRIBUTING.md](./CONTRIBUTING.md)

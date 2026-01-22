@@ -148,7 +148,7 @@
 2. Add comment for scaling to 2 if RAM >= 4GB
 3. Add env_production section
 4. Add log paths configuration
-5. Document in DEPLOYMENT.md
+5. Document in docs/DEPLOYMENT.md
 
 ---
 

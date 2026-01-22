@@ -488,5 +488,5 @@ If recovery steps don't work:
 ## Emergency Contacts
 
 - **Repository:** https://github.com/amarktainetwork-blip/Equiprofile.online
-- **Documentation:** See `docs/` directory and `DEPLOYMENT.md`
-- **Deployment Guide:** `DEPLOYMENT.md`
+- **Documentation:** See `docs/` directory
+- **Deployment Guide:** `docs/DEPLOYMENT.md`

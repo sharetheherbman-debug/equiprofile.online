@@ -508,8 +508,10 @@ These enhancements are possible but not required for production:
 
 ### Documentation
 - Main README: `README.md`
-- Deployment Guide: `DEPLOYMENT.md`
-- Quick Deploy: `QUICK_DEPLOY.md`
+- Deployment Guide: `docs/DEPLOYMENT.md`
+- Features: `docs/FEATURES.md`
+- Changelog: `docs/CHANGELOG.md`
+- Recovery Guide: `docs/RECOVERY.md`
 
 ### Support
 - Email: support@equiprofile.online
