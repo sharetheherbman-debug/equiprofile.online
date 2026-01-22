@@ -88,12 +88,12 @@ export default function Home() {
             {/* Full-width hero image with dark overlay and proper positioning */}
             <div className="absolute inset-0">
               <img 
-                src="/images/hero-auth.jpg" 
+                src="/images/hero-horse-riding.jpg" 
                 alt="Professional horse management" 
                 className="w-full h-full object-cover object-center"
                 style={{ objectPosition: "50% 40%" }}
               />
-              <div className="absolute inset-0 bg-black/20" />
+              <div className="absolute inset-0 bg-black/40" />
             </div>
             
             <div className="container relative z-10 py-24">
@@ -225,7 +225,7 @@ export default function Home() {
                       alt="Professional horse care and management" 
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="absolute inset-0 bg-black/40" />
                     <div className="absolute bottom-6 left-6 right-6 text-white">
                       <h3 className="text-2xl font-bold mb-2">Professional Tools</h3>
                       <p className="text-white/90">Built for serious equestrians who demand excellence</p>

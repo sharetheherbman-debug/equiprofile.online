@@ -92,7 +92,7 @@ export function MarketingNav() {
 
           {/* Mobile Menu Button */}
           <button
-            className={`md:hidden p-2 hover:bg-accent rounded-lg transition-colors ${!isScrolled ? "text-white" : ""}`}
+            className={`md:hidden p-2 mr-2 hover:bg-accent rounded-lg transition-colors ${!isScrolled ? "text-white" : ""}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle mobile menu"
           >

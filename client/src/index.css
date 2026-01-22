@@ -198,7 +198,17 @@
   }
   .card-hover:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 40px -15px oklch(0.48 0.08 190 / 0.15);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Modern card with subtle shadow */
+  .card-modern {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .card-modern:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   }
 
   .btn-premium {
