@@ -114,10 +114,14 @@ sudo mysql
 ```sql
 CREATE DATABASE equiprofile CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER 'equiprofile'@'localhost' IDENTIFIED BY 'your_secure_password';
+CREATE USER 'equiprofile'@'127.0.0.1' IDENTIFIED BY 'your_secure_password';
 GRANT ALL PRIVILEGES ON equiprofile.* TO 'equiprofile'@'localhost';
+GRANT ALL PRIVILEGES ON equiprofile.* TO 'equiprofile'@'127.0.0.1';
 FLUSH PRIVILEGES;
 EXIT;
 ```
+
+> **Note for MariaDB/MySQL**: Create users for BOTH `localhost` and `127.0.0.1` to avoid "Access denied" errors. Node.js may connect via TCP (`127.0.0.1`) even when using `localhost` in the connection string.
 
 ### Step 2: Deploy Application
 
@@ -156,6 +160,11 @@ ADMIN_UNLOCK_PASSWORD=<secure-password>
 # Application
 BASE_URL=https://equiprofile.online
 NODE_ENV=production
+
+# Feature Flags (all default to false)
+ENABLE_STRIPE=false
+ENABLE_UPLOADS=false
+ENABLE_FORGE=false  # Required for AI, LLM, image gen, transcription, maps
 
 # PWA (leave OFF for production)
 VITE_PWA_ENABLED=false
@@ -251,6 +260,69 @@ ls -lt /var/equiprofile/_ops/deploy_*.log | head -1 | xargs cat
 tail -f /var/equiprofile/_ops/deploy_*.log
 ```
 
+### PM2 Deployment (Alternative to systemd)
+
+If you prefer using PM2 for process management instead of systemd:
+
+#### Install PM2
+
+```bash
+sudo npm install -g pm2
+```
+
+#### Deploy with PM2
+
+```bash
+cd /var/equiprofile/app
+
+# Install dependencies and build
+npm ci
+npm run build
+
+# Create log directory
+sudo mkdir -p /var/log/equiprofile
+sudo chown -R $USER:$USER /var/log/equiprofile
+
+# Start with PM2 (reads ecosystem.config.js)
+pm2 start ecosystem.config.js --env production
+
+# Save PM2 process list
+pm2 save
+
+# Generate startup script to run PM2 on boot
+pm2 startup
+# Follow the instructions printed by the command above
+
+# Check status
+pm2 status
+pm2 logs equiprofile
+```
+
+#### PM2 Management Commands
+
+```bash
+# View status
+pm2 status
+
+# View logs
+pm2 logs equiprofile
+pm2 logs equiprofile --lines 100
+
+# Restart
+pm2 restart equiprofile
+
+# Stop
+pm2 stop equiprofile
+
+# Delete from PM2
+pm2 delete equiprofile
+
+# Reload (zero-downtime restart)
+pm2 reload equiprofile
+```
+
+> **Note**: The `ecosystem.config.js` uses `scripts/start-prod.sh` which automatically loads environment variables from `.env` file.
+
 ### SSH-Disconnect-Safe Deployment
 
 To run deployment that continues even if SSH disconnects:
@@ -283,9 +355,11 @@ journalctl -u equiprofile -f
 # 3. Check nginx logs
 tail -f /var/log/nginx/equiprofile-error.log
 
-# 4. Test health endpoint
-curl http://127.0.0.1:3000/api/health
+# 4. Test health endpoints
+curl http://127.0.0.1:3000/api/health      # Should return {"status":"ok",...}
+curl http://127.0.0.1:3000/api/ready       # Should return {"status":"ready","database":"connected"}
 curl https://equiprofile.online/api/health
+curl https://equiprofile.online/api/ready
 
 # 5. Check version/build info
 curl http://127.0.0.1:3000/api/version
