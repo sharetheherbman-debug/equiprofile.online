@@ -2,16 +2,16 @@ module.exports = {
   apps: [
     {
       name: 'equiprofile',
-      script: 'dist/index.js',
+      script: './scripts/start-prod.sh',
+      cwd: './',
       // For low-memory VPS (< 4GB RAM): use instances: 1
       // For higher-memory VPS (>= 4GB RAM): use instances: 2
-      instances: 1,  // Changed to 1 for low-memory deployment
       instances: process.env.PM2_INSTANCES || 1,
-      exec_mode: 'cluster',
+      exec_mode: 'fork', // Changed from cluster since start-prod.sh is not a Node.js file
       autorestart: true,
       watch: false,
       // Restart if memory exceeds 500MB (conservative for low-memory VPS)
-      max_memory_restart: '500M',  // Changed from 1G
+      max_memory_restart: '500M',
       min_uptime: '10s',
       max_restarts: 10,
       env: {

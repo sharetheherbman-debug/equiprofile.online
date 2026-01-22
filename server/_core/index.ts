@@ -286,23 +286,46 @@ async function startServer() {
     res.json(cachedBuildInfo);
   });
 
-  // Health check endpoint (detailed)
-  app.get("/api/health", async (req, res) => {
-    const dbConnected = !!(await db.getDb());
-    const stripeConfigured = !!getStripe();
-    const oauthConfigured = !!(ENV.oAuthServerUrl && ENV.appId);
-    const version = process.env.npm_package_version || "1.0.0";
-    
-    res.json({
-      status: "healthy",
-      timestamp: new Date().toISOString(),
-      version,
-      services: {
-        database: dbConnected,
-        stripe: stripeConfigured,
-        oauth: oauthConfigured,
-      },
+  // Health check endpoint (always returns 200, no DB required)
+  // Suitable for liveness probes
+  const startTime = Date.now();
+  app.get("/api/health", healthLimiter, (req, res) => {
+    const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
+    res.status(200).json({
+      status: "ok",
+      uptimeSeconds,
+      time: new Date().toISOString(),
+      version: cachedBuildInfo.version
     });
+  });
+
+  // Readiness check endpoint (checks DB, returns 200 if ready, 503 if not)
+  // Suitable for readiness probes
+  app.get("/api/ready", healthLimiter, async (req, res) => {
+    try {
+      const dbInstance = await db.getDb();
+      if (!dbInstance) {
+        return res.status(503).json({
+          status: "not_ready",
+          database: "disconnected",
+          error: "Database connection not available"
+        });
+      }
+      
+      // Test the connection with a simple query
+      await dbInstance.execute('SELECT 1');
+      
+      res.status(200).json({
+        status: "ready",
+        database: "connected"
+      });
+    } catch (error) {
+      res.status(503).json({
+        status: "not_ready",
+        database: "error",
+        error: error instanceof Error ? error.message : "Unknown database error"
+      });
+    }
   });
 
   // Simple ping endpoint (minimal response for monitoring)
@@ -374,6 +397,39 @@ async function startServer() {
       res.json({ success, message: success ? "Test email sent" : "Failed to send email (check SMTP config)" });
     } catch (error) {
       console.error("[Admin] Test email error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Environment diagnostics endpoint (admin only)
+  app.get("/api/diagnostics/env", async (req, res) => {
+    try {
+      // Get user from session (reuse tRPC context logic)
+      const context = await createContext({ req, res, info: { isBatchCall: false, calls: [] } });
+      
+      if (!context.user || context.user.role !== 'admin') {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      // Check admin session
+      const adminSession = await db.getActiveAdminSession(context.user.id);
+      if (!adminSession) {
+        return res.status(403).json({ error: "Admin session expired. Please unlock admin mode in AI Chat" });
+      }
+
+      res.json({
+        database_url_present: !!process.env.DATABASE_URL,
+        jwt_secret_present: !!process.env.JWT_SECRET,
+        admin_unlock_password_present: !!process.env.ADMIN_UNLOCK_PASSWORD,
+        enable_stripe: ENV.enableStripe,
+        enable_uploads: ENV.enableUploads,
+        enable_forge: ENV.enableForge,
+        forge_vars_present: !!(process.env.BUILT_IN_FORGE_API_URL && process.env.BUILT_IN_FORGE_API_KEY),
+        version: cachedBuildInfo.version,
+        node_env: process.env.NODE_ENV || "development"
+      });
+    } catch (error) {
+      console.error("[Admin] Diagnostics error:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

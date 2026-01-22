@@ -60,7 +60,19 @@ export async function getDb() {
     try {
       _db = drizzle(process.env.DATABASE_URL);
     } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
+      // Check if this is an access denied error (common with MariaDB/MySQL)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('Access denied') || errorMessage.includes('ER_ACCESS_DENIED_ERROR')) {
+        console.error("\n⚠️  Database connection failed with 'Access denied'\n");
+        console.error("For MariaDB/MySQL, you may need BOTH host entries:\n");
+        console.error("  CREATE USER 'equiprofile'@'localhost' IDENTIFIED BY 'your_password';");
+        console.error("  CREATE USER 'equiprofile'@'127.0.0.1' IDENTIFIED BY 'your_password';");
+        console.error("  GRANT ALL PRIVILEGES ON equiprofile.* TO 'equiprofile'@'localhost';");
+        console.error("  GRANT ALL PRIVILEGES ON equiprofile.* TO 'equiprofile'@'127.0.0.1';");
+        console.error("  FLUSH PRIVILEGES;\n");
+      } else {
+        console.warn("[Database] Failed to connect:", error);
+      }
       _db = null;
     }
   }
