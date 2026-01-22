@@ -1,11 +1,8 @@
 /**
  * Admin Toggle System
- * Provides a hidden console-based admin section toggle
+ * Provides a hidden admin section toggle
  * 
- * Usage:
- * - Type "show admin" in browser console to reveal admin section
- * - Type "hide admin" to hide it again
- * - Admin password is required to access
+ * Internal system - no UI hints
  */
 
 // Admin password should be set via environment variable
@@ -23,22 +20,9 @@ class AdminToggleSystem {
   }
 
   private setupConsoleCommands() {
-    // Make commands globally available
+    // Make commands globally available (no console hints)
     (window as any).showAdmin = () => this.showAdmin();
     (window as any).hideAdmin = () => this.hideAdmin();
-    
-    console.log(
-      "%c🐴 EquiProfile Admin Commands",
-      "color: #10b981; font-size: 16px; font-weight: bold;"
-    );
-    console.log(
-      "%cType 'showAdmin()' to reveal admin section",
-      "color: #6b7280; font-size: 12px;"
-    );
-    console.log(
-      "%cType 'hideAdmin()' to hide admin section",
-      "color: #6b7280; font-size: 12px;"
-    );
   }
 
   private loadState() {
@@ -61,12 +45,10 @@ class AdminToggleSystem {
         const password = prompt("Enter admin password:");
         
         if (!password) {
-          console.log("%c❌ Admin access cancelled", "color: #ef4444;");
           return;
         }
 
         if (password !== ADMIN_PASSWORD) {
-          console.log("%c❌ Invalid admin password", "color: #ef4444;");
           alert("Invalid admin password");
           return;
         }
@@ -78,15 +60,6 @@ class AdminToggleSystem {
       // Show admin section
       sessionStorage.setItem(ADMIN_VISIBLE_KEY, "true");
       this.notifyListeners();
-      
-      console.log(
-        "%c✅ Admin section is now visible",
-        "color: #10b981; font-weight: bold;"
-      );
-      console.log(
-        "%cNavigate to /admin to access the admin panel",
-        "color: #6b7280;"
-      );
     } catch (error) {
       console.error("Error showing admin:", error);
     }
@@ -95,11 +68,6 @@ class AdminToggleSystem {
   private hideAdmin() {
     sessionStorage.setItem(ADMIN_VISIBLE_KEY, "false");
     this.notifyListeners();
-    
-    console.log(
-      "%c✅ Admin section is now hidden",
-      "color: #10b981; font-weight: bold;"
-    );
   }
 
   public isAdminVisible(): boolean {
