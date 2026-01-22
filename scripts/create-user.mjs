@@ -3,7 +3,7 @@
  * User creation script for EquiProfile
  * 
  * Usage:
- *   node scripts/create-user.mjs --email test@equiprofile.online --password "ashmor12@" --name "Test User"
+ *   node scripts/create-user.mjs --email user@example.com --password "SecureP@ssw0rd" --name "John Doe"
  * 
  * Features:
  * - Connects using DATABASE_URL from environment
@@ -36,7 +36,7 @@ const name = getArg('name') || 'User';
 // Validate inputs
 if (!email || !password) {
   console.error('Error: --email and --password are required');
-  console.error('Usage: node scripts/create-user.mjs --email test@equiprofile.online --password "ashmor12@" --name "Test User"');
+  console.error('Usage: node scripts/create-user.mjs --email user@example.com --password "SecureP@ssw0rd" --name "John Doe"');
   process.exit(1);
 }
 

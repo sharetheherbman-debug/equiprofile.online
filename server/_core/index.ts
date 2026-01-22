@@ -312,7 +312,7 @@ async function startServer() {
         });
       }
       
-      // Test the connection with a simple query
+      // Test the connection with a simple query (using raw SQL for lightweight check)
       await dbInstance.execute('SELECT 1');
       
       res.status(200).json({

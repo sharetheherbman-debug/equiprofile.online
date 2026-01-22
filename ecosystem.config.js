@@ -7,7 +7,7 @@ module.exports = {
       // For low-memory VPS (< 4GB RAM): use instances: 1
       // For higher-memory VPS (>= 4GB RAM): use instances: 2
       instances: process.env.PM2_INSTANCES || 1,
-      exec_mode: 'fork', // Changed from cluster since start-prod.sh is not a Node.js file
+      exec_mode: 'fork', // Fork mode required for env loading in start-prod.sh
       autorestart: true,
       watch: false,
       // Restart if memory exceeds 500MB (conservative for low-memory VPS)

@@ -10,8 +10,10 @@ cd "$(dirname "$0")/.."
 # Load .env file if it exists
 if [ -f .env ]; then
   echo "Loading environment from .env file..."
-  # Export variables from .env, ignoring comments and empty lines
-  export $(cat .env | grep -v '^#' | grep -v '^$' | xargs)
+  # Safely load environment variables
+  set -o allexport
+  source .env
+  set +o allexport
   echo "✅ Environment variables loaded"
 else
   echo "⚠️  Warning: .env file not found"

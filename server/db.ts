@@ -65,11 +65,12 @@ export async function getDb() {
       if (errorMessage.includes('Access denied') || errorMessage.includes('ER_ACCESS_DENIED_ERROR')) {
         console.error("\n⚠️  Database connection failed with 'Access denied'\n");
         console.error("For MariaDB/MySQL, you may need BOTH host entries:\n");
-        console.error("  CREATE USER 'equiprofile'@'localhost' IDENTIFIED BY 'your_password';");
-        console.error("  CREATE USER 'equiprofile'@'127.0.0.1' IDENTIFIED BY 'your_password';");
-        console.error("  GRANT ALL PRIVILEGES ON equiprofile.* TO 'equiprofile'@'localhost';");
-        console.error("  GRANT ALL PRIVILEGES ON equiprofile.* TO 'equiprofile'@'127.0.0.1';");
+        console.error("  CREATE USER 'your_db_user'@'localhost' IDENTIFIED BY 'your_password';");
+        console.error("  CREATE USER 'your_db_user'@'127.0.0.1' IDENTIFIED BY 'your_password';");
+        console.error("  GRANT ALL PRIVILEGES ON your_database.* TO 'your_db_user'@'localhost';");
+        console.error("  GRANT ALL PRIVILEGES ON your_database.* TO 'your_db_user'@'127.0.0.1';");
         console.error("  FLUSH PRIVILEGES;\n");
+        console.error("Replace 'your_db_user', 'your_password', and 'your_database' with your actual values.\n");
       } else {
         console.warn("[Database] Failed to connect:", error);
       }
