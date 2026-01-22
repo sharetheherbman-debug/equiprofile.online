@@ -12,8 +12,7 @@ import "./index.css";
 import { registerServiceWorker } from "./bootstrap";
 import { initializeAnalytics } from "./analytics";
 
-// Initialize admin toggle system - sets up console commands
-// This must be imported to register showAdmin() and hideAdmin() functions
+// Initialize admin toggle system (internal)
 import "@/lib/adminToggle";
 
 // Initialize service worker and analytics

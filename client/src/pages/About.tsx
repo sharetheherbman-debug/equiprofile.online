@@ -48,7 +48,7 @@ export default function About() {
                 alt="About EquiProfile" 
                 className="w-full h-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-black/50" />
+              <div className="absolute inset-0 bg-black/20" />
             </div>
             <div className="relative z-10 container mx-auto px-4 h-full flex items-center justify-center">
               <h1 className="text-5xl md:text-6xl font-bold font-serif text-white text-center">
@@ -135,7 +135,7 @@ export default function About() {
                     alt="Professional stable and equine care" 
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/50" />
+                  <div className="absolute inset-0 bg-black/20" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center p-8 text-white">
                       <div className="text-6xl font-bold mb-4">

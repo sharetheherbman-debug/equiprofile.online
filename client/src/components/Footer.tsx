@@ -1,8 +1,9 @@
 import { Link } from "wouter";
 import { Mail, MessageSquare } from "lucide-react";
 
-const WHATSAPP_NUMBER = "+447700900000";
+const WHATSAPP_NUMBER = "+447347258089";
 const SUPPORT_EMAIL = "support@equiprofile.online";
+const WHATSAPP_MESSAGE = "Hello, I'm contacting you from EquiProfile…";
 
 export function Footer() {
   return (
@@ -51,7 +52,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
+                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"

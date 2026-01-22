@@ -6,11 +6,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { getLoginUrl, isOAuthAvailable } from "@/const";
 import { Link, useLocation } from "wouter";
 import { useState, FormEvent } from "react";
-import { Loader2, ArrowLeft, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { PageTransition } from "@/components/PageTransition";
-import { MarketingNav } from "@/components/MarketingNav";
-import { Footer } from "@/components/Footer";
+import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 /**
@@ -94,24 +92,8 @@ export default function Register() {
   };
 
   return (
-    <>
-      <MarketingNav />
-      <PageTransition>
-        <div className="min-h-screen flex items-center justify-center px-4 pt-20 pb-8 relative">
-          {/* Background with image and black transparent overlay */}
-          <div className="absolute inset-0 bg-[url('/images/hero-auth.jpg')] bg-cover bg-center" />
-          <div className="absolute inset-0 bg-black/50" />
-          
-          <div className="relative z-10 w-full max-w-md">
-            {/* Back button */}
-            <Link href="/">
-              <a className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
-                <ArrowLeft className="w-4 h-4" />
-                Back to home
-              </a>
-            </Link>
-
-            <Card className="shadow-xl">
+    <AuthSplitLayout>
+      <Card className="shadow-xl">
               <CardHeader className="space-y-1">
                 <CardTitle className="text-2xl font-bold text-center">
                   Create an account
@@ -293,10 +275,6 @@ export default function Register() {
             <p className="text-xs text-center text-muted-foreground mt-2">
               Start your <strong>7-day free trial</strong> - no credit card required
             </p>
-          </div>
-        </div>
-      </PageTransition>
-      <Footer />
-    </>
+          </AuthSplitLayout>
   );
 }
