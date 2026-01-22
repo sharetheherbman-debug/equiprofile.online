@@ -22,6 +22,12 @@ function getMapsConfig(): MapsConfig {
   const baseUrl = ENV.forgeApiUrl;
   const apiKey = ENV.forgeApiKey;
 
+  if (!ENV.enableForge) {
+    throw new Error(
+      "Google Maps proxy is disabled: set ENABLE_FORGE=true to enable"
+    );
+  }
+
   if (!baseUrl || !apiKey) {
     throw new Error(
       "Google Maps proxy credentials missing: set BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY"

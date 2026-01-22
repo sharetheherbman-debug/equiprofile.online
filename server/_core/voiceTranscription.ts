@@ -75,6 +75,13 @@ export async function transcribeAudio(
 ): Promise<TranscriptionResponse | TranscriptionError> {
   try {
     // Step 1: Validate environment configuration
+    if (!ENV.enableForge) {
+      return {
+        error: "Voice transcription service is disabled",
+        code: "SERVICE_ERROR",
+        details: "Set ENABLE_FORGE=true to enable Forge API features"
+      };
+    }
     if (!ENV.forgeApiUrl) {
       return {
         error: "Voice transcription service is not configured",

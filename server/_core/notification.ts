@@ -68,6 +68,13 @@ export async function notifyOwner(
 ): Promise<boolean> {
   const { title, content } = validatePayload(payload);
 
+  if (!ENV.enableForge) {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message: "Notification service is disabled. Set ENABLE_FORGE=true to enable.",
+    });
+  }
+
   if (!ENV.forgeApiUrl) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",

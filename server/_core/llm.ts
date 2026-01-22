@@ -215,8 +215,11 @@ const resolveApiUrl = () =>
     : "https://forge.manus.im/v1/chat/completions";
 
 const assertApiKey = () => {
+  if (!ENV.enableForge) {
+    throw new Error("Forge API is disabled. Set ENABLE_FORGE=true to enable.");
+  }
   if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+    throw new Error("BUILT_IN_FORGE_API_KEY is not configured");
   }
 };
 

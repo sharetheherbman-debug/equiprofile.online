@@ -17,6 +17,9 @@ export async function callDataApi(
   apiId: string,
   options: DataApiCallOptions = {}
 ): Promise<unknown> {
+  if (!ENV.enableForge) {
+    throw new Error("Forge API is disabled. Set ENABLE_FORGE=true to enable.");
+  }
   if (!ENV.forgeApiUrl) {
     throw new Error("BUILT_IN_FORGE_API_URL is not configured");
   }
