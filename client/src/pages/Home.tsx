@@ -88,7 +88,7 @@ export default function Home() {
             {/* Full-width hero image with dark overlay and proper positioning */}
             <div className="absolute inset-0">
               <img 
-                src="/images/hero-horse-riding.jpg" 
+                src="/images/landing-hero.jpg" 
                 alt="Professional horse management" 
                 className="w-full h-full object-cover object-center"
                 style={{ objectPosition: "50% 40%" }}
@@ -167,31 +167,31 @@ export default function Home() {
 
               <Stagger className="grid md:grid-cols-3 gap-8">
                 <StaggerItem>
-                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
-                    <CardContent className="pt-6">
+                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2 h-full">
+                    <CardContent className="pt-6 flex flex-col h-full">
                       <div className="text-5xl mb-4">📱</div>
                       <div className="text-lg font-semibold mb-2">Access Anywhere</div>
-                      <p className="text-muted-foreground">Manage your horses from your phone, tablet, or computer - whether you're at the stable or on the go</p>
+                      <p className="text-muted-foreground flex-grow">Manage your horses from your phone, tablet, or computer - whether you're at the stable or on the go</p>
                     </CardContent>
                   </Card>
                 </StaggerItem>
                 
                 <StaggerItem>
-                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
-                    <CardContent className="pt-6">
+                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2 h-full">
+                    <CardContent className="pt-6 flex flex-col h-full">
                       <div className="text-5xl mb-4">⏰</div>
                       <div className="text-lg font-semibold mb-2">Never Miss a Thing</div>
-                      <p className="text-muted-foreground">Automated reminders ensure you never forget vet appointments, medications, or important care tasks</p>
+                      <p className="text-muted-foreground flex-grow">Automated reminders ensure you never forget vet appointments, medications, or important care tasks</p>
                     </CardContent>
                   </Card>
                 </StaggerItem>
                 
                 <StaggerItem>
-                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2">
-                    <CardContent className="pt-6">
+                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2 h-full">
+                    <CardContent className="pt-6 flex flex-col h-full">
                       <div className="text-5xl mb-4">🎯</div>
                       <div className="text-lg font-semibold mb-2">Stay Organized</div>
-                      <p className="text-muted-foreground">All your horse records, documents, and schedules in one secure place - no more searching through files</p>
+                      <p className="text-muted-foreground flex-grow">All your horse records, documents, and schedules in one secure place - no more searching through files</p>
                     </CardContent>
                   </Card>
                 </StaggerItem>
@@ -221,7 +221,7 @@ export default function Home() {
                 <ScrollReveal direction="left">
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                     <img 
-                      src="/images/stable-management.jpg" 
+                      src="/images/stable-mgmt.jpg" 
                       alt="Professional horse care and management" 
                       className="w-full h-full object-cover"
                     />

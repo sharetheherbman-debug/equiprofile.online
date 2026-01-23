@@ -73,7 +73,7 @@ export default function Login() {
   };
 
   return (
-    <AuthSplitLayout>
+    <AuthSplitLayout imageSrc="/images/login-bg.jpg">
       <Card className="shadow-xl">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">

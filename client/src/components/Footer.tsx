@@ -3,13 +3,13 @@ import { Mail, MessageSquare } from "lucide-react";
 
 const WHATSAPP_NUMBER = "+447347258089";
 const SUPPORT_EMAIL = "support@equiprofile.online";
-const WHATSAPP_MESSAGE = "Hello, I'm contacting you from EquiProfile…";
+const WHATSAPP_MESSAGE = "Welcome to Equiprofile.Online";
 
 export function Footer() {
   return (
     <footer className="py-12 lg:py-16 border-t bg-card">
       <div className="container">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="text-2xl font-bold font-serif mb-4">
               <span className="text-gradient">EquiProfile</span>
