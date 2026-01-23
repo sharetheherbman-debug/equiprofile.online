@@ -581,6 +581,12 @@ async function startServer() {
   // REST API v1 (for third-party integrations)
   app.use("/api/v1", apiRouter);
 
+  // API fallthrough guard - catch all undefined API routes
+  // Must be AFTER all API routes but BEFORE serveStatic/setupVite
+  app.all("/api/*", (req, res) => {
+    res.status(404).json({ error: "Not found" });
+  });
+
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

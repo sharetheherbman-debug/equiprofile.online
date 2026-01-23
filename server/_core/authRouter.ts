@@ -26,8 +26,11 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ error: "Password must be at least 8 characters" });
     }
 
+    // Normalize email to lowercase
+    const normalizedEmail = userEmail.toLowerCase().trim();
+
     // Check if user already exists
-    const existingUser = await db.getUserByEmail(userEmail);
+    const existingUser = await db.getUserByEmail(normalizedEmail);
     
     if (existingUser) {
       return res.status(400).json({ error: "Email already registered" });
@@ -45,7 +48,7 @@ router.post("/signup", async (req, res) => {
 
     await db.upsertUser({
       openId,
-      email: userEmail,
+      email: normalizedEmail,
       passwordHash,
       name: name || null,
       loginMethod: "email",
@@ -82,7 +85,9 @@ router.post("/signup", async (req, res) => {
     );
 
     res.json({
-      success: true,
+      access_token: token,
+      token_type: "bearer",
+      token: token, // Legacy field
       user: {
         id: user.id,
         name: user.name,
@@ -92,6 +97,98 @@ router.post("/signup", async (req, res) => {
     });
   } catch (error) {
     console.error("[Auth] Signup error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/**
+ * POST /api/auth/register
+ * Alias for /signup - Create a new user account with email/password
+ */
+router.post("/register", async (req, res) => {
+  try {
+    const { email: userEmail, password, name } = req.body;
+
+    // Validation
+    if (!userEmail || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ error: "Password must be at least 8 characters" });
+    }
+
+    // Normalize email to lowercase
+    const normalizedEmail = userEmail.toLowerCase().trim();
+
+    // Check if user already exists
+    const existingUser = await db.getUserByEmail(normalizedEmail);
+    
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Generate unique openId for local auth users
+    const openId = `local_${nanoid(16)}`;
+
+    // Create user with trial period
+    const trialEnd = new Date();
+    trialEnd.setDate(trialEnd.getDate() + 7);
+
+    await db.upsertUser({
+      openId,
+      email: normalizedEmail,
+      passwordHash,
+      name: name || null,
+      loginMethod: "email",
+      emailVerified: false,
+      subscriptionStatus: "trial",
+      trialEndsAt: trialEnd,
+      lastSignedIn: new Date(),
+    });
+
+    // Get the created user
+    const user = await db.getUserByOpenId(openId);
+    if (!user) {
+      return res.status(500).json({ error: "Failed to create user" });
+    }
+
+    // Generate JWT token
+    const token = await new SignJWT({ userId: user.id })
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime("30d")
+      .sign(new TextEncoder().encode(ENV.cookieSecret));
+
+    // Set cookie
+    res.cookie(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: ENV.cookieSecure,
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      domain: ENV.cookieDomain,
+    });
+
+    // Send welcome email (async, don't wait)
+    email.sendWelcomeEmail(user).catch(err => 
+      console.error("[Auth] Failed to send welcome email:", err)
+    );
+
+    res.json({
+      access_token: token,
+      token_type: "bearer",
+      token: token, // Legacy field
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("[Auth] Register error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -108,8 +205,11 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
+    // Normalize email to lowercase
+    const normalizedEmail = userEmail.toLowerCase().trim();
+
     // Find user by email
-    const user = await db.getUserByEmail(userEmail);
+    const user = await db.getUserByEmail(normalizedEmail);
 
     if (!user || !user.passwordHash) {
       return res.status(401).json({ error: "Invalid email or password" });
@@ -148,7 +248,9 @@ router.post("/login", async (req, res) => {
     });
 
     res.json({
-      success: true,
+      access_token: token,
+      token_type: "bearer",
+      token: token, // Legacy field
       user: {
         id: user.id,
         name: user.name,
