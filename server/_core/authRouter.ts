@@ -195,12 +195,15 @@ router.post("/request-reset", async (req, res) => {
       return res.status(400).json({ error: "Email is required" });
     }
 
+    // Normalize email to lowercase
+    const normalizedEmail = userEmail.toLowerCase().trim();
+
     // Find user by email
-    const user = await db.getUserByEmail(userEmail);
+    const user = await db.getUserByEmail(normalizedEmail);
 
     // Always return success to prevent email enumeration
     if (!user) {
-      console.log("[Auth] Password reset requested for non-existent email:", userEmail);
+      console.log("[Auth] Password reset requested for non-existent email:", normalizedEmail);
       return res.json({ success: true, message: "If that email exists, a reset link has been sent" });
     }
 
@@ -216,7 +219,7 @@ router.post("/request-reset", async (req, res) => {
     });
 
     // Send reset email
-    await email.sendPasswordResetEmail(userEmail, resetToken, user.name || undefined);
+    await email.sendPasswordResetEmail(normalizedEmail, resetToken, user.name || undefined);
 
     res.json({ 
       success: true, 
