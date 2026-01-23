@@ -10,10 +10,9 @@ import { COOKIE_NAME } from "@shared/const";
 const router: Router = express.Router();
 
 /**
- * POST /api/auth/signup
- * Create a new user account with email/password
+ * Shared registration logic used by both /signup and /register endpoints
  */
-router.post("/signup", async (req, res) => {
+async function handleRegistration(req: express.Request, res: express.Response) {
   try {
     const { email: userEmail, password, name } = req.body;
 
@@ -26,8 +25,11 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ error: "Password must be at least 8 characters" });
     }
 
+    // Normalize email to lowercase
+    const normalizedEmail = userEmail.toLowerCase().trim();
+
     // Check if user already exists
-    const existingUser = await db.getUserByEmail(userEmail);
+    const existingUser = await db.getUserByEmail(normalizedEmail);
     
     if (existingUser) {
       return res.status(400).json({ error: "Email already registered" });
@@ -45,7 +47,7 @@ router.post("/signup", async (req, res) => {
 
     await db.upsertUser({
       openId,
-      email: userEmail,
+      email: normalizedEmail,
       passwordHash,
       name: name || null,
       loginMethod: "email",
@@ -82,7 +84,9 @@ router.post("/signup", async (req, res) => {
     );
 
     res.json({
-      success: true,
+      access_token: token,
+      token_type: "bearer",
+      token: token, // Legacy field - TODO: Remove in v2.0
       user: {
         id: user.id,
         name: user.name,
@@ -91,10 +95,22 @@ router.post("/signup", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("[Auth] Signup error:", error);
+    console.error("[Auth] Registration error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-});
+}
+
+/**
+ * POST /api/auth/signup
+ * Create a new user account with email/password
+ */
+router.post("/signup", handleRegistration);
+
+/**
+ * POST /api/auth/register
+ * Alias for /signup - Create a new user account with email/password
+ */
+router.post("/register", handleRegistration);
 
 /**
  * POST /api/auth/login
@@ -108,8 +124,11 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
+    // Normalize email to lowercase
+    const normalizedEmail = userEmail.toLowerCase().trim();
+
     // Find user by email
-    const user = await db.getUserByEmail(userEmail);
+    const user = await db.getUserByEmail(normalizedEmail);
 
     if (!user || !user.passwordHash) {
       return res.status(401).json({ error: "Invalid email or password" });
@@ -148,7 +167,9 @@ router.post("/login", async (req, res) => {
     });
 
     res.json({
-      success: true,
+      access_token: token,
+      token_type: "bearer",
+      token: token, // Legacy field - TODO: Remove in v2.0
       user: {
         id: user.id,
         name: user.name,
@@ -174,12 +195,15 @@ router.post("/request-reset", async (req, res) => {
       return res.status(400).json({ error: "Email is required" });
     }
 
+    // Normalize email to lowercase
+    const normalizedEmail = userEmail.toLowerCase().trim();
+
     // Find user by email
-    const user = await db.getUserByEmail(userEmail);
+    const user = await db.getUserByEmail(normalizedEmail);
 
     // Always return success to prevent email enumeration
     if (!user) {
-      console.log("[Auth] Password reset requested for non-existent email:", userEmail);
+      console.log("[Auth] Password reset requested for non-existent email:", normalizedEmail);
       return res.json({ success: true, message: "If that email exists, a reset link has been sent" });
     }
 
@@ -195,7 +219,7 @@ router.post("/request-reset", async (req, res) => {
     });
 
     // Send reset email
-    await email.sendPasswordResetEmail(userEmail, resetToken, user.name || undefined);
+    await email.sendPasswordResetEmail(normalizedEmail, resetToken, user.name || undefined);
 
     res.json({ 
       success: true, 

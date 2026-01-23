@@ -164,8 +164,8 @@ export default function Pricing() {
       <MarketingNav />
       <PageTransition>
         <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-24 relative">
-          {/* Background image behind pricing blocks */}
-          <div className="absolute inset-0 bg-[url('/images/stable.jpg')] bg-cover bg-center opacity-5" />
+          {/* Dark overlay for consistency */}
+          <div className="absolute inset-0 bg-black/5" />
           <div className="container mx-auto px-4 relative z-10">
             {/* Header */}
             <div className="text-center mb-12">
@@ -231,8 +231,8 @@ export default function Pricing() {
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* Free Trial */}
-          <Card className={isCurrentPlan('trial') ? 'border-primary' : ''}>
-            <CardHeader>
+          <Card className={`${isCurrentPlan('trial') ? 'border-primary' : ''} flex flex-col h-full`}>
+            <CardHeader className="flex-grow">
               <CardTitle>Free Trial</CardTitle>
               <CardDescription>Perfect for getting started</CardDescription>
               <div className="mt-4">
@@ -240,7 +240,7 @@ export default function Pricing() {
                 <span className="text-muted-foreground">/7 days</span>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-grow">
               <ul className="space-y-3">
                 {features.free.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -262,7 +262,7 @@ export default function Pricing() {
           </Card>
 
           {/* Pro Plan */}
-          <Card className={`${isCurrentPlan('pro') ? 'border-primary' : ''} border-2 border-primary shadow-lg relative`}>
+          <Card className={`${isCurrentPlan('pro') ? 'border-primary' : ''} border-2 border-primary shadow-lg relative flex flex-col h-full`}>
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
               <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
                 Most Popular
@@ -285,7 +285,7 @@ export default function Pricing() {
                 </p>
               )}
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-grow">
               <ul className="space-y-3">
                 {features.pro.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -325,8 +325,8 @@ export default function Pricing() {
           </Card>
 
           {/* Stable Plan */}
-          <Card className={isCurrentPlan('stable') ? 'border-primary' : ''}>
-            <CardHeader>
+          <Card className={`${isCurrentPlan('stable') ? 'border-primary' : ''} flex flex-col h-full`}>
+            <CardHeader className="flex-grow">
               <CardTitle>Stable</CardTitle>
               <CardDescription>For professional operations</CardDescription>
               <div className="mt-4">
@@ -343,7 +343,7 @@ export default function Pricing() {
                 </p>
               )}
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-grow">
               <ul className="space-y-3">
                 {features.stable.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">

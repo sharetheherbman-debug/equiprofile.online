@@ -245,6 +245,225 @@ sudo systemctl daemon-reload && sudo systemctl restart equiprofile
 
 ---
 
+## 🚀 Go Live Checklist
+
+### Production Deployment Checklist
+
+Use this checklist when deploying the application to production:
+
+#### 1. Pre-Deployment Preparation
+
+```bash
+# On your VPS (Ubuntu 24.04), ensure prerequisites are installed
+sudo apt-get update
+sudo apt-get install -y nodejs npm nginx mysql-server git
+
+# Install pnpm
+sudo npm install -g pnpm
+
+# Create application directory
+sudo mkdir -p /var/equiprofile/app
+sudo chown -R $USER:$USER /var/equiprofile
+```
+
+#### 2. Clone and Configure
+
+```bash
+# Clone the repository
+cd /var/equiprofile
+git clone https://github.com/sharetheherbman-debug/equiprofile.online.git app
+cd app
+
+# Create .env file with production settings
+cp .env.production.example .env
+
+# Edit .env with your production values
+nano .env
+```
+
+Required environment variables:
+- `DATABASE_URL` - MySQL connection string
+- `JWT_SECRET` - Generate with `openssl rand -hex 32`
+- `ADMIN_UNLOCK_PASSWORD` - Secure password for admin access
+- `BASE_URL` - Your domain (e.g., https://equiprofile.online)
+- `NODE_ENV=production`
+
+#### 3. Install Dependencies and Build
+
+```bash
+# Install dependencies
+pnpm install --frozen-lockfile
+
+# Build the application
+pnpm run build
+
+# Verify build output
+ls -la dist/
+ls -la dist/public/
+```
+
+Expected output:
+- `dist/index.js` - Server bundle
+- `dist/public/` - Client static files
+- `dist/public/index.html` - SPA entry point
+
+#### 4. Setup Database
+
+```bash
+# Initialize database schema
+pnpm run db:push
+
+# Verify database tables created
+mysql -u root -p equiprofile -e "SHOW TABLES;"
+```
+
+#### 5. Configure Systemd Service
+
+```bash
+# Copy systemd service file
+sudo cp ops/systemd/equiprofile.service /etc/systemd/system/
+
+# Edit service file to match your paths
+sudo nano /etc/systemd/system/equiprofile.service
+
+# Reload systemd and enable service
+sudo systemctl daemon-reload
+sudo systemctl enable equiprofile
+sudo systemctl start equiprofile
+
+# Check service status
+sudo systemctl status equiprofile
+```
+
+#### 6. Configure Nginx
+
+```bash
+# Copy nginx config
+sudo cp ops/nginx/equiprofile.webdock.conf /etc/nginx/sites-available/equiprofile
+
+# Edit config with your domain
+sudo nano /etc/nginx/sites-available/equiprofile
+
+# Enable site
+sudo ln -s /etc/nginx/sites-available/equiprofile /etc/nginx/sites-enabled/
+
+# Test nginx config
+sudo nginx -t
+
+# Reload nginx
+sudo systemctl reload nginx
+```
+
+Key Nginx configuration:
+- Proxy `/api/` to `http://127.0.0.1:3000`
+- Serve static files from root
+- Enable gzip compression
+- Set proper headers
+
+#### 7. Run Smoke Tests
+
+```bash
+# Make smoke test executable
+chmod +x scripts/smoke.sh
+
+# Run smoke tests against local server
+./scripts/smoke.sh
+
+# Or specify custom URL
+BASE_URL=http://127.0.0.1:3000 ./scripts/smoke.sh
+```
+
+Expected results:
+- ✅ Health check returns JSON
+- ✅ Non-existent API routes return JSON 404 (not HTML)
+- ✅ Register endpoint returns JSON
+- ✅ Login endpoint returns JSON
+- ✅ SSE endpoint returns proper response
+- ✅ Email normalization works
+
+#### 8. Verify Production
+
+```bash
+# Check service is running
+sudo systemctl status equiprofile
+
+# View logs
+sudo journalctl -u equiprofile -n 50 --no-pager
+
+# Test endpoints
+curl http://127.0.0.1:3000/api/health
+curl http://127.0.0.1:3000/api/version
+curl http://127.0.0.1:3000/api/this-should-not-exist  # Should return JSON 404
+
+# Test via domain
+curl https://your-domain.com/api/health
+```
+
+#### 9. SSL/TLS Setup (Production)
+
+```bash
+# Install certbot
+sudo apt-get install -y certbot python3-certbot-nginx
+
+# Obtain SSL certificate
+sudo certbot --nginx -d equiprofile.online -d www.equiprofile.online
+
+# Test auto-renewal
+sudo certbot renew --dry-run
+```
+
+#### 10. Final Verification
+
+- [ ] Application accessible via domain
+- [ ] HTTPS working (SSL certificate valid)
+- [ ] All API endpoints return JSON (no HTML from /api/*)
+- [ ] Authentication works (register/login)
+- [ ] Health check endpoint responds
+- [ ] Systemd service restarts on failure
+- [ ] Nginx logs show proper routing
+- [ ] Database connections stable
+- [ ] All smoke tests pass
+
+### Quick Restart Commands
+
+```bash
+# Restart application
+sudo systemctl restart equiprofile
+
+# Reload nginx
+sudo systemctl reload nginx
+
+# View real-time logs
+sudo journalctl -u equiprofile -f
+
+# Run smoke tests
+./scripts/smoke.sh
+```
+
+### Rollback Procedure
+
+If deployment fails:
+
+```bash
+# Stop current service
+sudo systemctl stop equiprofile
+
+# Checkout previous working version
+git checkout <previous-commit-sha>
+
+# Rebuild
+pnpm install --frozen-lockfile
+pnpm run build
+
+# Restart service
+sudo systemctl start equiprofile
+
+# Verify
+./scripts/smoke.sh
+```
+
+---
+
 ## ⚙️ Configuration
 
 ### Prerequisites

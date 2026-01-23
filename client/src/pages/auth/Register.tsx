@@ -68,7 +68,7 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, name }),
@@ -92,7 +92,7 @@ export default function Register() {
   };
 
   return (
-    <AuthSplitLayout>
+    <AuthSplitLayout imageSrc="/images/register-bg.jpg">
       <Card className="shadow-xl">
               <CardHeader className="space-y-1">
                 <CardTitle className="text-2xl font-bold text-center">

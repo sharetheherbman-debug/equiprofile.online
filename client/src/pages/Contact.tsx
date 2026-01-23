@@ -80,23 +80,27 @@ export default function Contact() {
     <>
       <MarketingNav />
       <PageTransition>
-        <div className="min-h-screen pt-24 pb-16">
-          {/* Hero Section */}
-          <section className="container mx-auto px-4 mb-12">
-            <ScrollReveal>
-              <div className="text-center max-w-3xl mx-auto">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-6">
-                  Get in <span className="text-gradient">Touch</span>
-                </h1>
-                <p className="text-lg md:text-xl text-muted-foreground">
-                  Have a question or need help? We're here for you. Send us a
-                  message and we'll respond as soon as possible.
-                </p>
-              </div>
-            </ScrollReveal>
+        <div className="min-h-screen">
+          {/* Hero Section with Dark Overlay */}
+          <section className="relative py-20 lg:py-24 mb-12 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-background" />
+            <div className="absolute inset-0 bg-black/10" />
+            <div className="container mx-auto px-4 relative z-10">
+              <ScrollReveal>
+                <div className="text-center max-w-3xl mx-auto">
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-6">
+                    Get in <span className="text-gradient">Touch</span>
+                  </h1>
+                  <p className="text-lg md:text-xl text-muted-foreground">
+                    Have a question or need help? We're here for you. Send us a
+                    message and we'll respond as soon as possible.
+                  </p>
+                </div>
+              </ScrollReveal>
+            </div>
           </section>
 
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 pb-16">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {/* Contact Form */}
               <ScrollReveal className="lg:col-span-2">
