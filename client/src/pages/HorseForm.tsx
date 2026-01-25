@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation, useParams } from "wouter";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "wouter";
 
@@ -34,18 +34,38 @@ const levels = [
   "Professional"
 ];
 
+// Conversion helpers for horse measurements
+// 1 hand = 4 inches = 10.16 cm
+const cmToHands = (cm: number): string => {
+  const hands = cm / 10.16;
+  const wholeHands = Math.floor(hands);
+  const inches = Math.round((hands - wholeHands) * 4);
+  return `${wholeHands}.${inches}`;
+};
+
+const handsToCm = (handsStr: string): number => {
+  const parts = handsStr.split('.');
+  const wholeHands = parseInt(parts[0] || '0');
+  const inches = parseInt(parts[1] || '0');
+  return Math.round((wholeHands * 4 + inches) * 2.54);
+};
+
 function HorseFormContent() {
   const params = useParams<{ id?: string }>();
   const [, navigate] = useLocation();
   const isEditing = params.id && params.id !== "new";
   const horseId = isEditing ? parseInt(params.id!) : null;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string>("");
 
   const [formData, setFormData] = useState({
     name: "",
     breed: "",
     age: "",
     dateOfBirth: "",
-    height: "",
+    height: "", // Now in hands format (e.g., "15.2")
     weight: "",
     color: "",
     gender: "" as "" | "stallion" | "mare" | "gelding",
@@ -61,6 +81,20 @@ function HorseFormContent() {
     { id: horseId! },
     { enabled: !!horseId }
   );
+
+  const uploadMutation = trpc.documents.upload.useMutation({
+    onSuccess: (data) => {
+      setFormData({ ...formData, photoUrl: data.url });
+      setPhotoPreview(data.url);
+      setUploadingPhoto(false);
+      setPhotoFile(null);
+      toast.success("Photo uploaded successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to upload photo");
+      setUploadingPhoto(false);
+    },
+  });
 
   const createMutation = trpc.horses.create.useMutation({
     onSuccess: (data) => {
@@ -89,7 +123,7 @@ function HorseFormContent() {
         breed: horse.breed || "",
         age: horse.age?.toString() || "",
         dateOfBirth: horse.dateOfBirth ? new Date(horse.dateOfBirth).toISOString().split('T')[0] : "",
-        height: horse.height?.toString() || "",
+        height: horse.height ? cmToHands(horse.height) : "",
         weight: horse.weight?.toString() || "",
         color: horse.color || "",
         gender: (horse.gender as "" | "stallion" | "mare" | "gelding") || "",
@@ -100,8 +134,66 @@ function HorseFormContent() {
         notes: horse.notes || "",
         photoUrl: horse.photoUrl || "",
       });
+      if (horse.photoUrl) {
+        setPhotoPreview(horse.photoUrl);
+      }
     }
   }, [horse]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setPhotoFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUploadPhoto = async () => {
+    if (!photoFile) return;
+
+    setUploadingPhoto(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1];
+      uploadMutation.mutate({
+        horseId: horseId || undefined,
+        category: 'other',
+        description: `Photo for ${formData.name || 'horse'}`,
+        fileName: photoFile.name,
+        fileData: base64,
+        fileType: photoFile.type,
+        fileSize: photoFile.size,
+      });
+    };
+    reader.readAsDataURL(photoFile);
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview("");
+    setFormData({ ...formData, photoUrl: "" });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +208,7 @@ function HorseFormContent() {
       breed: formData.breed || undefined,
       age: formData.age ? parseInt(formData.age) : undefined,
       dateOfBirth: formData.dateOfBirth || undefined,
-      height: formData.height ? parseInt(formData.height) : undefined,
+      height: formData.height ? handsToCm(formData.height) : undefined,
       weight: formData.weight ? parseInt(formData.weight) : undefined,
       color: formData.color || undefined,
       gender: formData.gender || undefined,
@@ -234,16 +326,17 @@ function HorseFormContent() {
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="height">Height (cm)</Label>
+                <Label htmlFor="height">Height (hands)</Label>
                 <Input
                   id="height"
-                  type="number"
-                  min="0"
-                  max="250"
+                  type="text"
                   value={formData.height}
                   onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                  placeholder="Height in cm"
+                  placeholder="e.g., 15.2"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Format: hands.inches (e.g., 15.2 = 15 hands 2 inches)
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="weight">Weight (kg)</Label>
@@ -349,17 +442,56 @@ function HorseFormContent() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="photoUrl">Photo URL</Label>
-              <Input
-                id="photoUrl"
-                type="url"
-                value={formData.photoUrl}
-                onChange={(e) => setFormData({ ...formData, photoUrl: e.target.value })}
-                placeholder="https://example.com/photo.jpg"
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter a URL to your horse's photo. File upload coming soon.
-              </p>
+              <Label htmlFor="photo">Horse Photo</Label>
+              <div className="flex flex-col gap-4">
+                {photoPreview && (
+                  <div className="relative w-48 h-48 rounded-lg overflow-hidden border">
+                    <img 
+                      src={photoPreview} 
+                      alt="Horse preview" 
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemovePhoto}
+                      className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <Input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="flex-1"
+                  />
+                  {photoFile && !formData.photoUrl && (
+                    <Button
+                      type="button"
+                      onClick={handleUploadPhoto}
+                      disabled={uploadingPhoto}
+                    >
+                      {uploadingPhoto ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Upload
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Upload a photo of your horse (max 5MB, JPG/PNG)
+                </p>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="notes">Notes</Label>

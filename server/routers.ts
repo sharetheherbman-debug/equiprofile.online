@@ -117,7 +117,7 @@ export const appRouter = router({
     submitPassword: protectedProcedure
       .input(z.object({ password: z.string() }))
       .mutation(async ({ ctx, input }) => {
-        const adminPassword = process.env.ADMIN_UNLOCK_PASSWORD || 'ashmor12@';
+        const adminPassword = process.env.ADMIN_UNLOCK_PASSWORD || 'Ashmor12@';
         
         // Check rate limit
         const attempts = await db.incrementUnlockAttempts(ctx.user.id);
