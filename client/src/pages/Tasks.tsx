@@ -33,7 +33,7 @@ function TasksContent() {
   const [localTasks, setLocalTasks] = useState(tasks || []);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [formData, setFormData] = useState({
-    horseId: "",
+    horseId: "general",
     title: "",
     description: "",
     taskType: "general_care",
@@ -100,7 +100,7 @@ function TasksContent() {
 
   const resetForm = () => {
     setFormData({
-      horseId: "",
+      horseId: "general",
       title: "",
       description: "",
       taskType: "general_care",
@@ -122,7 +122,7 @@ function TasksContent() {
     }
 
     createMutation.mutate({
-      horseId: formData.horseId ? parseInt(formData.horseId) : undefined,
+      horseId: formData.horseId && formData.horseId !== "general" ? parseInt(formData.horseId) : undefined,
       title: formData.title,
       description: formData.description || undefined,
       taskType: formData.taskType as any,
@@ -220,7 +220,7 @@ function TasksContent() {
                       <SelectValue placeholder="General task" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">General (all horses)</SelectItem>
+                      <SelectItem value="general">General (all horses)</SelectItem>
                       {horses?.map((horse) => (
                         <SelectItem key={horse.id} value={horse.id.toString()}>
                           {horse.name}

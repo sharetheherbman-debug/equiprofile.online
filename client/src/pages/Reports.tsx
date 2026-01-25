@@ -33,8 +33,8 @@ export default function Reports() {
   
   // Generate report state
   const [generateForm, setGenerateForm] = useState({
-    reportType: "",
-    horseId: "",
+    reportType: "all",
+    horseId: "all",
     startDate: "",
     endDate: "",
   });
@@ -99,7 +99,7 @@ export default function Reports() {
 
     generateReport.mutate({
       reportType: generateForm.reportType as any,
-      horseId: generateForm.horseId ? parseInt(generateForm.horseId) : undefined,
+      horseId: generateForm.horseId && generateForm.horseId !== "all" ? parseInt(generateForm.horseId) : undefined,
       startDate: generateForm.startDate || undefined,
       endDate: generateForm.endDate || undefined,
     });
@@ -190,7 +190,7 @@ export default function Reports() {
                       <SelectValue placeholder="All horses" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Horses</SelectItem>
+                      <SelectItem value="all">All Horses</SelectItem>
                       {horses.map((horse) => (
                         <SelectItem key={horse.id} value={horse.id.toString()}>
                           {horse.name}

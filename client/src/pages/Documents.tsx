@@ -102,7 +102,7 @@ function DocumentsContent() {
       reader.onload = async () => {
         const base64 = (reader.result as string).split(',')[1];
         uploadMutation.mutate({
-          horseId: formData.horseId ? parseInt(formData.horseId) : undefined,
+          horseId: formData.horseId && formData.horseId !== "general" ? parseInt(formData.horseId) : undefined,
           category: formData.documentType as 'health' | 'registration' | 'insurance' | 'competition' | 'other',
           description: formData.title,
           fileName: selectedFile.name,
@@ -241,7 +241,7 @@ function DocumentsContent() {
                         <SelectValue placeholder="Select horse" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">General</SelectItem>
+                        <SelectItem value="general">General</SelectItem>
                         {horses?.map((horse) => (
                           <SelectItem key={horse.id} value={horse.id.toString()}>
                             {horse.name}
