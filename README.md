@@ -81,6 +81,59 @@ openssl rand -base64 16
 
 ---
 
+## ⚡ Quick Reference
+
+### Development Commands
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Run tests
+pnpm test
+
+# Build for production
+pnpm build
+
+# Start production server (after build)
+pnpm start
+```
+
+### Production Deployment (Systemd)
+
+```bash
+# Build the application
+pnpm install
+pnpm build
+
+# Restart systemd service
+sudo systemctl restart equiprofile
+
+# Check service status
+sudo systemctl status equiprofile
+
+# View logs
+journalctl -u equiprofile -f
+```
+
+### Health Checks
+
+```bash
+# Run health check script
+bash scripts/health-check.sh http://localhost:3000
+
+# Or manually test endpoints
+curl http://localhost:3000/healthz
+curl http://localhost:3000/api/health
+```
+
+---
+
+---
+
 ## 🚀 Quick Start (Local Development)
 
 Get EquiProfile running locally in 5 minutes:
