@@ -51,16 +51,16 @@ import { ThemeToggle } from "./ThemeToggle";
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: CircleDot, label: "My Horses", path: "/horses" },
-  { icon: Heart, label: "Health Records", path: "/health" },
   { icon: Activity, label: "Training", path: "/training" },
   { icon: ListChecks, label: "Training Templates", path: "/training-templates" },
-  { icon: ListChecks, label: "Tasks", path: "/tasks" },
-  { icon: Users, label: "Contacts", path: "/contacts" },
+  { icon: Heart, label: "Health Records", path: "/health" },
+  { icon: Utensils, label: "Feeding Plans", path: "/feeding" },
   { icon: Baby, label: "Breeding", path: "/breeding" },
   { icon: Calendar, label: "Lessons", path: "/lessons" },
-  { icon: Utensils, label: "Feeding Plans", path: "/feeding" },
-  { icon: Cloud, label: "Weather", path: "/weather" },
+  { icon: ListChecks, label: "Tasks", path: "/tasks" },
+  { icon: Users, label: "Contacts", path: "/contacts" },
   { icon: FileText, label: "Documents", path: "/documents" },
+  { icon: Cloud, label: "Weather", path: "/weather" },
   { icon: MessageSquare, label: "AI Chat", path: "/ai-chat" },
 ];
 

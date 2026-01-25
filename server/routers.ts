@@ -4146,6 +4146,88 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return { success: true };
       }),
   }),
+
+  // ============ STORAGE ROUTER ============
+  storage: router({
+    getUsage: protectedProcedure.query(async ({ ctx }) => {
+      const user = await db.getUserById(ctx.user.id);
+      if (!user) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
+      }
+
+      // Get user's subscription plan to determine quota
+      let quotaBytes = 1 * 1024 ** 3; // Default: 1 GB for trial/free users
+      
+      if (user.plan === 'monthly' || user.plan === 'yearly') {
+        quotaBytes = 10 * 1024 ** 3; // 10 GB for Pro plan
+      } else if (user.plan === 'stable_monthly' || user.plan === 'stable_yearly') {
+        quotaBytes = 100 * 1024 ** 3; // 100 GB for Stable plan
+      }
+
+      // Get user's current storage usage from documents
+      const documents = await db.getDocumentsByUserId(ctx.user.id);
+      const usedBytes = documents.reduce((sum, doc) => sum + (doc.fileSize || 0), 0);
+
+      return {
+        usedBytes,
+        quotaBytes,
+        remainingBytes: quotaBytes - usedBytes,
+        percentUsed: (usedBytes / quotaBytes) * 100,
+        plan: user.plan || 'trial',
+      };
+    }),
+
+    // Admin-only: Get storage stats for all users
+    getAdminStats: adminUnlockedProcedure.query(async () => {
+      const allUsers = await db.getAllUsers();
+      let totalUsed = 0;
+      let totalFiles = 0;
+
+      for (const user of allUsers) {
+        const documents = await db.getDocumentsByUserId(user.id);
+        totalUsed += documents.reduce((sum, doc) => sum + (doc.fileSize || 0), 0);
+        totalFiles += documents.length;
+      }
+
+      return {
+        totalUsed,
+        totalFiles,
+        userCount: allUsers.length,
+      };
+    }),
+
+    // Admin-only: Get per-user storage details
+    getUserStorageDetails: adminUnlockedProcedure.query(async () => {
+      const allUsers = await db.getAllUsers();
+      const userStorageDetails = [];
+
+      for (const user of allUsers) {
+        const documents = await db.getDocumentsByUserId(user.id);
+        const usedBytes = documents.reduce((sum, doc) => sum + (doc.fileSize || 0), 0);
+        
+        // Calculate quota based on plan
+        let quotaBytes = 1 * 1024 ** 3; // Default: 1 GB
+        if (user.plan === 'monthly' || user.plan === 'yearly') {
+          quotaBytes = 10 * 1024 ** 3; // 10 GB for Pro
+        } else if (user.plan === 'stable_monthly' || user.plan === 'stable_yearly') {
+          quotaBytes = 100 * 1024 ** 3; // 100 GB for Stable
+        }
+
+        userStorageDetails.push({
+          userId: user.id,
+          userName: user.name || 'Unknown',
+          userEmail: user.email,
+          usedBytes,
+          quotaBytes,
+          fileCount: documents.length,
+          plan: user.plan || 'trial',
+        });
+      }
+
+      // Sort by usage (highest first)
+      return userStorageDetails.sort((a, b) => b.usedBytes - a.usedBytes);
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
