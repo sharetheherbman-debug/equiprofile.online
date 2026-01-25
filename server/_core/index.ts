@@ -412,7 +412,7 @@ async function startServer() {
       }
 
       // Check admin session
-      const adminSession = await db.getActiveAdminSession(context.user.id);
+      const adminSession = await db.getAdminSession(context.user.id);
       if (!adminSession) {
         return res.status(403).json({ error: "Admin session expired. Please unlock admin mode in AI Chat" });
       }
