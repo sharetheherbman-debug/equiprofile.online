@@ -44,6 +44,18 @@ export const STRIPE_PRICING = {
     currency: "gbp",
     interval: "year",
   },
+  stable_monthly: {
+    priceId: process.env.STRIPE_STABLE_MONTHLY_PRICE_ID || "",
+    amount: 2499, // £24.99 in pence
+    currency: "gbp",
+    interval: "month",
+  },
+  stable_yearly: {
+    priceId: process.env.STRIPE_STABLE_YEARLY_PRICE_ID || "",
+    amount: 24900, // £249 in pence (equivalent to ~£20.75/month)
+    currency: "gbp",
+    interval: "year",
+  },
 };
 
 // Create checkout session

@@ -240,12 +240,22 @@ export const appRouter = router({
           currency: STRIPE_PRICING.yearly.currency,
           interval: STRIPE_PRICING.yearly.interval,
         },
+        stable_monthly: {
+          amount: STRIPE_PRICING.stable_monthly.amount,
+          currency: STRIPE_PRICING.stable_monthly.currency,
+          interval: STRIPE_PRICING.stable_monthly.interval,
+        },
+        stable_yearly: {
+          amount: STRIPE_PRICING.stable_yearly.amount,
+          currency: STRIPE_PRICING.stable_yearly.currency,
+          interval: STRIPE_PRICING.stable_yearly.interval,
+        },
       };
     }),
 
     createCheckout: protectedProcedure
       .input(z.object({
-        plan: z.enum(['monthly', 'yearly']),
+        plan: z.enum(['monthly', 'yearly', 'stable_monthly', 'stable_yearly']),
       }))
       .mutation(async ({ ctx, input }) => {
         // Check if billing is enabled
@@ -261,9 +271,7 @@ export const appRouter = router({
           throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' });
         }
 
-        const priceId = input.plan === 'monthly' 
-          ? STRIPE_PRICING.monthly.priceId 
-          : STRIPE_PRICING.yearly.priceId;
+        const priceId = STRIPE_PRICING[input.plan]?.priceId;
 
         if (!priceId) {
           throw new TRPCError({ 

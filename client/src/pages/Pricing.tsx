@@ -54,7 +54,7 @@ export default function Pricing() {
     }
   }, []);
 
-  const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
+  const handleSubscribe = async (plan: 'monthly' | 'yearly' | 'stable_monthly' | 'stable_yearly') => {
     if (!user) {
       setLocation('/login');
       toast.error("Authentication required", {
@@ -357,8 +357,13 @@ export default function Pricing() {
               {isCurrentPlan('stable') ? (
                 <Button className="w-full" disabled>Current Plan</Button>
               ) : (
-                <Button className="w-full" variant="outline">
-                  Contact Sales
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => handleSubscribe(billingPeriod === "monthly" ? "stable_monthly" : "stable_yearly")}
+                  disabled={backendUnavailable}
+                >
+                  {backendUnavailable ? 'Temporarily Unavailable' : `Subscribe ${billingPeriod === "monthly" ? "Monthly" : "Yearly"}`}
                 </Button>
               )}
             </CardFooter>
