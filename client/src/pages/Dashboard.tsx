@@ -35,7 +35,13 @@ function DashboardContent() {
         const trialDays = subscription.trialEndsAt 
           ? Math.ceil((new Date(subscription.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
           : 0;
-        return <Badge variant="secondary" className="bg-blue-100 text-blue-700">{trialDays} days left in trial</Badge>;
+        return (
+          <Link href="/billing">
+            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer transition-colors">
+              {trialDays} days left · Subscribe now
+            </Badge>
+          </Link>
+        );
       case 'active':
         return <Badge variant="secondary" className="bg-green-100 text-green-700">Active Subscription</Badge>;
       case 'overdue':

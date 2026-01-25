@@ -335,7 +335,6 @@ function DashboardLayoutContent({
           </div>
         )}
         <main className="flex-1 p-4">
-          <TrialBanner />
           {children}
         </main>
       </SidebarInset>
