@@ -37,17 +37,22 @@ const levels = [
 // Conversion helpers for horse measurements
 // 1 hand = 4 inches = 10.16 cm
 const cmToHands = (cm: number): string => {
-  const hands = cm / 10.16;
-  const wholeHands = Math.floor(hands);
-  const inches = Math.round((hands - wholeHands) * 4);
-  return `${wholeHands}.${inches}`;
+  const totalInches = cm / 2.54;
+  const wholeHands = Math.floor(totalInches / 4);
+  const remainingInches = Math.round(totalInches % 4);
+  // Clamp inches to 0-3 range (if 4, roll over to next hand)
+  if (remainingInches >= 4) {
+    return `${wholeHands + 1}.0`;
+  }
+  return `${wholeHands}.${remainingInches}`;
 };
 
 const handsToCm = (handsStr: string): number => {
   const parts = handsStr.split('.');
   const wholeHands = parseInt(parts[0] || '0');
   const inches = parseInt(parts[1] || '0');
-  return Math.round((wholeHands * 4 + inches) * 2.54);
+  // Convert hands to cm, then add inches converted to cm
+  return Math.round((wholeHands * 10.16) + (inches * 2.54));
 };
 
 function HorseFormContent() {

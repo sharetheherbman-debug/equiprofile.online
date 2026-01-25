@@ -9,7 +9,8 @@
 #   bash scripts/health-check.sh http://localhost:3000
 #   bash scripts/health-check.sh https://equiprofile.online
 
-set -e
+# Use better error handling without immediate exit
+set -uo pipefail
 
 URL="${1:-http://localhost:3000}"
 FAILED=0
@@ -45,12 +46,13 @@ test_endpoint "/build" "200" "Build info endpoint"
 test_endpoint "/" "200" "Frontend (index.html)"
 test_endpoint "/api/trpc/health.ping" "200" "tRPC health ping"
 
-# Check Tasks/Contacts/Breeding pages (these require auth, so expect redirects or specific error codes)
+# Check Tasks/Contacts/Breeding pages (these require auth, so may redirect)
 echo ""
-echo "📋 Testing page endpoints (auth required):"
-test_endpoint "/tasks" "200" "Tasks page" || true
-test_endpoint "/contacts" "200" "Contacts page" || true
-test_endpoint "/breeding" "200" "Breeding page" || true
+echo "📋 Testing page endpoints (may require auth):"
+# These endpoints may return 200 or redirect, so we don't fail on them
+test_endpoint "/tasks" "200" "Tasks page" || echo "   (May require authentication)"
+test_endpoint "/contacts" "200" "Contacts page" || echo "   (May require authentication)"
+test_endpoint "/breeding" "200" "Breeding page" || echo "   (May require authentication)"
 
 echo ""
 if [ $FAILED -eq 0 ]; then
