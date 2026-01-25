@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { trpc } from "@/lib/trpc";
 import { 
   CloudSun, 
@@ -20,13 +21,16 @@ import {
   RefreshCw,
   CheckCircle,
   AlertTriangle,
-  XCircle
+  XCircle,
+  Navigation
 } from "lucide-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 
 function WeatherContent() {
   const [location, setLocation] = useState("");
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
   const [weatherData, setWeatherData] = useState({
     temperature: 15,
     humidity: 60,
@@ -48,6 +52,59 @@ function WeatherContent() {
       toast.error(error.message || "Failed to analyze weather");
     },
   });
+
+  // Request geolocation on component mount
+  useEffect(() => {
+    if (navigator.geolocation && navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        setLocationPermission(result.state as 'granted' | 'denied' | 'prompt');
+        
+        if (result.state === 'granted') {
+          // Auto-fetch location if already granted
+          handleGetLocation();
+        }
+      }).catch(() => {
+        // Permissions API not supported, try geolocation anyway
+        setLocationPermission('prompt');
+      });
+    }
+  }, []);
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation not supported", {
+        description: "Please enter your location manually."
+      });
+      return;
+    }
+
+    setIsGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        // Convert coordinates to location name (simplified - in production use reverse geocoding)
+        setLocation(`${latitude.toFixed(2)}, ${longitude.toFixed(2)}`);
+        setLocationPermission('granted');
+        toast.success("Location obtained!", {
+          description: "Using your current location for weather data."
+        });
+        setIsGettingLocation(false);
+      },
+      (error) => {
+        setLocationPermission('denied');
+        console.error("Geolocation error:", error);
+        toast.error("Location access denied", {
+          description: "Please enter a UK postcode or area (e.g., M32, London)."
+        });
+        setIsGettingLocation(false);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 300000 // Cache for 5 minutes
+      }
+    );
+  };
 
   const handleAnalyze = () => {
     if (!location.trim()) {
@@ -98,9 +155,19 @@ function WeatherContent() {
       <div>
         <h1 className="font-serif text-3xl font-bold text-foreground">Weather Analysis</h1>
         <p className="text-muted-foreground mt-1">
-          AI-powered riding condition recommendations based on current weather
+          Check riding conditions and get AI-powered recommendations
         </p>
       </div>
+
+      {/* Location Permission Alert */}
+      {locationPermission === 'denied' && (
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Location access denied. Please enter a UK postcode or area manually (e.g., M32, London, Manchester).
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Weather Input Form */}
@@ -121,10 +188,28 @@ function WeatherContent() {
                     id="location"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Enter your location (e.g., London, UK)"
+                    placeholder="Enter UK postcode or area (e.g., M32, London)"
                     className="pl-10"
                   />
                 </div>
+                <Button
+                  variant="outline"
+                  onClick={handleGetLocation}
+                  disabled={isGettingLocation}
+                  className="shrink-0"
+                >
+                  {isGettingLocation ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Getting...
+                    </>
+                  ) : (
+                    <>
+                      <Navigation className="w-4 h-4 mr-2" />
+                      Use My Location
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
 

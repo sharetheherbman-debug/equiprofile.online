@@ -17,14 +17,14 @@ router.get("/checkout", async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const plan = req.query.plan as "monthly" | "yearly";
-    if (!plan || (plan !== "monthly" && plan !== "yearly")) {
-      return res.status(400).json({ error: "Invalid plan. Must be 'monthly' or 'yearly'" });
+    const plan = req.query.plan as "monthly" | "yearly" | "stable_monthly" | "stable_yearly";
+    const validPlans = ["monthly", "yearly", "stable_monthly", "stable_yearly"];
+    
+    if (!plan || !validPlans.includes(plan)) {
+      return res.status(400).json({ error: "Invalid plan. Must be 'monthly', 'yearly', 'stable_monthly', or 'stable_yearly'" });
     }
 
-    const priceId = plan === "monthly" 
-      ? STRIPE_PRICING.monthly.priceId 
-      : STRIPE_PRICING.yearly.priceId;
+    const priceId = STRIPE_PRICING[plan]?.priceId;
 
     if (!priceId) {
       return res.status(500).json({ error: "Stripe price ID not configured" });

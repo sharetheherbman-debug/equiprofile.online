@@ -17,19 +17,43 @@ import {
   Calendar,
   Syringe,
   Stethoscope,
-  FileHeart
+  FileHeart,
+  Download
 } from "lucide-react";
 import { toast } from "sonner";
 import { MedicalPassport } from "@/components/MedicalPassport";
+import { generatePDFFromHTML } from "@/lib/utils/pdf";
+import { useRef, useState } from "react";
 
 function HorseDetailContent() {
   const params = useParams<{ id: string }>();
   const horseId = parseInt(params.id);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const { data: horse, isLoading } = trpc.horses.get.useQuery({ id: horseId });
   const { data: healthRecords } = trpc.healthRecords.listByHorse.useQuery({ horseId });
   const { data: trainingSessions } = trpc.training.listByHorse.useQuery({ horseId });
   const { data: feedingPlans } = trpc.feeding.listByHorse.useQuery({ horseId });
+
+  const handleExportPDF = async () => {
+    if (!profileRef.current || !horse) return;
+    
+    setIsExporting(true);
+    try {
+      await generatePDFFromHTML(profileRef.current, {
+        filename: `${horse.name.replace(/\s+/g, '_')}_Profile.pdf`,
+        orientation: 'portrait',
+        format: 'a4',
+      });
+      toast.success("PDF exported successfully!");
+    } catch (error) {
+      console.error("PDF export failed:", error);
+      toast.error("Failed to export PDF");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -80,16 +104,28 @@ function HorseDetailContent() {
             {horse.age && ` • ${horse.age} years old`}
           </p>
         </div>
-        <Link href={`/horses/${horse.id}/edit`}>
-          <Button variant="outline">
-            <Edit className="w-4 h-4 mr-2" />
-            Edit
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={handleExportPDF}
+            disabled={isExporting}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {isExporting ? "Exporting..." : "Export PDF"}
           </Button>
-        </Link>
+          <Link href={`/horses/${horse.id}/edit`}>
+            <Button variant="outline">
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      {/* Horse Profile Card */}
-      <Card>
+      {/* Profile content wrapper for PDF export */}
+      <div ref={profileRef}>
+        {/* Horse Profile Card */}
+        <Card>
         <div className="grid md:grid-cols-3 gap-6">
           <div className="aspect-square bg-muted rounded-l-lg overflow-hidden">
             {horse.photoUrl ? (
@@ -352,6 +388,8 @@ function HorseDetailContent() {
           </Card>
         </TabsContent>
       </Tabs>
+      </div>
+      {/* End profile content wrapper */}
     </div>
   );
 }

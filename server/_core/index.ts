@@ -19,6 +19,8 @@ import { getStripe } from "../stripe";
 import * as email from "./email";
 import { ENV } from "./env";
 import { resolve } from "path";
+import fs from "fs";
+import { execSync } from "child_process";
 
 // Port checking functions removed - now using deterministic port binding
 // If port is in use, server will fail with clear error message instead of auto-switching
@@ -244,12 +246,11 @@ async function startServer() {
   let cachedBuildInfo: any = null;
   try {
     const packageJsonPath = resolve(process.cwd(), 'package.json');
-    const packageJson = JSON.parse(require('fs').readFileSync(packageJsonPath, 'utf-8'));
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
     
     // Try to get git commit (only once at startup)
     let commit = 'unknown';
     try {
-      const { execSync } = require('child_process');
       commit = execSync('git rev-parse HEAD', { encoding: 'utf-8', timeout: 1000 }).trim().slice(0, 7);
     } catch {
       // Git not available, that's okay
@@ -335,7 +336,6 @@ async function startServer() {
 
   // Version endpoint with build fingerprint
   app.get("/api/version", (req, res) => {
-    const fs = require('fs');
     const path = require('path');
     
     // Try to read build.txt for build fingerprint
@@ -412,7 +412,7 @@ async function startServer() {
       }
 
       // Check admin session
-      const adminSession = await db.getActiveAdminSession(context.user.id);
+      const adminSession = await db.getAdminSession(context.user.id);
       if (!adminSession) {
         return res.status(403).json({ error: "Admin session expired. Please unlock admin mode in AI Chat" });
       }

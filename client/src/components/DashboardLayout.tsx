@@ -49,19 +49,24 @@ import { trpc } from "@/lib/trpc";
 import { ThemeToggle } from "./ThemeToggle";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: CircleDot, label: "My Horses", path: "/horses" },
-  { icon: Heart, label: "Health Records", path: "/health" },
-  { icon: Activity, label: "Training", path: "/training" },
-  { icon: ListChecks, label: "Training Templates", path: "/training-templates" },
-  { icon: ListChecks, label: "Tasks", path: "/tasks" },
-  { icon: Users, label: "Contacts", path: "/contacts" },
-  { icon: Baby, label: "Breeding", path: "/breeding" },
-  { icon: Calendar, label: "Lessons", path: "/lessons" },
-  { icon: Utensils, label: "Feeding Plans", path: "/feeding" },
-  { icon: Cloud, label: "Weather", path: "/weather" },
-  { icon: FileText, label: "Documents", path: "/documents" },
-  { icon: MessageSquare, label: "AI Chat", path: "/ai-chat" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", requiresStable: false },
+  { icon: CircleDot, label: "My Horses", path: "/horses", requiresStable: false },
+  { icon: Activity, label: "Training", path: "/training", requiresStable: false },
+  { icon: ListChecks, label: "Training Templates", path: "/training-templates", requiresStable: false },
+  { icon: Heart, label: "Health Records", path: "/health", requiresStable: false },
+  { icon: Utensils, label: "Feeding Plans", path: "/feeding", requiresStable: false },
+  { icon: Baby, label: "Breeding", path: "/breeding", requiresStable: false },
+  { icon: Calendar, label: "Lessons", path: "/lessons", requiresStable: false },
+  { icon: ListChecks, label: "Tasks", path: "/tasks", requiresStable: false },
+  { icon: Users, label: "Contacts", path: "/contacts", requiresStable: false },
+  { icon: FileText, label: "Documents", path: "/documents", requiresStable: false },
+  { icon: Cloud, label: "Weather", path: "/weather", requiresStable: false },
+  { icon: MessageSquare, label: "AI Chat", path: "/ai-chat", requiresStable: false },
+];
+
+// Stable-only features
+const stableMenuItems = [
+  { icon: Users, label: "Stable Management", path: "/stable", requiresStable: true },
 ];
 
 const adminMenuItems = [
@@ -152,6 +157,10 @@ function DashboardLayoutContent({
   const isMobile = useIsMobile();
   const { isAdminVisible } = useAdminToggle();
 
+  // Get user subscription to check if they have Stable plan
+  const { data: subscription } = trpc.user.getSubscriptionStatus.useQuery();
+  const hasStablePlan = subscription?.plan === 'stable_monthly' || subscription?.plan === 'stable_yearly';
+
   // Check admin unlock status
   const { data: adminStatus } = trpc.adminUnlock.getStatus.useQuery(
     undefined,
@@ -227,6 +236,7 @@ function DashboardLayoutContent({
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
+              {/* Regular menu items */}
               {menuItems.map(item => {
                 const isActive = location === item.path;
                 return (
@@ -245,6 +255,27 @@ function DashboardLayoutContent({
                   </SidebarMenuItem>
                 );
               })}
+
+              {/* Stable-only menu items - only show if user has stable plan */}
+              {hasStablePlan && stableMenuItems.map(item => {
+                const isActive = location === item.path;
+                return (
+                  <SidebarMenuItem key={item.path}>
+                    <SidebarMenuButton
+                      isActive={isActive}
+                      onClick={() => setLocation(item.path)}
+                      tooltip={item.label}
+                      className="h-10 transition-all font-normal"
+                    >
+                      <item.icon
+                        className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
+                      />
+                      <span>{item.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+
               {/* Admin menu items - shown to admin users who have unlocked admin mode */}
               {user?.role === 'admin' && adminStatus?.isUnlocked && (
                 <>
@@ -335,7 +366,6 @@ function DashboardLayoutContent({
           </div>
         )}
         <main className="flex-1 p-4">
-          <TrialBanner />
           {children}
         </main>
       </SidebarInset>
