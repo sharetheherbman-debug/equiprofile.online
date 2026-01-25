@@ -24,7 +24,7 @@ const categories = [
     id: "stable-management",
     icon: Users,
     title: "Stable Management",
-    image: "/images/stable-management.jpg",
+    image: "/images/horse-stable.jpg",
     description:
       "Comprehensive tools to manage your entire stable operation efficiently. Track multiple horses, coordinate staff, and oversee daily operations from a single dashboard.",
     points: [
@@ -39,7 +39,7 @@ const categories = [
     id: "horse-health",
     icon: Heart,
     title: "Horse Profiles & Health",
-    image: "/images/horse-profiles.jpg",
+    image: "/images/horse-profiles-health.jpg",
     description:
       "Maintain detailed health records for each horse. Track vaccinations, vet visits, medications, and medical history with automated reminders to ensure nothing is missed.",
     points: [
@@ -54,7 +54,7 @@ const categories = [
     id: "training-scheduling",
     icon: Activity,
     title: "Training & Scheduling",
-    image: "/images/training-session.jpg",
+    image: "/images/hero-horse-riding.jpg",
     description:
       "Plan, log, and analyze training sessions with detailed performance tracking. Schedule lessons, track progress, and monitor improvement over time with visual analytics.",
     points: [
@@ -84,7 +84,7 @@ const categories = [
     id: "reporting-analytics",
     icon: BarChart3,
     title: "Reporting & Analytics",
-    image: "/images/riding-lesson.jpg",
+    image: "/images/horse-portrait.jpg",
     description:
       "Generate comprehensive reports and gain insights into health trends, training progress, and expenses. Export data in multiple formats for sharing with vets, trainers, or for your own records.",
     points: [
@@ -99,7 +99,7 @@ const categories = [
     id: "scheduling-reminders",
     icon: Bell,
     title: "Care Scheduling & Reminders",
-    image: "/images/training.jpg",
+    image: "/images/care-scheduling.jpg",
     description:
       "Never miss important care tasks. Set up automated reminders for farrier visits, dental appointments, worming schedules, and daily routines.",
     points: [

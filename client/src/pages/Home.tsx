@@ -83,56 +83,58 @@ export default function Home() {
       <MarketingNav />
       <PageTransition>
         <div className="min-h-screen">
-          {/* Hero Section */}
-          <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-            {/* Full-width hero image with dark overlay and proper positioning */}
+          {/* Hero Section - Mobile Friendly */}
+          <section className="relative min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh] flex items-center overflow-hidden">
+            {/* Full-width hero image with dark overlay and proper mobile positioning */}
             <div className="absolute inset-0">
               <img 
                 src="/images/landing-hero.jpg" 
                 alt="Professional horse management" 
-                className="w-full h-full object-cover object-center"
-                style={{ objectPosition: "50% 40%" }}
+                className="w-full h-full object-cover"
+                style={{ 
+                  objectPosition: "center 30%"
+                }}
               />
-              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
             </div>
             
-            <div className="container relative z-10 py-24">
+            <div className="container relative z-10 px-4 md:px-6 py-16 md:py-24">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="max-w-3xl"
+                className="max-w-4xl mx-auto md:mx-0"
               >
-                <Badge className="mb-6 inline-flex items-center gap-1 bg-primary/90">
+                <Badge className="mb-4 md:mb-6 inline-flex items-center gap-1 bg-primary/90">
                   <Sparkles className="w-3 h-3" />
                   7-Day Free Trial
                 </Badge>
                 
-                <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6 text-white">
+                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-4 md:mb-6 text-white">
                   Professional Horse Management Made{" "}
                   <span className="text-accent-400">Simple</span>
                 </h1>
                 
-                <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed">
+                <p className="text-base md:text-lg lg:text-xl text-white/90 mb-6 md:mb-8 leading-relaxed max-w-2xl">
                   The complete digital platform for horse owners, trainers, and equestrian professionals. 
                   Track health records, manage training, and provide exceptional care—all in one place.
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-6 md:mb-8">
                   <Link href={isAuthenticated ? "/dashboard" : "/register"}>
-                    <Button size="lg" className="text-lg w-full sm:w-auto">
+                    <Button size="lg" className="text-base md:text-lg w-full sm:w-auto shadow-lg">
                       {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
                       <ChevronRight className="w-5 h-5 ml-2" />
                     </Button>
                   </Link>
                   <Link href="/features">
-                    <Button size="lg" variant="outline" className="text-lg w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20">
+                    <Button size="lg" variant="outline" className="text-base md:text-lg w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20">
                       Explore Features
                     </Button>
                   </Link>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-6 text-sm text-white/80">
+                <div className="flex flex-wrap items-center gap-4 md:gap-6 text-xs md:text-sm text-white/80">
                   <div className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-primary" />
                     <span>No credit card required</span>
