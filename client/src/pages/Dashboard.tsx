@@ -33,6 +33,17 @@ function DashboardContent() {
   const upcomingList = Array.isArray(upcomingSessions) ? upcomingSessions : [];
   const remindersList = Array.isArray(reminders) ? reminders : [];
 
+  // Log when fallback values are used to help identify data shape issues
+  if (horses && (!horses.horses || !Array.isArray(horses.horses))) {
+    console.warn('[Dashboard] Unexpected horses data shape:', horses);
+  }
+  if (upcomingSessions && !Array.isArray(upcomingSessions)) {
+    console.warn('[Dashboard] Unexpected upcomingSessions data shape:', upcomingSessions);
+  }
+  if (reminders && !Array.isArray(reminders)) {
+    console.warn('[Dashboard] Unexpected reminders data shape:', reminders);
+  }
+
   const getSubscriptionBadge = () => {
     if (!subscription) return null;
     switch (subscription.status) {
