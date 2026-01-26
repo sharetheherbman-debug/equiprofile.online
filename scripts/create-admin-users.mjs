@@ -11,6 +11,7 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
 import { nanoid } from "nanoid";
+import mysql from "mysql2/promise";
 import { drizzle } from "drizzle-orm/mysql2";
 import { users } from "../drizzle/schema.js";
 import { eq } from "drizzle-orm";
@@ -22,7 +23,9 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-const db = drizzle(DATABASE_URL);
+// Create mysql2 connection
+const connection = await mysql.createConnection(DATABASE_URL);
+const db = drizzle(connection);
 
 async function createAdminUser(email, password, name) {
   if (!email || !password) {
@@ -98,6 +101,7 @@ async function main() {
   await createAdminUser(admin2Email, admin2Password, "Admin 2");
   
   console.log("\n✅ Admin user creation complete!\n");
+  await connection.end();
   process.exit(0);
 }
 

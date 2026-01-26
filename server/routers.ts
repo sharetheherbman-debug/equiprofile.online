@@ -3107,7 +3107,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
   // Lesson bookings management
   lessonBookings: router({
-    create: stableProcedure
+    create: protectedProcedure
       .input(z.object({
         trainerId: z.number(),
         horseId: z.number().optional(),

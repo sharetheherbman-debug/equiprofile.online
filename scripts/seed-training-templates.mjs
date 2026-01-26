@@ -7,6 +7,7 @@
  */
 
 import "dotenv/config";
+import mysql from "mysql2/promise";
 import { drizzle } from "drizzle-orm/mysql2";
 import { trainingProgramTemplates } from "../drizzle/schema.js";
 import { eq } from "drizzle-orm";
@@ -18,7 +19,9 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-const db = drizzle(DATABASE_URL);
+// Create mysql2 connection
+const connection = await mysql.createConnection(DATABASE_URL);
+const db = drizzle(connection);
 
 // Pre-made training templates
 const templates = [
@@ -175,8 +178,10 @@ async function seedTemplates() {
     }
     
     console.log("\n✅ Training template seeding complete!\n");
+    await connection.end();
   } catch (error) {
     console.error("❌ Error seeding templates:", error);
+    await connection.end();
     process.exit(1);
   }
   
