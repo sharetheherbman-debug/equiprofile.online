@@ -4396,8 +4396,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           // Medication compliance (30 points): Check all scheduled meds administered
           const schedules = await db.getMedicationSchedules(input.horseId, ctx.user.id, true);
           if (schedules.length > 0) {
-            const logs = await db.getMedicationLogsByHorse(input.horseId, ctx.user.id, 1);
-            const todayLogs = logs.filter(l => {
+            const medLogs = await db.getMedicationLogsByHorse(input.horseId, ctx.user.id, 1);
+            const todayLogs = medLogs.filter(l => {
               const logDate = new Date(l.administeredAt).toISOString().split('T')[0];
               return logDate === targetDate && !l.wasSkipped;
             });
@@ -4428,7 +4428,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             },
             medicationCompliance: {
               scheduled: schedules.length,
-              administered: logs.filter(l => new Date(l.administeredAt).toISOString().split('T')[0] === targetDate).length,
+              administered: medLogs.filter(l => new Date(l.administeredAt).toISOString().split('T')[0] === targetDate).length,
             },
             healthEvents: {
               activeAlerts: alerts.length,
@@ -4556,7 +4556,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         );
         
         const injuryTypes = recentInjuries.map(r => r.title.toLowerCase());
-        const duplicates = injuryTypes.filter((item, index) => injuryTypes.indexOf(item) !== index);
+        const seen = new Set<string>();
+        const duplicates: string[] = [];
+        for (const type of injuryTypes) {
+          if (seen.has(type)) {
+            if (!duplicates.includes(type)) {
+              duplicates.push(type);
+            }
+          } else {
+            seen.add(type);
+          }
+        }
         
         if (duplicates.length > 0) {
           const alertId = await db.createHealthAlert({
@@ -4571,31 +4581,34 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // Check for weight loss (>5% in 30 days)
         const behaviorLogs = await db.getBehaviorLogs(input.horseId, ctx.user.id, 30);
-        const logsWithWeight = behaviorLogs.filter(l => l.weight);
+        const logsWithWeight = behaviorLogs.filter(l => l.weight != null);
         
         if (logsWithWeight.length >= 2) {
-          const oldestWeight = logsWithWeight[logsWithWeight.length - 1].weight!;
-          const newestWeight = logsWithWeight[0].weight!;
-          const weightLossPercent = ((oldestWeight - newestWeight) / oldestWeight) * 100;
+          const oldestWeight = logsWithWeight[logsWithWeight.length - 1].weight;
+          const newestWeight = logsWithWeight[0].weight;
           
-          if (weightLossPercent > 5) {
-            const alertId = await db.createHealthAlert({
-              horseId: input.horseId,
-              userId: ctx.user.id,
-              alertType: 'weight_loss',
-              severity: 'high',
-              message: `Significant weight loss detected: ${weightLossPercent.toFixed(1)}% loss in the last 30 days`,
-            });
-            newAlerts.push(alertId);
+          if (oldestWeight && newestWeight) {
+            const weightLossPercent = ((oldestWeight - newestWeight) / oldestWeight) * 100;
+            
+            if (weightLossPercent > 5) {
+              const alertId = await db.createHealthAlert({
+                horseId: input.horseId,
+                userId: ctx.user.id,
+                alertType: 'weight_loss',
+                severity: 'high',
+                message: `Significant weight loss detected: ${weightLossPercent.toFixed(1)}% loss in the last 30 days`,
+              });
+              newAlerts.push(alertId);
+            }
           }
         }
 
         // Check for reduced activity (ride quality declining)
         const recentLogs = behaviorLogs.slice(0, 3);
-        const rideQualityMap = { excellent: 4, good: 3, fair: 2, poor: 1, skipped: 0 };
+        const rideQualityMap: Record<string, number> = { excellent: 4, good: 3, fair: 2, poor: 1, skipped: 0 };
         
         if (recentLogs.length === 3 && recentLogs.every(l => l.rideQuality)) {
-          const qualities = recentLogs.map(l => rideQualityMap[l.rideQuality!]);
+          const qualities = recentLogs.map(l => l.rideQuality ? rideQualityMap[l.rideQuality] : 0);
           const declining = qualities[0] < qualities[1] && qualities[1] < qualities[2];
           
           if (declining && qualities[0] <= 2) {
