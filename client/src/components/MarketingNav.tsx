@@ -43,12 +43,12 @@ export function MarketingNav() {
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center justify-between h-12 md:h-16">
           {/* Logo */}
           <Link href="/">
             <a className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <div className="text-2xl font-bold font-serif">
-                <span className="text-gradient">EquiProfile</span>
+                <span className="text-white">EquiProfile</span>
               </div>
             </a>
           </Link>

@@ -8,7 +8,10 @@ export const getLoginUrl = () => {
   
   // Return empty string if OAuth is not configured
   if (!oauthPortalUrl || !appId) {
-    console.warn("OAuth not configured: VITE_OAUTH_PORTAL_URL or VITE_APP_ID missing");
+    // Only warn in development mode
+    if (import.meta.env.DEV) {
+      console.warn("OAuth not configured: VITE_OAUTH_PORTAL_URL or VITE_APP_ID missing");
+    }
     return "";
   }
 
