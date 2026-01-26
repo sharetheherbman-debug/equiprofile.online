@@ -2765,6 +2765,10 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
           endDate: input.endDate ? new Date(input.endDate) : null,
         });
         
+        // Real-time update
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('events', 'created', { id: result[0].insertId, ...input }, ctx.user!.id);
+        
         return { id: result[0].insertId };
       }),
 
@@ -2794,6 +2798,10 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
             eq(events.userId, ctx.user.id)
           ));
         
+        // Real-time update
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('events', 'updated', { id, ...updateData }, ctx.user.id);
+        
         return { success: true };
       }),
 
@@ -2808,6 +2816,10 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
             eq(events.id, input.id),
             eq(events.userId, ctx.user.id)
           ));
+        
+        // Real-time update
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('events', 'deleted', { id: input.id }, ctx.user.id);
         
         return { success: true };
       }),

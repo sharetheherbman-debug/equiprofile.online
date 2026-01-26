@@ -70,21 +70,21 @@ function DashboardContent() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-3xl font-bold text-foreground">
+        <div className="space-y-1">
+          <h1 className="font-serif text-3xl font-bold text-foreground transition-all">
             Welcome back, {user?.name?.split(' ')[0] || 'Rider'}
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground">
             Here's an overview of your horses and activities
           </p>
         </div>
         <div className="flex items-center gap-3">
           {getSubscriptionBadge()}
           <Link href="/horses/new">
-            <Button>
+            <Button className="transition-all hover:scale-105">
               <Plus className="w-4 h-4 mr-2" />
               Add Horse
             </Button>
@@ -109,14 +109,14 @@ function DashboardContent() {
         <ActivityFeed maxHeight="500px" />
         
         {/* Horses List */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 transition-all hover:shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="font-serif">Your Horses</CardTitle>
               <CardDescription>Manage your equine companions</CardDescription>
             </div>
             <Link href="/horses">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="transition-all hover:scale-105">
                 View All
                 <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
@@ -125,10 +125,10 @@ function DashboardContent() {
           <CardContent>
             {horsesList.length === 0 ? (
               <div className="text-center py-8">
-                <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+                <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4 animate-pulse" />
                 <p className="text-muted-foreground mb-4">No horses added yet</p>
                 <Link href="/horses/new">
-                  <Button>
+                  <Button className="transition-all hover:scale-105">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Your First Horse
                   </Button>
@@ -138,8 +138,8 @@ function DashboardContent() {
               <div className="space-y-4">
                 {horsesList.slice(0, 3).map((horse) => (
                   <Link key={horse.id} href={`/horses/${horse.id}`}>
-                    <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-all cursor-pointer hover:scale-[1.02]">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center transition-all">
                         <Heart className="w-6 h-6 text-primary" />
                       </div>
                       <div className="flex-1">
@@ -148,7 +148,7 @@ function DashboardContent() {
                           {horse.breed || 'Unknown breed'} • {horse.age ? `${horse.age} years` : 'Age unknown'}
                         </p>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      <ChevronRight className="w-5 h-5 text-muted-foreground transition-all group-hover:translate-x-1" />
                     </div>
                   </Link>
                 ))}
@@ -160,7 +160,7 @@ function DashboardContent() {
         {/* Sidebar Content */}
         <div className="space-y-6">
           {/* Upcoming Sessions */}
-          <Card>
+          <Card className="transition-all hover:shadow-lg">
             <CardHeader>
               <CardTitle className="font-serif text-lg">Upcoming Sessions</CardTitle>
             </CardHeader>
@@ -173,7 +173,7 @@ function DashboardContent() {
               ) : (
                 <div className="space-y-3">
                   {upcomingList.slice(0, 3).map((session) => (
-                    <div key={session.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30">
+                    <div key={session.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30 transition-all hover:bg-muted/50">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Activity className="w-5 h-5 text-primary" />
                       </div>
@@ -188,7 +188,7 @@ function DashboardContent() {
                 </div>
               )}
               <Link href="/training">
-                <Button variant="outline" className="w-full mt-4" size="sm">
+                <Button variant="outline" className="w-full mt-4 transition-all hover:scale-105" size="sm">
                   View Schedule
                 </Button>
               </Link>
@@ -196,7 +196,7 @@ function DashboardContent() {
           </Card>
 
           {/* Health Reminders */}
-          <Card>
+          <Card className="transition-all hover:shadow-lg">
             <CardHeader>
               <CardTitle className="font-serif text-lg">Health Reminders</CardTitle>
             </CardHeader>
@@ -209,7 +209,7 @@ function DashboardContent() {
               ) : (
                 <div className="space-y-3">
                   {remindersList.slice(0, 3).map((reminder) => (
-                    <div key={reminder.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30">
+                    <div key={reminder.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30 transition-all hover:bg-muted/50">
                       <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
                         <AlertCircle className="w-5 h-5 text-orange-600" />
                       </div>
@@ -227,13 +227,13 @@ function DashboardContent() {
           </Card>
 
           {/* Weather Card */}
-          <Card>
+          <Card className="transition-all hover:shadow-lg">
             <CardHeader>
               <CardTitle className="font-serif text-lg">Riding Conditions</CardTitle>
             </CardHeader>
             <CardContent>
               <Link href="/weather">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full transition-all hover:scale-105">
                   <CloudSun className="w-4 h-4 mr-2" />
                   Check Weather
                 </Button>

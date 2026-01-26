@@ -48,7 +48,7 @@ export function MarketingNav() {
           <Link href="/">
             <a className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <div className="text-2xl font-bold font-serif">
-                <span className="text-white">EquiProfile</span>
+                <span className={isScrolled ? "text-foreground" : "text-white"}>EquiProfile</span>
               </div>
             </a>
           </Link>

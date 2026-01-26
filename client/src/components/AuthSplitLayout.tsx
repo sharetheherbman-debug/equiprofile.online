@@ -29,9 +29,9 @@ export function AuthSplitLayout({
       <MarketingNav />
       <PageTransition>
         {/* Desktop: 50/50 Split | Mobile: Stacked with background */}
-        <div className="min-h-screen flex">
+        <div className="min-h-screen flex overflow-hidden">
           {/* Left Side: Form Content */}
-          <div className="flex-1 flex items-center justify-center px-6 py-20 relative z-10 bg-background">
+          <div className="flex-1 flex items-center justify-center px-6 py-20 relative z-10 bg-background overflow-y-auto">
             <div className="w-full max-w-md">
               {/* Back button */}
               <Link href="/">

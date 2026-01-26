@@ -214,4 +214,35 @@
   .btn-premium {
     @apply bg-gradient-to-r from-accent via-accent to-accent-foreground text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg;
   }
+
+  /* Global page overlay - subtle light black for all pages */
+  .page-overlay {
+    @apply relative;
+  }
+
+  .page-overlay::before {
+    content: '';
+    @apply absolute inset-0 bg-black/5 pointer-events-none z-0;
+  }
+
+  /* Consistent banner gradient overlay for text readability */
+  .banner-overlay {
+    @apply absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70;
+  }
+
+  /* Fade in animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
 }
