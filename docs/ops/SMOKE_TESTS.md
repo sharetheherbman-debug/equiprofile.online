@@ -80,7 +80,10 @@ test_endpoint "Contact Page" "$BASE_URL/contact"
 echo ""
 echo "=== API Endpoints ==="
 test_json "API Health" "$BASE_URL/api/health" "status"
+test_json "API Ready" "$BASE_URL/api/ready" "status"
 test_endpoint "OAuth Status" "$BASE_URL/api/oauth/status"
+test_json "System Status" "$BASE_URL/api/trpc/system.status" "featureFlags"
+test_json "Feature Flags" "$BASE_URL/api/trpc/system.getFeatureFlags" "enableStripe"
 
 echo ""
 echo "=== Asset Loading ==="
@@ -185,10 +188,22 @@ curl -I http://localhost:3000/assets/index-[hash].js
 ### 6. API Responds
 
 ```bash
+# Auth endpoint (standard tRPC path)
 curl http://localhost:3000/api/trpc/auth.me
+
+# System status (new in this release)
+curl http://localhost:3000/api/trpc/system.status
 ```
 
-**Expected**: JSON response (even if unauthenticated)
+**Expected**: JSON response (auth.me returns null if unauthenticated, system.status returns service status)
+
+### 6a. System Status Check
+
+```bash
+curl http://localhost:3000/api/trpc/system.status
+```
+
+**Expected**: Detailed service status JSON (see sample below)
 
 ### 7. No JavaScript Errors
 
@@ -213,13 +228,54 @@ Open browser to `http://localhost:3000/` and check console:
 
 ```json
 {
-  "status": "healthy",
-  "timestamp": "2026-01-09T12:00:00.000Z",
-  "version": "1.0.0",
-  "services": {
-    "database": true,
-    "stripe": false,
-    "oauth": true
+  "status": "ok",
+  "uptimeSeconds": 3600,
+  "time": "2026-01-26T12:00:00.000Z",
+  "version": "1.0.0"
+}
+```
+
+### /api/ready
+
+```json
+{
+  "status": "ready",
+  "database": "connected"
+}
+```
+
+### /api/trpc/system.status (NEW)
+
+```json
+{
+  "featureFlags": {
+    "uploadsEnabled": true,
+    "stripeEnabled": false,
+    "forgeEnabled": true,
+    "pwaEnabled": false
+  },
+  "serviceStatus": {
+    "uploads": {
+      "enabled": true,
+      "ready": true,
+      "backend": "local"
+    },
+    "ai": {
+      "enabled": true,
+      "ready": true
+    },
+    "weather": {
+      "enabled": true,
+      "ready": true
+    },
+    "stripe": {
+      "enabled": false,
+      "ready": false
+    }
+  },
+  "environment": {
+    "nodeEnv": "production",
+    "version": "1.0.0"
   }
 }
 ```

@@ -128,7 +128,22 @@ bash scripts/health-check.sh http://localhost:3000
 # Or manually test endpoints
 curl http://localhost:3000/healthz
 curl http://localhost:3000/api/health
+curl http://localhost:3000/api/trpc/system.status  # Detailed system status
 ```
+
+### Admin Operations
+
+```bash
+# Promote a user to admin role
+tsx scripts/make-admin.ts --email user@example.com
+
+# Then the user can unlock admin mode in AI Chat with:
+# 1. Navigate to AI Chat
+# 2. Type: "show admin"
+# 3. Enter ADMIN_UNLOCK_PASSWORD
+```
+
+For complete admin operations guide, see: [docs/ops/ADMIN_OPERATIONS.md](docs/ops/ADMIN_OPERATIONS.md)
 
 ---
 

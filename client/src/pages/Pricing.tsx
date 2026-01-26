@@ -163,21 +163,37 @@ export default function Pricing() {
     <>
       <MarketingNav />
       <PageTransition>
-        <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-24 relative">
-          {/* Dark overlay for consistency */}
-          <div className="absolute inset-0 bg-black/5" />
-          <div className="container mx-auto px-4 relative z-10">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold tracking-tight mb-4">
-                Choose Your Plan
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-                Professional equine management for every need. Start with a 7-day free trial, upgrade anytime.
-              </p>
+        <div className="min-h-screen">
+          {/* Hero Section with Image */}
+          <section className="relative h-64 md:h-80 lg:h-96 mb-12 overflow-hidden">
+            <div className="absolute inset-0">
+              <img 
+                src="/images/stable-management.jpg" 
+                alt="Pricing" 
+                className="w-full h-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-black/50" />
+            </div>
+            <div className="relative z-10 container mx-auto px-4 h-full flex items-center justify-center">
+              <div className="text-center max-w-3xl mx-auto">
+                <h1 className="text-4xl md:text-5xl font-bold font-serif mb-4 text-white">
+                  Choose Your <span className="text-accent-400">Plan</span>
+                </h1>
+                <p className="text-lg md:text-xl text-white/90">
+                  Professional equine management for every need. Start with a 7-day free trial, upgrade anytime.
+                </p>
+              </div>
+            </div>
+          </section>
+          
+          <div className="bg-gradient-to-b from-background to-muted/20 py-12 relative">
+            {/* Dark overlay for consistency */}
+            <div className="absolute inset-0 bg-black/5" />
+            <div className="container mx-auto px-4 relative z-10">
 
               {/* Billing Period Toggle */}
-              <div className="inline-flex items-center gap-2 p-1 bg-muted rounded-lg">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 p-1 bg-muted rounded-lg">
                 <button
                   onClick={() => setBillingPeriod("monthly")}
                   className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -497,6 +513,7 @@ export default function Pricing() {
           </div>
         </div>
           </div>
+        </div>
         </div>
       </PageTransition>
       <Footer />

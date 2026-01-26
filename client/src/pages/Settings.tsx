@@ -11,8 +11,10 @@ import { PageTransition } from "@/components/PageTransition";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Bell, Lock, User, Moon } from "lucide-react";
+import { Bell, Lock, User, Moon, Server, CheckCircle2, XCircle, Upload, CreditCard, Cloud, Sparkles } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { trpc } from "@/lib/trpc";
+import { Badge } from "@/components/ui/badge";
 
 export default function Settings() {
   const { user } = useAuth();
@@ -99,7 +101,7 @@ export default function Settings() {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+            <TabsList className="grid grid-cols-5 w-full max-w-2xl">
               <TabsTrigger value="profile">
                 <User className="w-4 h-4 mr-2" />
                 Profile
@@ -115,6 +117,10 @@ export default function Settings() {
               <TabsTrigger value="appearance">
                 <Moon className="w-4 h-4 mr-2" />
                 Appearance
+              </TabsTrigger>
+              <TabsTrigger value="system">
+                <Server className="w-4 h-4 mr-2" />
+                System
               </TabsTrigger>
             </TabsList>
 
@@ -362,9 +368,194 @@ export default function Settings() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* System Tab */}
+            <TabsContent value="system">
+              <SystemStatus />
+            </TabsContent>
           </Tabs>
         </div>
       </PageTransition>
     </DashboardLayout>
+  );
+}
+
+function SystemStatus() {
+  const { data: systemStatus, isLoading } = trpc.system.status.useQuery();
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>System Status</CardTitle>
+          <CardDescription>Loading system information...</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  if (!systemStatus) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>System Status</CardTitle>
+          <CardDescription>Unable to load system information</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Environment */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Environment</CardTitle>
+          <CardDescription>System environment information</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">Node Environment</span>
+            <Badge variant="outline">{systemStatus.environment.nodeEnv}</Badge>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">Version</span>
+            <Badge variant="outline">{systemStatus.environment.version}</Badge>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Feature Flags */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Feature Flags</CardTitle>
+          <CardDescription>Enabled and disabled features</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">Uploads</span>
+            <Badge variant={systemStatus.featureFlags.uploadsEnabled ? "default" : "outline"}>
+              {systemStatus.featureFlags.uploadsEnabled ? "Enabled" : "Disabled"}
+            </Badge>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">Stripe</span>
+            <Badge variant={systemStatus.featureFlags.stripeEnabled ? "default" : "outline"}>
+              {systemStatus.featureFlags.stripeEnabled ? "Enabled" : "Disabled"}
+            </Badge>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">Forge</span>
+            <Badge variant={systemStatus.featureFlags.forgeEnabled ? "default" : "outline"}>
+              {systemStatus.featureFlags.forgeEnabled ? "Enabled" : "Disabled"}
+            </Badge>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">PWA</span>
+            <Badge variant={systemStatus.featureFlags.pwaEnabled ? "default" : "outline"}>
+              {systemStatus.featureFlags.pwaEnabled ? "Enabled" : "Disabled"}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Service Status */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Service Status</CardTitle>
+          <CardDescription>Status of integrated services</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Uploads Service */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Upload className="w-5 h-5 text-muted-foreground" />
+              <div>
+                <div className="text-sm font-medium">Uploads</div>
+                <div className="text-xs text-muted-foreground">
+                  Backend: {systemStatus.serviceStatus.uploads.backend}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {systemStatus.serviceStatus.uploads.ready ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <Badge variant="default">Ready</Badge>
+                </>
+              ) : (
+                <>
+                  <XCircle className="w-5 h-5 text-red-500" />
+                  <Badge variant="outline">Not Ready</Badge>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* AI & LLM Services */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-5 h-5 text-muted-foreground" />
+              <div className="text-sm font-medium">AI & LLM Services</div>
+            </div>
+            <div className="flex items-center gap-2">
+              {systemStatus.serviceStatus.ai.ready ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <Badge variant="default">Ready</Badge>
+                </>
+              ) : (
+                <>
+                  <XCircle className="w-5 h-5 text-red-500" />
+                  <Badge variant="outline">Not Ready</Badge>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Weather Integration */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Cloud className="w-5 h-5 text-muted-foreground" />
+              <div className="text-sm font-medium">Weather Integration</div>
+            </div>
+            <div className="flex items-center gap-2">
+              {systemStatus.serviceStatus.weather.ready ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <Badge variant="default">Ready</Badge>
+                </>
+              ) : (
+                <>
+                  <XCircle className="w-5 h-5 text-red-500" />
+                  <Badge variant="outline">Not Ready</Badge>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Stripe Payments */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CreditCard className="w-5 h-5 text-muted-foreground" />
+              <div className="text-sm font-medium">Stripe Payments</div>
+            </div>
+            <div className="flex items-center gap-2">
+              {systemStatus.serviceStatus.stripe.ready ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <Badge variant="default">Ready</Badge>
+                </>
+              ) : (
+                <>
+                  <XCircle className="w-5 h-5 text-red-500" />
+                  <Badge variant="outline">Not Ready</Badge>
+                </>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

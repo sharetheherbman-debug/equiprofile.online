@@ -81,17 +81,23 @@ export default function Contact() {
       <MarketingNav />
       <PageTransition>
         <div className="min-h-screen">
-          {/* Hero Section with Dark Overlay */}
-          <section className="relative py-20 lg:py-24 mb-12 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-background" />
-            <div className="absolute inset-0 bg-black/10" />
-            <div className="container mx-auto px-4 relative z-10">
+          {/* Hero Section with Image */}
+          <section className="relative h-64 md:h-80 lg:h-96 mb-12 overflow-hidden">
+            <div className="absolute inset-0">
+              <img 
+                src="/images/horse-portrait.jpg" 
+                alt="Contact Us" 
+                className="w-full h-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-black/50" />
+            </div>
+            <div className="relative z-10 container mx-auto px-4 h-full flex items-center justify-center">
               <ScrollReveal>
                 <div className="text-center max-w-3xl mx-auto">
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-6">
-                    Get in <span className="text-gradient">Touch</span>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-6 text-white">
+                    Get in <span className="text-accent-400">Touch</span>
                   </h1>
-                  <p className="text-lg md:text-xl text-muted-foreground">
+                  <p className="text-lg md:text-xl text-white/90">
                     Have a question or need help? We're here for you. Send us a
                     message and we'll respond as soon as possible.
                   </p>

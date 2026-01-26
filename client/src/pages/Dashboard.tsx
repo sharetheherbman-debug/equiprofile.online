@@ -123,12 +123,8 @@ function DashboardContent() {
                 {horses.slice(0, 3).map((horse) => (
                   <Link key={horse.id} href={`/horses/${horse.id}`}>
                     <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                        {horse.photoUrl ? (
-                          <img src={horse.photoUrl} alt={horse.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Heart className="w-6 h-6 text-primary" />
-                        )}
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Heart className="w-6 h-6 text-primary" />
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground">{horse.name}</h3>

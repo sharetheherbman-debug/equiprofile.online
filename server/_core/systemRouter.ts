@@ -19,6 +19,60 @@ export const systemRouter = router({
     enableUploads: ENV.enableUploads,
   })),
 
+  // System status endpoint for ops visibility
+  status: publicProcedure.query(() => {
+    // Check environment readiness
+    const forgeConfigured = !!(ENV.builtInForgeApiUrl && ENV.builtInForgeApiKey);
+    
+    const uploadsReady = ENV.enableUploads && (
+      forgeConfigured || // Forge storage
+      !!process.env.LOCAL_UPLOADS_PATH || // Local fallback
+      (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) // AWS S3
+    );
+
+    const aiReady = ENV.enableForge && forgeConfigured;
+    
+    const weatherReady = ENV.enableForge && forgeConfigured;
+    
+    const stripeReady = ENV.enableStripe && 
+      !!process.env.STRIPE_SECRET_KEY && 
+      !!process.env.STRIPE_PUBLISHABLE_KEY;
+
+    return {
+      featureFlags: {
+        uploadsEnabled: ENV.enableUploads,
+        stripeEnabled: ENV.enableStripe,
+        forgeEnabled: ENV.enableForge,
+        pwaEnabled: !!process.env.ENABLE_PWA,
+      },
+      serviceStatus: {
+        uploads: {
+          enabled: ENV.enableUploads,
+          ready: uploadsReady,
+          backend: uploadsReady 
+            ? (ENV.builtInForgeApiUrl ? 'forge' : process.env.AWS_ACCESS_KEY_ID ? 's3' : 'local')
+            : 'none',
+        },
+        ai: {
+          enabled: ENV.enableForge,
+          ready: aiReady,
+        },
+        weather: {
+          enabled: ENV.enableForge,
+          ready: weatherReady,
+        },
+        stripe: {
+          enabled: ENV.enableStripe,
+          ready: stripeReady,
+        },
+      },
+      environment: {
+        nodeEnv: process.env.NODE_ENV || 'development',
+        version: process.env.BUILD_ID || 'dev',
+      },
+    };
+  }),
+
   notifyOwner: adminUnlockedProcedure
     .input(
       z.object({

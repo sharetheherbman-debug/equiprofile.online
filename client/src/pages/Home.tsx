@@ -85,15 +85,27 @@ export default function Home() {
         <div className="min-h-screen">
           {/* Hero Section - Mobile Friendly */}
           <section className="relative min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh] flex items-center overflow-hidden">
-            {/* Full-width hero image with dark overlay and proper mobile positioning */}
+            {/* Full-width hero video with dark overlay and proper mobile positioning */}
             <div className="absolute inset-0">
+              <video 
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster="/images/landing-hero.jpg"
+                className="w-full h-full object-cover motion-reduce:hidden"
+                style={{ 
+                  objectFit: "cover",
+                  objectPosition: "center"
+                }}
+              >
+                <source src="/Equiprofile-hero.mp4" type="video/mp4" />
+              </video>
+              {/* Fallback image for users who prefer reduced motion */}
               <img 
                 src="/images/landing-hero.jpg" 
                 alt="Professional horse management" 
-                className="w-full h-full object-cover"
-                style={{ 
-                  objectPosition: "center 30%"
-                }}
+                className="w-full h-full object-cover hidden motion-reduce:block"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
             </div>
@@ -153,7 +165,7 @@ export default function Home() {
           </section>
 
           {/* Benefits Section - How EquiProfile Makes Life Easier */}
-          <section className="py-20 bg-gradient-to-b from-primary/5 to-white">
+          <section className="py-20 bg-gradient-to-b from-primary/5 to-muted/30">
             <div className="container">
               <ScrollReveal>
                 <div className="text-center max-w-3xl mx-auto mb-16">
@@ -169,7 +181,7 @@ export default function Home() {
 
               <Stagger className="grid md:grid-cols-3 gap-8">
                 <StaggerItem>
-                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2 h-full">
+                  <Card className="text-center p-6 rounded-xl shadow-md card-hover border-2 h-full">
                     <CardContent className="pt-6 flex flex-col h-full">
                       <div className="text-5xl mb-4">📱</div>
                       <div className="text-lg font-semibold mb-2">Access Anywhere</div>
@@ -179,7 +191,7 @@ export default function Home() {
                 </StaggerItem>
                 
                 <StaggerItem>
-                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2 h-full">
+                  <Card className="text-center p-6 rounded-xl shadow-md card-hover border-2 h-full">
                     <CardContent className="pt-6 flex flex-col h-full">
                       <div className="text-5xl mb-4">⏰</div>
                       <div className="text-lg font-semibold mb-2">Never Miss a Thing</div>
@@ -189,7 +201,7 @@ export default function Home() {
                 </StaggerItem>
                 
                 <StaggerItem>
-                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2 h-full">
+                  <Card className="text-center p-6 rounded-xl shadow-md card-hover border-2 h-full">
                     <CardContent className="pt-6 flex flex-col h-full">
                       <div className="text-5xl mb-4">🎯</div>
                       <div className="text-lg font-semibold mb-2">Stay Organized</div>

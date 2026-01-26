@@ -569,6 +569,56 @@ async function startServer() {
     }
   });
 
+  // Local storage file serving route (requires authentication)
+  app.get("/api/storage/*", async (req, res) => {
+    try {
+      // Get user from session
+      const context = await createContext({ req, res, info: { isBatchCall: false, calls: [] } });
+      
+      if (!context.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Get file path from URL
+      const filePath = req.path.replace('/api/storage/', '');
+      const localPath = process.env.LOCAL_UPLOADS_PATH || '/var/equiprofile/uploads';
+      const fullPath = resolve(localPath, filePath);
+
+      // Security: ensure path is within uploads directory (prevent directory traversal)
+      if (!fullPath.startsWith(resolve(localPath))) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      // Check if file exists
+      if (!fs.existsSync(fullPath)) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      // Serve file with appropriate content type
+      const ext = filePath.split('.').pop()?.toLowerCase();
+      const contentTypes: Record<string, string> = {
+        'pdf': 'application/pdf',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'txt': 'text/plain',
+      };
+
+      const contentType = contentTypes[ext || ''] || 'application/octet-stream';
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Cache-Control', 'private, max-age=3600');
+      
+      const fileStream = fs.createReadStream(fullPath);
+      fileStream.pipe(res);
+    } catch (error) {
+      console.error("[Storage] Error serving file:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

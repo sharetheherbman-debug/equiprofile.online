@@ -23,7 +23,7 @@ export default function BillingPage() {
   const isSubscriptionActive = user?.subscriptionStatus === "active";
   const isTrialExpired = user?.subscriptionStatus === "trial" && trialDaysLeft <= 0;
 
-  const handleSubscribe = async (plan: "monthly" | "yearly") => {
+  const handleSubscribe = async (plan: "monthly" | "yearly" | "stable_monthly" | "stable_yearly") => {
     setIsLoading(true);
     setError("");
 
@@ -158,11 +158,11 @@ export default function BillingPage() {
             <>
               <h2 className="text-2xl font-bold mb-6">Choose Your Plan</h2>
               
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
                 {/* Monthly Plan */}
                 <Card className="border-2">
                   <CardHeader>
-                    <CardTitle>Monthly</CardTitle>
+                    <CardTitle>Pro Monthly</CardTitle>
                     <CardDescription>Billed monthly, cancel anytime</CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -210,7 +210,7 @@ export default function BillingPage() {
                           Processing...
                         </>
                       ) : (
-                        "Choose Monthly"
+                        "Choose Pro Monthly"
                       )}
                     </Button>
                   </CardContent>
@@ -224,7 +224,7 @@ export default function BillingPage() {
                     </Badge>
                   </div>
                   <CardHeader>
-                    <CardTitle>Yearly</CardTitle>
+                    <CardTitle>Pro Yearly</CardTitle>
                     <CardDescription>Best value - save £16 per year</CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -275,7 +275,68 @@ export default function BillingPage() {
                           Processing...
                         </>
                       ) : (
-                        "Choose Yearly"
+                        "Choose Pro Yearly"
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Stable Plan */}
+                <Card className="border-2">
+                  <CardHeader>
+                    <CardTitle>Stable</CardTitle>
+                    <CardDescription>For professional operations</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="mb-6">
+                      <div className="text-4xl font-bold">£24.99</div>
+                      <div className="text-muted-foreground">per month</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        or £249/year (save 17%)
+                      </div>
+                    </div>
+
+                    <ul className="space-y-3 mb-6">
+                      <li className="flex items-start gap-2">
+                        <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm font-medium">Everything in Pro, plus:</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Unlimited horse profiles</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Unlimited team members</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Role-based permissions</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Stable management</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Priority support</span>
+                      </li>
+                    </ul>
+
+                    <Button
+                      onClick={() => handleSubscribe("stable_monthly")}
+                      className="w-full"
+                      size="lg"
+                      variant="outline"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        "Choose Stable"
                       )}
                     </Button>
                   </CardContent>
