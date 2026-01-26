@@ -93,7 +93,7 @@ export default function Home() {
                 loop
                 playsInline
                 poster="/images/landing-hero.jpg"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover motion-reduce:hidden"
                 style={{ 
                   objectFit: "cover",
                   objectPosition: "center"
@@ -101,6 +101,12 @@ export default function Home() {
               >
                 <source src="/Equiprofile-hero.mp4" type="video/mp4" />
               </video>
+              {/* Fallback image for users who prefer reduced motion */}
+              <img 
+                src="/images/landing-hero.jpg" 
+                alt="Professional horse management" 
+                className="w-full h-full object-cover hidden motion-reduce:block"
+              />
               <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
             </div>
             
