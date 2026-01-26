@@ -1,27 +1,60 @@
 // Preconfigured storage helpers for Manus WebDev templates
 // Uses the Biz-provided storage proxy (Authorization: Bearer <token>)
+// With local filesystem fallback when Forge is unavailable
 
 import { ENV } from './_core/env';
 import { TRPCError } from '@trpc/server';
+import fs from 'fs';
+import path from 'path';
+import { nanoid } from 'nanoid';
 
-type StorageConfig = { baseUrl: string; apiKey: string };
+type StorageConfig = { 
+  baseUrl: string; 
+  apiKey: string;
+  mode: 'forge' | 'local';
+};
 
 function getStorageConfig(): StorageConfig {
   // Check if uploads are enabled
   if (!ENV.enableUploads) {
-    throw new Error("Uploads are disabled. Set ENABLE_UPLOADS=true to enable storage features.");
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: "Uploads are disabled. Contact your administrator to enable upload features."
+    });
   }
   
   const baseUrl = ENV.forgeApiUrl;
   const apiKey = ENV.forgeApiKey;
 
-  if (!baseUrl || !apiKey) {
-    throw new Error(
-      "Storage proxy credentials missing: set BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY"
-    );
+  // Try Forge first
+  if (baseUrl && apiKey) {
+    return { 
+      baseUrl: baseUrl.replace(/\/+$/, ""), 
+      apiKey,
+      mode: 'forge'
+    };
   }
 
-  return { baseUrl: baseUrl.replace(/\/+$/, ""), apiKey };
+  // Fallback to local storage
+  const localPath = process.env.LOCAL_UPLOADS_PATH || '/var/equiprofile/uploads';
+  
+  // Ensure local directory exists
+  try {
+    if (!fs.existsSync(localPath)) {
+      fs.mkdirSync(localPath, { recursive: true });
+    }
+  } catch (error) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: "Upload storage is not properly configured. Please contact your administrator."
+    });
+  }
+
+  return {
+    baseUrl: localPath,
+    apiKey: '',
+    mode: 'local'
+  };
 }
 
 function buildUploadUrl(baseUrl: string, relKey: string): URL {
@@ -73,12 +106,66 @@ function buildAuthHeaders(apiKey: string): HeadersInit {
   return { Authorization: `Bearer ${apiKey}` };
 }
 
+// Local storage helpers
+async function localStoragePut(
+  basePath: string,
+  relKey: string,
+  data: Buffer | Uint8Array | string,
+  contentType: string
+): Promise<{ key: string; url: string }> {
+  const key = normalizeKey(relKey);
+  const filePath = path.join(basePath, key);
+  
+  // Ensure directory exists
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  // Write file
+  const buffer = typeof data === 'string' ? Buffer.from(data) : Buffer.from(data);
+  fs.writeFileSync(filePath, buffer);
+
+  // Return local URL (will be served via backend route)
+  const url = `/api/storage/${key}`;
+  
+  return { key, url };
+}
+
+async function localStorageGet(
+  basePath: string,
+  relKey: string
+): Promise<{ key: string; url: string }> {
+  const key = normalizeKey(relKey);
+  const filePath = path.join(basePath, key);
+  
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'File not found'
+    });
+  }
+
+  // Return local URL
+  const url = `/api/storage/${key}`;
+  
+  return { key, url };
+}
+
 export async function storagePut(
   relKey: string,
   data: Buffer | Uint8Array | string,
   contentType = "application/octet-stream"
 ): Promise<{ key: string; url: string }> {
-  const { baseUrl, apiKey } = getStorageConfig();
+  const config = getStorageConfig();
+  
+  if (config.mode === 'local') {
+    return localStoragePut(config.baseUrl, relKey, data, contentType);
+  }
+  
+  // Forge mode
+  const { baseUrl, apiKey } = config;
   const key = normalizeKey(relKey);
   const uploadUrl = buildUploadUrl(baseUrl, key);
   const formData = toFormData(data, contentType, key.split("/").pop() ?? key);
@@ -90,19 +177,37 @@ export async function storagePut(
 
   if (!response.ok) {
     const message = await response.text().catch(() => response.statusText);
-    throw new Error(
-      `Storage upload failed (${response.status} ${response.statusText}): ${message}`
-    );
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: `Storage upload failed: ${message}`
+    });
   }
   const url = (await response.json()).url;
   return { key, url };
 }
 
 export async function storageGet(relKey: string): Promise<{ key: string; url: string; }> {
-  const { baseUrl, apiKey } = getStorageConfig();
+  const config = getStorageConfig();
+  
+  if (config.mode === 'local') {
+    return localStorageGet(config.baseUrl, relKey);
+  }
+  
+  // Forge mode
+  const { baseUrl, apiKey } = config;
   const key = normalizeKey(relKey);
   return {
     key,
     url: await buildDownloadUrl(baseUrl, key, apiKey),
   };
+}
+
+// Helper to get storage mode for UI display
+export function getStorageMode(): 'forge' | 'local' | 'disabled' {
+  try {
+    const config = getStorageConfig();
+    return config.mode;
+  } catch {
+    return 'disabled';
+  }
 }
