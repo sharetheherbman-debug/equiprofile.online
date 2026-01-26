@@ -109,41 +109,54 @@
 ## 🔨 PARTIALLY IMPLEMENTED
 
 ### A4: Performance Optimizations
-- **Status**: PARTIAL
+- **Status**: IMPROVED
 - **Completed**:
   - Weather caching (30 min)
   - Database indexes on care insights tables
+  - Pagination added to horses.list endpoint
+  - Timeline pagination support
 - **Remaining**:
-  - Pagination for large lists
-  - Query optimization for dashboard
-  - Batch tRPC calls
+  - Batch tRPC calls for dashboard
+  - Further query optimization
 
 ### B2: Task Automation
-- **Status**: INFRASTRUCTURE EXISTS
-- **Existing**: Tasks table and basic CRUD
-- **Remaining**:
+- **Status**: COMPLETE ✅
+- **Implemented**:
   - AI-suggested daily plans
-  - Task templates
-  - Recurring routines
-  - AI prioritization
+  - Smart task prioritization
+  - Weather-aware recommendations
+  - Event-aware planning
+- **Endpoints**: `generateDailyPlan`, `prioritizeTasks`
 
 ### B5: Collaboration
-- **Status**: INFRASTRUCTURE EXISTS
-- **Existing**: stableMembers table with roles
-- **Remaining**:
-  - Share horse profiles
-  - Communication threads
-  - Event RSVPs
-  - Permissions enforcement
+- **Status**: COMPLETE ✅
+- **Implemented**:
+  - Share horse profiles with collaborators
+  - Role-based permissions (viewer, caretaker, trainer, vet, farrier)
+  - Communication/comments system
+  - Collaborator management
+- **Endpoints**: `shareHorse`, `listCollaborators`, `addComment`, `getComments`
 
 ### B6: Performance Visualization
-- **Status**: INFRASTRUCTURE EXISTS
-- **Existing**: Data tables (training, health, tasks)
-- **Remaining**:
-  - Timeline view
-  - Charts/graphs
-  - AI summaries
+- **Status**: COMPLETE ✅
+- **Implemented**:
+  - Timeline view (unified activity feed)
+  - AI-powered monthly summaries
   - Trend analysis
+  - Historical data aggregation
+- **Endpoints**: `getTimeline`, `getMonthlySummary`
+
+### B8: UI Improvements
+- **Status**: IMPROVED
+- **Completed**:
+  - Header height reduced
+  - Site name white
+  - Dashboard responsive
+  - OAuth warnings removed
+  - **Events "Add Event" button now functional** ✅
+- **Remaining**:
+  - Dark mode scoping (dashboard only)
+  - AI chat layout optimization
 
 ---
 

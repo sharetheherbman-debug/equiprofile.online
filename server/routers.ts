@@ -415,9 +415,21 @@ export const appRouter = router({
 
   // Horse management
   horses: router({
-    list: subscribedProcedure.query(async ({ ctx }) => {
-      return db.getHorsesByUserId(ctx.user.id);
-    }),
+    list: subscribedProcedure
+      .input(z.object({
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        const horses = await db.getHorsesByUserId(ctx.user.id);
+        const limit = input?.limit || 50;
+        const offset = input?.offset || 0;
+        return {
+          horses: horses.slice(offset, offset + limit),
+          total: horses.length,
+          hasMore: offset + limit < horses.length,
+        };
+      }),
     
     get: subscribedProcedure
       .input(z.object({ id: z.number() }))
