@@ -4860,7 +4860,7 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
         horseId: z.number(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const horse = await db.getHorseById(input.horseId);
+        const horse = await db.getHorseById(input.horseId, ctx.user.id);
         if (!horse || horse.userId !== ctx.user.id) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
         }
