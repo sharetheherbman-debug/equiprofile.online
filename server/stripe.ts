@@ -46,7 +46,7 @@ export const STRIPE_PRICING = {
   },
   stable_monthly: {
     priceId: process.env.STRIPE_STABLE_MONTHLY_PRICE_ID || "",
-    amount: 3500, // £35.00 in pence
+    amount: 3000, // £30.00 in pence
     currency: "gbp",
     interval: "month",
   },

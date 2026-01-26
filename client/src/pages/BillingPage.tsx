@@ -167,7 +167,7 @@ export default function BillingPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="mb-6">
-                      <div className="text-4xl font-bold">£7.99</div>
+                      <div className="text-4xl font-bold">£10</div>
                       <div className="text-muted-foreground">per month</div>
                     </div>
 
@@ -220,19 +220,19 @@ export default function BillingPage() {
                 <Card className="border-2 border-primary relative">
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <Badge className="bg-primary text-primary-foreground">
-                      Save 17%
+                      Save £20
                     </Badge>
                   </div>
                   <CardHeader>
                     <CardTitle>Pro Yearly</CardTitle>
-                    <CardDescription>Best value - save £16 per year</CardDescription>
+                    <CardDescription>Best value - save £20 per year</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="mb-6">
-                      <div className="text-4xl font-bold">£79.90</div>
+                      <div className="text-4xl font-bold">£100</div>
                       <div className="text-muted-foreground">per year</div>
                       <div className="text-sm text-primary mt-1">
-                        Just £6.66 per month
+                        Just £8.33 per month
                       </div>
                     </div>
 
@@ -289,10 +289,10 @@ export default function BillingPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="mb-6">
-                      <div className="text-4xl font-bold">£24.99</div>
+                      <div className="text-4xl font-bold">£30</div>
                       <div className="text-muted-foreground">per month</div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        or £249/year (save 17%)
+                        or £300/year (save £60)
                       </div>
                     </div>
 

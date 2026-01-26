@@ -186,7 +186,7 @@ This document summarizes the complete implementation of all requested features f
 
 ### B7: Subscription Tiers ✅ COMPLETE
 **Delivered**:
-- Pricing updated to £10/£100/£35/£300
+- Pricing updated to £10/£100/£30/£300
 - Feature gating middleware (stableProcedure)
 - Server-side enforcement
 - Frontend subscription utilities

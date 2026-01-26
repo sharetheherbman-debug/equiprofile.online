@@ -70,7 +70,7 @@ export function getPlanPricing(plan: SubscriptionPlan): { amount: number; interv
     case 'yearly':
       return { amount: 10000, interval: 'year', currency: 'GBP' }; // £100.00
     case 'stable_monthly':
-      return { amount: 3500, interval: 'month', currency: 'GBP' }; // £35.00
+      return { amount: 3000, interval: 'month', currency: 'GBP' }; // £30.00
     case 'stable_yearly':
       return { amount: 30000, interval: 'year', currency: 'GBP' }; // £300.00
   }

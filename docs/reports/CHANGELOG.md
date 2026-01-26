@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Payment System
 - Full Stripe integration with subscription management
 - 7-day free trial for new users
-- Monthly subscription (£7.99/month)
-- Yearly subscription (£79.90/year)
+- Monthly subscription (£10/month)
+- Yearly subscription (£100/year)
 - Secure webhook handler with signature verification
 - Idempotency tracking for webhook events
 - Customer billing portal integration

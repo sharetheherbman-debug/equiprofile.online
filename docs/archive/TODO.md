@@ -2,7 +2,7 @@
 
 ## Core Infrastructure
 - [x] Database schema for users, horses, health records, training, feeding
-- [ ] Stripe subscription integration (7-day trial, £7.99/month, yearly discount)
+- [ ] Stripe subscription integration (7-day trial, £10/month, yearly discount)
 - [x] Role-based access control (admin/user)
 - [x] File upload system for documents and images (S3)
 
