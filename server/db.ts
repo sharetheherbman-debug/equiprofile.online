@@ -1034,6 +1034,26 @@ export async function getUpcomingTasks(userId: number, days: number = 7) {
   ).orderBy(tasks.dueDate);
 }
 
+export async function getUpcomingEvents(userId: number, days: number = 7) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const { events } = await import('../drizzle/schema');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + days);
+  futureDate.setHours(23, 59, 59, 999);
+  
+  return db.select().from(events).where(
+    and(
+      eq(events.userId, userId),
+      gte(events.startDate, today),
+      lte(events.startDate, futureDate)
+    )
+  ).orderBy(events.startDate);
+}
+
 export async function updateTask(id: number, userId: number, data: {
   title?: string;
   description?: string;

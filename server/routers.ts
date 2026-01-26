@@ -4707,7 +4707,7 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
             taskCompletionScore += 20; // Daily log completed
           }
 
-          const sessions = await db.getTrainingSessionsByHorse(input.horseId);
+          const sessions = await db.getTrainingSessionsByHorseId(input.horseId, ctx.user.id);
           const todaySessions = sessions.filter(s => s.sessionDate === targetDate);
           if (todaySessions.length > 0) {
             taskCompletionScore += 20; // Training session logged
@@ -4868,7 +4868,7 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
         const newAlerts = [];
 
         // Check for repeat injuries (same type within 90 days)
-        const healthRecords = await db.getHealthRecordsByHorse(input.horseId);
+        const healthRecords = await db.getHealthRecordsByHorseId(input.horseId, ctx.user.id);
         const recentInjuries = healthRecords.filter(r => 
           r.recordType === 'injury' &&
           r.recordDate &&

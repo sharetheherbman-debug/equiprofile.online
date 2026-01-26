@@ -28,6 +28,11 @@ function DashboardContent() {
   const { data: upcomingSessions } = trpc.training.getUpcoming.useQuery();
   const { data: reminders } = trpc.healthRecords.getReminders.useQuery({ days: 14 });
 
+  // Runtime guards to ensure data is always treated as an array
+  const horsesList = horses?.horses && Array.isArray(horses.horses) ? horses.horses : [];
+  const upcomingList = Array.isArray(upcomingSessions) ? upcomingSessions : [];
+  const remindersList = Array.isArray(reminders) ? reminders : [];
+
   const getSubscriptionBadge = () => {
     if (!subscription) return null;
     switch (subscription.status) {
@@ -107,7 +112,7 @@ function DashboardContent() {
             </Link>
           </CardHeader>
           <CardContent>
-            {!horses || horses.length === 0 ? (
+            {horsesList.length === 0 ? (
               <div className="text-center py-8">
                 <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
                 <p className="text-muted-foreground mb-4">No horses added yet</p>
@@ -120,7 +125,7 @@ function DashboardContent() {
               </div>
             ) : (
               <div className="space-y-4">
-                {horses.slice(0, 3).map((horse) => (
+                {horsesList.slice(0, 3).map((horse) => (
                   <Link key={horse.id} href={`/horses/${horse.id}`}>
                     <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
                       <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -149,14 +154,14 @@ function DashboardContent() {
               <CardTitle className="font-serif text-lg">Upcoming Sessions</CardTitle>
             </CardHeader>
             <CardContent>
-              {!upcomingSessions || upcomingSessions.length === 0 ? (
+              {upcomingList.length === 0 ? (
                 <div className="text-center py-4">
                   <Calendar className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">No upcoming sessions</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {upcomingSessions.slice(0, 3).map((session) => (
+                  {upcomingList.slice(0, 3).map((session) => (
                     <div key={session.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Activity className="w-5 h-5 text-primary" />
@@ -185,14 +190,14 @@ function DashboardContent() {
               <CardTitle className="font-serif text-lg">Health Reminders</CardTitle>
             </CardHeader>
             <CardContent>
-              {!reminders || reminders.length === 0 ? (
+              {remindersList.length === 0 ? (
                 <div className="text-center py-4">
                   <Clock className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">No upcoming reminders</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {reminders.slice(0, 3).map((reminder) => (
+                  {remindersList.slice(0, 3).map((reminder) => (
                     <div key={reminder.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30">
                       <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
                         <AlertCircle className="w-5 h-5 text-orange-600" />
