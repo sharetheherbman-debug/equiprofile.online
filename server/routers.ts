@@ -1961,11 +1961,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         { name: 'STRIPE_SECRET_KEY', status: !!process.env.STRIPE_SECRET_KEY, critical: ENV.enableStripe, conditional: true, requiredWhen: 'ENABLE_STRIPE=true' },
         { name: 'STRIPE_WEBHOOK_SECRET', status: !!process.env.STRIPE_WEBHOOK_SECRET, critical: ENV.enableStripe, conditional: true, requiredWhen: 'ENABLE_STRIPE=true' },
         
-        // Upload/Storage vars (critical only if ENABLE_UPLOADS=true)
-        { name: 'BUILT_IN_FORGE_API_URL', status: !!process.env.BUILT_IN_FORGE_API_URL, critical: ENV.enableUploads, conditional: true, requiredWhen: 'ENABLE_UPLOADS=true' },
-        { name: 'BUILT_IN_FORGE_API_KEY', status: !!process.env.BUILT_IN_FORGE_API_KEY, critical: ENV.enableUploads, conditional: true, requiredWhen: 'ENABLE_UPLOADS=true' },
+        // Upload/Storage vars (optional - for S3 storage)
+        { name: 'LOCAL_UPLOADS_PATH', status: !!process.env.LOCAL_UPLOADS_PATH, critical: false, conditional: false },
         
-        // Legacy AWS vars (optional - kept for backward compatibility)
+        // AWS S3 vars (optional - for S3 storage)
+        { name: 'AWS_ACCESS_KEY_ID', status: !!process.env.AWS_ACCESS_KEY_ID, critical: false, conditional: false },
+        { name: 'AWS_SECRET_ACCESS_KEY', status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: false, conditional: false },
+        { name: 'AWS_S3_BUCKET', status: !!process.env.AWS_S3_BUCKET, critical: false, conditional: false },
+        
+        // AI/LLM vars (critical for AI features)
+        { name: 'OPENAI_API_KEY', status: !!process.env.OPENAI_API_KEY, critical: false, conditional: false },
+        { name: 'OPENAI_MODEL', status: !!process.env.OPENAI_MODEL, critical: false, conditional: false },
+        
+        // Weather API vars (critical for weather features)
+        { name: 'WEATHER_API_KEY', status: !!process.env.WEATHER_API_KEY, critical: false, conditional: false },
+        { name: 'WEATHER_API_PROVIDER', status: !!process.env.WEATHER_API_PROVIDER, critical: false, conditional: false },
+        
+        // Legacy AWS vars (deprecated - kept for backward compatibility)
         { name: 'AWS_ACCESS_KEY_ID', status: !!process.env.AWS_ACCESS_KEY_ID, critical: false, conditional: false },
         { name: 'AWS_SECRET_ACCESS_KEY', status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: false, conditional: false },
         { name: 'AWS_S3_BUCKET', status: !!process.env.AWS_S3_BUCKET, critical: false, conditional: false },
