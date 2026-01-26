@@ -342,7 +342,7 @@ export default function Home() {
                       Simple, Transparent Pricing
                     </h2>
                     <p className="text-lg md:text-xl text-muted-foreground mb-8">
-                      Start with a 7-day free trial. Plans start at just £7.99/month. 
+                      Start with a 7-day free trial. Plans start at just £10/month. 
                       No credit card required to get started.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

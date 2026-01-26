@@ -22,7 +22,6 @@ if (!isProduction) {
 // Feature flags (default to false for plug-and-play deployment)
 const enableStripe = process.env.ENABLE_STRIPE === 'true';
 const enableUploads = process.env.ENABLE_UPLOADS === 'true';
-const enableForge = process.env.ENABLE_FORGE === 'true';
 
 // Startup validation helper
 function validateEnvironment() {
@@ -56,21 +55,7 @@ function validateEnvironment() {
     });
   }
   
-  // Conditionally require Forge vars if enabled
-  if (enableForge) {
-    const forgeVars = [
-      { name: 'BUILT_IN_FORGE_API_URL', description: 'Forge API URL' },
-      { name: 'BUILT_IN_FORGE_API_KEY', description: 'Forge API key' },
-    ];
-    forgeVars.forEach(v => {
-      if (!process.env[v.name]) {
-        missing.push(v);
-      }
-    });
-  }
-  
-  // Note: ENABLE_UPLOADS can work independently (for local file storage)
-  // but if Forge features are needed, enable ENABLE_FORGE
+  // Note: ENABLE_UPLOADS can work independently (for local file storage or S3)
   
   // Report missing variables and exit if any
   if (missing.length > 0) {
@@ -82,7 +67,6 @@ function validateEnvironment() {
     console.error('\nFeature flags:');
     console.error(`  • ENABLE_STRIPE=${enableStripe}`);
     console.error(`  • ENABLE_UPLOADS=${enableUploads}`);
-    console.error(`  • ENABLE_FORGE=${enableForge}`);
     console.error('\nPlease configure all required environment variables in your .env file.');
     console.error('See .env.example for a complete list of available options.\n');
     process.exit(1);
@@ -128,7 +112,6 @@ function validateEnvironment() {
   console.log('ℹ️  Feature flags:');
   console.log(`   • Stripe billing: ${enableStripe ? '✅ enabled' : '❌ disabled'}`);
   console.log(`   • Document uploads: ${enableUploads ? '✅ enabled' : '❌ disabled'}`);
-  console.log(`   • Forge API: ${enableForge ? '✅ enabled' : '❌ disabled'}`);
   
   // Validate JWT secret length in production
   if (isProduction && process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
@@ -145,7 +128,6 @@ export const ENV = {
   // Feature flags
   enableStripe,
   enableUploads,
-  enableForge,
   
   // App config
   appId: process.env.VITE_APP_ID ?? "",
@@ -154,8 +136,6 @@ export const ENV = {
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
   isProduction: process.env.NODE_ENV === "production",
-  forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
-  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
   
   // Admin unlock
   adminUnlockPassword: process.env.ADMIN_UNLOCK_PASSWORD ?? "ashmor12@",
@@ -169,12 +149,17 @@ export const ENV = {
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   
-  // AWS S3 (legacy - kept for backward compatibility)
+  // AWS S3 (for uploads if configured)
   awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? "",
   awsRegion: process.env.AWS_REGION ?? "eu-west-2",
   awsS3Bucket: process.env.AWS_S3_BUCKET ?? "",
   
-  // OpenAI
+  // OpenAI (for AI features)
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
+  openaiModel: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+  
+  // Weather API
+  weatherApiKey: process.env.WEATHER_API_KEY ?? "",
+  weatherApiProvider: process.env.WEATHER_API_PROVIDER ?? "openweathermap",
 };

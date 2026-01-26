@@ -154,10 +154,10 @@ export default function Pricing() {
   const hasActiveSubscription = subscriptionStatus?.status === 'active';
 
   // Fallback prices if backend unavailable - now in GBP
-  const monthlyPrice = pricing?.monthly?.amount ? (pricing.monthly.amount / 100).toFixed(2) : '7.99';
-  const yearlyPrice = pricing?.yearly?.amount ? (pricing.yearly.amount / 100).toFixed(2) : '79';
-  const stableMonthlyPrice = '24.99';
-  const stableYearlyPrice = '249';
+  const monthlyPrice = pricing?.monthly?.amount ? (pricing.monthly.amount / 100).toFixed(2) : '10';
+  const yearlyPrice = pricing?.yearly?.amount ? (pricing.yearly.amount / 100).toFixed(2) : '100';
+  const stableMonthlyPrice = '30';
+  const stableYearlyPrice = '300';
 
   return (
     <>
@@ -213,7 +213,7 @@ export default function Pricing() {
                   }`}
                 >
                   Yearly
-                  <span className="ml-2 text-xs text-green-600 font-semibold">(Save 17%)</span>
+                  <span className="ml-2 text-xs text-green-600 font-semibold">(Save £20)</span>
                 </button>
               </div>
             </div>
@@ -297,7 +297,7 @@ export default function Pricing() {
               </div>
               {billingPeriod === "yearly" && (
                 <p className="text-sm text-green-600 font-semibold">
-                  Save 17% with annual billing
+                  Save £20 with annual billing
                 </p>
               )}
             </CardHeader>
@@ -355,7 +355,7 @@ export default function Pricing() {
               </div>
               {billingPeriod === "yearly" && (
                 <p className="text-sm text-green-600 font-semibold">
-                  Save 17% with annual billing
+                  Save £60 with annual billing
                 </p>
               )}
             </CardHeader>

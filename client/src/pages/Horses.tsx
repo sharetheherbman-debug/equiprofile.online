@@ -24,29 +24,36 @@ import { useRealtimeModule } from "@/hooks/useRealtime";
 
 function HorsesContent() {
   const { data: horses, isLoading, refetch } = trpc.horses.list.useQuery();
-  const [localHorses, setLocalHorses] = useState(horses || []);
+  const [localHorses, setLocalHorses] = useState<any[]>([]);
   
   // Real-time updates
   useRealtimeModule('horses', (action, data) => {
     switch (action) {
       case 'created':
-        setLocalHorses(prev => [...prev, data]);
+        setLocalHorses(prev => {
+          const horsesList = Array.isArray(prev) ? prev : horses?.horses || [];
+          return [...horsesList, data];
+        });
         toast.success(`${data.name} added`);
         break;
       case 'updated':
-        setLocalHorses(prev => 
-          prev.map(h => h.id === data.id ? { ...h, ...data } : h)
-        );
+        setLocalHorses(prev => {
+          const horsesList = Array.isArray(prev) ? prev : horses?.horses || [];
+          return horsesList.map((h: any) => h.id === data.id ? { ...h, ...data } : h);
+        });
         break;
       case 'deleted':
-        setLocalHorses(prev => prev.filter(h => h.id !== data.id));
+        setLocalHorses(prev => {
+          const horsesList = Array.isArray(prev) ? prev : horses?.horses || [];
+          return horsesList.filter((h: any) => h.id !== data.id);
+        });
         break;
     }
   });
   
   // Update local state when query data changes
   useEffect(() => {
-    if (horses) setLocalHorses(horses);
+    if (horses?.horses) setLocalHorses(horses.horses);
   }, [horses]);
   
   const exportMutation = trpc.horses.exportCSV.useQuery(undefined, {
@@ -97,24 +104,12 @@ function HorsesContent() {
 
   return (
     <div className="space-y-6">
-      {/* Header Section with Hero Image */}
-      <div className="relative h-48 md:h-64 -mx-6 -mt-6 mb-6 rounded-lg overflow-hidden">
-        <div className="absolute inset-0">
-          <img 
-            src="/images/horse-profiles.jpg" 
-            alt="Your Horses" 
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-        <div className="relative z-10 h-full flex items-end p-6">
-          <div className="text-white">
-            <h1 className="font-serif text-3xl md:text-4xl font-bold">Your Horses</h1>
-            <p className="text-white/90 mt-1">
-              Manage profiles for all your equine companions
-            </p>
-          </div>
-        </div>
+      {/* Header Section */}
+      <div className="flex flex-col gap-2">
+        <h1 className="font-serif text-3xl md:text-4xl font-bold">Your Horses</h1>
+        <p className="text-muted-foreground">
+          Manage profiles for all your equine companions
+        </p>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

@@ -211,7 +211,7 @@ export function getCareSuggestions(weather: WeatherData): string[] {
     suggestions.push('💧 Monitor for dehydration signs');
     suggestions.push('🌳 Ensure shade is available');
   } else if (weather.temperature < 5) {
-    suggestions.push('❄️ Cold weather: Check water isn't frozen, consider extra forage');
+    suggestions.push('❄️ Cold weather: Check water isn\'t frozen, consider extra forage');
     suggestions.push('🧥 Ensure adequate shelter from wind');
   }
 

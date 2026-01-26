@@ -1961,11 +1961,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         { name: 'STRIPE_SECRET_KEY', status: !!process.env.STRIPE_SECRET_KEY, critical: ENV.enableStripe, conditional: true, requiredWhen: 'ENABLE_STRIPE=true' },
         { name: 'STRIPE_WEBHOOK_SECRET', status: !!process.env.STRIPE_WEBHOOK_SECRET, critical: ENV.enableStripe, conditional: true, requiredWhen: 'ENABLE_STRIPE=true' },
         
-        // Upload/Storage vars (critical only if ENABLE_UPLOADS=true)
-        { name: 'BUILT_IN_FORGE_API_URL', status: !!process.env.BUILT_IN_FORGE_API_URL, critical: ENV.enableUploads, conditional: true, requiredWhen: 'ENABLE_UPLOADS=true' },
-        { name: 'BUILT_IN_FORGE_API_KEY', status: !!process.env.BUILT_IN_FORGE_API_KEY, critical: ENV.enableUploads, conditional: true, requiredWhen: 'ENABLE_UPLOADS=true' },
+        // Upload/Storage vars (optional - for S3 storage)
+        { name: 'LOCAL_UPLOADS_PATH', status: !!process.env.LOCAL_UPLOADS_PATH, critical: false, conditional: false },
         
-        // Legacy AWS vars (optional - kept for backward compatibility)
+        // AWS S3 vars (optional - for S3 storage)
+        { name: 'AWS_ACCESS_KEY_ID', status: !!process.env.AWS_ACCESS_KEY_ID, critical: false, conditional: false },
+        { name: 'AWS_SECRET_ACCESS_KEY', status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: false, conditional: false },
+        { name: 'AWS_S3_BUCKET', status: !!process.env.AWS_S3_BUCKET, critical: false, conditional: false },
+        
+        // AI/LLM vars (critical for AI features)
+        { name: 'OPENAI_API_KEY', status: !!process.env.OPENAI_API_KEY, critical: false, conditional: false },
+        { name: 'OPENAI_MODEL', status: !!process.env.OPENAI_MODEL, critical: false, conditional: false },
+        
+        // Weather API vars (critical for weather features)
+        { name: 'WEATHER_API_KEY', status: !!process.env.WEATHER_API_KEY, critical: false, conditional: false },
+        { name: 'WEATHER_API_PROVIDER', status: !!process.env.WEATHER_API_PROVIDER, critical: false, conditional: false },
+        
+        // Legacy AWS vars (deprecated - kept for backward compatibility)
         { name: 'AWS_ACCESS_KEY_ID', status: !!process.env.AWS_ACCESS_KEY_ID, critical: false, conditional: false },
         { name: 'AWS_SECRET_ACCESS_KEY', status: !!process.env.AWS_SECRET_ACCESS_KEY, critical: false, conditional: false },
         { name: 'AWS_S3_BUCKET', status: !!process.env.AWS_S3_BUCKET, critical: false, conditional: false },
@@ -2765,6 +2777,10 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
           endDate: input.endDate ? new Date(input.endDate) : null,
         });
         
+        // Real-time update
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('events', 'created', { id: result[0].insertId, ...input }, ctx.user!.id);
+        
         return { id: result[0].insertId };
       }),
 
@@ -2794,6 +2810,10 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
             eq(events.userId, ctx.user.id)
           ));
         
+        // Real-time update
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('events', 'updated', { id, ...updateData }, ctx.user.id);
+        
         return { success: true };
       }),
 
@@ -2808,6 +2828,10 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
             eq(events.id, input.id),
             eq(events.userId, ctx.user.id)
           ));
+        
+        // Real-time update
+        const { publishModuleEvent } = await import('./_core/realtime');
+        publishModuleEvent('events', 'deleted', { id: input.id }, ctx.user.id);
         
         return { success: true };
       }),
@@ -4707,7 +4731,7 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
             taskCompletionScore += 20; // Daily log completed
           }
 
-          const sessions = await db.getTrainingSessionsByHorse(input.horseId);
+          const sessions = await db.getTrainingSessionsByHorseId(input.horseId, ctx.user.id);
           const todaySessions = sessions.filter(s => s.sessionDate === targetDate);
           if (todaySessions.length > 0) {
             taskCompletionScore += 20; // Training session logged
@@ -4860,7 +4884,7 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
         horseId: z.number(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const horse = await db.getHorseById(input.horseId);
+        const horse = await db.getHorseById(input.horseId, ctx.user.id);
         if (!horse || horse.userId !== ctx.user.id) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
         }
@@ -4868,7 +4892,7 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
         const newAlerts = [];
 
         // Check for repeat injuries (same type within 90 days)
-        const healthRecords = await db.getHealthRecordsByHorse(input.horseId);
+        const healthRecords = await db.getHealthRecordsByHorseId(input.horseId, ctx.user.id);
         const recentInjuries = healthRecords.filter(r => 
           r.recordType === 'injury' &&
           r.recordDate &&

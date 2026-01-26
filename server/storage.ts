@@ -1,6 +1,5 @@
-// Preconfigured storage helpers for Manus WebDev templates
-// Uses the Biz-provided storage proxy (Authorization: Bearer <token>)
-// With local filesystem fallback when Forge is unavailable
+// Preconfigured storage helpers for local filesystem and S3
+// With local filesystem as default when S3 is not configured
 
 import { ENV } from './_core/env';
 import { TRPCError } from '@trpc/server';
@@ -9,9 +8,8 @@ import path from 'path';
 import { nanoid } from 'nanoid';
 
 type StorageConfig = { 
-  baseUrl: string; 
-  apiKey: string;
-  mode: 'forge' | 'local';
+  baseUrl: string;
+  mode: 'local' | 's3';
 };
 
 function getStorageConfig(): StorageConfig {
@@ -23,15 +21,11 @@ function getStorageConfig(): StorageConfig {
     });
   }
   
-  const baseUrl = ENV.forgeApiUrl;
-  const apiKey = ENV.forgeApiKey;
-
-  // Try Forge first
-  if (baseUrl && apiKey) {
-    return { 
-      baseUrl: baseUrl.replace(/\/+$/, ""), 
-      apiKey,
-      mode: 'forge'
+  // Check for S3 configuration
+  if (ENV.awsAccessKeyId && ENV.awsSecretAccessKey && ENV.awsS3Bucket) {
+    return {
+      baseUrl: ENV.awsS3Bucket,
+      mode: 's3'
     };
   }
 
@@ -52,36 +46,8 @@ function getStorageConfig(): StorageConfig {
 
   return {
     baseUrl: localPath,
-    apiKey: '',
     mode: 'local'
   };
-}
-
-function buildUploadUrl(baseUrl: string, relKey: string): URL {
-  const url = new URL("v1/storage/upload", ensureTrailingSlash(baseUrl));
-  url.searchParams.set("path", normalizeKey(relKey));
-  return url;
-}
-
-async function buildDownloadUrl(
-  baseUrl: string,
-  relKey: string,
-  apiKey: string
-): Promise<string> {
-  const downloadApiUrl = new URL(
-    "v1/storage/downloadUrl",
-    ensureTrailingSlash(baseUrl)
-  );
-  downloadApiUrl.searchParams.set("path", normalizeKey(relKey));
-  const response = await fetch(downloadApiUrl, {
-    method: "GET",
-    headers: buildAuthHeaders(apiKey),
-  });
-  return (await response.json()).url;
-}
-
-function ensureTrailingSlash(value: string): string {
-  return value.endsWith("/") ? value : `${value}/`;
 }
 
 function normalizeKey(relKey: string): string {
@@ -100,10 +66,6 @@ function toFormData(
   const form = new FormData();
   form.append("file", blob, fileName || "file");
   return form;
-}
-
-function buildAuthHeaders(apiKey: string): HeadersInit {
-  return { Authorization: `Bearer ${apiKey}` };
 }
 
 // Local storage helpers
@@ -164,26 +126,12 @@ export async function storagePut(
     return localStoragePut(config.baseUrl, relKey, data, contentType);
   }
   
-  // Forge mode
-  const { baseUrl, apiKey } = config;
-  const key = normalizeKey(relKey);
-  const uploadUrl = buildUploadUrl(baseUrl, key);
-  const formData = toFormData(data, contentType, key.split("/").pop() ?? key);
-  const response = await fetch(uploadUrl, {
-    method: "POST",
-    headers: buildAuthHeaders(apiKey),
-    body: formData,
+  // S3 mode - TODO: implement S3 upload using AWS SDK
+  // For now, fall back to local storage
+  throw new TRPCError({
+    code: 'INTERNAL_SERVER_ERROR',
+    message: 'S3 storage mode not yet implemented. Please use local storage.'
   });
-
-  if (!response.ok) {
-    const message = await response.text().catch(() => response.statusText);
-    throw new TRPCError({
-      code: 'INTERNAL_SERVER_ERROR',
-      message: `Storage upload failed: ${message}`
-    });
-  }
-  const url = (await response.json()).url;
-  return { key, url };
 }
 
 export async function storageGet(relKey: string): Promise<{ key: string; url: string; }> {
@@ -193,17 +141,16 @@ export async function storageGet(relKey: string): Promise<{ key: string; url: st
     return localStorageGet(config.baseUrl, relKey);
   }
   
-  // Forge mode
-  const { baseUrl, apiKey } = config;
-  const key = normalizeKey(relKey);
-  return {
-    key,
-    url: await buildDownloadUrl(baseUrl, key, apiKey),
-  };
+  // S3 mode - TODO: implement S3 URL generation
+  // For now, fall back to local storage
+  throw new TRPCError({
+    code: 'INTERNAL_SERVER_ERROR',
+    message: 'S3 storage mode not yet implemented. Please use local storage.'
+  });
 }
 
 // Helper to get storage mode for UI display
-export function getStorageMode(): 'forge' | 'local' | 'disabled' {
+export function getStorageMode(): 's3' | 'local' | 'disabled' {
   try {
     const config = getStorageConfig();
     return config.mode;

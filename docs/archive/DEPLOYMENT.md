@@ -157,8 +157,8 @@ To send transactional emails:
 
 1. Create a Stripe account at https://stripe.com
 2. Create two products (Monthly and Yearly):
-   - Monthly: £7.99/month
-   - Yearly: £79.90/year
+   - Monthly: £10/month
+   - Yearly: £100/year
 3. Copy the Price IDs to `STRIPE_MONTHLY_PRICE_ID` and `STRIPE_YEARLY_PRICE_ID`
 4. Get your Secret Key from https://dashboard.stripe.com/apikeys
 5. Set up webhook endpoint:
@@ -345,7 +345,7 @@ sudo certbot renew --dry-run
 - ✅ Trial expiration enforcement
 - ✅ Trial countdown banner
 - ✅ Hard paywall (blocks access after trial)
-- ✅ Monthly (£7.99) and Yearly (£79.90) plans
+- ✅ Monthly (£10) and Yearly (£100) plans
 
 ### Billing (Stripe)
 - ✅ Stripe Checkout integration

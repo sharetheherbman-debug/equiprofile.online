@@ -40,7 +40,7 @@ This audit examines the current EquiProfile codebase to identify:
 | `/` | Home.tsx | 🟡 Needs redesign | Landing page exists, needs marketing upgrade |
 | `/about` | About.tsx | 🟡 Needs redesign | Should be first in nav |
 | `/features` | Features.tsx | 🟡 Needs redesign | Needs UK-focused content |
-| `/pricing` | Pricing.tsx | ⚠️ Outdated | Shows wrong trial/pricing (needs 7-day, £7.99/£24.99) |
+| `/pricing` | Pricing.tsx | ⚠️ Outdated | Shows wrong trial/pricing (needs 7-day, £10/£30) |
 | `/contact` | Contact.tsx | 🟡 Needs redesign | Should show email + WhatsApp only |
 | `/terms` | TermsPage.tsx | 🟡 Basic | Needs UK legal review |
 | `/privacy` | PrivacyPage.tsx | 🟡 Basic | Needs UK GDPR/PECR compliance |
@@ -165,7 +165,7 @@ All procedures require `adminUnlockedProcedure` (admin session active).
 | createPortal | mutation | protected | Create Stripe portal |
 | getStatus | query | protected | Get subscription status |
 
-**Issue**: Pricing shows old amounts, needs update to 7-day trial + £7.99/£24.99
+**Issue**: Pricing shows old amounts, needs update to 7-day trial + £10/£30
 
 #### User Router (`user.*`)
 | Procedure | Type | Auth | Purpose |
@@ -260,9 +260,9 @@ All require `protectedProcedure`.
 - `expired` - Trial/subscription expired
 
 **Plans**:
-- `monthly` - ⚠️ Needs update to £7.99/month, 5 horses max
-- `yearly` - ⚠️ Needs update to £79/year, 5 horses max
-- (Missing) "stable" plan - £24.99/month or £249/year, unlimited horses
+- `monthly` - ⚠️ Needs update to £10/month, 5 horses max
+- `yearly` - ⚠️ Needs update to £100/year, 5 horses max
+- (Missing) "stable" plan - £30/month or £300/year, unlimited horses
 
 ### 3.2 Admin Unlock Mechanism
 
@@ -642,7 +642,7 @@ const logoutMutation = trpc.auth.logout.useMutation({
 - ❌ Mobile-responsive images
 - ❌ Conversion-focused landing page
 - ❌ UK-focused content (GBP, British terminology)
-- ❌ Correct pricing (7-day trial, £7.99/£24.99)
+- ❌ Correct pricing (7-day trial, £10/£30)
 - ❌ Cookie notice + preferences modal
 - ❌ Realistic stats (not 5000+ users)
 - ❌ Image management system for easy swapping
@@ -753,12 +753,12 @@ export const STRIPE_PRICING = {
 
 **Plans**:
 1. **Monthly Plan**:
-   - £7.99/month OR £79/year
+   - £10/month OR £100/year
    - Max 5 horses per user
    - Trial: 7 days
 
 2. **Stable Plan** (NEW):
-   - £24.99/month OR £249/year
+   - £30/month OR £300/year
    - Unlimited horses
    - Trial: 7 days
 

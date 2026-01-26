@@ -445,12 +445,6 @@ function SystemStatus() {
             </Badge>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Forge</span>
-            <Badge variant={systemStatus.featureFlags.forgeEnabled ? "default" : "outline"}>
-              {systemStatus.featureFlags.forgeEnabled ? "Enabled" : "Disabled"}
-            </Badge>
-          </div>
-          <div className="flex justify-between items-center">
             <span className="text-sm font-medium">PWA</span>
             <Badge variant={systemStatus.featureFlags.pwaEnabled ? "default" : "outline"}>
               {systemStatus.featureFlags.pwaEnabled ? "Enabled" : "Disabled"}
@@ -496,10 +490,15 @@ function SystemStatus() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Sparkles className="w-5 h-5 text-muted-foreground" />
-              <div className="text-sm font-medium">AI & LLM Services</div>
+              <div>
+                <div className="text-sm font-medium">OpenAI (AI & LLM)</div>
+                <div className="text-xs text-muted-foreground">
+                  Model: {systemStatus.serviceStatus.openai.model}
+                </div>
+              </div>
             </div>
             <div className="flex items-center gap-2">
-              {systemStatus.serviceStatus.ai.ready ? (
+              {systemStatus.serviceStatus.openai.ready ? (
                 <>
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <Badge variant="default">Ready</Badge>
@@ -517,7 +516,12 @@ function SystemStatus() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Cloud className="w-5 h-5 text-muted-foreground" />
-              <div className="text-sm font-medium">Weather Integration</div>
+              <div>
+                <div className="text-sm font-medium">Weather Integration</div>
+                <div className="text-xs text-muted-foreground">
+                  Provider: {systemStatus.serviceStatus.weather.provider}
+                </div>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               {systemStatus.serviceStatus.weather.ready ? (

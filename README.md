@@ -105,7 +105,7 @@ openssl rand -base64 16
    - `STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
    - `STRIPE_MONTHLY_PRICE_ID` - Stripe price ID for £10/month plan
    - `STRIPE_YEARLY_PRICE_ID` - Stripe price ID for £100/year plan
-   - `STRIPE_STABLE_MONTHLY_PRICE_ID` - Stripe price ID for £35/month stable plan
+   - `STRIPE_STABLE_MONTHLY_PRICE_ID` - Stripe price ID for £30/month stable plan
    - `STRIPE_STABLE_YEARLY_PRICE_ID` - Stripe price ID for £300/year stable plan
 
 See `.env.example` for complete configuration options.

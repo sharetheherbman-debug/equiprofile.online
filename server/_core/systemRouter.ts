@@ -21,28 +21,24 @@ export const systemRouter = router({
 
   // System status endpoint for ops visibility
   status: publicProcedure.query(() => {
-    // Check environment readiness
-    const forgeConfigured = !!(ENV.builtInForgeApiUrl && ENV.builtInForgeApiKey);
-    
+    // Check environment readiness    
     const uploadsReady = ENV.enableUploads && (
-      forgeConfigured || // Forge storage
-      !!process.env.LOCAL_UPLOADS_PATH || // Local fallback
-      (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) // AWS S3
+      !!process.env.LOCAL_UPLOADS_PATH || // Local storage
+      (ENV.awsAccessKeyId && ENV.awsSecretAccessKey && ENV.awsS3Bucket) // AWS S3
     );
 
-    const aiReady = ENV.enableForge && forgeConfigured;
+    const openaiReady = !!ENV.openaiApiKey;
     
-    const weatherReady = ENV.enableForge && forgeConfigured;
+    const weatherReady = !!ENV.weatherApiKey && !!ENV.weatherApiProvider;
     
     const stripeReady = ENV.enableStripe && 
-      !!process.env.STRIPE_SECRET_KEY && 
-      !!process.env.STRIPE_PUBLISHABLE_KEY;
+      !!ENV.stripeSecretKey && 
+      !!ENV.stripeWebhookSecret;
 
     return {
       featureFlags: {
         uploadsEnabled: ENV.enableUploads,
         stripeEnabled: ENV.enableStripe,
-        forgeEnabled: ENV.enableForge,
         pwaEnabled: !!process.env.ENABLE_PWA,
       },
       serviceStatus: {
@@ -50,16 +46,18 @@ export const systemRouter = router({
           enabled: ENV.enableUploads,
           ready: uploadsReady,
           backend: uploadsReady 
-            ? (ENV.builtInForgeApiUrl ? 'forge' : process.env.AWS_ACCESS_KEY_ID ? 's3' : 'local')
+            ? (ENV.awsAccessKeyId ? 's3' : 'local')
             : 'none',
         },
-        ai: {
-          enabled: ENV.enableForge,
-          ready: aiReady,
+        openai: {
+          enabled: true,
+          ready: openaiReady,
+          model: ENV.openaiModel,
         },
         weather: {
-          enabled: ENV.enableForge,
+          enabled: true,
           ready: weatherReady,
+          provider: ENV.weatherApiProvider || 'none',
         },
         stripe: {
           enabled: ENV.enableStripe,

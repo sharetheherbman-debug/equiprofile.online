@@ -72,7 +72,7 @@
 #### B7: Subscription Tiers ✅
 - **Status**: COMPLETE
 - **Implementation**:
-  - Pricing updated (£10/£100/£35/£300)
+  - Pricing updated (£10/£100/£30/£300)
   - `stableProcedure` middleware for feature gating
   - Protected stables & breeding features
   - Frontend utilities (`client/src/lib/subscription.ts`)
