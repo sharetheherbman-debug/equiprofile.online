@@ -3,7 +3,7 @@ import * as db from "./db";
 import { getDb } from "./db";
 import { horses, healthRecords, trainingSessions, competitions } from "../drizzle/schema";
 import { eq, desc } from "drizzle-orm";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 const apiRouter = Router();
 
