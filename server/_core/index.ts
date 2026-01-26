@@ -423,8 +423,8 @@ async function startServer() {
         admin_unlock_password_present: !!process.env.ADMIN_UNLOCK_PASSWORD,
         enable_stripe: ENV.enableStripe,
         enable_uploads: ENV.enableUploads,
-        enable_forge: ENV.enableForge,
-        forge_vars_present: !!(process.env.BUILT_IN_FORGE_API_URL && process.env.BUILT_IN_FORGE_API_KEY),
+        openai_api_key_present: !!ENV.openaiApiKey,
+        weather_api_key_present: !!ENV.weatherApiKey,
         version: cachedBuildInfo.version,
         node_env: process.env.NODE_ENV || "development"
       });
