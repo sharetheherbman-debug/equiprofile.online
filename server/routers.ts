@@ -1071,10 +1071,19 @@ Format as JSON array with: { title, description, priority (urgent/high/medium/lo
         let tasks = [];
         try {
           const content = response.choices[0]?.message?.content || '[]';
-          const parsed = JSON.parse(content);
-          tasks = Array.isArray(parsed) ? parsed : [];
+          try {
+            const parsed = JSON.parse(content);
+            tasks = Array.isArray(parsed) ? parsed : [];
+          } catch (parseErr) {
+            console.warn('[Task AI] Failed to parse AI response, using fallback');
+            // Use fallback below
+          }
         } catch (err) {
-          // Fallback to basic tasks
+          console.warn('[Task AI] AI request failed:', err);
+        }
+        
+        // Fallback to basic tasks if empty
+        if (tasks.length === 0) {
           tasks = [
             { title: 'Morning feed and water check', priority: 'high', taskType: 'feeding', estimatedMinutes: 30 },
             { title: 'Turnout and paddock check', priority: 'high', taskType: 'general_care', estimatedMinutes: 45 },
@@ -2506,10 +2515,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           ));
         
         // Generate AI summary
+        const trainingTypes = trainingSessions
+          .map(t => t.sessionType)
+          .filter(Boolean)
+          .join(', ') || 'None';
+        const healthTypes = healthRecords
+          .map(h => h.recordType)
+          .filter(Boolean)
+          .join(', ') || 'None';
+        
         const prompt = `Generate a concise monthly summary for ${horse.name} for ${targetMonth}:
 
-Training: ${trainingSessions.length} sessions, types: ${trainingSessions.map(t => t.sessionType).join(', ')}
-Health: ${healthRecords.length} records, types: ${healthRecords.map(h => h.recordType).join(', ')}
+Training: ${trainingSessions.length} sessions, types: ${trainingTypes}
+Health: ${healthRecords.length} records, types: ${healthTypes}
 
 Provide:
 1. Key highlights (2-3 points)
@@ -2528,7 +2546,14 @@ Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], reco
           });
           
           const content = response.choices[0]?.message?.content || '{}';
-          aiSummary = JSON.parse(content);
+          try {
+            const parsed = JSON.parse(content);
+            if (parsed && typeof parsed === 'object') {
+              aiSummary = parsed;
+            }
+          } catch (parseErr) {
+            console.warn('[Analytics] Failed to parse AI response:', parseErr);
+          }
         } catch (err) {
           console.warn('[Analytics] AI summary failed:', err);
         }
