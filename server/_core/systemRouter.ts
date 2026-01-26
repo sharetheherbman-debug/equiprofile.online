@@ -33,7 +33,7 @@ export const systemRouter = router({
     
     const stripeReady = ENV.enableStripe && 
       !!ENV.stripeSecretKey && 
-      !!process.env.STRIPE_PUBLISHABLE_KEY;
+      !!ENV.stripeWebhookSecret;
 
     return {
       featureFlags: {
