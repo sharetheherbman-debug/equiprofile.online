@@ -159,7 +159,7 @@ export default function Home() {
           </section>
 
           {/* Benefits Section - How EquiProfile Makes Life Easier */}
-          <section className="py-20 bg-gradient-to-b from-primary/5 to-white">
+          <section className="py-20 bg-gradient-to-b from-primary/5 to-muted/30">
             <div className="container">
               <ScrollReveal>
                 <div className="text-center max-w-3xl mx-auto mb-16">
@@ -175,7 +175,7 @@ export default function Home() {
 
               <Stagger className="grid md:grid-cols-3 gap-8">
                 <StaggerItem>
-                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2 h-full">
+                  <Card className="text-center p-6 rounded-xl shadow-md card-hover border-2 h-full">
                     <CardContent className="pt-6 flex flex-col h-full">
                       <div className="text-5xl mb-4">📱</div>
                       <div className="text-lg font-semibold mb-2">Access Anywhere</div>
@@ -185,7 +185,7 @@ export default function Home() {
                 </StaggerItem>
                 
                 <StaggerItem>
-                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2 h-full">
+                  <Card className="text-center p-6 rounded-xl shadow-md card-hover border-2 h-full">
                     <CardContent className="pt-6 flex flex-col h-full">
                       <div className="text-5xl mb-4">⏰</div>
                       <div className="text-lg font-semibold mb-2">Never Miss a Thing</div>
@@ -195,7 +195,7 @@ export default function Home() {
                 </StaggerItem>
                 
                 <StaggerItem>
-                  <Card className="text-center p-6 bg-white rounded-xl shadow-md card-hover border-2 h-full">
+                  <Card className="text-center p-6 rounded-xl shadow-md card-hover border-2 h-full">
                     <CardContent className="pt-6 flex flex-col h-full">
                       <div className="text-5xl mb-4">🎯</div>
                       <div className="text-lg font-semibold mb-2">Stay Organized</div>

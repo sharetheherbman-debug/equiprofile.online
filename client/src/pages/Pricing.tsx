@@ -510,7 +510,8 @@ export default function Pricing() {
                 <a href="/contact">Contact Support</a>
               </Button>
             </div>
-            </div>
+          </div>
+        </div>
           </div>
         </div>
         </div>
