@@ -1,7 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, adminUnlockedProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, adminUnlockedProcedure, stableProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
@@ -1958,7 +1958,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
   // Stable management
   stables: router({
-    create: subscribedProcedure
+    create: stableProcedure
       .input(z.object({
         name: z.string().min(1).max(200),
         description: z.string().optional(),
@@ -2033,7 +2033,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return stable[0] || null;
       }),
 
-    update: subscribedProcedure
+    update: stableProcedure
       .input(z.object({
         id: z.number(),
         name: z.string().optional(),
@@ -2693,7 +2693,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
   // Breeding Management
   breeding: router({
-    createRecord: subscribedProcedure
+    createRecord: stableProcedure
       .input(z.object({
         mareId: z.number(),
         stallionId: z.number().optional(),
@@ -3107,7 +3107,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
   // Lesson bookings management
   lessonBookings: router({
-    create: protectedProcedure
+    create: stableProcedure
       .input(z.object({
         trainerId: z.number(),
         horseId: z.number().optional(),

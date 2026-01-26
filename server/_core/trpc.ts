@@ -56,3 +56,44 @@ export const adminUnlockedProcedure = protectedProcedure.use(
     });
   }),
 );
+
+// Stable-tier procedure that requires stable subscription plan
+export const stableProcedure = protectedProcedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    // Import db dynamically to avoid circular dependencies
+    const db = await import('../db');
+    const user = await db.getUserById(ctx.user.id);
+    
+    if (!user) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: "User not found" });
+    }
+
+    // Allow admins full access
+    if (user.role === 'admin') {
+      return next({ ctx });
+    }
+
+    // Check if user has stable plan
+    const hasStablePlan = user.subscriptionPlan === 'stable_monthly' || user.subscriptionPlan === 'stable_yearly';
+    
+    if (!hasStablePlan) {
+      throw new TRPCError({ 
+        code: "FORBIDDEN", 
+        message: "This feature requires a Stable subscription plan. Please upgrade to access stable management features." 
+      });
+    }
+
+    // Check if subscription is active
+    const validStatuses = ['trial', 'active'];
+    if (!validStatuses.includes(user.subscriptionStatus)) {
+      throw new TRPCError({ 
+        code: "FORBIDDEN", 
+        message: "Your subscription has expired. Please renew to continue." 
+      });
+    }
+
+    return next({ ctx });
+  }),
+);
