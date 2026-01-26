@@ -24,29 +24,36 @@ import { useRealtimeModule } from "@/hooks/useRealtime";
 
 function HorsesContent() {
   const { data: horses, isLoading, refetch } = trpc.horses.list.useQuery();
-  const [localHorses, setLocalHorses] = useState(horses || []);
+  const [localHorses, setLocalHorses] = useState<any[]>([]);
   
   // Real-time updates
   useRealtimeModule('horses', (action, data) => {
     switch (action) {
       case 'created':
-        setLocalHorses(prev => [...prev, data]);
+        setLocalHorses(prev => {
+          const horsesList = Array.isArray(prev) ? prev : horses?.horses || [];
+          return [...horsesList, data];
+        });
         toast.success(`${data.name} added`);
         break;
       case 'updated':
-        setLocalHorses(prev => 
-          prev.map(h => h.id === data.id ? { ...h, ...data } : h)
-        );
+        setLocalHorses(prev => {
+          const horsesList = Array.isArray(prev) ? prev : horses?.horses || [];
+          return horsesList.map((h: any) => h.id === data.id ? { ...h, ...data } : h);
+        });
         break;
       case 'deleted':
-        setLocalHorses(prev => prev.filter(h => h.id !== data.id));
+        setLocalHorses(prev => {
+          const horsesList = Array.isArray(prev) ? prev : horses?.horses || [];
+          return horsesList.filter((h: any) => h.id !== data.id);
+        });
         break;
     }
   });
   
   // Update local state when query data changes
   useEffect(() => {
-    if (horses) setLocalHorses(horses);
+    if (horses?.horses) setLocalHorses(horses.horses);
   }, [horses]);
   
   const exportMutation = trpc.horses.exportCSV.useQuery(undefined, {
