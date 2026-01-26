@@ -1445,6 +1445,47 @@ export const appRouter = router({
 
   // Weather and AI analysis
   weather: router({
+    // Fetch real-time weather for a location
+    getCurrent: subscribedProcedure
+      .input(z.object({
+        location: z.string(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const { getWeather, getCareSuggestions, getRidingRecommendation } = await import('./_core/weather');
+        
+        try {
+          const weatherData = await getWeather(input.location);
+          const suggestions = getCareSuggestions(weatherData);
+          const ridingRec = getRidingRecommendation(weatherData);
+          
+          // Log the weather check
+          await db.createWeatherLog({
+            userId: ctx.user!.id,
+            location: weatherData.location,
+            temperature: weatherData.temperature,
+            humidity: weatherData.humidity,
+            windSpeed: weatherData.windSpeed,
+            precipitation: weatherData.precipitation,
+            conditions: weatherData.conditions,
+            uvIndex: weatherData.uvIndex,
+            visibility: weatherData.visibility,
+            ridingRecommendation: ridingRec.safety,
+            aiAnalysis: JSON.stringify({ suggestions, ridingRec }),
+          });
+          
+          return {
+            ...weatherData,
+            suggestions,
+            ridingRecommendation: ridingRec,
+          };
+        } catch (error: any) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: error.message || 'Failed to fetch weather data',
+          });
+        }
+      }),
+    
     analyze: subscribedProcedure
       .input(z.object({
         location: z.string(),
