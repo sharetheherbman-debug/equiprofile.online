@@ -45,6 +45,7 @@ export default function PrivacyPage() {
                   <ul className="list-disc pl-6 space-y-2">
                     <li>Device and browser information</li>
                     <li>IP address</li>
+                    <li>Location data (if provided for weather features)</li>
                     <li>Usage data (pages viewed, features used)</li>
                     <li>Cookies and similar technologies</li>
                   </ul>
@@ -68,40 +69,80 @@ export default function PrivacyPage() {
                     <li>Provide and maintain the Service</li>
                     <li>Process transactions and manage subscriptions</li>
                     <li>Send transactional emails and reminders</li>
+                    <li>Provide AI-powered chat assistance through OpenAI's API</li>
+                    <li>Display weather information relevant to your horses' locations</li>
                     <li>Respond to your enquiries</li>
-                    <li>Improve and optimize the Service</li>
+                    <li>Improve and optimise the Service</li>
                     <li>Detect and prevent fraud</li>
                     <li>Comply with legal obligations</li>
                   </ul>
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold mb-3">5. Information Sharing</h2>
+                  <h2 className="text-2xl font-semibold mb-3">5. Third-Party Services and Information Sharing</h2>
                   <p>
-                    We do not sell your personal information. We may share information with:
+                    We do not sell your personal information. We may share information with trusted third-party 
+                    service providers who assist us in operating the Service:
                   </p>
+                  
+                  <h3 className="text-xl font-semibold mb-2 mt-4">OpenAI (AI Chat Features)</h3>
                   <ul className="list-disc pl-6 space-y-2">
-                    <li><strong>Service Providers:</strong> Such as Stripe for payment processing and cloud hosting providers</li>
+                    <li>When you use our AI chat feature, your queries and relevant horse data are sent to OpenAI's API for processing</li>
+                    <li>OpenAI processes this data to generate responses and does not use API data to train their models</li>
+                    <li>We only share the minimum information necessary for the AI to provide relevant assistance</li>
+                    <li>OpenAI's privacy policy: <a href="https://openai.com/privacy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">openai.com/privacy</a></li>
+                  </ul>
+
+                  <h3 className="text-xl font-semibold mb-2 mt-4">Stripe (Payment Processing)</h3>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>All payment information is processed securely by Stripe</li>
+                    <li>We do not store your payment card details on our servers</li>
+                    <li>Stripe's privacy policy: <a href="https://stripe.com/privacy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">stripe.com/privacy</a></li>
+                  </ul>
+
+                  <h3 className="text-xl font-semibold mb-2 mt-4">Weather APIs</h3>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Location data (if provided) is shared with weather API providers to retrieve relevant weather information</li>
+                    <li>This data is used solely for providing weather forecasts and is not stored by us beyond caching for performance</li>
+                  </ul>
+
+                  <h3 className="text-xl font-semibold mb-2 mt-4">Cloud Storage</h3>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Documents and images may be stored on Amazon S3 or similar secure cloud storage services</li>
+                    <li>All stored files are encrypted and access is strictly controlled</li>
+                  </ul>
+
+                  <h3 className="text-xl font-semibold mb-2 mt-4">Other Sharing Situations</h3>
+                  <ul className="list-disc pl-6 space-y-2">
                     <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
-                    <li><strong>With Your Consent:</strong> When you explicitly agree</li>
+                    <li><strong>With Your Consent:</strong> When you explicitly agree to share information</li>
                   </ul>
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold mb-3">6. Data Security</h2>
+                  <h2 className="text-2xl font-semibold mb-3">6. Data Storage and Security</h2>
                   <p>
-                    We implement appropriate technical and organizational measures to protect your data, including:
+                    We implement appropriate technical and organisational measures to protect your data, including:
                   </p>
                   <ul className="list-disc pl-6 space-y-2">
-                    <li>Encryption of data in transit and at rest</li>
-                    <li>Secure password hashing</li>
-                    <li>Regular security assessments</li>
-                    <li>Access controls and authentication</li>
-                    <li>Regular backups</li>
+                    <li>Encryption of data in transit (HTTPS/TLS) and at rest</li>
+                    <li>Secure password hashing using industry-standard algorithms</li>
+                    <li>Regular security assessments and updates</li>
+                    <li>Access controls and authentication requirements</li>
+                    <li>Regular automated backups</li>
+                    <li>Secure cloud storage with access logging</li>
                   </ul>
+                  
+                  <h3 className="text-xl font-semibold mb-2 mt-4">Data Storage Locations</h3>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Database: Hosted on secure cloud infrastructure</li>
+                    <li>Documents and images: Stored locally or on Amazon S3 with encryption</li>
+                    <li>Session data: Stored securely with encrypted cookies</li>
+                  </ul>
+
                   <p className="mt-3">
-                    However, no method of transmission over the Internet is completely secure. We cannot guarantee 
-                    absolute security.
+                    However, no method of transmission over the Internet is completely secure. Whilst we strive to 
+                    protect your personal information, we cannot guarantee absolute security.
                   </p>
                 </section>
 
@@ -109,7 +150,17 @@ export default function PrivacyPage() {
                   <h2 className="text-2xl font-semibold mb-3">7. Data Retention</h2>
                   <p>
                     We retain your personal information for as long as necessary to provide the Service and comply 
-                    with legal obligations. You can request deletion of your account and data at any time.
+                    with legal obligations:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li><strong>Active Accounts:</strong> Data is retained whilst your account remains active</li>
+                    <li><strong>Account Deletion:</strong> Upon deletion, personal data is removed within 30 days</li>
+                    <li><strong>Legal Requirements:</strong> Some data may be retained longer where required by law (e.g., payment records for tax purposes)</li>
+                    <li><strong>Backups:</strong> Data in backups is deleted according to our backup rotation schedule (typically 90 days)</li>
+                    <li><strong>AI Conversations:</strong> Chat history with AI is stored in your account and deleted when you delete conversations or your account</li>
+                  </ul>
+                  <p className="mt-3">
+                    You can request deletion of your account and data at any time by contacting us.
                   </p>
                 </section>
 
@@ -131,15 +182,26 @@ export default function PrivacyPage() {
                 </section>
 
                 <section>
-                  <h2 className="text-2xl font-semibold mb-3">9. Cookies</h2>
-                  <p>We use cookies and similar technologies to:</p>
+                  <h2 className="text-2xl font-semibold mb-3">9. Cookies and Local Storage</h2>
+                  <p>We use cookies and local storage technologies to:</p>
                   <ul className="list-disc pl-6 space-y-2">
-                    <li>Maintain your login session</li>
-                    <li>Remember your preferences</li>
-                    <li>Analyze usage patterns</li>
+                    <li>Maintain your login session securely</li>
+                    <li>Remember your preferences and settings</li>
+                    <li>Store theme preferences (light/dark mode)</li>
+                    <li>Analyse usage patterns to improve the Service</li>
+                    <li>Cache data for improved performance</li>
                   </ul>
+                  
+                  <h3 className="text-xl font-semibold mb-2 mt-4">Types of Cookies</h3>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li><strong>Essential Cookies:</strong> Required for authentication and basic functionality</li>
+                    <li><strong>Functional Cookies:</strong> Remember your preferences and settings</li>
+                    <li><strong>Analytics:</strong> Help us understand how you use the Service (if implemented)</li>
+                  </ul>
+
                   <p className="mt-3">
-                    You can control cookies through your browser settings.
+                    You can control cookies through your browser settings. Note that disabling essential cookies 
+                    may prevent you from using certain features of the Service.
                   </p>
                 </section>
 
