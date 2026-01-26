@@ -1792,6 +1792,168 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         timestamp: new Date().toISOString(),
       };
     }),
+    
+    // Data Cleanup & Maintenance
+    purgeOrphans: adminUnlockedProcedure
+      .input(z.object({
+        dryRun: z.boolean().default(true),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const orphans = {
+          healthRecords: 0,
+          trainingSessions: 0,
+          feedCosts: 0,
+          vaccinations: 0,
+          dewormings: 0,
+          documents: 0,
+          treatments: 0,
+          appointments: 0,
+          dentalCare: 0,
+          xrays: 0,
+          hoofcare: 0,
+          nutritionLogs: 0,
+          nutritionPlans: 0,
+        };
+
+        // Find all valid horse IDs
+        const allHorses = await getDb().select({ id: horses.id }).from(horses);
+        const validHorseIds = allHorses.map(h => h.id);
+
+        if (validHorseIds.length === 0) {
+          // No horses exist, all records are orphans
+          if (!input.dryRun) {
+            // Delete all horse-related records
+            await getDb().delete(healthRecords);
+            await getDb().delete(trainingSessions);
+            await getDb().delete(feedCosts);
+            // Add more deletions as needed
+          }
+          
+          // Count would be all records
+          const hRecords = await getDb().select().from(healthRecords);
+          orphans.healthRecords = hRecords.length;
+          
+        } else {
+          // Find orphaned health records
+          const orphanedHealthRecords = await getDb()
+            .select()
+            .from(healthRecords)
+            .where(sql`${healthRecords.horseId} NOT IN (${sql.join(validHorseIds.map(id => sql`${id}`), sql`, `)})`)
+            .execute();
+          
+          orphans.healthRecords = orphanedHealthRecords.length;
+
+          if (!input.dryRun && orphanedHealthRecords.length > 0) {
+            const orphanIds = orphanedHealthRecords.map(r => r.id);
+            await getDb().delete(healthRecords).where(inArray(healthRecords.id, orphanIds));
+          }
+
+          // Find orphaned training sessions
+          const orphanedTrainingSessions = await getDb()
+            .select()
+            .from(trainingSessions)
+            .where(sql`${trainingSessions.horseId} NOT IN (${sql.join(validHorseIds.map(id => sql`${id}`), sql`, `)})`)
+            .execute();
+          
+          orphans.trainingSessions = orphanedTrainingSessions.length;
+
+          if (!input.dryRun && orphanedTrainingSessions.length > 0) {
+            const orphanIds = orphanedTrainingSessions.map(r => r.id);
+            await getDb().delete(trainingSessions).where(inArray(trainingSessions.id, orphanIds));
+          }
+
+          // Find orphaned feed costs
+          const orphanedFeedCosts = await getDb()
+            .select()
+            .from(feedCosts)
+            .where(sql`${feedCosts.horseId} NOT IN (${sql.join(validHorseIds.map(id => sql`${id}`), sql`, `)})`)
+            .execute();
+          
+          orphans.feedCosts = orphanedFeedCosts.length;
+
+          if (!input.dryRun && orphanedFeedCosts.length > 0) {
+            const orphanIds = orphanedFeedCosts.map(r => r.id);
+            await getDb().delete(feedCosts).where(inArray(feedCosts.id, orphanIds));
+          }
+        }
+
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: input.dryRun ? 'orphan_scan' : 'orphans_purged',
+          entityType: 'system',
+          details: JSON.stringify(orphans),
+        });
+
+        return {
+          success: true,
+          dryRun: input.dryRun,
+          orphans,
+        };
+      }),
+    
+    deleteHorseHard: adminUnlockedProcedure
+      .input(z.object({
+        horseId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify horse exists
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        const deleted = {
+          healthRecords: 0,
+          trainingSessions: 0,
+          feedCosts: 0,
+          vaccinations: 0,
+          dewormings: 0,
+          documents: 0,
+          lessonBookings: 0,
+        };
+
+        // Delete all related records
+        const healthRecordsDeleted = await getDb()
+          .delete(healthRecords)
+          .where(eq(healthRecords.horseId, input.horseId))
+          .execute();
+        deleted.healthRecords = healthRecordsDeleted.rowsAffected || 0;
+
+        const trainingSessionsDeleted = await getDb()
+          .delete(trainingSessions)
+          .where(eq(trainingSessions.horseId, input.horseId))
+          .execute();
+        deleted.trainingSessions = trainingSessionsDeleted.rowsAffected || 0;
+
+        const feedCostsDeleted = await getDb()
+          .delete(feedCosts)
+          .where(eq(feedCosts.horseId, input.horseId))
+          .execute();
+        deleted.feedCosts = feedCostsDeleted.rowsAffected || 0;
+
+        const lessonBookingsDeleted = await getDb()
+          .delete(lessonBookings)
+          .where(eq(lessonBookings.horseId, input.horseId))
+          .execute();
+        deleted.lessonBookings = lessonBookingsDeleted.rowsAffected || 0;
+
+        // Finally, delete the horse itself
+        await db.deleteHorse(input.horseId);
+
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: 'horse_hard_deleted',
+          entityType: 'horse',
+          entityId: input.horseId,
+          details: JSON.stringify({ horseName: horse.name, deleted }),
+        });
+
+        return {
+          success: true,
+          horseName: horse.name,
+          deleted,
+        };
+      }),
   }),
 
   // Stable management
