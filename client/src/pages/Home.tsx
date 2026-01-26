@@ -85,16 +85,22 @@ export default function Home() {
         <div className="min-h-screen">
           {/* Hero Section - Mobile Friendly */}
           <section className="relative min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh] flex items-center overflow-hidden">
-            {/* Full-width hero image with dark overlay and proper mobile positioning */}
+            {/* Full-width hero video with dark overlay and proper mobile positioning */}
             <div className="absolute inset-0">
-              <img 
-                src="/images/landing-hero.jpg" 
-                alt="Professional horse management" 
+              <video 
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster="/images/landing-hero.jpg"
                 className="w-full h-full object-cover"
                 style={{ 
-                  objectPosition: "center 30%"
+                  objectFit: "cover",
+                  objectPosition: "center"
                 }}
-              />
+              >
+                <source src="/Equiprofile-hero.mp4" type="video/mp4" />
+              </video>
               <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
             </div>
             

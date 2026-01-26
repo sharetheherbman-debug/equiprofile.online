@@ -117,37 +117,47 @@ export default function Features() {
     <>
       <MarketingNav />
       <PageTransition>
-        <div className="min-h-screen pt-24 pb-16">
-          {/* Hero Section */}
-          <section className="container mx-auto px-4 mb-20">
-            <ScrollReveal>
-              <div className="text-center max-w-3xl mx-auto">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-6">
-                  Everything You Need for{" "}
-                  <span className="text-gradient">Horse Management</span>
-                </h1>
-                <p className="text-lg md:text-xl text-muted-foreground mb-8">
-                  Designed for daily workflows: health, training, documents, scheduling. 
-                  Built for professional stables and equine teams.
-                </p>
-                <div className="flex items-center justify-center gap-4">
-                  <Link href="/register">
-                    <Button size="lg" className="text-lg">
-                      Get Started Free
-                    </Button>
-                  </Link>
-                  <Link href="/pricing">
-                    <Button size="lg" variant="outline" className="text-lg">
-                      View Pricing
-                    </Button>
-                  </Link>
+        <div className="min-h-screen">
+          {/* Hero Section with Image */}
+          <section className="relative h-64 md:h-80 lg:h-96 mb-16 overflow-hidden">
+            <div className="absolute inset-0">
+              <img 
+                src="/images/training-session.jpg" 
+                alt="Features" 
+                className="w-full h-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-black/50" />
+            </div>
+            <div className="relative z-10 container mx-auto px-4 h-full flex items-center justify-center">
+              <ScrollReveal>
+                <div className="text-center max-w-3xl mx-auto">
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-6 text-white">
+                    Everything You Need for{" "}
+                    <span className="text-accent-400">Horse Management</span>
+                  </h1>
+                  <p className="text-lg md:text-xl text-white/90 mb-8">
+                    Designed for daily workflows: health, training, documents, scheduling. 
+                    Built for professional stables and equine teams.
+                  </p>
+                  <div className="flex items-center justify-center gap-4">
+                    <Link href="/register">
+                      <Button size="lg" className="text-lg">
+                        Get Started Free
+                      </Button>
+                    </Link>
+                    <Link href="/pricing">
+                      <Button size="lg" variant="outline" className="text-lg bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20">
+                        View Pricing
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </ScrollReveal>
+              </ScrollReveal>
+            </div>
           </section>
 
           {/* Category Sections */}
-          <section className="container mx-auto px-4 space-y-24">
+          <section className="container mx-auto px-4 space-y-24 pb-16">
             {categories.map((category, index) => (
               <ScrollReveal key={category.id}>
                 <div className={`grid lg:grid-cols-2 gap-12 items-center ${
