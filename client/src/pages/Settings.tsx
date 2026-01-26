@@ -416,11 +416,11 @@ function SystemStatus() {
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium">Node Environment</span>
-            <Badge variant="outline">{systemStatus.nodeEnv}</Badge>
+            <Badge variant="outline">{systemStatus.environment.nodeEnv}</Badge>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium">Version</span>
-            <Badge variant="outline">{systemStatus.version}</Badge>
+            <Badge variant="outline">{systemStatus.environment.version}</Badge>
           </div>
         </CardContent>
       </Card>
@@ -434,26 +434,26 @@ function SystemStatus() {
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium">Uploads</span>
-            <Badge variant={systemStatus.featureFlags.uploads ? "default" : "outline"}>
-              {systemStatus.featureFlags.uploads ? "Enabled" : "Disabled"}
+            <Badge variant={systemStatus.featureFlags.uploadsEnabled ? "default" : "outline"}>
+              {systemStatus.featureFlags.uploadsEnabled ? "Enabled" : "Disabled"}
             </Badge>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium">Stripe</span>
-            <Badge variant={systemStatus.featureFlags.stripe ? "default" : "outline"}>
-              {systemStatus.featureFlags.stripe ? "Enabled" : "Disabled"}
+            <Badge variant={systemStatus.featureFlags.stripeEnabled ? "default" : "outline"}>
+              {systemStatus.featureFlags.stripeEnabled ? "Enabled" : "Disabled"}
             </Badge>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium">Forge</span>
-            <Badge variant={systemStatus.featureFlags.forge ? "default" : "outline"}>
-              {systemStatus.featureFlags.forge ? "Enabled" : "Disabled"}
+            <Badge variant={systemStatus.featureFlags.forgeEnabled ? "default" : "outline"}>
+              {systemStatus.featureFlags.forgeEnabled ? "Enabled" : "Disabled"}
             </Badge>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium">PWA</span>
-            <Badge variant={systemStatus.featureFlags.pwa ? "default" : "outline"}>
-              {systemStatus.featureFlags.pwa ? "Enabled" : "Disabled"}
+            <Badge variant={systemStatus.featureFlags.pwaEnabled ? "default" : "outline"}>
+              {systemStatus.featureFlags.pwaEnabled ? "Enabled" : "Disabled"}
             </Badge>
           </div>
         </CardContent>
@@ -473,12 +473,12 @@ function SystemStatus() {
               <div>
                 <div className="text-sm font-medium">Uploads</div>
                 <div className="text-xs text-muted-foreground">
-                  Backend: {systemStatus.services.uploads.backend}
+                  Backend: {systemStatus.serviceStatus.uploads.backend}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {systemStatus.services.uploads.ready ? (
+              {systemStatus.serviceStatus.uploads.ready ? (
                 <>
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <Badge variant="default">Ready</Badge>
@@ -499,7 +499,7 @@ function SystemStatus() {
               <div className="text-sm font-medium">AI & LLM Services</div>
             </div>
             <div className="flex items-center gap-2">
-              {systemStatus.services.ai.ready ? (
+              {systemStatus.serviceStatus.ai.ready ? (
                 <>
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <Badge variant="default">Ready</Badge>
@@ -520,7 +520,7 @@ function SystemStatus() {
               <div className="text-sm font-medium">Weather Integration</div>
             </div>
             <div className="flex items-center gap-2">
-              {systemStatus.services.weather.ready ? (
+              {systemStatus.serviceStatus.weather.ready ? (
                 <>
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <Badge variant="default">Ready</Badge>
@@ -541,7 +541,7 @@ function SystemStatus() {
               <div className="text-sm font-medium">Stripe Payments</div>
             </div>
             <div className="flex items-center gap-2">
-              {systemStatus.services.stripe.ready ? (
+              {systemStatus.serviceStatus.stripe.ready ? (
                 <>
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   <Badge variant="default">Ready</Badge>

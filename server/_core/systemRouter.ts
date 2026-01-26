@@ -22,15 +22,17 @@ export const systemRouter = router({
   // System status endpoint for ops visibility
   status: publicProcedure.query(() => {
     // Check environment readiness
+    const forgeConfigured = !!(ENV.builtInForgeApiUrl && ENV.builtInForgeApiKey);
+    
     const uploadsReady = ENV.enableUploads && (
-      (ENV.builtInForgeApiUrl && ENV.builtInForgeApiKey) || // Forge storage
+      forgeConfigured || // Forge storage
       !!process.env.LOCAL_UPLOADS_PATH || // Local fallback
       (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) // AWS S3
     );
 
-    const aiReady = ENV.enableForge && ENV.builtInForgeApiUrl && ENV.builtInForgeApiKey;
+    const aiReady = ENV.enableForge && forgeConfigured;
     
-    const weatherReady = ENV.enableForge && ENV.builtInForgeApiUrl && ENV.builtInForgeApiKey;
+    const weatherReady = ENV.enableForge && forgeConfigured;
     
     const stripeReady = ENV.enableStripe && 
       !!process.env.STRIPE_SECRET_KEY && 
