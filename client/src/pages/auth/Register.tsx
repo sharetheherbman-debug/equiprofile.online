@@ -94,187 +94,181 @@ export default function Register() {
   return (
     <AuthSplitLayout imageSrc="/images/register-bg.jpg">
       <Card className="shadow-xl">
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl font-bold text-center">
-                  Create an account
-                </CardTitle>
-                <CardDescription className="text-center">
-                  Get started with EquiProfile today
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">
+            Create an account
+          </CardTitle>
+          <CardDescription className="text-center">
+            Get started with EquiProfile today
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-                <form onSubmit={handleEmailRegister} className="space-y-4">
-                  {/* Name field */}
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="John Doe"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      disabled={isLoading}
-                    />
-                  </div>
+          <form onSubmit={handleEmailRegister} className="space-y-3">
+            {/* Name field */}
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
 
-                  {/* Email field */}
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading}
-                      required
-                    />
-                  </div>
+            {/* Email field */}
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
 
-                  {/* Password field */}
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={isLoading}
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      At least 8 characters
-                    </p>
-                  </div>
+            {/* Password field */}
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="•••••••• (min 8 characters)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
 
-                  {/* Confirm Password field */}
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      disabled={isLoading}
-                      required
-                    />
-                  </div>
+            {/* Confirm Password field */}
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
 
-                  {/* Terms acceptance */}
-                  <div className="flex items-start gap-2">
-                    <Checkbox 
-                      id="terms" 
-                      className="mt-1"
-                      checked={acceptTerms}
-                      onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
-                    />
-                    <Label
-                      htmlFor="terms"
-                      className="text-sm font-normal cursor-pointer leading-relaxed"
-                    >
-                      I agree to the{" "}
-                      <Link href="/terms">
-                        <a className="text-primary hover:underline">
-                          Terms of Service
-                        </a>
-                      </Link>{" "}
-                      and{" "}
-                      <Link href="/privacy">
-                        <a className="text-primary hover:underline">
-                          Privacy Policy
-                        </a>
-                      </Link>
-                    </Label>
-                  </div>
+            {/* Terms acceptance */}
+            <div className="flex items-start gap-2">
+              <Checkbox 
+                id="terms" 
+                className="mt-0.5"
+                checked={acceptTerms}
+                onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
+              />
+              <Label
+                htmlFor="terms"
+                className="text-sm font-normal cursor-pointer leading-snug"
+              >
+                I agree to the{" "}
+                <Link href="/terms">
+                  <a className="text-primary hover:underline">
+                    Terms of Service
+                  </a>
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy">
+                  <a className="text-primary hover:underline">
+                    Privacy Policy
+                  </a>
+                </Link>
+              </Label>
+            </div>
 
-                  {/* Create account button */}
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    size="lg"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Creating account...
-                      </>
-                    ) : (
-                      "Create account"
-                    )}
-                  </Button>
-                </form>
+            {/* Create account button */}
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                "Create account"
+              )}
+            </Button>
+          </form>
 
-                {/* OAuth option if available */}
-                {oauthEnabled && (
-                  <>
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
-                      </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-card px-2 text-muted-foreground">
-                          Or continue with
-                        </span>
-                      </div>
-                    </div>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={handleOAuthRegister}
-                      disabled={isLoading}
-                    >
-                      OAuth Sign Up
-                    </Button>
-                  </>
-                )}
-
-                {/* Divider */}
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">
-                      Or
-                    </span>
-                  </div>
+          {/* OAuth option if available */}
+          {oauthEnabled && (
+            <>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
                 </div>
-
-                {/* Login link */}
-                <div className="text-center text-sm">
-                  <span className="text-muted-foreground">
-                    Already have an account?{" "}
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">
+                    Or continue with
                   </span>
-                  <Link href="/login">
-                    <a className="text-primary font-medium hover:underline">
-                      Sign in
-                    </a>
-                  </Link>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Note */}
-            <p className="text-xs text-center text-muted-foreground mt-4">
-              {oauthEnabled 
-                ? "Secure authentication with OAuth or email/password" 
-                : "Secure email/password authentication"}
-            </p>
-            <p className="text-xs text-center text-muted-foreground mt-2">
-              Start your <strong>7-day free trial</strong> - no credit card required
-            </p>
-          </AuthSplitLayout>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleOAuthRegister}
+                disabled={isLoading}
+              >
+                OAuth Sign Up
+              </Button>
+            </>
+          )}
+
+          {/* Divider */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                Or
+              </span>
+            </div>
+          </div>
+
+          {/* Login link */}
+          <div className="text-center text-sm">
+            <span className="text-muted-foreground">
+              Already have an account?{" "}
+            </span>
+            <Link href="/login">
+              <a className="text-primary font-medium hover:underline">
+                Sign in
+              </a>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Note */}
+      <p className="text-xs text-center text-muted-foreground mt-4">
+        {oauthEnabled 
+          ? "Secure authentication with OAuth or email/password" 
+          : "Secure email/password authentication"}
+      </p>
+    </AuthSplitLayout>
   );
 }
