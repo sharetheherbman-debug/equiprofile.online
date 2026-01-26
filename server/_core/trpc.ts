@@ -64,7 +64,7 @@ export const stableProcedure = protectedProcedure.use(
 
     // Import db dynamically to avoid circular dependencies
     const db = await import('../db');
-    const user = await db.getUserById(ctx.user.id);
+    const user = await db.getUserById(ctx.user!.id);
     
     if (!user) {
       throw new TRPCError({ code: "UNAUTHORIZED", message: "User not found" });
