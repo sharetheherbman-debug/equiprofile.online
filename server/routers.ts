@@ -41,6 +41,11 @@ import {
   lessonBookings,
   trainerAvailability,
   horses,
+  careScores,
+  medicationSchedules,
+  medicationLogs,
+  behaviorLogs,
+  healthAlerts,
 } from "../drizzle/schema";
 
 // Subscription check middleware
@@ -4344,6 +4349,561 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           entityType: 'nutrition_plan',
           entityId: input.id,
           details: `Deleted nutrition plan`,
+        });
+
+        return { success: true };
+      }),
+  }),
+
+  // ============ CARE INSIGHTS ROUTER ============
+  careInsights: router({
+    // Get daily care score for a horse
+    getScore: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        date: z.string().optional(), // ISO date string, defaults to today
+      }))
+      .query(async ({ ctx, input }) => {
+        const targetDate = input.date || new Date().toISOString().split('T')[0];
+        
+        // Check horse ownership
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        // Check if score already calculated for this date
+        let score = await db.getCareScore(input.horseId, ctx.user.id, targetDate);
+        
+        if (!score) {
+          // Calculate score
+          let taskCompletionScore = 0;
+          let medicationComplianceScore = 0;
+          let healthEventScore = 30;
+
+          // Task completion (40 points): Check for feeding, training, behavior logs
+          const behaviorLog = await db.getBehaviorLogs(input.horseId, ctx.user.id, 1);
+          if (behaviorLog.length > 0 && behaviorLog[0].logDate === targetDate) {
+            taskCompletionScore += 20; // Daily log completed
+          }
+
+          const sessions = await db.getTrainingSessionsByHorse(input.horseId);
+          const todaySessions = sessions.filter(s => s.sessionDate === targetDate);
+          if (todaySessions.length > 0) {
+            taskCompletionScore += 20; // Training session logged
+          }
+
+          // Medication compliance (30 points): Check all scheduled meds administered
+          const schedules = await db.getMedicationSchedules(input.horseId, ctx.user.id, true);
+          if (schedules.length > 0) {
+            const logs = await db.getMedicationLogsByHorse(input.horseId, ctx.user.id, 1);
+            const todayLogs = logs.filter(l => {
+              const logDate = new Date(l.administeredAt).toISOString().split('T')[0];
+              return logDate === targetDate && !l.wasSkipped;
+            });
+            
+            if (todayLogs.length >= schedules.length) {
+              medicationComplianceScore = 30; // All meds given
+            } else if (todayLogs.length > 0) {
+              medicationComplianceScore = Math.floor((todayLogs.length / schedules.length) * 30);
+            }
+          } else {
+            medicationComplianceScore = 30; // No meds scheduled = full points
+          }
+
+          // Health events (30 points): Check for active alerts and overdue health records
+          const alerts = await db.getHealthAlerts(input.horseId, ctx.user.id, false);
+          const highSeverityAlerts = alerts.filter(a => a.severity === 'high').length;
+          const mediumSeverityAlerts = alerts.filter(a => a.severity === 'medium').length;
+          
+          healthEventScore -= (highSeverityAlerts * 15 + mediumSeverityAlerts * 7);
+          healthEventScore = Math.max(0, healthEventScore);
+
+          const overallScore = taskCompletionScore + medicationComplianceScore + healthEventScore;
+
+          const notes = JSON.stringify({
+            taskCompletion: {
+              dailyLog: behaviorLog.length > 0,
+              trainingSession: todaySessions.length > 0,
+            },
+            medicationCompliance: {
+              scheduled: schedules.length,
+              administered: logs.filter(l => new Date(l.administeredAt).toISOString().split('T')[0] === targetDate).length,
+            },
+            healthEvents: {
+              activeAlerts: alerts.length,
+              highSeverity: highSeverityAlerts,
+              mediumSeverity: mediumSeverityAlerts,
+            },
+          });
+
+          // Create and save score
+          await db.createCareScore({
+            horseId: input.horseId,
+            userId: ctx.user.id,
+            date: targetDate,
+            overallScore,
+            taskCompletionScore,
+            medicationComplianceScore,
+            healthEventScore,
+            notes,
+          });
+
+          score = await db.getCareScore(input.horseId, ctx.user.id, targetDate);
+        }
+
+        return score;
+      }),
+
+    // Get score history
+    getScoreHistory: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        days: z.number().min(1).max(90).default(7),
+      }))
+      .query(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        return await db.getCareScoreHistory(input.horseId, ctx.user.id, input.days);
+      }),
+
+    // Get active health alerts
+    getAlerts: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        includeResolved: z.boolean().default(false),
+      }))
+      .query(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        return await db.getHealthAlerts(input.horseId, ctx.user.id, input.includeResolved);
+      }),
+
+    // Resolve an alert
+    resolveAlert: subscribedProcedure
+      .input(z.object({
+        alertId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const alert = await db.getHealthAlert(input.alertId, ctx.user.id);
+        if (!alert) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Alert not found' });
+        }
+
+        await db.resolveHealthAlert(input.alertId, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'health_alert_resolved',
+          entityType: 'health_alert',
+          entityId: input.alertId,
+          details: `Resolved health alert: ${alert.alertType}`,
+        });
+
+        return { success: true };
+      }),
+
+    // Dismiss (delete) an alert
+    dismissAlert: subscribedProcedure
+      .input(z.object({
+        alertId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const alert = await db.getHealthAlert(input.alertId, ctx.user.id);
+        if (!alert) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Alert not found' });
+        }
+
+        await db.deleteHealthAlert(input.alertId, ctx.user.id);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'health_alert_dismissed',
+          entityType: 'health_alert',
+          entityId: input.alertId,
+          details: `Dismissed health alert: ${alert.alertType}`,
+        });
+
+        return { success: true };
+      }),
+
+    // Check and generate alerts for a horse
+    checkAlerts: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        const newAlerts = [];
+
+        // Check for repeat injuries (same type within 90 days)
+        const healthRecords = await db.getHealthRecordsByHorse(input.horseId);
+        const recentInjuries = healthRecords.filter(r => 
+          r.recordType === 'injury' &&
+          r.recordDate &&
+          new Date(r.recordDate) > new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+        );
+        
+        const injuryTypes = recentInjuries.map(r => r.title.toLowerCase());
+        const duplicates = injuryTypes.filter((item, index) => injuryTypes.indexOf(item) !== index);
+        
+        if (duplicates.length > 0) {
+          const alertId = await db.createHealthAlert({
+            horseId: input.horseId,
+            userId: ctx.user.id,
+            alertType: 'repeat_injury',
+            severity: 'medium',
+            message: `Repeat injury detected: ${duplicates[0]} has occurred multiple times in the last 90 days`,
+          });
+          newAlerts.push(alertId);
+        }
+
+        // Check for weight loss (>5% in 30 days)
+        const behaviorLogs = await db.getBehaviorLogs(input.horseId, ctx.user.id, 30);
+        const logsWithWeight = behaviorLogs.filter(l => l.weight);
+        
+        if (logsWithWeight.length >= 2) {
+          const oldestWeight = logsWithWeight[logsWithWeight.length - 1].weight!;
+          const newestWeight = logsWithWeight[0].weight!;
+          const weightLossPercent = ((oldestWeight - newestWeight) / oldestWeight) * 100;
+          
+          if (weightLossPercent > 5) {
+            const alertId = await db.createHealthAlert({
+              horseId: input.horseId,
+              userId: ctx.user.id,
+              alertType: 'weight_loss',
+              severity: 'high',
+              message: `Significant weight loss detected: ${weightLossPercent.toFixed(1)}% loss in the last 30 days`,
+            });
+            newAlerts.push(alertId);
+          }
+        }
+
+        // Check for reduced activity (ride quality declining)
+        const recentLogs = behaviorLogs.slice(0, 3);
+        const rideQualityMap = { excellent: 4, good: 3, fair: 2, poor: 1, skipped: 0 };
+        
+        if (recentLogs.length === 3 && recentLogs.every(l => l.rideQuality)) {
+          const qualities = recentLogs.map(l => rideQualityMap[l.rideQuality!]);
+          const declining = qualities[0] < qualities[1] && qualities[1] < qualities[2];
+          
+          if (declining && qualities[0] <= 2) {
+            const alertId = await db.createHealthAlert({
+              horseId: input.horseId,
+              userId: ctx.user.id,
+              alertType: 'reduced_activity',
+              severity: 'medium',
+              message: 'Ride quality has been declining over the last 3 sessions',
+            });
+            newAlerts.push(alertId);
+          }
+        }
+
+        // Check for missed medications (2+ consecutive misses)
+        const schedules = await db.getMedicationSchedules(input.horseId, ctx.user.id, true);
+        
+        for (const schedule of schedules) {
+          const logs = await db.getMedicationLogs(schedule.id, ctx.user.id, 7);
+          const skippedLogs = logs.filter(l => l.wasSkipped).slice(0, 2);
+          
+          if (skippedLogs.length >= 2) {
+            const alertId = await db.createHealthAlert({
+              horseId: input.horseId,
+              userId: ctx.user.id,
+              alertType: 'medication_missed',
+              severity: 'high',
+              message: `Medication "${schedule.medicationName}" has been skipped 2 or more times recently`,
+            });
+            newAlerts.push(alertId);
+            break;
+          }
+        }
+
+        // Check for overdue health events
+        const overdueRecords = healthRecords.filter(r => 
+          r.nextDueDate &&
+          new Date(r.nextDueDate) < new Date()
+        );
+        
+        if (overdueRecords.length > 0) {
+          const alertId = await db.createHealthAlert({
+            horseId: input.horseId,
+            userId: ctx.user.id,
+            alertType: 'overdue_health',
+            severity: 'medium',
+            message: `${overdueRecords.length} health record(s) are overdue (vaccination, dental, etc.)`,
+          });
+          newAlerts.push(alertId);
+        }
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'health_alerts_checked',
+          entityType: 'horse',
+          entityId: input.horseId,
+          details: `Checked health alerts, found ${newAlerts.length} new alerts`,
+        });
+
+        return { newAlertsCount: newAlerts.length };
+      }),
+
+    // Medication schedules
+    createSchedule: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        medicationName: z.string().min(1).max(200),
+        dosage: z.string().min(1).max(100),
+        frequency: z.enum(['daily', 'twice_daily', 'three_times_daily', 'weekly', 'biweekly', 'monthly', 'as_needed']),
+        startDate: z.string(),
+        endDate: z.string().optional(),
+        timeOfDay: z.enum(['morning', 'afternoon', 'evening', 'night', 'any']).optional(),
+        specialInstructions: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        const scheduleId = await db.createMedicationSchedule({
+          ...input,
+          userId: ctx.user.id,
+          isActive: true,
+        });
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'medication_schedule_created',
+          entityType: 'medication_schedule',
+          entityId: scheduleId,
+          details: `Created medication schedule for ${input.medicationName}`,
+        });
+
+        return { id: scheduleId };
+      }),
+
+    listSchedules: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        activeOnly: z.boolean().default(true),
+      }))
+      .query(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        return await db.getMedicationSchedules(input.horseId, ctx.user.id, input.activeOnly);
+      }),
+
+    updateSchedule: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        medicationName: z.string().min(1).max(200).optional(),
+        dosage: z.string().min(1).max(100).optional(),
+        frequency: z.enum(['daily', 'twice_daily', 'three_times_daily', 'weekly', 'biweekly', 'monthly', 'as_needed']).optional(),
+        endDate: z.string().optional(),
+        timeOfDay: z.enum(['morning', 'afternoon', 'evening', 'night', 'any']).optional(),
+        specialInstructions: z.string().optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const schedule = await db.getMedicationSchedule(input.id, ctx.user.id);
+        if (!schedule) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found' });
+        }
+
+        const { id, ...updateData } = input;
+        await db.updateMedicationSchedule(id, ctx.user.id, updateData);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'medication_schedule_updated',
+          entityType: 'medication_schedule',
+          entityId: id,
+          details: `Updated medication schedule`,
+        });
+
+        return { success: true };
+      }),
+
+    deleteSchedule: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const schedule = await db.getMedicationSchedule(input.id, ctx.user.id);
+        if (!schedule) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found' });
+        }
+
+        await db.deleteMedicationSchedule(input.id, ctx.user.id);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'medication_schedule_deleted',
+          entityType: 'medication_schedule',
+          entityId: input.id,
+          details: `Deleted medication schedule`,
+        });
+
+        return { success: true };
+      }),
+
+    logMedication: subscribedProcedure
+      .input(z.object({
+        scheduleId: z.number(),
+        administeredAt: z.string(), // ISO timestamp
+        administeredBy: z.string().max(100).optional(),
+        dosageGiven: z.string().max(100).optional(),
+        notes: z.string().optional(),
+        wasSkipped: z.boolean().default(false),
+        skipReason: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const schedule = await db.getMedicationSchedule(input.scheduleId, ctx.user.id);
+        if (!schedule) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found' });
+        }
+
+        const logId = await db.createMedicationLog({
+          ...input,
+          horseId: schedule.horseId,
+          userId: ctx.user.id,
+        });
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'medication_logged',
+          entityType: 'medication_log',
+          entityId: logId,
+          details: `Logged medication administration for ${schedule.medicationName}`,
+        });
+
+        return { id: logId };
+      }),
+
+    getMedicationLogs: subscribedProcedure
+      .input(z.object({
+        scheduleId: z.number(),
+        days: z.number().min(1).max(90).default(30),
+      }))
+      .query(async ({ ctx, input }) => {
+        const schedule = await db.getMedicationSchedule(input.scheduleId, ctx.user.id);
+        if (!schedule) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found' });
+        }
+
+        return await db.getMedicationLogs(input.scheduleId, ctx.user.id, input.days);
+      }),
+
+    // Behavior logs
+    createBehaviorLog: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        logDate: z.string(),
+        weight: z.number().optional(),
+        appetite: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+        energy: z.enum(['high', 'normal', 'low']).optional(),
+        sorenessScore: z.number().min(0).max(10).optional(),
+        rideQuality: z.enum(['excellent', 'good', 'fair', 'poor', 'skipped']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        const logId = await db.createBehaviorLog({
+          ...input,
+          userId: ctx.user.id,
+        });
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'behavior_log_created',
+          entityType: 'behavior_log',
+          entityId: logId,
+          details: `Created behavior log for ${horse.name}`,
+        });
+
+        return { id: logId };
+      }),
+
+    listBehaviorLogs: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        days: z.number().min(1).max(90).default(30),
+      }))
+      .query(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        return await db.getBehaviorLogs(input.horseId, ctx.user.id, input.days);
+      }),
+
+    updateBehaviorLog: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        weight: z.number().optional(),
+        appetite: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+        energy: z.enum(['high', 'normal', 'low']).optional(),
+        sorenessScore: z.number().min(0).max(10).optional(),
+        rideQuality: z.enum(['excellent', 'good', 'fair', 'poor', 'skipped']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const log = await db.getBehaviorLog(input.id, ctx.user.id);
+        if (!log) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Behavior log not found' });
+        }
+
+        const { id, ...updateData } = input;
+        await db.updateBehaviorLog(id, ctx.user.id, updateData);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'behavior_log_updated',
+          entityType: 'behavior_log',
+          entityId: id,
+          details: `Updated behavior log`,
+        });
+
+        return { success: true };
+      }),
+
+    deleteBehaviorLog: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const log = await db.getBehaviorLog(input.id, ctx.user.id);
+        if (!log) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Behavior log not found' });
+        }
+
+        await db.deleteBehaviorLog(input.id, ctx.user.id);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'behavior_log_deleted',
+          entityType: 'behavior_log',
+          entityId: input.id,
+          details: `Deleted behavior log`,
         });
 
         return { success: true };

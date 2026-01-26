@@ -952,3 +952,92 @@ export const nutritionPlans = mysqlTable("nutritionPlans", {
 
 export type NutritionPlan = typeof nutritionPlans.$inferSelect;
 export type InsertNutritionPlan = typeof nutritionPlans.$inferInsert;
+
+// Care Insights System - Daily care scores
+export const careScores = mysqlTable("careScores", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  date: date("date").notNull(),
+  overallScore: int("overallScore").notNull(), // 0-100
+  taskCompletionScore: int("taskCompletionScore").notNull(), // 0-40
+  medicationComplianceScore: int("medicationComplianceScore").notNull(), // 0-30
+  healthEventScore: int("healthEventScore").notNull(), // 0-30
+  notes: text("notes"), // JSON with details about score calculation
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CareScore = typeof careScores.$inferSelect;
+export type InsertCareScore = typeof careScores.$inferInsert;
+
+// Medication schedules
+export const medicationSchedules = mysqlTable("medicationSchedules", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  medicationName: varchar("medicationName", { length: 200 }).notNull(),
+  dosage: varchar("dosage", { length: 100 }).notNull(),
+  frequency: mysqlEnum("frequency", ["daily", "twice_daily", "three_times_daily", "weekly", "biweekly", "monthly", "as_needed"]).notNull(),
+  startDate: date("startDate").notNull(),
+  endDate: date("endDate"),
+  timeOfDay: mysqlEnum("timeOfDay", ["morning", "afternoon", "evening", "night", "any"]),
+  specialInstructions: text("specialInstructions"),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MedicationSchedule = typeof medicationSchedules.$inferSelect;
+export type InsertMedicationSchedule = typeof medicationSchedules.$inferInsert;
+
+// Medication administration logs
+export const medicationLogs = mysqlTable("medicationLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  scheduleId: int("scheduleId").notNull(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  administeredAt: timestamp("administeredAt").notNull(),
+  administeredBy: varchar("administeredBy", { length: 100 }),
+  dosageGiven: varchar("dosageGiven", { length: 100 }),
+  notes: text("notes"),
+  wasSkipped: boolean("wasSkipped").default(false).notNull(),
+  skipReason: text("skipReason"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MedicationLog = typeof medicationLogs.$inferSelect;
+export type InsertMedicationLog = typeof medicationLogs.$inferInsert;
+
+// Behavior and daily observations
+export const behaviorLogs = mysqlTable("behaviorLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  logDate: date("logDate").notNull(),
+  weight: int("weight"), // in kg
+  appetite: mysqlEnum("appetite", ["excellent", "good", "fair", "poor"]),
+  energy: mysqlEnum("energy", ["high", "normal", "low"]),
+  sorenessScore: int("sorenessScore"), // 0-10 scale
+  rideQuality: mysqlEnum("rideQuality", ["excellent", "good", "fair", "poor", "skipped"]),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type BehaviorLog = typeof behaviorLogs.$inferSelect;
+export type InsertBehaviorLog = typeof behaviorLogs.$inferInsert;
+
+// Health alerts
+export const healthAlerts = mysqlTable("healthAlerts", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  userId: int("userId").notNull(),
+  alertType: mysqlEnum("alertType", ["repeat_injury", "weight_loss", "reduced_activity", "medication_missed", "overdue_health"]).notNull(),
+  severity: mysqlEnum("severity", ["low", "medium", "high"]).notNull(),
+  message: text("message").notNull(),
+  isResolved: boolean("isResolved").default(false).notNull(),
+  resolvedAt: timestamp("resolvedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type HealthAlert = typeof healthAlerts.$inferSelect;
+export type InsertHealthAlert = typeof healthAlerts.$inferInsert;
