@@ -4,11 +4,29 @@ import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight } from "lucid
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
 
 export default function CalendarPage() {
   const { t } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<"month" | "week" | "day">("month");
+  const [isAddEventOpen, setIsAddEventOpen] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    date: "",
+    time: "",
+    description: "",
+  });
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -17,6 +35,13 @@ export default function CalendarPage() {
 
   const navigateMonth = (direction: number) => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + direction, 1));
+  };
+
+  const handleAddEvent = () => {
+    // TODO: Implement event creation via tRPC
+    console.log("Creating event:", newEvent);
+    setIsAddEventOpen(false);
+    setNewEvent({ title: "", date: "", time: "", description: "" });
   };
 
   return (
@@ -28,10 +53,65 @@ export default function CalendarPage() {
             Schedule and manage all your equestrian activities
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Event
-        </Button>
+        <Dialog open={isAddEventOpen} onOpenChange={setIsAddEventOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Event
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Event</DialogTitle>
+              <DialogDescription>
+                Create a new event or appointment for your horses.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="event-title">Title</Label>
+                <Input
+                  id="event-title"
+                  value={newEvent.title}
+                  onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                  placeholder="e.g., Vet Appointment, Training Session"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="event-date">Date</Label>
+                  <Input
+                    id="event-date"
+                    type="date"
+                    value={newEvent.date}
+                    onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="event-time">Time</Label>
+                  <Input
+                    id="event-time"
+                    type="time"
+                    value={newEvent.time}
+                    onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="event-description">Description</Label>
+                <Textarea
+                  id="event-description"
+                  value={newEvent.description}
+                  onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                  placeholder="Additional details..."
+                />
+              </div>
+              <Button onClick={handleAddEvent} className="w-full">
+                Create Event
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>

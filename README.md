@@ -79,6 +79,37 @@ openssl rand -base64 32
 openssl rand -base64 16
 ```
 
+**Key Environment Variables:**
+
+1. **Authentication & Security**
+   - `JWT_SECRET` - Secret for signing JWT tokens (REQUIRED)
+   - `ADMIN_UNLOCK_PASSWORD` - Password for admin mode (REQUIRED)
+   - `ADMIN1_EMAIL` & `ADMIN1_PASSWORD` - First admin user credentials (optional)
+   - `ADMIN2_EMAIL` & `ADMIN2_PASSWORD` - Second admin user credentials (optional)
+
+2. **Database**
+   - `DATABASE_URL` - MySQL connection string (REQUIRED)
+   - Example: `mysql://user:password@localhost:3306/equiprofile`
+
+3. **AI Features** (Optional but recommended)
+   - `OPENAI_API_KEY` - OpenAI API key for AI chat and training templates
+   - `ENABLE_FORGE` - Set to `true` to enable AI features
+
+4. **Weather Features** (Optional)
+   - `WEATHER_API_KEY` - API key for weather provider (OpenWeatherMap, WeatherAPI, etc.)
+   - `WEATHER_API_PROVIDER` - Weather provider name
+
+5. **Stripe Billing** (Optional)
+   - `ENABLE_STRIPE` - Set to `true` to enable billing
+   - `STRIPE_SECRET_KEY` - Stripe secret key
+   - `STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
+   - `STRIPE_MONTHLY_PRICE_ID` - Stripe price ID for £10/month plan
+   - `STRIPE_YEARLY_PRICE_ID` - Stripe price ID for £100/year plan
+   - `STRIPE_STABLE_MONTHLY_PRICE_ID` - Stripe price ID for £35/month stable plan
+   - `STRIPE_STABLE_YEARLY_PRICE_ID` - Stripe price ID for £300/year stable plan
+
+See `.env.example` for complete configuration options.
+
 ---
 
 ## ⚡ Quick Reference
@@ -134,10 +165,16 @@ curl http://localhost:3000/api/trpc/system.status  # Detailed system status
 ### Admin Operations
 
 ```bash
-# Promote a user to admin role
+# Create admin users from environment variables
+node scripts/create-admin-users.mjs
+
+# Promote an existing user to admin role
 tsx scripts/make-admin.ts --email user@example.com
 
-# Then the user can unlock admin mode in AI Chat with:
+# Seed AI training templates (5 pre-made templates)
+node scripts/seed-training-templates.mjs
+
+# Admin users can unlock admin mode in AI Chat:
 # 1. Navigate to AI Chat
 # 2. Type: "show admin"
 # 3. Enter ADMIN_UNLOCK_PASSWORD

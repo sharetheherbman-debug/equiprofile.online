@@ -1,7 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, adminUnlockedProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, adminUnlockedProcedure, stableProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
@@ -41,6 +41,11 @@ import {
   lessonBookings,
   trainerAvailability,
   horses,
+  careScores,
+  medicationSchedules,
+  medicationLogs,
+  behaviorLogs,
+  healthAlerts,
 } from "../drizzle/schema";
 
 // Subscription check middleware
@@ -410,9 +415,21 @@ export const appRouter = router({
 
   // Horse management
   horses: router({
-    list: subscribedProcedure.query(async ({ ctx }) => {
-      return db.getHorsesByUserId(ctx.user.id);
-    }),
+    list: subscribedProcedure
+      .input(z.object({
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        const horses = await db.getHorsesByUserId(ctx.user.id);
+        const limit = input?.limit || 50;
+        const offset = input?.offset || 0;
+        return {
+          horses: horses.slice(offset, offset + limit),
+          total: horses.length,
+          hasMore: offset + limit < horses.length,
+        };
+      }),
     
     get: subscribedProcedure
       .input(z.object({ id: z.number() }))
@@ -990,6 +1007,144 @@ export const appRouter = router({
         
         return { success: true };
       }),
+    
+    // AI-powered task generation (B2)
+    generateDailyPlan: subscribedProcedure
+      .input(z.object({
+        horseId: z.number().optional(),
+        date: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const targetDate = input.date ? new Date(input.date) : new Date();
+        
+        // Get horse data if specified
+        let horseData = null;
+        if (input.horseId) {
+          const horse = await db.getHorseById(input.horseId, ctx.user.id);
+          if (!horse) {
+            throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+          }
+          horseData = horse;
+          
+          // Get recent health logs and training
+          const healthRecords = await db.getHealthRecordsByHorseId(input.horseId, ctx.user.id);
+          const trainingSessions = await db.getTrainingSessionsByHorseId(input.horseId, ctx.user.id);
+          horseData = { ...horseData, recentHealth: healthRecords.slice(0, 5), recentTraining: trainingSessions.slice(0, 5) };
+        }
+        
+        // Get weather if available
+        let weatherData = null;
+        try {
+          const { getWeather } = await import('./_core/weather');
+          const userLocation = ctx.user.location || 'London, UK';
+          weatherData = await getWeather(userLocation);
+        } catch (err) {
+          console.warn('[Task AI] Could not fetch weather:', err);
+        }
+        
+        // Get upcoming events
+        const upcomingEvents = await db.getUpcomingEvents(ctx.user.id, 7);
+        
+        // Generate AI suggestions
+        const prompt = `As an equestrian care expert, generate a prioritized daily task plan for ${targetDate.toLocaleDateString()}.
+
+Horse Info: ${horseData ? JSON.stringify({ name: horseData.name, age: horseData.age, discipline: horseData.discipline, level: horseData.level }) : 'Multiple horses'}
+Weather: ${weatherData ? `${weatherData.temperature}°C, ${weatherData.conditions}, Wind: ${weatherData.windSpeed}km/h` : 'Unknown'}
+Upcoming Events: ${upcomingEvents.length > 0 ? upcomingEvents.map(e => e.title).join(', ') : 'None'}
+
+Generate 5-8 prioritized tasks for today covering:
+1. Essential care (feeding, water, turnout, grooming)
+2. Health/medication (if any due)
+3. Training/exercise (weather-appropriate)
+4. Stable maintenance
+5. Event preparation (if applicable)
+
+Format as JSON array with: { title, description, priority (urgent/high/medium/low), taskType, estimatedMinutes }`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: 'system', content: 'You are an expert equestrian care advisor. Generate practical, actionable daily tasks. Always respond with valid JSON array.' },
+            { role: 'user', content: prompt },
+          ],
+        });
+
+        let tasks = [];
+        try {
+          const content = response.choices[0]?.message?.content || '[]';
+          try {
+            const parsed = JSON.parse(content);
+            tasks = Array.isArray(parsed) ? parsed : [];
+          } catch (parseErr) {
+            console.warn('[Task AI] Failed to parse AI response, using fallback');
+            // Use fallback below
+          }
+        } catch (err) {
+          console.warn('[Task AI] AI request failed:', err);
+        }
+        
+        // Fallback to basic tasks if empty
+        if (tasks.length === 0) {
+          tasks = [
+            { title: 'Morning feed and water check', priority: 'high', taskType: 'feeding', estimatedMinutes: 30 },
+            { title: 'Turnout and paddock check', priority: 'high', taskType: 'general_care', estimatedMinutes: 45 },
+            { title: 'Groom and check for injuries', priority: 'medium', taskType: 'general_care', estimatedMinutes: 30 },
+            { title: 'Evening feed and water', priority: 'high', taskType: 'feeding', estimatedMinutes: 30 },
+          ];
+        }
+        
+        return {
+          date: targetDate.toISOString(),
+          tasks,
+          weather: weatherData,
+          generated: true,
+        };
+      }),
+    
+    // AI task prioritization
+    prioritizeTasks: subscribedProcedure
+      .input(z.object({
+        horseId: z.number().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        // Get all pending tasks
+        const allTasks = input.horseId 
+          ? await db.getTasksByHorseId(input.horseId, ctx.user.id)
+          : await db.getTasksByUserId(ctx.user.id);
+        
+        const pendingTasks = allTasks.filter(t => t.status === 'pending');
+        
+        if (pendingTasks.length === 0) {
+          return { urgent: [], high: [], medium: [], low: [] };
+        }
+        
+        // Categorize by due date and priority
+        const now = new Date();
+        const urgent = pendingTasks.filter(t => {
+          if (!t.dueDate) return false;
+          const dueDate = new Date(t.dueDate);
+          const hoursUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+          return hoursUntilDue <= 24 || t.priority === 'urgent';
+        });
+        
+        const high = pendingTasks.filter(t => {
+          if (urgent.includes(t)) return false;
+          if (t.priority === 'high') return true;
+          if (!t.dueDate) return false;
+          const dueDate = new Date(t.dueDate);
+          const hoursUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+          return hoursUntilDue <= 48;
+        });
+        
+        const medium = pendingTasks.filter(t => !urgent.includes(t) && !high.includes(t) && (t.priority === 'medium' || t.dueDate));
+        const low = pendingTasks.filter(t => !urgent.includes(t) && !high.includes(t) && !medium.includes(t));
+        
+        return {
+          urgent: urgent.slice(0, 10),
+          high: high.slice(0, 10),
+          medium: medium.slice(0, 10),
+          low: low.slice(0, 10),
+        };
+      }),
   }),
 
   // Contacts management
@@ -1445,6 +1600,47 @@ export const appRouter = router({
 
   // Weather and AI analysis
   weather: router({
+    // Fetch real-time weather for a location
+    getCurrent: subscribedProcedure
+      .input(z.object({
+        location: z.string(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const { getWeather, getCareSuggestions, getRidingRecommendation } = await import('./_core/weather');
+        
+        try {
+          const weatherData = await getWeather(input.location);
+          const suggestions = getCareSuggestions(weatherData);
+          const ridingRec = getRidingRecommendation(weatherData);
+          
+          // Log the weather check
+          await db.createWeatherLog({
+            userId: ctx.user!.id,
+            location: weatherData.location,
+            temperature: weatherData.temperature,
+            humidity: weatherData.humidity,
+            windSpeed: weatherData.windSpeed,
+            precipitation: weatherData.precipitation,
+            conditions: weatherData.conditions,
+            uvIndex: weatherData.uvIndex,
+            visibility: weatherData.visibility,
+            ridingRecommendation: ridingRec.safety,
+            aiAnalysis: JSON.stringify({ suggestions, ridingRec }),
+          });
+          
+          return {
+            ...weatherData,
+            suggestions,
+            ridingRecommendation: ridingRec,
+          };
+        } catch (error: any) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: error.message || 'Failed to fetch weather data',
+          });
+        }
+      }),
+    
     analyze: subscribedProcedure
       .input(z.object({
         location: z.string(),
@@ -1958,7 +2154,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
   // Stable management
   stables: router({
-    create: subscribedProcedure
+    create: stableProcedure
       .input(z.object({
         name: z.string().min(1).max(200),
         description: z.string().optional(),
@@ -2033,7 +2229,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return stable[0] || null;
       }),
 
-    update: subscribedProcedure
+    update: stableProcedure
       .input(z.object({
         id: z.number(),
         name: z.string().optional(),
@@ -2208,6 +2404,176 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
   // Analytics
   analytics: router({
+    // Timeline view - unified feed per horse (B6)
+    getTimeline: protectedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        limit: z.number().default(50),
+        offset: z.number().default(0),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        // Get all activities for the horse
+        const activities: any[] = [];
+        
+        // Health records
+        const health = await db.select().from(healthRecords)
+          .where(and(eq(healthRecords.horseId, input.horseId), eq(healthRecords.userId, ctx.user.id)))
+          .orderBy(desc(healthRecords.recordDate))
+          .limit(20);
+        health.forEach(h => activities.push({
+          type: 'health',
+          date: h.recordDate,
+          title: h.title,
+          description: h.description,
+          category: h.recordType,
+          id: h.id,
+        }));
+        
+        // Training sessions
+        const training = await db.select().from(trainingSessions)
+          .where(and(eq(trainingSessions.horseId, input.horseId), eq(trainingSessions.userId, ctx.user.id)))
+          .orderBy(desc(trainingSessions.sessionDate))
+          .limit(20);
+        training.forEach(t => activities.push({
+          type: 'training',
+          date: t.sessionDate,
+          title: `${t.sessionType} session`,
+          description: t.notes,
+          category: t.sessionType,
+          performance: t.performance,
+          id: t.id,
+        }));
+        
+        // Tasks
+        const tasks = await db.getTasksByHorseId(input.horseId, ctx.user.id);
+        const completedTasks = tasks.filter(t => t.status === 'completed').slice(0, 20);
+        completedTasks.forEach(t => activities.push({
+          type: 'task',
+          date: t.updatedAt,
+          title: t.title,
+          description: t.description,
+          category: t.taskType,
+          id: t.id,
+        }));
+        
+        // Documents
+        const docs = await db.getDocumentsByHorseId(input.horseId, ctx.user.id);
+        docs.slice(0, 20).forEach(d => activities.push({
+          type: 'document',
+          date: d.createdAt,
+          title: `Document: ${d.fileName}`,
+          description: d.description,
+          category: d.category,
+          id: d.id,
+        }));
+        
+        // Sort by date descending
+        activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        
+        return activities.slice(input.offset, input.offset + input.limit);
+      }),
+    
+    // AI-powered monthly summary (B6)
+    getMonthlySummary: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        month: z.string().optional(), // YYYY-MM format
+      }))
+      .query(async ({ ctx, input }) => {
+        const targetMonth = input.month || new Date().toISOString().slice(0, 7);
+        const [year, month] = targetMonth.split('-').map(Number);
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+        
+        // Get horse data
+        const horse = await db.getHorseById(input.horseId, ctx.user.id);
+        if (!horse) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+        
+        // Get data for the month
+        const dbInstance = await getDb();
+        if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
+        
+        const trainingSessions = await dbInstance.select().from(trainingSessions)
+          .where(and(
+            eq(trainingSessions.horseId, input.horseId),
+            eq(trainingSessions.userId, ctx.user.id),
+            gte(trainingSessions.sessionDate, startDate.toISOString().split('T')[0]),
+            lte(trainingSessions.sessionDate, endDate.toISOString().split('T')[0])
+          ));
+        
+        const healthRecords = await dbInstance.select().from(healthRecords)
+          .where(and(
+            eq(healthRecords.horseId, input.horseId),
+            eq(healthRecords.userId, ctx.user.id),
+            gte(healthRecords.recordDate, startDate.toISOString().split('T')[0]),
+            lte(healthRecords.recordDate, endDate.toISOString().split('T')[0])
+          ));
+        
+        // Generate AI summary
+        const trainingTypes = trainingSessions
+          .map(t => t.sessionType)
+          .filter(Boolean)
+          .join(', ') || 'None';
+        const healthTypes = healthRecords
+          .map(h => h.recordType)
+          .filter(Boolean)
+          .join(', ') || 'None';
+        
+        const prompt = `Generate a concise monthly summary for ${horse.name} for ${targetMonth}:
+
+Training: ${trainingSessions.length} sessions, types: ${trainingTypes}
+Health: ${healthRecords.length} records, types: ${healthTypes}
+
+Provide:
+1. Key highlights (2-3 points)
+2. Notable trends or changes
+3. Recommendations for next month
+
+Keep it brief and actionable. Format as JSON: { highlights: [], trends: [], recommendations: [] }`;
+
+        let aiSummary = { highlights: [], trends: [], recommendations: [] };
+        try {
+          const response = await invokeLLM({
+            messages: [
+              { role: 'system', content: 'You are an equestrian care analyst. Provide brief, actionable insights. Always respond with valid JSON.' },
+              { role: 'user', content: prompt },
+            ],
+          });
+          
+          const content = response.choices[0]?.message?.content || '{}';
+          try {
+            const parsed = JSON.parse(content);
+            if (parsed && typeof parsed === 'object') {
+              aiSummary = parsed;
+            }
+          } catch (parseErr) {
+            console.warn('[Analytics] Failed to parse AI response:', parseErr);
+          }
+        } catch (err) {
+          console.warn('[Analytics] AI summary failed:', err);
+        }
+        
+        return {
+          month: targetMonth,
+          horse: { id: horse.id, name: horse.name },
+          stats: {
+            trainingSessions: trainingSessions.length,
+            healthRecords: healthRecords.length,
+            avgPerformance: trainingSessions.filter(t => t.performance).length > 0
+              ? trainingSessions.filter(t => t.performance).map(t => 
+                  t.performance === 'excellent' ? 4 : t.performance === 'good' ? 3 : t.performance === 'average' ? 2 : 1
+                ).reduce((a, b) => a + b, 0) / trainingSessions.filter(t => t.performance).length
+              : 0,
+          },
+          aiSummary,
+        };
+      }),
+    
     getTrainingStats: protectedProcedure
       .input(z.object({
         horseId: z.number().optional(),
@@ -2693,7 +3059,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
   // Breeding Management
   breeding: router({
-    createRecord: subscribedProcedure
+    createRecord: stableProcedure
       .input(z.object({
         mareId: z.number(),
         stallionId: z.number().optional(),
@@ -4309,6 +4675,574 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
   }),
 
+  // ============ CARE INSIGHTS ROUTER ============
+  careInsights: router({
+    // Get daily care score for a horse
+    getScore: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        date: z.string().optional(), // ISO date string, defaults to today
+      }))
+      .query(async ({ ctx, input }) => {
+        const targetDate = input.date || new Date().toISOString().split('T')[0];
+        
+        // Check horse ownership
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        // Check if score already calculated for this date
+        let score = await db.getCareScore(input.horseId, ctx.user.id, targetDate);
+        
+        if (!score) {
+          // Calculate score
+          let taskCompletionScore = 0;
+          let medicationComplianceScore = 0;
+          let healthEventScore = 30;
+
+          // Task completion (40 points): Check for feeding, training, behavior logs
+          const behaviorLog = await db.getBehaviorLogs(input.horseId, ctx.user.id, 1);
+          if (behaviorLog.length > 0 && behaviorLog[0].logDate === targetDate) {
+            taskCompletionScore += 20; // Daily log completed
+          }
+
+          const sessions = await db.getTrainingSessionsByHorse(input.horseId);
+          const todaySessions = sessions.filter(s => s.sessionDate === targetDate);
+          if (todaySessions.length > 0) {
+            taskCompletionScore += 20; // Training session logged
+          }
+
+          // Medication compliance (30 points): Check all scheduled meds administered
+          const schedules = await db.getMedicationSchedules(input.horseId, ctx.user.id, true);
+          if (schedules.length > 0) {
+            const medLogs = await db.getMedicationLogsByHorse(input.horseId, ctx.user.id, 1);
+            const todayLogs = medLogs.filter(l => {
+              const logDate = new Date(l.administeredAt).toISOString().split('T')[0];
+              return logDate === targetDate && !l.wasSkipped;
+            });
+            
+            if (todayLogs.length >= schedules.length) {
+              medicationComplianceScore = 30; // All meds given
+            } else if (todayLogs.length > 0) {
+              medicationComplianceScore = Math.floor((todayLogs.length / schedules.length) * 30);
+            }
+          } else {
+            medicationComplianceScore = 30; // No meds scheduled = full points
+          }
+
+          // Health events (30 points): Check for active alerts and overdue health records
+          const alerts = await db.getHealthAlerts(input.horseId, ctx.user.id, false);
+          const highSeverityAlerts = alerts.filter(a => a.severity === 'high').length;
+          const mediumSeverityAlerts = alerts.filter(a => a.severity === 'medium').length;
+          
+          healthEventScore -= (highSeverityAlerts * 15 + mediumSeverityAlerts * 7);
+          healthEventScore = Math.max(0, healthEventScore);
+
+          const overallScore = taskCompletionScore + medicationComplianceScore + healthEventScore;
+
+          const notes = JSON.stringify({
+            taskCompletion: {
+              dailyLog: behaviorLog.length > 0,
+              trainingSession: todaySessions.length > 0,
+            },
+            medicationCompliance: {
+              scheduled: schedules.length,
+              administered: medLogs.filter(l => new Date(l.administeredAt).toISOString().split('T')[0] === targetDate).length,
+            },
+            healthEvents: {
+              activeAlerts: alerts.length,
+              highSeverity: highSeverityAlerts,
+              mediumSeverity: mediumSeverityAlerts,
+            },
+          });
+
+          // Create and save score
+          await db.createCareScore({
+            horseId: input.horseId,
+            userId: ctx.user.id,
+            date: targetDate,
+            overallScore,
+            taskCompletionScore,
+            medicationComplianceScore,
+            healthEventScore,
+            notes,
+          });
+
+          score = await db.getCareScore(input.horseId, ctx.user.id, targetDate);
+        }
+
+        return score;
+      }),
+
+    // Get score history
+    getScoreHistory: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        days: z.number().min(1).max(90).default(7),
+      }))
+      .query(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        return await db.getCareScoreHistory(input.horseId, ctx.user.id, input.days);
+      }),
+
+    // Get active health alerts
+    getAlerts: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        includeResolved: z.boolean().default(false),
+      }))
+      .query(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        return await db.getHealthAlerts(input.horseId, ctx.user.id, input.includeResolved);
+      }),
+
+    // Resolve an alert
+    resolveAlert: subscribedProcedure
+      .input(z.object({
+        alertId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const alert = await db.getHealthAlert(input.alertId, ctx.user.id);
+        if (!alert) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Alert not found' });
+        }
+
+        await db.resolveHealthAlert(input.alertId, ctx.user.id);
+
+        // Audit log
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'health_alert_resolved',
+          entityType: 'health_alert',
+          entityId: input.alertId,
+          details: `Resolved health alert: ${alert.alertType}`,
+        });
+
+        return { success: true };
+      }),
+
+    // Dismiss (delete) an alert
+    dismissAlert: subscribedProcedure
+      .input(z.object({
+        alertId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const alert = await db.getHealthAlert(input.alertId, ctx.user.id);
+        if (!alert) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Alert not found' });
+        }
+
+        await db.deleteHealthAlert(input.alertId, ctx.user.id);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'health_alert_dismissed',
+          entityType: 'health_alert',
+          entityId: input.alertId,
+          details: `Dismissed health alert: ${alert.alertType}`,
+        });
+
+        return { success: true };
+      }),
+
+    // Check and generate alerts for a horse
+    checkAlerts: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        const newAlerts = [];
+
+        // Check for repeat injuries (same type within 90 days)
+        const healthRecords = await db.getHealthRecordsByHorse(input.horseId);
+        const recentInjuries = healthRecords.filter(r => 
+          r.recordType === 'injury' &&
+          r.recordDate &&
+          new Date(r.recordDate) > new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+        );
+        
+        const injuryTypes = recentInjuries.map(r => r.title.toLowerCase());
+        const seen = new Set<string>();
+        const duplicates: string[] = [];
+        for (const type of injuryTypes) {
+          if (seen.has(type)) {
+            if (!duplicates.includes(type)) {
+              duplicates.push(type);
+            }
+          } else {
+            seen.add(type);
+          }
+        }
+        
+        if (duplicates.length > 0) {
+          const alertId = await db.createHealthAlert({
+            horseId: input.horseId,
+            userId: ctx.user.id,
+            alertType: 'repeat_injury',
+            severity: 'medium',
+            message: `Repeat injury detected: ${duplicates[0]} has occurred multiple times in the last 90 days`,
+          });
+          newAlerts.push(alertId);
+        }
+
+        // Check for weight loss (>5% in 30 days)
+        const behaviorLogs = await db.getBehaviorLogs(input.horseId, ctx.user.id, 30);
+        const logsWithWeight = behaviorLogs.filter(l => l.weight != null);
+        
+        if (logsWithWeight.length >= 2) {
+          const oldestWeight = logsWithWeight[logsWithWeight.length - 1].weight;
+          const newestWeight = logsWithWeight[0].weight;
+          
+          if (oldestWeight && newestWeight) {
+            const weightLossPercent = ((oldestWeight - newestWeight) / oldestWeight) * 100;
+            
+            if (weightLossPercent > 5) {
+              const alertId = await db.createHealthAlert({
+                horseId: input.horseId,
+                userId: ctx.user.id,
+                alertType: 'weight_loss',
+                severity: 'high',
+                message: `Significant weight loss detected: ${weightLossPercent.toFixed(1)}% loss in the last 30 days`,
+              });
+              newAlerts.push(alertId);
+            }
+          }
+        }
+
+        // Check for reduced activity (ride quality declining)
+        const recentLogs = behaviorLogs.slice(0, 3);
+        const rideQualityMap: Record<string, number> = { excellent: 4, good: 3, fair: 2, poor: 1, skipped: 0 };
+        
+        if (recentLogs.length === 3 && recentLogs.every(l => l.rideQuality)) {
+          const qualities = recentLogs.map(l => l.rideQuality ? rideQualityMap[l.rideQuality] : 0);
+          const declining = qualities[0] < qualities[1] && qualities[1] < qualities[2];
+          
+          if (declining && qualities[0] <= 2) {
+            const alertId = await db.createHealthAlert({
+              horseId: input.horseId,
+              userId: ctx.user.id,
+              alertType: 'reduced_activity',
+              severity: 'medium',
+              message: 'Ride quality has been declining over the last 3 sessions',
+            });
+            newAlerts.push(alertId);
+          }
+        }
+
+        // Check for missed medications (2+ consecutive misses)
+        const schedules = await db.getMedicationSchedules(input.horseId, ctx.user.id, true);
+        
+        for (const schedule of schedules) {
+          const logs = await db.getMedicationLogs(schedule.id, ctx.user.id, 7);
+          const skippedLogs = logs.filter(l => l.wasSkipped).slice(0, 2);
+          
+          if (skippedLogs.length >= 2) {
+            const alertId = await db.createHealthAlert({
+              horseId: input.horseId,
+              userId: ctx.user.id,
+              alertType: 'medication_missed',
+              severity: 'high',
+              message: `Medication "${schedule.medicationName}" has been skipped 2 or more times recently`,
+            });
+            newAlerts.push(alertId);
+            break;
+          }
+        }
+
+        // Check for overdue health events
+        const overdueRecords = healthRecords.filter(r => 
+          r.nextDueDate &&
+          new Date(r.nextDueDate) < new Date()
+        );
+        
+        if (overdueRecords.length > 0) {
+          const alertId = await db.createHealthAlert({
+            horseId: input.horseId,
+            userId: ctx.user.id,
+            alertType: 'overdue_health',
+            severity: 'medium',
+            message: `${overdueRecords.length} health record(s) are overdue (vaccination, dental, etc.)`,
+          });
+          newAlerts.push(alertId);
+        }
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'health_alerts_checked',
+          entityType: 'horse',
+          entityId: input.horseId,
+          details: `Checked health alerts, found ${newAlerts.length} new alerts`,
+        });
+
+        return { newAlertsCount: newAlerts.length };
+      }),
+
+    // Medication schedules
+    createSchedule: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        medicationName: z.string().min(1).max(200),
+        dosage: z.string().min(1).max(100),
+        frequency: z.enum(['daily', 'twice_daily', 'three_times_daily', 'weekly', 'biweekly', 'monthly', 'as_needed']),
+        startDate: z.string(),
+        endDate: z.string().optional(),
+        timeOfDay: z.enum(['morning', 'afternoon', 'evening', 'night', 'any']).optional(),
+        specialInstructions: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        const scheduleId = await db.createMedicationSchedule({
+          ...input,
+          userId: ctx.user.id,
+          isActive: true,
+        });
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'medication_schedule_created',
+          entityType: 'medication_schedule',
+          entityId: scheduleId,
+          details: `Created medication schedule for ${input.medicationName}`,
+        });
+
+        return { id: scheduleId };
+      }),
+
+    listSchedules: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        activeOnly: z.boolean().default(true),
+      }))
+      .query(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        return await db.getMedicationSchedules(input.horseId, ctx.user.id, input.activeOnly);
+      }),
+
+    updateSchedule: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        medicationName: z.string().min(1).max(200).optional(),
+        dosage: z.string().min(1).max(100).optional(),
+        frequency: z.enum(['daily', 'twice_daily', 'three_times_daily', 'weekly', 'biweekly', 'monthly', 'as_needed']).optional(),
+        endDate: z.string().optional(),
+        timeOfDay: z.enum(['morning', 'afternoon', 'evening', 'night', 'any']).optional(),
+        specialInstructions: z.string().optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const schedule = await db.getMedicationSchedule(input.id, ctx.user.id);
+        if (!schedule) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found' });
+        }
+
+        const { id, ...updateData } = input;
+        await db.updateMedicationSchedule(id, ctx.user.id, updateData);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'medication_schedule_updated',
+          entityType: 'medication_schedule',
+          entityId: id,
+          details: `Updated medication schedule`,
+        });
+
+        return { success: true };
+      }),
+
+    deleteSchedule: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const schedule = await db.getMedicationSchedule(input.id, ctx.user.id);
+        if (!schedule) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found' });
+        }
+
+        await db.deleteMedicationSchedule(input.id, ctx.user.id);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'medication_schedule_deleted',
+          entityType: 'medication_schedule',
+          entityId: input.id,
+          details: `Deleted medication schedule`,
+        });
+
+        return { success: true };
+      }),
+
+    logMedication: subscribedProcedure
+      .input(z.object({
+        scheduleId: z.number(),
+        administeredAt: z.string(), // ISO timestamp
+        administeredBy: z.string().max(100).optional(),
+        dosageGiven: z.string().max(100).optional(),
+        notes: z.string().optional(),
+        wasSkipped: z.boolean().default(false),
+        skipReason: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const schedule = await db.getMedicationSchedule(input.scheduleId, ctx.user.id);
+        if (!schedule) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found' });
+        }
+
+        const logId = await db.createMedicationLog({
+          ...input,
+          horseId: schedule.horseId,
+          userId: ctx.user.id,
+        });
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'medication_logged',
+          entityType: 'medication_log',
+          entityId: logId,
+          details: `Logged medication administration for ${schedule.medicationName}`,
+        });
+
+        return { id: logId };
+      }),
+
+    getMedicationLogs: subscribedProcedure
+      .input(z.object({
+        scheduleId: z.number(),
+        days: z.number().min(1).max(90).default(30),
+      }))
+      .query(async ({ ctx, input }) => {
+        const schedule = await db.getMedicationSchedule(input.scheduleId, ctx.user.id);
+        if (!schedule) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found' });
+        }
+
+        return await db.getMedicationLogs(input.scheduleId, ctx.user.id, input.days);
+      }),
+
+    // Behavior logs
+    createBehaviorLog: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        logDate: z.string(),
+        weight: z.number().optional(),
+        appetite: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+        energy: z.enum(['high', 'normal', 'low']).optional(),
+        sorenessScore: z.number().min(0).max(10).optional(),
+        rideQuality: z.enum(['excellent', 'good', 'fair', 'poor', 'skipped']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        const logId = await db.createBehaviorLog({
+          ...input,
+          userId: ctx.user.id,
+        });
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'behavior_log_created',
+          entityType: 'behavior_log',
+          entityId: logId,
+          details: `Created behavior log for ${horse.name}`,
+        });
+
+        return { id: logId };
+      }),
+
+    listBehaviorLogs: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        days: z.number().min(1).max(90).default(30),
+      }))
+      .query(async ({ ctx, input }) => {
+        const horse = await db.getHorseById(input.horseId);
+        if (!horse || horse.userId !== ctx.user.id) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+
+        return await db.getBehaviorLogs(input.horseId, ctx.user.id, input.days);
+      }),
+
+    updateBehaviorLog: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+        weight: z.number().optional(),
+        appetite: z.enum(['excellent', 'good', 'fair', 'poor']).optional(),
+        energy: z.enum(['high', 'normal', 'low']).optional(),
+        sorenessScore: z.number().min(0).max(10).optional(),
+        rideQuality: z.enum(['excellent', 'good', 'fair', 'poor', 'skipped']).optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const log = await db.getBehaviorLog(input.id, ctx.user.id);
+        if (!log) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Behavior log not found' });
+        }
+
+        const { id, ...updateData } = input;
+        await db.updateBehaviorLog(id, ctx.user.id, updateData);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'behavior_log_updated',
+          entityType: 'behavior_log',
+          entityId: id,
+          details: `Updated behavior log`,
+        });
+
+        return { success: true };
+      }),
+
+    deleteBehaviorLog: subscribedProcedure
+      .input(z.object({
+        id: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const log = await db.getBehaviorLog(input.id, ctx.user.id);
+        if (!log) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Behavior log not found' });
+        }
+
+        await db.deleteBehaviorLog(input.id, ctx.user.id);
+
+        await db.createActivityLog({
+          userId: ctx.user.id,
+          action: 'behavior_log_deleted',
+          entityType: 'behavior_log',
+          entityId: input.id,
+          details: `Deleted behavior log`,
+        });
+
+        return { success: true };
+      }),
+  }),
+
   // ============ STORAGE ROUTER ============
   storage: router({
     getUsage: protectedProcedure.query(async ({ ctx }) => {
@@ -4389,6 +5323,151 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       // Sort by usage (highest first)
       return userStorageDetails.sort((a, b) => b.usedBytes - a.usedBytes);
     }),
+  }),
+  
+  // Collaboration system (B5)
+  collaboration: router({
+    // Share horse with collaborator
+    shareHorse: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        email: z.string().email(),
+        role: z.enum(['viewer', 'caretaker', 'trainer', 'vet', 'farrier']),
+        permissions: z.object({
+          viewHealth: z.boolean().default(true),
+          editHealth: z.boolean().default(false),
+          viewTraining: z.boolean().default(true),
+          editTraining: z.boolean().default(false),
+          viewTasks: z.boolean().default(true),
+          editTasks: z.boolean().default(false),
+          viewDocuments: z.boolean().default(true),
+        }).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify horse ownership
+        const horse = await db.getHorseById(input.horseId, ctx.user.id);
+        if (!horse) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+        
+        // Check if user being invited exists
+        const inviteeUser = await db.getUserByEmail(input.email);
+        
+        // Create or update share
+        const shareData = {
+          horseId: input.horseId,
+          ownerId: ctx.user.id,
+          sharedWithEmail: input.email,
+          sharedWithUserId: inviteeUser?.id,
+          role: input.role,
+          permissions: JSON.stringify(input.permissions || {}),
+          createdAt: new Date(),
+        };
+        
+        // For now, store in activity log (proper table can be added in migration)
+        await db.logActivity({
+          userId: ctx.user.id,
+          action: 'horse_shared',
+          entityType: 'horse',
+          entityId: input.horseId,
+          details: JSON.stringify({ email: input.email, role: input.role }),
+        });
+        
+        return { success: true, message: `Horse shared with ${input.email}` };
+      }),
+    
+    // List collaborators for a horse
+    listCollaborators: subscribedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        // Verify horse access
+        const horse = await db.getHorseById(input.horseId, ctx.user.id);
+        if (!horse) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+        
+        // Get shares from activity log (placeholder until proper table)
+        const activities = await db.getActivityLogs(ctx.user.id, 100);
+        const shares = activities
+          .filter(a => a.action === 'horse_shared' && a.entityId === input.horseId)
+          .map(a => {
+            try {
+              const details = JSON.parse(a.details || '{}');
+              return {
+                email: details.email,
+                role: details.role,
+                sharedAt: a.timestamp,
+              };
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean);
+        
+        return shares;
+      }),
+    
+    // Add comment/message to horse timeline
+    addComment: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        content: z.string().min(1),
+        type: z.enum(['note', 'question', 'update']).default('note'),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify horse access
+        const horse = await db.getHorseById(input.horseId, ctx.user.id);
+        if (!horse) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+        
+        // Store as activity
+        await db.logActivity({
+          userId: ctx.user.id,
+          action: 'comment_added',
+          entityType: 'horse',
+          entityId: input.horseId,
+          details: JSON.stringify({ content: input.content, type: input.type }),
+        });
+        
+        return { success: true };
+      }),
+    
+    // Get comments/messages for a horse
+    getComments: subscribedProcedure
+      .input(z.object({
+        horseId: z.number(),
+        limit: z.number().default(50),
+      }))
+      .query(async ({ ctx, input }) => {
+        // Verify horse access
+        const horse = await db.getHorseById(input.horseId, ctx.user.id);
+        if (!horse) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Horse not found' });
+        }
+        
+        // Get comments from activity log
+        const activities = await db.getActivityLogs(ctx.user.id, input.limit);
+        const comments = activities
+          .filter(a => a.action === 'comment_added' && a.entityId === input.horseId)
+          .map(a => {
+            try {
+              const details = JSON.parse(a.details || '{}');
+              return {
+                id: a.id,
+                userId: a.userId,
+                content: details.content,
+                type: details.type,
+                createdAt: a.timestamp,
+              };
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean);
+        
+        return comments;
+      }),
   }),
 });
 

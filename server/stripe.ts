@@ -34,25 +34,25 @@ export function getStripe(): Stripe | null {
 export const STRIPE_PRICING = {
   monthly: {
     priceId: process.env.STRIPE_MONTHLY_PRICE_ID || "",
-    amount: 799, // £7.99 in pence
+    amount: 1000, // £10.00 in pence
     currency: "gbp",
     interval: "month",
   },
   yearly: {
     priceId: process.env.STRIPE_YEARLY_PRICE_ID || "",
-    amount: 7990, // £79.90 in pence (equivalent to ~£6.66/month)
+    amount: 10000, // £100.00 in pence
     currency: "gbp",
     interval: "year",
   },
   stable_monthly: {
     priceId: process.env.STRIPE_STABLE_MONTHLY_PRICE_ID || "",
-    amount: 2499, // £24.99 in pence
+    amount: 3500, // £35.00 in pence
     currency: "gbp",
     interval: "month",
   },
   stable_yearly: {
     priceId: process.env.STRIPE_STABLE_YEARLY_PRICE_ID || "",
-    amount: 24900, // £249 in pence (equivalent to ~£20.75/month)
+    amount: 30000, // £300.00 in pence
     currency: "gbp",
     interval: "year",
   },
