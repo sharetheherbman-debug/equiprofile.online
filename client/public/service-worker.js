@@ -263,6 +263,7 @@ async function replayOfflineMutations() {
       const req = store.getAll();
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
+      tx.onerror = () => reject(tx.error);
     });
 
     for (const item of allItems) {

@@ -101,6 +101,8 @@ function formatDuration(seconds: number): string {
   return `${s}s`;
 }
 
+const GPS_NOISE_THRESHOLD_METERS = 2; // Filter out GPS drift to avoid inflating distance
+
 function formatDistance(meters: number): string {
   if (meters >= 1000) return `${(meters / 1000).toFixed(2)} km`;
   return `${Math.round(meters)} m`;
@@ -145,9 +147,10 @@ function RideTrackingContent() {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
           timestamp: position.timestamp,
-          speed: position.coords.speed
-            ? position.coords.speed * 3.6
-            : undefined, // Convert m/s to km/h
+          speed:
+            position.coords.speed !== null && position.coords.speed >= 0
+              ? position.coords.speed * 3.6 // Convert m/s to km/h
+              : undefined,
         };
 
         pendingPointsRef.current.push(point);
@@ -158,8 +161,7 @@ function RideTrackingContent() {
           // Calculate distance
           if (prev.length > 0) {
             const dist = calculateDistance(prev[prev.length - 1], point);
-            if (dist > 2) {
-              // Only count if moved more than 2m (GPS noise filter)
+            if (dist > GPS_NOISE_THRESHOLD_METERS) {
               setCurrentDistance((d) => d + dist);
             }
           }
