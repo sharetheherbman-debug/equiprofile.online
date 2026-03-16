@@ -10,7 +10,7 @@
 set -e
 
 LOG_FILE="/var/log/equiprofile-deploy.log"
-DEPLOY_DIR="/var/www/equiprofile"
+DEPLOY_DIR="/var/equiprofile/app"
 
 # Ensure we're running with proper permissions
 if [ "$EUID" -ne 0 ]; then 
@@ -51,6 +51,10 @@ if [ "$CURRENT_OWNER" != "www-data" ]; then
     chown -R www-data:www-data .
 fi
 
+# Create log directory
+mkdir -p /var/log/equiprofile
+chown -R www-data:www-data /var/log/equiprofile
+
 # Step 3: Pull latest code (if git repo)
 echo ""
 echo "[3/9] Updating code..."
@@ -62,19 +66,23 @@ fi
 
 # Step 4: Install dependencies
 echo ""
-echo "[4/9] Installing dependencies..."
-if ! command -v pnpm &> /dev/null; then
-    echo "ERROR: pnpm is not installed. Please install it first:"
-    echo "  npm install -g pnpm"
-    exit 1
-fi
+echo "[4/9] Installing dependencies (npm ci)..."
 
-sudo -u www-data pnpm install --frozen-lockfile
+sudo -u www-data npm ci
 
 # Step 5: Build application
 echo ""
 echo "[5/9] Building application..."
-sudo -u www-data pnpm build
+
+# Backup previous dist before building (keep last 2 for rollback)
+if [ -d "dist" ]; then
+    if [ -d "dist.prev2" ]; then rm -rf dist.prev2; fi
+    if [ -d "dist.prev" ]; then mv dist.prev dist.prev2; fi
+    cp -r dist dist.prev
+    echo "Previous dist backed up to dist.prev"
+fi
+
+sudo -u www-data npm run build
 
 # Verify build output exists
 if [ ! -f "dist/index.js" ]; then
@@ -93,17 +101,17 @@ echo "Build successful!"
 echo ""
 echo "[6/9] Installing systemd service..."
 if [ ! -f /etc/systemd/system/equiprofile.service ]; then
-    if [ -f deployment/systemd/equiprofile.service ]; then
-        cp deployment/systemd/equiprofile.service /etc/systemd/system/
+    if [ -f deployment/equiprofile.service ]; then
+        cp deployment/equiprofile.service /etc/systemd/system/
         systemctl daemon-reload
         echo "Systemd service installed"
     else
-        echo "WARNING: deployment/systemd/equiprofile.service not found"
+        echo "WARNING: deployment/equiprofile.service not found"
     fi
 else
     echo "Systemd service already installed"
     # Reload in case it changed
-    cp deployment/systemd/equiprofile.service /etc/systemd/system/ 2>/dev/null || true
+    cp deployment/equiprofile.service /etc/systemd/system/ 2>/dev/null || true
     systemctl daemon-reload
 fi
 
@@ -111,13 +119,34 @@ fi
 echo ""
 echo "[7/9] Checking nginx configuration..."
 if [ ! -f /etc/nginx/sites-available/equiprofile ]; then
-    echo "WARNING: Nginx config not installed at /etc/nginx/sites-available/equiprofile"
-    echo "Please:"
-    echo "  1. Edit deployment/nginx-equiprofile.conf"
-    echo "  2. Replace ALL instances of YOUR_DOMAIN_HERE with your actual domain"
-    echo "  3. Copy to /etc/nginx/sites-available/equiprofile"
-    echo "  4. Create symlink: ln -s /etc/nginx/sites-available/equiprofile /etc/nginx/sites-enabled/"
-    echo "  5. Run certbot: certbot --nginx -d yourdomain.com"
+    if command -v nginx &>/dev/null; then
+        # nginx is installed — auto-deploy the config if the source exists
+        if [ -f deployment/nginx/equiprofile.conf ]; then
+            echo "Auto-installing nginx config from deployment/nginx/equiprofile.conf..."
+            cp deployment/nginx/equiprofile.conf /etc/nginx/sites-available/equiprofile
+            # Create symlink if not already present
+            if [ ! -L /etc/nginx/sites-enabled/equiprofile ]; then
+                ln -s /etc/nginx/sites-available/equiprofile /etc/nginx/sites-enabled/equiprofile
+                echo "Symlink created: /etc/nginx/sites-enabled/equiprofile"
+            fi
+            # Test and reload
+            if nginx -t 2>/dev/null; then
+                systemctl reload nginx
+                echo "Nginx configuration installed and reloaded"
+            else
+                echo "WARNING: Auto-installed nginx config failed validation"
+                echo "Please check /etc/nginx/sites-available/equiprofile manually"
+            fi
+        else
+            echo "WARNING: deployment/nginx/equiprofile.conf not found"
+            echo "Please:"
+            echo "  1. Edit deployment/nginx/equiprofile.conf"
+            echo "  2. Replace ALL instances of YOUR_DOMAIN_HERE with your actual domain"
+            echo "  3. Re-run this script, or copy manually and reload nginx"
+        fi
+    else
+        echo "INFO: Nginx is not installed — skipping nginx configuration"
+    fi
 else
     # Check if placeholder still exists
     if grep -q "YOUR_DOMAIN_HERE" /etc/nginx/sites-available/equiprofile 2>/dev/null; then
@@ -159,11 +188,15 @@ else
 fi
 
 # Check local health endpoint
-if curl -sf http://127.0.0.1:3000/healthz > /dev/null; then
+if curl -sf http://127.0.0.1:3000/api/health > /dev/null; then
     echo "✓ Local health check passed"
 else
-    echo "✗ Local health check failed"
-    echo "Service may still be starting, or there's a configuration issue"
+    echo "✗ Local health check failed (trying legacy /healthz)"
+    if curl -sf http://127.0.0.1:3000/healthz > /dev/null; then
+        echo "✓ Legacy health check passed"
+    else
+        echo "Service may still be starting, or there's a configuration issue"
+    fi
 fi
 
 # Try HTTPS check (may fail if SSL not configured)
@@ -177,6 +210,41 @@ if [ -n "$DOMAIN" ] && [ "$DOMAIN" != "YOUR_DOMAIN_HERE" ]; then
     fi
 fi
 
+# Rollback function — restores dist.prev and restarts the service
+rollback() {
+    echo "⚠️  ROLLING BACK to previous build..."
+    if [ -d "dist.prev" ]; then
+        rm -rf dist
+        mv dist.prev dist
+        systemctl restart equiprofile
+        echo "✓ Rollback complete"
+    else
+        echo "✗ No previous build available for rollback"
+    fi
+    exit 1
+}
+
+# Run UI smoke test if available
+if command -v node &>/dev/null && [ -f "scripts/ui-smoke-test.mjs" ]; then
+    # Only try to install Playwright if chromium is not already available.
+    # Pre-installing Playwright on the deployment target is recommended:
+    #   npx playwright install chromium --with-deps
+    PLAYWRIGHT_AVAILABLE=false
+    if node -e "require('playwright')" 2>/dev/null; then
+        PLAYWRIGHT_AVAILABLE=true
+    elif npx --yes playwright install chromium --with-deps >/dev/null 2>&1; then
+        PLAYWRIGHT_AVAILABLE=true
+    fi
+
+    if $PLAYWRIGHT_AVAILABLE; then
+        echo "Running UI smoke test..."
+        BASE_URL="http://127.0.0.1:3000" node scripts/ui-smoke-test.mjs || rollback
+    else
+        echo "⚠️  Playwright not available — skipping UI smoke test."
+        echo "   To enable: run 'npx playwright install chromium --with-deps' on this server."
+    fi
+fi
+
 echo ""
 echo "======================================"
 echo "Deployment Complete!"
@@ -187,4 +255,5 @@ echo "Next steps:"
 echo "  - View logs: journalctl -u equiprofile -f"
 echo "  - Check status: systemctl status equiprofile"
 echo "  - View this log: cat $LOG_FILE"
+echo "  - Rollback if needed: bash deployment/deploy.sh --rollback"
 echo ""

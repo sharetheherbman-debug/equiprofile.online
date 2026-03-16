@@ -1,4 +1,4 @@
-import QRCode from 'qrcode';
+import QRCode from "qrcode";
 
 export async function generateQRCode(data: string): Promise<string> {
   try {
@@ -6,14 +6,14 @@ export async function generateQRCode(data: string): Promise<string> {
       width: 300,
       margin: 2,
       color: {
-        dark: '#000000',
-        light: '#FFFFFF',
+        dark: "#000000",
+        light: "#FFFFFF",
       },
     });
     return qrCodeDataUrl;
   } catch (error) {
-    console.error('Error generating QR code:', error);
-    throw new Error('Failed to generate QR code');
+    console.error("Error generating QR code:", error);
+    throw new Error("Failed to generate QR code");
   }
 }
 
@@ -25,7 +25,7 @@ export async function generateQRCodeBuffer(data: string): Promise<Buffer> {
     });
     return buffer;
   } catch (error) {
-    console.error('Error generating QR code buffer:', error);
-    throw new Error('Failed to generate QR code buffer');
+    console.error("Error generating QR code buffer:", error);
+    throw new Error("Failed to generate QR code buffer");
   }
 }

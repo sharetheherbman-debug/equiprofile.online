@@ -1,26 +1,40 @@
-import { useState } from 'react';
-import { trpc } from '../_core/trpc';
-import { DashboardLayout } from '../components/DashboardLayout';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
-import { useToast } from '../hooks/use-toast';
-import { useRealtimeModule } from '../hooks/useRealtime';
-import { PlusCircle, Edit2, Trash2, Tag } from 'lucide-react';
-import { Badge } from '../components/ui/badge';
+import { useState } from "react";
+import { trpc } from "../_core/trpc";
+import { DashboardLayout } from "../components/DashboardLayout";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { useToast } from "../hooks/use-toast";
+import { useRealtimeModule } from "../hooks/useRealtime";
+import { PlusCircle, Edit2, Trash2, Tag } from "lucide-react";
+import { Badge } from "../components/ui/badge";
 
 const PRESET_COLORS = [
-  { name: 'Red', value: '#ef4444' },
-  { name: 'Orange', value: '#f97316' },
-  { name: 'Yellow', value: '#eab308' },
-  { name: 'Green', value: '#22c55e' },
-  { name: 'Blue', value: '#3b82f6' },
-  { name: 'Purple', value: '#a855f7' },
-  { name: 'Pink', value: '#ec4899' },
-  { name: 'Gray', value: '#6b7280' }
+  { name: "Red", value: "#ef4444" },
+  { name: "Orange", value: "#f97316" },
+  { name: "Yellow", value: "#eab308" },
+  { name: "Green", value: "#22c55e" },
+  { name: "Blue", value: "#3b82f6" },
+  { name: "Purple", value: "#a855f7" },
+  { name: "Pink", value: "#ec4899" },
+  { name: "Gray", value: "#6b7280" },
 ];
 
 export default function Tags() {
@@ -37,24 +51,26 @@ function TagsContent() {
   const [editingTag, setEditingTag] = useState<any>(null);
 
   const [formData, setFormData] = useState({
-    name: '',
-    color: '#3b82f6',
-    category: '',
-    description: ''
+    name: "",
+    color: "#3b82f6",
+    category: "",
+    description: "",
   });
 
   const { data: tags, refetch } = trpc.tags.list.useQuery();
   const [localTags, setLocalTags] = useState(tags || []);
 
   // Real-time updates
-  useRealtimeModule('tags', (action, data) => {
-    if (action === 'created') {
-      setLocalTags(prev => [data, ...(prev || [])]);
-      toast({ title: 'New tag created' });
-    } else if (action === 'updated') {
-      setLocalTags(prev => (prev || []).map(t => t.id === data.id ? { ...t, ...data } : t));
-    } else if (action === 'deleted') {
-      setLocalTags(prev => (prev || []).filter(t => t.id !== data.id));
+  useRealtimeModule("tags", (action, data) => {
+    if (action === "created") {
+      setLocalTags((prev) => [data, ...(prev || [])]);
+      toast({ title: "New tag created" });
+    } else if (action === "updated") {
+      setLocalTags((prev) =>
+        (prev || []).map((t) => (t.id === data.id ? { ...t, ...data } : t)),
+      );
+    } else if (action === "deleted") {
+      setLocalTags((prev) => (prev || []).filter((t) => t.id !== data.id));
     }
   });
 
@@ -65,45 +81,57 @@ function TagsContent() {
 
   const createMutation = trpc.tags.create.useMutation({
     onSuccess: () => {
-      toast({ title: 'Tag created successfully' });
+      toast({ title: "Tag created successfully" });
       setIsDialogOpen(false);
       resetForm();
       refetch();
     },
     onError: (error) => {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    }
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const updateMutation = trpc.tags.update.useMutation({
     onSuccess: () => {
-      toast({ title: 'Tag updated successfully' });
+      toast({ title: "Tag updated successfully" });
       setIsDialogOpen(false);
       setEditingTag(null);
       resetForm();
       refetch();
     },
     onError: (error) => {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    }
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteMutation = trpc.tags.delete.useMutation({
     onSuccess: () => {
-      toast({ title: 'Tag deleted' });
+      toast({ title: "Tag deleted" });
       refetch();
     },
     onError: (error) => {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    }
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const resetForm = () => {
     setFormData({
-      name: '',
-      color: '#3b82f6',
-      category: '',
-      description: ''
+      name: "",
+      color: "#3b82f6",
+      category: "",
+      description: "",
     });
   };
 
@@ -113,7 +141,7 @@ function TagsContent() {
     if (editingTag) {
       updateMutation.mutate({
         id: editingTag.id,
-        ...formData
+        ...formData,
       });
     } else {
       createMutation.mutate(formData);
@@ -123,16 +151,16 @@ function TagsContent() {
   const handleEdit = (tag: any) => {
     setEditingTag(tag);
     setFormData({
-      name: tag.name || '',
-      color: tag.color || '#3b82f6',
-      category: tag.category || '',
-      description: tag.description || ''
+      name: tag.name || "",
+      color: tag.color || "#3b82f6",
+      category: tag.category || "",
+      description: tag.description || "",
     });
     setIsDialogOpen(true);
   };
 
   const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this tag?')) {
+    if (confirm("Are you sure you want to delete this tag?")) {
       deleteMutation.mutate({ id });
     }
   };
@@ -142,20 +170,29 @@ function TagsContent() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Tags</h1>
-          <p className="text-muted-foreground">Organize your horses, documents, and tasks</p>
+          <p className="text-muted-foreground">
+            Organize your horses, documents, and tasks
+          </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingTag(null); resetForm(); }}>
+            <Button
+              onClick={() => {
+                setEditingTag(null);
+                resetForm();
+              }}
+            >
               <PlusCircle className="mr-2 h-4 w-4" />
               Create Tag
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>{editingTag ? 'Edit Tag' : 'New Tag'}</DialogTitle>
+              <DialogTitle>{editingTag ? "Edit Tag" : "New Tag"}</DialogTitle>
               <DialogDescription>
-                {editingTag ? 'Update tag details' : 'Create a new tag for organization'}
+                {editingTag
+                  ? "Update tag details"
+                  : "Create a new tag for organization"}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
@@ -166,7 +203,9 @@ function TagsContent() {
                     id="name"
                     placeholder="e.g., Competition, Training, Medical"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -178,9 +217,13 @@ function TagsContent() {
                       <button
                         key={color.value}
                         type="button"
-                        onClick={() => setFormData({...formData, color: color.value})}
+                        onClick={() =>
+                          setFormData({ ...formData, color: color.value })
+                        }
                         className={`w-10 h-10 rounded-md border-2 ${
-                          formData.color === color.value ? 'border-primary ring-2 ring-primary' : 'border-transparent'
+                          formData.color === color.value
+                            ? "border-primary ring-2 ring-primary"
+                            : "border-transparent"
                         }`}
                         style={{ backgroundColor: color.value }}
                         title={color.name}
@@ -188,15 +231,21 @@ function TagsContent() {
                     ))}
                   </div>
                   <div className="flex items-center gap-2 mt-2">
-                    <Label htmlFor="customColor" className="text-sm">Custom:</Label>
+                    <Label htmlFor="customColor" className="text-sm">
+                      Custom:
+                    </Label>
                     <Input
                       id="customColor"
                       type="color"
                       value={formData.color}
-                      onChange={(e) => setFormData({...formData, color: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, color: e.target.value })
+                      }
                       className="w-20 h-10"
                     />
-                    <span className="text-sm text-muted-foreground">{formData.color}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {formData.color}
+                    </span>
                   </div>
                 </div>
 
@@ -206,7 +255,9 @@ function TagsContent() {
                     id="category"
                     placeholder="e.g., Health, Training, Events"
                     value={formData.category}
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
                   />
                 </div>
 
@@ -216,30 +267,36 @@ function TagsContent() {
                     id="description"
                     placeholder="What is this tag used for?"
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     rows={3}
                   />
                 </div>
 
                 <div className="grid gap-2">
                   <Label>Preview</Label>
-                  <Badge 
-                    style={{ 
+                  <Badge
+                    style={{
                       backgroundColor: formData.color,
-                      color: '#ffffff'
+                      color: "#ffffff",
                     }}
                     className="w-fit"
                   >
-                    {formData.name || 'Tag Name'}
+                    {formData.name || "Tag Name"}
                   </Badge>
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button type="submit">
-                  {editingTag ? 'Update' : 'Create'} Tag
+                  {editingTag ? "Update" : "Create"} Tag
                 </Button>
               </DialogFooter>
             </form>
@@ -263,10 +320,18 @@ function TagsContent() {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => handleEdit(tag)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(tag)}
+                    >
                       <Edit2 className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(tag.id)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(tag.id)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -274,16 +339,18 @@ function TagsContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <Badge 
-                    style={{ 
+                  <Badge
+                    style={{
                       backgroundColor: tag.color,
-                      color: '#ffffff'
+                      color: "#ffffff",
                     }}
                   >
                     {tag.name}
                   </Badge>
                   {tag.description && (
-                    <p className="text-sm text-muted-foreground">{tag.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {tag.description}
+                    </p>
                   )}
                 </div>
               </CardContent>
@@ -293,7 +360,9 @@ function TagsContent() {
           <Card className="col-span-full">
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Tag className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No tags yet. Create your first tag above.</p>
+              <p className="text-muted-foreground">
+                No tags yet. Create your first tag above.
+              </p>
             </CardContent>
           </Card>
         )}

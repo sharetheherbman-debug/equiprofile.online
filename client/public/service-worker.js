@@ -12,48 +12,52 @@ const STATIC_CACHE_URLS = [
 ];
 
 // Install service worker and prepare cache
-self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing version', CACHE_VERSION);
+self.addEventListener("install", (event) => {
+  console.log("[Service Worker] Installing version", CACHE_VERSION);
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(CACHE_NAME)
       .then((cache) => {
-        console.log('[Service Worker] Cache opened');
+        console.log("[Service Worker] Cache opened");
         return cache.addAll(STATIC_CACHE_URLS);
       })
       .then(() => {
         // Take control immediately
         return self.skipWaiting();
-      })
+      }),
   );
 });
 
 // Activate and clean old caches
-self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating version', CACHE_VERSION);
+self.addEventListener("activate", (event) => {
+  console.log("[Service Worker] Activating version", CACHE_VERSION);
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[Service Worker] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      // Take control of all clients immediately
-      return self.clients.claim();
-    })
+    caches
+      .keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.log("[Service Worker] Deleting old cache:", cacheName);
+              return caches.delete(cacheName);
+            }
+          }),
+        );
+      })
+      .then(() => {
+        // Take control of all clients immediately
+        return self.clients.claim();
+      }),
   );
 });
 
 // Fetch strategy: network-first for HTML and API, cache-first for hashed assets
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
   // Skip non-GET requests
-  if (request.method !== 'GET') {
+  if (request.method !== "GET") {
     return;
   }
 
@@ -63,15 +67,17 @@ self.addEventListener('fetch', (event) => {
   }
 
   // API requests: always network, never cache
-  if (url.pathname.startsWith('/api/')) {
+  if (url.pathname.startsWith("/api/")) {
     event.respondWith(fetch(request));
     return;
   }
 
   // index.html and service-worker.js: always network-first, never cache
-  if (url.pathname === '/' || 
-      url.pathname === '/index.html' || 
-      url.pathname.includes('service-worker')) {
+  if (
+    url.pathname === "/" ||
+    url.pathname === "/index.html" ||
+    url.pathname.includes("service-worker")
+  ) {
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -80,21 +86,21 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => {
           // If offline and we have a cached version, use it
-          return caches.match('/index.html');
-        })
+          return caches.match("/index.html");
+        }),
     );
     return;
   }
 
   // Hashed assets (/assets/*): cache-first with immutable strategy
-  if (url.pathname.startsWith('/assets/')) {
+  if (url.pathname.startsWith("/assets/")) {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
         return cache.match(request).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;
           }
-          
+
           return fetch(request).then((networkResponse) => {
             // Only cache successful responses
             if (networkResponse && networkResponse.status === 200) {
@@ -103,7 +109,7 @@ self.addEventListener('fetch', (event) => {
             return networkResponse;
           });
         });
-      })
+      }),
     );
     return;
   }
@@ -117,52 +123,48 @@ self.addEventListener('fetch', (event) => {
       .catch(() => {
         // Try to serve from cache if offline
         return caches.match(request);
-      })
+      }),
   );
 });
 
 // Handle push notifications
-self.addEventListener('push', (event) => {
+self.addEventListener("push", (event) => {
   const options = {
-    body: event.data ? event.data.text() : 'New notification',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    body: event.data ? event.data.text() : "New notification",
+    icon: "/icons/icon-192x192.png",
+    badge: "/icons/icon-72x72.png",
     vibrate: [200, 100, 200],
     data: {
       dateOfArrival: Date.now(),
-      primaryKey: 1
+      primaryKey: 1,
     },
     actions: [
       {
-        action: 'explore',
-        title: 'View',
+        action: "explore",
+        title: "View",
       },
       {
-        action: 'close',
-        title: 'Close',
+        action: "close",
+        title: "Close",
       },
-    ]
+    ],
   };
 
-  event.waitUntil(
-    self.registration.showNotification('EquiProfile', options)
-  );
+  event.waitUntil(self.registration.showNotification("EquiProfile", options));
 });
 
 // Handle notification clicks
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  if (event.action === 'explore') {
-    event.waitUntil(
-      clients.openWindow('/')
-    );
+  if (event.action === "explore") {
+    event.waitUntil(clients.openWindow("/"));
   }
 });
 
 // Listen for messages from clients
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 });

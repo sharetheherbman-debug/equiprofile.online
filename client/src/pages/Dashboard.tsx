@@ -1,247 +1,1010 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { QuickActionsWidget } from "@/components/QuickActionsWidget";
-import { ActivityFeed } from "@/components/ActivityFeed";
 import { StatsOverview } from "@/components/StatsOverview";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { 
-  Heart, 
-  Calendar, 
-  CloudSun, 
+import { motion } from "framer-motion";
+import {
+  Heart,
+  Calendar,
+  CloudSun,
   Plus,
   ChevronRight,
   AlertCircle,
   Clock,
-  Activity
+  Activity,
+  Stethoscope,
+  Dumbbell,
+  Apple,
+  CalendarDays,
+  Brain,
+  FileText,
+  Baby,
+  Home,
+  DollarSign,
+  BarChart3,
+  Settings,
+  Users,
+  MessageSquare,
+  Shield,
+  Syringe,
+  Pill,
+  Scissors,
+  XCircle,
+  GitBranch,
+  Tag,
+  Sparkles,
+  BookOpen,
+  TrendingUp,
+  Zap,
+  Star,
 } from "lucide-react";
+
+// Module categories with richer descriptions for premium grid
+const moduleCategories = [
+  {
+    id: "horses",
+    name: "Horses",
+    description: "Profiles, pedigrees & records",
+    icon: Heart,
+    color: "from-rose-500 to-pink-600",
+    accent: "border-rose-500/30",
+    href: "/horses",
+    modules: [
+      { name: "All Horses", href: "/horses", icon: Heart },
+      { name: "Add Horse", href: "/horses/new", icon: Plus },
+      { name: "Pedigree", href: "/pedigree", icon: GitBranch },
+    ],
+  },
+  {
+    id: "health",
+    name: "Health",
+    description: "Vets, vaccines & treatments",
+    icon: Stethoscope,
+    color: "from-blue-500 to-cyan-600",
+    accent: "border-blue-500/30",
+    href: "/health",
+    modules: [
+      { name: "Health Hub", href: "/health", icon: Stethoscope },
+      { name: "Vaccinations", href: "/vaccinations", icon: Syringe },
+      { name: "Dental Care", href: "/dental", icon: Scissors },
+      { name: "Hoof Care", href: "/hoofcare", icon: Activity },
+      { name: "Dewormings", href: "/dewormings", icon: Pill },
+      { name: "Treatments", href: "/treatments", icon: Heart },
+      { name: "X-Rays", href: "/xrays", icon: XCircle },
+    ],
+  },
+  {
+    id: "training",
+    name: "Training",
+    description: "Sessions, templates & lessons",
+    icon: Dumbbell,
+    color: "from-green-500 to-emerald-600",
+    accent: "border-green-500/30",
+    href: "/training",
+    modules: [
+      { name: "Training Log", href: "/training", icon: Dumbbell },
+      { name: "Templates", href: "/training-templates", icon: BookOpen },
+      { name: "Lessons", href: "/lessons", icon: Users },
+    ],
+  },
+  {
+    id: "nutrition",
+    name: "Nutrition",
+    description: "Feed plans & diet tracking",
+    icon: Apple,
+    color: "from-orange-500 to-amber-600",
+    accent: "border-orange-500/30",
+    href: "/feeding",
+    modules: [
+      { name: "Feeding Plans", href: "/feeding", icon: Apple },
+      { name: "Nutrition Plans", href: "/nutrition-plans", icon: FileText },
+      { name: "Nutrition Logs", href: "/nutrition-logs", icon: BookOpen },
+    ],
+  },
+  {
+    id: "schedule",
+    name: "Schedule",
+    description: "Calendar, tasks & appointments",
+    icon: CalendarDays,
+    color: "from-purple-500 to-violet-600",
+    accent: "border-purple-500/30",
+    href: "/calendar",
+    modules: [
+      { name: "Calendar", href: "/calendar", icon: Calendar },
+      { name: "Appointments", href: "/appointments", icon: Clock },
+      { name: "Tasks", href: "/tasks", icon: Activity },
+    ],
+  },
+  {
+    id: "ai",
+    name: "AI Tools",
+    description: "Smart assistant & weather insights",
+    icon: Brain,
+    color: "from-indigo-500 to-blue-600",
+    accent: "border-indigo-500/30",
+    href: "/ai-chat",
+    modules: [
+      { name: "AI Assistant", href: "/ai-chat", icon: Brain },
+      { name: "Weather", href: "/weather", icon: CloudSun },
+    ],
+  },
+  {
+    id: "documents",
+    name: "Documents",
+    description: "Secure file & record vault",
+    icon: FileText,
+    color: "from-slate-500 to-gray-600",
+    accent: "border-slate-500/30",
+    href: "/documents",
+    modules: [{ name: "Document Vault", href: "/documents", icon: FileText }],
+  },
+  {
+    id: "breeding",
+    name: "Breeding",
+    description: "Foaling records & lineage",
+    icon: Baby,
+    color: "from-pink-500 to-rose-600",
+    accent: "border-pink-500/30",
+    href: "/breeding",
+    modules: [{ name: "Breeding Manager", href: "/breeding", icon: Baby }],
+  },
+  {
+    id: "stable",
+    name: "Stable",
+    description: "Team, contacts & messaging",
+    icon: Home,
+    color: "from-yellow-500 to-orange-600",
+    accent: "border-yellow-500/30",
+    href: "/stable",
+    modules: [
+      { name: "Stable Management", href: "/stable", icon: Home },
+      { name: "Contacts", href: "/contacts", icon: Users },
+      { name: "Client Portal", href: "/stable", icon: Shield },
+      { name: "Messages", href: "/messages", icon: MessageSquare },
+    ],
+  },
+  {
+    id: "financial",
+    name: "Financial",
+    description: "Billing, costs & invoices",
+    icon: DollarSign,
+    color: "from-emerald-500 to-teal-600",
+    accent: "border-emerald-500/30",
+    href: "/billing",
+    modules: [{ name: "Billing", href: "/billing", icon: DollarSign }],
+  },
+  {
+    id: "reports",
+    name: "Reports",
+    description: "Analytics, tags & exports",
+    icon: BarChart3,
+    color: "from-cyan-500 to-blue-600",
+    accent: "border-cyan-500/30",
+    href: "/analytics",
+    modules: [
+      { name: "Analytics", href: "/analytics", icon: BarChart3 },
+      { name: "Reports", href: "/reports", icon: FileText },
+      { name: "Tags", href: "/tags", icon: Tag },
+    ],
+  },
+  {
+    id: "settings",
+    name: "Settings",
+    description: "Account, security & admin",
+    icon: Settings,
+    color: "from-gray-500 to-slate-600",
+    accent: "border-gray-500/30",
+    href: "/settings",
+    modules: [
+      { name: "Settings", href: "/settings", icon: Settings },
+      { name: "Admin", href: "/admin", icon: Shield },
+    ],
+  },
+];
+
+function PremiumModuleCard({
+  category,
+  index,
+}: {
+  category: (typeof moduleCategories)[0];
+  index: number;
+}) {
+  const Icon = category.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.04 }}
+    >
+      <Link href={category.href}>
+        <div
+          className={`group relative rounded-xl border ${category.accent} bg-card/60 backdrop-blur-sm p-4 h-full cursor-pointer hover:shadow-md hover:bg-card/80 transition-all duration-200 hover:-translate-y-0.5`}
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className={`w-10 h-10 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center shadow-sm shrink-0`}
+            >
+              <Icon className="w-5 h-5 text-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm leading-tight">
+                {category.name}
+              </h3>
+              <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
+                {category.description}
+              </p>
+            </div>
+            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-muted-foreground shrink-0 mt-0.5 transition-colors" />
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1">
+            {category.modules.slice(0, 3).map((m) => (
+              <span
+                key={m.href}
+                className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted/50 text-muted-foreground"
+              >
+                {m.name}
+              </span>
+            ))}
+            {category.modules.length > 3 && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted/50 text-muted-foreground">
+                +{category.modules.length - 3} more
+              </span>
+            )}
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
 
 function DashboardContent() {
   const { user } = useAuth();
-  const { data: stats, isLoading: statsLoading } = trpc.user.getDashboardStats.useQuery();
+  const { data: stats } = trpc.user.getDashboardStats.useQuery(undefined, {
+    retry: false,
+  });
   const { data: subscription } = trpc.user.getSubscriptionStatus.useQuery();
-  const { data: horses } = trpc.horses.list.useQuery();
-  const { data: upcomingSessions } = trpc.training.getUpcoming.useQuery();
-  const { data: reminders } = trpc.healthRecords.getReminders.useQuery({ days: 14 });
+  const { data: trainingStats } = trpc.analytics.getTrainingStats.useQuery(
+    {},
+    { retry: false },
+  );
+  const { data: horses = [] } = trpc.horses.list.useQuery(undefined, {
+    retry: false,
+  });
+  const { data: upcomingAppointments = [] } = trpc.appointments.list.useQuery(
+    undefined,
+    { retry: false },
+  );
+  const { data: tasks = [] } = trpc.tasks.list.useQuery(undefined, {
+    retry: false,
+  });
 
-  // Runtime guards to ensure data is always treated as an array
-  const horsesList = horses?.horses && Array.isArray(horses.horses) ? horses.horses : [];
-  const upcomingList = Array.isArray(upcomingSessions) ? upcomingSessions : [];
-  const remindersList = Array.isArray(reminders) ? reminders : [];
+  // Upcoming events (next 30 days) for "Next Event" quick card
+  const { data: upcomingCalendarEvents = [] } =
+    trpc.calendar.getEvents.useQuery(
+      {
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      { retry: false },
+    );
 
-  // Log when fallback values are used to help identify data shape issues
-  if (horses && (!horses.horses || !Array.isArray(horses.horses))) {
-    console.warn('[Dashboard] Unexpected horses data shape:', horses);
-  }
-  if (upcomingSessions && !Array.isArray(upcomingSessions)) {
-    console.warn('[Dashboard] Unexpected upcomingSessions data shape:', upcomingSessions);
-  }
-  if (reminders && !Array.isArray(reminders)) {
-    console.warn('[Dashboard] Unexpected reminders data shape:', reminders);
-  }
+  // Today's calendar events
+  const today = new Date();
+  const todayStart = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+  const todayEnd = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + 1,
+  );
+  const { data: calendarEvents = [] } = trpc.calendar.getEvents.useQuery(
+    {
+      startDate: todayStart.toISOString(),
+      endDate: todayEnd.toISOString(),
+    },
+    { retry: false },
+  );
 
   const getSubscriptionBadge = () => {
     if (!subscription) return null;
     switch (subscription.status) {
-      case 'trial':
-        const trialDays = subscription.trialEndsAt 
-          ? Math.ceil((new Date(subscription.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      case "trial": {
+        const trialDays = subscription.trialEndsAt
+          ? Math.ceil(
+              (new Date(subscription.trialEndsAt).getTime() - Date.now()) /
+                (1000 * 60 * 60 * 24),
+            )
           : 0;
         return (
-          <Link href="/billing">
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer transition-colors">
-              {trialDays} days left · Subscribe now
-            </Badge>
-          </Link>
+          <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800 gap-1">
+            <Star className="w-3 h-3" />
+            {trialDays} days left in trial
+          </Badge>
         );
-      case 'active':
-        return <Badge variant="secondary" className="bg-green-100 text-green-700">Active Subscription</Badge>;
-      case 'overdue':
-        return <Badge variant="destructive">Payment Overdue</Badge>;
-      case 'expired':
-        return <Badge variant="destructive">Subscription Expired</Badge>;
+      }
+      case "active":
+        return (
+          <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 gap-1">
+            <Zap className="w-3 h-3" />
+            {subscription.planTier === "stable"
+              ? "Stable Plan"
+              : "Starter Plan"}
+          </Badge>
+        );
+      case "overdue":
+        return (
+          <Badge variant="destructive" className="gap-1">
+            <AlertCircle className="w-3 h-3" />
+            Payment Overdue
+          </Badge>
+        );
+      case "expired":
+        return (
+          <Badge variant="destructive" className="gap-1">
+            <AlertCircle className="w-3 h-3" />
+            Subscription Expired
+          </Badge>
+        );
       default:
         return null;
     }
   };
 
+  const quickActions = [
+    {
+      label: "Add Horse",
+      href: "/horses/new",
+      icon: Plus,
+      color: "from-rose-500 to-pink-600",
+    },
+    {
+      label: "Log Training",
+      href: "/training",
+      icon: Dumbbell,
+      color: "from-green-500 to-emerald-600",
+    },
+    {
+      label: "Schedule",
+      href: "/calendar",
+      icon: Calendar,
+      color: "from-purple-500 to-violet-600",
+    },
+    {
+      label: "AI Chat",
+      href: "/ai-chat",
+      icon: Sparkles,
+      color: "from-indigo-500 to-blue-600",
+    },
+    {
+      label: "Analytics",
+      href: "/analytics",
+      icon: TrendingUp,
+      color: "from-cyan-500 to-blue-600",
+    },
+  ];
+
+  // Build a chronological activity feed from horses + appointments
+  const activityFeed: Array<{
+    id: string;
+    type: "horse" | "appointment" | "training";
+    title: string;
+    subtitle: string;
+    date: Date;
+    icon: typeof Heart;
+    color: string;
+  }> = [
+    ...horses.slice(0, 3).map((h: any) => ({
+      id: `horse-${h.id}`,
+      type: "horse" as const,
+      title: h.name,
+      subtitle: h.breed ? `${h.breed} · Added to stable` : "Added to stable",
+      date: new Date(h.createdAt || Date.now()),
+      icon: Heart,
+      color: "from-rose-500 to-pink-600",
+    })),
+    ...upcomingAppointments.slice(0, 3).map((a: any) => ({
+      id: `appt-${a.id}`,
+      type: "appointment" as const,
+      title: a.title,
+      subtitle: a.appointmentType || "Appointment",
+      date: new Date(a.appointmentDate),
+      icon: Calendar,
+      color: "from-purple-500 to-violet-600",
+    })),
+  ]
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .slice(0, 5);
+
+  const futureAppointments = upcomingAppointments
+    .filter((a: any) => new Date(a.appointmentDate) >= new Date())
+    .sort(
+      (a: any, b: any) =>
+        new Date(a.appointmentDate).getTime() -
+        new Date(b.appointmentDate).getTime(),
+    )
+    .slice(0, 4);
+
+  const healthAlerts =
+    (stats?.reminderCount || 0) > 0
+      ? [
+          {
+            id: "health-reminder",
+            message: `${stats?.reminderCount} health reminder${(stats?.reminderCount || 0) > 1 ? "s" : ""} due`,
+            href: "/health",
+          },
+        ]
+      : [];
+
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="font-serif text-3xl font-bold text-foreground transition-all">
-            Welcome back, {user?.name?.split(' ')[0] || 'Rider'}
-          </h1>
-          <p className="text-muted-foreground">
-            Here's an overview of your horses and activities
-          </p>
+    <div className="space-y-6 pb-6">
+      {/* ── Hero Section ─────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 p-6 text-white shadow-lg shadow-indigo-500/20"
+      >
+        {/* decorative circles */}
+        <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10" />
+        <div className="pointer-events-none absolute -bottom-8 right-16 h-32 w-32 rounded-full bg-white/5" />
+
+        <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium text-indigo-100 mb-1">
+              {(() => {
+                const h = new Date().getHours();
+                if (h < 12) return "Good morning";
+                if (h < 18) return "Good afternoon";
+                return "Good evening";
+              })()}
+              , {user?.name?.split(" ")[0] || "Rider"}! 🐎
+            </p>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold leading-tight">
+              Your Dashboard
+            </h1>
+            <p className="text-indigo-200 text-sm mt-1">
+              Your equestrian command centre
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {getSubscriptionBadge()}
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {getSubscriptionBadge()}
-          <Link href="/horses/new">
-            <Button className="transition-all hover:scale-105">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Horse
-            </Button>
-          </Link>
-        </div>
-      </div>
+      </motion.div>
 
-      {/* Stats Cards */}
-      <StatsOverview
-        totalHorses={stats?.horseCount || 0}
-        trainingHours={0}
-        upcomingEvents={stats?.upcomingSessionCount || 0}
-        healthReminders={stats?.reminderCount || 0}
-      />
-
-      {/* Quick Actions */}
-      <QuickActionsWidget />
-
-      {/* Main Content Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Activity Feed */}
-        <ActivityFeed maxHeight="500px" />
-        
-        {/* Horses List */}
-        <Card className="lg:col-span-2 transition-all hover:shadow-lg">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="font-serif">Your Horses</CardTitle>
-              <CardDescription>Manage your equine companions</CardDescription>
+      {/* ── Quick-Access Stat Cards ───────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.06 }}
+        className="grid grid-cols-1 sm:grid-cols-3 gap-3"
+      >
+        <Link href="/horses">
+          <div className="flex items-center gap-3 p-4 rounded-xl border bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/30 dark:to-pink-950/30 border-rose-200/50 dark:border-rose-800/30 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shrink-0">
+              <Heart className="w-5 h-5 text-white" />
             </div>
-            <Link href="/horses">
-              <Button variant="ghost" size="sm" className="transition-all hover:scale-105">
-                View All
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
+            <div>
+              <p className="text-2xl font-bold">{(horses as any[]).length}</p>
+              <p className="text-xs text-muted-foreground">My Horses</p>
+            </div>
+          </div>
+        </Link>
+        <Link href="/calendar">
+          <div className="flex items-center gap-3 p-4 rounded-xl border bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30 border-purple-200/50 dark:border-purple-800/30 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shrink-0">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              {(upcomingCalendarEvents as any[]).length > 0 ? (
+                <>
+                  <p className="text-sm font-semibold leading-tight truncate max-w-[140px]">
+                    {(upcomingCalendarEvents as any[])[0]?.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(
+                      (upcomingCalendarEvents as any[])[0]?.startDate,
+                    ).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                    })}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold">No upcoming events</p>
+                  <p className="text-xs text-muted-foreground">Next Event</p>
+                </>
+              )}
+            </div>
+          </div>
+        </Link>
+        <Link href="/tasks">
+          <div className="flex items-center gap-3 p-4 rounded-xl border bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200/50 dark:border-amber-800/30 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shrink-0">
+              <Activity className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">
+                {(tasks as any[]).filter((t: any) => !t.isCompleted).length}
+              </p>
+              <p className="text-xs text-muted-foreground">Active Tasks</p>
+            </div>
+          </div>
+        </Link>
+      </motion.div>
+
+      {/* ── KPI Stats Row ─────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.08 }}
+        className="rounded-xl bg-muted/30 p-1"
+      >
+        <StatsOverview
+          totalHorses={stats?.horseCount || 0}
+          trainingHours={Math.round((trainingStats?.totalDuration || 0) / 60)}
+          upcomingEvents={stats?.upcomingSessionCount || 0}
+          healthReminders={stats?.reminderCount || 0}
+        />
+      </motion.div>
+
+      {/* ── Quick Action Pills ────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.14 }}
+      >
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {quickActions.map((action) => {
+            const ActionIcon = action.icon;
+            return (
+              <Link key={action.href} href={action.href}>
+                <button className="flex items-center gap-2 shrink-0 px-4 py-2.5 rounded-full border border-muted/60 bg-card/60 hover:bg-card hover:shadow-sm active:scale-95 transition-all text-sm font-medium">
+                  <div
+                    className={`w-5 h-5 rounded-full bg-gradient-to-br ${action.color} flex items-center justify-center`}
+                  >
+                    <ActionIcon className="w-3 h-3 text-white" />
+                  </div>
+                  {action.label}
+                </button>
+              </Link>
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {/* ── Two-Column Body ───────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="grid grid-cols-1 lg:grid-cols-5 gap-4"
+      >
+        {/* LEFT — Recent Activity (60%) */}
+        <div className="lg:col-span-3 space-y-4">
+          <Card className="border-muted/50 bg-card/60 backdrop-blur-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="font-serif text-base flex items-center gap-2">
+                <Activity className="w-4 h-4 text-primary" />
+                Recent Activity
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Your horses, appointments and events
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {activityFeed.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Activity className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No activity yet</p>
+                  <p className="text-xs mt-1">
+                    Add a horse or schedule an appointment to get started
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-0">
+                  {activityFeed.map((item, i) => {
+                    const ItemIcon = item.icon;
+                    return (
+                      <div key={item.id} className="flex gap-3 group">
+                        {/* timeline line */}
+                        <div className="flex flex-col items-center">
+                          <div
+                            className={`w-8 h-8 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm shrink-0`}
+                          >
+                            <ItemIcon className="w-3.5 h-3.5 text-white" />
+                          </div>
+                          {i < activityFeed.length - 1 && (
+                            <div className="w-px flex-1 bg-border/50 my-1" />
+                          )}
+                        </div>
+                        <div className="flex-1 pb-4 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {item.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.subtitle}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                            {item.date.toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                              year:
+                                item.date.getFullYear() !==
+                                new Date().getFullYear()
+                                  ? "numeric"
+                                  : undefined,
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {horses.length > 0 && (
+                <Link href="/horses">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full mt-1 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    View all horses
+                    <ChevronRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </Link>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* RIGHT — Upcoming Events + Health Alerts (40%) */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* Upcoming Events */}
+          <Card className="border-muted/50 bg-card/60 backdrop-blur-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="font-serif text-base flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-purple-500" />
+                Upcoming
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {futureAppointments.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground">
+                  <Calendar className="w-7 h-7 mx-auto mb-2 opacity-30" />
+                  <p className="text-xs">No upcoming appointments</p>
+                  <Link href="/appointments">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 text-xs h-7"
+                    >
+                      Schedule one
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {futureAppointments.map((appt: any) => {
+                    const d = new Date(appt.appointmentDate);
+                    const isToday =
+                      d.toDateString() === new Date().toDateString();
+                    return (
+                      <div
+                        key={appt.id}
+                        className={`flex items-center gap-3 p-2.5 rounded-lg border ${isToday ? "border-purple-500/30 bg-purple-50/50 dark:bg-purple-900/10" : "border-muted/40 bg-muted/20"}`}
+                      >
+                        <div className="text-center shrink-0 w-9">
+                          <p className="text-[10px] text-muted-foreground font-medium uppercase">
+                            {d.toLocaleDateString("en-GB", { month: "short" })}
+                          </p>
+                          <p className="text-base font-bold leading-tight">
+                            {d.getDate()}
+                          </p>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-medium truncate">
+                            {appt.title}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground truncate">
+                            {appt.appointmentType || "Appointment"}
+                            {appt.providerName ? ` · ${appt.providerName}` : ""}
+                          </p>
+                        </div>
+                        {isToday && (
+                          <Badge className="text-[9px] h-4 px-1.5 bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 shrink-0">
+                            Today
+                          </Badge>
+                        )}
+                      </div>
+                    );
+                  })}
+                  <Link href="/calendar">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-xs text-muted-foreground hover:text-foreground mt-1"
+                    >
+                      Open calendar
+                      <ChevronRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Health Alerts */}
+          {healthAlerts.length > 0 && (
+            <Card className="border-amber-500/30 bg-amber-50/50 dark:bg-amber-900/10 backdrop-blur-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="font-serif text-sm flex items-center gap-2 text-amber-700 dark:text-amber-400">
+                  <AlertCircle className="w-4 h-4" />
+                  Health Alerts
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {healthAlerts.map((alert) => (
+                  <Link key={alert.id} href={alert.href}>
+                    <div className="flex items-center justify-between p-2 rounded-lg hover:bg-amber-100/50 dark:hover:bg-amber-900/20 transition-colors cursor-pointer">
+                      <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                        {alert.message}
+                      </p>
+                      <ChevronRight className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    </div>
+                  </Link>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </motion.div>
+
+      {/* ── Today's Schedule ────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.28 }}
+        className="grid grid-cols-1 lg:grid-cols-3 gap-4"
+      >
+        {/* Today's Schedule */}
+        <Card className="border-muted/50 bg-card/60 backdrop-blur-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="font-serif text-base flex items-center gap-2">
+              <CalendarDays className="w-4 h-4 text-primary" />
+              Today's Schedule
+            </CardTitle>
+            <CardDescription className="text-xs">
+              {today.toLocaleDateString("en-GB", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+              })}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            {horsesList.length === 0 ? (
-              <div className="text-center py-8">
-                <Heart className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4 animate-pulse" />
-                <p className="text-muted-foreground mb-4">No horses added yet</p>
-                <Link href="/horses/new">
-                  <Button className="transition-all hover:scale-105">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Your First Horse
+            {calendarEvents.length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground">
+                <CalendarDays className="w-7 h-7 mx-auto mb-2 opacity-30" />
+                <p className="text-xs">No events scheduled today</p>
+                <Link href="/calendar">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-2 text-xs h-7"
+                  >
+                    Open calendar
                   </Button>
                 </Link>
               </div>
             ) : (
-              <div className="space-y-4">
-                {horsesList.slice(0, 3).map((horse) => (
-                  <Link key={horse.id} href={`/horses/${horse.id}`}>
-                    <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-all cursor-pointer hover:scale-[1.02]">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center transition-all">
-                        <Heart className="w-6 h-6 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground">{horse.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {horse.breed || 'Unknown breed'} • {horse.age ? `${horse.age} years` : 'Age unknown'}
-                        </p>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground transition-all group-hover:translate-x-1" />
+              <div className="space-y-2">
+                {calendarEvents.slice(0, 4).map((event: any) => (
+                  <div
+                    key={event.id}
+                    className="flex items-center gap-3 p-2.5 rounded-lg border border-muted/40 bg-muted/20"
+                  >
+                    <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium truncate">
+                        {event.title}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground capitalize">
+                        {event.eventType}
+                      </p>
                     </div>
-                  </Link>
+                  </div>
                 ))}
+                <Link href="/calendar">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs text-muted-foreground hover:text-foreground mt-1"
+                  >
+                    View calendar <ChevronRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </Link>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Sidebar Content */}
-        <div className="space-y-6">
-          {/* Upcoming Sessions */}
-          <Card className="transition-all hover:shadow-lg">
-            <CardHeader>
-              <CardTitle className="font-serif text-lg">Upcoming Sessions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {upcomingList.length === 0 ? (
-                <div className="text-center py-4">
-                  <Calendar className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">No upcoming sessions</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {upcomingList.slice(0, 3).map((session) => (
-                    <div key={session.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30 transition-all hover:bg-muted/50">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Activity className="w-5 h-5 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium capitalize">{session.sessionType}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(session.sessionDate).toLocaleDateString()}
+        {/* Horse Overview */}
+        <Card className="border-muted/50 bg-card/60 backdrop-blur-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="font-serif text-base flex items-center gap-2">
+              <Heart className="w-4 h-4 text-rose-500" />
+              Horse Overview
+            </CardTitle>
+            <CardDescription className="text-xs">
+              {horses.length} horse{horses.length !== 1 ? "s" : ""} in your
+              stable
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {horses.length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground">
+                <Heart className="w-7 h-7 mx-auto mb-2 opacity-30" />
+                <p className="text-xs">No horses added yet</p>
+                <Link href="/horses/new">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-2 text-xs h-7"
+                  >
+                    Add first horse
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {horses.slice(0, 4).map((horse: any) => (
+                  <Link key={horse.id} href={`/horses/${horse.id}`}>
+                    <div className="flex items-center gap-3 p-2.5 rounded-lg border border-muted/40 bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer">
+                      {horse.imageUrl ? (
+                        <img
+                          src={horse.imageUrl}
+                          alt={horse.name}
+                          className="w-8 h-8 rounded-full object-cover shrink-0 border border-border"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "/assets/marketing/hero/hero-horse.jpg";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shrink-0">
+                          <span className="text-[10px] text-white font-bold">
+                            {horse.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium truncate">
+                          {horse.name}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate">
+                          {horse.breed || "Unknown breed"}
                         </p>
                       </div>
                     </div>
+                  </Link>
+                ))}
+                {horses.length > 4 && (
+                  <Link href="/horses">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-xs text-muted-foreground hover:text-foreground mt-1"
+                    >
+                      View all {horses.length} horses{" "}
+                      <ChevronRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Notifications & Tasks */}
+        <div className="space-y-4">
+          {/* Notifications */}
+          <Card className="border-muted/50 bg-card/60 backdrop-blur-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="font-serif text-base flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-500" />
+                Notifications
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {healthAlerts.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-3">
+                  No alerts
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {healthAlerts.map((alert) => (
+                    <Link key={alert.id} href={alert.href}>
+                      <div className="flex items-center justify-between p-2 rounded-lg hover:bg-amber-100/50 dark:hover:bg-amber-900/20 transition-colors cursor-pointer">
+                        <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                          {alert.message}
+                        </p>
+                        <ChevronRight className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      </div>
+                    </Link>
                   ))}
                 </div>
               )}
-              <Link href="/training">
-                <Button variant="outline" className="w-full mt-4 transition-all hover:scale-105" size="sm">
-                  View Schedule
-                </Button>
-              </Link>
             </CardContent>
           </Card>
 
-          {/* Health Reminders */}
-          <Card className="transition-all hover:shadow-lg">
-            <CardHeader>
-              <CardTitle className="font-serif text-lg">Health Reminders</CardTitle>
+          {/* Tasks */}
+          <Card className="border-muted/50 bg-card/60 backdrop-blur-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="font-serif text-base flex items-center gap-2">
+                <Clock className="w-4 h-4 text-blue-500" />
+                Tasks
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              {remindersList.length === 0 ? (
-                <div className="text-center py-4">
-                  <Clock className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">No upcoming reminders</p>
+              {tasks.length === 0 ? (
+                <div className="text-center py-4 text-muted-foreground">
+                  <p className="text-xs">No pending tasks</p>
+                  <Link href="/tasks">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 text-xs h-7"
+                    >
+                      Add task
+                    </Button>
+                  </Link>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {remindersList.slice(0, 3).map((reminder) => (
-                    <div key={reminder.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30 transition-all hover:bg-muted/50">
-                      <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                        <AlertCircle className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{reminder.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Due: {reminder.nextDueDate ? new Date(reminder.nextDueDate).toLocaleDateString() : 'N/A'}
-                        </p>
-                      </div>
+                <div className="space-y-1.5">
+                  {tasks.slice(0, 4).map((task: any) => (
+                    <div
+                      key={task.id}
+                      className="flex items-center gap-2 p-2 rounded-lg border border-muted/40 bg-muted/20"
+                    >
+                      <div
+                        className={`w-2 h-2 rounded-full shrink-0 ${task.priority === "high" ? "bg-red-500" : task.priority === "medium" ? "bg-amber-500" : "bg-green-500"}`}
+                      />
+                      <p className="text-xs font-medium truncate flex-1">
+                        {task.title}
+                      </p>
                     </div>
                   ))}
+                  <Link href="/tasks">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-xs text-muted-foreground hover:text-foreground mt-1"
+                    >
+                      View all tasks <ChevronRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </Link>
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Weather Card */}
-          <Card className="transition-all hover:shadow-lg">
-            <CardHeader>
-              <CardTitle className="font-serif text-lg">Riding Conditions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Link href="/weather">
-                <Button variant="outline" className="w-full transition-all hover:scale-105">
-                  <CloudSun className="w-4 h-4 mr-2" />
-                  Check Weather
-                </Button>
-              </Link>
             </CardContent>
           </Card>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

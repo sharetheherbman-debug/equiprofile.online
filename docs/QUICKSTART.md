@@ -5,7 +5,7 @@ Get EquiProfile up and running in minutes!
 ## Prerequisites
 
 - Node.js 22.x or higher
-- pnpm 10.x or higher  
+- pnpm 10.x or higher
 - MySQL 8.0 or higher
 - AWS S3 account (for file uploads)
 - OpenAI API key (for weather analysis)
@@ -27,6 +27,7 @@ cp .env.example .env
 ```
 
 Edit `.env` and set at minimum:
+
 ```env
 DATABASE_URL=mysql://user:password@localhost:3306/equiprofile
 JWT_SECRET=your_random_32_char_string
@@ -62,7 +63,7 @@ Visit http://localhost:3000 🎉
 ### Disable Admin Section
 
 ```javascript
-hideAdmin()
+hideAdmin();
 ```
 
 ## Available Scripts
@@ -84,6 +85,7 @@ EquiProfile uses a service worker to cache static assets for better performance 
 ### How It Works
 
 The service worker automatically:
+
 - Caches hashed static assets (JavaScript, CSS, fonts) with a cache-first strategy
 - Uses network-first for HTML and API requests to ensure fresh content
 - Updates its cache version on every build to force cache refresh
@@ -100,6 +102,7 @@ The cache version is automatically synced with your `package.json` version durin
 ```
 
 This means when you deploy a new version:
+
 1. The service worker version changes automatically
 2. Browsers detect the new version
 3. Old caches are cleared
@@ -110,23 +113,29 @@ This means when you deploy a new version:
 If you see stale content after deployment, you can manually clear the service worker:
 
 **In Chrome/Edge:**
+
 1. Open DevTools (F12)
 2. Go to Application tab → Service Workers
 3. Click "Unregister" next to the service worker
 4. Hard refresh the page (Ctrl+Shift+R or Cmd+Shift+R)
 
 **In Firefox:**
+
 1. Open DevTools (F12)
 2. Go to Application tab → Service Workers
 3. Click "Unregister"
 4. Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)
 
 **Universal Method:**
+
 ```javascript
 // In browser console:
-navigator.serviceWorker.getRegistrations().then(registrations => {
-  registrations.forEach(registration => registration.unregister());
-}).then(() => location.reload(true));
+navigator.serviceWorker
+  .getRegistrations()
+  .then((registrations) => {
+    registrations.forEach((registration) => registration.unregister());
+  })
+  .then(() => location.reload(true));
 ```
 
 ### Troubleshooting Stale Content
@@ -134,6 +143,7 @@ navigator.serviceWorker.getRegistrations().then(registrations => {
 **Problem:** "I deployed a new version but users see old content"
 
 **Solution:**
+
 1. Verify the build ran successfully and `CACHE_VERSION` was updated
 2. Check `client/public/service-worker.js` - the version should match `package.json`
 3. Users may need to close all tabs and reopen to activate the new service worker
@@ -142,6 +152,7 @@ navigator.serviceWorker.getRegistrations().then(registrations => {
 **Problem:** "Development changes aren't showing up"
 
 **Solution:**
+
 - Use `pnpm dev` which bypasses service worker caching
 - Or disable service worker in DevTools during development
 - In DevTools: Application → Service Workers → Check "Bypass for network"
@@ -188,15 +199,18 @@ Equiprofile.online/
 All endpoints available at `/api/trpc`:
 
 ### Public
+
 - `auth.me` - Get current user
 - `auth.logout` - Logout
 
 ### User (Authenticated)
+
 - `user.getProfile` - Get profile
 - `user.updateProfile` - Update profile
 - `user.getSubscriptionStatus` - Get subscription
 
 ### Horses (Active Subscription)
+
 - `horses.list` - List horses
 - `horses.get` - Get horse by ID
 - `horses.create` - Create horse
@@ -204,16 +218,19 @@ All endpoints available at `/api/trpc`:
 - `horses.delete` - Delete horse
 
 ### Health Records
+
 - `healthRecords.listAll` - List all records
 - `healthRecords.create` - Create record
 - More endpoints in API.md...
 
 ### Training
+
 - `training.listAll` - List sessions
 - `training.create` - Create session
 - More endpoints in API.md...
 
 ### Admin (Admin Role Only)
+
 - `admin.getUsers` - List all users
 - `admin.getStats` - System statistics
 - `admin.suspendUser` - Suspend user
@@ -256,6 +273,7 @@ pnpm test
 ```
 
 Test coverage includes:
+
 - ✅ 34 passing tests
 - ✅ Authentication flows
 - ✅ Horse management
@@ -275,7 +293,8 @@ pnpm build
 pm2 start dist/index.js --name equiprofile
 ```
 
-See [docs/DEPLOYMENT.md](./DEPLOYMENT.md) for full deployment guide including:
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for full deployment guide including:
+
 - Nginx configuration
 - SSL setup
 - Database configuration
@@ -285,14 +304,17 @@ See [docs/DEPLOYMENT.md](./DEPLOYMENT.md) for full deployment guide including:
 ## Common Issues
 
 ### Port Already in Use
+
 Server automatically finds an available port. Check console output for actual port.
 
 ### Database Connection Failed
+
 - Verify DATABASE_URL is correct
 - Check MySQL is running: `systemctl status mysql`
 - Test connection: `mysql -u user -p`
 
 ### Build Errors
+
 ```bash
 # Clear cache and rebuild
 rm -rf node_modules dist .pnpm-store
@@ -301,6 +323,7 @@ pnpm build
 ```
 
 ### Tests Failing
+
 ```bash
 # Make sure database is accessible
 # Mock functions should prevent database calls in tests
@@ -309,21 +332,23 @@ pnpm test
 
 ## Getting Help
 
-- 📖 Documentation: See [README.md](../README.md)
+- 📖 Documentation: See [README.md](./README.md)
 - 🔒 Security: See [SECURITY.md](./SECURITY.md)
 - 🤝 Contributing: See [CONTRIBUTING.md](./CONTRIBUTING.md)
 - 🚀 Deployment: See [DEPLOYMENT.md](./DEPLOYMENT.md)
-- 📡 API: See [API_REFERENCE.md](./API_REFERENCE.md)
+- 📡 API: See [API.md](./API.md)
 - 🐛 Issues: [GitHub Issues](https://github.com/amarktainetwork-blip/Equiprofile.online/issues)
 
 ## Key Features
 
 ✅ **Horse Management**
+
 - Complete profiles with photos
 - Multiple horses per user
 - Detailed information tracking
 
 ✅ **Health Records**
+
 - Vaccination tracking
 - Vet visit logs
 - Medical history
@@ -331,23 +356,27 @@ pnpm test
 - Automatic reminders
 
 ✅ **Training Scheduler**
+
 - Session planning
 - Progress tracking
 - Performance notes
 - Calendar view
 
 ✅ **AI Weather Analysis**
+
 - Real-time conditions
 - Riding recommendations
 - Safety alerts
 
 ✅ **Admin Dashboard**
+
 - User management
 - System analytics
 - Settings configuration
 - Activity monitoring
 
 ✅ **Security**
+
 - OAuth authentication
 - Role-based access
 - Rate limiting
@@ -357,7 +386,7 @@ pnpm test
 ## Next Steps
 
 1. ✅ Complete this quick start
-2. 📖 Read [API_REFERENCE.md](./API_REFERENCE.md) for API details
+2. 📖 Read [API.md](./API.md) for API details
 3. 🔒 Review [SECURITY.md](./SECURITY.md) for security
 4. 🚀 Deploy using [DEPLOYMENT.md](./DEPLOYMENT.md)
 5. 🤝 Contribute via [CONTRIBUTING.md](./CONTRIBUTING.md)

@@ -187,6 +187,7 @@ curl http://localhost:3000/api/system/health
 **Use Case:** Internal testing, MVP launch, proof of concept
 
 **`.env` Configuration:**
+
 ```env
 DATABASE_URL=mysql://equiprofile:password@localhost:3306/equiprofile
 JWT_SECRET=your_jwt_secret_here
@@ -200,6 +201,7 @@ ENABLE_UPLOADS=false
 ```
 
 **Features Available:**
+
 - ✅ User authentication
 - ✅ Horse profiles
 - ✅ Health records
@@ -211,6 +213,7 @@ ENABLE_UPLOADS=false
 - ❌ Document uploads (disabled)
 
 **Deployment Command:**
+
 ```bash
 ./scripts/preflight.sh && pnpm build && pm2 restart equiprofile
 ```
@@ -222,6 +225,7 @@ ENABLE_UPLOADS=false
 **Use Case:** Enable billing/subscriptions, no document storage yet
 
 **Additional Configuration:**
+
 ```env
 # ... (all from Scenario 1) ...
 
@@ -236,12 +240,14 @@ STRIPE_YEARLY_PRICE_ID=price_xxxxx
 ```
 
 **Features Added:**
+
 - ✅ Subscription billing
 - ✅ Payment processing
 - ✅ Customer portal
 - ❌ Document uploads (still disabled)
 
 **Setup Steps:**
+
 1. Create Stripe account at https://stripe.com
 2. Get API keys from https://dashboard.stripe.com/apikeys
 3. Create products/prices in Stripe dashboard
@@ -250,6 +256,7 @@ STRIPE_YEARLY_PRICE_ID=price_xxxxx
 6. Restart application
 
 **Deployment Command:**
+
 ```bash
 ./scripts/preflight.sh && pnpm build && pm2 restart equiprofile
 ```
@@ -261,6 +268,7 @@ STRIPE_YEARLY_PRICE_ID=price_xxxxx
 **Use Case:** Enable document storage, no billing yet
 
 **Additional Configuration:**
+
 ```env
 # ... (all from Scenario 1) ...
 
@@ -273,17 +281,20 @@ BUILT_IN_FORGE_API_KEY=your_storage_api_key
 ```
 
 **Features Added:**
+
 - ✅ Document uploads
 - ✅ File storage
 - ❌ Billing (still disabled)
 
 **Setup Steps:**
+
 1. Setup storage API endpoint
 2. Generate API key
 3. Add credentials to `.env`
 4. Restart application
 
 **Deployment Command:**
+
 ```bash
 ./scripts/preflight.sh && pnpm build && pm2 restart equiprofile
 ```
@@ -295,6 +306,7 @@ BUILT_IN_FORGE_API_KEY=your_storage_api_key
 **Use Case:** Production deployment with all features
 
 **Complete Configuration:**
+
 ```env
 # Core Configuration
 DATABASE_URL=mysql://equiprofile:password@localhost:3306/equiprofile
@@ -326,6 +338,7 @@ COOKIE_SECURE=true
 ```
 
 **All Features Enabled:**
+
 - ✅ User authentication
 - ✅ Complete horse management
 - ✅ Billing/subscriptions
@@ -334,6 +347,7 @@ COOKIE_SECURE=true
 - ✅ All functionality
 
 **Deployment Command:**
+
 ```bash
 ./scripts/preflight.sh && pnpm build && pm2 restart equiprofile
 ```
@@ -397,16 +411,19 @@ curl http://localhost:3000/api/system/getFeatureFlags
 ### Application Won't Start
 
 **Check environment variables:**
+
 ```bash
 ./scripts/preflight.sh
 ```
 
 **View logs:**
+
 ```bash
 pm2 logs equiprofile
 ```
 
 **Common Issues:**
+
 - ❌ Missing required environment variables → Run preflight script
 - ❌ Database connection failed → Check DATABASE_URL
 - ❌ Port 3000 already in use → Change PORT in .env
@@ -415,17 +432,20 @@ pm2 logs equiprofile
 ### Feature Not Working
 
 **Check feature flags:**
+
 ```bash
 curl http://localhost:3000/api/system/getFeatureFlags
 ```
 
 **Verify environment:**
+
 ```bash
 # In admin panel (after unlocking admin mode)
 # Navigate to: Admin → System → Environment Health
 ```
 
 **Common Issues:**
+
 - ❌ Billing disabled → Set `ENABLE_STRIPE=true` and add Stripe vars
 - ❌ Uploads disabled → Set `ENABLE_UPLOADS=true` and add storage vars
 - ❌ Feature enabled but credentials missing → Check preflight output

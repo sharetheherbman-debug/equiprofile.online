@@ -1,16 +1,17 @@
-import { config } from 'dotenv';
-import { existsSync } from 'fs';
-import { resolve } from 'path';
+// Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
+import { config } from "dotenv";
+import { existsSync } from "fs";
+import { resolve } from "path";
 
 // Load environment variables with fallback to .env.default in non-production
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 if (!isProduction) {
   // In development/test, load .env first, then fallback to .env.default
   config(); // Load .env if exists
-  
+
   // If .env doesn't exist or variables are missing, try .env.default
-  const envDefaultPath = resolve(process.cwd(), '.env.default');
+  const envDefaultPath = resolve(process.cwd(), ".env.default");
   if (existsSync(envDefaultPath)) {
     config({ path: envDefaultPath, override: false }); // Don't override existing vars
   }
@@ -20,104 +21,184 @@ if (!isProduction) {
 }
 
 // Feature flags (default to false for plug-and-play deployment)
-const enableStripe = process.env.ENABLE_STRIPE === 'true';
-const enableUploads = process.env.ENABLE_UPLOADS === 'true';
+const enableStripe = process.env.ENABLE_STRIPE === "true";
+const enableUploads = process.env.ENABLE_UPLOADS === "true";
 
 // Startup validation helper
 function validateEnvironment() {
-  
   // Core required vars (always needed)
   const coreRequiredVars = [
-    { name: 'DATABASE_URL', description: 'Database connection string' },
-    { name: 'JWT_SECRET', description: 'JWT secret for token signing' },
-    { name: 'ADMIN_UNLOCK_PASSWORD', description: 'Admin unlock password' },
+    { name: "DATABASE_URL", description: "Database connection string" },
+    { name: "JWT_SECRET", description: "JWT secret for token signing" },
+    { name: "ADMIN_UNLOCK_PASSWORD", description: "Admin unlock password" },
   ];
-  
+
   const missing: Array<{ name: string; description: string }> = [];
-  
+
   // Check core required variables
-  coreRequiredVars.forEach(v => {
+  coreRequiredVars.forEach((v) => {
     if (!process.env[v.name]) {
       missing.push(v);
     }
   });
-  
+
   // Conditionally require Stripe vars if enabled
   if (enableStripe) {
     const stripeVars = [
-      { name: 'STRIPE_SECRET_KEY', description: 'Stripe secret key' },
-      { name: 'STRIPE_WEBHOOK_SECRET', description: 'Stripe webhook secret' },
+      { name: "STRIPE_SECRET_KEY", description: "Stripe secret key" },
+      { name: "STRIPE_WEBHOOK_SECRET", description: "Stripe webhook secret" },
     ];
-    stripeVars.forEach(v => {
+    stripeVars.forEach((v) => {
       if (!process.env[v.name]) {
         missing.push(v);
       }
     });
   }
-  
-  // Note: ENABLE_UPLOADS can work independently (for local file storage or S3)
-  
+
+  // Conditionally require upload/storage vars if enabled
+  if (enableUploads) {
+    const uploadVars = [
+      { name: "BUILT_IN_FORGE_API_URL", description: "Forge API URL" },
+      { name: "BUILT_IN_FORGE_API_KEY", description: "Forge API key" },
+    ];
+    uploadVars.forEach((v) => {
+      if (!process.env[v.name]) {
+        missing.push(v);
+      }
+    });
+  }
+
   // Report missing variables and exit if any
   if (missing.length > 0) {
-    console.error('❌ STARTUP ERROR: Missing required environment variables\n');
-    console.error('The following required environment variables are not set:\n');
-    missing.forEach(v => {
+    console.error("❌ STARTUP ERROR: Missing required environment variables\n");
+    console.error(
+      "The following required environment variables are not set:\n",
+    );
+    missing.forEach((v) => {
       console.error(`  • ${v.name} - ${v.description}`);
     });
-    console.error('\nFeature flags:');
+    console.error("\nFeature flags:");
     console.error(`  • ENABLE_STRIPE=${enableStripe}`);
     console.error(`  • ENABLE_UPLOADS=${enableUploads}`);
-    console.error('\nPlease configure all required environment variables in your .env file.');
-    console.error('See .env.example for a complete list of available options.\n');
+    console.error(
+      "\nPlease configure all required environment variables in your .env file.",
+    );
+    console.error(
+      "See .env.example for a complete list of available options.\n",
+    );
     process.exit(1);
   }
-  
-  // Validate no hardcoded fallbacks in production
-  if (isProduction && (process.env.ADMIN_UNLOCK_PASSWORD === 'ashmor12@' || process.env.ADMIN_UNLOCK_PASSWORD === 'EquiProfile2026!Admin')) {
-    console.error('❌ PRODUCTION ERROR: ADMIN_UNLOCK_PASSWORD is still set to default value!');
-    console.error('You MUST change this to a secure password before running in production.');
-    console.error('Generate a secure password and update your .env file.\n');
+
+  // Validate admin password is not weak or default in production
+  const hasWeakAdminPassword = (password: string) => {
+    // Check for common weak patterns without hardcoding actual defaults
+    const weakPatterns = [
+      /^admin/i,
+      /^password/i,
+      /^12345/,
+      /^ashmor/i,
+      /^equiprofile/i,
+    ];
+    return (
+      password.length < 8 ||
+      weakPatterns.some((pattern) => pattern.test(password))
+    );
+  };
+
+  if (
+    isProduction &&
+    process.env.ADMIN_UNLOCK_PASSWORD &&
+    hasWeakAdminPassword(process.env.ADMIN_UNLOCK_PASSWORD)
+  ) {
+    console.error(
+      "❌ PRODUCTION ERROR: ADMIN_UNLOCK_PASSWORD is weak or set to a default value!",
+    );
+    console.error(
+      "You MUST set a strong, secure password before running in production.",
+    );
+    console.error(
+      "Use a password with at least 8 characters, including letters, numbers, and symbols.\n",
+    );
     process.exit(1);
   }
-  
+
   // Validate JWT_SECRET is not set to default values in production
-  // NOTE: These are known default values from .env.default and common examples
-  // If you're seeing this in code review, these are intentionally hardcoded as a security check
-  const DEFAULT_JWT_SECRETS = [
-    'FHnuavgCmZtlXQ2AAxgq+bmpt6D4Iqfl',  // From .env.default
-    'your_secure_jwt_secret_here',         // Common placeholder
-    'your_super_secret_jwt_key_change_this_in_production' // From old docs
-  ];
-  
-  if (isProduction && DEFAULT_JWT_SECRETS.includes(process.env.JWT_SECRET || '')) {
-    console.error('❌ PRODUCTION ERROR: JWT_SECRET is still set to a default value!');
-    console.error('Generate a secure secret with: openssl rand -base64 32');
-    console.error('Update your .env file before running in production.\n');
+  // Check for common patterns in JWT secrets that indicate they haven't been changed
+  const hasDefaultPattern = (secret: string) => {
+    const patterns = [
+      /your.*secret/i,
+      /change.*this/i,
+      /placeholder/i,
+      /example/i,
+      /default/i,
+    ];
+    return patterns.some((pattern) => pattern.test(secret));
+  };
+
+  if (
+    isProduction &&
+    process.env.JWT_SECRET &&
+    hasDefaultPattern(process.env.JWT_SECRET)
+  ) {
+    console.error(
+      "❌ PRODUCTION ERROR: JWT_SECRET appears to be a default/placeholder value!",
+    );
+    console.error("Generate a secure secret with: openssl rand -base64 32");
+    console.error("Update your .env file before running in production.\n");
     process.exit(1);
   }
-  
+
   // Log OAuth configuration status
   if (process.env.OAUTH_SERVER_URL) {
     if (!process.env.VITE_APP_ID) {
-      console.warn('⚠️  WARNING: OAUTH_SERVER_URL is set but VITE_APP_ID is missing.');
-      console.warn('   OAuth login will not work correctly without an app ID.\n');
+      console.warn(
+        "⚠️  WARNING: OAUTH_SERVER_URL is set but VITE_APP_ID is missing.",
+      );
+      console.warn(
+        "   OAuth login will not work correctly without an app ID.\n",
+      );
     } else {
-      console.log('✅ OAuth configured:', process.env.OAUTH_SERVER_URL);
+      console.log("✅ OAuth configured:", process.env.OAUTH_SERVER_URL);
     }
   } else {
-    console.log('ℹ️  OAuth not configured - using email/password authentication only');
+    console.log(
+      "ℹ️  OAuth not configured - using email/password authentication only",
+    );
   }
-  
+
   // Log feature status
-  console.log('ℹ️  Feature flags:');
-  console.log(`   • Stripe billing: ${enableStripe ? '✅ enabled' : '❌ disabled'}`);
-  console.log(`   • Document uploads: ${enableUploads ? '✅ enabled' : '❌ disabled'}`);
-  
+  console.log("ℹ️  Feature flags:");
+  console.log(
+    `   • Stripe billing: ${enableStripe ? "✅ enabled" : "❌ disabled"}`,
+  );
+  console.log(
+    `   • Document uploads: ${enableUploads ? "✅ enabled" : "❌ disabled"}`,
+  );
+
   // Validate JWT secret length in production
-  if (isProduction && process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
-    console.error('❌ PRODUCTION ERROR: JWT_SECRET must be at least 32 characters long!');
-    console.error('Generate a secure secret with: openssl rand -base64 32\n');
-    process.exit(1);
+  if (isProduction && process.env.JWT_SECRET) {
+    const secret = process.env.JWT_SECRET;
+    if (secret.length < 32) {
+      if (process.env.AUTO_FIX_SECRETS === "true") {
+        console.warn(
+          "⚠️  WARNING: JWT_SECRET is shorter than 32 characters. AUTO_FIX_SECRETS=true set – continuing anyway.",
+        );
+        console.warn(
+          "   Generate a proper secret with: openssl rand -base64 32\n",
+        );
+      } else {
+        console.error(
+          "❌ PRODUCTION ERROR: JWT_SECRET must be at least 32 characters long!",
+        );
+        console.error(
+          "   Generate a secure secret with: openssl rand -base64 32",
+        );
+        console.error(
+          "   To bypass (NOT recommended): set AUTO_FIX_SECRETS=true\n",
+        );
+        process.exit(1);
+      }
+    }
   }
 }
 
@@ -128,7 +209,7 @@ export const ENV = {
   // Feature flags
   enableStripe,
   enableUploads,
-  
+
   // App config
   appId: process.env.VITE_APP_ID ?? "",
   cookieSecret: process.env.JWT_SECRET ?? "",
@@ -136,30 +217,34 @@ export const ENV = {
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
   isProduction: process.env.NODE_ENV === "production",
-  
-  // Admin unlock
-  adminUnlockPassword: process.env.ADMIN_UNLOCK_PASSWORD ?? "ashmor12@",
-  
+  forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
+  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+
+  // Local file storage path (used when ENABLE_UPLOADS=false or Forge is not configured)
+  storagePath:
+    process.env.STORAGE_PATH ??
+    (process.env.NODE_ENV === "production"
+      ? "/var/www/equiprofile/uploads"
+      : "./uploads"),
+
+  // Admin unlock (no default - must be set via env var)
+  adminUnlockPassword: process.env.ADMIN_UNLOCK_PASSWORD ?? "",
+
   // Security
   baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
   cookieDomain: process.env.COOKIE_DOMAIN ?? undefined,
   cookieSecure: process.env.COOKIE_SECURE === "true",
-  
+
   // Stripe (only used if enableStripe is true)
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
-  
-  // AWS S3 (for uploads if configured)
+
+  // AWS S3 (legacy - kept for backward compatibility)
   awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? "",
   awsRegion: process.env.AWS_REGION ?? "eu-west-2",
   awsS3Bucket: process.env.AWS_S3_BUCKET ?? "",
-  
-  // OpenAI (for AI features)
+
+  // OpenAI
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
-  openaiModel: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-  
-  // Weather API
-  weatherApiKey: process.env.WEATHER_API_KEY ?? "",
-  weatherApiProvider: process.env.WEATHER_API_PROVIDER ?? "openweathermap",
 };

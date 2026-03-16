@@ -49,7 +49,7 @@ echo "  EquiProfile Uninstallation"
 echo "=============================================================================="
 echo ""
 log_warn "This will remove EquiProfile from your system."
-log_warn "Application data in /var/www/equiprofile will be deleted."
+log_warn "Application data in /var/equiprofile/app will be deleted."
 log_warn "SSL certificates in /etc/letsencrypt will be preserved."
 echo ""
 read -p "Are you sure you want to continue? (yes/no): " -r
@@ -115,7 +115,7 @@ echo ""
 # ==============================================================================
 log_info "Step 3/4: Removing application directory..."
 
-APP_DIR="/var/www/equiprofile"
+APP_DIR="/var/equiprofile/app"
 
 if [ -d "$APP_DIR" ]; then
     # Create backup of .env if it exists
@@ -147,14 +147,12 @@ echo "EquiProfile has been uninstalled from your system."
 echo ""
 echo "Preserved:"
 echo "  • SSL certificates (/etc/letsencrypt)"
-echo "  • User 'equiprofile' (run 'userdel equiprofile' to remove)"
 echo "  • System packages (Node.js, nginx, etc.)"
 if [ -n "$BACKUP_FILE" ]; then
 echo "  • Environment backup: $BACKUP_FILE"
 fi
 echo ""
 echo "To completely remove all traces:"
-echo "  • Remove user: sudo userdel -r equiprofile"
 echo "  • Remove Node.js: sudo apt remove nodejs"
 echo "  • Remove nginx: sudo apt remove nginx"
 echo "=============================================================================="

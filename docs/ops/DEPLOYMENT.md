@@ -25,6 +25,7 @@
 Ensure all required environment variables are set in `/var/equiprofile/.env`:
 
 **Critical (must be set)**:
+
 - `DATABASE_URL` - MySQL connection string
 - `JWT_SECRET` - Secure random string for JWT signing
 - `ADMIN_UNLOCK_PASSWORD` - Admin password (change from default!)
@@ -32,6 +33,7 @@ Ensure all required environment variables are set in `/var/equiprofile/.env`:
 - `PORT=3000` (or your preferred port)
 
 **Optional but recommended**:
+
 - `STRIPE_SECRET_KEY` - If billing enabled
 - `STRIPE_WEBHOOK_SECRET` - If billing enabled
 - `OPENAI_API_KEY` - If AI features enabled
@@ -42,6 +44,7 @@ See `.env.example` for complete list.
 ### 2. Database
 
 Ensure database is:
+
 - Created and accessible
 - Migrations applied (run `npm run db:push`)
 - Backed up before major changes
@@ -49,6 +52,7 @@ Ensure database is:
 ### 3. Storage
 
 Ensure directories exist with correct permissions:
+
 ```bash
 sudo mkdir -p /var/equiprofile/storage/users
 sudo chown -R equiprofile:equiprofile /var/equiprofile/storage
@@ -89,11 +93,13 @@ npm run build
 ```
 
 This will:
+
 1. Update service worker version
 2. Build client (Vite) → `dist/`
 3. Build server (esbuild) → `dist/index.js`
 
 **Expected output**:
+
 - No TypeScript errors
 - `dist/` directory populated
 - `dist/index.js` exists
@@ -119,6 +125,7 @@ sudo journalctl -u equiprofile -n 50 -f
 ```
 
 Look for:
+
 - `Server running on http://localhost:3000/`
 - No error messages
 - Database connection success
@@ -144,6 +151,7 @@ After deployment, verify:
 5. ✅ API health: `curl http://localhost:3000/api/health`
 
 Expected responses:
+
 - All return 200 status
 - No 404 or 500 errors
 - JSON responses valid

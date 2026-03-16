@@ -11,13 +11,17 @@ This document details the security measures implemented to protect EquiProfile.o
 Helmet middleware adds multiple security headers to protect against common vulnerabilities:
 
 ```typescript
-app.use(helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === "production" ? undefined : false,
-  crossOriginEmbedderPolicy: false,
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy:
+      process.env.NODE_ENV === "production" ? undefined : false,
+    crossOriginEmbedderPolicy: false,
+  }),
+);
 ```
 
 **Headers Added:**
+
 - `X-DNS-Prefetch-Control` - Controls DNS prefetching
 - `X-Frame-Options` - Prevents clickjacking (SAMEORIGIN)
 - `X-Content-Type-Options` - Prevents MIME sniffing (nosniff)
@@ -42,6 +46,7 @@ app.use("/api", limiter);
 ```
 
 **Configuration:**
+
 - Default: 100 requests per 15 minutes
 - Applied to all `/api` routes
 - Configurable via environment variables
@@ -60,6 +65,7 @@ app.use((req, res, next) => {
 ```
 
 **Benefits:**
+
 - Trace requests across logs
 - Debug production issues
 - Correlate errors
@@ -74,13 +80,16 @@ app.use((req, res, next) => {
   const start = Date.now();
   res.on("finish", () => {
     const duration = Date.now() - start;
-    console.log(`[${req.headers["x-request-id"]}] ${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
+    console.log(
+      `[${req.headers["x-request-id"]}] ${req.method} ${req.path} ${res.statusCode} ${duration}ms`,
+    );
   });
   next();
 });
 ```
 
 **Logged Information:**
+
 - Request ID
 - HTTP method
 - Request path
@@ -103,6 +112,7 @@ try {
 ```
 
 **Protection:**
+
 - Cryptographic signature validation
 - Prevents unauthorized webhook calls
 - Idempotency checking
@@ -120,6 +130,7 @@ if (alreadyProcessed) {
 ```
 
 **Implementation:**
+
 - Every event ID stored in database
 - Checked before processing
 - Prevents duplicate charges
@@ -136,6 +147,7 @@ Zod schema validation on all tRPC procedures:
 ```
 
 **Benefits:**
+
 - Type-safe inputs
 - Prevents injection attacks
 - Automatic sanitization
@@ -149,7 +161,7 @@ Multi-layer access control:
 // Protected routes require authentication
 const protectedProcedure = publicProcedure.use(({ ctx, next }) => {
   if (!ctx.user) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
+    throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({ ctx: { user: ctx.user } });
 });
@@ -157,16 +169,19 @@ const protectedProcedure = publicProcedure.use(({ ctx, next }) => {
 // Subscription check
 const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   const user = await db.getUserById(ctx.user.id);
-  if (user.subscriptionStatus !== 'active' && user.subscriptionStatus !== 'trial') {
-    throw new TRPCError({ code: 'FORBIDDEN' });
+  if (
+    user.subscriptionStatus !== "active" &&
+    user.subscriptionStatus !== "trial"
+  ) {
+    throw new TRPCError({ code: "FORBIDDEN" });
   }
   return next({ ctx });
 });
 
 // Admin only
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.user.role !== 'admin') {
-    throw new TRPCError({ code: 'FORBIDDEN' });
+  if (ctx.user.role !== "admin") {
+    throw new TRPCError({ code: "FORBIDDEN" });
   }
   return next({ ctx });
 });
@@ -187,6 +202,7 @@ AWS_SECRET_ACCESS_KEY=...
 ```
 
 **Best Practices:**
+
 - ✅ Use `.env` files locally
 - ✅ Add `.env` to `.gitignore`
 - ✅ Provide `.env.example` templates
@@ -196,12 +212,14 @@ AWS_SECRET_ACCESS_KEY=...
 ### 10. Database Security
 
 **Query Protection:**
+
 - ✅ Parameterized queries via Drizzle ORM
 - ✅ No raw SQL with user input
 - ✅ Type-safe database operations
 - ✅ Automatic SQL injection prevention
 
 **Access Control:**
+
 - ✅ User ID validation on all queries
 - ✅ Row-level security via `userId` checks
 - ✅ Soft deletes (no permanent data loss)
@@ -212,7 +230,7 @@ S3 storage with validation:
 
 ```typescript
 // File type validation
-const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
 
 // Size limits
 app.use(express.json({ limit: "50mb" }));
@@ -222,6 +240,7 @@ const fileKey = `uploads/${userId}/${nanoid()}-${fileName}`;
 ```
 
 **Protection:**
+
 - File type whitelist
 - Size limits
 - Unique file names
@@ -301,6 +320,7 @@ GET /api/health
 ### Log Analysis
 
 Monitor for:
+
 - Failed authentication attempts
 - Rate limit violations
 - Webhook signature failures
@@ -364,6 +384,7 @@ Monitor for:
 ## Contact
 
 For security issues or vulnerabilities, please contact:
+
 - Email: security@equiprofile.online
 - Report responsibly, do not exploit
 

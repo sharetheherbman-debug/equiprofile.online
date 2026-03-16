@@ -1,19 +1,25 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -42,11 +48,12 @@ function TrainingTemplatesContent() {
   });
   const [applyData, setApplyData] = useState({
     horseId: "",
-    startDate: new Date().toISOString().split('T')[0],
+    startDate: new Date().toISOString().split("T")[0],
   });
 
   const utils = trpc.useUtils();
-  const { data: templates, isLoading } = trpc.trainingPrograms.listTemplates.useQuery();
+  const { data: templates, isLoading } =
+    trpc.trainingPrograms.listTemplates.useQuery();
   const { data: horses } = trpc.horses.list.useQuery();
 
   const createMutation = trpc.trainingPrograms.createTemplate.useMutation({
@@ -83,15 +90,17 @@ function TrainingTemplatesContent() {
     },
   });
 
-  const duplicateMutation = trpc.trainingPrograms.duplicateTemplate.useMutation({
-    onSuccess: () => {
-      toast.success("Template duplicated successfully");
-      utils.trainingPrograms.listTemplates.invalidate();
+  const duplicateMutation = trpc.trainingPrograms.duplicateTemplate.useMutation(
+    {
+      onSuccess: () => {
+        toast.success("Template duplicated successfully");
+        utils.trainingPrograms.listTemplates.invalidate();
+      },
+      onError: (error) => {
+        toast.error(`Error: ${error.message}`);
+      },
     },
-    onError: (error) => {
-      toast.error(`Error: ${error.message}`);
-    },
-  });
+  );
 
   const applyMutation = trpc.trainingPrograms.applyTemplate.useMutation({
     onSuccess: () => {
@@ -100,7 +109,7 @@ function TrainingTemplatesContent() {
       setSelectedTemplate(null);
       setApplyData({
         horseId: "",
-        startDate: new Date().toISOString().split('T')[0],
+        startDate: new Date().toISOString().split("T")[0],
       });
     },
     onError: (error) => {
@@ -239,7 +248,9 @@ function TrainingTemplatesContent() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="e.g., Jumping Fundamentals, Dressage Level 1"
                 />
               </div>
@@ -248,7 +259,9 @@ function TrainingTemplatesContent() {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   placeholder="Brief description of the training program"
                   rows={3}
                 />
@@ -260,13 +273,20 @@ function TrainingTemplatesContent() {
                     id="duration"
                     type="number"
                     value={formData.duration}
-                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, duration: e.target.value })
+                    }
                     placeholder="e.g., 12"
                   />
                 </div>
                 <div>
                   <Label htmlFor="level">Level</Label>
-                  <Select value={formData.level} onValueChange={(value) => setFormData({ ...formData, level: value })}>
+                  <Select
+                    value={formData.level}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, level: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select level" />
                     </SelectTrigger>
@@ -281,7 +301,12 @@ function TrainingTemplatesContent() {
               </div>
               <div>
                 <Label htmlFor="discipline">Discipline</Label>
-                <Select value={formData.discipline} onValueChange={(value) => setFormData({ ...formData, discipline: value })}>
+                <Select
+                  value={formData.discipline}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, discipline: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select discipline" />
                   </SelectTrigger>
@@ -300,7 +325,9 @@ function TrainingTemplatesContent() {
                 <Textarea
                   id="goals"
                   value={formData.goals}
-                  onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, goals: e.target.value })
+                  }
                   placeholder="Training goals and objectives"
                   rows={3}
                 />
@@ -310,17 +337,30 @@ function TrainingTemplatesContent() {
                   type="checkbox"
                   id="isPublic"
                   checked={formData.isPublic}
-                  onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isPublic: e.target.checked })
+                  }
                   className="rounded"
                 />
-                <Label htmlFor="isPublic">Make this template public (visible to all users)</Label>
+                <Label htmlFor="isPublic">
+                  Make this template public (visible to all users)
+                </Label>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => { setIsCreateOpen(false); resetForm(); }}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsCreateOpen(false);
+                  resetForm();
+                }}
+              >
                 Cancel
               </Button>
-              <Button onClick={handleCreate} disabled={createMutation.isPending}>
+              <Button
+                onClick={handleCreate}
+                disabled={createMutation.isPending}
+              >
                 {createMutation.isPending ? "Creating..." : "Create Template"}
               </Button>
             </DialogFooter>
@@ -333,9 +373,12 @@ function TrainingTemplatesContent() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Play className="w-16 h-16 text-muted-foreground/30 mb-4" />
-            <h3 className="font-semibold text-lg mb-2">No training templates yet</h3>
+            <h3 className="font-semibold text-lg mb-2">
+              No training templates yet
+            </h3>
             <p className="text-muted-foreground text-center mb-4">
-              Create your first training template to streamline your training programs
+              Create your first training template to streamline your training
+              programs
             </p>
             <Button onClick={() => setIsCreateOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -346,7 +389,10 @@ function TrainingTemplatesContent() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {templates.map((template) => (
-            <Card key={template.id} className="hover:shadow-lg transition-shadow">
+            <Card
+              key={template.id}
+              className="hover:shadow-lg transition-shadow"
+            >
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -381,7 +427,7 @@ function TrainingTemplatesContent() {
                       <Badge variant="outline">{template.duration} weeks</Badge>
                     )}
                   </div>
-                  
+
                   {template.goals && (
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {template.goals}
@@ -442,7 +488,9 @@ function TrainingTemplatesContent() {
               <Input
                 id="edit-name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="e.g., Jumping Fundamentals, Dressage Level 1"
               />
             </div>
@@ -451,7 +499,9 @@ function TrainingTemplatesContent() {
               <Textarea
                 id="edit-description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 placeholder="Brief description of the training program"
                 rows={3}
               />
@@ -463,13 +513,20 @@ function TrainingTemplatesContent() {
                   id="edit-duration"
                   type="number"
                   value={formData.duration}
-                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, duration: e.target.value })
+                  }
                   placeholder="e.g., 12"
                 />
               </div>
               <div>
                 <Label htmlFor="edit-level">Level</Label>
-                <Select value={formData.level} onValueChange={(value) => setFormData({ ...formData, level: value })}>
+                <Select
+                  value={formData.level}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, level: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select level" />
                   </SelectTrigger>
@@ -484,7 +541,12 @@ function TrainingTemplatesContent() {
             </div>
             <div>
               <Label htmlFor="edit-discipline">Discipline</Label>
-              <Select value={formData.discipline} onValueChange={(value) => setFormData({ ...formData, discipline: value })}>
+              <Select
+                value={formData.discipline}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, discipline: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select discipline" />
                 </SelectTrigger>
@@ -503,7 +565,9 @@ function TrainingTemplatesContent() {
               <Textarea
                 id="edit-goals"
                 value={formData.goals}
-                onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, goals: e.target.value })
+                }
                 placeholder="Training goals and objectives"
                 rows={3}
               />
@@ -513,14 +577,22 @@ function TrainingTemplatesContent() {
                 type="checkbox"
                 id="edit-isPublic"
                 checked={formData.isPublic}
-                onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, isPublic: e.target.checked })
+                }
                 className="rounded"
               />
               <Label htmlFor="edit-isPublic">Make this template public</Label>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setIsEditOpen(false); resetForm(); }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsEditOpen(false);
+                resetForm();
+              }}
+            >
               Cancel
             </Button>
             <Button onClick={handleEdit} disabled={updateMutation.isPending}>
@@ -542,7 +614,12 @@ function TrainingTemplatesContent() {
           <div className="space-y-4">
             <div>
               <Label htmlFor="horse">Select Horse *</Label>
-              <Select value={applyData.horseId} onValueChange={(value) => setApplyData({ ...applyData, horseId: value })}>
+              <Select
+                value={applyData.horseId}
+                onValueChange={(value) =>
+                  setApplyData({ ...applyData, horseId: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Choose a horse" />
                 </SelectTrigger>
@@ -561,19 +638,24 @@ function TrainingTemplatesContent() {
                 id="startDate"
                 type="date"
                 value={applyData.startDate}
-                onChange={(e) => setApplyData({ ...applyData, startDate: e.target.value })}
+                onChange={(e) =>
+                  setApplyData({ ...applyData, startDate: e.target.value })
+                }
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setIsApplyOpen(false);
-              setSelectedTemplate(null);
-              setApplyData({
-                horseId: "",
-                startDate: new Date().toISOString().split('T')[0],
-              });
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsApplyOpen(false);
+                setSelectedTemplate(null);
+                setApplyData({
+                  horseId: "",
+                  startDate: new Date().toISOString().split("T")[0],
+                });
+              }}
+            >
               Cancel
             </Button>
             <Button onClick={handleApply} disabled={applyMutation.isPending}>

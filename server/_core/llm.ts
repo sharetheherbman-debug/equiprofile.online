@@ -1,3 +1,4 @@
+// Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import { ENV } from "./env";
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
@@ -19,7 +20,12 @@ export type FileContent = {
   type: "file_url";
   file_url: {
     url: string;
-    mime_type?: "audio/mpeg" | "audio/wav" | "application/pdf" | "audio/mp4" | "video/mp4" ;
+    mime_type?:
+      | "audio/mpeg"
+      | "audio/wav"
+      | "application/pdf"
+      | "audio/mp4"
+      | "video/mp4";
   };
 };
 
@@ -111,11 +117,11 @@ export type ResponseFormat =
   | { type: "json_schema"; json_schema: JsonSchema };
 
 const ensureArray = (
-  value: MessageContent | MessageContent[]
+  value: MessageContent | MessageContent[],
 ): MessageContent[] => (Array.isArray(value) ? value : [value]);
 
 const normalizeContentPart = (
-  part: MessageContent
+  part: MessageContent,
 ): TextContent | ImageContent | FileContent => {
   if (typeof part === "string") {
     return { type: "text", text: part };
@@ -141,7 +147,7 @@ const normalizeMessage = (message: Message) => {
 
   if (role === "tool" || role === "function") {
     const content = ensureArray(message.content)
-      .map(part => (typeof part === "string" ? part : JSON.stringify(part)))
+      .map((part) => (typeof part === "string" ? part : JSON.stringify(part)))
       .join("\n");
 
     return {
@@ -172,7 +178,7 @@ const normalizeMessage = (message: Message) => {
 
 const normalizeToolChoice = (
   toolChoice: ToolChoice | undefined,
-  tools: Tool[] | undefined
+  tools: Tool[] | undefined,
 ): "none" | "auto" | ToolChoiceExplicit | undefined => {
   if (!toolChoice) return undefined;
 
@@ -183,13 +189,13 @@ const normalizeToolChoice = (
   if (toolChoice === "required") {
     if (!tools || tools.length === 0) {
       throw new Error(
-        "tool_choice 'required' was provided but no tools were configured"
+        "tool_choice 'required' was provided but no tools were configured",
       );
     }
 
     if (tools.length > 1) {
       throw new Error(
-        "tool_choice 'required' needs a single tool or specify the tool name explicitly"
+        "tool_choice 'required' needs a single tool or specify the tool name explicitly",
       );
     }
 
@@ -209,15 +215,28 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () => "https://api.openai.com/v1/chat/completions";
+const resolveApiUrl = (): string | null =>
+  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
+    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
+    : null;
 
 const assertApiKey = () => {
-  if (!ENV.openaiApiKey) {
-    const error = new Error("OpenAI API is not configured. Set OPENAI_API_KEY in your environment variables.");
-    (error as any).statusCode = 503;
-    throw error;
+  if (!ENV.forgeApiKey) {
+    throw new Error("AI service is not configured (API key missing)");
   }
 };
+
+/**
+ * Check whether the AI service is configured (key present).
+ * Use this before calling invokeLLM to provide a graceful fallback.
+ */
+export function isAIConfigured(): boolean {
+  return !!(
+    ENV.forgeApiKey ||
+    process.env.OPENAI_API_KEY ||
+    process.env.HUGGINGFACE_API_KEY
+  );
+}
 
 const normalizeResponseFormat = ({
   responseFormat,
@@ -241,7 +260,7 @@ const normalizeResponseFormat = ({
       !explicitFormat.json_schema?.schema
     ) {
       throw new Error(
-        "responseFormat json_schema requires a defined schema object"
+        "responseFormat json_schema requires a defined schema object",
       );
     }
     return explicitFormat;
@@ -267,6 +286,11 @@ const normalizeResponseFormat = ({
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   assertApiKey();
 
+  const apiUrl = resolveApiUrl();
+  if (!apiUrl) {
+    throw new Error("AI service is not configured (FORGE_API_URL is missing)");
+  }
+
   const {
     messages,
     tools,
@@ -279,7 +303,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   } = params;
 
   const payload: Record<string, unknown> = {
-    model: ENV.openaiModel,
+    model: "gemini-2.5-flash",
     messages: messages.map(normalizeMessage),
   };
 
@@ -289,13 +313,16 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
 
   const normalizedToolChoice = normalizeToolChoice(
     toolChoice || tool_choice,
-    tools
+    tools,
   );
   if (normalizedToolChoice) {
     payload.tool_choice = normalizedToolChoice;
   }
 
   payload.max_tokens = 32768;
+  payload.thinking = {
+    budget_tokens: 128,
+  };
 
   const normalizedResponseFormat = normalizeResponseFormat({
     responseFormat,
@@ -308,11 +335,11 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
-  const response = await fetch(resolveApiUrl(), {
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.openaiApiKey}`,
+      authorization: `Bearer ${ENV.forgeApiKey}`,
     },
     body: JSON.stringify(payload),
   });
@@ -320,7 +347,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
+      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`,
     );
   }
 

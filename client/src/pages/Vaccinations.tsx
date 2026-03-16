@@ -2,14 +2,38 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { trpc } from "../_core/trpc";
 import { Button } from "../components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { toast } from "../components/ui/use-toast";
-import { Syringe, Plus, Calendar, AlertCircle, Edit, Trash2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Syringe,
+  Plus,
+  Calendar,
+  AlertCircle,
+  Edit,
+  Trash2,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { useRealtimeModule } from "../hooks/useRealtime";
 
@@ -22,11 +46,13 @@ export default function Vaccinations() {
 }
 
 function VaccinationsContent() {
+  const { toast } = useToast();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingVaccination, setEditingVaccination] = useState<any>(null);
   const [localVaccinations, setLocalVaccinations] = useState<any[]>([]);
 
-  const { data: vaccinations = [], refetch } = trpc.vaccinations.list.useQuery();
+  const { data: vaccinations = [], refetch } =
+    trpc.vaccinations.list.useQuery();
   const { data: horses = [] } = trpc.horses.list.useQuery();
   const createMutation = trpc.vaccinations.create.useMutation();
   const updateMutation = trpc.vaccinations.update.useMutation();
@@ -38,17 +64,22 @@ function VaccinationsContent() {
   }, [vaccinations]);
 
   // Real-time updates
-  useRealtimeModule('vaccinations', (action, data) => {
+  useRealtimeModule("vaccinations", (action, data) => {
     switch (action) {
-      case 'created':
-        setLocalVaccinations(prev => [data, ...prev]);
-        toast({ title: "Vaccination added", description: "New vaccination record created" });
+      case "created":
+        setLocalVaccinations((prev) => [data, ...prev]);
+        toast({
+          title: "Vaccination added",
+          description: "New vaccination record created",
+        });
         break;
-      case 'updated':
-        setLocalVaccinations(prev => prev.map(v => v.id === data.id ? { ...v, ...data } : v));
+      case "updated":
+        setLocalVaccinations((prev) =>
+          prev.map((v) => (v.id === data.id ? { ...v, ...data } : v)),
+        );
         break;
-      case 'deleted':
-        setLocalVaccinations(prev => prev.filter(v => v.id !== data.id));
+      case "deleted":
+        setLocalVaccinations((prev) => prev.filter((v) => v.id !== data.id));
         break;
     }
   });
@@ -85,8 +116,16 @@ function VaccinationsContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.horseId || !formData.vaccineName || !formData.dateAdministered) {
-      toast({ title: "Error", description: "Please fill in all required fields", variant: "destructive" });
+    if (
+      !formData.horseId ||
+      !formData.vaccineName ||
+      !formData.dateAdministered
+    ) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -96,7 +135,9 @@ function VaccinationsContent() {
         vaccineName: formData.vaccineName,
         vaccineType: formData.vaccineType || undefined,
         dateAdministered: new Date(formData.dateAdministered),
-        nextDueDate: formData.nextDueDate ? new Date(formData.nextDueDate) : undefined,
+        nextDueDate: formData.nextDueDate
+          ? new Date(formData.nextDueDate)
+          : undefined,
         batchNumber: formData.batchNumber || undefined,
         vetName: formData.vetName || undefined,
         vetClinic: formData.vetClinic || undefined,
@@ -105,7 +146,10 @@ function VaccinationsContent() {
       };
 
       if (editingVaccination) {
-        await updateMutation.mutateAsync({ id: editingVaccination.id, ...data });
+        await updateMutation.mutateAsync({
+          id: editingVaccination.id,
+          ...data,
+        });
         toast({ title: "Success", description: "Vaccination record updated" });
       } else {
         await createMutation.mutateAsync(data);
@@ -115,7 +159,11 @@ function VaccinationsContent() {
       setIsCreateDialogOpen(false);
       resetForm();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -125,8 +173,8 @@ function VaccinationsContent() {
       horseId: vaccination.horseId,
       vaccineName: vaccination.vaccineName,
       vaccineType: vaccination.vaccineType || "",
-      dateAdministered: vaccination.dateAdministered?.split('T')[0] || "",
-      nextDueDate: vaccination.nextDueDate?.split('T')[0] || "",
+      dateAdministered: vaccination.dateAdministered?.split("T")[0] || "",
+      nextDueDate: vaccination.nextDueDate?.split("T")[0] || "",
       batchNumber: vaccination.batchNumber || "",
       vetName: vaccination.vetName || "",
       vetClinic: vaccination.vetClinic || "",
@@ -137,18 +185,23 @@ function VaccinationsContent() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this vaccination record?")) return;
+    if (!confirm("Are you sure you want to delete this vaccination record?"))
+      return;
 
     try {
       await deleteMutation.mutateAsync({ id });
       toast({ title: "Success", description: "Vaccination record deleted" });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
   const getHorseName = (horseId: number) => {
-    const horse = horses.find(h => h.id === horseId);
+    const horse = horses.find((h) => h.id === horseId);
     return horse?.name || "Unknown";
   };
 
@@ -156,7 +209,9 @@ function VaccinationsContent() {
     if (!nextDueDate) return false;
     const due = new Date(nextDueDate);
     const today = new Date();
-    const diff = Math.floor((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const diff = Math.floor(
+      (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    );
     return diff >= 0 && diff <= 30;
   };
 
@@ -166,8 +221,16 @@ function VaccinationsContent() {
   };
 
   // Group by upcoming/current
-  const upcomingVaccinations = localVaccinations.filter(v => v.nextDueDate && (isDueNext30Days(v.nextDueDate) || isOverdue(v.nextDueDate)));
-  const completedVaccinations = localVaccinations.filter(v => !v.nextDueDate || (!isDueNext30Days(v.nextDueDate) && !isOverdue(v.nextDueDate)));
+  const upcomingVaccinations = localVaccinations.filter(
+    (v) =>
+      v.nextDueDate &&
+      (isDueNext30Days(v.nextDueDate) || isOverdue(v.nextDueDate)),
+  );
+  const completedVaccinations = localVaccinations.filter(
+    (v) =>
+      !v.nextDueDate ||
+      (!isDueNext30Days(v.nextDueDate) && !isOverdue(v.nextDueDate)),
+  );
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -177,9 +240,17 @@ function VaccinationsContent() {
             <Syringe className="h-8 w-8 text-blue-600" />
             Vaccinations
           </h1>
-          <p className="text-muted-foreground mt-1">Track vaccination records for your horses</p>
+          <p className="text-muted-foreground mt-1">
+            Track vaccination records for your horses
+          </p>
         </div>
-        <Button onClick={() => { resetForm(); setIsCreateDialogOpen(true); }} size="lg">
+        <Button
+          onClick={() => {
+            resetForm();
+            setIsCreateDialogOpen(true);
+          }}
+          size="lg"
+        >
           <Plus className="h-5 w-5 mr-2" />
           Add Vaccination
         </Button>
@@ -197,41 +268,74 @@ function VaccinationsContent() {
           <CardContent>
             <div className="space-y-3">
               {upcomingVaccinations.map((vaccination) => (
-                <Card key={vaccination.id} className={isOverdue(vaccination.nextDueDate) ? "border-red-300 bg-red-50" : "border-yellow-300 bg-yellow-50"}>
+                <Card
+                  key={vaccination.id}
+                  className={
+                    isOverdue(vaccination.nextDueDate)
+                      ? "border-red-300 bg-red-50"
+                      : "border-yellow-300 bg-yellow-50"
+                  }
+                >
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-lg">{vaccination.vaccineName}</h3>
+                          <h3 className="font-semibold text-lg">
+                            {vaccination.vaccineName}
+                          </h3>
                           {isOverdue(vaccination.nextDueDate) && (
                             <Badge variant="destructive">Overdue</Badge>
                           )}
-                          {isDueNext30Days(vaccination.nextDueDate) && !isOverdue(vaccination.nextDueDate) && (
-                            <Badge variant="outline" className="bg-yellow-100">Due Soon</Badge>
-                          )}
+                          {isDueNext30Days(vaccination.nextDueDate) &&
+                            !isOverdue(vaccination.nextDueDate) && (
+                              <Badge
+                                variant="outline"
+                                className="bg-yellow-100"
+                              >
+                                Due Soon
+                              </Badge>
+                            )}
                         </div>
                         <div className="text-sm text-muted-foreground mt-1">
-                          <span className="font-medium">{getHorseName(vaccination.horseId)}</span>
-                          {vaccination.vaccineType && <span> • {vaccination.vaccineType}</span>}
+                          <span className="font-medium">
+                            {getHorseName(vaccination.horseId)}
+                          </span>
+                          {vaccination.vaccineType && (
+                            <span> • {vaccination.vaccineType}</span>
+                          )}
                         </div>
                         <div className="flex items-center gap-4 mt-2 text-sm">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
-                            Last: {new Date(vaccination.dateAdministered).toLocaleDateString()}
+                            Last:{" "}
+                            {new Date(
+                              vaccination.dateAdministered,
+                            ).toLocaleDateString()}
                           </span>
                           {vaccination.nextDueDate && (
                             <span className="flex items-center gap-1 font-medium text-orange-700">
                               <Calendar className="h-4 w-4" />
-                              Next Due: {new Date(vaccination.nextDueDate).toLocaleDateString()}
+                              Next Due:{" "}
+                              {new Date(
+                                vaccination.nextDueDate,
+                              ).toLocaleDateString()}
                             </span>
                           )}
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="ghost" onClick={() => handleEdit(vaccination)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleEdit(vaccination)}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="ghost" onClick={() => handleDelete(vaccination.id)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDelete(vaccination.id)}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -247,14 +351,18 @@ function VaccinationsContent() {
       {/* All Vaccination Records */}
       <Card>
         <CardHeader>
-          <CardTitle>All Vaccination Records ({localVaccinations.length})</CardTitle>
+          <CardTitle>
+            All Vaccination Records ({localVaccinations.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {localVaccinations.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Syringe className="h-16 w-16 mx-auto mb-4 opacity-50" />
               <p className="text-lg font-medium">No vaccination records yet</p>
-              <p className="text-sm">Add your first vaccination record to get started</p>
+              <p className="text-sm">
+                Add your first vaccination record to get started
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -263,33 +371,58 @@ function VaccinationsContent() {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{vaccination.vaccineName}</h3>
+                        <h3 className="font-semibold text-lg">
+                          {vaccination.vaccineName}
+                        </h3>
                         <div className="text-sm text-muted-foreground mt-1">
-                          <span className="font-medium">{getHorseName(vaccination.horseId)}</span>
-                          {vaccination.vaccineType && <span> • {vaccination.vaccineType}</span>}
+                          <span className="font-medium">
+                            {getHorseName(vaccination.horseId)}
+                          </span>
+                          {vaccination.vaccineType && (
+                            <span> • {vaccination.vaccineType}</span>
+                          )}
                         </div>
                         <div className="flex items-center gap-4 mt-2 text-sm">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
-                            {new Date(vaccination.dateAdministered).toLocaleDateString()}
+                            {new Date(
+                              vaccination.dateAdministered,
+                            ).toLocaleDateString()}
                           </span>
                           {vaccination.nextDueDate && (
                             <span className="flex items-center gap-1">
-                              Next: {new Date(vaccination.nextDueDate).toLocaleDateString()}
+                              Next:{" "}
+                              {new Date(
+                                vaccination.nextDueDate,
+                              ).toLocaleDateString()}
                             </span>
                           )}
-                          {vaccination.vetName && <span>Vet: {vaccination.vetName}</span>}
-                          {vaccination.cost && <span>£{(vaccination.cost / 100).toFixed(2)}</span>}
+                          {vaccination.vetName && (
+                            <span>Vet: {vaccination.vetName}</span>
+                          )}
+                          {vaccination.cost && (
+                            <span>£{(vaccination.cost / 100).toFixed(2)}</span>
+                          )}
                         </div>
                         {vaccination.notes && (
-                          <p className="text-sm mt-2 text-muted-foreground">{vaccination.notes}</p>
+                          <p className="text-sm mt-2 text-muted-foreground">
+                            {vaccination.notes}
+                          </p>
                         )}
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="ghost" onClick={() => handleEdit(vaccination)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleEdit(vaccination)}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="ghost" onClick={() => handleDelete(vaccination.id)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDelete(vaccination.id)}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -306,9 +439,15 @@ function VaccinationsContent() {
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingVaccination ? "Edit Vaccination" : "Add Vaccination Record"}</DialogTitle>
+            <DialogTitle>
+              {editingVaccination
+                ? "Edit Vaccination"
+                : "Add Vaccination Record"}
+            </DialogTitle>
             <DialogDescription>
-              {editingVaccination ? "Update the vaccination details below" : "Record a new vaccination for your horse"}
+              {editingVaccination
+                ? "Update the vaccination details below"
+                : "Record a new vaccination for your horse"}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -317,7 +456,9 @@ function VaccinationsContent() {
                 <Label htmlFor="horseId">Horse *</Label>
                 <Select
                   value={formData.horseId.toString()}
-                  onValueChange={(value) => setFormData({ ...formData, horseId: parseInt(value) })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, horseId: parseInt(value) })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a horse" />
@@ -337,7 +478,9 @@ function VaccinationsContent() {
                 <Input
                   id="vaccineName"
                   value={formData.vaccineName}
-                  onChange={(e) => setFormData({ ...formData, vaccineName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, vaccineName: e.target.value })
+                  }
                   placeholder="e.g., Flu/Tetanus"
                   required
                 />
@@ -348,7 +491,9 @@ function VaccinationsContent() {
                 <Input
                   id="vaccineType"
                   value={formData.vaccineType}
-                  onChange={(e) => setFormData({ ...formData, vaccineType: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, vaccineType: e.target.value })
+                  }
                   placeholder="e.g., Influenza, Tetanus"
                 />
               </div>
@@ -359,7 +504,12 @@ function VaccinationsContent() {
                   id="dateAdministered"
                   type="date"
                   value={formData.dateAdministered}
-                  onChange={(e) => setFormData({ ...formData, dateAdministered: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      dateAdministered: e.target.value,
+                    })
+                  }
                   required
                 />
               </div>
@@ -370,7 +520,9 @@ function VaccinationsContent() {
                   id="nextDueDate"
                   type="date"
                   value={formData.nextDueDate}
-                  onChange={(e) => setFormData({ ...formData, nextDueDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nextDueDate: e.target.value })
+                  }
                 />
               </div>
 
@@ -379,7 +531,9 @@ function VaccinationsContent() {
                 <Input
                   id="batchNumber"
                   value={formData.batchNumber}
-                  onChange={(e) => setFormData({ ...formData, batchNumber: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, batchNumber: e.target.value })
+                  }
                   placeholder="e.g., BN123456"
                 />
               </div>
@@ -391,7 +545,9 @@ function VaccinationsContent() {
                   type="number"
                   step="0.01"
                   value={formData.cost}
-                  onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, cost: e.target.value })
+                  }
                   placeholder="0.00"
                 />
               </div>
@@ -401,7 +557,9 @@ function VaccinationsContent() {
                 <Input
                   id="vetName"
                   value={formData.vetName}
-                  onChange={(e) => setFormData({ ...formData, vetName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, vetName: e.target.value })
+                  }
                   placeholder="Vet's name"
                 />
               </div>
@@ -411,7 +569,9 @@ function VaccinationsContent() {
                 <Input
                   id="vetClinic"
                   value={formData.vetClinic}
-                  onChange={(e) => setFormData({ ...formData, vetClinic: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, vetClinic: e.target.value })
+                  }
                   placeholder="Clinic name"
                 />
               </div>
@@ -421,7 +581,9 @@ function VaccinationsContent() {
                 <Textarea
                   id="notes"
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                   placeholder="Any additional notes..."
                   rows={3}
                 />
@@ -429,10 +591,20 @@ function VaccinationsContent() {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => { setIsCreateDialogOpen(false); resetForm(); }}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsCreateDialogOpen(false);
+                  resetForm();
+                }}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+              <Button
+                type="submit"
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
                 {editingVaccination ? "Update" : "Create"} Vaccination
               </Button>
             </div>

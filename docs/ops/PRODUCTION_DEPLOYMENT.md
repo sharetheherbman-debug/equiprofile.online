@@ -37,6 +37,7 @@ npm run build
 ```
 
 Expected output:
+
 - Client build: `dist/public/` directory
 - Server build: `dist/index.js` file
 - Build time: ~20-30 seconds
@@ -44,11 +45,13 @@ Expected output:
 ### 4. Database Migrations
 
 The new features added these database tables:
+
 - `tasks` - Task management system
-- `contacts` - Contact management  
+- `contacts` - Contact management
 - `accountFeatures` - Feature flags system
 
 Run migrations:
+
 ```bash
 npm run db:push
 ```
@@ -77,15 +80,18 @@ bash scripts/smoke-test.sh
 ## New Features Enabled
 
 ### Real-time Updates (SSE)
+
 - Endpoint: `/api/realtime/events`
 - 8 modules now have instant updates without page refresh
 - Modules: Horses, Health, Training, Tasks, Contacts, Breeding, Feeding, Documents
 
 ### New Pages Added
+
 1. **/tasks** - Complete task management system
 2. **/contacts** - Contact management (vets, farriers, trainers, etc.)
 
 ### Updated Pages
+
 - Dashboard sidebar now includes Tasks and Contacts
 - Admin page renamed "API Keys" to "System Secrets"
 - Lessons page navigation fixed
@@ -93,6 +99,7 @@ bash scripts/smoke-test.sh
 ## Environment Variables
 
 ### Required (Already Set)
+
 ```bash
 DATABASE_URL=mysql://...
 JWT_SECRET=...
@@ -101,6 +108,7 @@ PORT=3000
 ```
 
 ### Optional (For Full Functionality)
+
 ```bash
 # Real-time monitoring (optional)
 REALTIME_HEARTBEAT_INTERVAL=30000  # 30 seconds (default)
@@ -125,9 +133,11 @@ AWS_S3_BUCKET=...
 ## Configuration Files
 
 ### Nginx Configuration
+
 Location: `/etc/nginx/sites-available/equiprofile`
 
 Ensure these sections exist:
+
 ```nginx
 # Real-time SSE endpoint
 location /api/realtime {
@@ -166,15 +176,18 @@ location / {
 ```
 
 Test and reload Nginx:
+
 ```bash
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
 ### Systemd Service
+
 Location: `/etc/systemd/system/equiprofile.service`
 
 Should already be configured. If not:
+
 ```ini
 [Unit]
 Description=EquiProfile Node Server
@@ -198,6 +211,7 @@ WantedBy=multi-user.target
 ```
 
 Reload if changed:
+
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl restart equiprofile
@@ -207,12 +221,14 @@ sudo systemctl enable equiprofile
 ## Smoke Tests
 
 Run automated tests:
+
 ```bash
 cd /var/equiprofile
 bash scripts/smoke-test.sh
 ```
 
 Expected output:
+
 - ✅ Service is running
 - ✅ Health endpoint responds
 - ✅ Static files load
@@ -224,6 +240,7 @@ Expected output:
 If issues occur:
 
 ### Quick Rollback
+
 ```bash
 cd /var/equiprofile
 git checkout main  # or previous stable branch
@@ -233,7 +250,9 @@ sudo systemctl restart equiprofile
 ```
 
 ### Database Rollback
+
 If migrations cause issues:
+
 ```bash
 # Restore from backup
 mysql -u root -p equiprofile < /var/backups/equiprofile_YYYYMMDD.sql
@@ -242,6 +261,7 @@ mysql -u root -p equiprofile < /var/backups/equiprofile_YYYYMMDD.sql
 ## Monitoring
 
 ### Check Service Health
+
 ```bash
 # Service status
 sudo systemctl status equiprofile
@@ -258,6 +278,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ```
 
 ### Performance Metrics
+
 ```bash
 # CPU and memory usage
 top -p $(pgrep -f "node.*dist/index.js")
@@ -272,6 +293,7 @@ mysql -e "SHOW PROCESSLIST;"
 ## Troubleshooting
 
 ### Build Fails
+
 ```bash
 # Clear node_modules and rebuild
 rm -rf node_modules package-lock.json
@@ -280,6 +302,7 @@ npm run build
 ```
 
 ### Service Won't Start
+
 ```bash
 # Check logs
 sudo journalctl -u equiprofile -n 100
@@ -292,6 +315,7 @@ sudo chown -R equiprofile:equiprofile /var/equiprofile
 ```
 
 ### Real-time Not Working
+
 ```bash
 # Check Nginx configuration
 sudo nginx -t
@@ -304,6 +328,7 @@ curl -H "Authorization: Bearer TOKEN" \
 ```
 
 ### Database Connection Issues
+
 ```bash
 # Test database connection
 mysql -h HOST -u USER -p DATABASE
@@ -315,11 +340,13 @@ cat /var/equiprofile/.env | grep DATABASE_URL
 ## Post-Deployment Verification
 
 ### 1. Test User Login
+
 - Visit https://yourdomain.com
 - Log in with existing account
 - Verify dashboard loads
 
 ### 2. Test New Features
+
 - Navigate to Tasks page (/tasks)
 - Create a new task
 - Verify it appears instantly without refresh
@@ -328,11 +355,13 @@ cat /var/equiprofile/.env | grep DATABASE_URL
 - Verify real-time update
 
 ### 3. Test Real-time Sync
+
 - Open dashboard in two browser tabs
 - Create a horse in tab 1
 - Verify it appears in tab 2 without refresh
 
 ### 4. Test Admin Features
+
 - Access admin panel (if admin)
 - Verify "System Secrets" tab (renamed from "API Keys")
 - Check environment health page
@@ -351,6 +380,7 @@ cat /var/equiprofile/.env | grep DATABASE_URL
 ## Backup Recommendations
 
 ### Database Backup
+
 ```bash
 # Daily backup script
 #!/bin/bash
@@ -360,6 +390,7 @@ find /var/backups -name "equiprofile_*.sql" -mtime +7 -delete
 ```
 
 ### Application Backup
+
 ```bash
 # Backup before deployment
 cd /var/equiprofile
@@ -373,6 +404,7 @@ tar -czf /var/backups/equiprofile_app_$(date +%Y%m%d).tar.gz \
 ## Support
 
 For issues:
+
 1. Check logs: `sudo journalctl -u equiprofile -n 100`
 2. Run smoke tests: `bash scripts/smoke-test.sh`
 3. Review MODULE_MATRIX.md for feature status
@@ -381,14 +413,17 @@ For issues:
 ## Summary of Changes
 
 ### Phase 0
+
 - Complete repository audit (docs/audit/REPO_AUDIT.md)
 - Identified all working/broken features
 
 ### Phase 1
+
 - Fixed admin hints, navigation bugs, logout redirect
 - Added deployment and smoke test documentation
 
 ### Phase 2
+
 - Implemented real-time SSE infrastructure
 - Added Tasks module (complete)
 - Added Contacts module (complete)

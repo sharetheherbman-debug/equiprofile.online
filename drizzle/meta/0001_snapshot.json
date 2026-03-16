@@ -77,9 +77,7 @@
       "compositePrimaryKeys": {
         "activityLogs_id": {
           "name": "activityLogs_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -158,9 +156,7 @@
       "compositePrimaryKeys": {
         "backupLogs_id": {
           "name": "backupLogs_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -261,9 +257,7 @@
       "compositePrimaryKeys": {
         "documents_id": {
           "name": "documents_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -374,9 +368,7 @@
       "compositePrimaryKeys": {
         "feedingPlans_id": {
           "name": "feedingPlans_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -506,9 +498,7 @@
       "compositePrimaryKeys": {
         "healthRecords_id": {
           "name": "healthRecords_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -660,9 +650,7 @@
       "compositePrimaryKeys": {
         "horses_id": {
           "name": "horses_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -745,17 +733,13 @@
       "compositePrimaryKeys": {
         "systemSettings_id": {
           "name": "systemSettings_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "systemSettings_settingKey_unique": {
           "name": "systemSettings_settingKey_unique",
-          "columns": [
-            "settingKey"
-          ]
+          "columns": ["settingKey"]
         }
       },
       "checkConstraint": {}
@@ -913,9 +897,7 @@
       "compositePrimaryKeys": {
         "trainingSessions_id": {
           "name": "trainingSessions_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},
@@ -1093,17 +1075,13 @@
       "compositePrimaryKeys": {
         "users_id": {
           "name": "users_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {
         "users_openId_unique": {
           "name": "users_openId_unique",
-          "columns": [
-            "openId"
-          ]
+          "columns": ["openId"]
         }
       },
       "checkConstraint": {}
@@ -1209,9 +1187,7 @@
       "compositePrimaryKeys": {
         "weatherLogs_id": {
           "name": "weatherLogs_id",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {},

@@ -1,214 +1,555 @@
-import { MarketingNav } from "@/components/MarketingNav";
-import { Footer } from "@/components/Footer";
-import { PageTransition } from "@/components/PageTransition";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import { PageBanner } from "@/components/PageBanner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function TermsPage() {
   return (
-    <>
-      <MarketingNav />
-      <PageTransition>
-        <div className="min-h-screen bg-background py-24">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto">
-              <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
-              <p className="text-muted-foreground mb-12">Last updated: January 10, 2026</p>
+    <MarketingLayout>
+      <div className="min-h-screen bg-black">
+        <PageBanner
+          title="Terms of Service"
+          subtitle="Legal terms and conditions for using EquiProfile"
+          imageSrc="/images/gallery/20.jpg"
+          imagePosition="center"
+        />
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-4xl mx-auto">
+            {/* Header with Last Updated */}
+            <div className="mb-12 text-center">
+              <h2 className="text-2xl md:text-3xl font-bold font-serif mb-4 bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                EquiProfile Terms of Service
+              </h2>
+              <p className="text-gray-400">
+                Last updated:{" "}
+                <span className="text-white">January 5, 2026</span>
+              </p>
+            </div>
 
-              <div className="space-y-8 prose prose-slate dark:prose-invert max-w-none">
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">1. Acceptance of Terms</h2>
-                  <p>
-                    By accessing and using EquiProfile ("the Service"), you agree to be bound by these Terms of Service. 
-                    If you do not agree to these terms, please do not use the Service.
+            <div className="space-y-8">
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    1. Acceptance of Terms
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    By accessing and using EquiProfile ("the Service"), you
+                    accept and agree to be bound by the terms and provision of
+                    this agreement. If you do not agree to these Terms of
+                    Service, please do not use the Service.
                   </p>
-                </section>
+                </CardContent>
+              </Card>
 
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">2. Description of Service</h2>
-                  <p>
-                    EquiProfile provides a comprehensive horse management platform including:
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    2. Description of Service
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    EquiProfile provides a comprehensive horse management
+                    platform that includes features for:
                   </p>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Horse profile management and tracking</li>
-                    <li>Health records and vaccination tracking</li>
-                    <li>Training session management</li>
-                    <li>Feeding schedules and nutrition plans</li>
-                    <li>Document storage and organisation</li>
-                    <li>Calendar and event management</li>
-                    <li>Weather information integration</li>
-                    <li>AI-powered chat assistance (powered by OpenAI)</li>
+                  <ul>
+                    <li className="text-gray-300">
+                      Horse profile management and tracking
+                    </li>
+                    <li className="text-gray-300">
+                      Health records and vaccination tracking
+                    </li>
+                    <li className="text-gray-300">
+                      Training session management
+                    </li>
+                    <li className="text-gray-300">
+                      Feeding schedules and nutrition plans
+                    </li>
+                    <li className="text-gray-300">
+                      Document storage and organization
+                    </li>
+                    <li className="text-gray-300">
+                      Calendar and event management
+                    </li>
                   </ul>
-                </section>
+                </CardContent>
+              </Card>
 
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">3. User Accounts</h2>
-                  <p>
-                    To use the Service, you must register for an account. You agree to:
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    3. User Accounts and Account Responsibilities
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    To use certain features of the Service, you must register
+                    for an account. When you register, you agree to:
                   </p>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Provide accurate and current information</li>
-                    <li>Maintain the security of your account credentials</li>
-                    <li>Accept responsibility for all activities under your account</li>
-                    <li>Notify us immediately of any unauthorized access</li>
+                  <ul>
+                    <li className="text-gray-300">
+                      Provide accurate, current, and complete information
+                    </li>
+                    <li className="text-gray-300">
+                      Maintain and promptly update your account information
+                    </li>
+                    <li className="text-gray-300">
+                      Maintain the security of your password and accept all
+                      risks of unauthorized access
+                    </li>
+                    <li className="text-gray-300">
+                      Immediately notify us of any unauthorized use of your
+                      account
+                    </li>
+                    <li className="text-gray-300">
+                      You are responsible for all activities conducted through
+                      your account
+                    </li>
+                    <li className="text-gray-300">
+                      You must not share your account credentials with others
+                    </li>
+                    <li className="text-gray-300">
+                      You must be at least 18 years of age to create an account
+                    </li>
                   </ul>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">4. Trial Period and Subscriptions</h2>
-                  <p>
-                    EquiProfile offers a 7-day free trial for new users. After the trial, you may choose from the following subscription plans:
+                  <p className="text-gray-300">
+                    We reserve the right to suspend or terminate accounts that
+                    violate these terms or remain inactive for extended periods.
                   </p>
-                  
-                  <h3 className="text-xl font-semibold mb-2 mt-4">Subscription Plans</h3>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li><strong>Standard Plan:</strong> £10/month or £100/year - includes core features with usage-based AI features</li>
-                    <li><strong>Stable Plan:</strong> £30/month or £300/year - includes unlimited AI features and priority support</li>
-                  </ul>
+                </CardContent>
+              </Card>
 
-                  <h3 className="text-xl font-semibold mb-2 mt-4">Subscription Terms</h3>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>The 7-day free trial provides full access to all features</li>
-                    <li>You will not be charged during the trial period</li>
-                    <li>After the trial, an active subscription is required to continue using premium features</li>
-                    <li>Subscriptions automatically renew at the end of each billing period</li>
-                    <li>You can cancel at any time from your account settings</li>
-                    <li>Cancellations take effect at the end of the current billing period</li>
-                    <li>When your subscription expires, you retain read-only access to your data but cannot add or edit content</li>
-                    <li>No refunds are provided for partial subscription periods unless required by law</li>
-                  </ul>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">5. User Content and Data</h2>
-                  <p>
-                    You retain ownership of all data you upload. By using the Service, you grant us a licence to 
-                    store, process, and display your content as necessary to provide the Service.
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    4. Subscriptions, Billing & Payment Terms
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <h4 className="text-white mt-4 mb-2 font-semibold">
+                    Trial Period
+                  </h4>
+                  <p className="text-gray-300">
+                    EquiProfile offers a 7-day free trial period for new users.
+                    You may cancel at any time during the trial without being
+                    charged.
                   </p>
-                  
-                  <h3 className="text-xl font-semibold mb-2 mt-4">Data Storage</h3>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Your data is stored securely in our database</li>
-                    <li>Documents and images may be stored locally or on secure cloud storage (Amazon S3)</li>
-                    <li>All data is encrypted in transit and at rest</li>
-                    <li>You are responsible for maintaining backups of your data</li>
-                    <li>We perform regular backups but recommend you keep your own copies of critical documents</li>
-                  </ul>
 
-                  <h3 className="text-xl font-semibold mb-2 mt-4">Data Retention</h3>
-                  <p>
-                    Your data remains accessible whilst your account is active. If you delete your account, 
-                    your data will be permanently deleted within 30 days, except where we are required by law to retain it.
-                  </p>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">6. Acceptable Use</h2>
-                  <p>You agree not to:</p>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Violate any applicable laws or regulations</li>
-                    <li>Infringe on intellectual property rights</li>
-                    <li>Transmit malicious code or harmful content</li>
-                    <li>Attempt unauthorized access to the Service</li>
-                    <li>Interfere with or disrupt the Service</li>
-                  </ul>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">7. AI Features and Third-Party Services</h2>
-                  <p>
-                    EquiProfile uses third-party services to provide certain features:
-                  </p>
-                  
-                  <h3 className="text-xl font-semibold mb-2 mt-4">OpenAI Integration</h3>
-                  <p>
-                    Our AI chat feature is powered by OpenAI's API. When you use the AI chat:
-                  </p>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Your queries and relevant horse data may be sent to OpenAI for processing</li>
-                    <li>OpenAI processes this data in accordance with their privacy policy and terms</li>
-                    <li>OpenAI has stated they do not use API data to train their models</li>
-                    <li>We do not share personally identifiable information beyond what's necessary for the AI to function</li>
-                    <li>You can review OpenAI's privacy policy at: <a href="https://openai.com/privacy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">openai.com/privacy</a></li>
+                  <h4 className="text-white mt-4 mb-2 font-semibold">
+                    Subscription Plans
+                  </h4>
+                  <ul>
+                    <li className="text-gray-300">
+                      An active subscription is required to continue using
+                      premium features after the trial period
+                    </li>
+                    <li className="text-gray-300">
+                      Subscription plans are available on a monthly or yearly
+                      basis
+                    </li>
+                    <li className="text-gray-300">
+                      All fees are quoted in GBP and are inclusive of UK VAT
+                      where applicable
+                    </li>
+                    <li className="text-gray-300">
+                      Payment is due at the start of each billing cycle
+                    </li>
+                    <li className="text-gray-300">
+                      Subscriptions automatically renew unless cancelled
+                    </li>
                   </ul>
 
-                  <h3 className="text-xl font-semibold mb-2 mt-4">Weather Services</h3>
-                  <p>
-                    Weather information is provided by third-party weather APIs. Location data (if provided) 
-                    is used solely to retrieve relevant weather information for your horses' locations.
+                  <h4 className="text-white mt-4 mb-2 font-semibold">
+                    Payment Processing
+                  </h4>
+                  <p className="text-gray-300">
+                    All payments are processed securely through Stripe. We do
+                    not store your complete payment card details. By providing
+                    payment information, you authorize us to charge your payment
+                    method for all subscription fees.
                   </p>
 
-                  <h3 className="text-xl font-semibold mb-2 mt-4">Payment Processing</h3>
-                  <p>
-                    All payments are processed securely by Stripe. We do not store your payment card details. 
-                    Stripe's processing is subject to their terms and privacy policy.
-                  </p>
-                </section>
+                  <h4 className="text-white mt-4 mb-2 font-semibold">
+                    Cancellation & Refunds
+                  </h4>
+                  <ul>
+                    <li className="text-gray-300">
+                      You can cancel your subscription at any time through your
+                      account settings
+                    </li>
+                    <li className="text-gray-300">
+                      Cancellation takes effect at the end of your current
+                      billing period
+                    </li>
+                    <li className="text-gray-300">
+                      No refunds are provided for partial subscription periods
+                    </li>
+                    <li className="text-gray-300">
+                      Refunds for billing errors will be processed within 14
+                      days
+                    </li>
+                    <li className="text-gray-300">
+                      We reserve the right to issue refunds on a case-by-case
+                      basis at our discretion
+                    </li>
+                  </ul>
 
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">8. Intellectual Property</h2>
-                  <p>
-                    The Service and its original content, features, and functionality are owned by EquiProfile 
-                    and protected by international copyright, trademark, and other intellectual property laws.
+                  <h4 className="text-white mt-4 mb-2 font-semibold">
+                    Price Changes
+                  </h4>
+                  <p className="text-gray-300">
+                    We reserve the right to modify subscription pricing with at
+                    least 30 days' notice. Changes will take effect at your next
+                    renewal date.
                   </p>
-                </section>
+                </CardContent>
+              </Card>
 
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">9. Limitation of Liability</h2>
-                  <p>
-                    To the fullest extent permitted by law, EquiProfile shall not be liable for any indirect, 
-                    incidental, special, consequential, or punitive damages arising from your use of the Service.
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    5. User Content and Data
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    You retain all rights to the data and content you upload to
+                    the Service. By using the Service, you grant us:
                   </p>
-                  <p className="mt-3">
-                    The Service is provided for informational and management purposes. It is not a substitute for 
-                    professional veterinary advice. Always consult qualified professionals for your horses' health 
-                    and wellbeing.
-                  </p>
-                </section>
+                  <ul>
+                    <li className="text-gray-300">
+                      A license to store, process, and display your content as
+                      necessary to provide the Service
+                    </li>
+                    <li className="text-gray-300">
+                      You are responsible for maintaining backups of your data
+                    </li>
+                    <li className="text-gray-300">
+                      We reserve the right to remove content that violates these
+                      terms
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
 
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">10. Termination</h2>
-                  <p>
-                    We may terminate or suspend your access to the Service at any time for any reason, including 
-                    breach of these Terms. Upon termination, your right to use the Service will immediately cease.
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    6. Acceptable Use Policy
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    You agree not to use the Service to:
                   </p>
-                  <p className="mt-3">
-                    You may terminate your account at any time through your account settings. Upon termination, 
-                    you will lose access to the Service and your data will be scheduled for deletion in accordance 
-                    with our data retention policies.
+                  <ul>
+                    <li className="text-gray-300">
+                      Violate any applicable UK or international laws or
+                      regulations
+                    </li>
+                    <li className="text-gray-300">
+                      Infringe on intellectual property rights or other rights
+                      of others
+                    </li>
+                    <li className="text-gray-300">
+                      Transmit harmful or malicious code, viruses, or malware
+                    </li>
+                    <li className="text-gray-300">
+                      Attempt to gain unauthorized access to the Service, other
+                      accounts, or systems
+                    </li>
+                    <li className="text-gray-300">
+                      Interfere with, disrupt, or place unreasonable burden on
+                      the Service
+                    </li>
+                    <li className="text-gray-300">
+                      Engage in any automated data collection (scraping,
+                      crawling, etc.) without permission
+                    </li>
+                    <li className="text-gray-300">
+                      Impersonate any person or entity or misrepresent your
+                      affiliation
+                    </li>
+                    <li className="text-gray-300">
+                      Upload or transmit false, misleading, or fraudulent
+                      information
+                    </li>
+                    <li className="text-gray-300">
+                      Harass, abuse, threaten, or intimidate other users
+                    </li>
+                    <li className="text-gray-300">
+                      Use the Service for any illegal or unauthorized purpose
+                    </li>
+                    <li className="text-gray-300">
+                      Reverse engineer, decompile, or disassemble any part of
+                      the Service
+                    </li>
+                    <li className="text-gray-300">
+                      Resell, rent, lease, or sublicense access to the Service
+                      without authorization
+                    </li>
+                  </ul>
+                  <p className="text-gray-300">
+                    We reserve the right to investigate and take appropriate
+                    legal action against anyone who violates this Acceptable Use
+                    Policy, including removing content, suspending or
+                    terminating accounts, and reporting to law enforcement
+                    authorities.
                   </p>
-                </section>
+                </CardContent>
+              </Card>
 
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">11. Governing Law</h2>
-                  <p>
-                    These Terms shall be governed by and construed in accordance with the laws of England and Wales, 
-                    without regard to conflict of law provisions.
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    7. Intellectual Property
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    The Service and its original content, features, and
+                    functionality are owned by EquiProfile and are protected by
+                    international copyright, trademark, patent, trade secret,
+                    and other intellectual property laws.
                   </p>
-                </section>
+                </CardContent>
+              </Card>
 
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">12. Changes to Terms</h2>
-                  <p>
-                    We reserve the right to modify these Terms at any time. We will notify you of any material 
-                    changes via email or through the Service. Your continued use after such changes constitutes 
-                    acceptance of the new Terms.
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    8. Disclaimer of Warranties
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT
+                    WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+                    BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY,
+                    FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
                   </p>
-                </section>
+                  <p className="text-gray-300">WE DO NOT WARRANT THAT:</p>
+                  <ul>
+                    <li className="text-gray-300">
+                      The Service will be uninterrupted, secure, or error-free
+                    </li>
+                    <li className="text-gray-300">
+                      The Service will meet your specific requirements
+                    </li>
+                    <li className="text-gray-300">
+                      Any errors or defects will be corrected
+                    </li>
+                    <li className="text-gray-300">
+                      The Service will be available at all times
+                    </li>
+                    <li className="text-gray-300">
+                      Data stored will not be lost or corrupted
+                    </li>
+                  </ul>
+                  <p className="text-gray-300">
+                    Your use of the Service is entirely at your own risk. We
+                    recommend maintaining your own backups of all important
+                    data.
+                  </p>
+                  <p className="font-semibold mt-4">
+                    IMPORTANT: Nothing in these Terms shall exclude or limit our
+                    liability for death or personal injury caused by our
+                    negligence, fraud or fraudulent misrepresentation, or any
+                    other liability that cannot be excluded or limited under
+                    English law.
+                  </p>
+                </CardContent>
+              </Card>
 
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">13. Contact Us</h2>
-                  <p>
-                    If you have questions about these Terms, please contact us at:
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    9. Limitation of Liability
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="font-semibold">
+                    Subject to the provisions below, to the fullest extent
+                    permitted by English law:
                   </p>
-                  <p>
-                    Email: <a href="mailto:support@equiprofile.online" className="text-primary hover:underline">support@equiprofile.online</a>
+                  <p className="text-gray-300">
+                    EQUIPROFILE SHALL NOT BE LIABLE FOR ANY INDIRECT,
+                    INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES,
+                    INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, USE,
+                    GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR
+                    RELATED TO YOUR USE OF THE SERVICE, EVEN IF WE HAVE BEEN
+                    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
                   </p>
-                </section>
-              </div>
+                  <p className="text-gray-300">
+                    Our total liability to you for any claims arising out of or
+                    related to these Terms or the Service shall not exceed the
+                    greater of: (a) the amount you have paid us in the 12 months
+                    preceding the claim, or (b) £100 GBP.
+                  </p>
+                  <p className="font-semibold mt-4">
+                    IMPORTANT LIMITATIONS UNDER UK LAW:
+                  </p>
+                  <p className="text-gray-300">
+                    Nothing in these Terms shall exclude or limit our liability
+                    for:
+                  </p>
+                  <ul>
+                    <li className="text-gray-300">
+                      Death or personal injury caused by our negligence
+                    </li>
+                    <li className="text-gray-300">
+                      Fraud or fraudulent misrepresentation
+                    </li>
+                    <li className="text-gray-300">
+                      Any liability that cannot be excluded or limited under
+                      English law
+                    </li>
+                  </ul>
+                  <p className="text-gray-300">
+                    These limitations and exclusions apply regardless of the
+                    form of action, whether in contract, tort (including
+                    negligence), breach of statutory duty, or otherwise.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">10. Termination</CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <h4 className="text-white mt-4 mb-2 font-semibold">
+                    Termination by You
+                  </h4>
+                  <p className="text-gray-300">
+                    You may terminate your account at any time by:
+                  </p>
+                  <ul>
+                    <li className="text-gray-300">
+                      Cancelling your subscription through account settings
+                    </li>
+                    <li className="text-gray-300">
+                      Requesting account deletion via support@equiprofile.online
+                    </li>
+                  </ul>
+                  <p className="text-gray-300">
+                    Upon termination, you will lose access to your account and
+                    all associated data. We recommend exporting any important
+                    data before terminating your account.
+                  </p>
+
+                  <h4 className="text-white mt-4 mb-2 font-semibold">
+                    Termination by Us
+                  </h4>
+                  <p className="text-gray-300">
+                    We may suspend or terminate your account and access to the
+                    Service immediately, with or without prior notice, if:
+                  </p>
+                  <ul>
+                    <li className="text-gray-300">
+                      You breach these Terms of Service
+                    </li>
+                    <li className="text-gray-300">
+                      You violate our Acceptable Use Policy
+                    </li>
+                    <li className="text-gray-300">
+                      Your account remains inactive for an extended period
+                    </li>
+                    <li className="text-gray-300">
+                      We are required to do so by law
+                    </li>
+                    <li className="text-gray-300">
+                      We believe your actions may harm us, other users, or third
+                      parties
+                    </li>
+                    <li className="text-gray-300">
+                      Payment for your subscription fails or is disputed
+                    </li>
+                  </ul>
+
+                  <h4 className="text-white mt-4 mb-2 font-semibold">
+                    Effect of Termination
+                  </h4>
+                  <p className="text-gray-300">Upon termination:</p>
+                  <ul>
+                    <li className="text-gray-300">
+                      Your right to use the Service immediately ceases
+                    </li>
+                    <li className="text-gray-300">
+                      We may delete your account and data after a reasonable
+                      retention period
+                    </li>
+                    <li className="text-gray-300">
+                      You remain liable for all charges incurred prior to
+                      termination
+                    </li>
+                    <li className="text-gray-300">
+                      Provisions that should survive termination (including
+                      liability limitations, intellectual property rights, and
+                      governing law) shall continue to apply
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    11. Changes to Terms
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    We reserve the right to modify these terms at any time. We
+                    will notify users of any material changes via email or
+                    through the Service. Your continued use of the Service after
+                    such changes constitutes acceptance of the new terms.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    12. Governing Law and Jurisdiction
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    These Terms shall be governed by and construed in accordance
+                    with the laws of England and Wales. Any disputes arising
+                    under or in connection with these Terms shall be subject to
+                    the exclusive jurisdiction of the courts of England and
+                    Wales.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    13. Contact Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    If you have any questions about these Terms of Service,
+                    please contact us at:
+                  </p>
+                  <p className="text-gray-300">
+                    <strong>Email:</strong> support@equiprofile.online
+                    <br />
+                    <strong>Website:</strong> https://equiprofile.online
+                    <br />
+                    <strong>WhatsApp:</strong> +44 7347 258089
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
-        <Footer />
-      </PageTransition>
-    </>
+      </div>
+    </MarketingLayout>
   );
 }

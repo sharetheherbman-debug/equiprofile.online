@@ -19,8 +19,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/var/equiprofile/app
-ReadWritePaths=/var/log/equiprofile
+ReadWritePaths=/var/equiprofile/app /var/log/equiprofile
 
 [Install]
 WantedBy=multi-user.target

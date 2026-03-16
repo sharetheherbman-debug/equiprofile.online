@@ -1,0 +1,124 @@
+import cron from "node-cron";
+import * as db from "../db";
+import {
+  isWhatsAppEnabled,
+  sendWhatsAppMessage,
+  formatDateForWhatsApp,
+  userHasWhatsAppEnabled,
+} from "./whatsapp";
+
+/**
+ * Reminder Scheduler
+ * Checks for due reminders every hour and sends email + WhatsApp notifications
+ */
+
+let isRunning = false;
+
+export function startReminderScheduler() {
+  if (isRunning) {
+    console.log("[Reminders] Scheduler already running");
+    return;
+  }
+
+  console.log("[Reminders] Starting reminder scheduler...");
+
+  // Run every hour at minute 0
+  cron.schedule("0 * * * *", async () => {
+    console.log("[Reminders] Checking for due reminders...");
+
+    try {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      // Get event reminders that need to be sent
+      const dueReminders = await db.getDueEventReminders(tomorrow);
+
+      console.log(`[Reminders] Found ${dueReminders.length} due reminders`);
+
+      for (const reminder of dueReminders) {
+        try {
+          // Get the associated event
+          const event = await db.getEventById(reminder.eventId);
+          if (!event) {
+            console.log(
+              `[Reminders] Event not found for reminder ${reminder.id}`,
+            );
+            continue;
+          }
+
+          // Get user details
+          const user = await db.getUserById(event.userId);
+          if (!user || !user.email) {
+            console.log(`[Reminders] User not found for event ${event.id}`);
+            continue;
+          }
+
+          // Send email reminder
+          const emailModule = await import("./email");
+          await emailModule.sendReminderEmail(
+            user.email,
+            user.name || "there",
+            event.title,
+            event.description || "",
+            new Date(event.startDate),
+            undefined, // horse name if applicable
+          );
+
+          // Send WhatsApp reminder if user has it enabled
+          const waConfig = isWhatsAppEnabled();
+          if (
+            waConfig.enabled &&
+            userHasWhatsAppEnabled(user.preferences || null)
+          ) {
+            const phone = user.phone;
+            if (phone) {
+              const hoursUntil = Math.round(
+                (new Date(event.startDate).getTime() - now.getTime()) /
+                  (1000 * 60 * 60),
+              );
+              const timeLabel =
+                hoursUntil <= 1 ? "1 hour" : `${hoursUntil} hours`;
+              await sendWhatsAppMessage({
+                to: phone,
+                template: "event_reminder",
+                parameters: [
+                  user.name || "there",
+                  event.title,
+                  formatDateForWhatsApp(new Date(event.startDate)),
+                  timeLabel,
+                ],
+              });
+            }
+          }
+
+          // Mark reminder as sent
+          await db.markEventReminderSent(reminder.id);
+
+          console.log(
+            `[Reminders] Sent reminder ${reminder.id} to ${user.email}`,
+          );
+        } catch (error) {
+          console.error(
+            `[Reminders] Failed to send reminder ${reminder.id}:`,
+            error,
+          );
+        }
+      }
+
+      console.log("[Reminders] Reminder check complete");
+    } catch (error) {
+      console.error("[Reminders] Error checking reminders:", error);
+    }
+  });
+
+  isRunning = true;
+  console.log("[Reminders] Scheduler started successfully");
+}
+
+export function stopReminderScheduler() {
+  // Note: node-cron doesn't provide a direct way to stop all tasks
+  // In production, you might want to keep track of task references
+  isRunning = false;
+  console.log("[Reminders] Scheduler stopped");
+}

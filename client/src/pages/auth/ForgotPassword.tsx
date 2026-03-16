@@ -1,12 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "wouter";
 import { useState, FormEvent } from "react";
 import { Loader2, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
 import { PageTransition } from "@/components/PageTransition";
-import { MarketingNav } from "@/components/MarketingNav";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function ForgotPassword() {
@@ -45,16 +52,17 @@ export default function ForgotPassword() {
 
   return (
     <>
-      <MarketingNav />
+      <Navbar alwaysDark />
       <PageTransition>
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 px-4 pt-20">
           <div className="w-full max-w-md">
             {/* Back button */}
-            <Link href="/login">
-              <a className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
-                <ArrowLeft className="w-4 h-4" />
-                Back to login
-              </a>
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to login
             </Link>
 
             <Card className="shadow-xl">
@@ -82,7 +90,8 @@ export default function ForgotPassword() {
                     <div>
                       <h3 className="font-semibold mb-2">Check your email</h3>
                       <p className="text-sm text-muted-foreground">
-                        If an account exists with that email, we've sent password reset instructions.
+                        If an account exists with that email, we've sent
+                        password reset instructions.
                       </p>
                     </div>
                     <Link href="/login">
@@ -128,10 +137,11 @@ export default function ForgotPassword() {
                       <span className="text-muted-foreground">
                         Remember your password?{" "}
                       </span>
-                      <Link href="/login">
-                        <a className="text-primary font-medium hover:underline">
-                          Sign in
-                        </a>
+                      <Link
+                        href="/login"
+                        className="text-primary font-medium hover:underline"
+                      >
+                        Sign in
                       </Link>
                     </div>
                   </form>
@@ -141,6 +151,7 @@ export default function ForgotPassword() {
           </div>
         </div>
       </PageTransition>
+      <Footer />
     </>
   );
 }

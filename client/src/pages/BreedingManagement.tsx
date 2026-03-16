@@ -1,6 +1,12 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +30,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
-import { Plus, Edit, Trash2, Baby, CheckCircle, XCircle, Calendar } from "lucide-react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Baby,
+  CheckCircle,
+  XCircle,
+  Calendar,
+} from "lucide-react";
 import { toast } from "sonner";
 
 function BreedingManagementContent() {
@@ -36,7 +50,7 @@ function BreedingManagementContent() {
   const [formData, setFormData] = useState({
     mareId: "",
     stallionName: "",
-    breedingDate: new Date().toISOString().split('T')[0],
+    breedingDate: new Date().toISOString().split("T")[0],
     method: "natural" as "natural" | "artificial" | "embryo_transfer",
     veterinarianName: "",
     cost: "",
@@ -44,11 +58,11 @@ function BreedingManagementContent() {
   });
   const [confirmData, setConfirmData] = useState({
     confirmed: true,
-    confirmationDate: new Date().toISOString().split('T')[0],
+    confirmationDate: new Date().toISOString().split("T")[0],
     dueDate: "",
   });
   const [foalData, setFoalData] = useState({
-    birthDate: new Date().toISOString().split('T')[0],
+    birthDate: new Date().toISOString().split("T")[0],
     gender: "colt" as "colt" | "filly",
     name: "",
     color: "",
@@ -124,7 +138,7 @@ function BreedingManagementContent() {
     setFormData({
       mareId: "",
       stallionName: "",
-      breedingDate: new Date().toISOString().split('T')[0],
+      breedingDate: new Date().toISOString().split("T")[0],
       method: "natural",
       veterinarianName: "",
       cost: "",
@@ -135,7 +149,7 @@ function BreedingManagementContent() {
 
   const resetFoalForm = () => {
     setFoalData({
-      birthDate: new Date().toISOString().split('T')[0],
+      birthDate: new Date().toISOString().split("T")[0],
       gender: "colt",
       name: "",
       color: "",
@@ -185,7 +199,9 @@ function BreedingManagementContent() {
     setFormData({
       mareId: breeding.mareId?.toString() || "",
       stallionName: breeding.stallionName || "",
-      breedingDate: breeding.breedingDate ? new Date(breeding.breedingDate).toISOString().split('T')[0] : "",
+      breedingDate: breeding.breedingDate
+        ? new Date(breeding.breedingDate).toISOString().split("T")[0]
+        : "",
       method: breeding.method || "natural",
       veterinarianName: breeding.veterinarianName || "",
       cost: breeding.cost?.toString() || "",
@@ -198,7 +214,7 @@ function BreedingManagementContent() {
     setSelectedBreeding(breeding);
     setConfirmData({
       confirmed: !breeding.pregnancyConfirmed,
-      confirmationDate: new Date().toISOString().split('T')[0],
+      confirmationDate: new Date().toISOString().split("T")[0],
       dueDate: "",
     });
     setIsConfirmOpen(true);
@@ -229,12 +245,14 @@ function BreedingManagementContent() {
       gender: foalData.gender,
       name: foalData.name || undefined,
       color: foalData.color || undefined,
-      birthWeight: foalData.birthWeight ? parseFloat(foalData.birthWeight) : undefined,
+      birthWeight: foalData.birthWeight
+        ? parseFloat(foalData.birthWeight)
+        : undefined,
     });
   };
 
   const getMareName = (mareId: number) => {
-    const mare = horses?.find(h => h.id === mareId);
+    const mare = horses?.find((h) => h.id === mareId);
     return mare?.name || "Unknown";
   };
 
@@ -243,7 +261,9 @@ function BreedingManagementContent() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Loading breeding records...</p>
+          <p className="mt-2 text-muted-foreground">
+            Loading breeding records...
+          </p>
         </div>
       </div>
     );
@@ -268,23 +288,28 @@ function BreedingManagementContent() {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create Breeding Record</DialogTitle>
-              <DialogDescription>
-                Record a new breeding event
-              </DialogDescription>
+              <DialogDescription>Record a new breeding event</DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
                 <Label htmlFor="mare">Mare *</Label>
-                <Select value={formData.mareId} onValueChange={(value) => setFormData({ ...formData, mareId: value })}>
+                <Select
+                  value={formData.mareId}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, mareId: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select mare" />
                   </SelectTrigger>
                   <SelectContent>
-                    {horses?.filter(h => h.gender === 'mare').map((horse) => (
-                      <SelectItem key={horse.id} value={horse.id.toString()}>
-                        {horse.name}
-                      </SelectItem>
-                    ))}
+                    {horses
+                      ?.filter((h) => h.gender === "mare")
+                      .map((horse) => (
+                        <SelectItem key={horse.id} value={horse.id.toString()}>
+                          {horse.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -293,7 +318,9 @@ function BreedingManagementContent() {
                 <Input
                   id="stallionName"
                   value={formData.stallionName}
-                  onChange={(e) => setFormData({ ...formData, stallionName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, stallionName: e.target.value })
+                  }
                   placeholder="Stallion's name"
                 />
               </div>
@@ -304,19 +331,30 @@ function BreedingManagementContent() {
                     id="breedingDate"
                     type="date"
                     value={formData.breedingDate}
-                    onChange={(e) => setFormData({ ...formData, breedingDate: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, breedingDate: e.target.value })
+                    }
                   />
                 </div>
                 <div>
                   <Label htmlFor="method">Method</Label>
-                  <Select value={formData.method} onValueChange={(value: any) => setFormData({ ...formData, method: value })}>
+                  <Select
+                    value={formData.method}
+                    onValueChange={(value: any) =>
+                      setFormData({ ...formData, method: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="natural">Natural</SelectItem>
-                      <SelectItem value="artificial">Artificial Insemination</SelectItem>
-                      <SelectItem value="embryo_transfer">Embryo Transfer</SelectItem>
+                      <SelectItem value="artificial">
+                        Artificial Insemination
+                      </SelectItem>
+                      <SelectItem value="embryo_transfer">
+                        Embryo Transfer
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -326,7 +364,12 @@ function BreedingManagementContent() {
                 <Input
                   id="veterinarianName"
                   value={formData.veterinarianName}
-                  onChange={(e) => setFormData({ ...formData, veterinarianName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      veterinarianName: e.target.value,
+                    })
+                  }
                   placeholder="Attending veterinarian"
                 />
               </div>
@@ -336,7 +379,9 @@ function BreedingManagementContent() {
                   id="cost"
                   type="number"
                   value={formData.cost}
-                  onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, cost: e.target.value })
+                  }
                   placeholder="Breeding cost"
                 />
               </div>
@@ -345,17 +390,28 @@ function BreedingManagementContent() {
                 <Textarea
                   id="notes"
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                   placeholder="Additional notes"
                   rows={3}
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => { setIsCreateOpen(false); resetForm(); }}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsCreateOpen(false);
+                  resetForm();
+                }}
+              >
                 Cancel
               </Button>
-              <Button onClick={handleCreate} disabled={createMutation.isPending}>
+              <Button
+                onClick={handleCreate}
+                disabled={createMutation.isPending}
+              >
                 {createMutation.isPending ? "Creating..." : "Create Record"}
               </Button>
             </DialogFooter>
@@ -374,7 +430,9 @@ function BreedingManagementContent() {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Baby className="w-16 h-16 text-muted-foreground/30 mb-4" />
-                <h3 className="font-semibold text-lg mb-2">No breeding records yet</h3>
+                <h3 className="font-semibold text-lg mb-2">
+                  No breeding records yet
+                </h3>
                 <p className="text-muted-foreground text-center mb-4">
                   Start tracking your breeding program
                 </p>
@@ -392,10 +450,12 @@ function BreedingManagementContent() {
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-lg">
-                          {getMareName(breeding.mareId)} × {breeding.stallionName}
+                          {getMareName(breeding.mareId)} ×{" "}
+                          {breeding.stallionName}
                         </CardTitle>
                         <CardDescription className="mt-1">
-                          Bred on {new Date(breeding.breedingDate).toLocaleDateString()}
+                          Bred on{" "}
+                          {new Date(breeding.breedingDate).toLocaleDateString()}
                         </CardDescription>
                       </div>
                       {breeding.pregnancyConfirmed ? (
@@ -404,9 +464,7 @@ function BreedingManagementContent() {
                           Pregnant
                         </Badge>
                       ) : (
-                        <Badge variant="secondary">
-                          Pending Confirmation
-                        </Badge>
+                        <Badge variant="secondary">Pending Confirmation</Badge>
                       )}
                     </div>
                   </CardHeader>
@@ -415,12 +473,18 @@ function BreedingManagementContent() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <p className="text-muted-foreground">Method</p>
-                          <p className="font-medium capitalize">{breeding.method.replace('_', ' ')}</p>
+                          <p className="font-medium capitalize">
+                            {breeding.method.replace("_", " ")}
+                          </p>
                         </div>
                         {breeding.veterinarianName && (
                           <div>
-                            <p className="text-muted-foreground">Veterinarian</p>
-                            <p className="font-medium">{breeding.veterinarianName}</p>
+                            <p className="text-muted-foreground">
+                              Veterinarian
+                            </p>
+                            <p className="font-medium">
+                              {breeding.veterinarianName}
+                            </p>
                           </div>
                         )}
                         {breeding.cost && (
@@ -432,12 +496,16 @@ function BreedingManagementContent() {
                         {breeding.dueDate && (
                           <div>
                             <p className="text-muted-foreground">Due Date</p>
-                            <p className="font-medium">{new Date(breeding.dueDate).toLocaleDateString()}</p>
+                            <p className="font-medium">
+                              {new Date(breeding.dueDate).toLocaleDateString()}
+                            </p>
                           </div>
                         )}
                       </div>
                       {breeding.notes && (
-                        <p className="text-sm text-muted-foreground">{breeding.notes}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {breeding.notes}
+                        </p>
                       )}
                       <div className="flex gap-2 pt-2">
                         <Button
@@ -445,8 +513,14 @@ function BreedingManagementContent() {
                           variant="outline"
                           onClick={() => openConfirmDialog(breeding)}
                         >
-                          {breeding.pregnancyConfirmed ? <XCircle className="w-3 h-3 mr-1" /> : <CheckCircle className="w-3 h-3 mr-1" />}
-                          {breeding.pregnancyConfirmed ? "Update Status" : "Confirm Pregnancy"}
+                          {breeding.pregnancyConfirmed ? (
+                            <XCircle className="w-3 h-3 mr-1" />
+                          ) : (
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                          )}
+                          {breeding.pregnancyConfirmed
+                            ? "Update Status"
+                            : "Confirm Pregnancy"}
                         </Button>
                         {breeding.pregnancyConfirmed && (
                           <Button
@@ -488,7 +562,9 @@ function BreedingManagementContent() {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Baby className="w-16 h-16 text-muted-foreground/30 mb-4" />
-                <h3 className="font-semibold text-lg mb-2">No foals recorded yet</h3>
+                <h3 className="font-semibold text-lg mb-2">
+                  No foals recorded yet
+                </h3>
                 <p className="text-muted-foreground text-center">
                   Foal records will appear here once added to breeding records
                 </p>
@@ -500,7 +576,8 @@ function BreedingManagementContent() {
                 <Card key={foal.id}>
                   <CardHeader>
                     <CardTitle className="text-lg">
-                      {foal.name || `Unnamed ${foal.gender === 'colt' ? 'Colt' : 'Filly'}`}
+                      {foal.name ||
+                        `Unnamed ${foal.gender === "colt" ? "Colt" : "Filly"}`}
                     </CardTitle>
                     <CardDescription>
                       Born {new Date(foal.birthDate).toLocaleDateString()}
@@ -510,7 +587,9 @@ function BreedingManagementContent() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Gender</span>
-                        <Badge variant="outline" className="capitalize">{foal.gender}</Badge>
+                        <Badge variant="outline" className="capitalize">
+                          {foal.gender}
+                        </Badge>
                       </div>
                       {foal.color && (
                         <div className="flex justify-between">
@@ -520,8 +599,12 @@ function BreedingManagementContent() {
                       )}
                       {foal.birthWeight && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Birth Weight</span>
-                          <span className="font-medium">{foal.birthWeight} kg</span>
+                          <span className="text-muted-foreground">
+                            Birth Weight
+                          </span>
+                          <span className="font-medium">
+                            {foal.birthWeight} kg
+                          </span>
                         </div>
                       )}
                     </div>
@@ -548,7 +631,9 @@ function BreedingManagementContent() {
               <Input
                 id="edit-stallionName"
                 value={formData.stallionName}
-                onChange={(e) => setFormData({ ...formData, stallionName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, stallionName: e.target.value })
+                }
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -558,19 +643,30 @@ function BreedingManagementContent() {
                   id="edit-breedingDate"
                   type="date"
                   value={formData.breedingDate}
-                  onChange={(e) => setFormData({ ...formData, breedingDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, breedingDate: e.target.value })
+                  }
                 />
               </div>
               <div>
                 <Label htmlFor="edit-method">Method</Label>
-                <Select value={formData.method} onValueChange={(value: any) => setFormData({ ...formData, method: value })}>
+                <Select
+                  value={formData.method}
+                  onValueChange={(value: any) =>
+                    setFormData({ ...formData, method: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="natural">Natural</SelectItem>
-                    <SelectItem value="artificial">Artificial Insemination</SelectItem>
-                    <SelectItem value="embryo_transfer">Embryo Transfer</SelectItem>
+                    <SelectItem value="artificial">
+                      Artificial Insemination
+                    </SelectItem>
+                    <SelectItem value="embryo_transfer">
+                      Embryo Transfer
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -580,7 +676,9 @@ function BreedingManagementContent() {
               <Input
                 id="edit-veterinarianName"
                 value={formData.veterinarianName}
-                onChange={(e) => setFormData({ ...formData, veterinarianName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, veterinarianName: e.target.value })
+                }
               />
             </div>
             <div>
@@ -589,7 +687,9 @@ function BreedingManagementContent() {
                 id="edit-cost"
                 type="number"
                 value={formData.cost}
-                onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, cost: e.target.value })
+                }
               />
             </div>
             <div>
@@ -597,13 +697,21 @@ function BreedingManagementContent() {
               <Textarea
                 id="edit-notes"
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 rows={3}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setIsEditOpen(false); resetForm(); }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsEditOpen(false);
+                resetForm();
+              }}
+            >
               Cancel
             </Button>
             <Button onClick={handleEdit} disabled={updateMutation.isPending}>
@@ -629,7 +737,12 @@ function BreedingManagementContent() {
                 id="confirmationDate"
                 type="date"
                 value={confirmData.confirmationDate}
-                onChange={(e) => setConfirmData({ ...confirmData, confirmationDate: e.target.value })}
+                onChange={(e) =>
+                  setConfirmData({
+                    ...confirmData,
+                    confirmationDate: e.target.value,
+                  })
+                }
               />
             </div>
             <div>
@@ -638,15 +751,26 @@ function BreedingManagementContent() {
                 id="dueDate"
                 type="date"
                 value={confirmData.dueDate}
-                onChange={(e) => setConfirmData({ ...confirmData, dueDate: e.target.value })}
+                onChange={(e) =>
+                  setConfirmData({ ...confirmData, dueDate: e.target.value })
+                }
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setIsConfirmOpen(false); setSelectedBreeding(null); }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsConfirmOpen(false);
+                setSelectedBreeding(null);
+              }}
+            >
               Cancel
             </Button>
-            <Button onClick={handleConfirm} disabled={confirmMutation.isPending}>
+            <Button
+              onClick={handleConfirm}
+              disabled={confirmMutation.isPending}
+            >
               {confirmMutation.isPending ? "Updating..." : "Confirm"}
             </Button>
           </DialogFooter>
@@ -658,9 +782,7 @@ function BreedingManagementContent() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add Foal</DialogTitle>
-            <DialogDescription>
-              Record the birth of a foal
-            </DialogDescription>
+            <DialogDescription>Record the birth of a foal</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -669,12 +791,19 @@ function BreedingManagementContent() {
                 id="birthDate"
                 type="date"
                 value={foalData.birthDate}
-                onChange={(e) => setFoalData({ ...foalData, birthDate: e.target.value })}
+                onChange={(e) =>
+                  setFoalData({ ...foalData, birthDate: e.target.value })
+                }
               />
             </div>
             <div>
               <Label htmlFor="gender">Gender *</Label>
-              <Select value={foalData.gender} onValueChange={(value: any) => setFoalData({ ...foalData, gender: value })}>
+              <Select
+                value={foalData.gender}
+                onValueChange={(value: any) =>
+                  setFoalData({ ...foalData, gender: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -689,7 +818,9 @@ function BreedingManagementContent() {
               <Input
                 id="foal-name"
                 value={foalData.name}
-                onChange={(e) => setFoalData({ ...foalData, name: e.target.value })}
+                onChange={(e) =>
+                  setFoalData({ ...foalData, name: e.target.value })
+                }
                 placeholder="Foal's name"
               />
             </div>
@@ -698,7 +829,9 @@ function BreedingManagementContent() {
               <Input
                 id="color"
                 value={foalData.color}
-                onChange={(e) => setFoalData({ ...foalData, color: e.target.value })}
+                onChange={(e) =>
+                  setFoalData({ ...foalData, color: e.target.value })
+                }
                 placeholder="Coat color"
               />
             </div>
@@ -708,13 +841,22 @@ function BreedingManagementContent() {
                 id="birthWeight"
                 type="number"
                 value={foalData.birthWeight}
-                onChange={(e) => setFoalData({ ...foalData, birthWeight: e.target.value })}
+                onChange={(e) =>
+                  setFoalData({ ...foalData, birthWeight: e.target.value })
+                }
                 placeholder="Weight at birth"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setIsFoalOpen(false); setSelectedBreeding(null); resetFoalForm(); }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsFoalOpen(false);
+                setSelectedBreeding(null);
+                resetFoalForm();
+              }}
+            >
               Cancel
             </Button>
             <Button onClick={handleAddFoal} disabled={foalMutation.isPending}>

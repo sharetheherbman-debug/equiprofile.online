@@ -27,7 +27,7 @@ EquiProfile uses environment-based feature flags to enable plug-and-play deploym
                    DATABASE_URL
                    JWT_SECRET
                    ADMIN_UNLOCK_PASSWORD
-                   
+
                    ✅ App starts successfully
                    ✅ Core features work
                    ✅ No payment processor needed

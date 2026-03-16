@@ -1,15 +1,27 @@
-import { useState } from 'react';
-import { trpc } from '../_core/trpc';
-import { useRealtimeModule } from '../hooks/useRealtime';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/components/ui/use-toast';
-import { Pill, Plus, Pencil, Trash2 } from 'lucide-react';
-import DashboardLayout from '../components/DashboardLayout';
+import { useState } from "react";
+import { trpc } from "../_core/trpc";
+import { useRealtimeModule } from "../hooks/useRealtime";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { Pill, Plus, Pencil, Trash2 } from "lucide-react";
+import DashboardLayout from "../components/DashboardLayout";
 
 function TreatmentsContent() {
   const { toast } = useToast();
@@ -32,50 +44,52 @@ function TreatmentsContent() {
   });
 
   // Real-time updates
-  useRealtimeModule('treatments', (action, data) => {
+  useRealtimeModule("treatments", (action, data) => {
     switch (action) {
-      case 'created':
-        setLocalTreatments(prev => [data, ...prev]);
-        toast({ title: 'New treatment added', description: data.name });
+      case "created":
+        setLocalTreatments((prev) => [data, ...prev]);
+        toast({ title: "New treatment added", description: data.name });
         break;
-      case 'updated':
-        setLocalTreatments(prev => prev.map(t => t.id === data.id ? { ...t, ...data } : t));
+      case "updated":
+        setLocalTreatments((prev) =>
+          prev.map((t) => (t.id === data.id ? { ...t, ...data } : t)),
+        );
         break;
-      case 'deleted':
-        setLocalTreatments(prev => prev.filter(t => t.id !== data.id));
+      case "deleted":
+        setLocalTreatments((prev) => prev.filter((t) => t.id !== data.id));
         break;
     }
   });
 
   const [formData, setFormData] = useState({
-    horseId: '',
-    type: 'medication',
-    name: '',
-    dosage: '',
-    frequency: '',
-    startDate: '',
-    endDate: '',
-    vet: '',
-    vetClinic: '',
-    cost: '',
-    status: 'active',
-    notes: ''
+    horseId: "",
+    type: "medication",
+    name: "",
+    dosage: "",
+    frequency: "",
+    startDate: "",
+    endDate: "",
+    vet: "",
+    vetClinic: "",
+    cost: "",
+    status: "active",
+    notes: "",
   });
 
   const resetForm = () => {
     setFormData({
-      horseId: '',
-      type: 'medication',
-      name: '',
-      dosage: '',
-      frequency: '',
-      startDate: '',
-      endDate: '',
-      vet: '',
-      vetClinic: '',
-      cost: '',
-      status: 'active',
-      notes: ''
+      horseId: "",
+      type: "medication",
+      name: "",
+      dosage: "",
+      frequency: "",
+      startDate: "",
+      endDate: "",
+      vet: "",
+      vetClinic: "",
+      cost: "",
+      status: "active",
+      notes: "",
     });
     setEditingTreatment(null);
   };
@@ -85,68 +99,112 @@ function TreatmentsContent() {
 
     try {
       const payload = {
-        ...formData,
         horseId: parseInt(formData.horseId),
-        costInPence: formData.cost ? Math.round(parseFloat(formData.cost) * 100) : null,
+        treatmentType: formData.type,
+        treatmentName: formData.name,
+        dosage: formData.dosage || undefined,
+        frequency: formData.frequency || undefined,
+        startDate: formData.startDate,
+        endDate: formData.endDate || undefined,
+        vetName: formData.vet || undefined,
+        vetClinic: formData.vetClinic || undefined,
+        cost: formData.cost
+          ? Math.round(parseFloat(formData.cost) * 100)
+          : undefined,
+        status: formData.status as
+          | "active"
+          | "completed"
+          | "discontinued"
+          | undefined,
+        notes: formData.notes || undefined,
       };
 
       if (editingTreatment) {
-        await updateMutation.mutateAsync({ id: editingTreatment.id, ...payload });
-        toast({ title: 'Treatment updated successfully' });
+        await updateMutation.mutateAsync({
+          id: editingTreatment.id,
+          treatmentType: payload.treatmentType,
+          treatmentName: payload.treatmentName,
+          dosage: payload.dosage,
+          frequency: payload.frequency,
+          startDate: payload.startDate,
+          endDate: payload.endDate,
+          vetName: payload.vetName,
+          vetClinic: payload.vetClinic,
+          cost: payload.cost,
+          status: payload.status,
+          notes: payload.notes,
+        });
+        toast({ title: "Treatment updated successfully" });
       } else {
         await createMutation.mutateAsync(payload);
-        toast({ title: 'Treatment created successfully' });
+        toast({ title: "Treatment created successfully" });
       }
 
       setOpen(false);
       resetForm();
       refetch();
     } catch (error: any) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
   const handleEdit = (treatment: any) => {
     setEditingTreatment(treatment);
     setFormData({
-      horseId: treatment.horseId?.toString() || '',
-      type: treatment.type,
-      name: treatment.name,
-      dosage: treatment.dosage || '',
-      frequency: treatment.frequency || '',
-      startDate: treatment.startDate ? new Date(treatment.startDate).toISOString().split('T')[0] : '',
-      endDate: treatment.endDate ? new Date(treatment.endDate).toISOString().split('T')[0] : '',
-      vet: treatment.vet || '',
-      vetClinic: treatment.vetClinic || '',
-      cost: treatment.costInPence ? (treatment.costInPence / 100).toFixed(2) : '',
+      horseId: treatment.horseId?.toString() || "",
+      type: treatment.treatmentType || treatment.type || "",
+      name: treatment.treatmentName || treatment.name || "",
+      dosage: treatment.dosage || "",
+      frequency: treatment.frequency || "",
+      startDate: treatment.startDate
+        ? new Date(treatment.startDate).toISOString().split("T")[0]
+        : "",
+      endDate: treatment.endDate
+        ? new Date(treatment.endDate).toISOString().split("T")[0]
+        : "",
+      vet: treatment.vetName || treatment.vet || "",
+      vetClinic: treatment.vetClinic || "",
+      cost: treatment.cost ? (treatment.cost / 100).toFixed(2) : "",
       status: treatment.status,
-      notes: treatment.notes || ''
+      notes: treatment.notes || "",
     });
     setOpen(true);
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm('Are you sure you want to delete this treatment?')) {
+    if (confirm("Are you sure you want to delete this treatment?")) {
       try {
         await deleteMutation.mutateAsync({ id });
-        toast({ title: 'Treatment deleted successfully' });
+        toast({ title: "Treatment deleted successfully" });
         refetch();
       } catch (error: any) {
-        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
       }
     }
   };
 
-  const activeTreatments = localTreatments.filter((t: any) => t.status === 'active');
-  const completedTreatments = localTreatments.filter((t: any) => t.status === 'completed');
+  const activeTreatments = localTreatments.filter(
+    (t: any) => t.status === "active",
+  );
+  const completedTreatments = localTreatments.filter(
+    (t: any) => t.status === "completed",
+  );
 
   const getStatusBadge = (status: string) => {
     const colors = {
-      active: 'bg-green-100 text-green-800',
-      completed: 'bg-blue-100 text-blue-800',
-      discontinued: 'bg-gray-100 text-gray-800'
+      active: "bg-green-100 text-green-800",
+      completed: "bg-blue-100 text-blue-800",
+      discontinued: "bg-gray-100 text-gray-800",
     };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
 
   return (
@@ -157,7 +215,9 @@ function TreatmentsContent() {
             <Pill className="h-8 w-8" />
             Treatments
           </h1>
-          <p className="text-gray-600 mt-1">Track medications, therapies, and procedures</p>
+          <p className="text-gray-600 mt-1">
+            Track medications, therapies, and procedures
+          </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -168,26 +228,38 @@ function TreatmentsContent() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingTreatment ? 'Edit Treatment' : 'New Treatment'}</DialogTitle>
+              <DialogTitle>
+                {editingTreatment ? "Edit Treatment" : "New Treatment"}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Horse *</Label>
-                  <Select value={formData.horseId} onValueChange={(v) => setFormData({ ...formData, horseId: v })}>
+                  <Select
+                    value={formData.horseId}
+                    onValueChange={(v) =>
+                      setFormData({ ...formData, horseId: v })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select horse" />
                     </SelectTrigger>
                     <SelectContent>
                       {horses?.map((horse: any) => (
-                        <SelectItem key={horse.id} value={horse.id.toString()}>{horse.name}</SelectItem>
+                        <SelectItem key={horse.id} value={horse.id.toString()}>
+                          {horse.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label>Type *</Label>
-                  <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v })}>
+                  <Select
+                    value={formData.type}
+                    onValueChange={(v) => setFormData({ ...formData, type: v })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -207,7 +279,9 @@ function TreatmentsContent() {
                 <Input
                   required
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="e.g., Bute, Physiotherapy"
                 />
               </div>
@@ -217,7 +291,9 @@ function TreatmentsContent() {
                   <Label>Dosage</Label>
                   <Input
                     value={formData.dosage}
-                    onChange={(e) => setFormData({ ...formData, dosage: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dosage: e.target.value })
+                    }
                     placeholder="e.g., 2g, 5ml"
                   />
                 </div>
@@ -225,7 +301,9 @@ function TreatmentsContent() {
                   <Label>Frequency</Label>
                   <Input
                     value={formData.frequency}
-                    onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, frequency: e.target.value })
+                    }
                     placeholder="e.g., Twice daily"
                   />
                 </div>
@@ -238,7 +316,9 @@ function TreatmentsContent() {
                     required
                     type="date"
                     value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, startDate: e.target.value })
+                    }
                   />
                 </div>
                 <div>
@@ -246,7 +326,9 @@ function TreatmentsContent() {
                   <Input
                     type="date"
                     value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, endDate: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -256,7 +338,9 @@ function TreatmentsContent() {
                   <Label>Vet</Label>
                   <Input
                     value={formData.vet}
-                    onChange={(e) => setFormData({ ...formData, vet: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, vet: e.target.value })
+                    }
                     placeholder="Veterinarian name"
                   />
                 </div>
@@ -264,7 +348,9 @@ function TreatmentsContent() {
                   <Label>Vet Clinic</Label>
                   <Input
                     value={formData.vetClinic}
-                    onChange={(e) => setFormData({ ...formData, vetClinic: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, vetClinic: e.target.value })
+                    }
                     placeholder="Clinic name"
                   />
                 </div>
@@ -277,13 +363,20 @@ function TreatmentsContent() {
                     type="number"
                     step="0.01"
                     value={formData.cost}
-                    onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, cost: e.target.value })
+                    }
                     placeholder="0.00"
                   />
                 </div>
                 <div>
                   <Label>Status *</Label>
-                  <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(v) =>
+                      setFormData({ ...formData, status: v })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -300,16 +393,29 @@ function TreatmentsContent() {
                 <Label>Notes</Label>
                 <Textarea
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                   placeholder="Additional notes..."
                   rows={3}
                 />
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button type="submit" disabled={createMutation.isLoading || updateMutation.isLoading}>
-                  {editingTreatment ? 'Update' : 'Create'}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={
+                    createMutation.isPending || updateMutation.isPending
+                  }
+                >
+                  {editingTreatment ? "Update" : "Create"}
                 </Button>
               </div>
             </form>
@@ -319,42 +425,88 @@ function TreatmentsContent() {
 
       {/* Active Treatments */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Active Treatments ({activeTreatments.length})</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Active Treatments ({activeTreatments.length})
+        </h2>
         <div className="grid gap-4">
           {activeTreatments.length === 0 ? (
             <p className="text-gray-500">No active treatments</p>
           ) : (
             activeTreatments.map((treatment: any) => (
-              <div key={treatment.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div
+                key={treatment.id}
+                className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-lg">{treatment.name}</h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(treatment.status)}`}>
+                      <h3 className="font-semibold text-lg">
+                        {treatment.treatmentName || treatment.name}
+                      </h3>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(treatment.status)}`}
+                      >
                         {treatment.status}
                       </span>
                       <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        {treatment.type}
+                        {treatment.treatmentType || treatment.type}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">
-                      Horse: {horses?.find((h: any) => h.id === treatment.horseId)?.name || 'Unknown'}
+                      Horse:{" "}
+                      {horses?.find((h: any) => h.id === treatment.horseId)
+                        ?.name || "Unknown"}
                     </p>
-                    {treatment.dosage && <p className="text-sm"><strong>Dosage:</strong> {treatment.dosage}</p>}
-                    {treatment.frequency && <p className="text-sm"><strong>Frequency:</strong> {treatment.frequency}</p>}
-                    <p className="text-sm"><strong>Started:</strong> {new Date(treatment.startDate).toLocaleDateString()}</p>
-                    {treatment.endDate && <p className="text-sm"><strong>Ends:</strong> {new Date(treatment.endDate).toLocaleDateString()}</p>}
-                    {treatment.vet && <p className="text-sm"><strong>Vet:</strong> {treatment.vet}</p>}
-                    {treatment.costInPence && (
-                      <p className="text-sm"><strong>Cost:</strong> £{(treatment.costInPence / 100).toFixed(2)}</p>
+                    {treatment.dosage && (
+                      <p className="text-sm">
+                        <strong>Dosage:</strong> {treatment.dosage}
+                      </p>
                     )}
-                    {treatment.notes && <p className="text-sm text-gray-600 mt-2">{treatment.notes}</p>}
+                    {treatment.frequency && (
+                      <p className="text-sm">
+                        <strong>Frequency:</strong> {treatment.frequency}
+                      </p>
+                    )}
+                    <p className="text-sm">
+                      <strong>Started:</strong>{" "}
+                      {new Date(treatment.startDate).toLocaleDateString()}
+                    </p>
+                    {treatment.endDate && (
+                      <p className="text-sm">
+                        <strong>Ends:</strong>{" "}
+                        {new Date(treatment.endDate).toLocaleDateString()}
+                      </p>
+                    )}
+                    {treatment.vetName && (
+                      <p className="text-sm">
+                        <strong>Vet:</strong> {treatment.vetName}
+                      </p>
+                    )}
+                    {treatment.cost && (
+                      <p className="text-sm">
+                        <strong>Cost:</strong> £
+                        {(treatment.cost / 100).toFixed(2)}
+                      </p>
+                    )}
+                    {treatment.notes && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        {treatment.notes}
+                      </p>
+                    )}
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => handleEdit(treatment)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(treatment)}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDelete(treatment.id)}>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDelete(treatment.id)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -367,26 +519,44 @@ function TreatmentsContent() {
 
       {/* Completed Treatments */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Completed Treatments ({completedTreatments.length})</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Completed Treatments ({completedTreatments.length})
+        </h2>
         <div className="grid gap-4">
           {completedTreatments.slice(0, 10).map((treatment: any) => (
-            <div key={treatment.id} className="bg-gray-50 border rounded-lg p-4">
+            <div
+              key={treatment.id}
+              className="bg-gray-50 border rounded-lg p-4"
+            >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-semibold">{treatment.name}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(treatment.status)}`}>
+                    <h3 className="font-semibold">
+                      {treatment.treatmentName || treatment.name}
+                    </h3>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(treatment.status)}`}
+                    >
                       {treatment.status}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600">
-                    Horse: {horses?.find((h: any) => h.id === treatment.horseId)?.name || 'Unknown'}
+                    Horse:{" "}
+                    {horses?.find((h: any) => h.id === treatment.horseId)
+                      ?.name || "Unknown"}
                   </p>
                   <p className="text-sm text-gray-600">
-                    {new Date(treatment.startDate).toLocaleDateString()} - {treatment.endDate ? new Date(treatment.endDate).toLocaleDateString() : 'Ongoing'}
+                    {new Date(treatment.startDate).toLocaleDateString()} -{" "}
+                    {treatment.endDate
+                      ? new Date(treatment.endDate).toLocaleDateString()
+                      : "Ongoing"}
                   </p>
                 </div>
-                <Button size="sm" variant="outline" onClick={() => handleEdit(treatment)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleEdit(treatment)}
+                >
                   <Pencil className="h-4 w-4" />
                 </Button>
               </div>

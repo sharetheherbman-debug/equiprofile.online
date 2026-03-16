@@ -1,0 +1,8 @@
+# Robots.txt for EquiProfile
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /admin/
+
+Sitemap: https://equiprofile.online/sitemap.xml

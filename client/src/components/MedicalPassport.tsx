@@ -33,7 +33,12 @@ interface MedicalPassportProps {
   }>;
 }
 
-export function MedicalPassport({ horse, vaccinations = [], dewormings = [], healthRecords = [] }: MedicalPassportProps) {
+export function MedicalPassport({
+  horse,
+  vaccinations = [],
+  dewormings = [],
+  healthRecords = [],
+}: MedicalPassportProps) {
   const { t } = useTranslation();
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const passportRef = useRef<HTMLDivElement>(null);
@@ -53,8 +58,8 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
   const handleExportPDF = async () => {
     if (passportRef.current) {
       await generatePDFFromHTML(passportRef.current, {
-        filename: `medical-passport-${horse.name.replace(/\s+/g, '-')}.pdf`,
-        orientation: 'portrait',
+        filename: `medical-passport-${horse.name.replace(/\s+/g, "-")}.pdf`,
+        orientation: "portrait",
       });
     }
   };
@@ -68,7 +73,7 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
           url: `${window.location.origin}/share/medical/${horse.id}`,
         });
       } catch (err) {
-        console.error('Error sharing:', err);
+        console.error("Error sharing:", err);
       }
     }
   };
@@ -88,7 +93,7 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
           <Download className="mr-2 h-4 w-4" />
           Export PDF
         </Button>
-        {typeof navigator.share !== 'undefined' && (
+        {typeof navigator.share !== "undefined" && (
           <Button onClick={handleShare} variant="outline">
             <Share2 className="mr-2 h-4 w-4" />
             Share
@@ -132,13 +137,17 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
               {horse.microchipNumber && (
                 <div>
                   <span className="text-muted-foreground">Microchip:</span>
-                  <span className="ml-2 font-medium">{horse.microchipNumber}</span>
+                  <span className="ml-2 font-medium">
+                    {horse.microchipNumber}
+                  </span>
                 </div>
               )}
               {horse.registrationNumber && (
                 <div>
                   <span className="text-muted-foreground">Registration:</span>
-                  <span className="ml-2 font-medium">{horse.registrationNumber}</span>
+                  <span className="ml-2 font-medium">
+                    {horse.registrationNumber}
+                  </span>
                 </div>
               )}
             </div>
@@ -150,11 +159,15 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
             {vaccinations.length > 0 ? (
               <div className="space-y-2">
                 {vaccinations.map((vacc, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center py-2 border-b last:border-0"
+                  >
                     <div>
                       <p className="font-medium">{vacc.vaccineName}</p>
                       <p className="text-sm text-muted-foreground">
-                        Administered: {new Date(vacc.dateAdministered).toLocaleDateString()}
+                        Administered:{" "}
+                        {new Date(vacc.dateAdministered).toLocaleDateString()}
                       </p>
                     </div>
                     {vacc.nextDueDate && (
@@ -166,7 +179,9 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">No vaccination records</p>
+              <p className="text-muted-foreground text-sm">
+                No vaccination records
+              </p>
             )}
           </section>
 
@@ -176,11 +191,15 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
             {dewormings.length > 0 ? (
               <div className="space-y-2">
                 {dewormings.map((deworm, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center py-2 border-b last:border-0"
+                  >
                     <div>
                       <p className="font-medium">{deworm.productName}</p>
                       <p className="text-sm text-muted-foreground">
-                        Administered: {new Date(deworm.dateAdministered).toLocaleDateString()}
+                        Administered:{" "}
+                        {new Date(deworm.dateAdministered).toLocaleDateString()}
                       </p>
                     </div>
                     {deworm.nextDueDate && (
@@ -192,21 +211,27 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm">No deworming records</p>
+              <p className="text-muted-foreground text-sm">
+                No deworming records
+              </p>
             )}
           </section>
 
           {/* Recent Health Records */}
           {healthRecords.length > 0 && (
             <section>
-              <h3 className="font-semibold text-lg mb-3">Recent Health Records</h3>
+              <h3 className="font-semibold text-lg mb-3">
+                Recent Health Records
+              </h3>
               <div className="space-y-2">
                 {healthRecords.slice(0, 5).map((record, idx) => (
                   <div key={idx} className="py-2 border-b last:border-0">
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-medium">{record.title}</p>
-                        <p className="text-sm text-muted-foreground">{record.recordType}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {record.recordType}
+                        </p>
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {new Date(record.recordDate).toLocaleDateString()}
@@ -221,7 +246,9 @@ export function MedicalPassport({ horse, vaccinations = [], dewormings = [], hea
           {/* Footer */}
           <div className="text-xs text-muted-foreground pt-4 border-t">
             <p>Generated on: {new Date().toLocaleString()}</p>
-            <p>Document ID: MP-{horse.id}-{Date.now()}</p>
+            <p>
+              Document ID: MP-{horse.id}-{Date.now()}
+            </p>
           </div>
         </CardContent>
       </Card>

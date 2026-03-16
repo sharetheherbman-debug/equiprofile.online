@@ -2,13 +2,52 @@ import { z } from "zod";
 import { notifyOwner } from "./notification";
 import { adminUnlockedProcedure, publicProcedure, router } from "./trpc";
 import { ENV } from "./env";
+import fs from "fs";
+import { resolve } from "path";
+
+// Cache build info at module load time
+let _buildInfoCache: {
+  sha: string;
+  buildTime: string;
+  version: string;
+} | null = null;
+
+function readBuildInfo() {
+  if (_buildInfoCache) return _buildInfoCache;
+  let sha = "unknown";
+  let buildTime = new Date().toISOString();
+  let version = "1.0.0";
+  try {
+    const pkg = JSON.parse(
+      fs.readFileSync(resolve(process.cwd(), "package.json"), "utf-8"),
+    );
+    version = pkg.version || "1.0.0";
+  } catch {}
+  try {
+    const txt = fs.readFileSync(
+      resolve(process.cwd(), "dist/public/build.txt"),
+      "utf-8",
+    );
+    for (const line of txt.split("\n")) {
+      const eqIdx = line.indexOf("=");
+      if (eqIdx < 0) continue;
+      const k = line.slice(0, eqIdx);
+      const v = line.slice(eqIdx + 1).trim();
+      if (k === "BUILD_SHA" && v) sha = v;
+      if (k === "BUILD_TIME" && v) buildTime = v;
+      if (k === "VERSION" && v) version = v;
+    }
+  } catch {}
+  _buildInfoCache = { sha, buildTime, version };
+  return _buildInfoCache;
+}
 
 export const systemRouter = router({
   health: publicProcedure
     .input(
       z.object({
         timestamp: z.number().min(0, "timestamp cannot be negative"),
-      })
+      }),
     )
     .query(() => ({
       ok: true,
@@ -19,56 +58,8 @@ export const systemRouter = router({
     enableUploads: ENV.enableUploads,
   })),
 
-  // System status endpoint for ops visibility
-  status: publicProcedure.query(() => {
-    // Check environment readiness    
-    const uploadsReady = ENV.enableUploads && (
-      !!process.env.LOCAL_UPLOADS_PATH || // Local storage
-      (ENV.awsAccessKeyId && ENV.awsSecretAccessKey && ENV.awsS3Bucket) // AWS S3
-    );
-
-    const openaiReady = !!ENV.openaiApiKey;
-    
-    const weatherReady = !!ENV.weatherApiKey && !!ENV.weatherApiProvider;
-    
-    const stripeReady = ENV.enableStripe && 
-      !!ENV.stripeSecretKey && 
-      !!ENV.stripeWebhookSecret;
-
-    return {
-      featureFlags: {
-        uploadsEnabled: ENV.enableUploads,
-        stripeEnabled: ENV.enableStripe,
-        pwaEnabled: !!process.env.ENABLE_PWA,
-      },
-      serviceStatus: {
-        uploads: {
-          enabled: ENV.enableUploads,
-          ready: uploadsReady,
-          backend: uploadsReady 
-            ? (ENV.awsAccessKeyId ? 's3' : 'local')
-            : 'none',
-        },
-        openai: {
-          enabled: true,
-          ready: openaiReady,
-          model: ENV.openaiModel,
-        },
-        weather: {
-          enabled: true,
-          ready: weatherReady,
-          provider: ENV.weatherApiProvider || 'none',
-        },
-        stripe: {
-          enabled: ENV.enableStripe,
-          ready: stripeReady,
-        },
-      },
-      environment: {
-        nodeEnv: process.env.NODE_ENV || 'development',
-        version: process.env.BUILD_ID || 'dev',
-      },
-    };
+  getBuildInfo: adminUnlockedProcedure.query(() => {
+    return readBuildInfo();
   }),
 
   notifyOwner: adminUnlockedProcedure
@@ -76,7 +67,7 @@ export const systemRouter = router({
       z.object({
         title: z.string().min(1, "title is required"),
         content: z.string().min(1, "content is required"),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const delivered = await notifyOwner(input);

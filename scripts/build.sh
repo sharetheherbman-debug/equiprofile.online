@@ -30,7 +30,7 @@ echo ""
 
 # Update service worker version
 echo "📝 Updating service worker version..."
-pnpm exec node scripts/update-sw-version.js
+node scripts/update-sw-version.js
 echo ""
 
 # Build client with Vite
@@ -38,7 +38,7 @@ echo "🔨 Building client (Vite)..."
 echo "   Source: client/"
 echo "   Output: dist/public/"
 echo ""
-pnpm vite build
+npx vite build
 echo ""
 
 # Build server with esbuild
@@ -46,7 +46,7 @@ echo "🔨 Building server (esbuild)..."
 echo "   Source: server/_core/index.ts"
 echo "   Output: dist/index.js"
 echo ""
-pnpm esbuild server/_core/index.ts \
+npx esbuild server/_core/index.ts \
   --platform=node \
   --bundle \
   --format=esm \
@@ -97,7 +97,7 @@ echo ""
 echo "Next steps:"
 echo "  - Set NODE_ENV=production"
 echo "  - Configure .env file with production settings"
-echo "  - Run 'pnpm start' or 'node dist/index.js'"
+echo "  - Run 'npm start' or 'node dist/index.js'"
 echo ""
 echo "For deployment:"
 echo "  - Copy dist/, node_modules/, package.json to production server"

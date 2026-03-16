@@ -1,24 +1,70 @@
 import { useState } from "react";
-import { Plus, Calendar as CalendarIcon, Clock, MapPin, DollarSign, User, Check, X, Edit, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Calendar as CalendarIcon,
+  Clock,
+  MapPin,
+  DollarSign,
+  User,
+  Check,
+  X,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "../components/ui/dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { toast } from "sonner";
 import { trpc } from "../lib/trpc";
 import { format } from "date-fns";
 import DashboardLayout from "../components/DashboardLayout";
 
-const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const DAYS_OF_WEEK = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 function LessonSchedulingContent() {
-  const [activeTab, setActiveTab] = useState<'bookings' | 'availability'>('bookings');
-  
+  const [activeTab, setActiveTab] = useState<"bookings" | "availability">(
+    "bookings",
+  );
+
   // Bookings state
   const [isCreateBookingOpen, setIsCreateBookingOpen] = useState(false);
   const [bookingForm, setBookingForm] = useState({
@@ -33,7 +79,8 @@ function LessonSchedulingContent() {
   });
 
   // Availability state
-  const [isCreateAvailabilityOpen, setIsCreateAvailabilityOpen] = useState(false);
+  const [isCreateAvailabilityOpen, setIsCreateAvailabilityOpen] =
+    useState(false);
   const [availabilityForm, setAvailabilityForm] = useState({
     dayOfWeek: "",
     startTime: "",
@@ -41,9 +88,12 @@ function LessonSchedulingContent() {
   });
 
   // Queries
-  const { data: bookings = [], refetch: refetchBookings } = trpc.lessonBookings.list.useQuery({ asTrainer: false });
-  const { data: myTrainingBookings = [], refetch: refetchMyTraining } = trpc.lessonBookings.list.useQuery({ asTrainer: true });
-  const { data: availability = [], refetch: refetchAvailability } = trpc.trainerAvailability.list.useQuery();
+  const { data: bookings = [], refetch: refetchBookings } =
+    trpc.lessonBookings.list.useQuery({ asTrainer: false });
+  const { data: myTrainingBookings = [], refetch: refetchMyTraining } =
+    trpc.lessonBookings.list.useQuery({ asTrainer: true });
+  const { data: availability = [], refetch: refetchAvailability } =
+    trpc.trainerAvailability.list.useQuery();
   const { data: horses = [] } = trpc.horses.list.useQuery();
   const { data: currentUser } = trpc.user.getProfile.useQuery();
   // For trainer list, we'll use a placeholder or fetch from a trainers endpoint when available
@@ -52,78 +102,92 @@ function LessonSchedulingContent() {
   // Mutations
   const createBooking = trpc.lessonBookings.create.useMutation({
     onSuccess: () => {
-      toast({ title: "Lesson booked successfully" });
+      toast.success("Lesson booked successfully");
       setIsCreateBookingOpen(false);
       resetBookingForm();
       refetchBookings();
     },
     onError: (error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Error", {
+        description: error.message,
+      });
     },
   });
 
   const updateBooking = trpc.lessonBookings.update.useMutation({
     onSuccess: () => {
-      toast({ title: "Lesson updated successfully" });
+      toast.success("Lesson updated successfully");
       refetchBookings();
       refetchMyTraining();
     },
     onError: (error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Error", {
+        description: error.message,
+      });
     },
   });
 
   const deleteBooking = trpc.lessonBookings.delete.useMutation({
     onSuccess: () => {
-      toast({ title: "Lesson deleted successfully" });
+      toast.success("Lesson deleted successfully");
       refetchBookings();
       refetchMyTraining();
     },
     onError: (error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Error", {
+        description: error.message,
+      });
     },
   });
 
   const markCompleted = trpc.lessonBookings.markCompleted.useMutation({
     onSuccess: () => {
-      toast({ title: "Lesson marked as completed" });
+      toast.success("Lesson marked as completed");
       refetchMyTraining();
     },
     onError: (error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Error", {
+        description: error.message,
+      });
     },
   });
 
   const markCancelled = trpc.lessonBookings.markCancelled.useMutation({
     onSuccess: () => {
-      toast({ title: "Lesson cancelled" });
+      toast.success("Lesson cancelled");
       refetchBookings();
       refetchMyTraining();
     },
     onError: (error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Error", {
+        description: error.message,
+      });
     },
   });
 
   const createAvailability = trpc.trainerAvailability.create.useMutation({
     onSuccess: () => {
-      toast({ title: "Availability added successfully" });
+      toast.success("Availability added successfully");
       setIsCreateAvailabilityOpen(false);
       resetAvailabilityForm();
       refetchAvailability();
     },
     onError: (error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Error", {
+        description: error.message,
+      });
     },
   });
 
   const deleteAvailability = trpc.trainerAvailability.delete.useMutation({
     onSuccess: () => {
-      toast({ title: "Availability removed" });
+      toast.success("Availability removed");
       refetchAvailability();
     },
     onError: (error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Error", {
+        description: error.message,
+      });
     },
   });
 
@@ -150,7 +214,9 @@ function LessonSchedulingContent() {
 
   const handleCreateBooking = () => {
     if (!bookingForm.trainerId || !bookingForm.lessonDate) {
-      toast({ title: "Error", description: "Please fill in required fields", variant: "destructive" });
+      toast.error("Error", {
+        description: "Please fill in required fields",
+      });
       return;
     }
 
@@ -167,8 +233,14 @@ function LessonSchedulingContent() {
   };
 
   const handleCreateAvailability = () => {
-    if (!availabilityForm.dayOfWeek || !availabilityForm.startTime || !availabilityForm.endTime) {
-      toast({ title: "Error", description: "Please fill in all fields", variant: "destructive" });
+    if (
+      !availabilityForm.dayOfWeek ||
+      !availabilityForm.startTime ||
+      !availabilityForm.endTime
+    ) {
+      toast.error("Error", {
+        description: "Please fill in all fields",
+      });
       return;
     }
 
@@ -180,7 +252,10 @@ function LessonSchedulingContent() {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
       scheduled: "default",
       completed: "secondary",
       cancelled: "destructive",
@@ -191,7 +266,7 @@ function LessonSchedulingContent() {
 
   const getHorseName = (horseId: number | null) => {
     if (!horseId) return "N/A";
-    const horse = horses.find(h => h.id === horseId);
+    const horse = horses.find((h) => h.id === horseId);
     return horse?.name || `Horse #${horseId}`;
   };
 
@@ -200,11 +275,17 @@ function LessonSchedulingContent() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Lesson Scheduling</h1>
-          <p className="text-muted-foreground">Manage your riding lessons and trainer availability</p>
+          <p className="text-muted-foreground">
+            Manage your riding lessons and trainer availability
+          </p>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v as any)}
+        className="space-y-4"
+      >
         <TabsList>
           <TabsTrigger value="bookings">My Lessons</TabsTrigger>
           <TabsTrigger value="availability">My Availability</TabsTrigger>
@@ -213,7 +294,10 @@ function LessonSchedulingContent() {
         <TabsContent value="bookings" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold">Lesson Bookings</h2>
-            <Dialog open={isCreateBookingOpen} onOpenChange={setIsCreateBookingOpen}>
+            <Dialog
+              open={isCreateBookingOpen}
+              onOpenChange={setIsCreateBookingOpen}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
@@ -223,7 +307,9 @@ function LessonSchedulingContent() {
               <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Book a Lesson</DialogTitle>
-                  <DialogDescription>Schedule a new riding lesson</DialogDescription>
+                  <DialogDescription>
+                    Schedule a new riding lesson
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
@@ -232,19 +318,32 @@ function LessonSchedulingContent() {
                       id="trainer"
                       type="number"
                       value={bookingForm.trainerId}
-                      onChange={(e) => setBookingForm({ ...bookingForm, trainerId: e.target.value })}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          trainerId: e.target.value,
+                        })
+                      }
                       placeholder="Enter trainer ID"
                     />
                   </div>
                   <div>
                     <Label htmlFor="horse">Horse (Optional)</Label>
-                    <Select value={bookingForm.horseId} onValueChange={(value) => setBookingForm({ ...bookingForm, horseId: value })}>
+                    <Select
+                      value={bookingForm.horseId}
+                      onValueChange={(value) =>
+                        setBookingForm({ ...bookingForm, horseId: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a horse" />
                       </SelectTrigger>
                       <SelectContent>
                         {horses.map((horse) => (
-                          <SelectItem key={horse.id} value={horse.id.toString()}>
+                          <SelectItem
+                            key={horse.id}
+                            value={horse.id.toString()}
+                          >
                             {horse.name}
                           </SelectItem>
                         ))}
@@ -257,7 +356,12 @@ function LessonSchedulingContent() {
                       id="lessonDate"
                       type="datetime-local"
                       value={bookingForm.lessonDate}
-                      onChange={(e) => setBookingForm({ ...bookingForm, lessonDate: e.target.value })}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          lessonDate: e.target.value,
+                        })
+                      }
                     />
                   </div>
                   <div>
@@ -266,7 +370,12 @@ function LessonSchedulingContent() {
                       id="duration"
                       type="number"
                       value={bookingForm.duration}
-                      onChange={(e) => setBookingForm({ ...bookingForm, duration: e.target.value })}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          duration: e.target.value,
+                        })
+                      }
                       placeholder="60"
                     />
                   </div>
@@ -275,7 +384,12 @@ function LessonSchedulingContent() {
                     <Input
                       id="lessonType"
                       value={bookingForm.lessonType}
-                      onChange={(e) => setBookingForm({ ...bookingForm, lessonType: e.target.value })}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          lessonType: e.target.value,
+                        })
+                      }
                       placeholder="e.g., Dressage, Jumping"
                     />
                   </div>
@@ -284,7 +398,12 @@ function LessonSchedulingContent() {
                     <Input
                       id="location"
                       value={bookingForm.location}
-                      onChange={(e) => setBookingForm({ ...bookingForm, location: e.target.value })}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          location: e.target.value,
+                        })
+                      }
                       placeholder="Arena, outdoor ring, etc."
                     />
                   </div>
@@ -294,7 +413,9 @@ function LessonSchedulingContent() {
                       id="fee"
                       type="number"
                       value={bookingForm.fee}
-                      onChange={(e) => setBookingForm({ ...bookingForm, fee: e.target.value })}
+                      onChange={(e) =>
+                        setBookingForm({ ...bookingForm, fee: e.target.value })
+                      }
                       placeholder="5000"
                     />
                   </div>
@@ -303,13 +424,23 @@ function LessonSchedulingContent() {
                     <Textarea
                       id="notes"
                       value={bookingForm.notes}
-                      onChange={(e) => setBookingForm({ ...bookingForm, notes: e.target.value })}
+                      onChange={(e) =>
+                        setBookingForm({
+                          ...bookingForm,
+                          notes: e.target.value,
+                        })
+                      }
                       placeholder="Any additional information"
                     />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsCreateBookingOpen(false)}>Cancel</Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCreateBookingOpen(false)}
+                  >
+                    Cancel
+                  </Button>
                   <Button onClick={handleCreateBooking}>Book Lesson</Button>
                 </DialogFooter>
               </DialogContent>
@@ -320,8 +451,13 @@ function LessonSchedulingContent() {
             <Card>
               <CardContent className="pt-6 text-center">
                 <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">No lessons scheduled yet</p>
-                <Button className="mt-4" onClick={() => setIsCreateBookingOpen(true)}>
+                <p className="text-muted-foreground">
+                  No lessons scheduled yet
+                </p>
+                <Button
+                  className="mt-4"
+                  onClick={() => setIsCreateBookingOpen(true)}
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   Book Your First Lesson
                 </Button>
@@ -338,8 +474,12 @@ function LessonSchedulingContent() {
                         <CardHeader>
                           <div className="flex justify-between items-start">
                             <div>
-                              <CardTitle className="text-lg">Client #{booking.clientId}</CardTitle>
-                              <CardDescription>{getHorseName(booking.horseId)}</CardDescription>
+                              <CardTitle className="text-lg">
+                                Client #{booking.clientId}
+                              </CardTitle>
+                              <CardDescription>
+                                {getHorseName(booking.horseId)}
+                              </CardDescription>
                             </div>
                             {getStatusBadge(booking.status)}
                           </div>
@@ -347,7 +487,9 @@ function LessonSchedulingContent() {
                         <CardContent className="space-y-2">
                           <div className="flex items-center text-sm">
                             <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                            <span>{format(new Date(booking.lessonDate), "PPp")}</span>
+                            <span>
+                              {format(new Date(booking.lessonDate), "PPp")}
+                            </span>
                           </div>
                           <div className="flex items-center text-sm">
                             <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -368,16 +510,30 @@ function LessonSchedulingContent() {
                           {booking.fee && (
                             <div className="flex items-center text-sm">
                               <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />
-                              <span>${(booking.fee / 100).toFixed(2)} {booking.paid ? "(Paid)" : "(Unpaid)"}</span>
+                              <span>
+                                ${(booking.fee / 100).toFixed(2)}{" "}
+                                {booking.paid ? "(Paid)" : "(Unpaid)"}
+                              </span>
                             </div>
                           )}
-                          {booking.status === 'scheduled' && (
+                          {booking.status === "scheduled" && (
                             <div className="flex gap-2 mt-4">
-                              <Button size="sm" onClick={() => markCompleted.mutate({ id: booking.id })}>
+                              <Button
+                                size="sm"
+                                onClick={() =>
+                                  markCompleted.mutate({ id: booking.id })
+                                }
+                              >
                                 <Check className="mr-1 h-3 w-3" />
                                 Complete
                               </Button>
-                              <Button size="sm" variant="outline" onClick={() => markCancelled.mutate({ id: booking.id })}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  markCancelled.mutate({ id: booking.id })
+                                }
+                              >
                                 <X className="mr-1 h-3 w-3" />
                                 Cancel
                               </Button>
@@ -399,8 +555,12 @@ function LessonSchedulingContent() {
                         <CardHeader>
                           <div className="flex justify-between items-start">
                             <div>
-                              <CardTitle className="text-lg">Trainer #{booking.trainerId}</CardTitle>
-                              <CardDescription>{getHorseName(booking.horseId)}</CardDescription>
+                              <CardTitle className="text-lg">
+                                Trainer #{booking.trainerId}
+                              </CardTitle>
+                              <CardDescription>
+                                {getHorseName(booking.horseId)}
+                              </CardDescription>
                             </div>
                             {getStatusBadge(booking.status)}
                           </div>
@@ -408,7 +568,9 @@ function LessonSchedulingContent() {
                         <CardContent className="space-y-2">
                           <div className="flex items-center text-sm">
                             <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                            <span>{format(new Date(booking.lessonDate), "PPp")}</span>
+                            <span>
+                              {format(new Date(booking.lessonDate), "PPp")}
+                            </span>
                           </div>
                           <div className="flex items-center text-sm">
                             <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -429,19 +591,36 @@ function LessonSchedulingContent() {
                           {booking.fee && (
                             <div className="flex items-center text-sm">
                               <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />
-                              <span>${(booking.fee / 100).toFixed(2)} {booking.paid ? "(Paid)" : "(Unpaid)"}</span>
+                              <span>
+                                ${(booking.fee / 100).toFixed(2)}{" "}
+                                {booking.paid ? "(Paid)" : "(Unpaid)"}
+                              </span>
                             </div>
                           )}
                           {booking.notes && (
-                            <p className="text-sm text-muted-foreground mt-2">{booking.notes}</p>
+                            <p className="text-sm text-muted-foreground mt-2">
+                              {booking.notes}
+                            </p>
                           )}
-                          {booking.status === 'scheduled' && (
+                          {booking.status === "scheduled" && (
                             <div className="flex gap-2 mt-4">
-                              <Button size="sm" variant="outline" onClick={() => markCancelled.mutate({ id: booking.id })}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  markCancelled.mutate({ id: booking.id })
+                                }
+                              >
                                 <X className="mr-1 h-3 w-3" />
                                 Cancel
                               </Button>
-                              <Button size="sm" variant="destructive" onClick={() => deleteBooking.mutate({ id: booking.id })}>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() =>
+                                  deleteBooking.mutate({ id: booking.id })
+                                }
+                              >
                                 <Trash2 className="mr-1 h-3 w-3" />
                                 Delete
                               </Button>
@@ -460,7 +639,10 @@ function LessonSchedulingContent() {
         <TabsContent value="availability" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold">My Training Availability</h2>
-            <Dialog open={isCreateAvailabilityOpen} onOpenChange={setIsCreateAvailabilityOpen}>
+            <Dialog
+              open={isCreateAvailabilityOpen}
+              onOpenChange={setIsCreateAvailabilityOpen}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
@@ -470,12 +652,22 @@ function LessonSchedulingContent() {
               <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Add Availability</DialogTitle>
-                  <DialogDescription>Set your training availability</DialogDescription>
+                  <DialogDescription>
+                    Set your training availability
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="dayOfWeek">Day of Week *</Label>
-                    <Select value={availabilityForm.dayOfWeek} onValueChange={(value) => setAvailabilityForm({ ...availabilityForm, dayOfWeek: value })}>
+                    <Select
+                      value={availabilityForm.dayOfWeek}
+                      onValueChange={(value) =>
+                        setAvailabilityForm({
+                          ...availabilityForm,
+                          dayOfWeek: value,
+                        })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select day" />
                       </SelectTrigger>
@@ -494,7 +686,12 @@ function LessonSchedulingContent() {
                       id="startTime"
                       type="time"
                       value={availabilityForm.startTime}
-                      onChange={(e) => setAvailabilityForm({ ...availabilityForm, startTime: e.target.value })}
+                      onChange={(e) =>
+                        setAvailabilityForm({
+                          ...availabilityForm,
+                          startTime: e.target.value,
+                        })
+                      }
                     />
                   </div>
                   <div>
@@ -503,13 +700,25 @@ function LessonSchedulingContent() {
                       id="endTime"
                       type="time"
                       value={availabilityForm.endTime}
-                      onChange={(e) => setAvailabilityForm({ ...availabilityForm, endTime: e.target.value })}
+                      onChange={(e) =>
+                        setAvailabilityForm({
+                          ...availabilityForm,
+                          endTime: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsCreateAvailabilityOpen(false)}>Cancel</Button>
-                  <Button onClick={handleCreateAvailability}>Add Availability</Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCreateAvailabilityOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreateAvailability}>
+                    Add Availability
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -520,8 +729,13 @@ function LessonSchedulingContent() {
               <CardContent className="pt-6 text-center">
                 <Clock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">No availability set yet</p>
-                <p className="text-sm text-muted-foreground mt-2">Set your training schedule to allow clients to book lessons</p>
-                <Button className="mt-4" onClick={() => setIsCreateAvailabilityOpen(true)}>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Set your training schedule to allow clients to book lessons
+                </p>
+                <Button
+                  className="mt-4"
+                  onClick={() => setIsCreateAvailabilityOpen(true)}
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   Set Your Availability
                 </Button>
@@ -532,16 +746,20 @@ function LessonSchedulingContent() {
               {availability.map((slot) => (
                 <Card key={slot.id}>
                   <CardHeader>
-                    <CardTitle className="text-lg">{DAYS_OF_WEEK[slot.dayOfWeek]}</CardTitle>
+                    <CardTitle className="text-lg">
+                      {DAYS_OF_WEEK[slot.dayOfWeek]}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex items-center text-sm">
                       <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
-                      <span>{slot.startTime} - {slot.endTime}</span>
+                      <span>
+                        {slot.startTime} - {slot.endTime}
+                      </span>
                     </div>
-                    <Button 
-                      size="sm" 
-                      variant="destructive" 
+                    <Button
+                      size="sm"
+                      variant="destructive"
                       className="w-full mt-2"
                       onClick={() => deleteAvailability.mutate({ id: slot.id })}
                     >

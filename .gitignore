@@ -1,6 +1,11 @@
 # Dependencies
 node_modules/
 .pnpm-store/
+.npm/
+
+# Lock files for other package managers (standardized on npm / package-lock.json)
+pnpm-lock.yaml
+yarn.lock
 
 # Build outputs (generated during deployment - see README)
 # dist/ contains:
@@ -93,3 +98,5 @@ uploads/
 # Cache
 .cache/
 .parcel-cache/
+# Root-level video assets (served from client/public/videos/ and client/public/assets/marketing/)
+/landingfinal.mp4

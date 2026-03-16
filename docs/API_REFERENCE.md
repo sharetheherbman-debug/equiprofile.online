@@ -39,6 +39,7 @@ API requests are rate-limited to prevent abuse:
 - Exceeded rate limits return `429 Too Many Requests`
 
 Response headers indicate rate limit status:
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -84,6 +85,7 @@ Returns all horses for the authenticated user.
 **Endpoint**: `GET /api/v1/horses`
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -115,6 +117,7 @@ Returns all horses for the authenticated user.
 ```
 
 **Example**:
+
 ```bash
 curl -H "Authorization: Bearer your_api_key" \
   https://your-domain.com/api/v1/horses
@@ -129,9 +132,11 @@ Returns detailed information about a specific horse.
 **Endpoint**: `GET /api/v1/horses/:id`
 
 **Parameters**:
+
 - `id` (path parameter): Horse ID
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -139,19 +144,21 @@ Returns detailed information about a specific horse.
     "id": 1,
     "userId": 1,
     "name": "Thunder",
-    "breed": "Thoroughbred",
+    "breed": "Thoroughbred"
     // ... all horse fields
   }
 }
 ```
 
 **Example**:
+
 ```bash
 curl -H "Authorization: Bearer your_api_key" \
   https://your-domain.com/api/v1/horses/1
 ```
 
 **Errors**:
+
 - `400 Bad Request`: Invalid horse ID format
 - `404 Not Found`: Horse doesn't exist
 - `403 Forbidden`: You don't own this horse
@@ -165,9 +172,11 @@ Returns all health records for a specific horse.
 **Endpoint**: `GET /api/v1/health-records/:horseId`
 
 **Parameters**:
+
 - `horseId` (path parameter): Horse ID
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -196,12 +205,14 @@ Returns all health records for a specific horse.
 ```
 
 **Example**:
+
 ```bash
 curl -H "Authorization: Bearer your_api_key" \
   https://your-domain.com/api/v1/health-records/1
 ```
 
 **Record Types**:
+
 - `vaccination`
 - `deworming`
 - `dental`
@@ -220,9 +231,11 @@ Returns all training sessions for a specific horse.
 **Endpoint**: `GET /api/v1/training-sessions/:horseId`
 
 **Parameters**:
+
 - `horseId` (path parameter): Horse ID
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -255,12 +268,14 @@ Returns all training sessions for a specific horse.
 ```
 
 **Example**:
+
 ```bash
 curl -H "Authorization: Bearer your_api_key" \
   https://your-domain.com/api/v1/training-sessions/1
 ```
 
 **Session Types**:
+
 - `flatwork`
 - `jumping`
 - `hacking`
@@ -271,6 +286,7 @@ curl -H "Authorization: Bearer your_api_key" \
 - `other`
 
 **Performance Levels**:
+
 - `excellent`
 - `good`
 - `average`
@@ -285,9 +301,11 @@ Returns all competition entries for a specific horse.
 **Endpoint**: `GET /api/v1/competitions/:horseId`
 
 **Parameters**:
+
 - `horseId` (path parameter): Horse ID
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -316,6 +334,7 @@ Returns all competition entries for a specific horse.
 ```
 
 **Example**:
+
 ```bash
 curl -H "Authorization: Bearer your_api_key" \
   https://your-domain.com/api/v1/competitions/1
@@ -328,24 +347,24 @@ curl -H "Authorization: Bearer your_api_key" \
 Always check the HTTP status code and handle errors appropriately:
 
 ```javascript
-fetch('https://your-domain.com/api/v1/horses', {
+fetch("https://your-domain.com/api/v1/horses", {
   headers: {
-    'Authorization': 'Bearer your_api_key'
-  }
+    Authorization: "Bearer your_api_key",
+  },
 })
-  .then(response => {
+  .then((response) => {
     if (!response.ok) {
-      return response.json().then(err => {
-        throw new Error(err.error || 'API request failed');
+      return response.json().then((err) => {
+        throw new Error(err.error || "API request failed");
       });
     }
     return response.json();
   })
-  .then(data => {
-    console.log('Horses:', data.data);
+  .then((data) => {
+    console.log("Horses:", data.data);
   })
-  .catch(error => {
-    console.error('Error:', error.message);
+  .catch((error) => {
+    console.error("Error:", error.message);
   });
 ```
 
@@ -360,6 +379,7 @@ fetch('https://your-domain.com/api/v1/horses', {
 ## Support
 
 For API support or to request new endpoints:
+
 - **Email**: support@equiprofile.online
 - **Documentation**: https://docs.equiprofile.online/api
 - **Status**: https://status.equiprofile.online
@@ -367,6 +387,7 @@ For API support or to request new endpoints:
 ## Changelog
 
 ### v1.0.0 (2024-01-01)
+
 - Initial REST API release
 - Read-only endpoints for horses, health records, training sessions, and competitions
 - API key authentication

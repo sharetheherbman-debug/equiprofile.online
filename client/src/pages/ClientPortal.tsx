@@ -1,9 +1,28 @@
 import { useEffect, useState } from "react";
 import { useRoute } from "wouter";
-import { Eye, Heart, Activity, FileText, Calendar, TrendingUp, Lock } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Eye,
+  Heart,
+  Activity,
+  FileText,
+  Calendar,
+  TrendingUp,
+  Lock,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { trpc } from "../lib/trpc";
 import { format } from "date-fns";
 
@@ -16,8 +35,10 @@ export default function ClientPortal() {
   const { data: horses = [] } = trpc.horses.list.useQuery();
   const { data: healthRecords = [] } = trpc.healthRecords.listAll.useQuery();
   const { data: trainingSessions = [] } = trpc.training.listAll.useQuery();
-  const { data: competitions = [] } = trpc.competitions.list.useQuery({ horseId: undefined });
-  const { data: documents = [] } = trpc.documents.list.useQuery({ folderId: undefined });
+  const { data: competitions = [] } = trpc.competitions.list.useQuery({
+    horseId: undefined,
+  });
+  const { data: documents = [] } = trpc.documents.list.useQuery();
 
   if (!clientId) {
     return (
@@ -40,7 +61,9 @@ export default function ClientPortal() {
           <Eye className="h-8 w-8 text-primary" />
           <div>
             <h1 className="text-3xl font-bold">Client Portal</h1>
-            <p className="text-muted-foreground">Read-only view of your horses' information</p>
+            <p className="text-muted-foreground">
+              Read-only view of your horses' information
+            </p>
           </div>
         </div>
       </div>
@@ -48,7 +71,9 @@ export default function ClientPortal() {
       {horses.length === 0 ? (
         <Card>
           <CardContent className="pt-6 text-center">
-            <p className="text-muted-foreground">No horses available in this portal</p>
+            <p className="text-muted-foreground">
+              No horses available in this portal
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -57,7 +82,9 @@ export default function ClientPortal() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Total Horses</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Horses
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{horses.length}</div>
@@ -65,7 +92,9 @@ export default function ClientPortal() {
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Health Records</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Health Records
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{healthRecords.length}</div>
@@ -73,15 +102,21 @@ export default function ClientPortal() {
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Training Sessions</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Training Sessions
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{trainingSessions.length}</div>
+                <div className="text-2xl font-bold">
+                  {trainingSessions.length}
+                </div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Competitions</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Competitions
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{competitions.length}</div>
@@ -94,16 +129,24 @@ export default function ClientPortal() {
             <h2 className="text-2xl font-semibold">Your Horses</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {horses.map((horse) => {
-                const horseHealth = healthRecords.filter(h => h.horseId === horse.id);
-                const horseTraining = trainingSessions.filter(t => t.horseId === horse.id);
-                const horseCompetitions = competitions.filter((c: any) => c.horseId === horse.id);
+                const horseHealth = healthRecords.filter(
+                  (h) => h.horseId === horse.id,
+                );
+                const horseTraining = trainingSessions.filter(
+                  (t) => t.horseId === horse.id,
+                );
+                const horseCompetitions = competitions.filter(
+                  (c: any) => c.horseId === horse.id,
+                );
 
                 return (
                   <Card key={horse.id} className="overflow-hidden">
                     <CardHeader className="pb-3">
                       <div className="flex justify-between items-start">
                         <div>
-                          <CardTitle className="text-xl">{horse.name}</CardTitle>
+                          <CardTitle className="text-xl">
+                            {horse.name}
+                          </CardTitle>
                           <CardDescription>
                             {horse.breed} • {horse.age} years
                           </CardDescription>
@@ -119,19 +162,29 @@ export default function ClientPortal() {
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
                           <span className="text-muted-foreground">Gender:</span>
-                          <div className="font-medium">{horse.gender || 'N/A'}</div>
+                          <div className="font-medium">
+                            {horse.gender || "N/A"}
+                          </div>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Color:</span>
-                          <div className="font-medium">{horse.color || 'N/A'}</div>
+                          <div className="font-medium">
+                            {horse.color || "N/A"}
+                          </div>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Discipline:</span>
-                          <div className="font-medium">{horse.discipline || 'N/A'}</div>
+                          <span className="text-muted-foreground">
+                            Discipline:
+                          </span>
+                          <div className="font-medium">
+                            {horse.discipline || "N/A"}
+                          </div>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Level:</span>
-                          <div className="font-medium">{horse.level || 'N/A'}</div>
+                          <div className="font-medium">
+                            {horse.level || "N/A"}
+                          </div>
                         </div>
                       </div>
 
@@ -153,51 +206,78 @@ export default function ClientPortal() {
 
                         <TabsContent value="health" className="mt-3">
                           <div className="space-y-2">
-                            <div className="text-sm font-medium">{horseHealth.length} Records</div>
+                            <div className="text-sm font-medium">
+                              {horseHealth.length} Records
+                            </div>
                             {horseHealth.slice(0, 3).map((record) => (
-                              <div key={record.id} className="text-xs p-2 bg-muted rounded">
-                                <div className="font-medium">{record.title}</div>
+                              <div
+                                key={record.id}
+                                className="text-xs p-2 bg-muted rounded"
+                              >
+                                <div className="font-medium">
+                                  {record.title}
+                                </div>
                                 <div className="text-muted-foreground">
                                   {format(new Date(record.recordDate), "PP")}
                                 </div>
                               </div>
                             ))}
                             {horseHealth.length === 0 && (
-                              <p className="text-xs text-muted-foreground">No health records</p>
+                              <p className="text-xs text-muted-foreground">
+                                No health records
+                              </p>
                             )}
                           </div>
                         </TabsContent>
 
                         <TabsContent value="training" className="mt-3">
                           <div className="space-y-2">
-                            <div className="text-sm font-medium">{horseTraining.length} Sessions</div>
+                            <div className="text-sm font-medium">
+                              {horseTraining.length} Sessions
+                            </div>
                             {horseTraining.slice(0, 3).map((session) => (
-                              <div key={session.id} className="text-xs p-2 bg-muted rounded">
-                                <div className="font-medium">{session.sessionType}</div>
+                              <div
+                                key={session.id}
+                                className="text-xs p-2 bg-muted rounded"
+                              >
+                                <div className="font-medium">
+                                  {session.sessionType}
+                                </div>
                                 <div className="text-muted-foreground">
                                   {format(new Date(session.sessionDate), "PP")}
                                 </div>
                               </div>
                             ))}
                             {horseTraining.length === 0 && (
-                              <p className="text-xs text-muted-foreground">No training sessions</p>
+                              <p className="text-xs text-muted-foreground">
+                                No training sessions
+                              </p>
                             )}
                           </div>
                         </TabsContent>
 
                         <TabsContent value="competitions" className="mt-3">
                           <div className="space-y-2">
-                            <div className="text-sm font-medium">{horseCompetitions.length} Events</div>
+                            <div className="text-sm font-medium">
+                              {horseCompetitions.length} Events
+                            </div>
                             {horseCompetitions.slice(0, 3).map((comp) => (
-                              <div key={comp.id} className="text-xs p-2 bg-muted rounded">
-                                <div className="font-medium">{comp.eventName}</div>
+                              <div
+                                key={comp.id}
+                                className="text-xs p-2 bg-muted rounded"
+                              >
+                                <div className="font-medium">
+                                  {comp.competitionName}
+                                </div>
                                 <div className="text-muted-foreground">
                                   {comp.placement && `${comp.placement} place`}
                                 </div>
                               </div>
                             ))}
                             {horseCompetitions.length === 0 && (
-                              <p className="text-xs text-muted-foreground">No competitions</p>
+                              <p className="text-xs text-muted-foreground">
+                                No competitions
+                              </p>
                             )}
                           </div>
                         </TabsContent>
@@ -213,19 +293,25 @@ export default function ClientPortal() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Latest updates across all your horses</CardDescription>
+              <CardDescription>
+                Latest updates across all your horses
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {healthRecords.slice(0, 5).map((record) => {
-                  const horse = horses.find(h => h.id === record.horseId);
+                  const horse = horses.find((h) => h.id === record.horseId);
                   return (
-                    <div key={record.id} className="flex items-start gap-3 pb-3 border-b last:border-0">
+                    <div
+                      key={record.id}
+                      className="flex items-start gap-3 pb-3 border-b last:border-0"
+                    >
                       <Heart className="h-5 w-5 text-muted-foreground mt-0.5" />
                       <div className="flex-1">
                         <div className="font-medium">{record.title}</div>
                         <div className="text-sm text-muted-foreground">
-                          {horse?.name} • {format(new Date(record.recordDate), "PPP")}
+                          {horse?.name} •{" "}
+                          {format(new Date(record.recordDate), "PPP")}
                         </div>
                       </div>
                       <Badge variant="outline">Health</Badge>
@@ -233,23 +319,30 @@ export default function ClientPortal() {
                   );
                 })}
                 {trainingSessions.slice(0, 5).map((session) => {
-                  const horse = horses.find(h => h.id === session.horseId);
+                  const horse = horses.find((h) => h.id === session.horseId);
                   return (
-                    <div key={session.id} className="flex items-start gap-3 pb-3 border-b last:border-0">
+                    <div
+                      key={session.id}
+                      className="flex items-start gap-3 pb-3 border-b last:border-0"
+                    >
                       <Activity className="h-5 w-5 text-muted-foreground mt-0.5" />
                       <div className="flex-1">
                         <div className="font-medium">{session.sessionType}</div>
                         <div className="text-sm text-muted-foreground">
-                          {horse?.name} • {format(new Date(session.sessionDate), "PPP")}
+                          {horse?.name} •{" "}
+                          {format(new Date(session.sessionDate), "PPP")}
                         </div>
                       </div>
                       <Badge variant="outline">Training</Badge>
                     </div>
                   );
                 })}
-                {healthRecords.length === 0 && trainingSessions.length === 0 && (
-                  <p className="text-muted-foreground text-center py-4">No recent activity</p>
-                )}
+                {healthRecords.length === 0 &&
+                  trainingSessions.length === 0 && (
+                    <p className="text-muted-foreground text-center py-4">
+                      No recent activity
+                    </p>
+                  )}
               </div>
             </CardContent>
           </Card>
@@ -264,10 +357,15 @@ export default function ClientPortal() {
               <CardContent>
                 <div className="grid gap-3 md:grid-cols-2">
                   {documents.slice(0, 6).map((doc) => (
-                    <div key={doc.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div
+                      key={doc.id}
+                      className="flex items-center gap-3 p-3 border rounded-lg"
+                    >
                       <FileText className="h-5 w-5 text-muted-foreground" />
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{doc.fileName}</div>
+                        <div className="font-medium truncate">
+                          {doc.fileName}
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           {format(new Date(doc.createdAt), "PP")}
                         </div>
@@ -288,8 +386,9 @@ export default function ClientPortal() {
                 <div>
                   <h3 className="font-semibold">Read-Only Access</h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    This is a view-only portal. You can see your horses' information but cannot make changes. 
-                    Contact your trainer or stable manager if you need updates.
+                    This is a view-only portal. You can see your horses'
+                    information but cannot make changes. Contact your trainer or
+                    stable manager if you need updates.
                   </p>
                 </div>
               </div>

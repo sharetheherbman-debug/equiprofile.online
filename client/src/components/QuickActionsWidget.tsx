@@ -1,6 +1,12 @@
 import { Plus, Calendar, FileText, Activity } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Button } from "./ui/button";
 import { useLocation } from "wouter";
 

@@ -15,38 +15,46 @@ export function useKeyboardNavigation() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Add keyboard shortcuts
-      if (e.altKey && e.key === 'h') {
+      if (e.altKey && e.key === "h") {
         e.preventDefault();
-        window.location.href = '/';
+        window.location.href = "/";
       }
-      if (e.altKey && e.key === 'd') {
+      if (e.altKey && e.key === "d") {
         e.preventDefault();
-        window.location.href = '/dashboard';
+        window.location.href = "/dashboard";
       }
-      if (e.altKey && e.key === 'm') {
+      if (e.altKey && e.key === "m") {
         e.preventDefault();
-        window.location.href = '/horses';
+        window.location.href = "/horses";
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 }
 
-export function FocusTrap({ children, isActive }: { children: React.ReactNode; isActive: boolean }) {
+export function FocusTrap({
+  children,
+  isActive,
+}: {
+  children: React.ReactNode;
+  isActive: boolean;
+}) {
   useEffect(() => {
     if (!isActive) return;
 
     const focusableElements = document.querySelectorAll(
-      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
     );
 
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -61,24 +69,27 @@ export function FocusTrap({ children, isActive }: { children: React.ReactNode; i
       }
     };
 
-    document.addEventListener('keydown', handleTabKey);
-    return () => document.removeEventListener('keydown', handleTabKey);
+    document.addEventListener("keydown", handleTabKey);
+    return () => document.removeEventListener("keydown", handleTabKey);
   }, [isActive]);
 
   return <>{children}</>;
 }
 
 // Announce changes to screen readers
-export function announceToScreenReader(message: string, priority: 'polite' | 'assertive' = 'polite') {
-  const announcement = document.createElement('div');
-  announcement.setAttribute('role', 'status');
-  announcement.setAttribute('aria-live', priority);
-  announcement.setAttribute('aria-atomic', 'true');
-  announcement.className = 'sr-only';
+export function announceToScreenReader(
+  message: string,
+  priority: "polite" | "assertive" = "polite",
+) {
+  const announcement = document.createElement("div");
+  announcement.setAttribute("role", "status");
+  announcement.setAttribute("aria-live", priority);
+  announcement.setAttribute("aria-atomic", "true");
+  announcement.className = "sr-only";
   announcement.textContent = message;
-  
+
   document.body.appendChild(announcement);
-  
+
   setTimeout(() => {
     document.body.removeChild(announcement);
   }, 1000);

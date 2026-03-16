@@ -1,16 +1,22 @@
 export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
+// Track if OAuth warning has been logged
+let oauthWarningLogged = false;
+
 // Generate login URL at runtime so redirect URI reflects the current origin.
 // Returns empty string if OAuth is not configured (prevents crashes)
 export const getLoginUrl = () => {
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;
-  
+
   // Return empty string if OAuth is not configured
+  // Only log warning once in development mode
   if (!oauthPortalUrl || !appId) {
-    // Only warn in development mode
-    if (import.meta.env.DEV) {
-      console.warn("OAuth not configured: VITE_OAUTH_PORTAL_URL or VITE_APP_ID missing");
+    if (!oauthWarningLogged && import.meta.env.DEV) {
+      console.warn(
+        "OAuth not configured: VITE_OAUTH_PORTAL_URL or VITE_APP_ID missing",
+      );
+      oauthWarningLogged = true;
     }
     return "";
   }

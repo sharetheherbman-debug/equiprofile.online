@@ -15,6 +15,27 @@
       "when": 1765360048340,
       "tag": "0001_cold_shen",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1740931200000,
+      "tag": "0002_add_missing_user_columns",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1741046400000,
+      "tag": "0003_chat_contact_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1741132800000,
+      "tag": "0004_notes_table",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -12,78 +12,139 @@ const navLinks = [
   { label: "Contact", path: "/contact" },
 ];
 
+interface MarketingNavProps {
+  /**
+   * When true the nav always renders in its "light" state
+   * (white background + black text, no scroll-triggered change).
+   * Use on Login and Register pages where the form background is dark
+   * and we need permanently visible black text.
+   */
+  alwaysLight?: boolean;
+  /**
+   * When true the nav is always transparent with white text regardless of
+   * scroll position. Use on auth pages (Login/Register/ForgotPassword/Reset)
+   * so the dark-themed pages never show a white bar on scroll.
+   */
+  alwaysDark?: boolean;
+}
+
 /**
  * Marketing navigation component for public pages
- * 
+ *
  * Features:
  * - Responsive design with mobile hamburger menu
- * - Sticky header with background change on scroll
+ * - Sticky header: transparent + white text at top of page,
+ *   white background + black text once scrolled (or always when alwaysLight=true)
  * - Login/Register buttons
  * - Logo on the left
  */
-export function MarketingNav() {
+export function MarketingNav({
+  alwaysLight = false,
+  alwaysDark = false,
+}: MarketingNavProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
   const { isAuthenticated } = useAuth();
 
+  // showLight = true  → white bg + black/dark text  (scrolled or forced)
+  // showLight = false → transparent bg + white text  (top of page, default)
+  // alwaysDark overrides everything → always transparent/dark
+  const showLight = !alwaysDark && (alwaysLight || isScrolled);
+
   // Handle scroll for sticky header effect
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", () => {
-      setIsScrolled(window.scrollY > 10);
-    });
-  }
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-background/95 backdrop-blur-md shadow-sm border-b"
+      className={`fixed top-0 left-0 right-0 z-50 h-[72px] transition-all duration-300 ${
+        showLight
+          ? "bg-white/95 backdrop-blur-md shadow-md border-b border-gray-200"
           : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-12 md:h-16">
-          {/* Logo */}
-          <Link href="/">
-            <a className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="text-2xl font-bold font-serif">
-                <span className={isScrolled ? "text-foreground" : "text-white"}>EquiProfile</span>
-              </div>
-            </a>
+      <div className="container mx-auto px-4 h-[72px]">
+        <div className="flex items-center justify-between h-full">
+          {/* Logo — wouter v3 Link renders as <a>; no nested <a> needed */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <div className="text-2xl font-bold font-serif">
+              <span
+                className={
+                  showLight
+                    ? "bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent"
+                    : "text-white"
+                }
+              >
+                EquiProfile
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link key={link.path} href={link.path}>
-                <a
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    location === link.path
-                      ? "text-primary"
-                      : isScrolled
-                      ? "text-foreground/80"
+              <Link
+                key={link.path}
+                href={link.path}
+                className={`text-sm font-medium transition-colors ${
+                  showLight
+                    ? location === link.path
+                      ? "text-black font-semibold"
+                      : "text-gray-900 hover:text-black"
+                    : location === link.path
+                      ? "text-white font-semibold"
                       : "text-white/90 hover:text-white"
-                  }`}
-                >
-                  {link.label}
-                </a>
+                }`}
+              >
+                {link.label}
               </Link>
             ))}
           </div>
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {!isAuthenticated && (
+            {isAuthenticated ? (
+              <Link href="/dashboard">
+                <Button
+                  className={
+                    showLight
+                      ? ""
+                      : "bg-white/10 text-white border-white/20 hover:bg-white/20"
+                  }
+                >
+                  Go to Dashboard
+                </Button>
+              </Link>
+            ) : (
               <>
                 <Link href="/login">
-                  <Button variant={isScrolled ? "ghost" : "outline"} className={!isScrolled ? "text-white border-white/30 hover:bg-white/10" : ""}>
+                  <Button
+                    variant="ghost"
+                    className={
+                      showLight
+                        ? ""
+                        : "text-white hover:bg-white/10 hover:text-white"
+                    }
+                  >
                     Log In
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className={!isScrolled ? "bg-accent hover:bg-accent/90" : ""}>
-                    Start 7-Day Trial
+                  <Button
+                    className={
+                      showLight
+                        ? ""
+                        : "bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white border-0"
+                    }
+                  >
+                    Get Started
                   </Button>
                 </Link>
               </>
@@ -92,7 +153,9 @@ export function MarketingNav() {
 
           {/* Mobile Menu Button */}
           <button
-            className={`md:hidden p-2 mr-2 hover:bg-accent rounded-lg transition-colors ${!isScrolled ? "text-white" : ""}`}
+            className={`md:hidden p-2 hover:bg-accent rounded-lg transition-colors ${
+              showLight ? "text-black" : "text-white"
+            }`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle mobile menu"
           >
@@ -109,49 +172,63 @@ export function MarketingNav() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden border-t bg-background/95 backdrop-blur-md"
+            key="mobile-menu"
+            {...({
+              initial: { opacity: 0, height: 0 },
+              animate: { opacity: 1, height: "auto" },
+              exit: { opacity: 0, height: 0 },
+              transition: { duration: 0.2 },
+            } as any)}
+            className="md:hidden border-t bg-background/95 backdrop-blur-md overflow-hidden"
           >
             <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
               {navLinks.map((link) => (
-                <Link key={link.path} href={link.path}>
-                  <a
-                    className={`block py-2 text-base font-medium transition-colors hover:text-primary ${
-                      location === link.path
-                        ? "text-primary"
-                        : "text-foreground/80"
-                    }`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </a>
+                <Link
+                  key={link.path}
+                  href={link.path}
+                  className={`block py-2 text-base font-medium transition-colors ${
+                    location === link.path
+                      ? "text-foreground hover:text-foreground/90"
+                      : "text-foreground/90 hover:text-foreground"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
                 </Link>
               ))}
-              
-              {!isAuthenticated && (
-                <div className="pt-4 border-t flex flex-col gap-2">
-                  <Link href="/login">
-                    <Button
-                      variant="ghost"
-                      className="w-full"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Log In
-                    </Button>
-                  </Link>
-                  <Link href="/register">
+
+              <div className="pt-4 border-t flex flex-col gap-2">
+                {isAuthenticated ? (
+                  <Link href="/dashboard">
                     <Button
                       className="w-full"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Start 7-Day Trial
+                      Go to Dashboard
                     </Button>
                   </Link>
-                </div>
-              )}
+                ) : (
+                  <>
+                    <Link href="/login">
+                      <Button
+                        variant="ghost"
+                        className="w-full"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Log In
+                      </Button>
+                    </Link>
+                    <Link href="/register">
+                      <Button
+                        className="w-full"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

@@ -76,16 +76,6 @@ else
 fi
 echo ""
 
-# Step 4: Install pnpm
-info "Installing pnpm..."
-if ! command -v pnpm >/dev/null 2>&1; then
-  npm install -g pnpm@10.4.1
-  success "pnpm installed: $(pnpm --version)"
-else
-  success "pnpm already installed: $(pnpm --version)"
-fi
-echo ""
-
 # Step 5: Create application directory
 info "Creating application directory..."
 mkdir -p "$APP_DIR"
@@ -137,15 +127,15 @@ fi
 echo ""
 
 # Step 8: Install dependencies
-info "Installing application dependencies..."
+info "Installing application dependencies (npm ci)..."
 cd "$APP_DIR"
-pnpm install --frozen-lockfile
+npm ci
 success "Dependencies installed"
 echo ""
 
 # Step 9: Build application
 info "Building application..."
-pnpm run build
+npm run build
 success "Application built"
 echo ""
 
@@ -179,7 +169,7 @@ echo ""
 # Step 13: Install nginx configuration
 info "Installing nginx configuration..."
 if [ ! -f /etc/nginx/sites-available/equiprofile ]; then
-  cp "$APP_DIR/deployment/nginx-webdock.conf" /etc/nginx/sites-available/equiprofile
+  cp "$APP_DIR/deployment/nginx/equiprofile.conf" /etc/nginx/sites-available/equiprofile
   
   # Try to extract domain from BASE_URL environment variable
   DOMAIN=""
@@ -187,14 +177,14 @@ if [ ! -f /etc/nginx/sites-available/equiprofile ]; then
     DOMAIN=$(grep "^BASE_URL=" "$APP_DIR/.env" | cut -d'=' -f2 | sed 's|https\?://||' | sed 's|/.*||' | tr -d '"' | tr -d "'")
   fi
   
-  # If no BASE_URL set, default to localhost
+  # If no BASE_URL set, use placeholder
   if [ -z "$DOMAIN" ]; then
-    DOMAIN="localhost"
-    warn "BASE_URL not found in .env, using 'localhost' as domain"
-  fi
-  
-  if [ -n "$DOMAIN" ]; then
-    sed -i "s/DOMAIN_NAME/$DOMAIN/g" /etc/nginx/sites-available/equiprofile
+    DOMAIN="YOUR_DOMAIN_HERE"
+    warn "BASE_URL not found in .env, using placeholder in nginx config"
+    warn "Remember to edit /etc/nginx/sites-available/equiprofile and replace YOUR_DOMAIN_HERE"
+  else
+    # Replace placeholder with actual domain
+    sed -i "s/YOUR_DOMAIN_HERE/$DOMAIN/g" /etc/nginx/sites-available/equiprofile
     success "Domain name updated to: $DOMAIN"
   fi
   

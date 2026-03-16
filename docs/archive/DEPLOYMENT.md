@@ -3,6 +3,7 @@
 ## Overview
 
 This guide covers deploying EquiProfile as a production-ready SaaS application with:
+
 - **Email/Password Authentication** (with OAuth fallback)
 - **7-Day Trial with Hard Paywall Enforcement**
 - **Stripe Billing Integration** (monthly/yearly plans)
@@ -157,8 +158,8 @@ To send transactional emails:
 
 1. Create a Stripe account at https://stripe.com
 2. Create two products (Monthly and Yearly):
-   - Monthly: £10/month
-   - Yearly: £100/year
+   - Monthly: £7.99/month
+   - Yearly: £79.90/year
 3. Copy the Price IDs to `STRIPE_MONTHLY_PRICE_ID` and `STRIPE_YEARLY_PRICE_ID`
 4. Get your Secret Key from https://dashboard.stripe.com/apikeys
 5. Set up webhook endpoint:
@@ -173,6 +174,7 @@ pnpm run build
 ```
 
 This creates:
+
 - `dist/public/` - Frontend static files
 - `dist/index.js` - Backend server bundle
 
@@ -334,6 +336,7 @@ sudo certbot renew --dry-run
 ## Feature Overview
 
 ### Authentication
+
 - ✅ Email/password signup and login
 - ✅ Password reset via email
 - ✅ OAuth fallback (if configured)
@@ -341,13 +344,15 @@ sudo certbot renew --dry-run
 - ✅ Secure HTTP-only cookies
 
 ### Trial & Subscription
+
 - ✅ 7-day free trial for new users
 - ✅ Trial expiration enforcement
 - ✅ Trial countdown banner
 - ✅ Hard paywall (blocks access after trial)
-- ✅ Monthly (£10) and Yearly (£100) plans
+- ✅ Monthly (£7.99) and Yearly (£79.90) plans
 
 ### Billing (Stripe)
+
 - ✅ Stripe Checkout integration
 - ✅ Stripe Customer Portal
 - ✅ Webhook handling for subscription events
@@ -355,6 +360,7 @@ sudo certbot renew --dry-run
 - ✅ Plan management (upgrade/cancel)
 
 ### Transactional Emails (Gmail SMTP)
+
 - ✅ Welcome email on signup
 - ✅ Trial reminder emails (2 days, 1 day, expired)
 - ✅ Payment success email
@@ -362,6 +368,7 @@ sudo certbot renew --dry-run
 - ✅ Test email endpoint for admins
 
 ### UI/UX
+
 - ✅ Terms of Service page
 - ✅ Privacy Policy page
 - ✅ Billing page with subscription management
@@ -379,6 +386,7 @@ curl https://equiprofile.online/api/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "healthy",
@@ -537,8 +545,8 @@ To send trial reminder emails automatically, add a cron job:
 Create `/home/equiprofile/send-trial-reminders.js`:
 
 ```javascript
-const db = require('./dist/server/db');
-const email = require('./dist/server/_core/email');
+const db = require("./dist/server/db");
+const email = require("./dist/server/_core/email");
 
 async function sendTrialReminders() {
   const now = new Date();
@@ -548,19 +556,23 @@ async function sendTrialReminders() {
   const users = await db.getAllUsers();
 
   for (const user of users) {
-    if (user.subscriptionStatus !== 'trial' || !user.trialEndsAt) continue;
+    if (user.subscriptionStatus !== "trial" || !user.trialEndsAt) continue;
 
     const trialEnd = new Date(user.trialEndsAt);
     const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
 
     if (daysLeft === 2 || daysLeft === 1 || daysLeft === 0) {
       await email.sendTrialReminderEmail(user, daysLeft);
-      console.log(`Sent trial reminder to ${user.email} (${daysLeft} days left)`);
+      console.log(
+        `Sent trial reminder to ${user.email} (${daysLeft} days left)`,
+      );
     }
   }
 }
 
-sendTrialReminders().then(() => process.exit(0)).catch(console.error);
+sendTrialReminders()
+  .then(() => process.exit(0))
+  .catch(console.error);
 ```
 
 Add to crontab (runs daily at 10 AM):

@@ -1,12 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useLocation } from "wouter";
 import { useState, FormEvent, useEffect } from "react";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { PageTransition } from "@/components/PageTransition";
-import { MarketingNav } from "@/components/MarketingNav";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function ResetPassword() {
@@ -73,7 +80,7 @@ export default function ResetPassword() {
 
   return (
     <>
-      <MarketingNav />
+      <Navbar alwaysDark />
       <PageTransition>
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 px-4 pt-20">
           <div className="w-full max-w-md">
@@ -100,15 +107,15 @@ export default function ResetPassword() {
                       <CheckCircle className="w-16 h-16 text-green-500" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-2">Password reset successful!</h3>
+                      <h3 className="font-semibold mb-2">
+                        Password reset successful!
+                      </h3>
                       <p className="text-sm text-muted-foreground">
                         You can now log in with your new password.
                       </p>
                     </div>
                     <Link href="/login">
-                      <Button className="w-full">
-                        Go to login
-                      </Button>
+                      <Button className="w-full">Go to login</Button>
                     </Link>
                   </div>
                 ) : (
@@ -132,7 +139,9 @@ export default function ResetPassword() {
 
                     {/* Confirm Password field */}
                     <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm New Password</Label>
+                      <Label htmlFor="confirm-password">
+                        Confirm New Password
+                      </Label>
                       <Input
                         id="confirm-password"
                         type="password"
@@ -162,10 +171,11 @@ export default function ResetPassword() {
                     </Button>
 
                     <div className="text-center text-sm">
-                      <Link href="/login">
-                        <a className="text-primary font-medium hover:underline">
-                          Back to login
-                        </a>
+                      <Link
+                        href="/login"
+                        className="text-primary font-medium hover:underline"
+                      >
+                        Back to login
                       </Link>
                     </div>
                   </form>
@@ -175,6 +185,7 @@ export default function ResetPassword() {
           </div>
         </div>
       </PageTransition>
+      <Footer />
     </>
   );
 }

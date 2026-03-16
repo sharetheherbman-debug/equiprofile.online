@@ -1,17 +1,29 @@
+# NOTE: This template is for reference only
+# The install.sh script now generates the service file inline
+# See deployment/equiprofile.service for the canonical version
+
 [Unit]
-Description=Equiprofile Application
-After=network.target
+Description=EquiProfile Node.js Application
+After=network.target mysql.service mariadb.service
 
 [Service]
 Type=simple
-User=equiprofile
-WorkingDirectory=/var/www/equiprofile
-Environment=NODE_ENV=production
+User=www-data
+WorkingDirectory=/var/equiprofile/app
+EnvironmentFile=/var/equiprofile/app/.env
 ExecStart=/usr/bin/node dist/index.js
-Restart=always
+Restart=on-failure
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
+SyslogIdentifier=equiprofile
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/equiprofile/app /var/log/equiprofile
 
 [Install]
 WantedBy=multi-user.target

@@ -90,12 +90,14 @@ Successfully implemented feature flags for EquiProfile to enable plug-and-play d
 ### `ENABLE_STRIPE` (default: `false`)
 
 **When `false`:**
+
 - ❌ No Stripe SDK initialization
 - ❌ Billing endpoints return "disabled" status
 - ❌ Payment processing unavailable
 - ✅ App starts without Stripe credentials
 
 **When `true`:**
+
 - ✅ Requires: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
 - ✅ Full billing functionality enabled
 - ✅ Payment processing available
@@ -103,12 +105,14 @@ Successfully implemented feature flags for EquiProfile to enable plug-and-play d
 ### `ENABLE_UPLOADS` (default: `false`)
 
 **When `false`:**
+
 - ❌ No storage API calls
 - ❌ Upload endpoint throws error
 - ✅ Document listing still works (read-only)
 - ✅ App starts without storage credentials
 
 **When `true`:**
+
 - ✅ Requires: `BUILT_IN_FORGE_API_URL`, `BUILT_IN_FORGE_API_KEY`
 - ✅ Full upload functionality enabled
 - ✅ File storage available
@@ -176,21 +180,21 @@ ENABLE_UPLOADS=true
 
 ### ✅ All Tests Passed (13/13)
 
-| # | Test | Status |
-|---|------|--------|
-| 1 | Preflight - Minimal Config | ✅ PASS |
-| 2 | Preflight - Missing Vars | ✅ PASS |
-| 3 | Code Compilation | ✅ PASS |
-| 4 | Feature Flag Logic | ✅ PASS |
-| 5 | Stripe Guards | ✅ PASS |
-| 6 | Billing Router | ✅ PASS |
-| 7 | Upload Guards | ✅ PASS |
-| 8 | Feature Flags Endpoint | ✅ PASS |
-| 9 | Admin Health Check | ✅ PASS |
-| 10 | Environment Config | ✅ PASS |
-| 11 | PM2 Configuration | ✅ PASS |
-| 12 | Package Management | ✅ PASS |
-| 13 | Documentation | ✅ PASS |
+| #   | Test                       | Status  |
+| --- | -------------------------- | ------- |
+| 1   | Preflight - Minimal Config | ✅ PASS |
+| 2   | Preflight - Missing Vars   | ✅ PASS |
+| 3   | Code Compilation           | ✅ PASS |
+| 4   | Feature Flag Logic         | ✅ PASS |
+| 5   | Stripe Guards              | ✅ PASS |
+| 6   | Billing Router             | ✅ PASS |
+| 7   | Upload Guards              | ✅ PASS |
+| 8   | Feature Flags Endpoint     | ✅ PASS |
+| 9   | Admin Health Check         | ✅ PASS |
+| 10  | Environment Config         | ✅ PASS |
+| 11  | PM2 Configuration          | ✅ PASS |
+| 12  | Package Management         | ✅ PASS |
+| 13  | Documentation              | ✅ PASS |
 
 ---
 
@@ -266,14 +270,14 @@ pm2 restart equiprofile
 
 ## Documentation
 
-| Document | Purpose | Location |
-|----------|---------|----------|
-| Audit Report | Security analysis & changes | `docs/reports/AUDIT_REPORT.md` |
-| Deployment Guide | Step-by-step deployment | `docs/reports/DEPLOYMENT_PLUG_AND_PLAY.md` |
-| Testing Summary | Test results & scenarios | `TESTING_SUMMARY.md` |
-| Architecture | Visual diagrams & flows | `FEATURE_FLAGS_ARCHITECTURE.md` |
-| Preflight Script | Environment validation | `scripts/preflight.sh` |
-| Env Example | Configuration template | `.env.example` |
+| Document         | Purpose                     | Location                                   |
+| ---------------- | --------------------------- | ------------------------------------------ |
+| Audit Report     | Security analysis & changes | `docs/reports/AUDIT_REPORT.md`             |
+| Deployment Guide | Step-by-step deployment     | `docs/reports/DEPLOYMENT_PLUG_AND_PLAY.md` |
+| Testing Summary  | Test results & scenarios    | `TESTING_SUMMARY.md`                       |
+| Architecture     | Visual diagrams & flows     | `FEATURE_FLAGS_ARCHITECTURE.md`            |
+| Preflight Script | Environment validation      | `scripts/preflight.sh`                     |
+| Env Example      | Configuration template      | `.env.example`                             |
 
 ---
 

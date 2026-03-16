@@ -3,6 +3,7 @@
 ## Overview
 
 The EquiProfile admin panel is protected by a two-factor security system:
+
 1. User must have `admin` role in the database
 2. Admin session must be unlocked via AI chat (time-limited to 30 minutes)
 
@@ -13,6 +14,7 @@ This design ensures that even if someone gains admin role access, they cannot us
 ## 🔐 Security Features
 
 ### Multi-Layer Protection
+
 - **Role-Based Access**: Only users with `role='admin'` can attempt unlock
 - **Password Protection**: Requires `ADMIN_UNLOCK_PASSWORD` environment variable
 - **Rate Limiting**: 5 failed attempts = 15-minute lockout
@@ -21,6 +23,7 @@ This design ensures that even if someone gains admin role access, they cannot us
 - **No Plaintext Storage**: Passwords never logged or stored in plain text
 
 ### Security Best Practices
+
 - Change default password immediately in production
 - Use strong passwords (minimum 12 characters, mixed case, numbers, symbols)
 - Rotate password periodically
@@ -72,19 +75,23 @@ pm2 restart equiprofile  # or: npm run dev
 ### Unlocking Admin Mode
 
 **Step 1: Navigate to AI Chat**
+
 - Click "AI Chat" in the sidebar navigation
 - Or visit `/ai-chat` directly
 
 **Step 2: Trigger Unlock**
+
 - Type the command: `show admin`
 - System responds with password challenge
 
 **Step 3: Enter Password**
+
 - Password input field appears below chat
 - Enter your `ADMIN_UNLOCK_PASSWORD`
 - Press Enter or click "Unlock" button
 
 **Step 4: Access Admin Panel**
+
 - Success message confirms unlock
 - Admin panel accessible at `/admin`
 - Session valid for 30 minutes
@@ -92,10 +99,12 @@ pm2 restart equiprofile  # or: npm run dev
 ### Checking Session Status
 
 **In AI Chat:**
+
 - Admin status badge shows in header if unlocked
 - Displays expiry time
 
 **In Admin Panel:**
+
 - Attempting to access without unlock redirects to AI Chat
 - Alert message explains unlock requirement
 
@@ -121,6 +130,7 @@ lockMutation.mutate();
 ### Database Schema
 
 **Admin Sessions Table:**
+
 ```sql
 CREATE TABLE adminSessions (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -131,6 +141,7 @@ CREATE TABLE adminSessions (
 ```
 
 **Unlock Attempts Tracking:**
+
 ```sql
 CREATE TABLE adminUnlockAttempts (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -145,18 +156,21 @@ CREATE TABLE adminUnlockAttempts (
 ### API Endpoints
 
 **Check Status:**
+
 ```typescript
 GET /api/trpc/adminUnlock.getStatus
 Response: { isUnlocked: boolean, expiresAt?: Date }
 ```
 
 **Request Unlock Challenge:**
+
 ```typescript
 POST /api/trpc/adminUnlock.requestUnlock
 Response: { challenge: string, attemptsRemaining: number }
 ```
 
 **Submit Password:**
+
 ```typescript
 POST /api/trpc/adminUnlock.submitPassword
 Body: { password: string }
@@ -165,9 +179,12 @@ Error: { code: 'UNAUTHORIZED' | 'TOO_MANY_REQUESTS' }
 ```
 
 **Revoke Session:**
+
 ```typescript
-POST /api/trpc/adminUnlock.lock
-Response: { success: true }
+POST / api / trpc / adminUnlock.lock;
+Response: {
+  success: true;
+}
 ```
 
 ### Rate Limiting Logic
@@ -204,6 +221,7 @@ Response: { success: true }
 ## 🧪 Testing Checklist
 
 ### Basic Flow
+
 - [ ] Non-admin user cannot see "show admin" option
 - [ ] Non-admin user gets rejection message on "show admin"
 - [ ] Admin user can trigger unlock with "show admin"
@@ -213,6 +231,7 @@ Response: { success: true }
 - [ ] Session status shows in AI Chat header
 
 ### Security Tests
+
 - [ ] Incorrect password rejects unlock
 - [ ] 5 failed attempts triggers 15-minute lockout
 - [ ] Cannot unlock again during lockout period
@@ -222,6 +241,7 @@ Response: { success: true }
 - [ ] All attempts logged in activity logs
 
 ### Edge Cases
+
 - [ ] Multiple unlock attempts in quick succession
 - [ ] Session expires while on admin page
 - [ ] Re-unlocking before expiry extends session
@@ -230,6 +250,7 @@ Response: { success: true }
 - [ ] Very long password handled correctly
 
 ### Integration Tests
+
 - [ ] Admin endpoints blocked without session
 - [ ] Admin endpoints work with valid session
 - [ ] Session persists across page refreshes
@@ -244,7 +265,8 @@ Response: { success: true }
 
 **Problem**: Trying to access admin panel but session expired.
 
-**Solution**: 
+**Solution**:
+
 1. Go to AI Chat (`/ai-chat`)
 2. Type "show admin"
 3. Enter password to unlock again
@@ -253,18 +275,20 @@ Response: { success: true }
 
 **Problem**: Exceeded 5 failed password attempts.
 
-**Solution**: 
+**Solution**:
+
 - Wait 15 minutes for lockout to expire
 - Or, as admin, manually reset in database:
   ```sql
-  UPDATE adminUnlockAttempts 
-  SET attempts = 0, lockedUntil = NULL 
+  UPDATE adminUnlockAttempts
+  SET attempts = 0, lockedUntil = NULL
   WHERE userId = [your_user_id];
   ```
 
 ### Password Not Working
 
 **Check**:
+
 1. Verify `ADMIN_UNLOCK_PASSWORD` in `.env` file
 2. Restart application after changing `.env`
 3. Check for trailing spaces in password
@@ -273,6 +297,7 @@ Response: { success: true }
 ### Admin Panel Not Accessible
 
 **Check**:
+
 1. User has `role='admin'` in database
 2. Admin session is unlocked and not expired
 3. Browser cookies enabled
@@ -281,6 +306,7 @@ Response: { success: true }
 ### "Database not available" Error
 
 **Check**:
+
 1. MySQL server is running
 2. `DATABASE_URL` in `.env` is correct
 3. Database tables created (run migrations)
@@ -293,25 +319,28 @@ Response: { success: true }
 ### Activity Log Queries
 
 **View recent unlock attempts:**
+
 ```sql
-SELECT * FROM activityLogs 
-WHERE action IN ('admin_unlocked', 'admin_unlock_failed') 
-ORDER BY createdAt DESC 
+SELECT * FROM activityLogs
+WHERE action IN ('admin_unlocked', 'admin_unlock_failed')
+ORDER BY createdAt DESC
 LIMIT 20;
 ```
 
 **Count failed attempts by user:**
+
 ```sql
-SELECT userId, COUNT(*) as failed_attempts 
-FROM activityLogs 
-WHERE action = 'admin_unlock_failed' 
+SELECT userId, COUNT(*) as failed_attempts
+FROM activityLogs
+WHERE action = 'admin_unlock_failed'
 AND createdAt > NOW() - INTERVAL 24 HOUR
 GROUP BY userId;
 ```
 
 **Check active admin sessions:**
+
 ```sql
-SELECT s.*, u.email 
+SELECT s.*, u.email
 FROM adminSessions s
 JOIN users u ON s.userId = u.id
 WHERE s.expiresAt > NOW();
@@ -320,8 +349,9 @@ WHERE s.expiresAt > NOW();
 ### Rate Limit Status
 
 **Check locked accounts:**
+
 ```sql
-SELECT a.*, u.email 
+SELECT a.*, u.email
 FROM adminUnlockAttempts a
 JOIN users u ON a.userId = u.id
 WHERE a.lockedUntil > NOW();
@@ -332,6 +362,7 @@ WHERE a.lockedUntil > NOW();
 ## 🔒 Production Security Recommendations
 
 ### Password Policy
+
 - **Minimum 16 characters**
 - Mix of uppercase, lowercase, numbers, symbols
 - Avoid dictionary words
@@ -339,12 +370,14 @@ WHERE a.lockedUntil > NOW();
 - Never share password via email or chat
 
 ### Environment Security
+
 - Store `.env` file outside web root
 - Restrict file permissions: `chmod 600 .env`
 - Use secrets manager in production (AWS Secrets Manager, Vault, etc.)
 - Never commit `.env` to version control
 
 ### Additional Hardening
+
 - Enable 2FA for database access
 - Implement IP whitelisting for admin routes
 - Add honeypot logging for unauthorized attempts
@@ -352,6 +385,7 @@ WHERE a.lockedUntil > NOW();
 - Regular security audits of admin actions
 
 ### Compliance
+
 - Log all admin actions for audit trail
 - Retain logs per compliance requirements
 - Implement log rotation and archival
@@ -379,6 +413,7 @@ A: Password stored in environment variable, never in database. Transmitted over 
 
 **Q: Can I change the session duration?**  
 A: Yes, modify the duration in `server/routers.ts`:
+
 ```typescript
 const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
 ```
@@ -406,13 +441,14 @@ A: Currently, "show admin" is the only special command. The AI chat also handles
 **Option 1: Wait 15 minutes**
 
 **Option 2: Manual reset**
+
 ```bash
 # Connect to MySQL
 mysql -u root -p equiprofile
 
 # Reset lockout for user
-UPDATE adminUnlockAttempts 
-SET attempts = 0, lockedUntil = NULL 
+UPDATE adminUnlockAttempts
+SET attempts = 0, lockedUntil = NULL
 WHERE userId = (SELECT id FROM users WHERE email = 'admin@example.com');
 ```
 
@@ -441,9 +477,8 @@ WHERE userId = (SELECT id FROM users WHERE email = 'admin@example.com');
 ## 📚 Additional Resources
 
 - **Main Documentation**: `/README.md`
-- **Deployment Guide**: `/docs/DEPLOYMENT.md`
-- **Features**: `/docs/FEATURES.md`
-- **API Documentation**: `/docs/API_REFERENCE.md`
+- **Deployment Guide**: `/DEPLOYMENT.md`
+- **API Documentation**: `/docs/API.md`
 - **Security Policy**: `/SECURITY.md`
 
 ---

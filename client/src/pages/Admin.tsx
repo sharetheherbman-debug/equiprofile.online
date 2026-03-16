@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -39,10 +45,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { trpc } from "@/lib/trpc";
-import { 
-  Users, 
-  Heart, 
-  Activity, 
+import {
+  Users,
+  Heart,
+  Activity,
   FileText,
   AlertCircle,
   Settings,
@@ -56,7 +62,13 @@ import {
   Key,
   Plus,
   RotateCw,
-  Server
+  Server,
+  MessageSquare,
+  Smartphone,
+  Save,
+  CheckCircle2,
+  XCircle,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -66,7 +78,15 @@ function AdminContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [suspendReason, setSuspendReason] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [newApiKeyData, setNewApiKeyData] = useState<{ id: number; key: string } | null>(null);
+  const [newApiKeyData, setNewApiKeyData] = useState<{
+    id: number;
+    key: string;
+  } | null>(null);
+  const [whatsappForm, setWhatsappForm] = useState({
+    enabled: false,
+    phoneNumberId: "",
+    accessToken: "",
+  });
 
   // Check admin session status
   const statusQuery = trpc.adminUnlock.getStatus.useQuery();
@@ -74,8 +94,8 @@ function AdminContent() {
   // Redirect if admin not unlocked
   useEffect(() => {
     if (statusQuery.data && !statusQuery.data.isUnlocked) {
-      toast.error('Admin session expired. Please unlock admin mode.');
-      navigate('/ai-chat');
+      toast.error("Admin session expired. Please unlock admin mode.");
+      navigate("/ai-chat");
     }
   }, [statusQuery.data, navigate]);
 
@@ -89,24 +109,50 @@ function AdminContent() {
             Your admin session has expired or you don't have admin access.
           </AlertDescription>
         </Alert>
-        <Button onClick={() => navigate('/dashboard')} className="mt-4">
+        <Button onClick={() => navigate("/dashboard")} className="mt-4">
           Return to Dashboard
         </Button>
       </div>
     );
   }
 
-  const { data: stats, isLoading: statsLoading } = trpc.admin.getStats.useQuery();
-  const { data: users, isLoading: usersLoading, refetch: refetchUsers } = trpc.admin.getUsers.useQuery();
+  const { data: stats, isLoading: statsLoading } =
+    trpc.admin.getStats.useQuery();
+  const {
+    data: users,
+    isLoading: usersLoading,
+    refetch: refetchUsers,
+  } = trpc.admin.getUsers.useQuery();
   const { data: overdueUsers } = trpc.admin.getOverdueUsers.useQuery();
-  const { data: activityLogs } = trpc.admin.getActivityLogs.useQuery({ limit: 50 });
+  const { data: activityLogs } = trpc.admin.getActivityLogs.useQuery({
+    limit: 50,
+  });
   const { data: settings } = trpc.admin.getSettings.useQuery();
-  
+
   // API Key queries
   const apiKeysQuery = trpc.admin.apiKeys.list.useQuery();
   const envHealthQuery = trpc.admin.getEnvHealth.useQuery(undefined, {
     refetchInterval: 30000, // Refresh every 30s
   });
+  const leadsQuery = trpc.admin.getLeads.useQuery();
+  const whatsappConfigQuery = trpc.admin.getWhatsAppConfig.useQuery();
+  const updateWhatsAppMutation = trpc.admin.updateWhatsAppConfig.useMutation({
+    onSuccess: () => {
+      toast.success("WhatsApp configuration saved");
+      whatsappConfigQuery.refetch();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  // Sync WhatsApp form when data loads
+  useEffect(() => {
+    if (whatsappConfigQuery.data) {
+      setWhatsappForm((prev) => ({
+        ...prev,
+        enabled: whatsappConfigQuery.data!.enabled,
+      }));
+    }
+  }, [whatsappConfigQuery.data]);
 
   const suspendMutation = trpc.admin.suspendUser.useMutation({
     onSuccess: () => {
@@ -139,13 +185,13 @@ function AdminContent() {
     },
     onError: (error) => toast.error(error.message),
   });
-  
+
   // API Key mutations
   const createApiKeyMutation = trpc.admin.apiKeys.create.useMutation({
     onSuccess: (data) => {
       setNewApiKeyData(data);
       apiKeysQuery.refetch();
-      toast.success('API key created successfully');
+      toast.success("API key created successfully");
     },
     onError: (error) => toast.error(error.message),
   });
@@ -153,7 +199,7 @@ function AdminContent() {
   const revokeApiKeyMutation = trpc.admin.apiKeys.revoke.useMutation({
     onSuccess: () => {
       apiKeysQuery.refetch();
-      toast.success('API key revoked');
+      toast.success("API key revoked");
     },
     onError: (error) => toast.error(error.message),
   });
@@ -162,27 +208,40 @@ function AdminContent() {
     onSuccess: (data, variables) => {
       setNewApiKeyData({ id: variables.id, key: data.key });
       apiKeysQuery.refetch();
-      toast.success('API key rotated. Save the new key now!');
+      toast.success("API key rotated. Save the new key now!");
     },
     onError: (error) => toast.error(error.message),
   });
 
-  const filteredUsers = users?.filter(user => 
-    user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = users?.filter(
+    (user) =>
+      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const getSubscriptionBadge = (status: string) => {
     switch (status) {
-      case 'trial':
-        return <Badge variant="secondary" className="bg-blue-100 text-blue-700">Trial</Badge>;
-      case 'active':
-        return <Badge variant="secondary" className="bg-green-100 text-green-700">Active</Badge>;
-      case 'overdue':
+      case "trial":
+        return (
+          <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+            Trial
+          </Badge>
+        );
+      case "active":
+        return (
+          <Badge variant="secondary" className="bg-green-100 text-green-700">
+            Active
+          </Badge>
+        );
+      case "overdue":
         return <Badge variant="destructive">Overdue</Badge>;
-      case 'expired':
-        return <Badge variant="outline" className="text-muted-foreground">Expired</Badge>;
-      case 'cancelled':
+      case "expired":
+        return (
+          <Badge variant="outline" className="text-muted-foreground">
+            Expired
+          </Badge>
+        );
+      case "cancelled":
         return <Badge variant="outline">Cancelled</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
@@ -192,7 +251,9 @@ function AdminContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Admin Dashboard</h1>
+        <h1 className="font-serif text-3xl font-bold text-foreground">
+          Admin Dashboard
+        </h1>
         <p className="text-muted-foreground mt-1">
           Monitor users, subscriptions, and system health
         </p>
@@ -202,14 +263,18 @@ function AdminContent() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Users</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Users
+            </CardTitle>
             <Users className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             {statsLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
-              <div className="text-2xl font-bold">{stats?.users?.totalUsers || 0}</div>
+              <div className="text-2xl font-bold">
+                {stats?.users?.totalUsers || 0}
+              </div>
             )}
             <p className="text-xs text-muted-foreground mt-1">
               {stats?.users?.activeUsers || 0} active
@@ -219,14 +284,18 @@ function AdminContent() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Paid Subscribers</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Paid Subscribers
+            </CardTitle>
             <Shield className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             {statsLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
-              <div className="text-2xl font-bold">{stats?.users?.paidUsers || 0}</div>
+              <div className="text-2xl font-bold">
+                {stats?.users?.paidUsers || 0}
+              </div>
             )}
             <p className="text-xs text-muted-foreground mt-1">
               {stats?.users?.trialUsers || 0} on trial
@@ -236,14 +305,18 @@ function AdminContent() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Horses</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Horses
+            </CardTitle>
             <Heart className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             {statsLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
-              <div className="text-2xl font-bold">{stats?.horses?.totalHorses || 0}</div>
+              <div className="text-2xl font-bold">
+                {stats?.horses?.totalHorses || 0}
+              </div>
             )}
             <p className="text-xs text-muted-foreground mt-1">
               {stats?.horses?.activeHorses || 0} active
@@ -253,7 +326,9 @@ function AdminContent() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Overdue Payments</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Overdue Payments
+            </CardTitle>
             <AlertCircle className="w-4 h-4 text-destructive" />
           </CardHeader>
           <CardContent>
@@ -298,6 +373,14 @@ function AdminContent() {
             <Server className="w-4 h-4" />
             System
           </TabsTrigger>
+          <TabsTrigger value="leads" className="flex items-center gap-2">
+            <MessageSquare className="w-4 h-4" />
+            Leads
+          </TabsTrigger>
+          <TabsTrigger value="whatsapp" className="flex items-center gap-2">
+            <MessageSquare className="w-4 h-4" />
+            WhatsApp
+          </TabsTrigger>
         </TabsList>
 
         {/* Users Tab */}
@@ -307,7 +390,9 @@ function AdminContent() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <CardTitle>User Management</CardTitle>
-                  <CardDescription>View and manage all registered users</CardDescription>
+                  <CardDescription>
+                    View and manage all registered users
+                  </CardDescription>
                 </div>
                 <div className="relative w-full sm:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -345,12 +430,20 @@ function AdminContent() {
                         <TableRow key={user.id}>
                           <TableCell>
                             <div>
-                              <p className="font-medium">{user.name || 'No name'}</p>
-                              <p className="text-sm text-muted-foreground">{user.email}</p>
+                              <p className="font-medium">
+                                {user.name || "No name"}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {user.email}
+                              </p>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={user.role === 'admin' ? 'default' : 'outline'}>
+                            <Badge
+                              variant={
+                                user.role === "admin" ? "default" : "outline"
+                              }
+                            >
                               {user.role}
                             </Badge>
                           </TableCell>
@@ -361,7 +454,12 @@ function AdminContent() {
                             {user.isSuspended ? (
                               <Badge variant="destructive">Suspended</Badge>
                             ) : user.isActive ? (
-                              <Badge variant="secondary" className="bg-green-100 text-green-700">Active</Badge>
+                              <Badge
+                                variant="secondary"
+                                className="bg-green-100 text-green-700"
+                              >
+                                Active
+                              </Badge>
                             ) : (
                               <Badge variant="outline">Inactive</Badge>
                             )}
@@ -375,7 +473,11 @@ function AdminContent() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => unsuspendMutation.mutate({ userId: user.id })}
+                                  onClick={() =>
+                                    unsuspendMutation.mutate({
+                                      userId: user.id,
+                                    })
+                                  }
                                 >
                                   Unsuspend
                                 </Button>
@@ -390,7 +492,9 @@ function AdminContent() {
                                     <DialogHeader>
                                       <DialogTitle>Suspend User</DialogTitle>
                                       <DialogDescription>
-                                        This will prevent {user.name || user.email} from accessing their account.
+                                        This will prevent{" "}
+                                        {user.name || user.email} from accessing
+                                        their account.
                                       </DialogDescription>
                                     </DialogHeader>
                                     <div className="space-y-4 py-4">
@@ -398,7 +502,9 @@ function AdminContent() {
                                         <Label>Reason for suspension</Label>
                                         <Textarea
                                           value={suspendReason}
-                                          onChange={(e) => setSuspendReason(e.target.value)}
+                                          onChange={(e) =>
+                                            setSuspendReason(e.target.value)
+                                          }
                                           placeholder="Enter reason..."
                                         />
                                       </div>
@@ -407,9 +513,9 @@ function AdminContent() {
                                       <Button
                                         variant="destructive"
                                         onClick={() => {
-                                          suspendMutation.mutate({ 
-                                            userId: user.id, 
-                                            reason: suspendReason 
+                                          suspendMutation.mutate({
+                                            userId: user.id,
+                                            reason: suspendReason,
                                           });
                                           setSuspendReason("");
                                         }}
@@ -420,26 +526,39 @@ function AdminContent() {
                                   </DialogContent>
                                 </Dialog>
                               )}
-                              
+
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="sm" className="text-destructive">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-destructive"
+                                  >
                                     <Trash2 className="w-4 h-4" />
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete User</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                      Delete User
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      This will permanently deactivate {user.name || user.email}'s account. 
-                                      This action cannot be undone.
+                                      This will permanently deactivate{" "}
+                                      {user.name || user.email}'s account. This
+                                      action cannot be undone.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
                                     <AlertDialogAction
                                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                      onClick={() => deleteMutation.mutate({ userId: user.id })}
+                                      onClick={() =>
+                                        deleteMutation.mutate({
+                                          userId: user.id,
+                                        })
+                                      }
                                     >
                                       Delete
                                     </AlertDialogAction>
@@ -463,13 +582,17 @@ function AdminContent() {
           <Card>
             <CardHeader>
               <CardTitle>Overdue Subscriptions</CardTitle>
-              <CardDescription>Users with payment issues requiring attention</CardDescription>
+              <CardDescription>
+                Users with payment issues requiring attention
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {!overdueUsers || overdueUsers.length === 0 ? (
                 <div className="text-center py-8">
                   <AlertCircle className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                  <p className="text-muted-foreground">No overdue subscriptions</p>
+                  <p className="text-muted-foreground">
+                    No overdue subscriptions
+                  </p>
                 </div>
               ) : (
                 <Table>
@@ -486,15 +609,18 @@ function AdminContent() {
                       <TableRow key={user.id}>
                         <TableCell>
                           <div>
-                            <p className="font-medium">{user.name || 'No name'}</p>
-                            <p className="text-sm text-muted-foreground">{user.email}</p>
+                            <p className="font-medium">
+                              {user.name || "No name"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {user.email}
+                            </p>
                           </div>
                         </TableCell>
                         <TableCell>
-                          {user.lastPaymentAt 
+                          {user.lastPaymentAt
                             ? new Date(user.lastPaymentAt).toLocaleDateString()
-                            : 'Never'
-                          }
+                            : "Never"}
                         </TableCell>
                         <TableCell>
                           <Badge variant="destructive">Overdue</Badge>
@@ -518,7 +644,9 @@ function AdminContent() {
           <Card>
             <CardHeader>
               <CardTitle>Activity Logs</CardTitle>
-              <CardDescription>Recent system activity and user actions</CardDescription>
+              <CardDescription>
+                Recent system activity and user actions
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {!activityLogs || activityLogs.length === 0 ? (
@@ -529,14 +657,20 @@ function AdminContent() {
               ) : (
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {activityLogs.map((log) => (
-                    <div key={log.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30">
+                    <div
+                      key={log.id}
+                      className="flex items-center gap-4 p-3 rounded-lg bg-muted/30"
+                    >
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Activity className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium">{log.action.replace(/_/g, ' ')}</p>
+                        <p className="text-sm font-medium">
+                          {log.action.replace(/_/g, " ")}
+                        </p>
                         <p className="text-xs text-muted-foreground">
-                          {log.entityType && `${log.entityType} #${log.entityId} • `}
+                          {log.entityType &&
+                            `${log.entityType} #${log.entityId} • `}
                           {new Date(log.createdAt).toLocaleString()}
                         </p>
                       </div>
@@ -553,20 +687,27 @@ function AdminContent() {
           <Card>
             <CardHeader>
               <CardTitle>System Settings</CardTitle>
-              <CardDescription>Configure API keys and system parameters</CardDescription>
+              <CardDescription>
+                Configure API keys and system parameters
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="p-4 rounded-lg border bg-muted/30">
                   <h3 className="font-medium mb-2">API Configuration</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    API keys are managed securely through environment variables. 
+                    API keys are managed securely through environment variables.
                     Contact your system administrator to update API keys.
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2 rounded bg-background">
                       <span className="text-sm">OpenAI API</span>
-                      <Badge variant="secondary" className="bg-green-100 text-green-700">Configured</Badge>
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-100 text-green-700"
+                      >
+                        Configured
+                      </Badge>
                     </div>
                     <div className="flex items-center justify-between p-2 rounded bg-background">
                       <span className="text-sm">Stripe API</span>
@@ -579,11 +720,16 @@ function AdminContent() {
                   <div className="space-y-2">
                     <h3 className="font-medium">Custom Settings</h3>
                     {settings.map((setting) => (
-                      <div key={setting.id} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div
+                        key={setting.id}
+                        className="flex items-center justify-between p-3 rounded-lg border"
+                      >
                         <div>
                           <p className="font-medium">{setting.settingKey}</p>
                           {setting.description && (
-                            <p className="text-sm text-muted-foreground">{setting.description}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {setting.description}
+                            </p>
                           )}
                         </div>
                         <Badge variant="outline">{setting.settingType}</Badge>
@@ -595,7 +741,7 @@ function AdminContent() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* System Secrets Tab */}
         <TabsContent value="api-keys" className="space-y-4">
           <Card>
@@ -603,14 +749,22 @@ function AdminContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>System Integration Keys</CardTitle>
-                  <CardDescription>Configure global API keys for platform integrations (OpenAI, SMTP, weather providers). These are system-wide settings, not user-specific.</CardDescription>
+                  <CardDescription>
+                    Configure global API keys for platform integrations (OpenAI,
+                    SMTP, weather providers). These are system-wide settings,
+                    not user-specific.
+                  </CardDescription>
                 </div>
-                <Button onClick={() => {
-                  const name = prompt('Enter integration name (e.g., "OpenAI API", "Weather API"):');
-                  if (name) {
-                    createApiKeyMutation.mutate({ name, rateLimit: 100 });
-                  }
-                }}>
+                <Button
+                  onClick={() => {
+                    const name = prompt(
+                      'Enter integration name (e.g., "OpenAI API", "Weather API"):',
+                    );
+                    if (name) {
+                      createApiKeyMutation.mutate({ name, rateLimit: 100 });
+                    }
+                  }}
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   Add Integration
                 </Button>
@@ -622,7 +776,9 @@ function AdminContent() {
                   <Key className="h-4 w-4" />
                   <AlertTitle>Save This Key Now!</AlertTitle>
                   <AlertDescription className="mt-2 space-y-2">
-                    <p className="text-sm">This is the only time you'll see this key:</p>
+                    <p className="text-sm">
+                      This is the only time you'll see this key:
+                    </p>
                     <div className="flex items-center gap-2 bg-white p-2 rounded border font-mono text-sm">
                       <code className="flex-1">{newApiKeyData.key}</code>
                       <Button
@@ -630,19 +786,23 @@ function AdminContent() {
                         variant="ghost"
                         onClick={() => {
                           navigator.clipboard.writeText(newApiKeyData.key);
-                          toast.success('Copied to clipboard');
+                          toast.success("Copied to clipboard");
                         }}
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
                     </div>
-                    <Button size="sm" variant="outline" onClick={() => setNewApiKeyData(null)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setNewApiKeyData(null)}
+                    >
                       I've saved it
                     </Button>
                   </AlertDescription>
                 </Alert>
               )}
-              
+
               {apiKeysQuery.data && apiKeysQuery.data.length > 0 ? (
                 <Table>
                   <TableHeader>
@@ -658,17 +818,25 @@ function AdminContent() {
                   <TableBody>
                     {apiKeysQuery.data.map((key) => (
                       <TableRow key={key.id}>
-                        <TableCell className="font-medium">{key.name}</TableCell>
+                        <TableCell className="font-medium">
+                          {key.name}
+                        </TableCell>
                         <TableCell>
                           <code className="text-xs">{key.keyPrefix}_...</code>
                         </TableCell>
                         <TableCell>{key.rateLimit}/hr</TableCell>
                         <TableCell>
-                          {key.lastUsedAt ? formatDistanceToNow(new Date(key.lastUsedAt), { addSuffix: true }) : 'Never'}
+                          {key.lastUsedAt
+                            ? formatDistanceToNow(new Date(key.lastUsedAt), {
+                                addSuffix: true,
+                              })
+                            : "Never"}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={key.isActive ? 'default' : 'secondary'}>
-                            {key.isActive ? 'Active' : 'Revoked'}
+                          <Badge
+                            variant={key.isActive ? "default" : "secondary"}
+                          >
+                            {key.isActive ? "Active" : "Revoked"}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -677,7 +845,11 @@ function AdminContent() {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                if (confirm('Rotate this API key? The old key will stop working immediately.')) {
+                                if (
+                                  confirm(
+                                    "Rotate this API key? The old key will stop working immediately.",
+                                  )
+                                ) {
                                   rotateApiKeyMutation.mutate({ id: key.id });
                                 }
                               }}
@@ -689,7 +861,11 @@ function AdminContent() {
                               size="sm"
                               variant="destructive"
                               onClick={() => {
-                                if (confirm('Revoke this API key? This cannot be undone.')) {
+                                if (
+                                  confirm(
+                                    "Revoke this API key? This cannot be undone.",
+                                  )
+                                ) {
                                   revokeApiKeyMutation.mutate({ id: key.id });
                                 }
                               }}
@@ -712,7 +888,7 @@ function AdminContent() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* System Health Tab */}
         <TabsContent value="system" className="space-y-4">
           <Card>
@@ -724,14 +900,20 @@ function AdminContent() {
               {envHealthQuery.data && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <Badge variant={envHealthQuery.data.healthy ? 'default' : 'destructive'}>
-                      {envHealthQuery.data.healthy ? '✓ All Critical OK' : '✗ Issues Detected'}
+                    <Badge
+                      variant={
+                        envHealthQuery.data.healthy ? "default" : "destructive"
+                      }
+                    >
+                      {envHealthQuery.data.healthy
+                        ? "✓ All Critical OK"
+                        : "✗ Issues Detected"}
                     </Badge>
                     <span className="text-sm text-muted-foreground">
                       Environment: {envHealthQuery.data.environment}
                     </span>
                   </div>
-                  
+
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -743,15 +925,23 @@ function AdminContent() {
                     <TableBody>
                       {envHealthQuery.data.checks.map((check) => (
                         <TableRow key={check.name}>
-                          <TableCell className="font-mono text-sm">{check.name}</TableCell>
+                          <TableCell className="font-mono text-sm">
+                            {check.name}
+                          </TableCell>
                           <TableCell>
-                            <Badge variant={check.status ? 'default' : 'destructive'}>
-                              {check.status ? '✓ Set' : '✗ Missing'}
+                            <Badge
+                              variant={check.status ? "default" : "destructive"}
+                            >
+                              {check.status ? "✓ Set" : "✗ Missing"}
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={check.critical ? 'destructive' : 'secondary'}>
-                              {check.critical ? 'Critical' : 'Optional'}
+                            <Badge
+                              variant={
+                                check.critical ? "destructive" : "secondary"
+                              }
+                            >
+                              {check.critical ? "Critical" : "Optional"}
                             </Badge>
                           </TableCell>
                         </TableRow>
@@ -762,6 +952,232 @@ function AdminContent() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Sales Leads Tab */}
+        <TabsContent value="leads">
+          <Card>
+            <CardHeader>
+              <CardTitle>Chat Leads</CardTitle>
+              <CardDescription>
+                Visitors who submitted their details via the sales chat widget
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {leadsQuery.isLoading ? (
+                <div className="space-y-2">
+                  {[...Array(4)].map((_, i) => (
+                    <Skeleton key={i} className="h-10 w-full" />
+                  ))}
+                </div>
+              ) : leadsQuery.data && leadsQuery.data.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Source</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {leadsQuery.data.map((lead) => (
+                      <TableRow key={lead.id}>
+                        <TableCell className="font-medium">
+                          {lead.name}
+                        </TableCell>
+                        <TableCell>{lead.email}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">
+                            {lead.source ?? "chat"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground text-sm">
+                          {formatDistanceToNow(new Date(lead.createdAt), {
+                            addSuffix: true,
+                          })}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <MessageSquare className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                  <p>No leads captured yet</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* WhatsApp Config Tab */}
+        <TabsContent value="whatsapp">
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Smartphone className="w-5 h-5" />
+                  WhatsApp Business Configuration
+                </CardTitle>
+                <CardDescription>
+                  Configure WhatsApp Business API for event reminders and
+                  notifications.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Status */}
+                <div className="flex items-center gap-3 p-3 rounded-lg border">
+                  {whatsappConfigQuery.data?.enabled ? (
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <XCircle className="w-5 h-5 text-muted-foreground" />
+                  )}
+                  <div>
+                    <p className="font-medium text-sm">
+                      Status:{" "}
+                      {whatsappConfigQuery.data?.enabled
+                        ? "Enabled"
+                        : "Disabled"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Phone ID:{" "}
+                      {whatsappConfigQuery.data?.phoneNumberId ||
+                        "Not configured"}{" "}
+                      · Token:{" "}
+                      {whatsappConfigQuery.data?.hasAccessToken
+                        ? "Configured"
+                        : "Not set"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Toggle */}
+                <div className="space-y-2">
+                  <Label>Enable WhatsApp</Label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="wa-enabled"
+                      checked={whatsappForm.enabled}
+                      onChange={(e) =>
+                        setWhatsappForm({
+                          ...whatsappForm,
+                          enabled: e.target.checked,
+                        })
+                      }
+                      className="w-4 h-4"
+                    />
+                    <label
+                      htmlFor="wa-enabled"
+                      className="text-sm text-muted-foreground"
+                    >
+                      Enable WhatsApp Business notifications
+                    </label>
+                  </div>
+                </div>
+
+                {/* Phone Number ID */}
+                <div className="space-y-2">
+                  <Label>Phone Number ID</Label>
+                  <Input
+                    placeholder="Meta Phone Number ID"
+                    value={whatsappForm.phoneNumberId}
+                    onChange={(e) =>
+                      setWhatsappForm({
+                        ...whatsappForm,
+                        phoneNumberId: e.target.value,
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Found in Meta Business Manager → WhatsApp → Phone Numbers
+                  </p>
+                </div>
+
+                {/* Access Token */}
+                <div className="space-y-2">
+                  <Label>Access Token</Label>
+                  <Input
+                    type="password"
+                    placeholder={
+                      whatsappConfigQuery.data?.hasAccessToken
+                        ? "••••••••• (already configured)"
+                        : "Meta permanent access token"
+                    }
+                    value={whatsappForm.accessToken}
+                    onChange={(e) =>
+                      setWhatsappForm({
+                        ...whatsappForm,
+                        accessToken: e.target.value,
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Permanent token from Meta Business Manager. Leave blank to
+                    keep existing.
+                  </p>
+                </div>
+
+                <Button
+                  onClick={() =>
+                    updateWhatsAppMutation.mutate({
+                      enabled: whatsappForm.enabled,
+                      phoneNumberId: whatsappForm.phoneNumberId || undefined,
+                      accessToken: whatsappForm.accessToken || undefined,
+                    })
+                  }
+                  disabled={updateWhatsAppMutation.isPending}
+                >
+                  {updateWhatsAppMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Configuration
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">
+                  Required Message Templates
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Pre-approve these templates in your Meta Business account:
+                </p>
+                <ul className="space-y-1.5">
+                  {[
+                    "event_reminder — 24h and 1h before events",
+                    "reminder_notification — health and care reminders",
+                    "vaccination_due — upcoming vaccination alerts",
+                    "trial_ending — trial expiry notifications",
+                  ].map((t) => (
+                    <li key={t} className="flex items-start gap-2 text-sm">
+                      <span className="text-primary">•</span>
+                      <code className="text-xs">{t}</code>
+                    </li>
+                  ))}
+                </ul>
+                <Alert className="mt-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="text-xs">
+                    See{" "}
+                    <code className="text-primary">docs/WHATSAPP_SETUP.md</code>{" "}
+                    for full setup instructions.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

@@ -1,28 +1,63 @@
 /**
  * Service Worker Registration Bootstrap
- * 
+ *
  * This module handles service worker registration for PWA functionality.
  * Extracted from inline script to comply with Content Security Policy.
+ *
+ * When PWA is disabled (the default), any previously-registered service
+ * workers are unregistered immediately.  A stale SW from a prior deploy
+ * can intercept network requests and serve cached HTML/JS with a mismatched
+ * CSP nonce, causing a blank white screen.  Unregistering on every page
+ * load (when PWA is off) permanently eliminates that failure mode.
  */
 
 export function registerServiceWorker() {
-  // Only register if service worker is supported and PWA is enabled
-  if ('serviceWorker' in navigator && import.meta.env.VITE_PWA_ENABLED === 'true') {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(registration => {
-          console.log('ServiceWorker registration successful');
-          
-          // Check for updates periodically
-          setInterval(() => {
+  if (!("serviceWorker" in navigator)) return;
+
+  if (import.meta.env.VITE_PWA_ENABLED === "true") {
+    // PWA is explicitly enabled — register the service worker.
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/service-worker.js")
+        .then((registration) => {
+          console.log("[SW] Registration successful");
+
+          // Check for updates periodically - keep reference so we can clear on unload
+          const updateInterval = setInterval(() => {
             registration.update();
           }, 60000); // Check every minute
+
+          // Clean up interval when the page is unloaded to prevent leaks
+          window.addEventListener(
+            "beforeunload",
+            () => clearInterval(updateInterval),
+            { once: true },
+          );
         })
-        .catch(err => {
-          console.log('ServiceWorker registration failed: ', err);
+        .catch((err) => {
+          console.warn("[SW] Registration failed: ", err);
         });
     });
-  } else if (import.meta.env.VITE_PWA_ENABLED !== 'true' && import.meta.env.DEV) {
-    console.log('PWA disabled (VITE_PWA_ENABLED not set to true)');
+  } else {
+    // PWA is disabled.  Unregister every existing service worker so that
+    // stale workers from previous deployments cannot intercept requests and
+    // serve outdated HTML or assets (which would produce a blank screen).
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((registrations) => {
+        for (const registration of registrations) {
+          registration.unregister().then((success) => {
+            if (success) {
+              console.log(
+                "[SW] Unregistered stale service worker:",
+                registration.scope,
+              );
+            }
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn("[SW] Could not enumerate registrations:", err);
+      });
   }
 }

@@ -1,12 +1,24 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -18,26 +30,26 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
-import { 
-  Plus, 
-  Heart, 
+import {
+  Plus,
+  Heart,
   Syringe,
   Stethoscope,
   Pill,
   FileText,
   AlertCircle,
-  Calendar
+  Calendar,
 } from "lucide-react";
 import { toast } from "sonner";
 
 const recordTypes = [
-  { value: 'vaccination', label: 'Vaccination', icon: Syringe },
-  { value: 'veterinary', label: 'Vet Visit', icon: Stethoscope },
-  { value: 'medication', label: 'Medication', icon: Pill },
-  { value: 'dental', label: 'Dental', icon: Heart },
-  { value: 'farrier', label: 'Farrier', icon: Heart },
-  { value: 'deworming', label: 'Deworming', icon: Pill },
-  { value: 'other', label: 'Other', icon: FileText },
+  { value: "vaccination", label: "Vaccination", icon: Syringe },
+  { value: "veterinary", label: "Vet Visit", icon: Stethoscope },
+  { value: "medication", label: "Medication", icon: Pill },
+  { value: "dental", label: "Dental", icon: Heart },
+  { value: "farrier", label: "Farrier", icon: Heart },
+  { value: "deworming", label: "Deworming", icon: Pill },
+  { value: "other", label: "Other", icon: FileText },
 ];
 
 function HealthContent() {
@@ -46,7 +58,7 @@ function HealthContent() {
     horseId: "",
     recordType: "vaccination" as const,
     title: "",
-    recordDate: new Date().toISOString().split('T')[0],
+    recordDate: new Date().toISOString().split("T")[0],
     nextDueDate: "",
     vetName: "",
     vetPhone: "",
@@ -55,8 +67,14 @@ function HealthContent() {
   });
 
   const { data: horses } = trpc.horses.list.useQuery();
-  const { data: records, isLoading, refetch } = trpc.healthRecords.listAll.useQuery();
-  const { data: reminders } = trpc.healthRecords.getReminders.useQuery({ days: 30 });
+  const {
+    data: records,
+    isLoading,
+    refetch,
+  } = trpc.healthRecords.listAll.useQuery();
+  const { data: reminders } = trpc.healthRecords.getReminders.useQuery({
+    days: 30,
+  });
 
   const createMutation = trpc.healthRecords.create.useMutation({
     onSuccess: () => {
@@ -67,7 +85,7 @@ function HealthContent() {
         horseId: "",
         recordType: "vaccination",
         title: "",
-        recordDate: new Date().toISOString().split('T')[0],
+        recordDate: new Date().toISOString().split("T")[0],
         nextDueDate: "",
         vetName: "",
         vetPhone: "",
@@ -98,7 +116,7 @@ function HealthContent() {
   };
 
   const getRecordIcon = (type: string) => {
-    const recordType = recordTypes.find(r => r.value === type);
+    const recordType = recordTypes.find((r) => r.value === type);
     const Icon = recordType?.icon || FileText;
     return <Icon className="w-5 h-5" />;
   };
@@ -120,7 +138,9 @@ function HealthContent() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-foreground">Health Records</h1>
+          <h1 className="font-serif text-3xl font-bold text-foreground">
+            Health Records
+          </h1>
           <p className="text-muted-foreground mt-1">
             Track vaccinations, vet visits, and medical history
           </p>
@@ -146,14 +166,19 @@ function HealthContent() {
                     <Label>Horse *</Label>
                     <Select
                       value={formData.horseId}
-                      onValueChange={(value) => setFormData({ ...formData, horseId: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, horseId: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select horse" />
                       </SelectTrigger>
                       <SelectContent>
                         {horses?.map((horse) => (
-                          <SelectItem key={horse.id} value={horse.id.toString()}>
+                          <SelectItem
+                            key={horse.id}
+                            value={horse.id.toString()}
+                          >
                             {horse.name}
                           </SelectItem>
                         ))}
@@ -164,7 +189,9 @@ function HealthContent() {
                     <Label>Record Type *</Label>
                     <Select
                       value={formData.recordType}
-                      onValueChange={(value: any) => setFormData({ ...formData, recordType: value })}
+                      onValueChange={(value: any) =>
+                        setFormData({ ...formData, recordType: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -184,7 +211,9 @@ function HealthContent() {
                   <Label>Title *</Label>
                   <Input
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     placeholder="e.g., Annual flu vaccination"
                   />
                 </div>
@@ -195,7 +224,9 @@ function HealthContent() {
                     <Input
                       type="date"
                       value={formData.recordDate}
-                      onChange={(e) => setFormData({ ...formData, recordDate: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, recordDate: e.target.value })
+                      }
                     />
                   </div>
                   <div className="space-y-2">
@@ -203,7 +234,12 @@ function HealthContent() {
                     <Input
                       type="date"
                       value={formData.nextDueDate}
-                      onChange={(e) => setFormData({ ...formData, nextDueDate: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          nextDueDate: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -213,7 +249,9 @@ function HealthContent() {
                     <Label>Vet Name</Label>
                     <Input
                       value={formData.vetName}
-                      onChange={(e) => setFormData({ ...formData, vetName: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, vetName: e.target.value })
+                      }
                       placeholder="Veterinarian name"
                     />
                   </div>
@@ -221,7 +259,9 @@ function HealthContent() {
                     <Label>Vet Contact</Label>
                     <Input
                       value={formData.vetPhone}
-                      onChange={(e) => setFormData({ ...formData, vetPhone: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, vetPhone: e.target.value })
+                      }
                       placeholder="Phone or email"
                     />
                   </div>
@@ -231,14 +271,20 @@ function HealthContent() {
                   <Label>Description</Label>
                   <Textarea
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     placeholder="Details about the treatment or visit..."
                     rows={3}
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button type="submit" disabled={createMutation.isPending}>
@@ -258,17 +304,25 @@ function HealthContent() {
               <AlertCircle className="w-5 h-5" />
               Upcoming Reminders
             </CardTitle>
-            <CardDescription>Health events due in the next 30 days</CardDescription>
+            <CardDescription>
+              Health events due in the next 30 days
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {reminders.slice(0, 5).map((reminder) => {
-                const horse = horses?.find(h => h.id === reminder.horseId);
-                const daysUntil = reminder.nextDueDate 
-                  ? Math.ceil((new Date(reminder.nextDueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                const horse = horses?.find((h) => h.id === reminder.horseId);
+                const daysUntil = reminder.nextDueDate
+                  ? Math.ceil(
+                      (new Date(reminder.nextDueDate).getTime() - Date.now()) /
+                        (1000 * 60 * 60 * 24),
+                    )
                   : 0;
                 return (
-                  <div key={reminder.id} className="flex items-center gap-4 p-3 rounded-lg bg-white border border-orange-200">
+                  <div
+                    key={reminder.id}
+                    className="flex items-center gap-4 p-3 rounded-lg bg-white border border-orange-200"
+                  >
                     <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600">
                       {getRecordIcon(reminder.recordType)}
                     </div>
@@ -278,8 +332,12 @@ function HealthContent() {
                         {horse?.name} • Due in {daysUntil} days
                       </p>
                     </div>
-                    <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-200">
-                      {reminder.nextDueDate && new Date(reminder.nextDueDate).toLocaleDateString()}
+                    <Badge
+                      variant="outline"
+                      className="bg-orange-100 text-orange-700 border-orange-200"
+                    >
+                      {reminder.nextDueDate &&
+                        new Date(reminder.nextDueDate).toLocaleDateString()}
                     </Badge>
                   </div>
                 );
@@ -293,13 +351,17 @@ function HealthContent() {
       <Card>
         <CardHeader>
           <CardTitle>All Health Records</CardTitle>
-          <CardDescription>Complete medical history for all horses</CardDescription>
+          <CardDescription>
+            Complete medical history for all horses
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {!records || records.length === 0 ? (
             <div className="text-center py-8">
               <Heart className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">No health records yet</p>
+              <p className="text-muted-foreground mb-4">
+                No health records yet
+              </p>
               <Button onClick={() => setIsDialogOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add First Record
@@ -308,9 +370,12 @@ function HealthContent() {
           ) : (
             <div className="space-y-3">
               {records.map((record) => {
-                const horse = horses?.find(h => h.id === record.horseId);
+                const horse = horses?.find((h) => h.id === record.horseId);
                 return (
-                  <div key={record.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/30 transition-colors">
+                  <div
+                    key={record.id}
+                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/30 transition-colors"
+                  >
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                       {getRecordIcon(record.recordType)}
                     </div>
@@ -318,7 +383,9 @@ function HealthContent() {
                       <div className="flex items-center gap-2">
                         <p className="font-medium">{record.title}</p>
                         {horse && (
-                          <span className="text-sm text-muted-foreground">• {horse.name}</span>
+                          <span className="text-sm text-muted-foreground">
+                            • {horse.name}
+                          </span>
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground">
@@ -326,7 +393,9 @@ function HealthContent() {
                         {record.vetName && ` • ${record.vetName}`}
                       </p>
                     </div>
-                    <Badge variant="outline" className="capitalize">{record.recordType}</Badge>
+                    <Badge variant="outline" className="capitalize">
+                      {record.recordType}
+                    </Badge>
                     {record.nextDueDate && (
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Calendar className="w-4 h-4" />

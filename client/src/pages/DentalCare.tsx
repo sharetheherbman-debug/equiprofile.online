@@ -1,17 +1,37 @@
 import { useState } from "react";
 import { trpc } from "../_core/trpc";
 import { Button } from "../components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { toast } from "../components/ui/use-toast";
-import { Plus, Edit, Trash2, Calendar, Stethoscope, AlertCircle } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Calendar,
+  Stethoscope,
+  AlertCircle,
+} from "lucide-react";
 import { DashboardLayout } from "../components/DashboardLayout";
-import { useRealtime } from "../hooks/useRealtime";
+import { useRealtimeModule } from "../hooks/useRealtime";
 
 function DentalCareContent() {
+  const { toast } = useToast();
   const { data: dentalRecords, refetch } = trpc.dentalCare.list.useQuery();
   const { data: horses } = trpc.horses.list.useQuery();
   const createMutation = trpc.dentalCare.create.useMutation();
@@ -23,16 +43,19 @@ function DentalCareContent() {
   const [localRecords, setLocalRecords] = useState(dentalRecords || []);
 
   // Real-time updates
-  useRealtime((module, action, data) => {
-    if (module === 'dentalCare') {
-      if (action === 'created') {
-        setLocalRecords(prev => [data, ...prev]);
-        toast({ title: "Dental record added", description: "New dental care record created" });
-      } else if (action === 'updated') {
-        setLocalRecords(prev => prev.map(r => r.id === data.id ? { ...r, ...data } : r));
-      } else if (action === 'deleted') {
-        setLocalRecords(prev => prev.filter(r => r.id !== data.id));
-      }
+  useRealtimeModule("dentalCare", (action, data) => {
+    if (action === "created") {
+      setLocalRecords((prev) => [data, ...prev]);
+      toast({
+        title: "Dental record added",
+        description: "New dental care record created",
+      });
+    } else if (action === "updated") {
+      setLocalRecords((prev) =>
+        prev.map((r) => (r.id === data.id ? { ...r, ...data } : r)),
+      );
+    } else if (action === "deleted") {
+      setLocalRecords((prev) => prev.filter((r) => r.id !== data.id));
     }
   });
 
@@ -43,7 +66,7 @@ function DentalCareContent() {
 
   const [formData, setFormData] = useState({
     horseId: 0,
-    examDate: new Date().toISOString().split('T')[0],
+    examDate: new Date().toISOString().split("T")[0],
     dentistName: "",
     dentistClinic: "",
     procedureType: "",
@@ -60,11 +83,17 @@ function DentalCareContent() {
     e.preventDefault();
 
     if (formData.horseId === 0) {
-      toast({ title: "Error", description: "Please select a horse", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Please select a horse",
+        variant: "destructive",
+      });
       return;
     }
 
-    const costInPence = formData.cost ? Math.round(parseFloat(formData.cost) * 100) : undefined;
+    const costInPence = formData.cost
+      ? Math.round(parseFloat(formData.cost) * 100)
+      : undefined;
 
     try {
       if (editingId) {
@@ -74,21 +103,31 @@ function DentalCareContent() {
           cost: costInPence,
           teethCondition: formData.teethCondition || undefined,
         });
-        toast({ title: "Success", description: "Dental record updated successfully" });
+        toast({
+          title: "Success",
+          description: "Dental record updated successfully",
+        });
       } else {
         await createMutation.mutateAsync({
           ...formData,
           cost: costInPence,
           teethCondition: formData.teethCondition as any,
         });
-        toast({ title: "Success", description: "Dental record created successfully" });
+        toast({
+          title: "Success",
+          description: "Dental record created successfully",
+        });
       }
-      
+
       setOpen(false);
       resetForm();
       refetch();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Failed to save dental record", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save dental record",
+        variant: "destructive",
+      });
     }
   };
 
@@ -113,13 +152,17 @@ function DentalCareContent() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this dental record?")) return;
-    
+
     try {
       await deleteMutation.mutateAsync({ id });
       toast({ title: "Success", description: "Dental record deleted" });
       refetch();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Failed to delete", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete",
+        variant: "destructive",
+      });
     }
   };
 
@@ -127,7 +170,7 @@ function DentalCareContent() {
     setEditingId(null);
     setFormData({
       horseId: 0,
-      examDate: new Date().toISOString().split('T')[0],
+      examDate: new Date().toISOString().split("T")[0],
       dentistName: "",
       dentistClinic: "",
       procedureType: "",
@@ -142,7 +185,7 @@ function DentalCareContent() {
   };
 
   const getHorseName = (horseId: number) => {
-    const horse = horses?.find(h => h.id === horseId);
+    const horse = horses?.find((h) => h.id === horseId);
     return horse?.name || "Unknown Horse";
   };
 
@@ -153,21 +196,34 @@ function DentalCareContent() {
       fair: "bg-yellow-100 text-yellow-800",
       poor: "bg-red-100 text-red-800",
     };
-    return colors[condition as keyof typeof colors] || "bg-gray-100 text-gray-800";
+    return (
+      colors[condition as keyof typeof colors] || "bg-gray-100 text-gray-800"
+    );
   };
 
-  const upcomingRecords = localRecords.filter(r => 
-    r.nextDueDate && new Date(r.nextDueDate) >= new Date()
-  ).sort((a, b) => new Date(a.nextDueDate!).getTime() - new Date(b.nextDueDate!).getTime());
+  const upcomingRecords = localRecords
+    .filter((r) => r.nextDueDate && new Date(r.nextDueDate) >= new Date())
+    .sort(
+      (a, b) =>
+        new Date(a.nextDueDate!).getTime() - new Date(b.nextDueDate!).getTime(),
+    );
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Dental Care</h1>
-          <p className="text-muted-foreground">Track dental exams and procedures</p>
+          <p className="text-muted-foreground">
+            Track dental exams and procedures
+          </p>
         </div>
-        <Dialog open={open} onOpenChange={(isOpen) => { setOpen(isOpen); if (!isOpen) resetForm(); }}>
+        <Dialog
+          open={open}
+          onOpenChange={(isOpen) => {
+            setOpen(isOpen);
+            if (!isOpen) resetForm();
+          }}
+        >
           <DialogTrigger asChild>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
@@ -176,13 +232,20 @@ function DentalCareContent() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingId ? "Edit Dental Record" : "New Dental Record"}</DialogTitle>
+              <DialogTitle>
+                {editingId ? "Edit Dental Record" : "New Dental Record"}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="horseId">Horse *</Label>
-                  <Select value={formData.horseId.toString()} onValueChange={(value) => setFormData({...formData, horseId: parseInt(value)})}>
+                  <Select
+                    value={formData.horseId.toString()}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, horseId: parseInt(value) })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select horse" />
                     </SelectTrigger>
@@ -202,7 +265,9 @@ function DentalCareContent() {
                     id="examDate"
                     type="date"
                     value={formData.examDate}
-                    onChange={(e) => setFormData({...formData, examDate: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, examDate: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -212,7 +277,9 @@ function DentalCareContent() {
                   <Input
                     id="dentistName"
                     value={formData.dentistName}
-                    onChange={(e) => setFormData({...formData, dentistName: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dentistName: e.target.value })
+                    }
                     placeholder="Dr. Smith"
                   />
                 </div>
@@ -222,7 +289,12 @@ function DentalCareContent() {
                   <Input
                     id="dentistClinic"
                     value={formData.dentistClinic}
-                    onChange={(e) => setFormData({...formData, dentistClinic: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        dentistClinic: e.target.value,
+                      })
+                    }
                     placeholder="Equine Dental Centre"
                   />
                 </div>
@@ -232,14 +304,24 @@ function DentalCareContent() {
                   <Input
                     id="procedureType"
                     value={formData.procedureType}
-                    onChange={(e) => setFormData({...formData, procedureType: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        procedureType: e.target.value,
+                      })
+                    }
                     placeholder="Routine exam, floating, extraction"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="teethCondition">Teeth Condition</Label>
-                  <Select value={formData.teethCondition} onValueChange={(value) => setFormData({...formData, teethCondition: value as any})}>
+                  <Select
+                    value={formData.teethCondition}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, teethCondition: value as any })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select condition" />
                     </SelectTrigger>
@@ -258,7 +340,9 @@ function DentalCareContent() {
                     id="nextDueDate"
                     type="date"
                     value={formData.nextDueDate}
-                    onChange={(e) => setFormData({...formData, nextDueDate: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nextDueDate: e.target.value })
+                    }
                   />
                 </div>
 
@@ -269,7 +353,9 @@ function DentalCareContent() {
                     type="number"
                     step="0.01"
                     value={formData.cost}
-                    onChange={(e) => setFormData({...formData, cost: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, cost: e.target.value })
+                    }
                     placeholder="0.00"
                   />
                 </div>
@@ -280,7 +366,9 @@ function DentalCareContent() {
                 <Textarea
                   id="findings"
                   value={formData.findings}
-                  onChange={(e) => setFormData({...formData, findings: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, findings: e.target.value })
+                  }
                   placeholder="Examination findings..."
                   rows={3}
                 />
@@ -291,7 +379,12 @@ function DentalCareContent() {
                 <Textarea
                   id="treatmentPerformed"
                   value={formData.treatmentPerformed}
-                  onChange={(e) => setFormData({...formData, treatmentPerformed: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      treatmentPerformed: e.target.value,
+                    })
+                  }
                   placeholder="Procedures and treatments..."
                   rows={3}
                 />
@@ -302,10 +395,14 @@ function DentalCareContent() {
                   type="checkbox"
                   id="sedationUsed"
                   checked={formData.sedationUsed}
-                  onChange={(e) => setFormData({...formData, sedationUsed: e.target.checked})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, sedationUsed: e.target.checked })
+                  }
                   className="rounded"
                 />
-                <Label htmlFor="sedationUsed" className="cursor-pointer">Sedation Used</Label>
+                <Label htmlFor="sedationUsed" className="cursor-pointer">
+                  Sedation Used
+                </Label>
               </div>
 
               <div className="space-y-2">
@@ -313,17 +410,28 @@ function DentalCareContent() {
                 <Textarea
                   id="notes"
                   value={formData.notes}
-                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                   placeholder="Additional notes..."
                   rows={2}
                 />
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setOpen(false)}
+                >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={createMutation.isLoading || updateMutation.isLoading}>
+                <Button
+                  type="submit"
+                  disabled={
+                    createMutation.isPending || updateMutation.isPending
+                  }
+                >
                   {editingId ? "Update" : "Create"} Record
                 </Button>
               </div>
@@ -339,9 +447,10 @@ function DentalCareContent() {
             Upcoming Dental Appointments
           </h3>
           <div className="space-y-2">
-            {upcomingRecords.map(record => (
+            {upcomingRecords.map((record) => (
               <div key={record.id} className="text-sm text-blue-800">
-                <strong>{getHorseName(record.horseId)}</strong> - {new Date(record.nextDueDate!).toLocaleDateString()}
+                <strong>{getHorseName(record.horseId)}</strong> -{" "}
+                {new Date(record.nextDueDate!).toLocaleDateString()}
               </div>
             ))}
           </div>
@@ -358,13 +467,20 @@ function DentalCareContent() {
         ) : (
           <div className="grid gap-4">
             {localRecords.map((record) => (
-              <div key={record.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div
+                key={record.id}
+                className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-lg">{getHorseName(record.horseId)}</h3>
+                      <h3 className="font-semibold text-lg">
+                        {getHorseName(record.horseId)}
+                      </h3>
                       {record.teethCondition && (
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getConditionBadge(record.teethCondition)}`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getConditionBadge(record.teethCondition)}`}
+                        >
                           {record.teethCondition}
                         </span>
                       )}
@@ -375,16 +491,24 @@ function DentalCareContent() {
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(record.examDate).toLocaleDateString()} 
+                      {new Date(record.examDate).toLocaleDateString()}
                       {record.dentistName && ` • ${record.dentistName}`}
                       {record.dentistClinic && ` (${record.dentistClinic})`}
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => handleEdit(record)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(record)}
+                    >
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(record.id)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(record.id)}
+                    >
                       <Trash2 className="w-4 h-4 text-red-600" />
                     </Button>
                   </div>
@@ -400,14 +524,18 @@ function DentalCareContent() {
                 {record.findings && (
                   <div className="mb-2">
                     <span className="text-sm font-medium">Findings: </span>
-                    <span className="text-sm text-muted-foreground">{record.findings}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {record.findings}
+                    </span>
                   </div>
                 )}
 
                 {record.treatmentPerformed && (
                   <div className="mb-2">
                     <span className="text-sm font-medium">Treatment: </span>
-                    <span className="text-sm text-muted-foreground">{record.treatmentPerformed}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {record.treatmentPerformed}
+                    </span>
                   </div>
                 )}
 

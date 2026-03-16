@@ -13,14 +13,17 @@ const SMTP_CONFIG = {
   },
 };
 
-const SMTP_FROM = process.env.SMTP_FROM || '"EquiProfile" <noreply@equiprofile.online>';
+const SMTP_FROM =
+  process.env.SMTP_FROM || '"EquiProfile" <noreply@equiprofile.online>';
 
 let transporter: Transporter | null = null;
 
 // Initialize transporter lazily
 function getTransporter(): Transporter | null {
   if (!SMTP_CONFIG.auth.user || !SMTP_CONFIG.auth.pass) {
-    console.warn("[Email] SMTP not configured (SMTP_USER and SMTP_PASS required)");
+    console.warn(
+      "[Email] SMTP not configured (SMTP_USER and SMTP_PASS required)",
+    );
     return null;
   }
 
@@ -44,7 +47,7 @@ export async function sendEmail(
   to: string,
   subject: string,
   html: string,
-  text?: string
+  text?: string,
 ): Promise<void> {
   const transporter = getTransporter();
   if (!transporter) {
@@ -77,7 +80,9 @@ export async function sendWelcomeEmail(user: User): Promise<void> {
   }
 
   const trialDays = user.trialEndsAt
-    ? Math.ceil((user.trialEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    ? Math.ceil(
+        (user.trialEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+      )
     : 7;
 
   const subject = "Welcome to EquiProfile!";
@@ -132,7 +137,10 @@ export async function sendWelcomeEmail(user: User): Promise<void> {
 /**
  * Send trial reminder email
  */
-export async function sendTrialReminderEmail(user: User, daysLeft: number): Promise<void> {
+export async function sendTrialReminderEmail(
+  user: User,
+  daysLeft: number,
+): Promise<void> {
   if (!user.email) return;
 
   let subject: string;
@@ -179,16 +187,16 @@ export async function sendTrialReminderEmail(user: User, daysLeft: number): Prom
       <div style="display: flex; gap: 20px; margin: 20px 0;">
         <div style="flex: 1; border: 2px solid #e5e7eb; border-radius: 8px; padding: 15px; text-align: center;">
           <h4 style="margin-top: 0;">Monthly</h4>
-          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">£10/mo</p>
+          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">£7.99/mo</p>
           <p style="font-size: 14px; color: #6b7280;">Billed monthly</p>
         </div>
         <div style="flex: 1; border: 2px solid #1e40af; border-radius: 8px; padding: 15px; text-align: center; background: #eff6ff;">
           <div style="background: #1e40af; color: white; font-size: 12px; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">
-            SAVE £20
+            SAVE 17%
           </div>
           <h4 style="margin-top: 0;">Yearly</h4>
-          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">£100/yr</p>
-          <p style="font-size: 14px; color: #6b7280;">Just £8.33/mo</p>
+          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">£79.90/yr</p>
+          <p style="font-size: 14px; color: #6b7280;">Just £6.66/mo</p>
         </div>
       </div>
       
@@ -211,11 +219,14 @@ export async function sendTrialReminderEmail(user: User, daysLeft: number): Prom
 /**
  * Send payment success/subscription activated email
  */
-export async function sendPaymentSuccessEmail(user: User, plan?: "monthly" | "yearly"): Promise<void> {
+export async function sendPaymentSuccessEmail(
+  user: User,
+  plan?: "monthly" | "yearly",
+): Promise<void> {
   if (!user.email) return;
 
   const planName = plan === "yearly" ? "Yearly" : "Monthly";
-  const amount = plan === "yearly" ? "£100/year" : "£10/month";
+  const amount = plan === "yearly" ? "£79.90/year" : "£7.99/month";
 
   const subject = "Payment successful - Welcome to EquiProfile Premium! 🎉";
   const html = `
@@ -274,9 +285,13 @@ export async function sendPaymentSuccessEmail(user: User, plan?: "monthly" | "ye
 /**
  * Send password reset email
  */
-export async function sendPasswordResetEmail(email: string, resetToken: string, name?: string): Promise<void> {
+export async function sendPasswordResetEmail(
+  email: string,
+  resetToken: string,
+  name?: string,
+): Promise<void> {
   const resetUrl = `${process.env.BASE_URL || "https://equiprofile.online"}/reset-password?token=${resetToken}`;
-  
+
   const subject = "Reset your EquiProfile password";
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -315,43 +330,69 @@ export async function sendPasswordResetEmail(email: string, resetToken: string, 
 }
 
 /**
- * Send contact form submission to support
+ * Send contact-form email to the business inbox (CONTACT_TO)
  */
-export async function sendContactFormEmail(data: {
+export async function sendContactEmail(fields: {
   name: string;
   email: string;
   subject: string;
   message: string;
 }): Promise<void> {
-  const contactEmail = process.env.CONTACT_TO_EMAIL || "support@equiprofile.com";
+  const to =
+    process.env.CONTACT_TO ||
+    process.env.SMTP_FROM ||
+    "support@equiprofile.online";
 
-  const subject = `Contact Form: ${data.subject}`;
+  // Escape HTML entities to prevent XSS in email clients
+  const esc = (s: string) =>
+    s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  const safeName = esc(fields.name);
+  const safeEmail = esc(fields.email);
+  const safeSubject = esc(fields.subject);
+  const safeMessage = esc(fields.message);
+
+  const subject = `[Contact Form] ${safeSubject}`;
   const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #1e40af;">New Contact Form Submission</h1>
-      
-      <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <p><strong>From:</strong> ${data.name}</p>
-        <p><strong>Email:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
-        <p><strong>Subject:</strong> ${data.subject}</p>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #1e40af; border-bottom: 2px solid #1e40af; padding-bottom: 10px;">
+        New Contact Form Submission
+      </h2>
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr>
+          <td style="padding: 8px; font-weight: bold; width: 120px; color: #374151;">Name:</td>
+          <td style="padding: 8px; color: #111827;">${safeName}</td>
+        </tr>
+        <tr style="background: #f9fafb;">
+          <td style="padding: 8px; font-weight: bold; color: #374151;">Email:</td>
+          <td style="padding: 8px; color: #111827;">
+            <a href="mailto:${safeEmail}" style="color: #1e40af;">${safeEmail}</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; font-weight: bold; color: #374151;">Subject:</td>
+          <td style="padding: 8px; color: #111827;">${safeSubject}</td>
+        </tr>
+      </table>
+      <div style="background: #f3f4f6; border-left: 4px solid #1e40af; padding: 16px; border-radius: 4px;">
+        <p style="margin: 0; font-weight: bold; color: #374151; margin-bottom: 8px;">Message:</p>
+        <p style="margin: 0; color: #111827; white-space: pre-wrap;">${safeMessage}</p>
       </div>
-      
-      <div style="background: white; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="margin-top: 0;">Message:</h3>
-        <p style="white-space: pre-wrap;">${data.message}</p>
-      </div>
-      
-      <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-        To reply, send an email to: <a href="mailto:${data.email}">${data.email}</a>
+      <p style="color: #6b7280; font-size: 12px; margin-top: 24px;">
+        Sent via EquiProfile Contact Form · ${new Date().toISOString()}
       </p>
     </div>
   `;
 
-  await sendEmail(contactEmail, subject, html);
+  await sendEmail(to, subject, html);
 }
 
 /**
- * Test email endpoint (for admin testing)
  */
 export async function sendTestEmail(to: string): Promise<boolean> {
   try {
@@ -367,13 +408,80 @@ export async function sendTestEmail(to: string): Promise<boolean> {
             Sent at: ${new Date().toISOString()}
           </p>
         </div>
-      `
+      `,
     );
     return true;
   } catch (error) {
     console.error("[Email] Test email failed:", error);
     return false;
   }
+}
+
+/**
+ * Send reminder email for events
+ */
+export async function sendReminderEmail(
+  to: string,
+  userName: string,
+  eventTitle: string,
+  eventDescription: string,
+  eventDate: Date,
+  horseName?: string,
+): Promise<void> {
+  const formattedDate = eventDate.toLocaleDateString("en-GB", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const formattedTime = eventDate.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const subject = `Reminder: ${eventTitle}`;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #1e40af; border-bottom: 2px solid #1e40af; padding-bottom: 10px;">
+        Event Reminder
+      </h2>
+      
+      <p style="font-size: 16px; color: #374151;">
+        Hi ${userName},
+      </p>
+      
+      <p style="font-size: 16px; color: #374151;">
+        This is a friendly reminder about your upcoming event:
+      </p>
+      
+      <div style="background: #f3f4f6; padding: 20px; margin: 20px 0; border-left: 4px solid #3b82f6; border-radius: 4px;">
+        <h3 style="margin-top: 0; color: #1e40af;">${eventTitle}</h3>
+        ${horseName ? `<p style="margin: 5px 0;"><strong>Horse:</strong> ${horseName}</p>` : ""}
+        <p style="margin: 5px 0;"><strong>Date:</strong> ${formattedDate}</p>
+        <p style="margin: 5px 0;"><strong>Time:</strong> ${formattedTime}</p>
+        ${eventDescription ? `<p style="margin: 10px 0 0 0;">${eventDescription}</p>` : ""}
+      </div>
+      
+      <p style="font-size: 16px; color: #374151;">
+        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/calendar" 
+           style="display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">
+          View in Calendar
+        </a>
+      </p>
+      
+      <p style="color: #6b7280; margin-top: 30px; font-size: 14px;">
+        Best regards,<br/>
+        The EquiProfile Team
+      </p>
+      
+      <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">
+        You received this email because you have an event scheduled in EquiProfile.
+      </p>
+    </div>
+  `;
+
+  await sendEmail(to, subject, html);
 }
 
 /**

@@ -34,25 +34,25 @@ export const RateLimits = {
     windowMs: 15 * 60 * 1000, // 15 minutes
     maxRequests: 100,
   },
-  
+
   // Authenticated endpoints
   authenticated: {
     windowMs: 15 * 60 * 1000, // 15 minutes
     maxRequests: 1000,
   },
-  
+
   // File uploads
   fileUpload: {
     windowMs: 60 * 60 * 1000, // 1 hour
     maxRequests: 50,
   },
-  
+
   // Admin endpoints
   admin: {
     windowMs: 15 * 60 * 1000, // 15 minutes
     maxRequests: 500,
   },
-  
+
   // AI/LLM endpoints
   ai: {
     windowMs: 60 * 60 * 1000, // 1 hour
@@ -65,7 +65,7 @@ export const RateLimits = {
  */
 export function checkRateLimit(
   key: string,
-  config: RateLimitConfig
+  config: RateLimitConfig,
 ): {
   allowed: boolean;
   remaining: number;
@@ -81,7 +81,7 @@ export function checkRateLimit(
       resetAt: now + config.windowMs,
     };
     rateLimitStore.set(key, newEntry);
-    
+
     return {
       allowed: true,
       remaining: config.maxRequests - 1,
@@ -114,7 +114,7 @@ export function checkRateLimit(
  */
 export function rateLimitMiddleware(
   key: string,
-  config: RateLimitConfig = RateLimits.authenticated
+  config: RateLimitConfig = RateLimits.authenticated,
 ) {
   const result = checkRateLimit(key, config);
 
@@ -150,7 +150,7 @@ setInterval(cleanupRateLimitStore, 5 * 60 * 1000);
  */
 export function getRateLimitKey(
   userId: number | null,
-  endpoint: string
+  endpoint: string,
 ): string {
   return userId ? `user:${userId}:${endpoint}` : `anon:${endpoint}`;
 }

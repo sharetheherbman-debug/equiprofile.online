@@ -3,7 +3,7 @@
  * Provides instant updates across all modules without page refresh
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface RealtimeEvent {
   event: string;
@@ -28,11 +28,11 @@ export function useRealtime(options: UseRealtimeOptions = {}) {
 
   const [isConnected, setIsConnected] = useState(false);
   const [lastEvent, setLastEvent] = useState<RealtimeEvent | null>(null);
-  
+
   const eventSourceRef = useRef<EventSource | null>(null);
   const handlersRef = useRef<Map<string, Set<EventHandler>>>(new Map());
   const reconnectAttemptsRef = useRef(0);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   /**
    * Subscribe to specific event type
@@ -62,18 +62,18 @@ export function useRealtime(options: UseRealtimeOptions = {}) {
     if (!enabled || eventSourceRef.current) return;
 
     try {
-      const eventSource = new EventSource('/api/realtime/events', {
+      const eventSource = new EventSource("/api/realtime/events", {
         withCredentials: true,
       });
 
       eventSource.onopen = () => {
-        console.log('[SSE] Connected');
+        console.log("[SSE] Connected");
         setIsConnected(true);
         reconnectAttemptsRef.current = 0;
       };
 
       eventSource.onerror = (error) => {
-        console.error('[SSE] Connection error:', error);
+        console.error("[SSE] Connection error:", error);
         setIsConnected(false);
         eventSource.close();
         eventSourceRef.current = null;
@@ -82,13 +82,13 @@ export function useRealtime(options: UseRealtimeOptions = {}) {
         if (reconnectAttemptsRef.current < maxReconnectAttempts) {
           reconnectAttemptsRef.current++;
           console.log(
-            `[SSE] Reconnecting... (attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`
+            `[SSE] Reconnecting... (attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`,
           );
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
           }, reconnectDelay);
         } else {
-          console.error('[SSE] Max reconnect attempts reached');
+          console.error("[SSE] Max reconnect attempts reached");
         }
       };
 
@@ -102,13 +102,13 @@ export function useRealtime(options: UseRealtimeOptions = {}) {
               data,
               timestamp: new Date().toISOString(),
             };
-            
+
             setLastEvent(realtimeEvent);
-            
+
             // Call all registered handlers for this event type
             const handlers = handlersRef.current.get(eventType);
             if (handlers) {
-              handlers.forEach(handler => {
+              handlers.forEach((handler) => {
                 try {
                   handler(data);
                 } catch (error) {
@@ -124,46 +124,46 @@ export function useRealtime(options: UseRealtimeOptions = {}) {
 
       // Setup listeners for common event types
       const eventTypes = [
-        'connected',
-        'horses:created',
-        'horses:updated',
-        'horses:deleted',
-        'documents:uploaded',
-        'documents:deleted',
-        'tasks:created',
-        'tasks:updated',
-        'tasks:deleted',
-        'tasks:completed',
-        'health:created',
-        'health:updated',
-        'health:deleted',
-        'health:appointment:created',
-        'health:appointment:updated',
-        'breeding:created',
-        'breeding:updated',
-        'breeding:deleted',
-        'foal:created',
-        'foal:updated',
-        'finance:income:created',
-        'finance:expense:created',
-        'finance:invoice:created',
-        'finance:invoice:updated',
-        'sales:lead:created',
-        'sales:lead:updated',
-        'nutrition:log:created',
-        'nutrition:plan:updated',
-        'team:member:added',
-        'team:member:removed',
-        'report:generated',
-        'file:uploaded',
-        'file:deleted',
+        "connected",
+        "horses:created",
+        "horses:updated",
+        "horses:deleted",
+        "documents:uploaded",
+        "documents:deleted",
+        "tasks:created",
+        "tasks:updated",
+        "tasks:deleted",
+        "tasks:completed",
+        "health:created",
+        "health:updated",
+        "health:deleted",
+        "health:appointment:created",
+        "health:appointment:updated",
+        "breeding:created",
+        "breeding:updated",
+        "breeding:deleted",
+        "foal:created",
+        "foal:updated",
+        "finance:income:created",
+        "finance:expense:created",
+        "finance:invoice:created",
+        "finance:invoice:updated",
+        "sales:lead:created",
+        "sales:lead:updated",
+        "nutrition:log:created",
+        "nutrition:plan:updated",
+        "team:member:added",
+        "team:member:removed",
+        "report:generated",
+        "file:uploaded",
+        "file:deleted",
       ];
 
       eventTypes.forEach(setupEventListener);
 
       eventSourceRef.current = eventSource;
     } catch (error) {
-      console.error('[SSE] Setup error:', error);
+      console.error("[SSE] Setup error:", error);
     }
   }, [enabled, reconnectDelay, maxReconnectAttempts]);
 
@@ -206,7 +206,7 @@ export function useRealtime(options: UseRealtimeOptions = {}) {
 export function useRealtimeModule(
   module: string,
   onEvent: (action: string, data: any) => void,
-  enabled = true
+  enabled = true,
 ) {
   const { subscribe, isConnected } = useRealtime({ enabled });
 
@@ -217,8 +217,8 @@ export function useRealtimeModule(
     const unsubscribers: (() => void)[] = [];
 
     // Subscribe to all events matching this module
-    const commonActions = ['created', 'updated', 'deleted', 'completed'];
-    commonActions.forEach(action => {
+    const commonActions = ["created", "updated", "deleted", "completed"];
+    commonActions.forEach((action) => {
       const eventType = `${module}:${action}`;
       const unsubscribe = subscribe(eventType, (data) => {
         onEvent(action, data);
@@ -227,7 +227,7 @@ export function useRealtimeModule(
     });
 
     return () => {
-      unsubscribers.forEach(unsub => unsub());
+      unsubscribers.forEach((unsub) => unsub());
     };
   }, [module, onEvent, enabled, subscribe]);
 
@@ -239,7 +239,7 @@ export function useRealtimeModule(
  */
 export function useOptimisticUpdate<T>(
   initialData: T[],
-  moduleKey: string
+  moduleKey: string,
 ): {
   data: T[];
   optimisticAdd: (item: T) => void;
@@ -254,38 +254,45 @@ export function useOptimisticUpdate<T>(
     moduleKey,
     (action, eventData) => {
       switch (action) {
-        case 'created':
-          setData(prev => [...prev, eventData]);
+        case "created":
+          setData((prev) => [...prev, eventData]);
           break;
-        case 'updated':
-          setData(prev =>
-            prev.map(item =>
-              (item as any).id === eventData.id ? { ...item, ...eventData } : item
-            )
+        case "updated":
+          setData((prev) =>
+            prev.map((item) =>
+              (item as any).id === eventData.id
+                ? { ...item, ...eventData }
+                : item,
+            ),
           );
           break;
-        case 'deleted':
-          setData(prev => prev.filter(item => (item as any).id !== eventData.id));
+        case "deleted":
+          setData((prev) =>
+            prev.filter((item) => (item as any).id !== eventData.id),
+          );
           break;
       }
     },
-    true
+    true,
   );
 
   const optimisticAdd = useCallback((item: T) => {
-    setData(prev => [...prev, item]);
+    setData((prev) => [...prev, item]);
   }, []);
 
-  const optimisticUpdate = useCallback((id: number | string, updates: Partial<T>) => {
-    setData(prev =>
-      prev.map(item =>
-        (item as any).id === id ? { ...item, ...updates } : item
-      )
-    );
-  }, []);
+  const optimisticUpdate = useCallback(
+    (id: number | string, updates: Partial<T>) => {
+      setData((prev) =>
+        prev.map((item) =>
+          (item as any).id === id ? { ...item, ...updates } : item,
+        ),
+      );
+    },
+    [],
+  );
 
   const optimisticRemove = useCallback((id: number | string) => {
-    setData(prev => prev.filter(item => (item as any).id !== id));
+    setData((prev) => prev.filter((item) => (item as any).id !== id));
   }, []);
 
   const syncData = useCallback((serverData: T[]) => {

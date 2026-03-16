@@ -1,11 +1,23 @@
 import { useState, useRef } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -17,24 +29,24 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
-import { 
-  Plus, 
-  FileText, 
+import {
+  Plus,
+  FileText,
   Download,
   Trash2,
   Upload,
   File,
   Image,
-  FileSpreadsheet
+  FileSpreadsheet,
 } from "lucide-react";
 import { toast } from "sonner";
 
 const documentTypes = [
-  { value: 'health', label: 'Health Record' },
-  { value: 'registration', label: 'Registration Papers' },
-  { value: 'insurance', label: 'Insurance Document' },
-  { value: 'competition', label: 'Competition Results' },
-  { value: 'other', label: 'Other' },
+  { value: "health", label: "Health Record" },
+  { value: "registration", label: "Registration Papers" },
+  { value: "insurance", label: "Insurance Document" },
+  { value: "competition", label: "Competition Results" },
+  { value: "other", label: "Other" },
 ];
 
 function DocumentsContent() {
@@ -43,13 +55,22 @@ function DocumentsContent() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     horseId: "",
-    documentType: "other" as 'health' | 'registration' | 'insurance' | 'competition' | 'other',
+    documentType: "other" as
+      | "health"
+      | "registration"
+      | "insurance"
+      | "competition"
+      | "other",
     title: "",
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: horses } = trpc.horses.list.useQuery();
-  const { data: documents, isLoading, refetch } = trpc.documents.list.useQuery();
+  const {
+    data: documents,
+    isLoading,
+    refetch,
+  } = trpc.documents.list.useQuery();
 
   const uploadMutation = trpc.documents.upload.useMutation({
     onSuccess: () => {
@@ -58,12 +79,25 @@ function DocumentsContent() {
       refetch();
       setFormData({
         horseId: "",
-        documentType: "other" as 'health' | 'registration' | 'insurance' | 'competition' | 'other',
+        documentType: "other" as
+          | "health"
+          | "registration"
+          | "insurance"
+          | "competition"
+          | "other",
         title: "",
       });
       setSelectedFile(null);
     },
-    onError: (error) => toast.error(error.message),
+    onError: (error) => {
+      if (error.message?.toLowerCase().includes("disabled")) {
+        toast.error("Document uploads are temporarily unavailable", {
+          description: "Please contact support if this persists.",
+        });
+      } else {
+        toast.error(error.message);
+      }
+    },
   });
 
   const deleteMutation = trpc.documents.delete.useMutation({
@@ -100,10 +134,18 @@ function DocumentsContent() {
       // Convert file to base64
       const reader = new FileReader();
       reader.onload = async () => {
-        const base64 = (reader.result as string).split(',')[1];
+        const base64 = (reader.result as string).split(",")[1];
         uploadMutation.mutate({
-          horseId: formData.horseId && formData.horseId !== "general" ? parseInt(formData.horseId) : undefined,
-          category: formData.documentType as 'health' | 'registration' | 'insurance' | 'competition' | 'other',
+          horseId:
+            formData.horseId && formData.horseId !== "none"
+              ? parseInt(formData.horseId)
+              : undefined,
+          category: formData.documentType as
+            | "health"
+            | "registration"
+            | "insurance"
+            | "competition"
+            | "other",
           description: formData.title,
           fileName: selectedFile.name,
           fileData: base64,
@@ -120,8 +162,9 @@ function DocumentsContent() {
   };
 
   const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) return <Image className="w-5 h-5" />;
-    if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return <FileSpreadsheet className="w-5 h-5" />;
+    if (mimeType.startsWith("image/")) return <Image className="w-5 h-5" />;
+    if (mimeType.includes("spreadsheet") || mimeType.includes("excel"))
+      return <FileSpreadsheet className="w-5 h-5" />;
     return <File className="w-5 h-5" />;
   };
 
@@ -148,7 +191,9 @@ function DocumentsContent() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-foreground">Documents</h1>
+          <h1 className="font-serif text-3xl font-bold text-foreground">
+            Documents
+          </h1>
           <p className="text-muted-foreground mt-1">
             Store and manage important documents for your horses
           </p>
@@ -169,7 +214,7 @@ function DocumentsContent() {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
-                <div 
+                <div
                   className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
                   onClick={() => fileInputRef.current?.click()}
                 >
@@ -207,7 +252,9 @@ function DocumentsContent() {
                   <Label>Title *</Label>
                   <Input
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     placeholder="Document title"
                   />
                 </div>
@@ -217,7 +264,9 @@ function DocumentsContent() {
                     <Label>Document Type</Label>
                     <Select
                       value={formData.documentType}
-                      onValueChange={(value: any) => setFormData({ ...formData, documentType: value })}
+                      onValueChange={(value: any) =>
+                        setFormData({ ...formData, documentType: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -235,15 +284,20 @@ function DocumentsContent() {
                     <Label>Horse (optional)</Label>
                     <Select
                       value={formData.horseId}
-                      onValueChange={(value) => setFormData({ ...formData, horseId: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, horseId: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select horse" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="general">General</SelectItem>
+                        <SelectItem value="none">General</SelectItem>
                         {horses?.map((horse) => (
-                          <SelectItem key={horse.id} value={horse.id.toString()}>
+                          <SelectItem
+                            key={horse.id}
+                            value={horse.id.toString()}
+                          >
                             {horse.name}
                           </SelectItem>
                         ))}
@@ -253,10 +307,17 @@ function DocumentsContent() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={uploading || uploadMutation.isPending}>
+                <Button
+                  type="submit"
+                  disabled={uploading || uploadMutation.isPending}
+                >
                   {uploading ? "Uploading..." : "Upload"}
                 </Button>
               </DialogFooter>
@@ -274,7 +335,9 @@ function DocumentsContent() {
           {!documents || documents.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">No documents uploaded yet</p>
+              <p className="text-muted-foreground mb-4">
+                No documents uploaded yet
+              </p>
               <Button onClick={() => setIsDialogOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Upload First Document
@@ -283,28 +346,44 @@ function DocumentsContent() {
           ) : (
             <div className="space-y-3">
               {documents.map((doc) => {
-                const horse = horses?.find(h => h.id === doc.horseId);
-                const docType = documentTypes.find(t => t.value === doc.category);
+                const horse = horses?.find((h) => h.id === doc.horseId);
+                const docType = documentTypes.find(
+                  (t) => t.value === doc.category,
+                );
                 return (
-                  <div key={doc.id} className="flex items-center gap-4 p-4 rounded-lg border hover:bg-muted/30 transition-colors">
+                  <div
+                    key={doc.id}
+                    className="flex items-center gap-4 p-4 rounded-lg border hover:bg-muted/30 transition-colors"
+                  >
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                      {getFileIcon(doc.fileType || 'application/pdf')}
+                      {getFileIcon(doc.fileType || "application/pdf")}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{doc.description || doc.fileName}</p>
+                      <p className="font-medium truncate">
+                        {doc.description || doc.fileName}
+                      </p>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{docType?.label || 'Document'}</span>
+                        <span>{docType?.label || "Document"}</span>
                         {horse && <span>• {horse.name}</span>}
-                        {doc.fileSize && <span>• {formatFileSize(doc.fileSize)}</span>}
+                        {doc.fileSize && (
+                          <span>• {formatFileSize(doc.fileSize)}</span>
+                        )}
                       </div>
                     </div>
-                    <Badge variant="outline" className="capitalize hidden sm:inline-flex">
-                      {doc.category || 'other'}
+                    <Badge
+                      variant="outline"
+                      className="capitalize hidden sm:inline-flex"
+                    >
+                      {doc.category || "other"}
                     </Badge>
                     <div className="flex items-center gap-2">
                       {doc.fileUrl && (
                         <Button variant="outline" size="icon" asChild>
-                          <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={doc.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <Download className="w-4 h-4" />
                           </a>
                         </Button>

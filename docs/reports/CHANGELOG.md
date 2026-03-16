@@ -10,16 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added - Production Ready Release
 
 #### Payment System
+
 - Full Stripe integration with subscription management
 - 7-day free trial for new users
-- Monthly subscription (£10/month)
-- Yearly subscription (£100/year)
+- Monthly subscription (£7.99/month)
+- Yearly subscription (£79.90/year)
 - Secure webhook handler with signature verification
 - Idempotency tracking for webhook events
 - Customer billing portal integration
 - Automatic subscription status updates
 
 #### Security
+
 - Helmet middleware for HTTP security headers
 - Rate limiting (100 requests per 15 minutes per IP)
 - Request ID tracking for all API calls
@@ -30,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Webhook signature verification
 
 #### Database Schema
+
 - `stables` table for multi-user team management
 - `stableMembers` table for role-based access control
 - `stableInvites` table for team invitations
@@ -44,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `stripeEvents` table for webhook idempotency
 
 #### Infrastructure
+
 - Health check endpoint (`/api/health`)
 - Environment variable templates (`.env.example`)
 - Production deployment documentation
@@ -53,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SSL certificate setup guide
 
 #### API Endpoints
+
 - `POST /api/webhooks/stripe` - Stripe webhook handler
 - `GET /api/health` - Health check endpoint
 - tRPC `billing.getPricing` - Get pricing information
@@ -61,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - tRPC `billing.getStatus` - Get subscription status
 
 #### Documentation
+
 - Complete production audit report (`AUDIT.md`)
 - Stripe integration guide (`STRIPE_INTEGRATION.md`)
 - Security hardening report (`SECURITY.md`)
@@ -69,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Backup and recovery procedures
 
 #### Developer Experience
+
 - `.gitignore` file to prevent sensitive data commits
 - TypeScript strict mode enabled
 - Comprehensive error handling
@@ -78,17 +85,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 #### Database
+
 - Enhanced `users` table with Stripe customer tracking
 - Updated subscription status enum
 - Added subscription plan tracking
 - Added payment history fields
 
 #### Middleware
+
 - Reorganized middleware stack for security
 - Enhanced error handling
 - Improved logging format
 
 #### Build Process
+
 - Optimized production build
 - Environment-specific configurations
 - Type checking in CI/CD
@@ -96,6 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 #### Fixed
+
 - ✅ Missing rate limiting
 - ✅ Missing security headers
 - ✅ Insufficient request logging
@@ -104,6 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Missing input validation
 
 #### Hardened
+
 - ✅ Helmet security headers active
 - ✅ Rate limiting implemented
 - ✅ Request ID tracking
@@ -112,12 +124,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ HTTPS enforcement
 
 ### Performance
+
 - Optimized database queries with indexes
 - Reduced API response times
 - Implemented query result caching
 - Optimized Stripe API calls
 
 ### Testing
+
 - All existing tests passing (7/7)
 - Type checking with zero errors
 - Webhook signature verification tested
@@ -128,6 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - Initial Release
 
 ### Added
+
 - User authentication via OAuth
 - Horse profile management
 - Health record tracking
@@ -140,6 +155,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic subscription management
 
 ### Features
+
 - Multi-horse support
 - Document uploads
 - Vet record tracking
@@ -164,6 +180,7 @@ pnpm db:push
 ```
 
 This will create:
+
 - stables, stableMembers, stableInvites
 - events, eventReminders
 - feedCosts, vaccinations, dewormings
@@ -204,6 +221,7 @@ VITE_STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
 #### Security Updates
 
 The following security features are now active:
+
 - Helmet headers (automatic)
 - Rate limiting (automatic)
 - Request logging (automatic)
@@ -218,6 +236,7 @@ None - This is a backward-compatible upgrade.
 #### New Features Available
 
 After upgrade, these features are database-ready:
+
 - Stable/team management
 - Event calendar
 - Feed cost tracking
@@ -232,6 +251,7 @@ UI implementation coming in future releases.
 ## Future Roadmap
 
 ### Version 1.1.0 (Q1 2026)
+
 - [ ] Modern UI redesign
 - [ ] Pricing page implementation
 - [ ] Billing management interface
@@ -239,6 +259,7 @@ UI implementation coming in future releases.
 - [ ] Calendar view for events
 
 ### Version 1.2.0 (Q2 2026)
+
 - [ ] Mobile app (iOS/Android)
 - [ ] Email notification system
 - [ ] Advanced analytics dashboard
@@ -246,6 +267,7 @@ UI implementation coming in future releases.
 - [ ] Medical passport printable view
 
 ### Version 1.3.0 (Q3 2026)
+
 - [ ] Multi-language support
 - [ ] Enhanced document search
 - [ ] Batch operations
@@ -253,6 +275,7 @@ UI implementation coming in future releases.
 - [ ] API for third-party integrations
 
 ### Version 2.0.0 (Q4 2026)
+
 - [ ] White-label solution
 - [ ] Multi-tenancy support
 - [ ] Advanced permissions system
@@ -264,6 +287,7 @@ UI implementation coming in future releases.
 ## Support
 
 For issues or questions:
+
 - Documentation: `/docs` directory
 - Bug reports: GitHub Issues
 - Security issues: security@equiprofile.online

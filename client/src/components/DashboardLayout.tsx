@@ -19,14 +19,21 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { useAdminToggle } from "@/hooks/useAdminToggle";
-import { TrialBanner } from "./TrialBanner";
-import { 
-  LayoutDashboard, 
-  LogOut, 
-  PanelLeft, 
+
+import {
+  LayoutDashboard,
+  LogOut,
+  PanelLeft,
   CircleDot,
   Heart,
   Activity,
@@ -37,40 +44,152 @@ import {
   Shield,
   MessageSquare,
   ListChecks,
+  BookTemplate,
   Baby,
   Calendar,
-  Users
+  Users,
+  MoreHorizontal,
+  Dumbbell,
+  Apple,
+  BarChart3,
+  DollarSign,
+  Stethoscope,
+  Syringe,
+  Scissors,
+  Pill,
+  XCircle,
+  GitBranch,
+  BookOpen,
+  Tag,
+  Clock,
+  Brain,
+  Home,
+  Building2,
+  Briefcase,
+  UserCog,
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
+import { DashboardLayoutSkeleton } from "./DashboardLayoutSkeleton";
 import { Button } from "./ui/button";
 import { trpc } from "@/lib/trpc";
 import { ThemeToggle } from "./ThemeToggle";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", requiresStable: false },
-  { icon: CircleDot, label: "My Horses", path: "/horses", requiresStable: false },
-  { icon: Activity, label: "Training", path: "/training", requiresStable: false },
-  { icon: ListChecks, label: "Training Templates", path: "/training-templates", requiresStable: false },
-  { icon: Heart, label: "Health Records", path: "/health", requiresStable: false },
-  { icon: Utensils, label: "Feeding Plans", path: "/feeding", requiresStable: false },
-  { icon: Baby, label: "Breeding", path: "/breeding", requiresStable: false },
-  { icon: Calendar, label: "Lessons", path: "/lessons", requiresStable: false },
-  { icon: ListChecks, label: "Tasks", path: "/tasks", requiresStable: false },
-  { icon: Users, label: "Contacts", path: "/contacts", requiresStable: false },
-  { icon: FileText, label: "Documents", path: "/documents", requiresStable: false },
-  { icon: Cloud, label: "Weather", path: "/weather", requiresStable: false },
-  { icon: MessageSquare, label: "AI Chat", path: "/ai-chat", requiresStable: false },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+  { icon: CircleDot, label: "My Horses", path: "/horses" },
+  { icon: Heart, label: "Health Records", path: "/health" },
+  { icon: Activity, label: "Training", path: "/training" },
+  {
+    icon: BookTemplate,
+    label: "Training Templates",
+    path: "/training-templates",
+  },
+  { icon: Calendar, label: "Calendar", path: "/calendar" },
+  { icon: MessageSquare, label: "Messages", path: "/messages" },
+  { icon: FileText, label: "Documents", path: "/documents" },
+  { icon: Users, label: "Contacts", path: "/contacts" },
+  { icon: BarChart3, label: "Analytics", path: "/analytics" },
+  { icon: BookOpen, label: "Reports", path: "/reports" },
+  { icon: Brain, label: "AI Chat", path: "/ai-chat" },
+  { icon: Cloud, label: "Weather", path: "/weather" },
+  { icon: Utensils, label: "Feeding Plans", path: "/feeding" },
+  { icon: ListChecks, label: "Tasks", path: "/tasks" },
+  { icon: Baby, label: "Breeding", path: "/breeding" },
+  { icon: DollarSign, label: "Billing", path: "/billing" },
+  { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
-// Stable-only features
+// Extra menu items for Stable plan subscribers
 const stableMenuItems = [
-  { icon: Users, label: "Stable Management", path: "/stable", requiresStable: true },
+  { icon: Building2, label: "Stable Dashboard", path: "/stable-dashboard" },
+  { icon: Home, label: "Stable", path: "/stable" },
+  { icon: UserCog, label: "Staff", path: "/contacts" },
+  { icon: Briefcase, label: "Owners", path: "/contacts" },
 ];
 
 const adminMenuItems = [
   { icon: Shield, label: "Admin Panel", path: "/admin" },
+  { icon: Shield, label: "QA Checklist", path: "/qa-check" },
+];
+
+// Bottom nav tabs (5 max for mobile)
+const bottomNavItems = [
+  { icon: Home, label: "Home", path: "/dashboard" },
+  { icon: CircleDot, label: "Horses", path: "/horses" },
+  { icon: Calendar, label: "Calendar", path: "/calendar" },
+  { icon: MessageSquare, label: "Messages", path: "/messages" },
+];
+
+// All modules grouped for the "More" sheet
+const moreModuleGroups = [
+  {
+    label: "Health",
+    items: [
+      { icon: Stethoscope, label: "Health Hub", path: "/health" },
+      { icon: Syringe, label: "Vaccinations", path: "/vaccinations" },
+      { icon: Scissors, label: "Dental Care", path: "/dental" },
+      { icon: Activity, label: "Hoof Care", path: "/hoofcare" },
+      { icon: Pill, label: "Dewormings", path: "/dewormings" },
+      { icon: Heart, label: "Treatments", path: "/treatments" },
+      { icon: XCircle, label: "X-Rays", path: "/xrays" },
+    ],
+  },
+  {
+    label: "Training",
+    items: [
+      { icon: Dumbbell, label: "Training Log", path: "/training" },
+      { icon: BookOpen, label: "Templates", path: "/training-templates" },
+      { icon: Users, label: "Lessons", path: "/lessons" },
+      { icon: Baby, label: "Breeding", path: "/breeding" },
+    ],
+  },
+  {
+    label: "Nutrition",
+    items: [
+      { icon: Apple, label: "Feeding Plans", path: "/feeding" },
+      { icon: FileText, label: "Nutrition Plans", path: "/nutrition-plans" },
+      { icon: BookOpen, label: "Nutrition Logs", path: "/nutrition-logs" },
+    ],
+  },
+  {
+    label: "Schedule",
+    items: [
+      { icon: Clock, label: "Appointments", path: "/appointments" },
+      { icon: ListChecks, label: "Tasks", path: "/tasks" },
+    ],
+  },
+  {
+    label: "AI & Info",
+    items: [
+      { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
+      { icon: Cloud, label: "Weather", path: "/weather" },
+      { icon: GitBranch, label: "Pedigree", path: "/pedigree" },
+    ],
+  },
+  {
+    label: "Data & Reports",
+    items: [
+      { icon: FileText, label: "Documents", path: "/documents" },
+      { icon: BarChart3, label: "Analytics", path: "/analytics" },
+      { icon: FileText, label: "Reports", path: "/reports" },
+      { icon: Tag, label: "Tags", path: "/tags" },
+    ],
+  },
+  {
+    label: "Stable & People",
+    items: [
+      { icon: Home, label: "Stable Management", path: "/stable" },
+      { icon: Users, label: "Contacts", path: "/contacts" },
+    ],
+  },
+  {
+    label: "Account",
+    items: [
+      { icon: Settings, label: "Settings", path: "/settings" },
+      { icon: DollarSign, label: "Billing", path: "/billing" },
+    ],
+  },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -94,7 +213,7 @@ export default function DashboardLayout({
   }, [sidebarWidth]);
 
   if (loading) {
-    return <DashboardLayoutSkeleton />
+    return <DashboardLayoutSkeleton />;
   }
 
   if (!user) {
@@ -106,7 +225,8 @@ export default function DashboardLayout({
               Sign in to continue
             </h1>
             <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Access to this dashboard requires authentication. Continue to launch the login flow.
+              Access to this dashboard requires authentication. Continue to
+              launch the login flow.
             </p>
           </div>
           <Button
@@ -153,23 +273,29 @@ function DashboardLayoutContent({
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const activeMenuItem = menuItems.find(item => item.path === location);
+  const activeMenuItem = menuItems.find((item) => item.path === location);
   const isMobile = useIsMobile();
   const { isAdminVisible } = useAdminToggle();
+  const [moreSheetOpen, setMoreSheetOpen] = useState(false);
 
-  // Get user subscription to check if they have Stable plan
-  const { data: subscription } = trpc.user.getSubscriptionStatus.useQuery();
-  const hasStablePlan = subscription?.plan === 'stable_monthly' || subscription?.plan === 'stable_yearly';
+  // Check admin unlock status — available to any authenticated user
+  const { data: adminStatus } = trpc.adminUnlock.getStatus.useQuery(undefined, {
+    staleTime: 60 * 1000,
+    refetchInterval: 60 * 1000,
+  });
 
-  // Check admin unlock status
-  const { data: adminStatus } = trpc.adminUnlock.getStatus.useQuery(
+  // Check subscription tier for stable plan features
+  const { data: subscriptionStatus } = trpc.user.getSubscriptionStatus.useQuery(
     undefined,
-    {
-      enabled: user?.role === 'admin', // Only fetch if admin
-      staleTime: 60 * 1000, // Cache for 1 minute
-      refetchInterval: 60 * 1000, // Refresh every minute
-    }
+    { staleTime: 5 * 60 * 1000 },
   );
+  const isStablePlan = subscriptionStatus?.planTier === "stable";
+
+  // Build fingerprint — shown in sidebar footer for admins only
+  const { data: buildInfo } = trpc.system.getBuildInfo.useQuery(undefined, {
+    enabled: !!adminStatus?.isUnlocked,
+    staleTime: Infinity,
+  });
 
   useEffect(() => {
     if (isCollapsed) {
@@ -236,8 +362,7 @@ function DashboardLayoutContent({
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
-              {/* Regular menu items */}
-              {menuItems.map(item => {
+              {menuItems.map((item) => {
                 const isActive = location === item.path;
                 return (
                   <SidebarMenuItem key={item.path}>
@@ -255,37 +380,47 @@ function DashboardLayoutContent({
                   </SidebarMenuItem>
                 );
               })}
-
-              {/* Stable-only menu items - only show if user has stable plan */}
-              {hasStablePlan && stableMenuItems.map(item => {
-                const isActive = location === item.path;
-                return (
-                  <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton
-                      isActive={isActive}
-                      onClick={() => setLocation(item.path)}
-                      tooltip={item.label}
-                      className="h-10 transition-all font-normal"
-                    >
-                      <item.icon
-                        className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
-                      />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-
-              {/* Admin menu items - shown to admin users who have unlocked admin mode */}
-              {user?.role === 'admin' && adminStatus?.isUnlocked && (
+              {/* Admin menu items */}
+              {adminStatus?.isUnlocked && (
                 <>
                   <div className="my-2 px-2">
                     <div className="h-px bg-border" />
                   </div>
-                  {adminMenuItems.map(item => {
+                  {adminMenuItems.map((item) => {
                     const isActive = location === item.path;
                     return (
                       <SidebarMenuItem key={item.path}>
+                        <SidebarMenuButton
+                          isActive={isActive}
+                          onClick={() => setLocation(item.path)}
+                          tooltip={item.label}
+                          className="h-10 transition-all font-normal"
+                        >
+                          <item.icon
+                            className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
+                          />
+                          <span>{item.label}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </>
+              )}
+              {/* Stable plan menu items */}
+              {isStablePlan && (
+                <>
+                  <div className="my-2 px-2">
+                    <div className="h-px bg-border" />
+                    {!isCollapsed && (
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-2 px-2 font-semibold">
+                        Stable
+                      </p>
+                    )}
+                  </div>
+                  {stableMenuItems.map((item) => {
+                    const isActive = location === item.path;
+                    return (
+                      <SidebarMenuItem key={`stable-${item.label}`}>
                         <SidebarMenuButton
                           isActive={isActive}
                           onClick={() => setLocation(item.path)}
@@ -309,6 +444,19 @@ function DashboardLayoutContent({
             <div className="flex items-center justify-between gap-2 px-1 mb-2 group-data-[collapsible=icon]:justify-center">
               <ThemeToggle />
             </div>
+            {/* Admin-only build fingerprint */}
+            {adminStatus?.isUnlocked && buildInfo && !isCollapsed && (
+              <div className="px-1 mb-2 group-data-[collapsible=icon]:hidden">
+                <p className="text-[10px] text-muted-foreground font-mono leading-relaxed">
+                  <span className="text-primary font-semibold">
+                    Dashboard v2
+                  </span>
+                  {" · "}
+                  {buildInfo.sha !== "unknown" ? `sha:${buildInfo.sha}` : "dev"}
+                  {" · "}v{buildInfo.version}
+                </p>
+              </div>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -365,9 +513,102 @@ function DashboardLayoutContent({
             <ThemeToggle />
           </div>
         )}
-        <main className="flex-1 p-4">
+        <main className={`flex-1 p-4 ${isMobile ? "pb-20" : ""}`}>
           {children}
         </main>
+
+        {/* Mobile Bottom Navigation Bar */}
+        {isMobile && (
+          <nav
+            className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+            aria-label="Mobile navigation"
+          >
+            <div className="flex items-stretch h-16">
+              {bottomNavItems.map((item) => {
+                const isActive =
+                  location === item.path ||
+                  (item.path === "/dashboard" && location === "/");
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => setLocation(item.path)}
+                    className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
+                      isActive
+                        ? "text-primary"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                    aria-label={item.label}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    <Icon
+                      className={`h-5 w-5 ${isActive ? "text-primary" : ""}`}
+                    />
+                    <span className="text-[10px] leading-none">
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              })}
+              {/* More sheet trigger */}
+              <Sheet open={moreSheetOpen} onOpenChange={setMoreSheetOpen}>
+                <SheetTrigger asChild>
+                  <button
+                    className="flex-1 flex flex-col items-center justify-center gap-0.5 text-xs text-muted-foreground hover:text-foreground transition-colors min-h-[44px]"
+                    aria-label="More modules"
+                  >
+                    <MoreHorizontal className="h-5 w-5" />
+                    <span className="text-[10px] leading-none">More</span>
+                  </button>
+                </SheetTrigger>
+                <SheetContent
+                  side="bottom"
+                  className="max-h-[80vh] overflow-y-auto rounded-t-xl"
+                >
+                  <SheetHeader className="pb-2">
+                    <SheetTitle className="font-serif text-left">
+                      Modules
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="space-y-4 pb-6">
+                    {moreModuleGroups.map((group) => (
+                      <div key={group.label}>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                          {group.label}
+                        </p>
+                        <div className="grid grid-cols-3 gap-2">
+                          {group.items.map((item) => {
+                            const Icon = item.icon;
+                            const isActive = location === item.path;
+                            return (
+                              <button
+                                key={item.path}
+                                onClick={() => {
+                                  setLocation(item.path);
+                                  setMoreSheetOpen(false);
+                                }}
+                                className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center min-h-[64px] ${
+                                  isActive
+                                    ? "border-primary bg-primary/10 text-primary"
+                                    : "border-border bg-card hover:bg-accent"
+                                }`}
+                              >
+                                <Icon className="h-5 w-5 shrink-0" />
+                                <span className="text-[11px] leading-tight font-medium">
+                                  {item.label}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </nav>
+        )}
       </SidebarInset>
     </>
   );

@@ -13,31 +13,35 @@ import {
 } from "../lib/utils/csv";
 
 interface ExportButtonProps {
-  type: 'horses' | 'health' | 'training' | 'all';
+  type: "horses" | "health" | "training" | "all";
   data: any[];
   label?: string;
 }
 
-export function ExportButton({ type, data, label = "Export" }: ExportButtonProps) {
+export function ExportButton({
+  type,
+  data,
+  label = "Export",
+}: ExportButtonProps) {
   const handleExport = () => {
     if (data.length === 0) {
-      alert('No data to export');
+      alert("No data to export");
       return;
     }
 
     switch (type) {
-      case 'horses':
+      case "horses":
         exportHorsesToCSV(data);
         break;
-      case 'health':
+      case "health":
         exportHealthRecordsToCSV(data);
         break;
-      case 'training':
+      case "training":
         exportTrainingSessionsToCSV(data);
         break;
-      case 'all':
+      case "all":
         // Export all data types if available
-        if (confirm('Export all data? This will create multiple CSV files.')) {
+        if (confirm("Export all data? This will create multiple CSV files.")) {
           exportHorsesToCSV(data);
         }
         break;
@@ -62,19 +66,19 @@ export function ExportMenu({ onExport }: { onExport: (type: string) => void }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onExport('horses')}>
+        <DropdownMenuItem onClick={() => onExport("horses")}>
           Export Horses
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onExport('health')}>
+        <DropdownMenuItem onClick={() => onExport("health")}>
           Export Health Records
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onExport('training')}>
+        <DropdownMenuItem onClick={() => onExport("training")}>
           Export Training Sessions
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onExport('feeding')}>
+        <DropdownMenuItem onClick={() => onExport("feeding")}>
           Export Feeding Plans
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onExport('all')}>
+        <DropdownMenuItem onClick={() => onExport("all")}>
           Export All Data
         </DropdownMenuItem>
       </DropdownMenuContent>

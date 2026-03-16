@@ -28,7 +28,7 @@ export class AppError extends Error {
     public code: ErrorCode,
     message: string,
     public statusCode: number = 500,
-    public details?: unknown
+    public details?: unknown,
   ) {
     super(message);
     this.name = "AppError";
@@ -131,7 +131,7 @@ export function logError(
     userId?: number;
     path?: string;
     input?: unknown;
-  }
+  },
 ): void {
   const logData = {
     timestamp: new Date().toISOString(),
@@ -146,7 +146,8 @@ export function logError(
   // In production, send to monitoring service (e.g., Sentry, DataDog)
   if (process.env.NODE_ENV === "production") {
     console.error("[Production Error]", JSON.stringify(logData));
-    // TODO: Send to monitoring service
+    // TODO: Integrate error monitoring service (Sentry/DataDog)
+    // When ready, add: if (process.env.SENTRY_DSN) { Sentry.captureException(error, { contexts: { context } }); }
   } else {
     console.error("[Development Error]", logData);
   }
@@ -168,8 +169,7 @@ export const Errors = {
   badRequest: (message: string = ErrorMessages.INVALID_INPUT) =>
     new AppError(ErrorCode.BAD_REQUEST, message, 400),
 
-  conflict: (message: string) =>
-    new AppError(ErrorCode.CONFLICT, message, 409),
+  conflict: (message: string) => new AppError(ErrorCode.CONFLICT, message, 409),
 
   serverError: (message: string = ErrorMessages.SERVER_ERROR) =>
     new AppError(ErrorCode.INTERNAL_SERVER_ERROR, message, 500),
@@ -178,7 +178,7 @@ export const Errors = {
     new AppError(
       ErrorCode.SERVICE_UNAVAILABLE,
       `${service} is currently unavailable`,
-      503
+      503,
     ),
 };
 
@@ -187,14 +187,12 @@ export const Errors = {
  */
 export async function safeAsync<T>(
   operation: () => Promise<T>,
-  errorMessage?: string
+  errorMessage?: string,
 ): Promise<T> {
   try {
     return await operation();
   } catch (error) {
     logError(error as Error);
-    throw errorMessage
-      ? Errors.serverError(errorMessage)
-      : toTRPCError(error);
+    throw errorMessage ? Errors.serverError(errorMessage) : toTRPCError(error);
   }
 }

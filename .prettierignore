@@ -1,0 +1,21 @@
+# Auto-generated files
+client/public/service-worker.js
+
+# Build output
+dist/
+build/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Misc
+.DS_Store
+*.swp
+*.swo
+*~

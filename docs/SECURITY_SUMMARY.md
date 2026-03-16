@@ -8,6 +8,7 @@ Status: ✅ PASS (1 false positive)
 ### Alert Found
 
 **[js/missing-rate-limiting]** Route handler performs file system access without rate limiting
+
 - Location: `server/_core/vite.ts:96-107`
 - Severity: Medium
 - Status: **FALSE POSITIVE** - Accepted
@@ -27,7 +28,7 @@ app.use("*", (req, res) => {
 
 1. **Static File Serving**: This route serves a pre-built static HTML file, not dynamic file system access
 2. **Already Rate Limited**: The application has global rate limiting configured:
-   - `/api/*` routes: 100 requests per 15 minutes (line 76-83 of server/_core/index.ts)
+   - `/api/*` routes: 100 requests per 15 minutes (line 76-83 of server/\_core/index.ts)
    - Health endpoints: 60 requests per minute (line 86-92)
 3. **SPA Nature**: Rate limiting the SPA fallback would break normal navigation and require users to wait between page navigations
 4. **No Security Risk**: Serving the same static HTML file repeatedly does not expose the server to DOS or information disclosure
@@ -46,6 +47,7 @@ The CodeQL alert is a false positive for this specific use case. The code follow
 ### Additional Security Measures Implemented
 
 As part of this PR:
+
 1. **Strict CSP**: No unsafe-inline for scripts
 2. **Proper MIME Types**: Prevents MIME-type confusion attacks
 3. **Asset Path Validation**: SPA fallback excludes asset requests

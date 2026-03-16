@@ -7,10 +7,12 @@ This PR implements a complete hidden admin panel system with AI chat-based unloc
 ### Core Features
 
 #### 1. Two-Factor Admin Protection
+
 - **Layer 1**: User must have `role='admin'` in database
 - **Layer 2**: Must unlock admin mode via AI chat with password
 
 #### 2. AI Chat Interface
+
 - New `/ai-chat` route with full chat interface
 - "show admin" command triggers unlock flow
 - Password input UI appears on demand
@@ -18,6 +20,7 @@ This PR implements a complete hidden admin panel system with AI chat-based unloc
 - Integration with existing `AIChatBox` component
 
 #### 3. Secure Unlock System
+
 - Environment variable password (`ADMIN_UNLOCK_PASSWORD`)
 - Default password: `ashmor12@`
 - 30-minute session duration
@@ -26,6 +29,7 @@ This PR implements a complete hidden admin panel system with AI chat-based unloc
 - No plaintext passwords in logs
 
 #### 4. Protected Admin Panel
+
 - Session validation on all admin endpoints
 - Automatic redirect to AI chat if not unlocked
 - Clear error messages guiding users
@@ -36,6 +40,7 @@ This PR implements a complete hidden admin panel system with AI chat-based unloc
 ## 🗂️ Files Changed
 
 ### Backend
+
 1. **`drizzle/schema.ts`**
    - Added `adminSessions` table
    - Added `adminUnlockAttempts` table
@@ -58,6 +63,7 @@ This PR implements a complete hidden admin panel system with AI chat-based unloc
    - Added `ai.chat` router with "show admin" detection
 
 ### Frontend
+
 4. **`client/src/pages/AIChat.tsx`** (NEW)
    - Full AI chat page with unlock UI
    - Password input handling
@@ -76,10 +82,12 @@ This PR implements a complete hidden admin panel system with AI chat-based unloc
    - Added AI Chat link to navigation
 
 ### Configuration
+
 8. **`.env.example`**
    - Added `ADMIN_UNLOCK_PASSWORD` variable
 
 ### Documentation
+
 9. **`README.md`**
    - Added "Admin Access" section
    - Added unlock instructions
@@ -97,22 +105,26 @@ This PR implements a complete hidden admin panel system with AI chat-based unloc
 ## 🔒 Security Implementation
 
 ### Password Protection
+
 ```env
 ADMIN_UNLOCK_PASSWORD=ashmor12@  # Default, change in production
 ```
 
 ### Rate Limiting
+
 - 5 failed attempts → 15-minute lockout
 - Counter resets on successful unlock
 - Lockout expires automatically
 
 ### Session Management
+
 - 30-minute TTL from unlock
 - Server-side validation
 - Automatic expiry
 - No client-side tampering possible
 
 ### Activity Logging
+
 ```typescript
 // All attempts logged to activityLogs table
 action: 'admin_unlocked' | 'admin_unlock_failed'
@@ -125,6 +137,7 @@ details: JSON with metadata (no passwords)
 ## 📋 API Endpoints
 
 ### 1. Get Status
+
 ```typescript
 GET /api/trpc/adminUnlock.getStatus
 Response: {
@@ -134,6 +147,7 @@ Response: {
 ```
 
 ### 2. Request Unlock
+
 ```typescript
 POST /api/trpc/adminUnlock.requestUnlock
 Response: {
@@ -144,6 +158,7 @@ Error: TOO_MANY_REQUESTS if locked
 ```
 
 ### 3. Submit Password
+
 ```typescript
 POST /api/trpc/adminUnlock.submitPassword
 Body: { password: string }
@@ -157,12 +172,16 @@ Errors:
 ```
 
 ### 4. Lock Session
+
 ```typescript
-POST /api/trpc/adminUnlock.lock
-Response: { success: true }
+POST / api / trpc / adminUnlock.lock;
+Response: {
+  success: true;
+}
 ```
 
 ### 5. AI Chat
+
 ```typescript
 POST /api/trpc/ai.chat
 Body: {
@@ -183,23 +202,28 @@ Response: {
 ## 🧪 Testing Instructions
 
 ### Prerequisites
+
 1. **Install Dependencies**
+
    ```bash
    npm install --legacy-peer-deps
    ```
 
 2. **Configure Environment**
+
    ```bash
    cp .env.example .env
    # Edit .env with database URL and other settings
    ```
 
 3. **Run Migrations**
+
    ```bash
    npm run db:push
    ```
 
 4. **Create Admin User**
+
    ```sql
    mysql -u root -p
    USE equiprofile;
@@ -217,6 +241,7 @@ Response: {
 ### Test Scenarios
 
 #### ✅ Scenario 1: Successful Unlock
+
 1. Login as admin user
 2. Navigate to `/ai-chat`
 3. Type: `show admin`
@@ -226,6 +251,7 @@ Response: {
 7. Verify: Session badge shows in AI chat header
 
 #### ✅ Scenario 2: Wrong Password
+
 1. Follow steps 1-3 above
 2. Enter wrong password
 3. Verify: Error message appears
@@ -233,6 +259,7 @@ Response: {
 5. Verify: Can retry
 
 #### ✅ Scenario 3: Rate Limiting
+
 1. Follow steps 1-3 above
 2. Enter wrong password 5 times
 3. Verify: Locked for 15 minutes
@@ -241,6 +268,7 @@ Response: {
 6. Verify: Can attempt again
 
 #### ✅ Scenario 4: Session Expiry
+
 1. Unlock admin mode successfully
 2. Wait 30 minutes (or modify duration in code for testing)
 3. Try to access `/admin`
@@ -248,6 +276,7 @@ Response: {
 5. Verify: Must unlock again
 
 #### ✅ Scenario 5: Non-Admin User
+
 1. Login as regular user (not admin role)
 2. Navigate to `/ai-chat`
 3. Type: `show admin`
@@ -255,6 +284,7 @@ Response: {
 5. Verify: Admin panel returns 403 Forbidden
 
 #### ✅ Scenario 6: Session Persistence
+
 1. Unlock admin mode
 2. Refresh page
 3. Verify: Still unlocked
@@ -268,6 +298,7 @@ Response: {
 ## 🚀 Deployment Checklist
 
 ### Pre-Deployment
+
 - [ ] Review and understand security implications
 - [ ] Change default admin password
 - [ ] Test unlock flow in staging environment
@@ -276,27 +307,33 @@ Response: {
 - [ ] Test session expiry
 
 ### Deployment Steps
+
 1. **Update Database**
+
    ```bash
    npm run db:push
    ```
 
 2. **Set Environment Variable**
+
    ```bash
    echo "ADMIN_UNLOCK_PASSWORD=your_secure_password" >> .env
    ```
 
 3. **Build Application**
+
    ```bash
    npm run build
    ```
 
 4. **Restart Server**
+
    ```bash
    pm2 restart equiprofile
    ```
 
 5. **Create Admin User**
+
    ```sql
    UPDATE users SET role = 'admin' WHERE email = 'admin@example.com';
    ```
@@ -309,6 +346,7 @@ Response: {
    - Verify admin panel access
 
 ### Post-Deployment
+
 - [ ] Monitor activity logs for unlock attempts
 - [ ] Verify session expiry works in production
 - [ ] Test rate limiting
@@ -321,6 +359,7 @@ Response: {
 ## 📊 Database Schema
 
 ### adminSessions
+
 ```sql
 CREATE TABLE adminSessions (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -333,6 +372,7 @@ CREATE TABLE adminSessions (
 ```
 
 ### adminUnlockAttempts
+
 ```sql
 CREATE TABLE adminUnlockAttempts (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -351,21 +391,28 @@ CREATE TABLE adminUnlockAttempts (
 ## 🔧 Configuration Options
 
 ### Session Duration
+
 Modify in `server/routers.ts`:
+
 ```typescript
 const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
 ```
 
 ### Rate Limit
+
 Modify in `server/routers.ts`:
+
 ```typescript
-if (attempts >= 5) { // Change 5 to desired max attempts
+if (attempts >= 5) {
+  // Change 5 to desired max attempts
   await db.setUnlockLockout(ctx.user.id, 15); // Change 15 to desired minutes
 }
 ```
 
 ### Password
+
 Set in `.env`:
+
 ```env
 ADMIN_UNLOCK_PASSWORD=your_secure_password
 ```
@@ -375,6 +422,7 @@ ADMIN_UNLOCK_PASSWORD=your_secure_password
 ## 🐛 Known Issues & Limitations
 
 ### Current Limitations
+
 1. **No visual session timer**: Users see expiry time but no countdown
 2. **No password strength validation**: Any string accepted
 3. **No multi-factor authentication**: Single password only
@@ -382,6 +430,7 @@ ADMIN_UNLOCK_PASSWORD=your_secure_password
 5. **No password rotation enforcement**: Manual process
 
 ### Future Enhancements
+
 - [ ] Session countdown timer in UI
 - [ ] Password strength requirements
 - [ ] Optional 2FA/TOTP support
@@ -407,15 +456,19 @@ ADMIN_UNLOCK_PASSWORD=your_secure_password
 ### Common Issues
 
 **Issue: "Admin session expired"**
+
 - Solution: Go to AI Chat, type "show admin", unlock again
 
 **Issue: "Too many attempts"**
+
 - Solution: Wait 15 minutes or manually reset in database
 
 **Issue: Password not working**
+
 - Solution: Check `.env` file, ensure no trailing spaces, restart server
 
 **Issue: Admin panel not accessible**
+
 - Solution: Verify admin role in database, check session is unlocked
 
 For more detailed troubleshooting, see: `/docs/ADMIN_UNLOCK_GUIDE.md`

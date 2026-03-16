@@ -1,236 +1,156 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MarketingNav } from "@/components/MarketingNav";
-import { PageTransition } from "@/components/PageTransition";
-import { ScrollReveal } from "@/components/ScrollReveal";
-import { Footer } from "@/components/Footer";
-import {
-  Heart,
-  Activity,
-  Utensils,
-  Calendar,
-  FileText,
-  BarChart3,
-  Users,
-  Bell,
-  Stethoscope,
-  ClipboardList,
-} from "lucide-react";
+import { MarketingLayout } from "@/components/MarketingLayout";
+import { PageBanner } from "@/components/PageBanner";
+import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { detailedFeatures } from "@/content/features";
 
-// 6 category sections as per requirements
-const categories = [
-  {
-    id: "stable-management",
-    icon: Users,
-    title: "Stable Management",
-    image: "/images/horse-stable.jpg",
-    description:
-      "Comprehensive tools to manage your entire stable operation efficiently. Track multiple horses, coordinate staff, and oversee daily operations from a single dashboard.",
-    points: [
-      "Multi-horse management with unlimited horses",
-      "Staff role-based access and permissions",
-      "Stable-wide calendar and scheduling",
-      "Team collaboration and messaging",
-      "Activity logs and audit trails",
-    ],
-  },
-  {
-    id: "horse-health",
-    icon: Heart,
-    title: "Horse Profiles & Health",
-    image: "/images/horse-profiles-health.jpg",
-    description:
-      "Maintain detailed health records for each horse. Track vaccinations, vet visits, medications, and medical history with automated reminders to ensure nothing is missed.",
-    points: [
-      "Complete horse profiles with photos and details",
-      "Vaccination schedules with auto-reminders",
-      "Vet visit history and notes",
-      "Medication tracking and dosage schedules",
-      "Medical document storage",
-    ],
-  },
-  {
-    id: "training-scheduling",
-    icon: Activity,
-    title: "Training & Scheduling",
-    image: "/images/hero-horse-riding.jpg",
-    description:
-      "Plan, log, and analyze training sessions with detailed performance tracking. Schedule lessons, track progress, and monitor improvement over time with visual analytics.",
-    points: [
-      "Training session planning and logging",
-      "Performance ratings and progress tracking",
-      "Lesson scheduling and management",
-      "Feeding schedules with custom plans",
-      "Calendar integration for all activities",
-    ],
-  },
-  {
-    id: "documents-xrays",
-    icon: FileText,
-    title: "Documents & X-rays",
-    image: "/images/documents-xrays.jpg",
-    description:
-      "Securely store and organize all horse-related documents in one central location. Upload registration papers, insurance documents, X-rays, competition records, and more with powerful search capabilities.",
-    points: [
-      "Cloud storage for all documents",
-      "X-ray and medical imaging storage",
-      "Category-based organization",
-      "Full-text search functionality",
-      "Secure access controls and sharing",
-    ],
-  },
-  {
-    id: "reporting-analytics",
-    icon: BarChart3,
-    title: "Reporting & Analytics",
-    image: "/images/horse-portrait.jpg",
-    description:
-      "Generate comprehensive reports and gain insights into health trends, training progress, and expenses. Export data in multiple formats for sharing with vets, trainers, or for your own records.",
-    points: [
-      "Health trend analysis and charts",
-      "Training progress visualization",
-      "Expense tracking and reports",
-      "Export to PDF, CSV, and Excel",
-      "Custom report generation",
-    ],
-  },
-  {
-    id: "scheduling-reminders",
-    icon: Bell,
-    title: "Care Scheduling & Reminders",
-    image: "/images/care-scheduling.jpg",
-    description:
-      "Never miss important care tasks. Set up automated reminders for farrier visits, dental appointments, worming schedules, and daily routines.",
-    points: [
-      "Automated email and push reminders",
-      "Recurring task scheduling",
-      "Farrier and dental appointment tracking",
-      "Worming and medication schedules",
-      "Custom care routine templates",
-    ],
-  },
-];
+const fadeInUpVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
 
 export default function Features() {
   return (
-    <>
-      <MarketingNav />
-      <PageTransition>
-        <div className="min-h-screen">
-          {/* Hero Section with Image */}
-          <section className="relative h-64 md:h-80 lg:h-96 mb-16 overflow-hidden">
-            <div className="absolute inset-0">
-              <img 
-                src="/images/training-session.jpg" 
-                alt="Features" 
-                className="w-full h-full object-cover object-center"
-              />
-              <div className="absolute inset-0 bg-black/50" />
-            </div>
-            <div className="relative z-10 container mx-auto px-4 h-full flex items-center justify-center">
-              <ScrollReveal>
-                <div className="text-center max-w-3xl mx-auto">
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-6 text-white">
-                    Everything You Need for{" "}
-                    <span className="text-accent-400">Horse Management</span>
-                  </h1>
-                  <p className="text-lg md:text-xl text-white/90 mb-8">
-                    Designed for daily workflows: health, training, documents, scheduling. 
-                    Built for professional stables and equine teams.
-                  </p>
-                  <div className="flex items-center justify-center gap-4">
-                    <Link href="/register">
-                      <Button size="lg" className="text-lg">
-                        Get Started Free
-                      </Button>
-                    </Link>
-                    <Link href="/pricing">
-                      <Button size="lg" variant="outline" className="text-lg bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20">
-                        View Pricing
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </ScrollReveal>
-            </div>
-          </section>
+    <MarketingLayout>
+      <div className="min-h-screen bg-black text-white">
+        {/* Page Banner */}
+        <PageBanner
+          title="Powerful Features for Modern Horse Management"
+          subtitle="Everything you need to manage your horses efficiently, all in one place"
+          imageSrc="/images/stable.jpg"
+          imagePosition="center"
+        />
 
-          {/* Category Sections */}
-          <section className="container mx-auto px-4 space-y-24 pb-16">
-            {categories.map((category, index) => (
-              <ScrollReveal key={category.id}>
-                <div className={`grid lg:grid-cols-2 gap-12 items-center ${
-                  index % 2 === 1 ? "lg:flex-row-reverse" : ""
-                }`}>
-                  {/* Image */}
-                  <div className={`${index % 2 === 1 ? "lg:order-2" : ""}`}>
-                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-lg">
-                      <img
-                        src={category.image}
-                        alt={category.title}
-                        className="w-full h-full object-cover object-center"
-                      />
+        {/* Feature Sections with Alternating Layout */}
+        <div className="py-20">
+          {detailedFeatures.map((section, index) => {
+            const Icon = section.icon;
+            const isImageRight = section.imagePosition === "right";
+
+            return (
+              <motion.section
+                key={index}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
+                variants={fadeInUpVariants}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className={`py-16 ${index % 2 === 1 ? "bg-gray-900/30" : ""}`}
+              >
+                <div className="container mx-auto px-4">
+                  <div
+                    className={`max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${
+                      isImageRight ? "" : "lg:grid-flow-dense"
+                    }`}
+                  >
+                    {/* Content */}
+                    <div className={`${isImageRight ? "" : "lg:col-start-2"}`}>
+                      <div
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${section.gradient} bg-opacity-20 border border-white/20 mb-6`}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </div>
+
+                      <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                        {section.title}
+                      </h2>
+                      <p className="text-lg text-gray-300 mb-8">
+                        {section.description}
+                      </p>
+
+                      <ul className="space-y-4 mb-8">
+                        {section.features.map((feature, featureIndex) => (
+                          <li
+                            key={featureIndex}
+                            className="flex items-start gap-3"
+                          >
+                            <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+                            <span className="text-gray-300">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {index === 1 && (
+                        <Link href="/pricing">
+                          <Button
+                            size="lg"
+                            className="bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white group"
+                          >
+                            Get Started
+                            <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+
+                    {/* Image */}
+                    <div
+                      className={`relative ${isImageRight ? "" : "lg:col-start-1 lg:row-start-1"}`}
+                    >
+                      <div className="relative rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-[0_0_40px_rgba(99,102,241,0.3)] group">
+                        <img
+                          src={section.image}
+                          alt={section.title}
+                          className="w-full h-full object-cover aspect-[4/3]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      </div>
                     </div>
                   </div>
-
-                  {/* Content */}
-                  <div className={`${index % 2 === 1 ? "lg:order-1" : ""}`}>
-                    <Card className="p-8 border-2 min-h-[400px] flex flex-col">
-                      <CardHeader className="p-0 mb-6">
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="p-3 rounded-xl bg-primary/10 text-primary">
-                            <category.icon className="w-8 h-8" />
-                          </div>
-                          <CardTitle className="text-3xl font-bold">
-                            {category.title}
-                          </CardTitle>
-                        </div>
-                        <CardDescription className="text-base leading-relaxed">
-                          {category.description}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="p-0">
-                        <ul className="space-y-3">
-                          {category.points.map((point, idx) => (
-                            <li key={idx} className="flex items-start gap-3">
-                              <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                              <span className="text-foreground">{point}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                    </Card>
-                  </div>
                 </div>
-              </ScrollReveal>
-            ))}
-          </section>
-
-          {/* CTA Section */}
-          <section className="container mx-auto px-4 mt-24">
-            <ScrollReveal>
-              <Card className="p-8 md:p-12 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2">
-                <div className="text-center max-w-2xl mx-auto">
-                  <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">
-                    Ready to Transform Your Horse Management?
-                  </h2>
-                  <p className="text-lg text-muted-foreground mb-8">
-                    Join equine professionals who trust EquiProfile for their daily workflows. 
-                    Start your 7-day free trial today.
-                  </p>
-                  <Link href="/register">
-                    <Button size="lg" className="text-lg">
-                      Start Your Free Trial
-                    </Button>
-                  </Link>
-                </div>
-              </Card>
-            </ScrollReveal>
-          </section>
+              </motion.section>
+            );
+          })}
         </div>
-      </PageTransition>
-      <Footer />
-    </>
+
+        {/* CTA Section */}
+        <section className="py-24 bg-gradient-to-b from-black to-gray-900">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUpVariants}
+              transition={{ duration: 0.6 }}
+              className="max-w-4xl mx-auto text-center"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold font-serif mb-6 text-white">
+                Ready to Transform Your
+                <br />
+                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                  Horse Management?
+                </span>
+              </h2>
+              <p className="text-xl text-gray-300 mb-10">
+                Join thousands of equestrians who trust EquiProfile. Start your
+                free 7-day trial today—no credit card required.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/register">
+                  <Button
+                    size="lg"
+                    className="text-lg px-10 py-6 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white group"
+                  >
+                    Start Free Trial
+                    <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link href="/pricing">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-lg px-10 py-6 border-white/20 text-white hover:bg-white/10"
+                  >
+                    View Pricing
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      </div>
+    </MarketingLayout>
   );
 }

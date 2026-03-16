@@ -1,0 +1,9 @@
+# Trivy Ignore File
+# This file contains paths and vulnerability IDs to ignore during Trivy scans
+
+# Test configuration files - these contain test-only credentials that are safe to ignore
+# These are not real credentials and are only used in isolated test environments
+vitest.config.ts
+*.test.ts
+*.spec.ts
+**/__tests__/**

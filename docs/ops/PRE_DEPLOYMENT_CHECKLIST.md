@@ -3,6 +3,7 @@
 ## Before Deploying to VPS
 
 ### 1. Code Quality ✅
+
 - [x] All code builds successfully (`npm run build`)
 - [x] No TypeScript errors
 - [x] Database functions all exported
@@ -10,6 +11,7 @@
 - [x] All imports resolve correctly
 
 ### 2. Database Readiness ✅
+
 - [x] New tables defined in schema:
   - `tasks` table
   - `contacts` table
@@ -22,6 +24,7 @@
 - [x] Foreign key relationships preserved
 
 ### 3. API Endpoints ✅
+
 - [x] Tasks router complete (8 endpoints)
 - [x] Contacts router complete (6 endpoints)
 - [x] Real-time events wired to 8 modules:
@@ -37,6 +40,7 @@
 - [x] SSE stats endpoint: `/api/realtime/stats`
 
 ### 4. UI Pages ✅
+
 - [x] Tasks page created and functional
 - [x] Contacts page created and functional
 - [x] Horses page updated with real-time
@@ -45,6 +49,7 @@
 - [x] Admin page "System Secrets" renamed
 
 ### 5. Real-time Infrastructure ✅
+
 - [x] SSE server manager implemented
 - [x] Client hooks created:
   - `useRealtime()`
@@ -56,6 +61,7 @@
 - [x] Heartbeat mechanism (30s intervals)
 
 ### 6. Documentation ✅
+
 - [x] REPO_AUDIT.md - Complete system audit
 - [x] MODULE_MATRIX.md - Status of all 39 modules
 - [x] REALTIME_ARCH.md - Real-time architecture guide
@@ -65,12 +71,14 @@
 - [x] IMAGES.md - (To be created if needed)
 
 ### 7. Testing ✅
+
 - [x] Build completes successfully
 - [x] No critical TypeScript errors
 - [x] Smoke test script created
 - [x] All new endpoints tested in development
 
 ### 8. Security ✅
+
 - [x] Admin hints removed from UI
 - [x] User data isolation maintained
 - [x] Real-time events per-user scoped
@@ -78,12 +86,14 @@
 - [x] No sensitive data in logs
 
 ### 9. Performance ✅
+
 - [x] Lazy loading implemented where needed
 - [x] Real-time event history limited (50 events)
 - [x] Database queries optimized
 - [x] Bundle size warnings noted (acceptable)
 
 ### 10. Backward Compatibility ✅
+
 - [x] No breaking changes to existing features
 - [x] All existing routes still work
 - [x] Database migrations are additive
@@ -133,19 +143,23 @@ sudo journalctl -u equiprofile -n 50
 ## Post-Deployment Verification
 
 ### Critical Tests
+
 1. **Service Status**
+
    ```bash
    sudo systemctl status equiprofile
    # Should show: Active: active (running)
    ```
 
 2. **Health Check**
+
    ```bash
    curl https://yourdomain.com/api/health
    # Should return: {"status":"ok"}
    ```
 
 3. **Real-time Connection**
+
    ```bash
    curl -H "Authorization: Bearer TOKEN" \
      https://yourdomain.com/api/realtime/events
@@ -163,6 +177,7 @@ sudo journalctl -u equiprofile -n 50
    - Verify it appears in tab 2 instantly
 
 ### Performance Checks
+
 ```bash
 # Memory usage should be < 500MB
 ps aux | grep "node.*dist/index.js"
@@ -172,6 +187,7 @@ curl -w "@curl-format.txt" -o /dev/null -s https://yourdomain.com/api/health
 ```
 
 ### Database Integrity
+
 ```bash
 mysql -e "USE equiprofile; SHOW TABLES;" | grep -E "tasks|contacts|accountFeatures"
 # Should show: contacts, tasks, accountFeatures tables
@@ -182,6 +198,7 @@ mysql -e "USE equiprofile; SHOW TABLES;" | grep -E "tasks|contacts|accountFeatur
 If anything goes wrong:
 
 ### Quick Rollback
+
 ```bash
 cd /var/equiprofile
 git checkout main  # or previous stable commit
@@ -191,12 +208,14 @@ sudo systemctl restart equiprofile
 ```
 
 ### Database Rollback
+
 ```bash
 # Restore from pre-deployment backup
 mysql -u root -p equiprofile < /var/backups/equiprofile_YYYYMMDD.sql
 ```
 
 ### Application Rollback
+
 ```bash
 # Restore application files
 cd /var/equiprofile
@@ -208,6 +227,7 @@ sudo systemctl restart equiprofile
 ## Success Criteria
 
 Deployment is successful when:
+
 - [ ] Service starts without errors
 - [ ] All existing pages load correctly
 - [ ] Tasks page accessible and functional
@@ -246,6 +266,7 @@ Deployment is successful when:
 ## Contact Information
 
 For deployment support:
+
 - Check service logs: `sudo journalctl -u equiprofile -f`
 - Review docs: `docs/ops/PRODUCTION_DEPLOYMENT.md`
 - Run diagnostics: `bash scripts/smoke-test.sh`

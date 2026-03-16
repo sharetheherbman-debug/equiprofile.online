@@ -38,7 +38,7 @@ function checkUserAccess(user: User | null): boolean {
 }
 
 export async function createContext(
-  opts: CreateExpressContextOptions
+  opts: CreateExpressContextOptions,
 ): Promise<TrpcContext> {
   let user: User | null = null;
 

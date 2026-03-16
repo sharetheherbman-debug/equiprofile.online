@@ -4,6 +4,28 @@ import type { TrpcContext } from "./_core/context";
 
 // Mock the database module
 vi.mock("./db", () => ({
+  getTrainingSessionById: vi.fn().mockResolvedValue({
+    id: 1,
+    horseId: 1,
+    userId: 1,
+    sessionDate: new Date("2024-12-20"),
+    startTime: "09:00",
+    endTime: "10:00",
+    duration: 60,
+    sessionType: "flatwork",
+    discipline: "Dressage",
+    trainer: "Jane Smith",
+    location: "Main Arena",
+    goals: "Work on transitions",
+    exercises: "Walk-trot transitions, circles",
+    notes: "Good progress",
+    performance: "good",
+    weather: "Sunny",
+    temperature: 15,
+    isCompleted: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }),
   getUserById: vi.fn().mockResolvedValue({
     id: 1,
     openId: "test-user",
@@ -50,7 +72,7 @@ function createAuthContext(): TrpcContext {
     openId: "test-user",
     email: "test@example.com",
     name: "Test User",
-    loginMethod: "manus",
+    loginMethod: "email",
     role: "user",
     createdAt: new Date(),
     updatedAt: new Date(),

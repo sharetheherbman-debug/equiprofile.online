@@ -1,77 +1,103 @@
 import { Link } from "wouter";
-import { Mail, MessageSquare } from "lucide-react";
-
-const WHATSAPP_NUMBER = "+447347258089";
-const SUPPORT_EMAIL = "support@equiprofile.online";
-const WHATSAPP_MESSAGE = "Welcome to Equiprofile.Online";
 
 export function Footer() {
   return (
-    <footer className="py-12 lg:py-16 border-t bg-card">
+    <footer className="py-12 lg:py-16 border-t border-white/10 bg-black">
       <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="text-2xl font-bold font-serif mb-4">
-              <span className="text-gradient">EquiProfile</span>
+              <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                EquiProfile
+              </span>
             </div>
-            <p className="text-muted-foreground text-sm mb-4">
-              Built for equine professionals
-            </p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-gray-400 text-sm">
               Professional horse management for the modern equestrian.
             </p>
           </div>
-          
+
           <div>
-            <h4 className="font-semibold mb-4">Product</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/features"><a className="hover:text-foreground transition-colors">Features</a></Link></li>
-              <li><Link href="/pricing"><a className="hover:text-foreground transition-colors">Pricing</a></Link></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/about"><a className="hover:text-foreground transition-colors">About</a></Link></li>
-              <li><Link href="/contact"><a className="hover:text-foreground transition-colors">Contact</a></Link></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold mb-4">Support</h4>
-            <ul className="space-y-3 text-sm">
+            <h4 className="font-semibold mb-4 text-white">Product</h4>
+            <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a 
-                  href={`mailto:${SUPPORT_EMAIL}`}
-                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                <Link
+                  href="/features"
+                  className="hover:text-white transition-colors"
                 >
-                  <Mail className="w-4 h-4" />
-                  <span>{SUPPORT_EMAIL}</span>
-                </a>
+                  Features
+                </Link>
               </li>
               <li>
-                <a 
-                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                <Link
+                  href="/pricing"
+                  className="hover:text-white transition-colors"
                 >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>{WHATSAPP_NUMBER}</span>
-                </a>
+                  Pricing
+                </Link>
               </li>
             </ul>
-            <h4 className="font-semibold mb-4 mt-6">Legal</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/privacy"><a className="hover:text-foreground transition-colors">Privacy</a></Link></li>
-              <li><Link href="/terms"><a className="hover:text-foreground transition-colors">Terms</a></Link></li>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-4 text-white">Company</h4>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li>
+                <Link
+                  href="/about"
+                  className="hover:text-white transition-colors"
+                >
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contact"
+                  className="hover:text-white transition-colors"
+                >
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-4 text-white">Legal</h4>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li>
+                <Link
+                  href="/privacy"
+                  className="hover:text-white transition-colors"
+                >
+                  Privacy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="hover:text-white transition-colors"
+                >
+                  Terms
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
-        
-        <div className="border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} EquiProfile. All rights reserved.</p>
+
+        <div className="border-t border-white/10 pt-8 text-center text-sm text-gray-400">
+          <p
+            aria-label={`© ${new Date().getFullYear()} EquiProfile.online · Part of AmarktAI Network`}
+          >
+            © {new Date().getFullYear()} EquiProfile.online · Part of{" "}
+            <a
+              href="https://amarktai.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-300 transition-colors"
+            >
+              Amarkt<span className="text-blue-400 font-semibold">AI</span>{" "}
+              Network
+            </a>
+          </p>
         </div>
       </div>
     </footer>

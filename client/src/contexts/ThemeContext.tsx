@@ -1,82 +1,59 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "system";
+type Theme = "light" | "dark";
 
 interface ThemeContextType {
   theme: Theme;
-  resolvedTheme: "light" | "dark";
-  setTheme: (theme: Theme) => void;
-  switchable: boolean;
+  toggleTheme: () => void;
+  isDarkMode: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-interface ThemeProviderProps {
-  children: React.ReactNode;
-  defaultTheme?: Theme;
-  switchable?: boolean;
-}
+// Helper function to check if current route is a dashboard route
+const isDashboardRoute = () => {
+  return (
+    window.location.pathname.startsWith("/dashboard") ||
+    window.location.pathname.startsWith("/horses") ||
+    window.location.pathname.startsWith("/health") ||
+    window.location.pathname.startsWith("/training")
+  );
+};
 
-export function ThemeProvider({
-  children,
-  defaultTheme = "system",
-  switchable = true,
-}: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (switchable && typeof window !== 'undefined') {
-      const stored = localStorage.getItem("theme") as Theme;
-      return stored || defaultTheme;
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState<Theme>(() => {
+    // Only apply saved theme in dashboard routes
+    if (isDashboardRoute()) {
+      const saved = localStorage.getItem("equiprofile-theme") as Theme;
+      return saved || "light";
     }
-    return defaultTheme;
+    return "light";
   });
 
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
-
   useEffect(() => {
-    const getSystemTheme = (): "light" | "dark" => {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    };
-
-    const updateResolvedTheme = () => {
-      const resolved = theme === "system" ? getSystemTheme() : theme;
-      setResolvedTheme(resolved);
-
-      const root = document.documentElement;
-      root.classList.remove("light", "dark");
-      root.classList.add(resolved);
-      root.style.colorScheme = resolved;
-    };
-
-    updateResolvedTheme();
-
-    if (theme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      const handler = () => updateResolvedTheme();
-      mediaQuery.addEventListener("change", handler);
-      return () => mediaQuery.removeEventListener("change", handler);
+    if (isDashboardRoute()) {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      localStorage.setItem("equiprofile-theme", theme);
+    } else {
+      document.documentElement.classList.remove("dark");
     }
   }, [theme]);
 
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-    if (switchable && typeof window !== 'undefined') {
-      localStorage.setItem("theme", newTheme);
-    }
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, switchable }}>
+    <ThemeContext.Provider
+      value={{ theme, toggleTheme, isDarkMode: theme === "dark" }}
+    >
       {children}
     </ThemeContext.Provider>
   );
 }
 
-export function useTheme() {
+export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useTheme must be used within ThemeProvider");
-  }
+  if (!context) throw new Error("useTheme must be used within ThemeProvider");
   return context;
-}
+};

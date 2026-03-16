@@ -7,7 +7,7 @@ import { adminToggle } from "@/lib/adminToggle";
  */
 export function useAdminToggle() {
   const [isAdminVisible, setIsAdminVisible] = useState(
-    adminToggle.isAdminVisible()
+    adminToggle.isAdminVisible(),
   );
 
   useEffect(() => {

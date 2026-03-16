@@ -1,4 +1,13 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, date } from "drizzle-orm/mysql-core";
+import {
+  int,
+  mysqlEnum,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+  boolean,
+  date,
+} from "drizzle-orm/mysql-core";
 
 // Core user table with subscription management
 export const users = mysqlTable("users", {
@@ -13,8 +22,19 @@ export const users = mysqlTable("users", {
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   // Subscription fields
-  subscriptionStatus: mysqlEnum("subscriptionStatus", ["trial", "active", "cancelled", "overdue", "expired"]).default("trial").notNull(),
-  subscriptionPlan: mysqlEnum("subscriptionPlan", ["monthly", "yearly", "stable_monthly", "stable_yearly"]).default("monthly"),
+  subscriptionStatus: mysqlEnum("subscriptionStatus", [
+    "trial",
+    "active",
+    "cancelled",
+    "overdue",
+    "expired",
+  ])
+    .default("trial")
+    .notNull(),
+  subscriptionPlan: mysqlEnum("subscriptionPlan", [
+    "monthly",
+    "yearly",
+  ]).default("monthly"),
   stripeCustomerId: varchar("stripeCustomerId", { length: 255 }),
   stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 255 }),
   trialEndsAt: timestamp("trialEndsAt"),
@@ -26,8 +46,13 @@ export const users = mysqlTable("users", {
   suspendedReason: text("suspendedReason"),
   // Profile
   phone: varchar("phone", { length: 20 }),
-  location: varchar("location", { length: 255 }),
+  location: varchar("location", { length: 255 }), // City/region text
+  latitude: varchar("latitude", { length: 20 }), // Geographic coordinates
+  longitude: varchar("longitude", { length: 20 }), // Geographic coordinates
   profileImageUrl: text("profileImageUrl"),
+  // Storage tracking
+  storageUsedBytes: int("storageUsedBytes").default(0).notNull(),
+  storageQuotaBytes: int("storageQuotaBytes").default(104857600).notNull(), // 100MB default
   // User preferences and settings
   preferences: text("preferences"), // JSON: theme, language, dashboard layout
   language: varchar("language", { length: 10 }).default("en"),
@@ -66,7 +91,16 @@ export const healthRecords = mysqlTable("healthRecords", {
   id: int("id").autoincrement().primaryKey(),
   horseId: int("horseId").notNull(),
   userId: int("userId").notNull(),
-  recordType: mysqlEnum("recordType", ["vaccination", "deworming", "dental", "farrier", "veterinary", "injury", "medication", "other"]).notNull(),
+  recordType: mysqlEnum("recordType", [
+    "vaccination",
+    "deworming",
+    "dental",
+    "farrier",
+    "veterinary",
+    "injury",
+    "medication",
+    "other",
+  ]).notNull(),
   title: varchar("title", { length: 200 }).notNull(),
   description: text("description"),
   recordDate: date("recordDate").notNull(),
@@ -90,14 +124,28 @@ export const trainingSessions = mysqlTable("trainingSessions", {
   startTime: varchar("startTime", { length: 10 }), // HH:MM format
   endTime: varchar("endTime", { length: 10 }),
   duration: int("duration"), // in minutes
-  sessionType: mysqlEnum("sessionType", ["flatwork", "jumping", "hacking", "lunging", "groundwork", "competition", "lesson", "other"]).notNull(),
+  sessionType: mysqlEnum("sessionType", [
+    "flatwork",
+    "jumping",
+    "hacking",
+    "lunging",
+    "groundwork",
+    "competition",
+    "lesson",
+    "other",
+  ]).notNull(),
   discipline: varchar("discipline", { length: 100 }),
   trainer: varchar("trainer", { length: 100 }),
   location: varchar("location", { length: 200 }),
   goals: text("goals"),
   exercises: text("exercises"),
   notes: text("notes"),
-  performance: mysqlEnum("performance", ["excellent", "good", "average", "poor"]),
+  performance: mysqlEnum("performance", [
+    "excellent",
+    "good",
+    "average",
+    "poor",
+  ]),
   weather: varchar("weather", { length: 100 }),
   temperature: int("temperature"), // in celsius
   isCompleted: boolean("isCompleted").default(false).notNull(),
@@ -114,7 +162,12 @@ export const feedingPlans = mysqlTable("feedingPlans", {
   brandName: varchar("brandName", { length: 100 }),
   quantity: varchar("quantity", { length: 50 }).notNull(), // e.g., "2kg", "1 scoop"
   unit: varchar("unit", { length: 20 }), // kg, lbs, scoops, flakes
-  mealTime: mysqlEnum("mealTime", ["morning", "midday", "evening", "night"]).notNull(),
+  mealTime: mysqlEnum("mealTime", [
+    "morning",
+    "midday",
+    "evening",
+    "night",
+  ]).notNull(),
   frequency: varchar("frequency", { length: 50 }).default("daily"), // daily, twice daily, etc.
   specialInstructions: text("specialInstructions"),
   isActive: boolean("isActive").default(true).notNull(),
@@ -133,7 +186,13 @@ export const documents = mysqlTable("documents", {
   fileSize: int("fileSize"), // in bytes
   fileUrl: text("fileUrl").notNull(),
   fileKey: varchar("fileKey", { length: 500 }).notNull(),
-  category: mysqlEnum("category", ["health", "registration", "insurance", "competition", "other"]).default("other"),
+  category: mysqlEnum("category", [
+    "health",
+    "registration",
+    "insurance",
+    "competition",
+    "other",
+  ]).default("other"),
   description: text("description"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
@@ -150,7 +209,13 @@ export const weatherLogs = mysqlTable("weatherLogs", {
   conditions: varchar("conditions", { length: 100 }), // sunny, cloudy, rainy, etc.
   uvIndex: int("uvIndex"),
   visibility: int("visibility"), // km
-  ridingRecommendation: mysqlEnum("ridingRecommendation", ["excellent", "good", "fair", "poor", "not_recommended"]),
+  ridingRecommendation: mysqlEnum("ridingRecommendation", [
+    "excellent",
+    "good",
+    "fair",
+    "poor",
+    "not_recommended",
+  ]),
   aiAnalysis: text("aiAnalysis"),
   checkedAt: timestamp("checkedAt").defaultNow().notNull(),
 });
@@ -160,7 +225,12 @@ export const systemSettings = mysqlTable("systemSettings", {
   id: int("id").autoincrement().primaryKey(),
   settingKey: varchar("settingKey", { length: 100 }).notNull().unique(),
   settingValue: text("settingValue"),
-  settingType: mysqlEnum("settingType", ["string", "number", "boolean", "json"]).default("string"),
+  settingType: mysqlEnum("settingType", [
+    "string",
+    "number",
+    "boolean",
+    "json",
+  ]).default("string"),
   description: text("description"),
   isEncrypted: boolean("isEncrypted").default(false),
   updatedBy: int("updatedBy"),
@@ -202,8 +272,18 @@ export const activityLogs = mysqlTable("activityLogs", {
 // Backup logs
 export const backupLogs = mysqlTable("backupLogs", {
   id: int("id").autoincrement().primaryKey(),
-  backupType: mysqlEnum("backupType", ["full", "incremental", "users", "horses"]).notNull(),
-  status: mysqlEnum("status", ["pending", "running", "completed", "failed"]).notNull(),
+  backupType: mysqlEnum("backupType", [
+    "full",
+    "incremental",
+    "users",
+    "horses",
+  ]).notNull(),
+  status: mysqlEnum("status", [
+    "pending",
+    "running",
+    "completed",
+    "failed",
+  ]).notNull(),
   fileName: varchar("fileName", { length: 255 }),
   fileSize: int("fileSize"),
   fileUrl: text("fileUrl"),
@@ -235,7 +315,13 @@ export const stableMembers = mysqlTable("stableMembers", {
   id: int("id").autoincrement().primaryKey(),
   stableId: int("stableId").notNull(),
   userId: int("userId").notNull(),
-  role: mysqlEnum("role", ["owner", "admin", "trainer", "member", "viewer"]).notNull(),
+  role: mysqlEnum("role", [
+    "owner",
+    "admin",
+    "trainer",
+    "member",
+    "viewer",
+  ]).notNull(),
   permissions: text("permissions"), // JSON string of specific permissions
   isActive: boolean("isActive").default(true).notNull(),
   joinedAt: timestamp("joinedAt").defaultNow().notNull(),
@@ -250,7 +336,9 @@ export const stableInvites = mysqlTable("stableInvites", {
   email: varchar("email", { length: 320 }).notNull(),
   role: mysqlEnum("role", ["admin", "trainer", "member", "viewer"]).notNull(),
   token: varchar("token", { length: 100 }).notNull().unique(),
-  status: mysqlEnum("status", ["pending", "accepted", "declined", "expired"]).default("pending").notNull(),
+  status: mysqlEnum("status", ["pending", "accepted", "declined", "expired"])
+    .default("pending")
+    .notNull(),
   expiresAt: timestamp("expiresAt").notNull(),
   acceptedAt: timestamp("acceptedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -264,7 +352,15 @@ export const events = mysqlTable("events", {
   horseId: int("horseId"),
   title: varchar("title", { length: 200 }).notNull(),
   description: text("description"),
-  eventType: mysqlEnum("eventType", ["training", "competition", "veterinary", "farrier", "lesson", "meeting", "other"]).notNull(),
+  eventType: mysqlEnum("eventType", [
+    "training",
+    "competition",
+    "veterinary",
+    "farrier",
+    "lesson",
+    "meeting",
+    "other",
+  ]).notNull(),
   startDate: timestamp("startDate").notNull(),
   endDate: timestamp("endDate"),
   location: varchar("location", { length: 255 }),
@@ -346,7 +442,11 @@ export const shareLinks = mysqlTable("shareLinks", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
   horseId: int("horseId"),
-  linkType: mysqlEnum("linkType", ["horse", "stable", "medical_passport"]).notNull(),
+  linkType: mysqlEnum("linkType", [
+    "horse",
+    "stable",
+    "medical_passport",
+  ]).notNull(),
   token: varchar("token", { length: 100 }).notNull().unique(),
   isPublic: boolean("isPublic").default(false).notNull(),
   isActive: boolean("isActive").default(true).notNull(),
@@ -464,7 +564,9 @@ export const trainingPrograms = mysqlTable("trainingPrograms", {
   name: varchar("name", { length: 200 }).notNull(),
   startDate: date("startDate").notNull(),
   endDate: date("endDate"),
-  status: mysqlEnum("status", ["active", "completed", "paused", "cancelled"]).default("active").notNull(),
+  status: mysqlEnum("status", ["active", "completed", "paused", "cancelled"])
+    .default("active")
+    .notNull(),
   progress: int("progress").default(0), // percentage
   programData: text("programData").notNull(), // JSON: customized schedule
   notes: text("notes"),
@@ -478,7 +580,13 @@ export const reports = mysqlTable("reports", {
   userId: int("userId").notNull(),
   stableId: int("stableId"),
   horseId: int("horseId"),
-  reportType: mysqlEnum("reportType", ["monthly_summary", "health_report", "training_progress", "cost_analysis", "competition_summary"]).notNull(),
+  reportType: mysqlEnum("reportType", [
+    "monthly_summary",
+    "health_report",
+    "training_progress",
+    "cost_analysis",
+    "competition_summary",
+  ]).notNull(),
   title: varchar("title", { length: 200 }).notNull(),
   reportData: text("reportData").notNull(), // JSON: report content
   fileUrl: text("fileUrl"), // PDF URL
@@ -490,8 +598,19 @@ export const reportSchedules = mysqlTable("reportSchedules", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
   stableId: int("stableId"),
-  reportType: mysqlEnum("reportType", ["monthly_summary", "health_report", "training_progress", "cost_analysis", "competition_summary"]).notNull(),
-  frequency: mysqlEnum("frequency", ["daily", "weekly", "monthly", "quarterly"]).notNull(),
+  reportType: mysqlEnum("reportType", [
+    "monthly_summary",
+    "health_report",
+    "training_progress",
+    "cost_analysis",
+    "competition_summary",
+  ]).notNull(),
+  frequency: mysqlEnum("frequency", [
+    "daily",
+    "weekly",
+    "monthly",
+    "quarterly",
+  ]).notNull(),
   recipients: text("recipients"), // JSON array of email addresses
   isActive: boolean("isActive").default(true).notNull(),
   lastRunAt: timestamp("lastRunAt"),
@@ -506,7 +625,11 @@ export const breeding = mysqlTable("breeding", {
   stallionId: int("stallionId"), // horseId of stallion (if owned)
   stallionName: varchar("stallionName", { length: 200 }),
   breedingDate: date("breedingDate").notNull(),
-  method: mysqlEnum("method", ["natural", "artificial", "embryo_transfer"]).notNull(),
+  method: mysqlEnum("method", [
+    "natural",
+    "artificial",
+    "embryo_transfer",
+  ]).notNull(),
   veterinarianName: varchar("veterinarianName", { length: 100 }),
   cost: int("cost"),
   pregnancyConfirmed: boolean("pregnancyConfirmed").default(false),
@@ -567,7 +690,14 @@ export const lessonBookings = mysqlTable("lessonBookings", {
   duration: int("duration").notNull(), // in minutes
   lessonType: varchar("lessonType", { length: 100 }),
   location: varchar("location", { length: 200 }),
-  status: mysqlEnum("status", ["scheduled", "completed", "cancelled", "no_show"]).default("scheduled").notNull(),
+  status: mysqlEnum("status", [
+    "scheduled",
+    "completed",
+    "cancelled",
+    "no_show",
+  ])
+    .default("scheduled")
+    .notNull(),
   fee: int("fee"), // in pence/cents
   paid: boolean("paid").default(false).notNull(),
   notes: text("notes"),
@@ -667,8 +797,10 @@ export type Message = typeof messages.$inferSelect;
 export type InsertMessage = typeof messages.$inferInsert;
 export type CompetitionResult = typeof competitionResults.$inferSelect;
 export type InsertCompetitionResult = typeof competitionResults.$inferInsert;
-export type TrainingProgramTemplate = typeof trainingProgramTemplates.$inferSelect;
-export type InsertTrainingProgramTemplate = typeof trainingProgramTemplates.$inferInsert;
+export type TrainingProgramTemplate =
+  typeof trainingProgramTemplates.$inferSelect;
+export type InsertTrainingProgramTemplate =
+  typeof trainingProgramTemplates.$inferInsert;
 export type TrainingProgram = typeof trainingPrograms.$inferSelect;
 export type InsertTrainingProgram = typeof trainingPrograms.$inferInsert;
 export type Report = typeof reports.$inferSelect;
@@ -707,10 +839,14 @@ export const accountFeatures = mysqlTable("accountFeatures", {
   financeEnabled: boolean("financeEnabled").default(false).notNull(),
   salesEnabled: boolean("salesEnabled").default(false).notNull(),
   teamsEnabled: boolean("teamsEnabled").default(false).notNull(),
-  advancedReportsEnabled: boolean("advancedReportsEnabled").default(false).notNull(),
+  advancedReportsEnabled: boolean("advancedReportsEnabled")
+    .default(false)
+    .notNull(),
   // Beta features
   peppolEnabled: boolean("peppolEnabled").default(false).notNull(),
-  aiInvoiceScanEnabled: boolean("aiInvoiceScanEnabled").default(false).notNull(),
+  aiInvoiceScanEnabled: boolean("aiInvoiceScanEnabled")
+    .default(false)
+    .notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -725,16 +861,43 @@ export const tasks = mysqlTable("tasks", {
   horseId: int("horseId"), // Optional - task may be for specific horse or general
   title: varchar("title", { length: 200 }).notNull(),
   description: text("description"),
-  taskType: mysqlEnum("taskType", ["hoofcare", "health_appointment", "treatment", "vaccination", "deworming", "dental", "general_care", "training", "feeding", "other"]).notNull(),
-  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).default("medium").notNull(),
-  status: mysqlEnum("status", ["pending", "in_progress", "completed", "cancelled"]).default("pending").notNull(),
+  taskType: mysqlEnum("taskType", [
+    "hoofcare",
+    "health_appointment",
+    "treatment",
+    "vaccination",
+    "deworming",
+    "dental",
+    "general_care",
+    "training",
+    "feeding",
+    "other",
+  ]).notNull(),
+  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"])
+    .default("medium")
+    .notNull(),
+  status: mysqlEnum("status", [
+    "pending",
+    "in_progress",
+    "completed",
+    "cancelled",
+  ])
+    .default("pending")
+    .notNull(),
   dueDate: date("dueDate"),
   completedAt: timestamp("completedAt"),
   assignedTo: varchar("assignedTo", { length: 100 }), // Name of person assigned
   notes: text("notes"),
   reminderDays: int("reminderDays").default(1), // Days before due date to remind
   isRecurring: boolean("isRecurring").default(false).notNull(),
-  recurringInterval: mysqlEnum("recurringInterval", ["daily", "weekly", "biweekly", "monthly", "quarterly", "yearly"]),
+  recurringInterval: mysqlEnum("recurringInterval", [
+    "daily",
+    "weekly",
+    "biweekly",
+    "monthly",
+    "quarterly",
+    "yearly",
+  ]),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -747,7 +910,17 @@ export const contacts = mysqlTable("contacts", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
   name: varchar("name", { length: 200 }).notNull(),
-  contactType: mysqlEnum("contactType", ["vet", "farrier", "trainer", "instructor", "stable", "breeder", "supplier", "emergency", "other"]).notNull(),
+  contactType: mysqlEnum("contactType", [
+    "vet",
+    "farrier",
+    "trainer",
+    "instructor",
+    "stable",
+    "breeder",
+    "supplier",
+    "emergency",
+    "other",
+  ]).notNull(),
   company: varchar("company", { length: 200 }),
   email: varchar("email", { length: 320 }),
   phone: varchar("phone", { length: 20 }),
@@ -783,7 +956,9 @@ export const treatments = mysqlTable("treatments", {
   vetName: varchar("vetName", { length: 100 }),
   vetClinic: varchar("vetClinic", { length: 200 }),
   cost: int("cost"), // in pence
-  status: mysqlEnum("status", ["active", "completed", "discontinued"]).default("active").notNull(),
+  status: mysqlEnum("status", ["active", "completed", "discontinued"])
+    .default("active")
+    .notNull(),
   notes: text("notes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -808,7 +983,14 @@ export const appointments = mysqlTable("appointments", {
   providerClinic: varchar("providerClinic", { length: 200 }),
   location: varchar("location", { length: 200 }),
   cost: int("cost"), // in pence
-  status: mysqlEnum("status", ["scheduled", "confirmed", "completed", "cancelled"]).default("scheduled").notNull(),
+  status: mysqlEnum("status", [
+    "scheduled",
+    "confirmed",
+    "completed",
+    "cancelled",
+  ])
+    .default("scheduled")
+    .notNull(),
   reminderSent: boolean("reminderSent").default(false).notNull(),
   notes: text("notes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -832,7 +1014,12 @@ export const dentalCare = mysqlTable("dentalCare", {
   nextDueDate: date("nextDueDate"),
   cost: int("cost"), // in pence
   sedationUsed: boolean("sedationUsed").default(false).notNull(),
-  teethCondition: mysqlEnum("teethCondition", ["excellent", "good", "fair", "poor"]),
+  teethCondition: mysqlEnum("teethCondition", [
+    "excellent",
+    "good",
+    "fair",
+    "poor",
+  ]),
   notes: text("notes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -887,10 +1074,21 @@ export const hoofcare = mysqlTable("hoofcare", {
   horseId: int("horseId").notNull(),
   userId: int("userId").notNull(),
   careDate: date("careDate").notNull(),
-  careType: mysqlEnum("careType", ["shoeing", "trimming", "remedial", "inspection", "other"]).notNull(),
+  careType: mysqlEnum("careType", [
+    "shoeing",
+    "trimming",
+    "remedial",
+    "inspection",
+    "other",
+  ]).notNull(),
   farrierName: varchar("farrierName", { length: 100 }),
   farrierPhone: varchar("farrierPhone", { length: 20 }),
-  hoofCondition: mysqlEnum("hoofCondition", ["excellent", "good", "fair", "poor"]),
+  hoofCondition: mysqlEnum("hoofCondition", [
+    "excellent",
+    "good",
+    "fair",
+    "poor",
+  ]),
   shoesType: varchar("shoesType", { length: 100 }), // e.g., front only, all four, barefoot
   findings: text("findings"),
   workPerformed: text("workPerformed"),
@@ -953,91 +1151,68 @@ export const nutritionPlans = mysqlTable("nutritionPlans", {
 export type NutritionPlan = typeof nutritionPlans.$inferSelect;
 export type InsertNutritionPlan = typeof nutritionPlans.$inferInsert;
 
-// Care Insights System - Daily care scores
-export const careScores = mysqlTable("careScores", {
+// Notes module - voice dictation and general notes
+export const notes = mysqlTable("notes", {
   id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
   userId: int("userId").notNull(),
-  date: date("date").notNull(),
-  overallScore: int("overallScore").notNull(), // 0-100
-  taskCompletionScore: int("taskCompletionScore").notNull(), // 0-40
-  medicationComplianceScore: int("medicationComplianceScore").notNull(), // 0-30
-  healthEventScore: int("healthEventScore").notNull(), // 0-30
-  notes: text("notes"), // JSON with details about score calculation
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type CareScore = typeof careScores.$inferSelect;
-export type InsertCareScore = typeof careScores.$inferInsert;
-
-// Medication schedules
-export const medicationSchedules = mysqlTable("medicationSchedules", {
-  id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  medicationName: varchar("medicationName", { length: 200 }).notNull(),
-  dosage: varchar("dosage", { length: 100 }).notNull(),
-  frequency: mysqlEnum("frequency", ["daily", "twice_daily", "three_times_daily", "weekly", "biweekly", "monthly", "as_needed"]).notNull(),
-  startDate: date("startDate").notNull(),
-  endDate: date("endDate"),
-  timeOfDay: mysqlEnum("timeOfDay", ["morning", "afternoon", "evening", "night", "any"]),
-  specialInstructions: text("specialInstructions"),
-  isActive: boolean("isActive").default(true).notNull(),
+  horseId: int("horseId"), // optional, can be general note
+  title: varchar("title", { length: 200 }),
+  content: text("content").notNull(),
+  transcribed: boolean("transcribed").default(false).notNull(), // true if from voice
+  tags: text("tags"), // JSON array of tags
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
-export type MedicationSchedule = typeof medicationSchedules.$inferSelect;
-export type InsertMedicationSchedule = typeof medicationSchedules.$inferInsert;
+export type Note = typeof notes.$inferSelect;
+export type InsertNote = typeof notes.$inferInsert;
 
-// Medication administration logs
-export const medicationLogs = mysqlTable("medicationLogs", {
+// ─────────────────────────────────────────────────────────────────────────────
+// Sales chat leads – persisted from the floating chat widget
+// ─────────────────────────────────────────────────────────────────────────────
+export const chatLeads = mysqlTable("chatLeads", {
   id: int("id").autoincrement().primaryKey(),
-  scheduleId: int("scheduleId").notNull(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  administeredAt: timestamp("administeredAt").notNull(),
-  administeredBy: varchar("administeredBy", { length: 100 }),
-  dosageGiven: varchar("dosageGiven", { length: 100 }),
-  notes: text("notes"),
-  wasSkipped: boolean("wasSkipped").default(false).notNull(),
-  skipReason: text("skipReason"),
+  leadId: varchar("leadId", { length: 40 }).notNull().unique(), // client-generated id
+  name: varchar("name", { length: 100 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  message: text("message"),
+  source: varchar("source", { length: 50 }).default("chat"),
+  // Full chat transcript stored as JSON string: [{role, content}]
+  transcript: text("transcript"),
+  ipHash: varchar("ipHash", { length: 64 }), // SHA-256 of IP for audit, not raw IP
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
-export type MedicationLog = typeof medicationLogs.$inferSelect;
-export type InsertMedicationLog = typeof medicationLogs.$inferInsert;
+export type ChatLead = typeof chatLeads.$inferSelect;
+export type InsertChatLead = typeof chatLeads.$inferInsert;
 
-// Behavior and daily observations
-export const behaviorLogs = mysqlTable("behaviorLogs", {
+// ─────────────────────────────────────────────────────────────────────────────
+// Contact form submissions
+// ─────────────────────────────────────────────────────────────────────────────
+export const contactSubmissions = mysqlTable("contactSubmissions", {
   id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  logDate: date("logDate").notNull(),
-  weight: int("weight"), // in kg
-  appetite: mysqlEnum("appetite", ["excellent", "good", "fair", "poor"]),
-  energy: mysqlEnum("energy", ["high", "normal", "low"]),
-  sorenessScore: int("sorenessScore"), // 0-10 scale
-  rideQuality: mysqlEnum("rideQuality", ["excellent", "good", "fair", "poor", "skipped"]),
-  notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type BehaviorLog = typeof behaviorLogs.$inferSelect;
-export type InsertBehaviorLog = typeof behaviorLogs.$inferInsert;
-
-// Health alerts
-export const healthAlerts = mysqlTable("healthAlerts", {
-  id: int("id").autoincrement().primaryKey(),
-  horseId: int("horseId").notNull(),
-  userId: int("userId").notNull(),
-  alertType: mysqlEnum("alertType", ["repeat_injury", "weight_loss", "reduced_activity", "medication_missed", "overdue_health"]).notNull(),
-  severity: mysqlEnum("severity", ["low", "medium", "high"]).notNull(),
+  name: varchar("name", { length: 200 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  subject: varchar("subject", { length: 500 }).notNull(),
   message: text("message").notNull(),
-  isResolved: boolean("isResolved").default(false).notNull(),
-  resolvedAt: timestamp("resolvedAt"),
+  ipHash: varchar("ipHash", { length: 64 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
-export type HealthAlert = typeof healthAlerts.$inferSelect;
-export type InsertHealthAlert = typeof healthAlerts.$inferInsert;
+export type ContactSubmission = typeof contactSubmissions.$inferSelect;
+export type InsertContactSubmission = typeof contactSubmissions.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Site settings – key/value store for admin-configurable options
+// (sensitive API keys must still be set via env vars, this is for non-sensitive
+//  settings only, e.g. admin notification email)
+// ─────────────────────────────────────────────────────────────────────────────
+export const siteSettings = mysqlTable("siteSettings", {
+  id: int("id").autoincrement().primaryKey(),
+  key: varchar("key", { length: 100 }).notNull().unique(),
+  value: text("value"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SiteSetting = typeof siteSettings.$inferSelect;
+export type InsertSiteSetting = typeof siteSettings.$inferInsert;

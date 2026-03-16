@@ -3,8 +3,8 @@
  * Provides instant updates across all modules without page refresh
  */
 
-import { Request, Response } from 'express';
-import { nanoid } from 'nanoid';
+import { Request, Response } from "express";
+import { nanoid } from "nanoid";
 
 interface SSEClient {
   id: string;
@@ -30,28 +30,28 @@ class RealtimeEventManager {
    */
   addClient(userId: number, res: Response): string {
     const clientId = nanoid();
-    
+
     // Set SSE headers
     res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'X-Accel-Buffering': 'no', // Disable nginx buffering
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no", // Disable nginx buffering
     });
 
     const client: SSEClient = {
       id: clientId,
       userId,
       res,
-      channels: new Set(['global', `user:${userId}`]),
+      channels: new Set(["global", `user:${userId}`]),
     };
 
     this.clients.set(clientId, client);
 
     // Send initial connection message
     this.sendToClient(client, {
-      channel: 'system',
-      event: 'connected',
+      channel: "system",
+      event: "connected",
       data: { clientId, timestamp: new Date().toISOString() },
       timestamp: new Date().toISOString(),
     });
@@ -63,7 +63,7 @@ class RealtimeEventManager {
         return;
       }
       try {
-        res.write(': heartbeat\n\n');
+        res.write(": heartbeat\n\n");
       } catch (error) {
         console.error(`[SSE] Heartbeat failed for client ${clientId}:`, error);
         this.removeClient(clientId);
@@ -72,7 +72,7 @@ class RealtimeEventManager {
     }, 30000); // Every 30 seconds
 
     // Cleanup on disconnect
-    res.on('close', () => {
+    res.on("close", () => {
       clearInterval(heartbeat);
       this.removeClient(clientId);
       console.log(`[SSE] Client disconnected: ${clientId}`);
@@ -95,7 +95,7 @@ class RealtimeEventManager {
   subscribe(clientId: string, channels: string[]): void {
     const client = this.clients.get(clientId);
     if (client) {
-      channels.forEach(channel => client.channels.add(channel));
+      channels.forEach((channel) => client.channels.add(channel));
     }
   }
 
@@ -105,7 +105,7 @@ class RealtimeEventManager {
   unsubscribe(clientId: string, channels: string[]): void {
     const client = this.clients.get(clientId);
     if (client) {
-      channels.forEach(channel => client.channels.delete(channel));
+      channels.forEach((channel) => client.channels.delete(channel));
     }
   }
 
@@ -132,8 +132,8 @@ class RealtimeEventManager {
 
     // Send to all subscribed clients
     let sentCount = 0;
-    this.clients.forEach(client => {
-      if (client.channels.has(channel) || client.channels.has('global')) {
+    this.clients.forEach((client) => {
+      if (client.channels.has(channel) || client.channels.has("global")) {
         this.sendToClient(client, realtimeEvent);
         sentCount++;
       }
@@ -178,8 +178,10 @@ class RealtimeEventManager {
       connectedClients: this.clients.size,
       channels: Array.from(
         new Set(
-          Array.from(this.clients.values()).flatMap(c => Array.from(c.channels))
-        )
+          Array.from(this.clients.values()).flatMap((c) =>
+            Array.from(c.channels),
+          ),
+        ),
       ),
       eventHistorySize: this.eventHistory.size,
     };
@@ -210,7 +212,7 @@ export function publishModuleEvent(
   module: string,
   action: string,
   data: any,
-  userId?: number
+  userId?: number,
 ) {
   const event = `${module}:${action}`;
   const channel = userId ? `user:${userId}` : module;
@@ -221,5 +223,5 @@ export function publishModuleEvent(
  * Helper to publish to all users (admin broadcasts)
  */
 export function publishGlobal(event: string, data: any) {
-  realtimeManager.publish('global', event, data);
+  realtimeManager.publish("global", event, data);
 }

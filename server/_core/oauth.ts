@@ -1,3 +1,4 @@
+// Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import type { Express, Request, Response } from "express";
 import * as db from "../db";
@@ -74,7 +75,10 @@ export function registerOAuthRoutes(app: Express) {
       });
 
       const cookieOptions = getSessionCookieOptions(req);
-      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+      res.cookie(COOKIE_NAME, sessionToken, {
+        ...cookieOptions,
+        maxAge: ONE_YEAR_MS,
+      });
 
       res.redirect(302, "/");
     } catch (error) {
@@ -82,13 +86,14 @@ export function registerOAuthRoutes(app: Express) {
       // Escape HTML to prevent XSS
       const escapeHtml = (str: string) => {
         return str
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#039;');
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
       };
-      const errorMessage = error instanceof Error ? escapeHtml(error.message) : "Unknown error";
+      const errorMessage =
+        error instanceof Error ? escapeHtml(error.message) : "Unknown error";
       res.status(500).send(`
         <html>
           <body>

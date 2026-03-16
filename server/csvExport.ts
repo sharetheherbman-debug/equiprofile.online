@@ -8,16 +8,16 @@
  */
 function escapeCSV(value: any): string {
   if (value === null || value === undefined) {
-    return '';
+    return "";
   }
-  
+
   const str = String(value);
-  
+
   // If contains comma, quote, or newline, wrap in quotes and escape quotes
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
     return `"${str.replace(/"/g, '""')}"`;
   }
-  
+
   return str;
 }
 
@@ -25,24 +25,24 @@ function escapeCSV(value: any): string {
  * Format date for CSV
  */
 function formatDate(date: Date | string | null | undefined): string {
-  if (!date) return '';
-  
-  const d = typeof date === 'string' ? new Date(date) : date;
-  if (isNaN(d.getTime())) return '';
-  
-  return d.toISOString().split('T')[0]; // YYYY-MM-DD
+  if (!date) return "";
+
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) return "";
+
+  return d.toISOString().split("T")[0]; // YYYY-MM-DD
 }
 
 /**
  * Format datetime for CSV
  */
 function formatDateTime(date: Date | string | null | undefined): string {
-  if (!date) return '';
-  
-  const d = typeof date === 'string' ? new Date(date) : date;
-  if (isNaN(d.getTime())) return '';
-  
-  return d.toISOString().replace('T', ' ').split('.')[0]; // YYYY-MM-DD HH:mm:ss
+  if (!date) return "";
+
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(d.getTime())) return "";
+
+  return d.toISOString().replace("T", " ").split(".")[0]; // YYYY-MM-DD HH:mm:ss
 }
 
 /**
@@ -50,41 +50,41 @@ function formatDateTime(date: Date | string | null | undefined): string {
  */
 export function arrayToCSV(data: any[], headers: string[]): string {
   if (data.length === 0) {
-    return headers.join(',') + '\n';
+    return headers.join(",") + "\n";
   }
-  
+
   // Header row
-  const csvLines = [headers.map(escapeCSV).join(',')];
-  
+  const csvLines = [headers.map(escapeCSV).join(",")];
+
   // Data rows
   for (const row of data) {
-    const values = headers.map(header => {
+    const values = headers.map((header) => {
       const value = row[header];
-      
+
       // Handle dates
       if (value instanceof Date) {
         return escapeCSV(formatDateTime(value));
       }
-      
+
       // Handle objects/arrays (stringify)
-      if (typeof value === 'object' && value !== null) {
+      if (typeof value === "object" && value !== null) {
         return escapeCSV(JSON.stringify(value));
       }
-      
+
       return escapeCSV(value);
     });
-    
-    csvLines.push(values.join(','));
+
+    csvLines.push(values.join(","));
   }
-  
-  return csvLines.join('\n');
+
+  return csvLines.join("\n");
 }
 
 /**
  * Generate CSV filename with timestamp
  */
 export function generateCSVFilename(prefix: string): string {
-  const timestamp = new Date().toISOString().split('T')[0];
+  const timestamp = new Date().toISOString().split("T")[0];
   return `${prefix}_${timestamp}.csv`;
 }
 
@@ -93,29 +93,29 @@ export function generateCSVFilename(prefix: string): string {
  */
 export function exportHorsesCSV(horses: any[]): string {
   const headers = [
-    'id',
-    'name',
-    'breed',
-    'age',
-    'dateOfBirth',
-    'height',
-    'weight',
-    'color',
-    'gender',
-    'discipline',
-    'level',
-    'registrationNumber',
-    'microchipNumber',
-    'notes',
-    'createdAt'
+    "id",
+    "name",
+    "breed",
+    "age",
+    "dateOfBirth",
+    "height",
+    "weight",
+    "color",
+    "gender",
+    "discipline",
+    "level",
+    "registrationNumber",
+    "microchipNumber",
+    "notes",
+    "createdAt",
   ];
-  
-  const data = horses.map(horse => ({
+
+  const data = horses.map((horse) => ({
     ...horse,
     dateOfBirth: formatDate(horse.dateOfBirth),
     createdAt: formatDateTime(horse.createdAt),
   }));
-  
+
   return arrayToCSV(data, headers);
 }
 
@@ -124,28 +124,28 @@ export function exportHorsesCSV(horses: any[]): string {
  */
 export function exportHealthRecordsCSV(records: any[]): string {
   const headers = [
-    'id',
-    'horseId',
-    'horseName',
-    'type',
-    'date',
-    'dueDate',
-    'veterinarian',
-    'diagnosis',
-    'treatment',
-    'medication',
-    'cost',
-    'notes',
-    'createdAt'
+    "id",
+    "horseId",
+    "horseName",
+    "type",
+    "date",
+    "dueDate",
+    "veterinarian",
+    "diagnosis",
+    "treatment",
+    "medication",
+    "cost",
+    "notes",
+    "createdAt",
   ];
-  
-  const data = records.map(record => ({
+
+  const data = records.map((record) => ({
     ...record,
     date: formatDate(record.date),
     dueDate: formatDate(record.dueDate),
     createdAt: formatDateTime(record.createdAt),
   }));
-  
+
   return arrayToCSV(data, headers);
 }
 
@@ -154,27 +154,27 @@ export function exportHealthRecordsCSV(records: any[]): string {
  */
 export function exportTrainingSessionsCSV(sessions: any[]): string {
   const headers = [
-    'id',
-    'horseId',
-    'horseName',
-    'sessionType',
-    'date',
-    'duration',
-    'exercises',
-    'performanceRating',
-    'notes',
-    'weatherConditions',
-    'completedAt',
-    'createdAt'
+    "id",
+    "horseId",
+    "horseName",
+    "sessionType",
+    "date",
+    "duration",
+    "exercises",
+    "performanceRating",
+    "notes",
+    "weatherConditions",
+    "completedAt",
+    "createdAt",
   ];
-  
-  const data = sessions.map(session => ({
+
+  const data = sessions.map((session) => ({
     ...session,
     date: formatDate(session.date),
     completedAt: formatDateTime(session.completedAt),
     createdAt: formatDateTime(session.createdAt),
   }));
-  
+
   return arrayToCSV(data, headers);
 }
 
@@ -183,26 +183,26 @@ export function exportTrainingSessionsCSV(sessions: any[]): string {
  */
 export function exportCompetitionsCSV(competitions: any[]): string {
   const headers = [
-    'id',
-    'horseId',
-    'horseName',
-    'competitionName',
-    'date',
-    'venue',
-    'discipline',
-    'level',
-    'placement',
-    'score',
-    'notes',
-    'createdAt'
+    "id",
+    "horseId",
+    "horseName",
+    "competitionName",
+    "date",
+    "venue",
+    "discipline",
+    "level",
+    "placement",
+    "score",
+    "notes",
+    "createdAt",
   ];
-  
-  const data = competitions.map(comp => ({
+
+  const data = competitions.map((comp) => ({
     ...comp,
     date: formatDate(comp.date),
     createdAt: formatDateTime(comp.createdAt),
   }));
-  
+
   return arrayToCSV(data, headers);
 }
 
@@ -211,26 +211,26 @@ export function exportCompetitionsCSV(competitions: any[]): string {
  */
 export function exportFeedCostsCSV(costs: any[]): string {
   const headers = [
-    'id',
-    'horseId',
-    'horseName',
-    'feedType',
-    'brandName',
-    'quantity',
-    'unit',
-    'cost',
-    'purchaseDate',
-    'supplierName',
-    'notes',
-    'createdAt'
+    "id",
+    "horseId",
+    "horseName",
+    "feedType",
+    "brandName",
+    "quantity",
+    "unit",
+    "cost",
+    "purchaseDate",
+    "supplierName",
+    "notes",
+    "createdAt",
   ];
-  
-  const data = costs.map(cost => ({
+
+  const data = costs.map((cost) => ({
     ...cost,
     purchaseDate: formatDate(cost.purchaseDate),
     createdAt: formatDateTime(cost.createdAt),
   }));
-  
+
   return arrayToCSV(data, headers);
 }
 
@@ -239,21 +239,21 @@ export function exportFeedCostsCSV(costs: any[]): string {
  */
 export function exportDocumentsCSV(documents: any[]): string {
   const headers = [
-    'id',
-    'horseId',
-    'horseName',
-    'fileName',
-    'fileSize',
-    'fileType',
-    'category',
-    'description',
-    'uploadedAt'
+    "id",
+    "horseId",
+    "horseName",
+    "fileName",
+    "fileSize",
+    "fileType",
+    "category",
+    "description",
+    "uploadedAt",
   ];
-  
-  const data = documents.map(doc => ({
+
+  const data = documents.map((doc) => ({
     ...doc,
     uploadedAt: formatDateTime(doc.uploadedAt || doc.createdAt),
   }));
-  
+
   return arrayToCSV(data, headers);
 }

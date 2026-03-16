@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Automated service worker cache versioning system
   - Created `scripts/update-sw-version.js` to sync SW version with package.json
   - Added `build:sw` npm script that runs before build
@@ -30,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Best practices for cache management in development and production
 
 ### Changed
+
 - Updated `.gitignore` to include exceptions for `dist/index.js` and `dist/public/`
 - Modified build script to run service worker version update before Vite build
 - Enhanced docker-compose.yml with dual env_file configuration
@@ -37,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Made `deployment/install.sh` fully non-interactive for CI/CD pipelines
 
 ### Fixed
+
 - Corrected syntax errors in `client/src/pages/Pricing.tsx` (duplicate component definition)
 - Fixed broken JSX structure in `client/src/components/DashboardLayout.tsx`
 - Updated toast API usage in Pricing.tsx to use sonner instead of shadcn/ui toast
@@ -45,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2024-01-07
 
 ### Added
+
 - Initial production release of EquiProfile
 - Complete horse management platform with:
   - Horse profile management with breed, age, discipline tracking
@@ -102,6 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Drizzle ORM for database operations
 
 ### Database
+
 - MySQL 8.0 as default production database
 - SQLite support for development and testing
 - Complete schema with migrations for:
@@ -115,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Admin audit logs
 
 ### API
+
 - tRPC-based type-safe API with procedures for:
   - Authentication (login, logout, session management)
   - User management (profile, settings, subscription)
@@ -129,6 +135,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - AWS S3/Forge API for file storage
 
 ### Frontend
+
 - Modern React 19 with TypeScript
 - Wouter for lightweight routing
 - TanStack Query for server state management
@@ -142,6 +149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - QR code generation for horse profiles
 
 ### Performance
+
 - Code splitting with dynamic imports
 - Service worker caching for offline support
 - Asset optimization and compression
@@ -150,6 +158,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting to prevent abuse
 
 ### Compatibility
+
 - Node.js 22.x or higher
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - MySQL 8.0+ or SQLite 3.35+

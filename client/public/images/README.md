@@ -5,6 +5,7 @@ This directory contains all visual assets for the EquiProfile application.
 ## Current Assets
 
 ### Feature Icons (`features/`)
+
 - `icon-automation.svg` - Automation/workflow icon
 - `icon-analytics.svg` - Analytics/charts icon
 - `icon-security.svg` - Security/lock icon
@@ -13,8 +14,9 @@ This directory contains all visual assets for the EquiProfile application.
 - `icon-support.svg` - Support/help icon
 
 ### Active Hero & Marketing Images
+
 - `hero-auth.jpg` (675KB) - Hero image for Login and Register pages (50/50 split layout)
-- `hero-horse-riding.jpg` (675KB) - Hero image for Home page  
+- `hero-horse-riding.jpg` (675KB) - Hero image for Home page
 - `about-hero.jpg` (255KB) - About page hero section (moved from root)
 - `stable-interior.jpg` (255KB) - About page interior section (moved from root)
 - `documents-xrays.jpg` (668KB) - Documents & X-rays feature page (moved from root)
@@ -25,6 +27,7 @@ This directory contains all visual assets for the EquiProfile application.
 - `about-story.jpg` (613KB) - About page story section
 
 ### Legacy Images (Available for other uses)
+
 - `equipment-detail.jpg` - Equipment/tack detail image
 - `horse-stable.jpg` (70KB) - Stable scene
 - `riding-lesson.jpg` (110KB) - Training scene
@@ -32,6 +35,7 @@ This directory contains all visual assets for the EquiProfile application.
 - `training.jpg` (203KB) - Training activity
 
 ### Stock Images (Backups)
+
 - `extra-animal.jpg` (648KB) - Stock horse image (source for stable-management.jpg)
 - `extra-horse.jpg` (289KB) - Stock horse image (source for training-session.jpg)
 - `extra-wild-horse.jpg` (613KB) - Stock horse image (source for about-story.jpg)
@@ -39,6 +43,7 @@ This directory contains all visual assets for the EquiProfile application.
 ## Image Guidelines
 
 ### Performance Requirements
+
 1. **Format**: Use WebP for photos, SVG for icons/graphics
 2. **Compression**: All images should be optimized
    - Photos: 60-80% quality WebP
@@ -47,11 +52,13 @@ This directory contains all visual assets for the EquiProfile application.
 4. **Responsive**: Provide multiple sizes for different viewports
 
 ### Naming Conventions
+
 - Use kebab-case: `hero-background.webp`
 - Be descriptive: `dashboard-empty-state.svg`
 - Include dimensions if specific: `logo-192x192.png`
 
 ### Directory Structure
+
 ```
 images/
 ├── features/          # Feature section icons
@@ -63,6 +70,7 @@ images/
 ## Adding New Images
 
 ### For WebP Conversion
+
 ```bash
 # Using sharp-cli (recommended)
 npx sharp-cli --input source.jpg --output optimized.webp --quality 75
@@ -72,12 +80,14 @@ cwebp -q 75 source.jpg -o optimized.webp
 ```
 
 ### For SVG Optimization
+
 ```bash
 # Using SVGO
 npx svgo input.svg -o output.svg
 ```
 
 ## Future Improvements
+
 - [ ] Replace hero-horse.jpg with modern hero.webp
 - [ ] Optimize all existing JPG images to WebP
 - [ ] Add dark mode variants if needed
@@ -86,7 +96,9 @@ npx svgo input.svg -o output.svg
 - [ ] Create app store screenshots
 
 ## Copyright Notice
+
 Ensure all images used are:
+
 - Owned by you/your organization
 - Licensed for commercial use
 - Properly attributed if required

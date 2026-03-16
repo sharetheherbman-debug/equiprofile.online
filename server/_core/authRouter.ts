@@ -1,7 +1,9 @@
+// Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import express, { Router } from "express";
 import bcrypt from "bcrypt";
 import { nanoid } from "nanoid";
 import { SignJWT } from "jose";
+import rateLimit from "express-rate-limit";
 import * as db from "../db";
 import * as email from "./email";
 import { ENV } from "./env";
@@ -9,10 +11,21 @@ import { COOKIE_NAME } from "@shared/const";
 
 const router: Router = express.Router();
 
+// Rate limiter for login attempts (5 attempts per 15 minutes)
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: "Too many login attempts from this IP, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true, // Don't count successful logins
+});
+
 /**
- * Shared registration logic used by both /signup and /register endpoints
+ * POST /api/auth/signup
+ * Create a new user account with email/password
  */
-async function handleRegistration(req: express.Request, res: express.Response) {
+router.post("/signup", async (req, res) => {
   try {
     const { email: userEmail, password, name } = req.body;
 
@@ -21,16 +34,15 @@ async function handleRegistration(req: express.Request, res: express.Response) {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    if (password.length < 8) {
-      return res.status(400).json({ error: "Password must be at least 8 characters" });
+    if (password.length < 12) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 12 characters" });
     }
 
-    // Normalize email to lowercase
-    const normalizedEmail = userEmail.toLowerCase().trim();
-
     // Check if user already exists
-    const existingUser = await db.getUserByEmail(normalizedEmail);
-    
+    const existingUser = await db.getUserByEmail(userEmail);
+
     if (existingUser) {
       return res.status(400).json({ error: "Email already registered" });
     }
@@ -47,7 +59,7 @@ async function handleRegistration(req: express.Request, res: express.Response) {
 
     await db.upsertUser({
       openId,
-      email: normalizedEmail,
+      email: userEmail,
       passwordHash,
       name: name || null,
       loginMethod: "email",
@@ -61,6 +73,11 @@ async function handleRegistration(req: express.Request, res: express.Response) {
     const user = await db.getUserByOpenId(openId);
     if (!user) {
       return res.status(500).json({ error: "Failed to create user" });
+    }
+
+    // Auto-grant admin role to primary admin email
+    if (userEmail === "amarktainetwork@gmail.com" && user.role !== "admin") {
+      await db.updateUser(user.id, { role: "admin" });
     }
 
     // Generate JWT token
@@ -79,14 +96,14 @@ async function handleRegistration(req: express.Request, res: express.Response) {
     });
 
     // Send welcome email (async, don't wait)
-    email.sendWelcomeEmail(user).catch(err => 
-      console.error("[Auth] Failed to send welcome email:", err)
-    );
+    email
+      .sendWelcomeEmail(user)
+      .catch((err) =>
+        console.error("[Auth] Failed to send welcome email:", err),
+      );
 
     res.json({
-      access_token: token,
-      token_type: "bearer",
-      token: token, // Legacy field - TODO: Remove in v2.0
+      success: true,
       user: {
         id: user.id,
         name: user.name,
@@ -95,28 +112,16 @@ async function handleRegistration(req: express.Request, res: express.Response) {
       },
     });
   } catch (error) {
-    console.error("[Auth] Registration error:", error);
+    console.error("[Auth] Signup error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-
-/**
- * POST /api/auth/signup
- * Create a new user account with email/password
- */
-router.post("/signup", handleRegistration);
-
-/**
- * POST /api/auth/register
- * Alias for /signup - Create a new user account with email/password
- */
-router.post("/register", handleRegistration);
+});
 
 /**
  * POST /api/auth/login
  * Login with email/password
  */
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   try {
     const { email: userEmail, password } = req.body;
 
@@ -124,11 +129,8 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    // Normalize email to lowercase
-    const normalizedEmail = userEmail.toLowerCase().trim();
-
     // Find user by email
-    const user = await db.getUserByEmail(normalizedEmail);
+    const user = await db.getUserByEmail(userEmail);
 
     if (!user || !user.passwordHash) {
       return res.status(401).json({ error: "Invalid email or password" });
@@ -142,14 +144,19 @@ router.post("/login", async (req, res) => {
 
     // Check if account is suspended
     if (user.isSuspended) {
-      return res.status(403).json({ 
-        error: "Account suspended", 
-        reason: user.suspendedReason 
+      return res.status(403).json({
+        error: "Account suspended",
+        reason: user.suspendedReason,
       });
     }
 
     // Update last signed in
     await db.updateUser(user.id, { lastSignedIn: new Date() });
+
+    // Auto-grant admin role to primary admin email if not already set
+    if (user.email === "amarktainetwork@gmail.com" && user.role !== "admin") {
+      await db.updateUser(user.id, { role: "admin" });
+    }
 
     // Generate JWT token
     const token = await new SignJWT({ userId: user.id })
@@ -167,9 +174,7 @@ router.post("/login", async (req, res) => {
     });
 
     res.json({
-      access_token: token,
-      token_type: "bearer",
-      token: token, // Legacy field - TODO: Remove in v2.0
+      success: true,
       user: {
         id: user.id,
         name: user.name,
@@ -195,16 +200,19 @@ router.post("/request-reset", async (req, res) => {
       return res.status(400).json({ error: "Email is required" });
     }
 
-    // Normalize email to lowercase
-    const normalizedEmail = userEmail.toLowerCase().trim();
-
     // Find user by email
-    const user = await db.getUserByEmail(normalizedEmail);
+    const user = await db.getUserByEmail(userEmail);
 
     // Always return success to prevent email enumeration
     if (!user) {
-      console.log("[Auth] Password reset requested for non-existent email:", normalizedEmail);
-      return res.json({ success: true, message: "If that email exists, a reset link has been sent" });
+      console.log(
+        "[Auth] Password reset requested for non-existent email:",
+        userEmail,
+      );
+      return res.json({
+        success: true,
+        message: "If that email exists, a reset link has been sent",
+      });
     }
 
     // Generate reset token
@@ -219,11 +227,15 @@ router.post("/request-reset", async (req, res) => {
     });
 
     // Send reset email
-    await email.sendPasswordResetEmail(normalizedEmail, resetToken, user.name || undefined);
+    await email.sendPasswordResetEmail(
+      userEmail,
+      resetToken,
+      user.name || undefined,
+    );
 
-    res.json({ 
-      success: true, 
-      message: "If that email exists, a reset link has been sent" 
+    res.json({
+      success: true,
+      message: "If that email exists, a reset link has been sent",
     });
   } catch (error) {
     console.error("[Auth] Request reset error:", error);
@@ -243,13 +255,14 @@ router.post("/reset-password", async (req, res) => {
       return res.status(400).json({ error: "Token and password are required" });
     }
 
-    if (password.length < 8) {
-      return res.status(400).json({ error: "Password must be at least 8 characters" });
+    if (password.length < 12) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 12 characters" });
     }
 
-    // Find user by reset token
-    const users = await db.getAllUsers();
-    const user = users.find(u => u.resetToken === token);
+    // Find user by reset token (direct indexed lookup)
+    const user = await db.getUserByResetToken(token);
 
     if (!user) {
       return res.status(400).json({ error: "Invalid or expired reset token" });
@@ -270,9 +283,10 @@ router.post("/reset-password", async (req, res) => {
       resetTokenExpiry: null,
     });
 
-    res.json({ 
-      success: true, 
-      message: "Password reset successful. You can now login with your new password." 
+    res.json({
+      success: true,
+      message:
+        "Password reset successful. You can now login with your new password.",
     });
   } catch (error) {
     console.error("[Auth] Reset password error:", error);
@@ -292,6 +306,83 @@ router.post("/logout", (req, res) => {
     domain: ENV.cookieDomain,
   });
   res.json({ success: true });
+});
+
+/**
+ * POST /api/auth/change-password
+ * Change password for the currently authenticated user.
+ * Requires a valid session cookie + current password for verification.
+ */
+router.post("/change-password", async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({ error: "currentPassword and newPassword are required" });
+    }
+
+    if (typeof newPassword !== "string" || newPassword.length < 8) {
+      return res
+        .status(400)
+        .json({ error: "New password must be at least 8 characters" });
+    }
+
+    // Verify the session cookie to get the current user
+    const cookieHeader = req.headers.cookie || "";
+    const cookiePairs = cookieHeader.split(";").map((c) => c.trim());
+    let sessionCookieValue: string | undefined;
+    for (const pair of cookiePairs) {
+      const [key, ...vals] = pair.split("=");
+      if (key.trim() === COOKIE_NAME) {
+        sessionCookieValue = vals.join("=");
+        break;
+      }
+    }
+
+    if (!sessionCookieValue) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    // Use SDK to authenticate
+    let user;
+    try {
+      const { sdk } = await import("./sdk");
+      user = await sdk.authenticateRequest(req as any);
+    } catch {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    if (!user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    // Verify current password
+    if (!user.passwordHash) {
+      return res.status(400).json({
+        error:
+          "No password set. Use forgot-password to create a password for your account.",
+      });
+    }
+
+    const isCurrentPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.passwordHash,
+    );
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    // Hash and save the new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+    await db.updateUser(user.id, { passwordHash: newPasswordHash });
+
+    res.json({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    console.error("[Auth] Change password error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 export default router;

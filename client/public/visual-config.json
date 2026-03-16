@@ -2,13 +2,13 @@
   "_comment": "Visual Configuration - Edit to customize branding without rebuilding",
   "_usage": "Edit this file to update site branding, colors, and images. Changes take effect on page reload.",
   "_location": "For post-deployment: /var/www/equiprofile/dist/public/visual-config.json",
-  
+
   "branding": {
     "siteName": "EquiProfile",
     "tagline": "Professional Horse Management Platform",
     "description": "Comprehensive horse management for equestrian professionals"
   },
-  
+
   "colors": {
     "primary": "#667eea",
     "primaryHover": "#5568d3",
@@ -17,14 +17,14 @@
     "background": "#ffffff",
     "foreground": "#1a202c"
   },
-  
+
   "logos": {
     "header": "/images/logo.png",
     "footer": "/images/logo.png",
     "favicon": "/favicon.ico",
     "alt": "EquiProfile Logo"
   },
-  
+
   "hero": {
     "backgroundImage": "",
     "backgroundGradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -33,12 +33,12 @@
     "ctaText": "Get Started Free",
     "ctaLink": "/register"
   },
-  
+
   "features": {
     "showFeatureIcons": true,
     "iconStyle": "rounded"
   },
-  
+
   "footer": {
     "copyrightText": "© 2024 EquiProfile. All rights reserved.",
     "showSocialLinks": false,
@@ -49,7 +49,7 @@
       "linkedin": null
     }
   },
-  
+
   "customization": {
     "enableDarkMode": true,
     "defaultTheme": "light",

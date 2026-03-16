@@ -1,12 +1,24 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -24,24 +36,24 @@ import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "../../../server/routers";
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
-type FeedingPlan = RouterOutput['feeding']['listAll'][number];
+type FeedingPlan = RouterOutput["feeding"]["listAll"][number];
 
 const mealTimes = [
-  { value: 'morning', label: 'Morning' },
-  { value: 'midday', label: 'Midday' },
-  { value: 'evening', label: 'Evening' },
-  { value: 'night', label: 'Night' },
+  { value: "morning", label: "Morning" },
+  { value: "midday", label: "Midday" },
+  { value: "evening", label: "Evening" },
+  { value: "night", label: "Night" },
 ];
 
 const feedTypes = [
-  'Hay',
-  'Haylage',
-  'Chaff',
-  'Hard Feed',
-  'Balancer',
-  'Supplement',
-  'Treats',
-  'Other',
+  "Hay",
+  "Haylage",
+  "Chaff",
+  "Hard Feed",
+  "Balancer",
+  "Supplement",
+  "Treats",
+  "Other",
 ];
 
 function FeedingContent() {
@@ -56,7 +68,11 @@ function FeedingContent() {
   });
 
   const { data: horses } = trpc.horses.list.useQuery();
-  const { data: feedingPlans, isLoading, refetch } = trpc.feeding.listAll.useQuery();
+  const {
+    data: feedingPlans,
+    isLoading,
+    refetch,
+  } = trpc.feeding.listAll.useQuery();
 
   const createMutation = trpc.feeding.create.useMutation({
     onSuccess: () => {
@@ -100,14 +116,17 @@ function FeedingContent() {
   };
 
   // Group feeding plans by horse
-  const groupedPlans = feedingPlans?.reduce((acc: Record<number, FeedingPlan[]>, plan: FeedingPlan) => {
-    const horseId = plan.horseId;
-    if (!acc[horseId]) {
-      acc[horseId] = [];
-    }
-    acc[horseId].push(plan);
-    return acc;
-  }, {} as Record<number, FeedingPlan[]>);
+  const groupedPlans = feedingPlans?.reduce(
+    (acc: Record<number, FeedingPlan[]>, plan: FeedingPlan) => {
+      const horseId = plan.horseId;
+      if (!acc[horseId]) {
+        acc[horseId] = [];
+      }
+      acc[horseId].push(plan);
+      return acc;
+    },
+    {} as Record<number, FeedingPlan[]>,
+  );
 
   if (isLoading) {
     return (
@@ -126,7 +145,9 @@ function FeedingContent() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-foreground">Feeding Plans</h1>
+          <h1 className="font-serif text-3xl font-bold text-foreground">
+            Feeding Plans
+          </h1>
           <p className="text-muted-foreground mt-1">
             Manage daily feeding schedules for your horses
           </p>
@@ -151,7 +172,9 @@ function FeedingContent() {
                   <Label>Horse *</Label>
                   <Select
                     value={formData.horseId}
-                    onValueChange={(value) => setFormData({ ...formData, horseId: value })}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, horseId: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select horse" />
@@ -171,7 +194,9 @@ function FeedingContent() {
                     <Label>Feed Type *</Label>
                     <Select
                       value={formData.feedType}
-                      onValueChange={(value) => setFormData({ ...formData, feedType: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, feedType: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
@@ -189,7 +214,9 @@ function FeedingContent() {
                     <Label>Meal Time *</Label>
                     <Select
                       value={formData.mealTime}
-                      onValueChange={(value: any) => setFormData({ ...formData, mealTime: value })}
+                      onValueChange={(value: any) =>
+                        setFormData({ ...formData, mealTime: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -210,7 +237,9 @@ function FeedingContent() {
                     <Label>Quantity</Label>
                     <Input
                       value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, quantity: e.target.value })
+                      }
                       placeholder="e.g., 2"
                     />
                   </div>
@@ -218,7 +247,9 @@ function FeedingContent() {
                     <Label>Unit</Label>
                     <Select
                       value={formData.unit}
-                      onValueChange={(value) => setFormData({ ...formData, unit: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, unit: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -238,14 +269,20 @@ function FeedingContent() {
                   <Label>Notes</Label>
                   <Textarea
                     value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, notes: e.target.value })
+                    }
                     placeholder="Any special instructions..."
                     rows={2}
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button type="submit" disabled={createMutation.isPending}>
@@ -261,7 +298,9 @@ function FeedingContent() {
         <Card className="text-center py-12">
           <CardContent>
             <Utensils className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-            <h3 className="font-serif text-xl font-semibold mb-2">No feeding plans yet</h3>
+            <h3 className="font-serif text-xl font-semibold mb-2">
+              No feeding plans yet
+            </h3>
             <p className="text-muted-foreground mb-6">
               Create feeding schedules to keep track of your horses' nutrition.
             </p>
@@ -286,21 +325,33 @@ function FeedingContent() {
                 <CardContent>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {mealTimes.map((mealTime) => {
-                      const mealPlans = horsePlans.filter((p: FeedingPlan) => p.mealTime === mealTime.value);
+                      const mealPlans = horsePlans.filter(
+                        (p: FeedingPlan) => p.mealTime === mealTime.value,
+                      );
                       return (
-                        <div key={mealTime.value} className="p-4 rounded-lg border bg-muted/30">
+                        <div
+                          key={mealTime.value}
+                          className="p-4 rounded-lg border bg-muted/30"
+                        >
                           <div className="flex items-center gap-2 mb-3">
                             <Clock className="w-4 h-4 text-muted-foreground" />
                             <h4 className="font-medium">{mealTime.label}</h4>
                           </div>
                           {mealPlans.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">No feeds scheduled</p>
+                            <p className="text-sm text-muted-foreground">
+                              No feeds scheduled
+                            </p>
                           ) : (
                             <div className="space-y-2">
                               {mealPlans.map((plan: FeedingPlan) => (
-                                <div key={plan.id} className="flex items-center justify-between p-2 rounded bg-background">
+                                <div
+                                  key={plan.id}
+                                  className="flex items-center justify-between p-2 rounded bg-background"
+                                >
                                   <div>
-                                    <p className="text-sm font-medium">{plan.feedType}</p>
+                                    <p className="text-sm font-medium">
+                                      {plan.feedType}
+                                    </p>
                                     {plan.quantity && (
                                       <p className="text-xs text-muted-foreground">
                                         {plan.quantity} {plan.unit}
@@ -311,7 +362,9 @@ function FeedingContent() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                    onClick={() => deleteMutation.mutate({ id: plan.id })}
+                                    onClick={() =>
+                                      deleteMutation.mutate({ id: plan.id })
+                                    }
                                   >
                                     <Trash2 className="w-4 h-4" />
                                   </Button>

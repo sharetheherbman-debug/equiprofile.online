@@ -1,3 +1,4 @@
+// Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { TRPCClientError } from "@trpc/client";
@@ -22,7 +23,7 @@ export function useAuth(options?: UseAuthOptions) {
     onSuccess: () => {
       utils.auth.me.setData(undefined, null);
       // Redirect to landing page after successful logout
-      window.location.href = '/';
+      window.location.href = "/";
     },
   });
 
@@ -44,10 +45,6 @@ export function useAuth(options?: UseAuthOptions) {
   }, [logoutMutation, utils]);
 
   const state = useMemo(() => {
-    localStorage.setItem(
-      "manus-runtime-user-info",
-      JSON.stringify(meQuery.data)
-    );
     return {
       user: meQuery.data ?? null,
       loading: meQuery.isLoading || logoutMutation.isPending,
@@ -62,6 +59,14 @@ export function useAuth(options?: UseAuthOptions) {
     logoutMutation.isPending,
   ]);
 
+  // Persist user info to localStorage for offline/quick reads (side effect)
+  useEffect(() => {
+    localStorage.setItem(
+      "equiprofile-user-info",
+      JSON.stringify(meQuery.data ?? null),
+    );
+  }, [meQuery.data]);
+
   useEffect(() => {
     if (!redirectOnUnauthenticated) return;
     if (meQuery.isLoading || logoutMutation.isPending) return;
@@ -69,7 +74,7 @@ export function useAuth(options?: UseAuthOptions) {
     if (typeof window === "undefined") return;
     if (window.location.pathname === redirectPath) return;
 
-    window.location.href = redirectPath
+    window.location.href = redirectPath;
   }, [
     redirectOnUnauthenticated,
     redirectPath,

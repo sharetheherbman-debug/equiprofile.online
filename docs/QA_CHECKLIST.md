@@ -124,6 +124,7 @@ curl -I https://yourdomain.com | grep -E "(X-Frame-Options|X-Content-Type-Option
 ```
 
 Expected output:
+
 ```
 x-frame-options: SAMEORIGIN
 x-content-type-options: nosniff
@@ -166,6 +167,7 @@ Perform a complete user journey:
 ### White Screen
 
 If you see a white screen:
+
 1. Check browser console for CSP errors
 2. Check browser console for MIME type errors
 3. Verify `dist/public/index.html` exists
@@ -174,7 +176,8 @@ If you see a white screen:
 ### Assets Return HTML
 
 If assets return HTML instead of JS/CSS:
-1. Check server/_core/vite.ts SPA fallback logic
+
+1. Check server/\_core/vite.ts SPA fallback logic
 2. Verify assets are in `dist/public/assets/`
 3. Test with: `curl https://yourdomain.com/assets/index-*.js | head -n1`
    - Should show JavaScript, not `<!doctype html>`
@@ -182,6 +185,7 @@ If assets return HTML instead of JS/CSS:
 ### CSP Violations
 
 If you see CSP violations:
+
 1. Ensure no inline scripts in `client/index.html`
 2. Verify `server/_core/index.ts` has correct CSP config
 3. Check that all scripts are loaded from `/src/` or `/assets/`
@@ -190,11 +194,11 @@ If you see CSP violations:
 
 ## Sign-Off
 
-Deployment tested by: _______________  
-Date: _______________  
-Environment: _______________  
-Version: _______________  
+Deployment tested by: **\*\***\_\_\_**\*\***  
+Date: **\*\***\_\_\_**\*\***  
+Environment: **\*\***\_\_\_**\*\***  
+Version: **\*\***\_\_\_**\*\***
 
-All checks passed: ☐ Yes ☐ No  
+All checks passed: ☐ Yes ☐ No
 
 If no, list issues:

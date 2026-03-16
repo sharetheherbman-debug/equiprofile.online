@@ -2,8 +2,7 @@
 # ==========================================
 # EquiProfile Dependency Installation
 # ==========================================
-# Installs all required dependencies with frozen lockfile
-# This ensures consistent builds across environments
+# Installs all required dependencies using npm ci (deterministic, frozen)
 #
 # Usage: bash scripts/install.sh
 
@@ -14,28 +13,15 @@ echo "Installing EquiProfile Dependencies"
 echo "======================================"
 echo ""
 
-# Check if pnpm is installed
-if ! command -v pnpm &> /dev/null; then
-    echo "❌ Error: pnpm is not installed"
-    echo ""
-    echo "Please install pnpm first:"
-    echo "  npm install -g pnpm"
-    echo ""
-    echo "Or using corepack (recommended):"
-    echo "  corepack enable"
-    echo "  corepack prepare pnpm@latest --activate"
-    exit 1
-fi
-
-echo "✅ pnpm found: $(pnpm --version)"
+echo "✅ node: $(node --version)"
+echo "✅ npm: $(npm --version)"
 echo ""
 
 # Install dependencies with frozen lockfile
-echo "📦 Installing dependencies..."
-echo "   Using frozen lockfile to ensure consistent builds"
+echo "📦 Installing dependencies (npm ci)..."
 echo ""
 
-pnpm install --frozen-lockfile
+npm ci
 
 echo ""
 echo "======================================"
@@ -47,5 +33,5 @@ echo "Build artifacts: node_modules/"
 echo ""
 echo "Next steps:"
 echo "  - Run 'bash scripts/build.sh' to build the application"
-echo "  - Or run 'pnpm dev' to start development server"
+echo "  - Or run 'npm run dev' to start development server"
 echo ""

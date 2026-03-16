@@ -1,11 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation, useParams } from "wouter";
 import { ArrowLeft, Save, Loader2, Upload, X } from "lucide-react";
@@ -22,7 +34,7 @@ const disciplines = [
   "Racing",
   "Trail Riding",
   "Driving",
-  "Other"
+  "Other",
 ];
 
 const levels = [
@@ -31,29 +43,8 @@ const levels = [
   "Intermediate",
   "Advanced",
   "Competition",
-  "Professional"
+  "Professional",
 ];
-
-// Conversion helpers for horse measurements
-// 1 hand = 4 inches = 10.16 cm
-const cmToHands = (cm: number): string => {
-  const totalInches = cm / 2.54;
-  const wholeHands = Math.floor(totalInches / 4);
-  const remainingInches = Math.round(totalInches % 4);
-  // Clamp inches to 0-3 range (if 4, roll over to next hand)
-  if (remainingInches >= 4) {
-    return `${wholeHands + 1}.0`;
-  }
-  return `${wholeHands}.${remainingInches}`;
-};
-
-const handsToCm = (handsStr: string): number => {
-  const parts = handsStr.split('.');
-  const wholeHands = parseInt(parts[0] || '0');
-  const inches = parseInt(parts[1] || '0');
-  // Convert hands to cm, then add inches converted to cm
-  return Math.round((wholeHands * 10.16) + (inches * 2.54));
-};
 
 function HorseFormContent() {
   const params = useParams<{ id?: string }>();
@@ -61,16 +52,15 @@ function HorseFormContent() {
   const isEditing = params.id && params.id !== "new";
   const horseId = isEditing ? parseInt(params.id!) : null;
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>("");
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
     breed: "",
     age: "",
     dateOfBirth: "",
-    height: "", // Now in hands format (e.g., "15.2")
+    height: "",
     weight: "",
     color: "",
     gender: "" as "" | "stallion" | "mare" | "gelding",
@@ -84,22 +74,10 @@ function HorseFormContent() {
 
   const { data: horse, isLoading: horseLoading } = trpc.horses.get.useQuery(
     { id: horseId! },
-    { enabled: !!horseId }
+    { enabled: !!horseId },
   );
 
-  const uploadMutation = trpc.documents.upload.useMutation({
-    onSuccess: (data) => {
-      setFormData({ ...formData, photoUrl: data.url });
-      setPhotoPreview(data.url);
-      setUploadingPhoto(false);
-      setPhotoFile(null);
-      toast.success("Photo uploaded successfully!");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to upload photo");
-      setUploadingPhoto(false);
-    },
-  });
+  const uploadMutation = trpc.documents.upload.useMutation();
 
   const createMutation = trpc.horses.create.useMutation({
     onSuccess: (data) => {
@@ -127,8 +105,10 @@ function HorseFormContent() {
         name: horse.name || "",
         breed: horse.breed || "",
         age: horse.age?.toString() || "",
-        dateOfBirth: horse.dateOfBirth ? new Date(horse.dateOfBirth).toISOString().split('T')[0] : "",
-        height: horse.height ? cmToHands(horse.height) : "",
+        dateOfBirth: horse.dateOfBirth
+          ? new Date(horse.dateOfBirth).toISOString().split("T")[0]
+          : "",
+        height: horse.height?.toString() || "",
         weight: horse.weight?.toString() || "",
         color: horse.color || "",
         gender: (horse.gender as "" | "stallion" | "mare" | "gelding") || "",
@@ -139,70 +119,62 @@ function HorseFormContent() {
         notes: horse.notes || "",
         photoUrl: horse.photoUrl || "",
       });
-      if (horse.photoUrl) {
-        setPhotoPreview(horse.photoUrl);
-      }
+      if (horse.photoUrl) setPhotoPreview(horse.photoUrl);
     }
   }, [horse]);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please select an image file");
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      toast.error("Photo must be under 5MB");
       return;
     }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
-    setPhotoFile(file);
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPhotoPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleUploadPhoto = async () => {
-    if (!photoFile) return;
-
-    setUploadingPhoto(true);
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = (reader.result as string).split(',')[1];
-      uploadMutation.mutate({
-        horseId: horseId || undefined,
-        category: 'other',
-        description: `Photo for ${formData.name || 'horse'}`,
-        fileName: photoFile.name,
-        fileData: base64,
-        fileType: photoFile.type,
-        fileSize: photoFile.size,
-      });
-    };
-    reader.readAsDataURL(photoFile);
-  };
-
-  const handleRemovePhoto = () => {
-    setPhotoFile(null);
-    setPhotoPreview("");
-    setFormData({ ...formData, photoUrl: "" });
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    // Show preview immediately before upload starts
+    setPhotoPreview(URL.createObjectURL(file));
+    setPhotoUploading(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const dataUrl = ev.target?.result;
+        if (typeof dataUrl !== "string" || !dataUrl.includes(",")) {
+          toast.error("Failed to read file");
+          setPhotoUploading(false);
+          return;
+        }
+        const base64 = dataUrl.split(",")[1];
+        try {
+          const result = await uploadMutation.mutateAsync({
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: file.size,
+            fileData: base64,
+            category: "other",
+            description: "Horse profile photo",
+          });
+          setFormData((prev) => ({ ...prev, photoUrl: result.url }));
+          toast.success("Photo uploaded");
+        } catch (err: any) {
+          toast.error(err.message || "Failed to upload photo");
+        } finally {
+          setPhotoUploading(false);
+        }
+      };
+      reader.onerror = () => {
+        toast.error("Failed to read file");
+        setPhotoUploading(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload photo");
+      setPhotoUploading(false);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       toast.error("Please enter a name for your horse");
       return;
@@ -213,7 +185,7 @@ function HorseFormContent() {
       breed: formData.breed || undefined,
       age: formData.age ? parseInt(formData.age) : undefined,
       dateOfBirth: formData.dateOfBirth || undefined,
-      height: formData.height ? handsToCm(formData.height) : undefined,
+      height: formData.height ? parseInt(formData.height) : undefined,
       weight: formData.weight ? parseInt(formData.weight) : undefined,
       color: formData.color || undefined,
       gender: formData.gender || undefined,
@@ -232,7 +204,8 @@ function HorseFormContent() {
     }
   };
 
-  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+  const isSubmitting =
+    createMutation.isPending || updateMutation.isPending || photoUploading;
 
   if (horseLoading) {
     return (
@@ -255,7 +228,9 @@ function HorseFormContent() {
             {isEditing ? "Edit Horse" : "Add New Horse"}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {isEditing ? "Update your horse's information" : "Enter details about your equine companion"}
+            {isEditing
+              ? "Update your horse's information"
+              : "Enter details about your equine companion"}
           </p>
         </div>
       </div>
@@ -264,7 +239,9 @@ function HorseFormContent() {
         <Card>
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
-            <CardDescription>Essential details about your horse</CardDescription>
+            <CardDescription>
+              Essential details about your horse
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
@@ -273,7 +250,9 @@ function HorseFormContent() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="Enter horse's name"
                   required
                 />
@@ -283,7 +262,9 @@ function HorseFormContent() {
                 <Input
                   id="breed"
                   value={formData.breed}
-                  onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, breed: e.target.value })
+                  }
                   placeholder="e.g., Thoroughbred, Arabian"
                 />
               </div>
@@ -298,7 +279,9 @@ function HorseFormContent() {
                   min="0"
                   max="50"
                   value={formData.age}
-                  onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, age: e.target.value })
+                  }
                   placeholder="Age"
                 />
               </div>
@@ -308,14 +291,18 @@ function HorseFormContent() {
                   id="dateOfBirth"
                   type="date"
                   value={formData.dateOfBirth}
-                  onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, dateOfBirth: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="gender">Gender</Label>
                 <Select
                   value={formData.gender}
-                  onValueChange={(value) => setFormData({ ...formData, gender: value as any })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, gender: value as any })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select gender" />
@@ -331,17 +318,18 @@ function HorseFormContent() {
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="height">Height (hands)</Label>
+                <Label htmlFor="height">Height (cm)</Label>
                 <Input
                   id="height"
-                  type="text"
+                  type="number"
+                  min="0"
+                  max="250"
                   value={formData.height}
-                  onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                  placeholder="e.g., 15.2"
+                  onChange={(e) =>
+                    setFormData({ ...formData, height: e.target.value })
+                  }
+                  placeholder="Height in cm"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Format: hands.inches (e.g., 15.2 = 15 hands 2 inches)
-                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="weight">Weight (kg)</Label>
@@ -351,7 +339,9 @@ function HorseFormContent() {
                   min="0"
                   max="1500"
                   value={formData.weight}
-                  onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, weight: e.target.value })
+                  }
                   placeholder="Weight in kg"
                 />
               </div>
@@ -360,7 +350,9 @@ function HorseFormContent() {
                 <Input
                   id="color"
                   value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, color: e.target.value })
+                  }
                   placeholder="e.g., Bay, Chestnut"
                 />
               </div>
@@ -371,7 +363,9 @@ function HorseFormContent() {
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>Training & Discipline</CardTitle>
-            <CardDescription>Your horse's specialty and skill level</CardDescription>
+            <CardDescription>
+              Your horse's specialty and skill level
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
@@ -379,14 +373,18 @@ function HorseFormContent() {
                 <Label htmlFor="discipline">Discipline</Label>
                 <Select
                   value={formData.discipline}
-                  onValueChange={(value) => setFormData({ ...formData, discipline: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, discipline: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select discipline" />
                   </SelectTrigger>
                   <SelectContent>
                     {disciplines.map((d) => (
-                      <SelectItem key={d} value={d}>{d}</SelectItem>
+                      <SelectItem key={d} value={d}>
+                        {d}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -395,14 +393,18 @@ function HorseFormContent() {
                 <Label htmlFor="level">Level</Label>
                 <Select
                   value={formData.level}
-                  onValueChange={(value) => setFormData({ ...formData, level: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, level: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select level" />
                   </SelectTrigger>
                   <SelectContent>
                     {levels.map((l) => (
-                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                      <SelectItem key={l} value={l}>
+                        {l}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -414,7 +416,9 @@ function HorseFormContent() {
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>Identification</CardTitle>
-            <CardDescription>Registration and identification numbers</CardDescription>
+            <CardDescription>
+              Registration and identification numbers
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
@@ -423,7 +427,12 @@ function HorseFormContent() {
                 <Input
                   id="registrationNumber"
                   value={formData.registrationNumber}
-                  onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      registrationNumber: e.target.value,
+                    })
+                  }
                   placeholder="Passport/registration number"
                 />
               </div>
@@ -432,7 +441,12 @@ function HorseFormContent() {
                 <Input
                   id="microchipNumber"
                   value={formData.microchipNumber}
-                  onChange={(e) => setFormData({ ...formData, microchipNumber: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      microchipNumber: e.target.value,
+                    })
+                  }
                   placeholder="Microchip ID"
                 />
               </div>
@@ -447,55 +461,67 @@ function HorseFormContent() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="photo">Horse Photo</Label>
-              <div className="flex flex-col gap-4">
-                {photoPreview && (
-                  <div className="relative w-48 h-48 rounded-lg overflow-hidden border">
-                    <img 
-                      src={photoPreview} 
-                      alt="Horse preview" 
-                      className="w-full h-full object-cover"
+              <Label>Photo</Label>
+              <div className="flex items-start gap-4">
+                {photoPreview ? (
+                  <div className="relative">
+                    <img
+                      src={photoPreview}
+                      alt="Horse preview"
+                      className="w-20 h-20 object-cover rounded-lg border"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/assets/marketing/brand/horse-1.svg";
+                      }}
                     />
                     <button
                       type="button"
-                      onClick={handleRemovePhoto}
-                      className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                      onClick={() => {
+                        setPhotoPreview("");
+                        setFormData((prev) => ({ ...prev, photoUrl: "" }));
+                      }}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"
+                      aria-label="Remove photo"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3 h-3" />
                     </button>
                   </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-lg border-2 border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/20">
+                    <Upload className="w-6 h-6 text-muted-foreground/50" />
+                  </div>
                 )}
-                <div className="flex gap-2">
-                  <Input
+                <div className="flex-1 space-y-2">
+                  <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    className="flex-1"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={handlePhotoChange}
                   />
-                  {photoFile && !formData.photoUrl && (
-                    <Button
-                      type="button"
-                      onClick={handleUploadPhoto}
-                      disabled={uploadingPhoto}
-                    >
-                      {uploadingPhoto ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="w-4 h-4 mr-2" />
-                          Upload
-                        </>
-                      )}
-                    </Button>
-                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={photoUploading}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {photoUploading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 mr-2" />
+                        {photoPreview ? "Change Photo" : "Upload Photo"}
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    JPG, PNG or WebP. Max 5MB.
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Upload a photo of your horse (max 5MB, JPG/PNG)
-                </p>
               </div>
             </div>
             <div className="space-y-2">
@@ -503,7 +529,9 @@ function HorseFormContent() {
               <Textarea
                 id="notes"
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 placeholder="Any additional notes about your horse..."
                 rows={4}
               />
@@ -513,7 +541,9 @@ function HorseFormContent() {
 
         <div className="flex justify-end gap-4 mt-6">
           <Link href="/horses">
-            <Button type="button" variant="outline">Cancel</Button>
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
           </Link>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (

@@ -29,11 +29,11 @@ test_endpoint() {
   local name="$1"
   local url="$2"
   local expected_status="${3:-200}"
-  
+
   echo -n "Testing $name... "
-  
+
   status=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000")
-  
+
   if [ "$status" = "$expected_status" ]; then
     echo "✅ PASS (HTTP $status)"
     PASS=$((PASS + 1))
@@ -48,11 +48,11 @@ test_json() {
   local name="$1"
   local url="$2"
   local key="$3"
-  
+
   echo -n "Testing $name... "
-  
+
   response=$(curl -s "$url")
-  
+
   if echo "$response" | grep -q "\"$key\""; then
     echo "✅ PASS (JSON valid, '$key' present)"
     PASS=$((PASS + 1))
@@ -80,10 +80,7 @@ test_endpoint "Contact Page" "$BASE_URL/contact"
 echo ""
 echo "=== API Endpoints ==="
 test_json "API Health" "$BASE_URL/api/health" "status"
-test_json "API Ready" "$BASE_URL/api/ready" "status"
 test_endpoint "OAuth Status" "$BASE_URL/api/oauth/status"
-test_json "System Status" "$BASE_URL/api/trpc/system.status" "featureFlags"
-test_json "Feature Flags" "$BASE_URL/api/trpc/system.getFeatureFlags" "enableStripe"
 
 echo ""
 echo "=== Asset Loading ==="
@@ -188,22 +185,10 @@ curl -I http://localhost:3000/assets/index-[hash].js
 ### 6. API Responds
 
 ```bash
-# Auth endpoint (standard tRPC path)
 curl http://localhost:3000/api/trpc/auth.me
-
-# System status (new in this release)
-curl http://localhost:3000/api/trpc/system.status
 ```
 
-**Expected**: JSON response (auth.me returns null if unauthenticated, system.status returns service status)
-
-### 6a. System Status Check
-
-```bash
-curl http://localhost:3000/api/trpc/system.status
-```
-
-**Expected**: Detailed service status JSON (see sample below)
+**Expected**: JSON response (even if unauthenticated)
 
 ### 7. No JavaScript Errors
 
@@ -228,54 +213,13 @@ Open browser to `http://localhost:3000/` and check console:
 
 ```json
 {
-  "status": "ok",
-  "uptimeSeconds": 3600,
-  "time": "2026-01-26T12:00:00.000Z",
-  "version": "1.0.0"
-}
-```
-
-### /api/ready
-
-```json
-{
-  "status": "ready",
-  "database": "connected"
-}
-```
-
-### /api/trpc/system.status (NEW)
-
-```json
-{
-  "featureFlags": {
-    "uploadsEnabled": true,
-    "stripeEnabled": false,
-    "forgeEnabled": true,
-    "pwaEnabled": false
-  },
-  "serviceStatus": {
-    "uploads": {
-      "enabled": true,
-      "ready": true,
-      "backend": "local"
-    },
-    "ai": {
-      "enabled": true,
-      "ready": true
-    },
-    "weather": {
-      "enabled": true,
-      "ready": true
-    },
-    "stripe": {
-      "enabled": false,
-      "ready": false
-    }
-  },
-  "environment": {
-    "nodeEnv": "production",
-    "version": "1.0.0"
+  "status": "healthy",
+  "timestamp": "2026-01-09T12:00:00.000Z",
+  "version": "1.0.0",
+  "services": {
+    "database": true,
+    "stripe": false,
+    "oauth": true
   }
 }
 ```
@@ -301,6 +245,7 @@ Open browser to `http://localhost:3000/` and check console:
 **Cause**: Server not running or not responding
 
 **Solution**:
+
 1. Check service status: `sudo systemctl status equiprofile`
 2. Check logs: `sudo journalctl -u equiprofile -n 50`
 3. Verify port 3000 is listening: `sudo netstat -tulpn | grep 3000`
@@ -310,6 +255,7 @@ Open browser to `http://localhost:3000/` and check console:
 **Cause**: Static files not built or served correctly
 
 **Solution**:
+
 1. Verify `dist/` directory exists: `ls -la dist/`
 2. Check Vite build completed: Look for `dist/index.html`
 3. Rebuild: `npm run build`
@@ -319,6 +265,7 @@ Open browser to `http://localhost:3000/` and check console:
 **Cause**: MySQL not running or wrong credentials
 
 **Solution**:
+
 1. Check MySQL status: `sudo systemctl status mysql`
 2. Test connection: `mysql -h localhost -u equiprofile -p`
 3. Verify DATABASE_URL in `.env`
@@ -328,6 +275,7 @@ Open browser to `http://localhost:3000/` and check console:
 **Cause**: Server-side error
 
 **Solution**:
+
 1. Check logs: `sudo journalctl -u equiprofile -n 100`
 2. Look for stack traces
 3. Verify all environment variables are set

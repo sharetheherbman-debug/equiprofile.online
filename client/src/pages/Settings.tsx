@@ -1,25 +1,71 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PageTransition } from "@/components/PageTransition";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { Bell, Lock, User, Moon, Server, CheckCircle2, XCircle, Upload, CreditCard, Cloud, Sparkles } from "lucide-react";
+import { Bell, Lock, User, Moon, MapPin, Loader2, Info } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { trpc } from "@/lib/trpc";
-import { Badge } from "@/components/ui/badge";
 
 export default function Settings() {
   const { user } = useAuth();
-  const { theme, setTheme } = useTheme();
-  const [isLoading, setIsLoading] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const [isCapturingLocation, setIsCapturingLocation] = useState(false);
+
+  const adminStatus = trpc.adminUnlock.getStatus.useQuery(undefined, {
+    staleTime: 60_000,
+  });
+  const buildInfo = trpc.system.getBuildInfo.useQuery(undefined, {
+    enabled: !!adminStatus.data?.isUnlocked,
+    staleTime: Infinity,
+  });
+
+  const updateLocation = trpc.weather.updateLocation.useMutation({
+    onSuccess: () => {
+      toast.success("Location updated successfully");
+      setIsCapturingLocation(false);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update location");
+      setIsCapturingLocation(false);
+    },
+  });
+
+  const updateProfile = trpc.user.updateProfile.useMutation({
+    onSuccess: () => {
+      toast.success("Profile updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update profile");
+    },
+  });
+
+  const updateNotificationPreferences =
+    trpc.user.updateNotificationPreferences.useMutation({
+      onSuccess: () => {
+        toast.success("Notification preferences saved");
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to save preferences");
+      },
+    });
+
+  const { data: savedNotificationPrefs } =
+    trpc.user.getNotificationPreferences.useQuery();
 
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
@@ -31,6 +77,7 @@ export default function Settings() {
     newPassword: "",
     confirmPassword: "",
   });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
@@ -41,15 +88,16 @@ export default function Settings() {
     weeklyDigest: true,
   });
 
-  const handleProfileSave = async (e: React.FormEvent) => {
+  // Sync notification prefs from server when loaded
+  useEffect(() => {
+    if (savedNotificationPrefs) {
+      setNotifications((prev) => ({ ...prev, ...savedNotificationPrefs }));
+    }
+  }, [savedNotificationPrefs]);
+
+  const handleProfileSave = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    toast.success("Profile updated successfully");
-    setIsLoading(false);
+    updateProfile.mutate({ name: profileData.name });
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -65,29 +113,81 @@ export default function Settings() {
       return;
     }
 
-    setIsLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    toast.success("Password changed successfully");
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    setIsLoading(false);
+    setIsChangingPassword(true);
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
+      if (res.ok) {
+        toast.success("Password changed successfully");
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error || "Failed to change password");
+      }
+    } catch {
+      toast.error("Failed to change password. Please try again.");
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
-  const handleNotificationSave = async () => {
-    setIsLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    toast.success("Notification preferences saved");
-    setIsLoading(false);
+  const handleNotificationSave = () => {
+    updateNotificationPreferences.mutate(notifications);
   };
+
+  const captureLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setIsCapturingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        updateLocation.mutate({
+          latitude: position.coords.latitude.toString(),
+          longitude: position.coords.longitude.toString(),
+          location: "",
+        });
+      },
+      (error) => {
+        toast.error(`Failed to get location: ${error.message}`);
+        setIsCapturingLocation(false);
+      },
+    );
+  };
+
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Avatar image must be under 2MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      setAvatarPreview(dataUrl);
+      updateProfile.mutate({ avatarData: dataUrl });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const isProfileLoading = updateProfile.isPending;
 
   return (
     <DashboardLayout>
@@ -101,7 +201,13 @@ export default function Settings() {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid grid-cols-5 w-full max-w-2xl">
+            <TabsList
+              className={
+                adminStatus.data?.isUnlocked
+                  ? "grid grid-cols-5 w-full max-w-2xl"
+                  : "grid grid-cols-4 w-full max-w-2xl"
+              }
+            >
               <TabsTrigger value="profile">
                 <User className="w-4 h-4 mr-2" />
                 Profile
@@ -118,10 +224,12 @@ export default function Settings() {
                 <Moon className="w-4 h-4 mr-2" />
                 Appearance
               </TabsTrigger>
-              <TabsTrigger value="system">
-                <Server className="w-4 h-4 mr-2" />
-                System
-              </TabsTrigger>
+              {adminStatus.data?.isUnlocked && (
+                <TabsTrigger value="system">
+                  <Info className="w-4 h-4 mr-2" />
+                  System
+                </TabsTrigger>
+              )}
             </TabsList>
 
             {/* Profile Tab */}
@@ -137,12 +245,31 @@ export default function Settings() {
                   <form onSubmit={handleProfileSave} className="space-y-6">
                     <div className="flex items-center gap-6">
                       <Avatar className="w-20 h-20">
+                        <AvatarImage
+                          src={
+                            avatarPreview ?? user?.profileImageUrl ?? undefined
+                          }
+                          alt={user?.name ?? "Avatar"}
+                        />
                         <AvatarFallback className="text-2xl">
                           {user?.name?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <Button variant="outline" size="sm">
+                        <input
+                          ref={avatarInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          className="hidden"
+                          onChange={handleAvatarChange}
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          type="button"
+                          onClick={() => avatarInputRef.current?.click()}
+                          disabled={isProfileLoading}
+                        >
                           Change Photo
                         </Button>
                         <p className="text-xs text-muted-foreground mt-2">
@@ -160,9 +287,12 @@ export default function Settings() {
                           id="name"
                           value={profileData.name}
                           onChange={(e) =>
-                            setProfileData({ ...profileData, name: e.target.value })
+                            setProfileData({
+                              ...profileData,
+                              name: e.target.value,
+                            })
                           }
-                          disabled={isLoading}
+                          disabled={isProfileLoading}
                         />
                       </div>
 
@@ -172,16 +302,53 @@ export default function Settings() {
                           id="email"
                           type="email"
                           value={profileData.email}
-                          onChange={(e) =>
-                            setProfileData({ ...profileData, email: e.target.value })
-                          }
-                          disabled={isLoading}
+                          disabled
+                          className="opacity-70"
                         />
+                        <p className="text-xs text-muted-foreground">
+                          Email cannot be changed here. Contact support if
+                          needed.
+                        </p>
+                      </div>
+
+                      <Separator />
+
+                      <div className="space-y-3">
+                        <Label>Location for Weather</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Allow EquiProfile to access your location for accurate
+                          weather forecasts and riding conditions.
+                        </p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={captureLocation}
+                          disabled={isCapturingLocation}
+                        >
+                          {isCapturingLocation ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Getting Location...
+                            </>
+                          ) : (
+                            <>
+                              <MapPin className="mr-2 h-4 w-4" />
+                              Use My Current Location
+                            </>
+                          )}
+                        </Button>
                       </div>
                     </div>
 
-                    <Button type="submit" disabled={isLoading}>
-                      {isLoading ? "Saving..." : "Save Changes"}
+                    <Button type="submit" disabled={isProfileLoading}>
+                      {isProfileLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        "Save Changes"
+                      )}
                     </Button>
                   </form>
                 </CardContent>
@@ -211,7 +378,6 @@ export default function Settings() {
                             currentPassword: e.target.value,
                           })
                         }
-                        disabled={isLoading}
                       />
                     </div>
 
@@ -227,7 +393,6 @@ export default function Settings() {
                             newPassword: e.target.value,
                           })
                         }
-                        disabled={isLoading}
                       />
                       <p className="text-xs text-muted-foreground">
                         Must be at least 8 characters
@@ -235,7 +400,9 @@ export default function Settings() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm New Password</Label>
+                      <Label htmlFor="confirm-password">
+                        Confirm New Password
+                      </Label>
                       <Input
                         id="confirm-password"
                         type="password"
@@ -246,12 +413,18 @@ export default function Settings() {
                             confirmPassword: e.target.value,
                           })
                         }
-                        disabled={isLoading}
                       />
                     </div>
 
-                    <Button type="submit" disabled={isLoading}>
-                      {isLoading ? "Changing..." : "Change Password"}
+                    <Button type="submit" disabled={isChangingPassword}>
+                      {isChangingPassword ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Changing...
+                        </>
+                      ) : (
+                        "Change Password"
+                      )}
                     </Button>
                   </form>
                 </CardContent>
@@ -273,17 +446,20 @@ export default function Settings() {
                       {
                         key: "emailNotifications",
                         label: "Email Notifications",
-                        description: "Receive email notifications for important updates",
+                        description:
+                          "Receive email notifications for important updates",
                       },
                       {
                         key: "healthReminders",
                         label: "Health Reminders",
-                        description: "Get notified about upcoming vet visits and vaccinations",
+                        description:
+                          "Get notified about upcoming vet visits and vaccinations",
                       },
                       {
                         key: "trainingReminders",
                         label: "Training Reminders",
-                        description: "Reminders for scheduled training sessions",
+                        description:
+                          "Reminders for scheduled training sessions",
                       },
                       {
                         key: "feedingReminders",
@@ -301,7 +477,10 @@ export default function Settings() {
                         description: "Receive a weekly summary of activities",
                       },
                     ].map((item) => (
-                      <div key={item.key} className="flex items-center justify-between">
+                      <div
+                        key={item.key}
+                        className="flex items-center justify-between"
+                      >
                         <div className="space-y-0.5">
                           <Label htmlFor={item.key}>{item.label}</Label>
                           <p className="text-sm text-muted-foreground">
@@ -311,18 +490,33 @@ export default function Settings() {
                         <Switch
                           id={item.key}
                           checked={
-                            notifications[item.key as keyof typeof notifications]
+                            notifications[
+                              item.key as keyof typeof notifications
+                            ]
                           }
                           onCheckedChange={(checked) =>
-                            setNotifications({ ...notifications, [item.key]: checked })
+                            setNotifications({
+                              ...notifications,
+                              [item.key]: checked,
+                            })
                           }
                         />
                       </div>
                     ))}
                   </div>
 
-                  <Button onClick={handleNotificationSave} disabled={isLoading}>
-                    {isLoading ? "Saving..." : "Save Preferences"}
+                  <Button
+                    onClick={handleNotificationSave}
+                    disabled={updateNotificationPreferences.isPending}
+                  >
+                    {updateNotificationPreferences.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Preferences"
+                    )}
                   </Button>
                 </CardContent>
               </Card>
@@ -340,11 +534,15 @@ export default function Settings() {
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
                     <Label>Theme</Label>
-                    <div className="grid grid-cols-3 gap-4">
-                      {["light", "dark", "system"].map((themeOption) => (
+                    <div className="grid grid-cols-2 gap-4">
+                      {["light", "dark"].map((themeOption) => (
                         <button
                           key={themeOption}
-                          onClick={() => setTheme(themeOption as any)}
+                          onClick={() => {
+                            if (theme !== themeOption) {
+                              toggleTheme();
+                            }
+                          }}
                           className={`p-4 border-2 rounded-lg transition-all ${
                             theme === themeOption
                               ? "border-primary bg-primary/5"
@@ -356,9 +554,7 @@ export default function Settings() {
                               {themeOption}
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              {themeOption === "system"
-                                ? "Match system"
-                                : `Use ${themeOption} theme`}
+                              Use {themeOption} theme
                             </div>
                           </div>
                         </button>
@@ -369,197 +565,69 @@ export default function Settings() {
               </Card>
             </TabsContent>
 
-            {/* System Tab */}
-            <TabsContent value="system">
-              <SystemStatus />
-            </TabsContent>
+            {/* System Tab — admin only */}
+            {adminStatus.data?.isUnlocked && (
+              <TabsContent value="system">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>System Information</CardTitle>
+                    <CardDescription>
+                      Build fingerprint and deployment details (admin only)
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                          Version
+                        </p>
+                        <p className="font-mono text-sm">
+                          {buildInfo.data?.version ?? "—"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                          Build SHA
+                        </p>
+                        <p className="font-mono text-sm">
+                          {buildInfo.data?.sha ?? "—"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                          Build Time
+                        </p>
+                        <p className="font-mono text-sm">
+                          {buildInfo.data?.buildTime ?? "—"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                          Dashboard
+                        </p>
+                        <p className="font-mono text-sm font-semibold text-primary">
+                          v2
+                        </p>
+                      </div>
+                    </div>
+                    <Separator />
+                    <p className="text-xs text-muted-foreground">
+                      Full build info is also available at{" "}
+                      <a
+                        href="/build.txt"
+                        target="_blank"
+                        className="underline hover:text-foreground"
+                      >
+                        /build.txt
+                      </a>
+                    </p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </PageTransition>
     </DashboardLayout>
-  );
-}
-
-function SystemStatus() {
-  const { data: systemStatus, isLoading } = trpc.system.status.useQuery();
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>System Status</CardTitle>
-          <CardDescription>Loading system information...</CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-
-  if (!systemStatus) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>System Status</CardTitle>
-          <CardDescription>Unable to load system information</CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Environment */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Environment</CardTitle>
-          <CardDescription>System environment information</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Node Environment</span>
-            <Badge variant="outline">{systemStatus.environment.nodeEnv}</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Version</span>
-            <Badge variant="outline">{systemStatus.environment.version}</Badge>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Feature Flags */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Feature Flags</CardTitle>
-          <CardDescription>Enabled and disabled features</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Uploads</span>
-            <Badge variant={systemStatus.featureFlags.uploadsEnabled ? "default" : "outline"}>
-              {systemStatus.featureFlags.uploadsEnabled ? "Enabled" : "Disabled"}
-            </Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Stripe</span>
-            <Badge variant={systemStatus.featureFlags.stripeEnabled ? "default" : "outline"}>
-              {systemStatus.featureFlags.stripeEnabled ? "Enabled" : "Disabled"}
-            </Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">PWA</span>
-            <Badge variant={systemStatus.featureFlags.pwaEnabled ? "default" : "outline"}>
-              {systemStatus.featureFlags.pwaEnabled ? "Enabled" : "Disabled"}
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Service Status */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Service Status</CardTitle>
-          <CardDescription>Status of integrated services</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Uploads Service */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Upload className="w-5 h-5 text-muted-foreground" />
-              <div>
-                <div className="text-sm font-medium">Uploads</div>
-                <div className="text-xs text-muted-foreground">
-                  Backend: {systemStatus.serviceStatus.uploads.backend}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {systemStatus.serviceStatus.uploads.ready ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <Badge variant="default">Ready</Badge>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5 text-red-500" />
-                  <Badge variant="outline">Not Ready</Badge>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* AI & LLM Services */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Sparkles className="w-5 h-5 text-muted-foreground" />
-              <div>
-                <div className="text-sm font-medium">OpenAI (AI & LLM)</div>
-                <div className="text-xs text-muted-foreground">
-                  Model: {systemStatus.serviceStatus.openai.model}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {systemStatus.serviceStatus.openai.ready ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <Badge variant="default">Ready</Badge>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5 text-red-500" />
-                  <Badge variant="outline">Not Ready</Badge>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Weather Integration */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Cloud className="w-5 h-5 text-muted-foreground" />
-              <div>
-                <div className="text-sm font-medium">Weather Integration</div>
-                <div className="text-xs text-muted-foreground">
-                  Provider: {systemStatus.serviceStatus.weather.provider}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {systemStatus.serviceStatus.weather.ready ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <Badge variant="default">Ready</Badge>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5 text-red-500" />
-                  <Badge variant="outline">Not Ready</Badge>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Stripe Payments */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <CreditCard className="w-5 h-5 text-muted-foreground" />
-              <div className="text-sm font-medium">Stripe Payments</div>
-            </div>
-            <div className="flex items-center gap-2">
-              {systemStatus.serviceStatus.stripe.ready ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <Badge variant="default">Ready</Badge>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5 text-red-500" />
-                  <Badge variant="outline">Not Ready</Badge>
-                </>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
   );
 }

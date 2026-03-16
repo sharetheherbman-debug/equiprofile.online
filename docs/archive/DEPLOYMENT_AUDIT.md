@@ -2,7 +2,7 @@
 
 **Date:** January 1, 2026  
 **Version:** 1.0  
-**Status:** 🟡 REVIEW IN PROGRESS  
+**Status:** 🟡 REVIEW IN PROGRESS
 
 ---
 
@@ -14,7 +14,7 @@ This audit assesses EquiProfile's readiness for production deployment on an Ubun
 
 **Critical Blockers:** 3  
 **High Priority Issues:** 7  
-**Medium Priority Issues:** 12  
+**Medium Priority Issues:** 12
 
 ---
 
@@ -85,24 +85,27 @@ This audit assesses EquiProfile's readiness for production deployment on an Ubun
 ## tRPC Router Inventory
 
 **Total Routers:** 22  
-**Total Procedures:** 80+  
+**Total Procedures:** 80+
 
 See `/docs/ROUTER_MAP.md` for complete procedure listing.
 
 ### Routers by Category:
 
 **Core System (4):**
+
 - system - Health checks, version
 - auth - Login, logout, me
 - adminUnlock - Admin session management
 - ai - AI chat + admin unlock trigger
 
 **Billing & Users (3):**
+
 - billing - Stripe checkout, portal, pricing
 - user - Profile, subscription status
 - admin - User management, system settings
 
 **Horse Management (7):**
+
 - horses - CRUD operations
 - healthRecords - Medical tracking
 - training - Session logging
@@ -112,6 +115,7 @@ See `/docs/ROUTER_MAP.md` for complete procedure listing.
 - breeding - Breeding records
 
 **Features (8):**
+
 - weather - AI weather analysis
 - analytics - Statistics and charts
 - reports - PDF generation
@@ -271,14 +275,14 @@ Redirect to success_url
 
 ```typescript
 // Add to drizzle/schema.ts
-export const stripeEvents = mysqlTable('stripeEvents', {
-  id: int('id').primaryKey().autoincrement(),
-  eventId: varchar('eventId', { length: 255 }).unique().notNull(),
-  eventType: varchar('eventType', { length: 100 }).notNull(),
-  processed: boolean('processed').default(false),
-  processedAt: timestamp('processedAt'),
-  error: text('error'),
-  createdAt: timestamp('createdAt').defaultNow(),
+export const stripeEvents = mysqlTable("stripeEvents", {
+  id: int("id").primaryKey().autoincrement(),
+  eventId: varchar("eventId", { length: 255 }).unique().notNull(),
+  eventType: varchar("eventType", { length: 100 }).notNull(),
+  processed: boolean("processed").default(false),
+  processedAt: timestamp("processedAt"),
+  error: text("error"),
+  createdAt: timestamp("createdAt").defaultNow(),
 });
 
 // Update webhook handler
@@ -287,31 +291,33 @@ async function handleWebhook(event) {
   const existing = await db.query.stripeEvents.findFirst({
     where: eq(stripeEvents.eventId, event.id),
   });
-  
+
   if (existing) {
     return { received: true, duplicate: true };
   }
-  
+
   // Insert event
   await db.insert(stripeEvents).values({
     eventId: event.id,
     eventType: event.type,
   });
-  
+
   // Process event
   try {
     await processEvent(event);
-    
+
     // Mark as processed
-    await db.update(stripeEvents)
+    await db
+      .update(stripeEvents)
       .set({ processed: true, processedAt: new Date() })
       .where(eq(stripeEvents.eventId, event.id));
   } catch (error) {
     // Log error
-    await db.update(stripeEvents)
+    await db
+      .update(stripeEvents)
       .set({ error: error.message })
       .where(eq(stripeEvents.eventId, event.id));
-    
+
     throw error;
   }
 }
@@ -324,6 +330,7 @@ async function handleWebhook(event) {
 ### Database Schema Coverage:
 
 **✅ Complete:**
+
 - users (auth, subscription, profile)
 - horses (horse profiles)
 - healthRecords (medical tracking)
@@ -355,6 +362,7 @@ async function handleWebhook(event) {
 - messages (message content)
 
 **❌ Missing:**
+
 - stripeEvents (webhook idempotency) - CRITICAL
 - lessonAvailability (trainer schedules) - if needed
 - lessonBookings (lesson appointments) - if needed
@@ -375,6 +383,7 @@ async function handleWebhook(event) {
 ### Current Performance Profile:
 
 **✅ Good:**
+
 - Code splitting with Vite
 - React 19 (latest)
 - TanStack Query caching
@@ -388,14 +397,15 @@ async function handleWebhook(event) {
    - healthRecords.horseId + dueDate (reminder queries)
    - trainingSessions.horseId + completedAt (analytics)
    - documents.horseId + category (filtering)
-   
+
    **Fix:**
+
    ```typescript
    // Add to schema
    indexes: {
      userId_idx: index('userId').on(activityLogs.userId),
      horseId_dueDate_idx: index('horseId_dueDate').on(
-       healthRecords.horseId, 
+       healthRecords.horseId,
        healthRecords.dueDate
      ),
    }
@@ -404,13 +414,13 @@ async function handleWebhook(event) {
 2. **N+1 Query Issues**
    - Dashboard stats queries (multiple round trips)
    - Horse list with related data
-   
+
    **Fix:** Use Drizzle's `with` for eager loading
 
 3. **Large Payload Issues**
    - Document list includes full file URLs
    - No pagination on some list endpoints
-   
+
    **Fix:** Add pagination to all list procedures
 
 4. **No Query Caching**
@@ -422,7 +432,7 @@ async function handleWebhook(event) {
    - S3 images not resized
    - No CDN
    - No lazy loading
-   
+
    **Fix:**
    - Add image optimization to upload pipeline
    - Consider CloudFront CDN
@@ -452,6 +462,7 @@ async function handleWebhook(event) {
 ### Environment Variables
 
 **✅ Configured:**
+
 - DATABASE_URL
 - JWT_SECRET
 - NODE_ENV
@@ -471,11 +482,13 @@ async function handleWebhook(event) {
 - COOKIE_SECURE
 
 **❌ Missing/Needs Update:**
+
 - LOG_FILE_PATH (not in .env.example)
 - SMTP_PASSWORD (missing field)
 - Complete Stripe webhook example
 
 **🔒 Production Validation:**
+
 - ✅ Startup validation exists (checks critical vars)
 - ✅ Prevents start with default admin password
 - ✅ Clear error messages
@@ -483,17 +496,20 @@ async function handleWebhook(event) {
 ### Build System
 
 **✅ Working:**
+
 - `npm install` - Dependencies install
 - Vite build system configured
 - ESBuild for server compilation
 - TypeScript compilation
 
 **❌ Issues:**
+
 - `npm run check` - TypeScript errors exist (2 errors)
 - No CI/CD pipeline configured
 - No automated testing in CI
 
 **Fix Required:**
+
 ```bash
 # Fix TypeScript errors
 npm run check
@@ -503,16 +519,19 @@ npm run check
 ### Database Migrations
 
 **✅ Working:**
+
 - Drizzle Kit installed
 - Migrations generated
 - Push command works
 
 **⚠️ Production Concerns:**
+
 - No migration rollback
 - No migration verification script
 - Manual migration process not documented
 
 **Recommendation:**
+
 ```bash
 # Production migration process:
 1. Backup database
@@ -527,6 +546,7 @@ npm run check
 **❌ Not Provided**
 
 **Required:**
+
 ```nginx
 server {
     listen 80;
@@ -575,33 +595,37 @@ server {
 ### PM2 Configuration
 
 **🟡 Partial:**
+
 - `ecosystem.config.js` exists
 - Basic config present
 
 **❌ Needs Update:**
+
 ```javascript
 // ecosystem.config.js
 module.exports = {
-  apps: [{
-    name: 'equiprofile',
-    script: 'dist/index.js',
-    instances: 1,  // Low-memory VPS: use 1
-    // instances: 2,  // If RAM >= 4GB: use 2
-    exec_mode: 'cluster',
-    env_production: {
-      NODE_ENV: 'production',
-      PORT: 3000
+  apps: [
+    {
+      name: "equiprofile",
+      script: "dist/index.js",
+      instances: 1, // Low-memory VPS: use 1
+      // instances: 2,  // If RAM >= 4GB: use 2
+      exec_mode: "cluster",
+      env_production: {
+        NODE_ENV: "production",
+        PORT: 3000,
+      },
+      error_file: "/var/log/equiprofile/error.log",
+      out_file: "/var/log/equiprofile/out.log",
+      log_date_format: "YYYY-MM-DD HH:mm:ss Z",
+      merge_logs: true,
+      max_memory_restart: "500M", // Restart if memory exceeds 500MB
+      autorestart: true,
+      watch: false,
+      max_restarts: 10,
+      min_uptime: "10s",
     },
-    error_file: '/var/log/equiprofile/error.log',
-    out_file: '/var/log/equiprofile/out.log',
-    log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-    merge_logs: true,
-    max_memory_restart: '500M',  // Restart if memory exceeds 500MB
-    autorestart: true,
-    watch: false,
-    max_restarts: 10,
-    min_uptime: '10s'
-  }]
+  ],
 };
 ```
 
@@ -610,6 +634,7 @@ module.exports = {
 **❌ NOT IMPLEMENTED - CRITICAL**
 
 **Current State:**
+
 - Using console.log() throughout
 - No structured logging
 - No log files
@@ -618,73 +643,79 @@ module.exports = {
 **Required Implementation:**
 
 1. **Install Winston**
+
    ```bash
    npm install winston
    ```
 
 2. **Create logger.ts**
+
    ```typescript
    // server/_core/logger.ts
-   import winston from 'winston';
-   
+   import winston from "winston";
+
    const logger = winston.createLogger({
-     level: process.env.LOG_LEVEL || 'info',
+     level: process.env.LOG_LEVEL || "info",
      format: winston.format.combine(
        winston.format.timestamp(),
        winston.format.errors({ stack: true }),
-       winston.format.json()
+       winston.format.json(),
      ),
-     defaultMeta: { service: 'equiprofile' },
+     defaultMeta: { service: "equiprofile" },
      transports: [
-       new winston.transports.File({ 
-         filename: process.env.LOG_FILE_PATH || '/var/log/equiprofile/app.log',
+       new winston.transports.File({
+         filename: process.env.LOG_FILE_PATH || "/var/log/equiprofile/app.log",
          maxsize: 10485760, // 10MB
          maxFiles: 10,
        }),
        new winston.transports.Console({
-         format: winston.format.simple()
-       })
-     ]
+         format: winston.format.simple(),
+       }),
+     ],
    });
-   
+
    // Redact sensitive data
    const redactSecrets = (obj: any) => {
      const redacted = { ...obj };
-     const sensitiveKeys = ['password', 'secret', 'token', 'key', 'apiKey'];
-     
+     const sensitiveKeys = ["password", "secret", "token", "key", "apiKey"];
+
      for (const key in redacted) {
-       if (sensitiveKeys.some(k => key.toLowerCase().includes(k))) {
-         redacted[key] = '[REDACTED]';
+       if (sensitiveKeys.some((k) => key.toLowerCase().includes(k))) {
+         redacted[key] = "[REDACTED]";
        }
      }
-     
+
      return redacted;
    };
-   
+
    export default logger;
    ```
 
 3. **Replace console.log**
+
    ```typescript
    // Before
-   console.log('User logged in', userId);
-   
+   console.log("User logged in", userId);
+
    // After
-   logger.info('User logged in', { userId });
+   logger.info("User logged in", { userId });
    ```
 
 ### Backup System
 
 **🟡 Partial:**
+
 - `/scripts/backup.sh` might exist
 - Backup logs table exists
 
 **❌ Not Verified:**
+
 - Backup script not tested
 - Cron job not documented
 - Restore procedure not documented
 
 **Required:**
+
 ```bash
 #!/bin/bash
 # /scripts/backup.sh
@@ -710,6 +741,7 @@ echo "Backup completed: $BACKUP_DIR/db_$DATE.sql.gz"
 ```
 
 **Cron:**
+
 ```cron
 # Daily backup at 2 AM
 0 2 * * * /var/www/equiprofile/scripts/backup.sh
@@ -829,84 +861,102 @@ fi
 ## Known Risks & Mitigation
 
 ### Risk 1: Data Loss During Migration
+
 **Severity:** HIGH  
-**Likelihood:** LOW  
+**Likelihood:** LOW
 
 **Risk:**
+
 - Database migration error could corrupt data
 - No automatic rollback mechanism
 
 **Mitigation:**
+
 - ✅ Always backup before migration
 - ✅ Test migrations on staging first
 - ✅ Manual verification after migration
 - ⚠️ Consider manual SQL migrations for critical changes
 
 ### Risk 2: Stripe Webhook Replay Attacks
+
 **Severity:** HIGH  
-**Likelihood:** MEDIUM  
+**Likelihood:** MEDIUM
 
 **Risk:**
+
 - Duplicate webhook processing
 - Double-charging or double-crediting
 
 **Mitigation:**
+
 - ❌ NOT IMPLEMENTED
 - **Fix:** Add stripeEvents table with unique eventId
 - Store and check eventId before processing
 
 ### Risk 3: Admin Password Compromise
+
 **Severity:** CRITICAL  
-**Likelihood:** LOW  
+**Likelihood:** LOW
 
 **Risk:**
+
 - Default password known publicly
 - Weak password chosen
 
 **Mitigation:**
+
 - ✅ Production validation prevents default password
 - ✅ Rate limiting on unlock attempts
 - ✅ Activity logging
 - ⚠️ Require strong password (16+ chars)
 
 ### Risk 4: S3 Bucket Misconfiguration
+
 **Severity:** HIGH  
-**Likelihood:** MEDIUM  
+**Likelihood:** MEDIUM
 
 **Risk:**
+
 - Public bucket exposes private documents
 - Incorrect permissions
 
 **Mitigation:**
+
 - ✅ Pre-signed URLs (not public URLs)
 - ⚠️ Verify bucket policy blocks public access
 - ⚠️ Enable bucket versioning
 - ⚠️ Enable access logging
 
 ### Risk 5: Memory Exhaustion
+
 **Severity:** MEDIUM  
-**Likelihood:** MEDIUM  
+**Likelihood:** MEDIUM
 
 **Risk:**
+
 - Single Node process on VPS
 - Large file uploads
 - Memory leaks
 
 **Mitigation:**
+
 - ✅ PM2 max_memory_restart configured
 - ✅ File upload size limits
 - ⚠️ Monitor memory usage
 - ⚠️ Consider swap space
 
 ### Risk 6: Database Connection Pool Exhaustion
+
 **Severity:** MEDIUM  
-**Likelihood:** LOW  
+**Likelihood:** LOW
 
 **Risk:**
+
 - Too many concurrent requests
 - Connection leaks
 
 **Mitigation:**
+
 - ✅ MySQL2 connection pooling
 - ⚠️ Configure pool size (default: 10)
 - ⚠️ Add connection timeout
@@ -917,6 +967,7 @@ fi
 ## Deployment Steps (Production)
 
 ### Prerequisites:
+
 - Ubuntu 22.04 LTS VPS
 - 2+ CPU cores
 - 4+ GB RAM
@@ -1097,24 +1148,28 @@ mysql> EXIT;
 ## Monitoring & Maintenance
 
 ### Daily Checks:
+
 - ✅ PM2 status (`pm2 status`)
 - ✅ Error logs (`pm2 logs equiprofile --err`)
 - ✅ Disk space (`df -h`)
 - ✅ Memory usage (`free -m`)
 
 ### Weekly Checks:
+
 - ✅ Backup verification
 - ✅ SSL certificate expiration
 - ✅ Failed login attempts (activityLogs)
 - ✅ Subscription renewals
 
 ### Monthly Checks:
+
 - ✅ Dependency updates (`npm outdated`)
 - ✅ Security patches
 - ✅ Database optimization
 - ✅ Log rotation
 
 ### Monitoring Tools Recommendations:
+
 - PM2 Plus (paid, excellent monitoring)
 - Uptime Robot (free uptime monitoring)
 - Sentry (error tracking)
@@ -1125,6 +1180,7 @@ mysql> EXIT;
 ## Security Hardening
 
 ### Firewall:
+
 ```bash
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
@@ -1135,6 +1191,7 @@ sudo ufw enable
 ```
 
 ### Fail2Ban:
+
 ```bash
 sudo apt install fail2ban
 sudo systemctl enable fail2ban
@@ -1142,6 +1199,7 @@ sudo systemctl start fail2ban
 ```
 
 ### SSH Hardening:
+
 ```bash
 sudo nano /etc/ssh/sshd_config
 # Set: PermitRootLogin no
@@ -1156,6 +1214,7 @@ sudo systemctl restart sshd
 **Production Readiness: 65%**
 
 ### Ready for Production:
+
 - ✅ Core application functionality
 - ✅ Authentication and authorization
 - ✅ Database schema and migrations
@@ -1164,11 +1223,13 @@ sudo systemctl restart sshd
 - ✅ Basic security measures
 
 ### Critical Blockers:
+
 1. ❌ Stripe webhook idempotency
 2. ❌ Logging system (Winston)
 3. ❌ Production checklist script
 
 ### High Priority Before Launch:
+
 1. Fix TypeScript errors
 2. Verify build succeeds
 3. Complete Stripe webhook handling
@@ -1179,6 +1240,7 @@ sudo systemctl restart sshd
 8. Create Nginx config
 
 ### Post-Launch Priority:
+
 1. Implement missing features (CSV exports, medical passport, etc.)
 2. Mobile apps
 3. Advanced features (breeding, lessons, client portal)

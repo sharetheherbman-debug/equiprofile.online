@@ -1,6 +1,6 @@
 /**
  * Service Worker Update Prompt
- * 
+ *
  * Detects when a new service worker version is available and prompts the user to refresh.
  * This ensures users don't get stuck on old versions after deployment.
  */
@@ -12,43 +12,49 @@ let refreshing = false;
  */
 export function initServiceWorkerUpdates() {
   // Check if service workers are supported
-  if (!('serviceWorker' in navigator)) {
-    console.log('[SW Update] Service workers not supported');
+  if (!("serviceWorker" in navigator)) {
+    console.log("[SW Update] Service workers not supported");
     return;
   }
 
   // Listen for controller change (new service worker activated)
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (refreshing) return;
-    console.log('[SW Update] New service worker activated, reloading page');
+    console.log("[SW Update] New service worker activated, reloading page");
     refreshing = true;
     window.location.reload();
   });
 
   // Check for updates periodically (every 10 minutes)
-  setInterval(() => {
-    navigator.serviceWorker.ready.then((registration) => {
-      console.log('[SW Update] Checking for updates...');
-      registration.update();
-    });
-  }, 10 * 60 * 1000);
+  setInterval(
+    () => {
+      navigator.serviceWorker.ready.then((registration) => {
+        console.log("[SW Update] Checking for updates...");
+        registration.update();
+      });
+    },
+    10 * 60 * 1000,
+  );
 
   // Check for updates immediately
   navigator.serviceWorker.ready.then((registration) => {
-    console.log('[SW Update] Service worker ready, checking for updates');
-    
+    console.log("[SW Update] Service worker ready, checking for updates");
+
     // Listen for new service worker waiting
     if (registration.waiting) {
       showUpdatePrompt(registration.waiting);
     }
 
     // Listen for new service worker installing
-    registration.addEventListener('updatefound', () => {
+    registration.addEventListener("updatefound", () => {
       const newWorker = registration.installing;
       if (!newWorker) return;
 
-      newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+      newWorker.addEventListener("statechange", () => {
+        if (
+          newWorker.state === "installed" &&
+          navigator.serviceWorker.controller
+        ) {
           // New service worker installed and waiting
           showUpdatePrompt(newWorker);
         }
@@ -64,10 +70,10 @@ export function initServiceWorkerUpdates() {
  * Show update prompt to user
  */
 function showUpdatePrompt(worker: ServiceWorker) {
-  console.log('[SW Update] New version available');
-  
+  console.log("[SW Update] New version available");
+
   // Create a simple toast notification
-  const toast = document.createElement('div');
+  const toast = document.createElement("div");
   toast.style.cssText = `
     position: fixed;
     bottom: 20px;
@@ -86,12 +92,12 @@ function showUpdatePrompt(worker: ServiceWorker) {
     max-width: 400px;
   `;
 
-  const message = document.createElement('div');
-  message.textContent = 'A new version is available!';
-  message.style.flex = '1';
+  const message = document.createElement("div");
+  message.textContent = "A new version is available!";
+  message.style.flex = "1";
 
-  const button = document.createElement('button');
-  button.textContent = 'Refresh';
+  const button = document.createElement("button");
+  button.textContent = "Refresh";
   button.style.cssText = `
     background: #3b82f6;
     color: white;
@@ -103,20 +109,20 @@ function showUpdatePrompt(worker: ServiceWorker) {
     font-size: 14px;
   `;
   button.onmouseover = () => {
-    button.style.background = '#2563eb';
+    button.style.background = "#2563eb";
   };
   button.onmouseout = () => {
-    button.style.background = '#3b82f6';
+    button.style.background = "#3b82f6";
   };
 
   button.onclick = () => {
     // Tell the service worker to skip waiting
-    worker.postMessage({ type: 'SKIP_WAITING' });
+    worker.postMessage({ type: "SKIP_WAITING" });
     toast.remove();
   };
 
-  const closeButton = document.createElement('button');
-  closeButton.textContent = '×';
+  const closeButton = document.createElement("button");
+  closeButton.textContent = "×";
   closeButton.style.cssText = `
     background: transparent;
     color: #999;
@@ -132,10 +138,10 @@ function showUpdatePrompt(worker: ServiceWorker) {
     justify-content: center;
   `;
   closeButton.onmouseover = () => {
-    closeButton.style.color = 'white';
+    closeButton.style.color = "white";
   };
   closeButton.onmouseout = () => {
-    closeButton.style.color = '#999';
+    closeButton.style.color = "#999";
   };
   closeButton.onclick = () => {
     toast.remove();

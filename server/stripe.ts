@@ -1,13 +1,14 @@
 import Stripe from "stripe";
 import { ENV } from "./_core/env";
 import { TRPCError } from "@trpc/server";
+import { DEFAULT_PRICING } from "../shared/pricing";
 
 // Check if Stripe is enabled
 function checkStripeEnabled() {
   if (!ENV.enableStripe) {
     throw new TRPCError({
-      code: 'PRECONDITION_FAILED',
-      message: 'Billing is disabled'
+      code: "PRECONDITION_FAILED",
+      message: "Billing is disabled",
     });
   }
 }
@@ -18,45 +19,135 @@ export function getStripe(): Stripe | null {
     console.warn("[Stripe] Billing feature is disabled");
     return null;
   }
-  
+
   if (!process.env.STRIPE_SECRET_KEY) {
     console.warn("[Stripe] Secret key not configured");
     return null;
   }
 
   return new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-12-15.clover",
+    apiVersion: "2026-01-28.clover",
     typescript: true,
   });
 }
 
 // Pricing configuration (should match Stripe dashboard)
+// This is the SINGLE SOURCE OF TRUTH for all pricing
+export const PRICING_PLANS = {
+  trial: {
+    name: "Free Trial",
+    horses: 1,
+    price: 0,
+    currency: "gbp",
+    interval: "trial",
+    duration: 7, // days
+    features: [
+      "7-day free trial",
+      "1 horse only",
+      "ALL features enabled",
+      "Basic health records",
+      "Training session logging",
+      "Secure storage",
+      "Email support",
+    ],
+  },
+  pro: {
+    name: "Pro",
+    horses: 5,
+    monthly: {
+      priceId: process.env.STRIPE_MONTHLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.individual.monthly.amount, // £10.00 in pence
+      currency: "gbp",
+      interval: "month" as const,
+    },
+    yearly: {
+      priceId: process.env.STRIPE_YEARLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.individual.yearly.amount, // £100.00 in pence
+      currency: "gbp",
+      interval: "year" as const,
+    },
+    features: [
+      "Up to 5 horses",
+      "Complete health tracking",
+      "Advanced training logs",
+      "Competition results",
+      "Secure storage",
+      "AI weather analysis (50/day)",
+      "Email reminders",
+      "Export to CSV/PDF",
+    ],
+  },
+  stable: {
+    name: "Stable",
+    horses: 20,
+    users: 5,
+    monthly: {
+      priceId: process.env.STRIPE_STABLE_MONTHLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.stable.monthly.amount, // £30.00 in pence
+      currency: "gbp",
+      interval: "month" as const,
+    },
+    yearly: {
+      priceId: process.env.STRIPE_STABLE_YEARLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.stable.yearly.amount, // £300.00 in pence
+      currency: "gbp",
+      interval: "year" as const,
+    },
+    features: [
+      "Everything in Pro, plus:",
+      "Up to 20 horses",
+      "Up to 5 users",
+      "Role-based permissions",
+      "Stable management",
+      "Secure storage",
+      "Unlimited AI weather",
+      "Advanced analytics",
+      "Priority email support",
+      "WhatsApp support",
+    ],
+  },
+} as const;
+
+// Legacy export for backward compatibility
 export const STRIPE_PRICING = {
-  monthly: {
-    priceId: process.env.STRIPE_MONTHLY_PRICE_ID || "",
-    amount: 1000, // £10.00 in pence
-    currency: "gbp",
-    interval: "month",
-  },
-  yearly: {
-    priceId: process.env.STRIPE_YEARLY_PRICE_ID || "",
-    amount: 10000, // £100.00 in pence
-    currency: "gbp",
-    interval: "year",
-  },
-  stable_monthly: {
-    priceId: process.env.STRIPE_STABLE_MONTHLY_PRICE_ID || "",
-    amount: 3000, // £30.00 in pence
-    currency: "gbp",
-    interval: "month",
-  },
-  stable_yearly: {
-    priceId: process.env.STRIPE_STABLE_YEARLY_PRICE_ID || "",
-    amount: 30000, // £300.00 in pence
-    currency: "gbp",
-    interval: "year",
-  },
+  monthly: PRICING_PLANS.pro.monthly,
+  yearly: PRICING_PLANS.pro.yearly,
 };
+
+// Validate Stripe price IDs and log warnings at startup
+export function validatePricingConfig(): void {
+  if (!ENV.enableStripe) {
+    console.warn(
+      `[Pricing] Stripe is disabled – showing default GBP prices (£${DEFAULT_PRICING.individual.monthly.amount / 100}/£${DEFAULT_PRICING.individual.yearly.amount / 100} Individual, £${DEFAULT_PRICING.stable.monthly.amount / 100}/£${DEFAULT_PRICING.stable.yearly.amount / 100} Stable). Configure ENABLE_STRIPE=true and Stripe keys to enable live billing.`,
+    );
+    return;
+  }
+
+  const requiredPriceIds: Array<{ name: string; value: string }> = [
+    {
+      name: "STRIPE_MONTHLY_PRICE_ID",
+      value: PRICING_PLANS.pro.monthly.priceId,
+    },
+    { name: "STRIPE_YEARLY_PRICE_ID", value: PRICING_PLANS.pro.yearly.priceId },
+    {
+      name: "STRIPE_STABLE_MONTHLY_PRICE_ID",
+      value: PRICING_PLANS.stable.monthly.priceId,
+    },
+    {
+      name: "STRIPE_STABLE_YEARLY_PRICE_ID",
+      value: PRICING_PLANS.stable.yearly.priceId,
+    },
+  ];
+
+  const missing = requiredPriceIds.filter((p) => !p.value);
+  if (missing.length > 0) {
+    console.warn(
+      `[Pricing] Missing Stripe price IDs: ${missing.map((p) => p.name).join(", ")}. Checkout will fail until these are set.`,
+    );
+  } else {
+    console.log("[Pricing] All Stripe price IDs configured.");
+  }
+}
 
 // Create checkout session
 export async function createCheckoutSession(
@@ -65,10 +156,10 @@ export async function createCheckoutSession(
   priceId: string,
   successUrl: string,
   cancelUrl: string,
-  customerId?: string
+  customerId?: string,
 ): Promise<{ sessionId: string; url: string } | null> {
   checkStripeEnabled();
-  
+
   const stripe = getStripe();
   if (!stripe) return null;
 
@@ -110,10 +201,10 @@ export async function createCheckoutSession(
 // Create customer portal session
 export async function createPortalSession(
   customerId: string,
-  returnUrl: string
+  returnUrl: string,
 ): Promise<string | null> {
   checkStripeEnabled();
-  
+
   const stripe = getStripe();
   if (!stripe) return null;
 
@@ -132,7 +223,7 @@ export async function createPortalSession(
 
 // Get subscription details
 export async function getSubscription(
-  subscriptionId: string
+  subscriptionId: string,
 ): Promise<Stripe.Subscription | null> {
   const stripe = getStripe();
   if (!stripe) return null;
@@ -147,7 +238,7 @@ export async function getSubscription(
 
 // Cancel subscription at period end
 export async function cancelSubscription(
-  subscriptionId: string
+  subscriptionId: string,
 ): Promise<boolean> {
   const stripe = getStripe();
   if (!stripe) return false;
@@ -165,7 +256,7 @@ export async function cancelSubscription(
 
 // Reactivate cancelled subscription
 export async function reactivateSubscription(
-  subscriptionId: string
+  subscriptionId: string,
 ): Promise<boolean> {
   const stripe = getStripe();
   if (!stripe) return false;
