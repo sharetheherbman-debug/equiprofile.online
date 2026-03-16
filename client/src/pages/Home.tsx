@@ -20,6 +20,7 @@ import {
   FileText,
   Check,
   ChevronRight,
+  ChevronDown,
   Activity,
   Utensils,
   Star,
@@ -27,13 +28,61 @@ import {
   Users,
   Award,
   ChevronLeft,
+  Shield,
+  Clock,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { marketingAssets } from "@/config/marketingAssets";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { coreFeatures, featureHighlights } from "@/content/features";
 
 const TESTIMONIAL_ROTATION_INTERVAL = 6000;
+
+function FAQItem({
+  question,
+  answer,
+  index,
+}: {
+  question: string;
+  answer: string;
+  index: number;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      viewport={{ once: true }}
+      className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden"
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex w-full items-center justify-between gap-4 p-5 text-left text-white hover:bg-white/5 transition-colors"
+      >
+        <span className="font-medium text-base">{question}</span>
+        <ChevronDown
+          className={`w-5 h-5 shrink-0 text-white/50 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 pb-5 text-white/70 text-sm leading-relaxed">
+              {answer}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -177,6 +226,22 @@ export default function Home() {
                         <ChevronRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </Link>
+                  </div>
+
+                  {/* Trust indicators */}
+                  <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-white/70">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-emerald-400" />
+                      <span>No credit card required</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-indigo-400" />
+                      <span>7-day free trial</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-cyan-400" />
+                      <span>Cancel anytime</span>
+                    </div>
                   </div>
                 </motion.div>
               </div>
@@ -440,6 +505,44 @@ export default function Home() {
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
+              </div>
+            </div>
+          </section>
+
+          {/* FAQ Section */}
+          <section className="py-24 bg-gray-900 relative">
+            <div className="container px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="text-center mb-16"
+              >
+                <Badge className="mb-4 inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border-white/20 text-white">
+                  <ChevronDown className="w-4 h-4" />
+                  FAQ
+                </Badge>
+                <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4 text-white">
+                  Frequently Asked{" "}
+                  <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    Questions
+                  </span>
+                </h2>
+                <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                  Everything you need to know about EquiProfile
+                </p>
+              </motion.div>
+
+              <div className="max-w-3xl mx-auto space-y-3">
+                {faqs.map((faq, index) => (
+                  <FAQItem
+                    key={index}
+                    question={faq.question}
+                    answer={faq.answer}
+                    index={index}
+                  />
+                ))}
               </div>
             </div>
           </section>

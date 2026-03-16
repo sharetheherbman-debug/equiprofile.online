@@ -221,16 +221,18 @@ function TrainingTemplatesContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Training Templates</h1>
-          <p className="text-muted-foreground mt-1">
-            Create and manage reusable training program templates
+          <h1 className="text-2xl font-bold font-serif">Training Templates</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Browse predesigned templates or create your own reusable training
+            programs
           </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0">
               <Plus className="w-4 h-4 mr-2" />
               Create Template
             </Button>
@@ -370,107 +372,128 @@ function TrainingTemplatesContent() {
 
       {/* Templates Grid */}
       {!templates || templates.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Play className="w-16 h-16 text-muted-foreground/30 mb-4" />
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center mb-4">
+              <Play className="w-8 h-8 text-green-500" />
+            </div>
             <h3 className="font-semibold text-lg mb-2">
               No training templates yet
             </h3>
-            <p className="text-muted-foreground text-center mb-4">
-              Create your first training template to streamline your training
-              programs
+            <p className="text-muted-foreground text-center mb-6 max-w-sm text-sm">
+              Create your first training template or seed the built-in starter
+              templates to get going. Templates let you apply structured
+              programs to any horse.
             </p>
-            <Button onClick={() => setIsCreateOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create First Template
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setIsCreateOpen(true)}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Template
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {templates.map((template) => (
-            <Card
-              key={template.id}
-              className="hover:shadow-lg transition-shadow"
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{template.name}</CardTitle>
-                    <CardDescription className="mt-1">
-                      {template.description || "No description"}
-                    </CardDescription>
-                  </div>
-                  {template.isPublic ? (
-                    <Badge variant="secondary" className="ml-2">
-                      <Globe className="w-3 h-3 mr-1" />
-                      Public
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline" className="ml-2">
-                      <Lock className="w-3 h-3 mr-1" />
-                      Private
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    {template.discipline && (
-                      <Badge variant="outline">{template.discipline}</Badge>
-                    )}
-                    {template.level && (
-                      <Badge variant="outline">{template.level}</Badge>
-                    )}
-                    {template.duration && (
-                      <Badge variant="outline">{template.duration} weeks</Badge>
+        <>
+          {/* Section label when templates exist */}
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              Available Templates
+            </h2>
+            <Badge variant="secondary" className="text-xs">
+              {templates.length}
+            </Badge>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {templates.map((template) => (
+              <Card
+                key={template.id}
+                className="hover:shadow-lg transition-shadow"
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-lg">{template.name}</CardTitle>
+                      <CardDescription className="mt-1">
+                        {template.description || "No description"}
+                      </CardDescription>
+                    </div>
+                    {template.isPublic ? (
+                      <Badge variant="secondary" className="ml-2">
+                        <Globe className="w-3 h-3 mr-1" />
+                        Public
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="ml-2">
+                        <Lock className="w-3 h-3 mr-1" />
+                        Private
+                      </Badge>
                     )}
                   </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap gap-2">
+                      {template.discipline && (
+                        <Badge variant="outline">{template.discipline}</Badge>
+                      )}
+                      {template.level && (
+                        <Badge variant="outline">{template.level}</Badge>
+                      )}
+                      {template.duration && (
+                        <Badge variant="outline">
+                          {template.duration} weeks
+                        </Badge>
+                      )}
+                    </div>
 
-                  {template.goals && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {template.goals}
-                    </p>
-                  )}
+                    {template.goals && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {template.goals}
+                      </p>
+                    )}
 
-                  <div className="flex gap-2 pt-2">
-                    <Button
-                      size="sm"
-                      variant="default"
-                      onClick={() => openApplyDialog(template)}
-                      className="flex-1"
-                    >
-                      <Play className="w-3 h-3 mr-1" />
-                      Apply
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => openEditDialog(template)}
-                    >
-                      <Edit className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDuplicate(template.id)}
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDelete(template.id)}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        size="sm"
+                        variant="default"
+                        onClick={() => openApplyDialog(template)}
+                        className="flex-1"
+                      >
+                        <Play className="w-3 h-3 mr-1" />
+                        Apply
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openEditDialog(template)}
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDuplicate(template.id)}
+                      >
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDelete(template.id)}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Edit Dialog */}

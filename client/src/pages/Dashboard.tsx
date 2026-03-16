@@ -50,6 +50,31 @@ import {
 } from "lucide-react";
 
 // Module categories with richer descriptions for premium grid
+// Grouped into logical sections for dashboard display
+const moduleSections = [
+  {
+    label: "Core",
+    description: "Essential horse management",
+    ids: ["horses", "health", "training", "nutrition"],
+  },
+  {
+    label: "Planning & Tools",
+    description: "Schedule, AI, and documents",
+    ids: ["schedule", "ai", "documents", "reports"],
+  },
+  {
+    label: "Advanced",
+    description: "Breeding, financials & settings",
+    ids: ["breeding", "financial", "settings"],
+  },
+  {
+    label: "Stable Management",
+    description: "Team, clients & messaging",
+    ids: ["stable"],
+    stableOnly: true,
+  },
+];
+
 const moduleCategories = [
   {
     id: "horses",
@@ -1006,26 +1031,43 @@ function DashboardContent() {
         </div>
       </motion.div>
 
-      {/* ── Module Grid ──────────────────────────────────────── */}
+      {/* ── Module Grid with Section Headers ──────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.34 }}
+        className="space-y-6"
       >
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="font-serif text-lg font-semibold">Your Modules</h2>
-          <p className="text-xs text-muted-foreground">Quick access</p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {moduleCategories
-            .filter(
-              (cat) =>
-                cat.id !== "stable" || subscription?.planTier === "stable",
-            )
-            .map((cat, i) => (
-              <PremiumModuleCard key={cat.id} category={cat} index={i} />
-            ))}
-        </div>
+        {moduleSections
+          .filter(
+            (section) =>
+              !section.stableOnly || subscription?.planTier === "stable",
+          )
+          .map((section) => {
+            const sectionModules = moduleCategories.filter((cat) =>
+              section.ids.includes(cat.id),
+            );
+            if (sectionModules.length === 0) return null;
+
+            return (
+              <div key={section.label}>
+                <div className="flex items-center gap-2 mb-3">
+                  <h2 className="font-serif text-base font-semibold">
+                    {section.label}
+                  </h2>
+                  <span className="text-xs text-muted-foreground">
+                    · {section.description}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {sectionModules.map((cat, i) => (
+                    <PremiumModuleCard key={cat.id} category={cat} index={i} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+
         {subscription?.planTier !== "stable" && (
           <div className="mt-4 p-4 rounded-xl border border-yellow-500/20 bg-yellow-50/30 dark:bg-yellow-900/10 flex items-center justify-between gap-3">
             <div className="flex items-start gap-3">
