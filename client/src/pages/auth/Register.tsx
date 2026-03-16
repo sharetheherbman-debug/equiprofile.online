@@ -20,6 +20,7 @@ import {
   Mail,
   Lock,
   ShieldCheck,
+  Home,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { PageTransition } from "@/components/PageTransition";
@@ -42,13 +43,14 @@ import { trpc } from "@/lib/trpc";
  */
 export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState("");
+  const [selectedPlanType, setSelectedPlanType] = useState<"normal" | "stable" | null>(null);
   const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -158,6 +160,17 @@ export default function Register() {
       return;
     }
 
+    // If no subscription intent, show plan type selection
+    if (!hasSubscribeIntent) {
+      setStep(5);
+      return;
+    }
+
+    // Otherwise, proceed with registration
+    await performRegistration();
+  };
+
+  const performRegistration = async () => {
     setIsLoading(true);
 
     try {
@@ -208,7 +221,14 @@ export default function Register() {
     }
   };
 
-  const stepLabels = ["Name", "Email", "Password", "Confirm"];
+  const handlePlanTypeSelection = async (planType: "normal" | "stable") => {
+    setSelectedPlanType(planType);
+    // Store preference in sessionStorage so it persists to billing page after registration
+    sessionStorage.setItem("preferredPlanType", planType);
+    await performRegistration();
+  };
+
+  const stepLabels = ["Name", "Email", "Password", "Confirm", "Choose Plan"];
 
   return (
     <>
@@ -234,7 +254,7 @@ export default function Register() {
               <CardHeader className="space-y-3 pb-2">
                 {/* Step progress indicator */}
                 <div className="flex items-center justify-center gap-1 mb-2">
-                  {[1, 2, 3, 4].map((s) => (
+                  {(hasSubscribeIntent ? [1, 2, 3, 4] : [1, 2, 3, 4, 5]).map((s) => (
                     <div
                       key={s}
                       className={`h-1.5 w-8 rounded-full transition-colors duration-300 ${step >= s ? "bg-gradient-to-r from-indigo-500 to-cyan-500" : "bg-white/10"}`}
@@ -243,7 +263,7 @@ export default function Register() {
                 </div>
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <span className="text-xs text-gray-500">
-                    Step {step} of 4 —{" "}
+                    Step {step} of {hasSubscribeIntent ? 4 : 5} —{" "}
                     <span className="text-gray-400">
                       {stepLabels[step - 1]}
                     </span>
@@ -260,7 +280,9 @@ export default function Register() {
                       ? "What's your email address?"
                       : step === 3
                         ? "Create a secure password"
-                        : "Confirm your password"}
+                        : step === 4
+                          ? "Confirm your password"
+                          : "Choose your plan type"}
                 </CardDescription>
                 {hasSubscribeIntent && (
                   <p className="text-xs text-center text-indigo-300 bg-indigo-950/40 border border-indigo-500/30 rounded-lg px-3 py-2 mt-2">
@@ -426,7 +448,7 @@ export default function Register() {
                         </Button>
                       </div>
                     </motion.form>
-                  ) : (
+                  ) : step === 4 ? (
                     <motion.form
                       key="step4"
                       initial={{ opacity: 0, x: 20 }}
@@ -514,6 +536,77 @@ export default function Register() {
                         </Button>
                       </div>
                     </motion.form>
+                  ) : (
+                    <motion.div
+                      key="step5"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-4"
+                    >
+                      <p className="text-sm text-gray-400 text-center">
+                        Select the plan type that best fits your needs
+                      </p>
+                      
+                      <div className="grid grid-cols-1 gap-4">
+                        {/* Normal Plan */}
+                        <button
+                          type="button"
+                          onClick={() => handlePlanTypeSelection("normal")}
+                          disabled={isLoading}
+                          className={`group relative p-6 rounded-xl border-2 transition-all duration-200 text-left disabled:opacity-50 ${selectedPlanType === "normal" ? "border-indigo-500 bg-indigo-500/10" : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-indigo-500/50"}`}
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shrink-0">
+                              <User className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="text-lg font-semibold text-white mb-1">
+                                Normal Plan
+                              </h3>
+                              <p className="text-sm text-gray-400">
+                                Perfect for individual horse owners. Manage your horses, training, health records, and more.
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+
+                        {/* Stable Plan */}
+                        <button
+                          type="button"
+                          onClick={() => handlePlanTypeSelection("stable")}
+                          disabled={isLoading}
+                          className={`group relative p-6 rounded-xl border-2 transition-all duration-200 text-left disabled:opacity-50 ${selectedPlanType === "stable" ? "border-amber-500 bg-amber-500/10" : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-amber-500/50"}`}
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shrink-0">
+                              <Home className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="text-lg font-semibold text-white mb-1">
+                                Stable Plan
+                              </h3>
+                              <p className="text-sm text-gray-400">
+                                For stables and professional yards. Includes staff management, client portal, and multi-horse management.
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setStep(4)}
+                          className="flex-1 border-white/10 text-white hover:bg-white/10 h-12 text-base"
+                          disabled={isLoading}
+                        >
+                          Back
+                        </Button>
+                      </div>
+                    </motion.div>
                   )}
                 </AnimatePresence>
 
