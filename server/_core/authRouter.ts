@@ -75,6 +75,11 @@ router.post("/signup", async (req, res) => {
       return res.status(500).json({ error: "Failed to create user" });
     }
 
+    // Auto-grant admin role to primary admin email
+    if (userEmail === 'amarktainetwork@gmail.com' && user.role !== 'admin') {
+      await db.updateUser(user.id, { role: 'admin' });
+    }
+
     // Generate JWT token
     const token = await new SignJWT({ userId: user.id })
       .setProtectedHeader({ alg: "HS256" })
@@ -147,6 +152,11 @@ router.post("/login", loginLimiter, async (req, res) => {
 
     // Update last signed in
     await db.updateUser(user.id, { lastSignedIn: new Date() });
+
+    // Auto-grant admin role to primary admin email if not already set
+    if (user.email === 'amarktainetwork@gmail.com' && user.role !== 'admin') {
+      await db.updateUser(user.id, { role: 'admin' });
+    }
 
     // Generate JWT token
     const token = await new SignJWT({ userId: user.id })

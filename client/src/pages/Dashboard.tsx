@@ -289,6 +289,15 @@ function DashboardContent() {
     retry: false,
   });
 
+  // Upcoming events (next 30 days) for "Next Event" quick card
+  const { data: upcomingCalendarEvents = [] } = trpc.calendar.getEvents.useQuery(
+    {
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    { retry: false },
+  );
+
   // Today's calendar events
   const today = new Date();
   const todayStart = new Date(
@@ -455,10 +464,15 @@ function DashboardContent() {
         <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium text-indigo-100 mb-1">
-              Welcome back
+              {(() => {
+                const h = new Date().getHours();
+                if (h < 12) return "Good morning";
+                if (h < 18) return "Good afternoon";
+                return "Good evening";
+              })()}, {user?.name?.split(" ")[0] || "Rider"}! 🐎
             </p>
             <h1 className="font-serif text-2xl sm:text-3xl font-bold leading-tight">
-              {user?.name?.split(" ")[0] || "Rider"}&apos;s Dashboard
+              Your Dashboard
             </h1>
             <p className="text-indigo-200 text-sm mt-1">
               Your equestrian command centre
@@ -470,11 +484,69 @@ function DashboardContent() {
         </div>
       </motion.div>
 
+      {/* ── Quick-Access Stat Cards ───────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.06 }}
+        className="grid grid-cols-1 sm:grid-cols-3 gap-3"
+      >
+        <Link href="/horses">
+          <div className="flex items-center gap-3 p-4 rounded-xl border bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/30 dark:to-pink-950/30 border-rose-200/50 dark:border-rose-800/30 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shrink-0">
+              <Heart className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{(horses as any[]).length}</p>
+              <p className="text-xs text-muted-foreground">My Horses</p>
+            </div>
+          </div>
+        </Link>
+        <Link href="/calendar">
+          <div className="flex items-center gap-3 p-4 rounded-xl border bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30 border-purple-200/50 dark:border-purple-800/30 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shrink-0">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              {(upcomingCalendarEvents as any[]).length > 0 ? (
+                <>
+                  <p className="text-sm font-semibold leading-tight truncate max-w-[140px]">
+                    {(upcomingCalendarEvents as any[])[0]?.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date((upcomingCalendarEvents as any[])[0]?.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold">No upcoming events</p>
+                  <p className="text-xs text-muted-foreground">Next Event</p>
+                </>
+              )}
+            </div>
+          </div>
+        </Link>
+        <Link href="/tasks">
+          <div className="flex items-center gap-3 p-4 rounded-xl border bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200/50 dark:border-amber-800/30 hover:shadow-md transition-all cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shrink-0">
+              <Activity className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">
+                {(tasks as any[]).filter((t: any) => !t.isCompleted).length}
+              </p>
+              <p className="text-xs text-muted-foreground">Active Tasks</p>
+            </div>
+          </div>
+        </Link>
+      </motion.div>
+
       {/* ── KPI Stats Row ─────────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.08 }}
+        className="rounded-xl bg-muted/30 p-1"
       >
         <StatsOverview
           totalHorses={stats?.horseCount || 0}

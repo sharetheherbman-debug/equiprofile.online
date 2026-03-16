@@ -131,6 +131,8 @@ function HorseFormContent() {
       toast.error("Photo must be under 5MB");
       return;
     }
+    // Show preview immediately before upload starts
+    setPhotoPreview(URL.createObjectURL(file));
     setPhotoUploading(true);
     try {
       const reader = new FileReader();
@@ -152,7 +154,6 @@ function HorseFormContent() {
             description: "Horse profile photo",
           });
           setFormData((prev) => ({ ...prev, photoUrl: result.url }));
-          setPhotoPreview(URL.createObjectURL(file));
           toast.success("Photo uploaded");
         } catch (err: any) {
           toast.error(err.message || "Failed to upload photo");
@@ -468,6 +469,9 @@ function HorseFormContent() {
                       src={photoPreview}
                       alt="Horse preview"
                       className="w-20 h-20 object-cover rounded-lg border"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/assets/marketing/brand/horse-1.svg';
+                      }}
                     />
                     <button
                       type="button"

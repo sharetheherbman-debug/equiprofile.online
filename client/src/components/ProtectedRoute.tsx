@@ -3,10 +3,12 @@ import { Loader2 } from "lucide-react";
 import { ReactNode, useEffect } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
+import { toast } from "sonner";
 
 interface ProtectedRouteProps {
   children: ReactNode;
   requireAdmin?: boolean;
+  stableOnly?: boolean;
 }
 
 /**
@@ -14,14 +16,25 @@ interface ProtectedRouteProps {
  *
  * Ensures user is authenticated before rendering children.
  * Redirects to login if not authenticated.
- * Optionally can require admin role.
+ * Optionally can require admin role or stable plan.
  */
 export function ProtectedRoute({
   children,
   requireAdmin = false,
+  stableOnly = false,
 }: ProtectedRouteProps) {
   const { user, loading, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+
+  const isStablePlan = (() => {
+    if (!user?.preferences) return false;
+    try {
+      const prefs = JSON.parse(user.preferences);
+      return prefs.planTier === "stable";
+    } catch {
+      return false;
+    }
+  })();
 
   useEffect(() => {
     if (loading) return;
@@ -46,7 +59,12 @@ export function ProtectedRoute({
       // Redirect to dashboard if user is not admin
       setLocation("/dashboard");
     }
-  }, [loading, isAuthenticated, requireAdmin, user, setLocation]);
+
+    if (stableOnly && !isStablePlan) {
+      toast.error("This feature requires the Stable plan. Upgrade to access.");
+      setLocation("/billing");
+    }
+  }, [loading, isAuthenticated, requireAdmin, stableOnly, isStablePlan, user, setLocation]);
 
   // Show loading state
   if (loading) {
@@ -70,7 +88,20 @@ export function ProtectedRoute({
     return null;
   }
 
+  // Don't render if stable plan required but user is not on stable plan
+  if (stableOnly && !isStablePlan) {
+    return null;
+  }
+
   return <>{children}</>;
+}
+
+/**
+ * Stable plan route - requires Stable subscription tier.
+ * Redirects to /billing with toast if user is on a lower plan.
+ */
+export function StableRoute({ children }: { children: ReactNode }) {
+  return <ProtectedRoute stableOnly>{children}</ProtectedRoute>;
 }
 
 export default ProtectedRoute;

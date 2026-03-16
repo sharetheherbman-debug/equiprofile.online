@@ -327,10 +327,15 @@ export default function BillingPage() {
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center">
                         <Crown className="w-4 h-4 text-white" />
                       </div>
-                      <CardTitle className="text-lg">{"Starter"}</CardTitle>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        {"Starter"}
+                        {isCurrentPlan("pro") && (
+                          <Badge variant="secondary" className="text-xs">Current Plan</Badge>
+                        )}
+                      </CardTitle>
                     </div>
                     <CardDescription>
-                      Perfect for individual horse owners
+                      For individual horse owners — up to 5 horses
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -361,12 +366,14 @@ export default function BillingPage() {
                       ))}
                     </ul>
                     {isCurrentPlan("pro") ? (
-                      <Badge
+                      <Button
+                        onClick={() => handleSubscribe("pro")}
+                        className="w-full"
+                        disabled
                         variant="secondary"
-                        className="w-full justify-center py-2"
                       >
                         Current Plan
-                      </Badge>
+                      </Button>
                     ) : (
                       <Button
                         onClick={() => handleSubscribe("pro")}
@@ -395,12 +402,15 @@ export default function BillingPage() {
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
                         <Building2 className="w-4 h-4 text-white" />
                       </div>
-                      <CardTitle className="text-lg">
+                      <CardTitle className="text-lg flex items-center gap-2">
                         {pricing?.stable?.name ?? "Stable"}
+                        {isCurrentPlan("stable") && (
+                          <Badge variant="secondary" className="text-xs">Current Plan</Badge>
+                        )}
                       </CardTitle>
                     </div>
                     <CardDescription>
-                      Full stable management suite
+                      For stables managing multiple horses, staff, and owners
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -433,12 +443,13 @@ export default function BillingPage() {
                       ))}
                     </ul>
                     {isCurrentPlan("stable") ? (
-                      <Badge
+                      <Button
                         variant="secondary"
-                        className="w-full justify-center py-2"
+                        className="w-full"
+                        disabled
                       >
                         Current Plan
-                      </Badge>
+                      </Button>
                     ) : (
                       <Button
                         onClick={() => handleSubscribe("stable")}

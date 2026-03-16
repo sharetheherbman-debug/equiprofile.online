@@ -13,7 +13,7 @@ import {
 import { useScrollToTop } from "./hooks/useScrollToTop";
 import { UpgradeModal } from "./components/UpgradeModal";
 import { useUpgradeModal } from "./hooks/useUpgradeModal";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ProtectedRoute, StableRoute } from "./components/ProtectedRoute";
 import { SalesChatWidget } from "./components/SalesChatWidget";
 import { CookieConsent } from "./components/CookieConsent";
 import "./i18n/config";
@@ -202,16 +202,16 @@ function Router() {
 
             {/* Breeding Management */}
             <Route path="/breeding">
-              <ProtectedRoute>
+              <StableRoute>
                 <BreedingManagement />
-              </ProtectedRoute>
+              </StableRoute>
             </Route>
 
             {/* Lesson Scheduling */}
             <Route path="/lessons">
-              <ProtectedRoute>
+              <StableRoute>
                 <LessonScheduling />
-              </ProtectedRoute>
+              </StableRoute>
             </Route>
 
             {/* Feeding plans */}
@@ -261,16 +261,16 @@ function Router() {
 
             {/* Stable Management */}
             <Route path="/stable">
-              <ProtectedRoute>
+              <StableRoute>
                 <Stable />
-              </ProtectedRoute>
+              </StableRoute>
             </Route>
 
             {/* Stable Dashboard (Stable plan users) */}
             <Route path="/stable-dashboard">
-              <ProtectedRoute>
+              <StableRoute>
                 <StableDashboard />
-              </ProtectedRoute>
+              </StableRoute>
             </Route>
 
             {/* Messaging */}

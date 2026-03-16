@@ -37,9 +37,9 @@ import { trpc } from "@/lib/trpc";
 
 // Public nav links (for unauthenticated users)
 const publicNavLinks = [
+  { label: "About", path: "/about" },
   { label: "Features", path: "/features" },
   { label: "Pricing", path: "/pricing" },
-  { label: "About", path: "/about" },
   { label: "Contact", path: "/contact" },
 ];
 
