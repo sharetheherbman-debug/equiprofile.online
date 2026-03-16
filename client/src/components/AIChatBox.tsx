@@ -43,7 +43,7 @@ export type AIChatBoxProps = {
   className?: string;
 
   /**
-   * Height of the chat box (default: 480px)
+   * Height of the chat box (default: 360px)
    */
   height?: string | number;
 
@@ -116,7 +116,7 @@ export function AIChatBox({
   isLoading = false,
   placeholder = "Type your message...",
   className,
-  height = "480px",
+  height = "360px",
   emptyStateMessage = "Start a conversation with AI",
   suggestedPrompts,
 }: AIChatBoxProps) {
@@ -197,6 +197,17 @@ export function AIChatBox({
       )}
       style={{ height }}
     >
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 py-3 border-b bg-gradient-to-r from-indigo-500/10 to-cyan-500/10">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 flex items-center justify-center">
+          <Sparkles className="size-4 text-indigo-500" />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-sm font-semibold">AI Assistant</h3>
+          <p className="text-xs text-muted-foreground">Ask me anything about horse care</p>
+        </div>
+      </div>
+
       {/* Messages Area */}
       <div ref={scrollAreaRef} className="flex-1 overflow-hidden">
         {displayMessages.length === 0 ? (
