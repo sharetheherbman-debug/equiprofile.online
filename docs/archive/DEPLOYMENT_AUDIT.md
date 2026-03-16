@@ -198,7 +198,7 @@ See `/docs/ROUTER_MAP.md` for complete procedure listing.
 ### ⚠️ Concerns:
 
 1. **Default Admin Password**
-   - Default `ashmor12@` must be changed in production
+   - Default `Ashmor12@` must be changed in production
    - ✅ Production validation exists (prevents startup with default)
 
 2. **Session Storage**
@@ -837,7 +837,7 @@ for VAR in "${REQUIRED_VARS[@]}"; do
 done
 
 # Check admin password is not default
-if [ "$ADMIN_UNLOCK_PASSWORD" = "ashmor12@" ]; then
+if [ "$ADMIN_UNLOCK_PASSWORD" = "Ashmor12@" ]; then
     echo -e "${RED}✗${NC} Admin password is still default!"
     ERRORS=$((ERRORS + 1))
 else

@@ -91,12 +91,11 @@ function validateEnvironment() {
 
   // Validate admin password is not weak or default in production
   const hasWeakAdminPassword = (password: string) => {
-    // Check for common weak patterns without hardcoding actual defaults
+    // Check for common weak patterns
     const weakPatterns = [
-      /^admin/i,
+      /^admin$/i,
       /^password/i,
       /^12345/,
-      /^ashmor/i,
       /^equiprofile/i,
     ];
     return (

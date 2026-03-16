@@ -20,7 +20,7 @@
 **Current State:**
 
 - `.env.example` exists with most vars
-- Has `ADMIN_UNLOCK_PASSWORD=ashmor12@`
+- Has `ADMIN_UNLOCK_PASSWORD=Ashmor12@`
 - Missing some recommended vars
 
 **Gaps:**
