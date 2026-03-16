@@ -570,8 +570,9 @@ function AdminContent() {
                                   </DialogHeader>
                                   <div className="space-y-4 py-4">
                                     <div className="space-y-2">
-                                      <Label>New Password (min 12 chars)</Label>
+                                      <Label htmlFor="reset-password-input">New Password (min 12 chars)</Label>
                                       <Input
+                                        id="reset-password-input"
                                         type="password"
                                         value={resetPasswordValue}
                                         onChange={(e) =>
