@@ -470,7 +470,8 @@ function HorseFormContent() {
                       alt="Horse preview"
                       className="w-20 h-20 object-cover rounded-lg border"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/assets/marketing/brand/horse-1.svg';
+                        (e.target as HTMLImageElement).src =
+                          "/assets/marketing/brand/horse-1.svg";
                       }}
                     />
                     <button

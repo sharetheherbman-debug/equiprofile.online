@@ -64,7 +64,15 @@ export function ProtectedRoute({
       toast.error("This feature requires the Stable plan. Upgrade to access.");
       setLocation("/billing");
     }
-  }, [loading, isAuthenticated, requireAdmin, stableOnly, isStablePlan, user, setLocation]);
+  }, [
+    loading,
+    isAuthenticated,
+    requireAdmin,
+    stableOnly,
+    isStablePlan,
+    user,
+    setLocation,
+  ]);
 
   // Show loading state
   if (loading) {

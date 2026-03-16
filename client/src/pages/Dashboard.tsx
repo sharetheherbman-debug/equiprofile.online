@@ -290,13 +290,14 @@ function DashboardContent() {
   });
 
   // Upcoming events (next 30 days) for "Next Event" quick card
-  const { data: upcomingCalendarEvents = [] } = trpc.calendar.getEvents.useQuery(
-    {
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    { retry: false },
-  );
+  const { data: upcomingCalendarEvents = [] } =
+    trpc.calendar.getEvents.useQuery(
+      {
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      { retry: false },
+    );
 
   // Today's calendar events
   const today = new Date();
@@ -469,7 +470,8 @@ function DashboardContent() {
                 if (h < 12) return "Good morning";
                 if (h < 18) return "Good afternoon";
                 return "Good evening";
-              })()}, {user?.name?.split(" ")[0] || "Rider"}! 🐎
+              })()}
+              , {user?.name?.split(" ")[0] || "Rider"}! 🐎
             </p>
             <h1 className="font-serif text-2xl sm:text-3xl font-bold leading-tight">
               Your Dashboard
@@ -514,7 +516,12 @@ function DashboardContent() {
                     {(upcomingCalendarEvents as any[])[0]?.title}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date((upcomingCalendarEvents as any[])[0]?.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                    {new Date(
+                      (upcomingCalendarEvents as any[])[0]?.startDate,
+                    ).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                    })}
                   </p>
                 </>
               ) : (

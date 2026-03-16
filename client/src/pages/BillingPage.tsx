@@ -330,7 +330,9 @@ export default function BillingPage() {
                       <CardTitle className="text-lg flex items-center gap-2">
                         {"Starter"}
                         {isCurrentPlan("pro") && (
-                          <Badge variant="secondary" className="text-xs">Current Plan</Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            Current Plan
+                          </Badge>
                         )}
                       </CardTitle>
                     </div>
@@ -405,7 +407,9 @@ export default function BillingPage() {
                       <CardTitle className="text-lg flex items-center gap-2">
                         {pricing?.stable?.name ?? "Stable"}
                         {isCurrentPlan("stable") && (
-                          <Badge variant="secondary" className="text-xs">Current Plan</Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            Current Plan
+                          </Badge>
                         )}
                       </CardTitle>
                     </div>
@@ -443,11 +447,7 @@ export default function BillingPage() {
                       ))}
                     </ul>
                     {isCurrentPlan("stable") ? (
-                      <Button
-                        variant="secondary"
-                        className="w-full"
-                        disabled
-                      >
+                      <Button variant="secondary" className="w-full" disabled>
                         Current Plan
                       </Button>
                     ) : (

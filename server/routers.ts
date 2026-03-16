@@ -152,7 +152,7 @@ export const appRouter = router({
     // Initiate unlock (returns challenge)
     requestUnlock: protectedProcedure.mutation(async ({ ctx }) => {
       // Primary admin always gets access
-      if (ctx.user.email === 'amarktainetwork@gmail.com') {
+      if (ctx.user.email === "amarktainetwork@gmail.com") {
         return {
           challenge: "Admin mode requires password. Enter password:",
           attemptsRemaining: 10,
@@ -181,7 +181,7 @@ export const appRouter = router({
     submitPassword: protectedProcedure
       .input(z.object({ password: z.string() }))
       .mutation(async ({ ctx, input }) => {
-        const isPrimaryAdmin = ctx.user.email === 'amarktainetwork@gmail.com';
+        const isPrimaryAdmin = ctx.user.email === "amarktainetwork@gmail.com";
         const adminPassword = process.env.ADMIN_UNLOCK_PASSWORD;
 
         if (!adminPassword) {
@@ -229,7 +229,9 @@ export const appRouter = router({
             userId: ctx.user!.id,
             action: "admin_unlock_failed",
             entityType: "system",
-            details: JSON.stringify({ attempts: isPrimaryAdmin ? 'N/A' : 'tracked' }),
+            details: JSON.stringify({
+              attempts: isPrimaryAdmin ? "N/A" : "tracked",
+            }),
           });
           throw new TRPCError({
             code: "UNAUTHORIZED",
@@ -239,8 +241,8 @@ export const appRouter = router({
 
         // Success - create session (8 hours for primary admin, 2 hours for others)
         const sessionDuration = isPrimaryAdmin
-          ? 8 * 60 * 60 * 1000   // 8 hours
-          : 2 * 60 * 60 * 1000;  // 2 hours
+          ? 8 * 60 * 60 * 1000 // 8 hours
+          : 2 * 60 * 60 * 1000; // 2 hours
         const expiresAt = new Date(Date.now() + sessionDuration);
         await db.createAdminSession(ctx.user.id, expiresAt);
         if (!isPrimaryAdmin) {
@@ -2465,29 +2467,39 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // WhatsApp configuration
     getWhatsAppConfig: adminUnlockedProcedure.query(async () => {
       return {
-        enabled: process.env.ENABLE_WHATSAPP === 'true',
-        phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID ? '***configured***' : '',
+        enabled: process.env.ENABLE_WHATSAPP === "true",
+        phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID
+          ? "***configured***"
+          : "",
         hasAccessToken: !!process.env.WHATSAPP_ACCESS_TOKEN,
       };
     }),
 
     updateWhatsAppConfig: adminUnlockedProcedure
-      .input(z.object({
-        enabled: z.boolean(),
-        phoneNumberId: z.string().optional(),
-        accessToken: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          enabled: z.boolean(),
+          phoneNumberId: z.string().optional(),
+          accessToken: z.string().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const db = await getDb();
-        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' });
-        await db.insert(siteSettings).values({ key: 'whatsapp_enabled', value: String(input.enabled) })
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        await db
+          .insert(siteSettings)
+          .values({ key: "whatsapp_enabled", value: String(input.enabled) })
           .onDuplicateKeyUpdate({ set: { value: String(input.enabled) } });
         if (input.phoneNumberId) {
-          await db.insert(siteSettings).values({ key: 'whatsapp_phone_id', value: input.phoneNumberId })
+          await db
+            .insert(siteSettings)
+            .values({ key: "whatsapp_phone_id", value: input.phoneNumberId })
             .onDuplicateKeyUpdate({ set: { value: input.phoneNumberId } });
         }
         if (input.accessToken) {
-          await db.insert(siteSettings).values({ key: 'whatsapp_token', value: input.accessToken })
+          await db
+            .insert(siteSettings)
+            .values({ key: "whatsapp_token", value: input.accessToken })
             .onDuplicateKeyUpdate({ set: { value: input.accessToken } });
         }
         return { success: true };

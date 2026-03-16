@@ -147,7 +147,10 @@ function AdminContent() {
   // Sync WhatsApp form when data loads
   useEffect(() => {
     if (whatsappConfigQuery.data) {
-      setWhatsappForm((prev) => ({ ...prev, enabled: whatsappConfigQuery.data!.enabled }));
+      setWhatsappForm((prev) => ({
+        ...prev,
+        enabled: whatsappConfigQuery.data!.enabled,
+      }));
     }
   }, [whatsappConfigQuery.data]);
 
@@ -1018,7 +1021,8 @@ function AdminContent() {
                   WhatsApp Business Configuration
                 </CardTitle>
                 <CardDescription>
-                  Configure WhatsApp Business API for event reminders and notifications.
+                  Configure WhatsApp Business API for event reminders and
+                  notifications.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -1031,11 +1035,19 @@ function AdminContent() {
                   )}
                   <div>
                     <p className="font-medium text-sm">
-                      Status: {whatsappConfigQuery.data?.enabled ? "Enabled" : "Disabled"}
+                      Status:{" "}
+                      {whatsappConfigQuery.data?.enabled
+                        ? "Enabled"
+                        : "Disabled"}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Phone ID: {whatsappConfigQuery.data?.phoneNumberId || "Not configured"} ·{" "}
-                      Token: {whatsappConfigQuery.data?.hasAccessToken ? "Configured" : "Not set"}
+                      Phone ID:{" "}
+                      {whatsappConfigQuery.data?.phoneNumberId ||
+                        "Not configured"}{" "}
+                      · Token:{" "}
+                      {whatsappConfigQuery.data?.hasAccessToken
+                        ? "Configured"
+                        : "Not set"}
                     </p>
                   </div>
                 </div>
@@ -1048,10 +1060,18 @@ function AdminContent() {
                       type="checkbox"
                       id="wa-enabled"
                       checked={whatsappForm.enabled}
-                      onChange={(e) => setWhatsappForm({ ...whatsappForm, enabled: e.target.checked })}
+                      onChange={(e) =>
+                        setWhatsappForm({
+                          ...whatsappForm,
+                          enabled: e.target.checked,
+                        })
+                      }
                       className="w-4 h-4"
                     />
-                    <label htmlFor="wa-enabled" className="text-sm text-muted-foreground">
+                    <label
+                      htmlFor="wa-enabled"
+                      className="text-sm text-muted-foreground"
+                    >
                       Enable WhatsApp Business notifications
                     </label>
                   </div>
@@ -1063,7 +1083,12 @@ function AdminContent() {
                   <Input
                     placeholder="Meta Phone Number ID"
                     value={whatsappForm.phoneNumberId}
-                    onChange={(e) => setWhatsappForm({ ...whatsappForm, phoneNumberId: e.target.value })}
+                    onChange={(e) =>
+                      setWhatsappForm({
+                        ...whatsappForm,
+                        phoneNumberId: e.target.value,
+                      })
+                    }
                   />
                   <p className="text-xs text-muted-foreground">
                     Found in Meta Business Manager → WhatsApp → Phone Numbers
@@ -1075,27 +1100,45 @@ function AdminContent() {
                   <Label>Access Token</Label>
                   <Input
                     type="password"
-                    placeholder={whatsappConfigQuery.data?.hasAccessToken ? "••••••••• (already configured)" : "Meta permanent access token"}
+                    placeholder={
+                      whatsappConfigQuery.data?.hasAccessToken
+                        ? "••••••••• (already configured)"
+                        : "Meta permanent access token"
+                    }
                     value={whatsappForm.accessToken}
-                    onChange={(e) => setWhatsappForm({ ...whatsappForm, accessToken: e.target.value })}
+                    onChange={(e) =>
+                      setWhatsappForm({
+                        ...whatsappForm,
+                        accessToken: e.target.value,
+                      })
+                    }
                   />
                   <p className="text-xs text-muted-foreground">
-                    Permanent token from Meta Business Manager. Leave blank to keep existing.
+                    Permanent token from Meta Business Manager. Leave blank to
+                    keep existing.
                   </p>
                 </div>
 
                 <Button
-                  onClick={() => updateWhatsAppMutation.mutate({
-                    enabled: whatsappForm.enabled,
-                    phoneNumberId: whatsappForm.phoneNumberId || undefined,
-                    accessToken: whatsappForm.accessToken || undefined,
-                  })}
+                  onClick={() =>
+                    updateWhatsAppMutation.mutate({
+                      enabled: whatsappForm.enabled,
+                      phoneNumberId: whatsappForm.phoneNumberId || undefined,
+                      accessToken: whatsappForm.accessToken || undefined,
+                    })
+                  }
                   disabled={updateWhatsAppMutation.isPending}
                 >
                   {updateWhatsAppMutation.isPending ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</>
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
                   ) : (
-                    <><Save className="w-4 h-4 mr-2" />Save Configuration</>
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Configuration
+                    </>
                   )}
                 </Button>
               </CardContent>
@@ -1103,7 +1146,9 @@ function AdminContent() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm">Required Message Templates</CardTitle>
+                <CardTitle className="text-sm">
+                  Required Message Templates
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground mb-3">
@@ -1125,7 +1170,9 @@ function AdminContent() {
                 <Alert className="mt-4">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription className="text-xs">
-                    See <code className="text-primary">docs/WHATSAPP_SETUP.md</code> for full setup instructions.
+                    See{" "}
+                    <code className="text-primary">docs/WHATSAPP_SETUP.md</code>{" "}
+                    for full setup instructions.
                   </AlertDescription>
                 </Alert>
               </CardContent>

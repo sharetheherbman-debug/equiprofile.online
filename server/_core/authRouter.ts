@@ -76,8 +76,8 @@ router.post("/signup", async (req, res) => {
     }
 
     // Auto-grant admin role to primary admin email
-    if (userEmail === 'amarktainetwork@gmail.com' && user.role !== 'admin') {
-      await db.updateUser(user.id, { role: 'admin' });
+    if (userEmail === "amarktainetwork@gmail.com" && user.role !== "admin") {
+      await db.updateUser(user.id, { role: "admin" });
     }
 
     // Generate JWT token
@@ -154,8 +154,8 @@ router.post("/login", loginLimiter, async (req, res) => {
     await db.updateUser(user.id, { lastSignedIn: new Date() });
 
     // Auto-grant admin role to primary admin email if not already set
-    if (user.email === 'amarktainetwork@gmail.com' && user.role !== 'admin') {
-      await db.updateUser(user.id, { role: 'admin' });
+    if (user.email === "amarktainetwork@gmail.com" && user.role !== "admin") {
+      await db.updateUser(user.id, { role: "admin" });
     }
 
     // Generate JWT token

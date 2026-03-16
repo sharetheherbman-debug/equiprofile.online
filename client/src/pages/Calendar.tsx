@@ -177,13 +177,27 @@ export default function CalendarPage() {
   });
 
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const navigateMonth = (direction: number) => {
     setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + direction, 1),
+      new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + direction,
+        1,
+      ),
     );
   };
 
@@ -294,7 +308,12 @@ export default function CalendarPage() {
               Schedule and manage all your equestrian activities
             </p>
           </div>
-          <Button onClick={() => { setNewEvent({ ...EMPTY_FORM }); setIsAddDialogOpen(true); }}>
+          <Button
+            onClick={() => {
+              setNewEvent({ ...EMPTY_FORM });
+              setIsAddDialogOpen(true);
+            }}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Event
           </Button>
@@ -308,13 +327,25 @@ export default function CalendarPage() {
                 {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
               </CardTitle>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="icon" onClick={() => navigateMonth(-1)}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => navigateMonth(-1)}
+                >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentDate(new Date())}
+                >
                   Today
                 </Button>
-                <Button variant="outline" size="icon" onClick={() => navigateMonth(1)}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => navigateMonth(1)}
+                >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
@@ -323,7 +354,10 @@ export default function CalendarPage() {
           <CardContent>
             <div className="grid grid-cols-7 gap-1">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                <div key={day} className="text-center font-medium text-xs text-muted-foreground p-2">
+                <div
+                  key={day}
+                  className="text-center font-medium text-xs text-muted-foreground p-2"
+                >
                   {day}
                 </div>
               ))}
@@ -349,7 +383,9 @@ export default function CalendarPage() {
                     }`}
                     onClick={() => handleDayClick(day)}
                   >
-                    <div className={`text-xs mb-1 font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}>
+                    <div
+                      className={`text-xs mb-1 font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}
+                    >
                       {day}
                     </div>
                     <div className="space-y-0.5">
@@ -362,7 +398,10 @@ export default function CalendarPage() {
                         >
                           {event.title}
                           {event.horseId && getHorseName(event.horseId) && (
-                            <span className="opacity-80"> · {getHorseName(event.horseId)}</span>
+                            <span className="opacity-80">
+                              {" "}
+                              · {getHorseName(event.horseId)}
+                            </span>
                           )}
                         </div>
                       ))}
@@ -380,7 +419,9 @@ export default function CalendarPage() {
             <div className="mt-4 flex flex-wrap gap-2">
               {Object.entries(EVENT_TYPE_LABELS).map(([type, label]) => (
                 <div key={type} className="flex items-center gap-1">
-                  <div className={`w-2 h-2 rounded-full ${EVENT_TYPE_COLORS[type]}`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${EVENT_TYPE_COLORS[type]}`}
+                  />
                   <span className="text-xs text-muted-foreground">{label}</span>
                 </div>
               ))}
@@ -400,7 +441,13 @@ export default function CalendarPage() {
                 <p className="text-sm text-muted-foreground mt-2">
                   Add events to your calendar to stay organised
                 </p>
-                <Button className="mt-4" onClick={() => { setNewEvent({ ...EMPTY_FORM }); setIsAddDialogOpen(true); }}>
+                <Button
+                  className="mt-4"
+                  onClick={() => {
+                    setNewEvent({ ...EMPTY_FORM });
+                    setIsAddDialogOpen(true);
+                  }}
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   Add Event
                 </Button>
@@ -416,17 +463,28 @@ export default function CalendarPage() {
                       onClick={() => handleOpenEdit(event)}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full shrink-0 ${EVENT_TYPE_COLORS[event.eventType] || "bg-gray-500"}`} />
+                        <div
+                          className={`w-3 h-3 rounded-full shrink-0 ${EVENT_TYPE_COLORS[event.eventType] || "bg-gray-500"}`}
+                        />
                         <div>
                           <p className="font-medium text-sm">{event.title}</p>
                           <p className="text-xs text-muted-foreground">
-                            {new Date(event.startDate).toLocaleDateString("en-GB", {
-                              weekday: "short", day: "numeric", month: "short",
-                            })}
+                            {new Date(event.startDate).toLocaleDateString(
+                              "en-GB",
+                              {
+                                weekday: "short",
+                                day: "numeric",
+                                month: "short",
+                              },
+                            )}
                             {" · "}
-                            {new Date(event.startDate).toLocaleTimeString("en-GB", {
-                              hour: "2-digit", minute: "2-digit",
-                            })}
+                            {new Date(event.startDate).toLocaleTimeString(
+                              "en-GB",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
                             {event.location && ` · ${event.location}`}
                           </p>
                           {horseName && (
@@ -438,13 +496,17 @@ export default function CalendarPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="text-xs">
-                          {EVENT_TYPE_LABELS[event.eventType] || event.eventType}
+                          {EVENT_TYPE_LABELS[event.eventType] ||
+                            event.eventType}
                         </Badge>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6"
-                          onClick={(e) => { e.stopPropagation(); handleOpenEdit(event); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEdit(event);
+                          }}
                         >
                           <Edit2 className="h-3 w-3" />
                         </Button>
@@ -474,11 +536,16 @@ export default function CalendarPage() {
                   onClick={() => handleOpenEdit(event)}
                 >
                   <div className="flex items-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${EVENT_TYPE_COLORS[event.eventType] || "bg-gray-500"}`} />
+                    <div
+                      className={`w-2.5 h-2.5 rounded-full ${EVENT_TYPE_COLORS[event.eventType] || "bg-gray-500"}`}
+                    />
                     <div>
                       <p className="font-medium text-sm">{event.title}</p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(event.startDate).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+                        {new Date(event.startDate).toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                         {horseName && ` · 🐎 ${horseName}`}
                       </p>
                     </div>
@@ -491,7 +558,13 @@ export default function CalendarPage() {
             })}
           </div>
           <DialogFooter>
-            <Button onClick={() => { setIsDayDialogOpen(false); setNewEvent({ ...EMPTY_FORM }); setIsAddDialogOpen(true); }}>
+            <Button
+              onClick={() => {
+                setIsDayDialogOpen(false);
+                setNewEvent({ ...EMPTY_FORM });
+                setIsAddDialogOpen(true);
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Event
             </Button>
@@ -510,7 +583,9 @@ export default function CalendarPage() {
               <Label>Title *</Label>
               <Input
                 value={newEvent.title}
-                onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, title: e.target.value })
+                }
                 placeholder="Event title"
               />
             </div>
@@ -518,12 +593,18 @@ export default function CalendarPage() {
               <Label>Type</Label>
               <Select
                 value={newEvent.eventType}
-                onValueChange={(v) => setNewEvent({ ...newEvent, eventType: v as DbEventType })}
+                onValueChange={(v) =>
+                  setNewEvent({ ...newEvent, eventType: v as DbEventType })
+                }
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {UI_EVENT_TYPES.map(({ value, label }) => (
-                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -534,15 +615,22 @@ export default function CalendarPage() {
                 <Input
                   type="date"
                   value={newEvent.startDate}
-                  onChange={(e) => setNewEvent({ ...newEvent, startDate: e.target.value })}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, startDate: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
-                <Label className="flex items-center gap-1"><Clock className="h-3 w-3" />Time</Label>
+                <Label className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  Time
+                </Label>
                 <Input
                   type="time"
                   value={newEvent.startTime}
-                  onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, startTime: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -551,13 +639,19 @@ export default function CalendarPage() {
                 <Label>Horse (optional)</Label>
                 <Select
                   value={newEvent.horseId || "none"}
-                  onValueChange={(v) => setNewEvent({ ...newEvent, horseId: v === "none" ? "" : v })}
+                  onValueChange={(v) =>
+                    setNewEvent({ ...newEvent, horseId: v === "none" ? "" : v })
+                  }
                 >
-                  <SelectTrigger><SelectValue placeholder="Select horse..." /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select horse..." />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">No specific horse</SelectItem>
                     {(horses as any[]).map((h: any) => (
-                      <SelectItem key={h.id} value={String(h.id)}>{h.name}</SelectItem>
+                      <SelectItem key={h.id} value={String(h.id)}>
+                        {h.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -567,7 +661,9 @@ export default function CalendarPage() {
               <Label>Location (optional)</Label>
               <Input
                 value={newEvent.location}
-                onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, location: e.target.value })
+                }
                 placeholder="e.g. Main arena"
               />
             </div>
@@ -575,17 +671,24 @@ export default function CalendarPage() {
               <Label>Description (optional)</Label>
               <Textarea
                 value={newEvent.description}
-                onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, description: e.target.value })
+                }
                 placeholder="Notes or details..."
                 rows={2}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              Cancel
+            </Button>
             <Button onClick={handleAddEvent} disabled={createEvent.isPending}>
               {createEvent.isPending ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creating...</>
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
               ) : (
                 "Create Event"
               )}
@@ -605,7 +708,9 @@ export default function CalendarPage() {
               <Label>Title *</Label>
               <Input
                 value={editForm.title}
-                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, title: e.target.value })
+                }
                 placeholder="Event title"
               />
             </div>
@@ -615,15 +720,22 @@ export default function CalendarPage() {
                 <Input
                   type="date"
                   value={editForm.startDate}
-                  onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, startDate: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
-                <Label className="flex items-center gap-1"><Clock className="h-3 w-3" />Time</Label>
+                <Label className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  Time
+                </Label>
                 <Input
                   type="time"
                   value={editForm.startTime}
-                  onChange={(e) => setEditForm({ ...editForm, startTime: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, startTime: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -631,18 +743,39 @@ export default function CalendarPage() {
               <Label>Description (optional)</Label>
               <Textarea
                 value={editForm.description}
-                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, description: e.target.value })
+                }
                 placeholder="Notes or details..."
                 rows={2}
               />
             </div>
             {selectedEvent && (
               <div className="text-xs text-muted-foreground">
-                Type: <span className="font-medium">{EVENT_TYPE_LABELS[selectedEvent.eventType] || selectedEvent.eventType}</span>
-                {selectedEvent.location && <> · Location: <span className="font-medium">{selectedEvent.location}</span></>}
-                {selectedEvent.horseId && getHorseName(selectedEvent.horseId) && (
-                  <> · Horse: <span className="font-medium">🐎 {getHorseName(selectedEvent.horseId)}</span></>
+                Type:{" "}
+                <span className="font-medium">
+                  {EVENT_TYPE_LABELS[selectedEvent.eventType] ||
+                    selectedEvent.eventType}
+                </span>
+                {selectedEvent.location && (
+                  <>
+                    {" "}
+                    · Location:{" "}
+                    <span className="font-medium">
+                      {selectedEvent.location}
+                    </span>
+                  </>
                 )}
+                {selectedEvent.horseId &&
+                  getHorseName(selectedEvent.horseId) && (
+                    <>
+                      {" "}
+                      · Horse:{" "}
+                      <span className="font-medium">
+                        🐎 {getHorseName(selectedEvent.horseId)}
+                      </span>
+                    </>
+                  )}
               </div>
             )}
           </div>
@@ -657,10 +790,21 @@ export default function CalendarPage() {
               Delete
             </Button>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-              <Button onClick={handleUpdateEvent} disabled={updateEvent.isPending}>
+              <Button
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleUpdateEvent}
+                disabled={updateEvent.isPending}
+              >
                 {updateEvent.isPending ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</>
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
                 ) : (
                   "Save Changes"
                 )}
@@ -676,13 +820,16 @@ export default function CalendarPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Event?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete "{selectedEvent?.title}". This action cannot be undone.
+              This will permanently delete "{selectedEvent?.title}". This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => selectedEvent && deleteEvent.mutate({ id: selectedEvent.id })}
+              onClick={() =>
+                selectedEvent && deleteEvent.mutate({ id: selectedEvent.id })
+              }
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete
@@ -693,5 +840,3 @@ export default function CalendarPage() {
     </DashboardLayout>
   );
 }
-
-
