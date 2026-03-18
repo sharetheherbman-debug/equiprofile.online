@@ -42,7 +42,7 @@ export const marketingAssets = {
   // Hero Section
   // ========================================
   hero: {
-    video: `${MARKETING_BASE}/hero/LANDINGPAGEV2.mp4`,
+    video: `${MARKETING_BASE}/hero/Landing.mp4`,
     heroHorse: `${MARKETING_BASE}/hero/hero-horse.jpg`,
     heroStable: `${MARKETING_BASE}/hero/hero-stable.jpg`,
   },
@@ -98,7 +98,7 @@ export const marketingAssets = {
   // ========================================
   auth: {
     background: `${MARKETING_BASE}/auth/auth-bg.svg`,
-    video: `/videos/LoginFinal2.mp4`,
+    video: `/videos/LoginRegister.mp4`,
   },
 
   // ========================================
