@@ -452,7 +452,6 @@ async function startServer() {
       );
     const aiOpenAI = !!process.env.OPENAI_API_KEY;
     const aiHuggingFace = !!process.env.HUGGINGFACE_API_KEY;
-    const aiForge = !!ENV.forgeApiKey;
 
     res.json({
       db: true, // If we got here the server started successfully
@@ -462,8 +461,7 @@ async function startServer() {
       ai: {
         openai: aiOpenAI,
         huggingface: aiHuggingFace,
-        forge: aiForge,
-        anyConfigured: aiOpenAI || aiHuggingFace || aiForge,
+        anyConfigured: aiOpenAI || aiHuggingFace,
       },
       weather: true, // Open-Meteo needs no key
       adminPasswordSet: !!process.env.ADMIN_UNLOCK_PASSWORD,
@@ -916,7 +914,7 @@ async function startServer() {
   app.use("/api/v1", apiRouter);
 
   // ── Local file serving ────────────────────────────────────────────────────
-  // Serves files uploaded to local disk storage (when Forge is not configured).
+  // Serves files uploaded to local disk storage (when proxy storage is not configured).
   // Authentication is NOT required here because the file URLs are unguessable
   // (nanoid-prefixed keys).  Path traversal is prevented by resolve() check.
   app.get(/^\/api\/files\/(.+)$/, async (req, res) => {

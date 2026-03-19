@@ -5,7 +5,6 @@
  *     query: { gl: "US", hl: "en", q: "horse care" },
  *   })
  */
-import { ENV } from "./env";
 
 export type DataApiCallOptions = {
   query?: Record<string, unknown>;
@@ -18,17 +17,20 @@ export async function callDataApi(
   apiId: string,
   options: DataApiCallOptions = {},
 ): Promise<unknown> {
-  if (!ENV.forgeApiUrl) {
-    throw new Error("BUILT_IN_FORGE_API_URL is not configured");
+  const proxyUrl = process.env.BUILT_IN_FORGE_API_URL ?? "";
+  const proxyKey = process.env.BUILT_IN_FORGE_API_KEY ?? "";
+
+  if (!proxyUrl) {
+    throw new Error("Data API service is not configured");
   }
-  if (!ENV.forgeApiKey) {
-    throw new Error("BUILT_IN_FORGE_API_KEY is not configured");
+  if (!proxyKey) {
+    throw new Error("Data API service authentication is missing");
   }
 
   // Build the full URL by appending the service path to the base URL
-  const baseUrl = ENV.forgeApiUrl.endsWith("/")
-    ? ENV.forgeApiUrl
-    : `${ENV.forgeApiUrl}/`;
+  const baseUrl = proxyUrl.endsWith("/")
+    ? proxyUrl
+    : `${proxyUrl}/`;
   const fullUrl = new URL(
     "webdevtoken.v1.WebDevService/CallApi",
     baseUrl,
@@ -40,7 +42,7 @@ export async function callDataApi(
       accept: "application/json",
       "content-type": "application/json",
       "connect-protocol-version": "1",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      authorization: `Bearer ${proxyKey}`,
     },
     body: JSON.stringify({
       apiId,

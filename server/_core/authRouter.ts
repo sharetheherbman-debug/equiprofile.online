@@ -11,10 +11,10 @@ import { COOKIE_NAME } from "@shared/const";
 
 const router: Router = express.Router();
 
-// Rate limiter for login attempts (5 attempts per 15 minutes)
+// Rate limiter for login attempts (10 attempts per 15 minutes)
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
+  max: 10,
   message: { error: "Too many requests", message: "Too many login attempts from this IP, please try again later." },
   standardHeaders: true,
   legacyHeaders: false,

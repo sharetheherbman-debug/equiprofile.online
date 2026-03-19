@@ -217,18 +217,20 @@ const normalizeToolChoice = (
 };
 
 const resolveApiUrl = async (): Promise<string | null> => {
-  const url =
-    ENV.forgeApiUrl ||
-    (await getRuntimeConfig("forge_api_url", "BUILT_IN_FORGE_API_URL"));
-  return url && url.trim().length > 0
-    ? `${url.replace(/\/$/, "")}/v1/chat/completions`
-    : null;
+  // Allow overriding the base URL via DB config or env (for custom OpenAI-compatible endpoints)
+  const customUrl =
+    process.env.OPENAI_BASE_URL ||
+    (await getRuntimeConfig("openai_base_url", "OPENAI_BASE_URL"));
+  const base = customUrl && customUrl.trim().length > 0
+    ? customUrl.trim().replace(/\/$/, "")
+    : "https://api.openai.com/v1";
+  return `${base}/chat/completions`;
 };
 
 const assertApiKey = async (): Promise<string> => {
   const key =
-    ENV.forgeApiKey ||
-    (await getRuntimeConfig("forge_api_key", "BUILT_IN_FORGE_API_KEY"));
+    ENV.openaiApiKey ||
+    (await getRuntimeConfig("openai_api_key", "OPENAI_API_KEY"));
   if (!key) {
     throw new Error("AI service is not configured (API key missing)");
   }
@@ -242,13 +244,12 @@ const assertApiKey = async (): Promise<string> => {
  */
 export async function isAIConfigured(): Promise<boolean> {
   if (
-    ENV.forgeApiKey ||
-    process.env.OPENAI_API_KEY ||
+    ENV.openaiApiKey ||
     process.env.HUGGINGFACE_API_KEY
   ) {
     return true;
   }
-  const dbKey = await getRuntimeConfig("forge_api_key", "BUILT_IN_FORGE_API_KEY");
+  const dbKey = await getRuntimeConfig("openai_api_key", "OPENAI_API_KEY");
   return !!dbKey;
 }
 
@@ -302,7 +303,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
 
   const apiUrl = await resolveApiUrl();
   if (!apiUrl) {
-    throw new Error("AI service is not configured (FORGE_API_URL is missing)");
+    throw new Error("AI service is not configured (API URL missing)");
   }
 
   const {

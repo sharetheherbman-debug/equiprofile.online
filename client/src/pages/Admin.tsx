@@ -96,8 +96,7 @@ function AdminContent() {
 
   // API key configuration form state
   const [aiConfigForm, setAiConfigForm] = useState({
-    forge_api_url: "",
-    forge_api_key: "",
+    openai_api_key: "",
   });
   const [smtpForm, setSmtpForm] = useState({
     smtp_host: "",
@@ -255,8 +254,7 @@ function AdminContent() {
     if (siteSettingsQuery.data) {
       const s = siteSettingsQuery.data as Record<string, string>;
       setAiConfigForm({
-        forge_api_url: s.forge_api_url ?? "",
-        forge_api_key: s.forge_api_key ? "••••••••" : "",
+        openai_api_key: s.openai_api_key ? "••••••••" : "",
       });
       setSmtpForm({
         smtp_host: s.smtp_host ?? "",
@@ -911,55 +909,27 @@ function AdminContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Server className="h-5 w-5" />
-                  AI Configuration (Forge API)
+                  AI Configuration (OpenAI)
                 </CardTitle>
                 <CardDescription>
-                  Configure the AI backend used for the chat assistant and
-                  weather recommendations. Keys saved here override environment
-                  variables and take effect immediately.
+                  Configure the OpenAI API key used for the chat assistant and
+                  AI features. Keys saved here override environment variables
+                  and take effect immediately.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="forge-url">Forge API URL</Label>
+                  <Label htmlFor="openai-key">OpenAI API Key</Label>
                   <div className="flex gap-2">
                     <Input
-                      id="forge-url"
-                      placeholder="https://your-forge-api.com"
-                      value={aiConfigForm.forge_api_url}
-                      onChange={(e) =>
-                        setAiConfigForm((p) => ({
-                          ...p,
-                          forge_api_url: e.target.value,
-                        }))
-                      }
-                    />
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        setSiteSettingMutation.mutate({
-                          key: "forge_api_url",
-                          value: aiConfigForm.forge_api_url,
-                        })
-                      }
-                      disabled={setSiteSettingMutation.isPending}
-                    >
-                      <Save className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="forge-key">Forge API Key</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="forge-key"
+                      id="openai-key"
                       type="password"
                       placeholder="Enter new key to update"
-                      value={aiConfigForm.forge_api_key}
+                      value={aiConfigForm.openai_api_key}
                       onChange={(e) =>
                         setAiConfigForm((p) => ({
                           ...p,
-                          forge_api_key: e.target.value,
+                          openai_api_key: e.target.value,
                         }))
                       }
                     />
@@ -967,14 +937,14 @@ function AdminContent() {
                       size="sm"
                       onClick={() =>
                         setSiteSettingMutation.mutate({
-                          key: "forge_api_key",
-                          value: aiConfigForm.forge_api_key,
+                          key: "openai_api_key",
+                          value: aiConfigForm.openai_api_key,
                         })
                       }
                       disabled={
                         setSiteSettingMutation.isPending ||
-                        !aiConfigForm.forge_api_key ||
-                        aiConfigForm.forge_api_key === "••••••••"
+                        !aiConfigForm.openai_api_key ||
+                        aiConfigForm.openai_api_key === "••••••••"
                       }
                     >
                       <Save className="h-4 w-4" />

@@ -1,7 +1,7 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 // Preconfigured storage helpers for EquiProfile
-// Uses the Biz-provided storage proxy (Authorization: Bearer <token>)
-// Falls back to local disk when Forge credentials are not configured.
+// Uses the storage proxy (Authorization: Bearer <token>) when configured.
+// Falls back to local disk when proxy credentials are not configured.
 
 import fs from "fs";
 import path from "path";
@@ -18,8 +18,8 @@ function getStorageConfig(): StorageConfig {
     );
   }
 
-  const baseUrl = ENV.forgeApiUrl;
-  const apiKey = ENV.forgeApiKey;
+  const baseUrl = process.env.BUILT_IN_FORGE_API_URL ?? "";
+  const apiKey = process.env.BUILT_IN_FORGE_API_KEY ?? "";
 
   if (!baseUrl || !apiKey) {
     throw new Error(
@@ -84,8 +84,8 @@ export async function storagePut(
   data: Buffer | Uint8Array | string,
   contentType = "application/octet-stream",
 ): Promise<{ key: string; url: string }> {
-  // Use Forge if ENABLE_UPLOADS=true and credentials are present
-  if (ENV.enableUploads && ENV.forgeApiUrl && ENV.forgeApiKey) {
+  // Use storage proxy if ENABLE_UPLOADS=true and credentials are present
+  if (ENV.enableUploads && process.env.BUILT_IN_FORGE_API_URL && process.env.BUILT_IN_FORGE_API_KEY) {
     const { baseUrl, apiKey } = getStorageConfig();
     const key = normalizeKey(relKey);
     const uploadUrl = buildUploadUrl(baseUrl, key);

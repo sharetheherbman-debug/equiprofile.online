@@ -57,15 +57,7 @@ function validateEnvironment() {
 
   // Conditionally require upload/storage vars if enabled
   if (enableUploads) {
-    const uploadVars = [
-      { name: "BUILT_IN_FORGE_API_URL", description: "Forge API URL" },
-      { name: "BUILT_IN_FORGE_API_KEY", description: "Forge API key" },
-    ];
-    uploadVars.forEach((v) => {
-      if (!process.env[v.name]) {
-        missing.push(v);
-      }
-    });
+    // Uploads fall back to local disk storage when no proxy is configured
   }
 
   // Report missing variables and exit if any
@@ -211,10 +203,8 @@ export const ENV = {
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
   isProduction: process.env.NODE_ENV === "production",
-  forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
-  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
 
-  // Local file storage path (used when ENABLE_UPLOADS=false or Forge is not configured)
+  // Local file storage path (used when ENABLE_UPLOADS=false or proxy storage is not configured)
   storagePath:
     process.env.STORAGE_PATH ??
     (process.env.NODE_ENV === "production"

@@ -15,7 +15,9 @@ export function useAuth(options?: UseAuthOptions) {
   const utils = trpc.useUtils();
 
   const meQuery = trpc.auth.me.useQuery(undefined, {
-    retry: false,
+    retry: 1,
+    retryDelay: 1000,
+    staleTime: 60000,
     refetchOnWindowFocus: false,
   });
 

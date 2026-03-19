@@ -87,7 +87,21 @@ export function useRealtime(options: UseRealtimeOptions = {}) {
           console.log(
             `[SSE] Reconnecting in ${delay}ms... (attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`,
           );
-          reconnectTimeoutRef.current = setTimeout(() => {
+          reconnectTimeoutRef.current = setTimeout(async () => {
+            // Before reconnecting, check if user is still authenticated
+            try {
+              const authCheck = await fetch("/api/trpc/auth.me", {
+                credentials: "include",
+              });
+              if (authCheck.status === 401) {
+                console.log("[SSE] Not authenticated, stopping reconnection");
+                reconnectAttemptsRef.current = maxReconnectAttempts;
+                return;
+              }
+            } catch (err) {
+              // Network error - continue with reconnect attempt
+              console.warn("[SSE] Auth check failed during reconnect:", err);
+            }
             connect();
           }, delay);
         } else {
