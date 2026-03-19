@@ -28,6 +28,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
@@ -39,6 +40,8 @@ import {
   CheckCircle,
   ChevronRight,
   BookOpen,
+  Sparkles,
+  Play,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -67,6 +70,7 @@ function TrainingContent() {
     notes: "",
   });
 
+  // All hooks must be before any conditional returns
   const { data: horses } = trpc.horses.list.useQuery();
   const {
     data: sessions,
@@ -74,6 +78,7 @@ function TrainingContent() {
     refetch,
   } = trpc.training.listAll.useQuery();
   const { data: upcomingSessions } = trpc.training.getUpcoming.useQuery();
+  const { data: templates } = trpc.trainingPrograms.listTemplates.useQuery();
 
   const createMutation = trpc.training.create.useMutation({
     onSuccess: () => {
@@ -137,6 +142,7 @@ function TrainingContent() {
 
   return (
     <div className="space-y-6">
+      {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl font-bold text-foreground">
@@ -146,20 +152,13 @@ function TrainingContent() {
             Sessions, schedules, and training programmes
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href="/training-templates">
-            <Button variant="outline" size="sm">
-              <ChevronRight className="w-4 h-4 mr-1.5" />
-              Templates
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Schedule Session
             </Button>
-          </Link>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Schedule Session
-              </Button>
-            </DialogTrigger>
+          </DialogTrigger>
           <DialogContent className="max-w-lg">
             <form onSubmit={handleSubmit}>
               <DialogHeader>
@@ -299,150 +298,238 @@ function TrainingContent() {
             </form>
           </DialogContent>
         </Dialog>
-        </div>
       </div>
 
-      {/* Upcoming Sessions */}
-      {upcomingSessions && upcomingSessions.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              Upcoming Sessions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {upcomingSessions.slice(0, 5).map((session) => {
-                const horse = horses?.find((h) => h.id === session.horseId);
-                return (
-                  <div
-                    key={session.id}
-                    className="flex items-center gap-4 p-4 rounded-lg border bg-muted/30"
-                  >
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Activity className="w-6 h-6 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium capitalize">
-                          {session.sessionType}
-                        </p>
-                        {horse && <Badge variant="outline">{horse.name}</Badge>}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(session.sessionDate).toLocaleDateString(
-                          "en-GB",
-                          {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                          },
-                        )}
-                        {session.startTime && ` at ${session.startTime}`}
-                      </p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        completeMutation.mutate({ id: session.id })
-                      }
-                    >
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Complete
-                    </Button>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Tabs: Sessions / Templates */}
+      <Tabs defaultValue="sessions" className="space-y-4">
+        <TabsList className="grid w-full max-w-sm grid-cols-2">
+          <TabsTrigger value="sessions" className="gap-1.5">
+            <Activity className="w-3.5 h-3.5" />
+            Sessions
+          </TabsTrigger>
+          <TabsTrigger value="templates" className="gap-1.5">
+            <BookOpen className="w-3.5 h-3.5" />
+            Templates
+          </TabsTrigger>
+        </TabsList>
 
-      {/* All Sessions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Sessions</CardTitle>
-          <CardDescription>Your complete training history</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!sessions || sessions.length === 0 ? (
-            <div className="text-center py-8">
-              <Activity className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">
-                No training sessions yet
-              </p>
-              <Button onClick={() => setIsDialogOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Schedule Your First Session
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {sessions.map((session) => {
-                const horse = horses?.find((h) => h.id === session.horseId);
-                return (
-                  <div
-                    key={session.id}
-                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/30 transition-colors"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                      <Activity className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium capitalize">
-                          {session.sessionType}
-                        </p>
-                        {horse && (
-                          <span className="text-sm text-muted-foreground">
-                            • {horse.name}
-                          </span>
+        {/* Sessions tab */}
+        <TabsContent value="sessions" className="space-y-4">
+          {/* Upcoming Sessions */}
+          {upcomingSessions && upcomingSessions.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  Upcoming Sessions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {upcomingSessions.slice(0, 5).map((session) => {
+                    const horse = horses?.find((h) => h.id === session.horseId);
+                    return (
+                      <div
+                        key={session.id}
+                        className="flex items-center gap-4 p-4 rounded-lg border bg-muted/30"
+                      >
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Activity className="w-6 h-6 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium capitalize">
+                              {session.sessionType}
+                            </p>
+                            {horse && (
+                              <Badge variant="outline">{horse.name}</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(session.sessionDate).toLocaleDateString(
+                              "en-GB",
+                              {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                              },
+                            )}
+                            {session.startTime && ` at ${session.startTime}`}
+                          </p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            completeMutation.mutate({ id: session.id })
+                          }
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Complete
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* All Sessions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>All Sessions</CardTitle>
+              <CardDescription>Your complete training history</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!sessions || sessions.length === 0 ? (
+                <div className="text-center py-8">
+                  <Activity className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                  <p className="text-muted-foreground mb-4">
+                    No training sessions yet
+                  </p>
+                  <Button onClick={() => setIsDialogOpen(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Schedule Your First Session
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {sessions.map((session) => {
+                    const horse = horses?.find((h) => h.id === session.horseId);
+                    return (
+                      <div
+                        key={session.id}
+                        className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/30 transition-colors"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                          <Activity className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium capitalize">
+                              {session.sessionType}
+                            </p>
+                            {horse && (
+                              <span className="text-sm text-muted-foreground">
+                                • {horse.name}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(session.sessionDate).toLocaleDateString()}
+                            {session.duration && ` • ${session.duration} min`}
+                          </p>
+                        </div>
+                        <Badge
+                          variant={
+                            session.isCompleted ? "secondary" : "outline"
+                          }
+                        >
+                          {session.isCompleted ? "Completed" : "Scheduled"}
+                        </Badge>
+                        {session.performance && (
+                          <Badge variant="outline" className="capitalize">
+                            {session.performance}
+                          </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(session.sessionDate).toLocaleDateString()}
-                        {session.duration && ` • ${session.duration} min`}
-                      </p>
-                    </div>
-                    <Badge
-                      variant={session.isCompleted ? "secondary" : "outline"}
-                    >
-                      {session.isCompleted ? "Completed" : "Scheduled"}
-                    </Badge>
-                    {session.performance && (
-                      <Badge variant="outline" className="capitalize">
-                        {session.performance}
-                      </Badge>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Templates tab */}
+        <TabsContent value="templates" className="space-y-4">
+          {/* Quick template grid — compact preview; full management on /training-templates */}
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {templates && templates.length > 0
+                ? `${templates.length} template${templates.length !== 1 ? "s" : ""} in your library`
+                : "No custom templates yet — add from the starter library below"}
+            </p>
+            <Link href="/training-templates">
+              <Button variant="outline" size="sm">
+                <ChevronRight className="w-4 h-4 mr-1.5" />
+                Manage All Templates
+              </Button>
+            </Link>
+          </div>
+
+          {/* User templates (compact) */}
+          {templates && templates.length > 0 && (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {templates.map((tpl) => (
+                <Card key={tpl.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">{tpl.name}</CardTitle>
+                    {tpl.description && (
+                      <CardDescription className="text-xs line-clamp-2">
+                        {tpl.description}
+                      </CardDescription>
                     )}
-                  </div>
-                );
-              })}
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {tpl.discipline && (
+                        <Badge variant="outline" className="text-xs">
+                          {tpl.discipline}
+                        </Badge>
+                      )}
+                      {tpl.level && (
+                        <Badge variant="outline" className="text-xs capitalize">
+                          {tpl.level}
+                        </Badge>
+                      )}
+                      {tpl.duration && (
+                        <Badge variant="outline" className="text-xs">
+                          {tpl.duration}w
+                        </Badge>
+                      )}
+                    </div>
+                    <Link href="/training-templates">
+                      <Button size="sm" variant="outline" className="w-full text-xs">
+                        <Play className="w-3 h-3 mr-1.5" />
+                        View &amp; Apply
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
-        </CardContent>
-      </Card>
 
-      <Card className="border-dashed border-2 border-primary/20 bg-primary/5">
-        <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 py-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="font-semibold text-sm">Training Templates</p>
-              <p className="text-xs text-muted-foreground">Browse built-in templates or create your own training programmes</p>
-            </div>
-          </div>
-          <Link href="/training-templates">
-            <Button variant="outline" size="sm" className="shrink-0">
-              <BookOpen className="w-4 h-4 mr-2" />
-              Browse Templates
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
+          {/* Starter library prompt */}
+          <Card className="border-dashed border-2 border-indigo-500/20 bg-indigo-500/5">
+            <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 py-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-indigo-500" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">Starter Template Library</p>
+                  <p className="text-xs text-muted-foreground">
+                    Browse &amp; apply professional equestrian training programmes
+                  </p>
+                </div>
+              </div>
+              <Link href="/training-templates">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="shrink-0 bg-indigo-600 hover:bg-indigo-700"
+                >
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Browse Templates
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
