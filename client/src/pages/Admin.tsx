@@ -60,10 +60,7 @@ import {
   RefreshCw,
   Search,
   Eye,
-  Copy,
   Key,
-  Plus,
-  RotateCw,
   Server,
   MessageSquare,
   Smartphone,
@@ -84,10 +81,6 @@ function AdminContent() {
     null,
   );
   const [resetPasswordValue, setResetPasswordValue] = useState("");
-  const [newApiKeyData, setNewApiKeyData] = useState<{
-    id: number;
-    key: string;
-  } | null>(null);
   const [whatsappForm, setWhatsappForm] = useState({
     enabled: false,
     phoneNumberId: "",
@@ -141,9 +134,6 @@ function AdminContent() {
   });
 
   // API Key queries
-  const apiKeysQuery = trpc.admin.apiKeys.list.useQuery(undefined, {
-    enabled: isUnlocked,
-  });
   const envHealthQuery = trpc.admin.getEnvHealth.useQuery(undefined, {
     enabled: isUnlocked,
     refetchInterval: isUnlocked ? 30000 : false,
@@ -209,33 +199,6 @@ function AdminContent() {
       toast.success("Password reset successfully");
       setResetPasswordUserId(null);
       setResetPasswordValue("");
-    },
-    onError: (error) => toast.error(error.message),
-  });
-
-  // API Key mutations
-  const createApiKeyMutation = trpc.admin.apiKeys.create.useMutation({
-    onSuccess: (data) => {
-      setNewApiKeyData(data);
-      apiKeysQuery.refetch();
-      toast.success("API key created successfully");
-    },
-    onError: (error) => toast.error(error.message),
-  });
-
-  const revokeApiKeyMutation = trpc.admin.apiKeys.revoke.useMutation({
-    onSuccess: () => {
-      apiKeysQuery.refetch();
-      toast.success("API key revoked");
-    },
-    onError: (error) => toast.error(error.message),
-  });
-
-  const rotateApiKeyMutation = trpc.admin.apiKeys.rotate.useMutation({
-    onSuccess: (data, variables) => {
-      setNewApiKeyData({ id: variables.id, key: data.key });
-      apiKeysQuery.refetch();
-      toast.success("API key rotated. Save the new key now!");
     },
     onError: (error) => toast.error(error.message),
   });
@@ -459,10 +422,6 @@ function AdminContent() {
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
             Settings
-          </TabsTrigger>
-          <TabsTrigger value="api-keys" className="flex items-center gap-2">
-            <Key className="w-4 h-4" />
-            System Secrets
           </TabsTrigger>
           <TabsTrigger value="system" className="flex items-center gap-2">
             <Server className="w-4 h-4" />
@@ -1232,153 +1191,6 @@ function AdminContent() {
               </Card>
             )}
           </div>
-        </TabsContent>
-
-        {/* System Secrets Tab */}
-        <TabsContent value="api-keys" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>System Integration Keys</CardTitle>
-                  <CardDescription>
-                    Configure global API keys for platform integrations (OpenAI,
-                    SMTP, weather providers). These are system-wide settings,
-                    not user-specific.
-                  </CardDescription>
-                </div>
-                <Button
-                  onClick={() => {
-                    const name = prompt(
-                      'Enter integration name (e.g., "OpenAI API", "Weather API"):',
-                    );
-                    if (name) {
-                      createApiKeyMutation.mutate({ name, rateLimit: 100 });
-                    }
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Integration
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {newApiKeyData && (
-                <Alert className="mb-4 border-yellow-500 bg-yellow-50">
-                  <Key className="h-4 w-4" />
-                  <AlertTitle>Save This Key Now!</AlertTitle>
-                  <AlertDescription className="mt-2 space-y-2">
-                    <p className="text-sm">
-                      This is the only time you'll see this key:
-                    </p>
-                    <div className="flex items-center gap-2 bg-white p-2 rounded border font-mono text-sm">
-                      <code className="flex-1">{newApiKeyData.key}</code>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => {
-                          navigator.clipboard.writeText(newApiKeyData.key);
-                          toast.success("Copied to clipboard");
-                        }}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setNewApiKeyData(null)}
-                    >
-                      I've saved it
-                    </Button>
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {apiKeysQuery.data && apiKeysQuery.data.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Key Prefix</TableHead>
-                      <TableHead>Rate Limit</TableHead>
-                      <TableHead>Last Used</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {apiKeysQuery.data.map((key) => (
-                      <TableRow key={key.id}>
-                        <TableCell className="font-medium">
-                          {key.name}
-                        </TableCell>
-                        <TableCell>
-                          <code className="text-xs">{key.keyPrefix}_...</code>
-                        </TableCell>
-                        <TableCell>{key.rateLimit}/hr</TableCell>
-                        <TableCell>
-                          {key.lastUsedAt
-                            ? formatDistanceToNow(new Date(key.lastUsedAt), {
-                                addSuffix: true,
-                              })
-                            : "Never"}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={key.isActive ? "default" : "secondary"}
-                          >
-                            {key.isActive ? "Active" : "Revoked"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                if (
-                                  confirm(
-                                    "Rotate this API key? The old key will stop working immediately.",
-                                  )
-                                ) {
-                                  rotateApiKeyMutation.mutate({ id: key.id });
-                                }
-                              }}
-                              disabled={!key.isActive}
-                            >
-                              <RotateCw className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => {
-                                if (
-                                  confirm(
-                                    "Revoke this API key? This cannot be undone.",
-                                  )
-                                ) {
-                                  revokeApiKeyMutation.mutate({ id: key.id });
-                                }
-                              }}
-                              disabled={!key.isActive}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Key className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                  <p>No API keys created yet</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* System Health Tab */}

@@ -261,10 +261,6 @@ export default function Settings() {
                 <Bell className="w-4 h-4 mr-2" />
                 Notifications
               </TabsTrigger>
-              <TabsTrigger value="appearance">
-                <Moon className="w-4 h-4 mr-2" />
-                Appearance
-              </TabsTrigger>
               {adminStatus.data?.isUnlocked && (
                 <TabsTrigger value="system">
                   <Info className="w-4 h-4 mr-2" />
@@ -559,49 +555,6 @@ export default function Settings() {
                       "Save Preferences"
                     )}
                   </Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Appearance Tab */}
-            <TabsContent value="appearance">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Appearance</CardTitle>
-                  <CardDescription>
-                    Customize how EquiProfile looks for you
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <Label>Theme</Label>
-                    <div className="grid grid-cols-2 gap-4">
-                      {["light", "dark"].map((themeOption) => (
-                        <button
-                          key={themeOption}
-                          onClick={() => {
-                            if (theme !== themeOption) {
-                              toggleTheme();
-                            }
-                          }}
-                          className={`p-4 border-2 rounded-lg transition-all ${
-                            theme === themeOption
-                              ? "border-primary bg-primary/5"
-                              : "border-border hover:border-primary/50"
-                          }`}
-                        >
-                          <div className="text-center">
-                            <div className="capitalize font-medium mb-1">
-                              {themeOption}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              Use {themeOption} theme
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

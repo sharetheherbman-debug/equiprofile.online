@@ -45,6 +45,8 @@ function TasksContent() {
   const { data: horses } = trpc.horses.list.useQuery();
   const [localTasks, setLocalTasks] = useState(tasks || []);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<(typeof localTasks)[0] | null>(null);
   const [formData, setFormData] = useState({
     horseId: "",
     title: "",
@@ -58,6 +60,17 @@ function TasksContent() {
     reminderDays: "1",
     isRecurring: false,
     recurringInterval: "",
+  });
+  const [editFormData, setEditFormData] = useState({
+    horseId: "",
+    title: "",
+    description: "",
+    taskType: "general_care",
+    priority: "medium",
+    status: "pending",
+    dueDate: "",
+    assignedTo: "",
+    notes: "",
   });
 
   // Real-time updates
@@ -99,6 +112,16 @@ function TasksContent() {
     },
   });
 
+  const updateMutation = trpc.tasks.update.useMutation({
+    onSuccess: () => {
+      setIsEditOpen(false);
+      setEditingTask(null);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update task");
+    },
+  });
+
   const completeMutation = trpc.tasks.complete.useMutation({
     onError: (error) => {
       toast.error(error.message || "Failed to complete task");
@@ -110,6 +133,43 @@ function TasksContent() {
       toast.error(error.message || "Failed to delete task");
     },
   });
+
+  const openEdit = (task: (typeof localTasks)[0]) => {
+    setEditingTask(task);
+    setEditFormData({
+      horseId: task.horseId?.toString() ?? "",
+      title: task.title,
+      description: task.description ?? "",
+      taskType: task.taskType,
+      priority: task.priority,
+      status: task.status,
+      dueDate: task.dueDate
+        ? new Date(task.dueDate).toISOString().slice(0, 10)
+        : "",
+      assignedTo: task.assignedTo ?? "",
+      notes: task.notes ?? "",
+    });
+    setIsEditOpen(true);
+  };
+
+  const handleUpdate = () => {
+    if (!editingTask) return;
+    if (!editFormData.title) {
+      toast.error("Please enter a task title");
+      return;
+    }
+    updateMutation.mutate({
+      id: editingTask.id,
+      title: editFormData.title,
+      description: editFormData.description || undefined,
+      taskType: editFormData.taskType as any,
+      priority: editFormData.priority as any,
+      status: editFormData.status as any,
+      dueDate: editFormData.dueDate || undefined,
+      assignedTo: editFormData.assignedTo || undefined,
+      notes: editFormData.notes || undefined,
+    });
+  };
 
   const resetForm = () => {
     setFormData({
@@ -360,6 +420,174 @@ function TasksContent() {
         </Dialog>
       </div>
 
+      {/* Edit Task Dialog */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Task</DialogTitle>
+            <DialogDescription>Update the task details</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-title">Task Title *</Label>
+              <Input
+                id="edit-title"
+                value={editFormData.title}
+                onChange={(e) =>
+                  setEditFormData({ ...editFormData, title: e.target.value })
+                }
+                placeholder="E.g., Farrier appointment"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-horse">Horse</Label>
+                <Select
+                  value={editFormData.horseId}
+                  onValueChange={(value) =>
+                    setEditFormData({ ...editFormData, horseId: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="General task" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">General (all horses)</SelectItem>
+                    {horses?.map((horse) => (
+                      <SelectItem key={horse.id} value={horse.id.toString()}>
+                        {horse.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-taskType">Type</Label>
+                <Select
+                  value={editFormData.taskType}
+                  onValueChange={(value) =>
+                    setEditFormData({ ...editFormData, taskType: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hoofcare">Hoofcare</SelectItem>
+                    <SelectItem value="health_appointment">
+                      Health Appointment
+                    </SelectItem>
+                    <SelectItem value="treatment">Treatment</SelectItem>
+                    <SelectItem value="vaccination">Vaccination</SelectItem>
+                    <SelectItem value="deworming">Deworming</SelectItem>
+                    <SelectItem value="dental">Dental</SelectItem>
+                    <SelectItem value="general_care">General Care</SelectItem>
+                    <SelectItem value="training">Training</SelectItem>
+                    <SelectItem value="feeding">Feeding</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-priority">Priority</Label>
+                <Select
+                  value={editFormData.priority}
+                  onValueChange={(value) =>
+                    setEditFormData({ ...editFormData, priority: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-dueDate">Due Date</Label>
+                <Input
+                  id="edit-dueDate"
+                  type="date"
+                  value={editFormData.dueDate}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, dueDate: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="edit-status">Status</Label>
+              <Select
+                value={editFormData.status}
+                onValueChange={(value) =>
+                  setEditFormData({ ...editFormData, status: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea
+                id="edit-description"
+                value={editFormData.description}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    description: e.target.value,
+                  })
+                }
+                placeholder="Task details..."
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit-assignedTo">Assigned To</Label>
+              <Input
+                id="edit-assignedTo"
+                value={editFormData.assignedTo}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    assignedTo: e.target.value,
+                  })
+                }
+                placeholder="Person responsible"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdate} disabled={updateMutation.isPending}>
+              {updateMutation.isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid gap-6">
         <Card>
           <CardHeader>
@@ -399,6 +627,13 @@ function TasksContent() {
                         </div>
                         <div className="flex items-center gap-2">
                           {getPriorityBadge(task.priority)}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openEdit(task)}
+                          >
+                            <Edit className="w-3 h-3" />
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"
@@ -443,7 +678,7 @@ function TasksContent() {
                 {completedTasks.slice(0, 10).map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-center gap-3 p-3 border rounded-lg opacity-60"
+                    className="flex items-center gap-3 p-3 border rounded-lg opacity-60 hover:opacity-80 transition-opacity"
                   >
                     <CheckCircle className="w-4 h-4 text-green-600" />
                     <div className="flex-1">
@@ -457,6 +692,13 @@ function TasksContent() {
                         {new Date(task.completedAt).toLocaleDateString()}
                       </p>
                     )}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => deleteMutation.mutate({ id: task.id })}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
                   </div>
                 ))}
               </div>

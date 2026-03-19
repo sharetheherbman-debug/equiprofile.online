@@ -125,8 +125,10 @@ export default function QAChecklistPage() {
   });
 
   function qStatus(query: any): CheckItem["status"] {
-    if (query.isLoading) return "loading";
+    // isFetching but no data yet = loading; if query has not started (fetchStatus idle with no data), show error
     if (query.isError) return "error";
+    if (query.isPending && query.fetchStatus === "fetching") return "loading";
+    if (query.isPending && query.fetchStatus === "idle") return "error";
     return "ok";
   }
 

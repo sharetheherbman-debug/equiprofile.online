@@ -146,7 +146,7 @@ function StableDashboardContent() {
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-600 via-orange-600 to-red-500 p-6 text-white shadow-lg shadow-amber-500/20"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-amber-950 to-orange-950 p-6 text-white shadow-xl shadow-black/30 border border-white/10"
       >
         <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10" />
         <div className="pointer-events-none absolute -bottom-8 right-16 h-32 w-32 rounded-full bg-white/5" />
@@ -177,7 +177,7 @@ function StableDashboardContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <Card className="border-muted/50 bg-card/60 backdrop-blur-sm">
+        <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="font-serif text-base flex items-center gap-2">
@@ -283,7 +283,7 @@ function StableDashboardContent() {
               >
                 <Link href={module.href}>
                   <div
-                    className={`group relative rounded-xl border ${module.accent} bg-card/60 backdrop-blur-sm p-4 h-full cursor-pointer hover:shadow-md hover:bg-card/80 transition-all duration-200 hover:-translate-y-0.5`}
+                    className={`group relative rounded-xl border ${module.accent} bg-card/80 backdrop-blur-sm p-4 h-full cursor-pointer hover:shadow-lg hover:bg-card/90 hover:border-opacity-60 transition-all duration-200 hover:-translate-y-0.5`}
                   >
                     <div className="flex items-start gap-3">
                       <div

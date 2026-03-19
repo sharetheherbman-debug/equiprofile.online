@@ -139,19 +139,26 @@ function TrainingContent() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl font-bold text-foreground">
-            Training Schedule
+            Training
           </h1>
           <p className="text-muted-foreground mt-1">
-            Plan and track your training sessions
+            Sessions, schedules, and training programmes
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Schedule Session
+        <div className="flex items-center gap-2">
+          <Link href="/training-templates">
+            <Button variant="outline" size="sm">
+              <ChevronRight className="w-4 h-4 mr-1.5" />
+              Templates
             </Button>
-          </DialogTrigger>
+          </Link>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Schedule Session
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-lg">
             <form onSubmit={handleSubmit}>
               <DialogHeader>
@@ -291,6 +298,7 @@ function TrainingContent() {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Upcoming Sessions */}
