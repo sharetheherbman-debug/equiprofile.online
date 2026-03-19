@@ -188,9 +188,13 @@ export const documents = mysqlTable("documents", {
   fileKey: varchar("fileKey", { length: 500 }).notNull(),
   category: mysqlEnum("category", [
     "health",
+    "passport",
     "registration",
     "insurance",
     "competition",
+    "training",
+    "feeding",
+    "invoice",
     "other",
   ]).default("other"),
   description: text("description"),

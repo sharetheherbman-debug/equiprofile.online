@@ -38,14 +38,26 @@ import {
   File,
   Image,
   FileSpreadsheet,
+  Heart,
+  BookOpen,
+  Shield,
+  Trophy,
+  Dumbbell,
+  Apple,
+  Receipt,
+  BookMarked,
 } from "lucide-react";
 import { toast } from "sonner";
 
 const documentTypes = [
   { value: "health", label: "Health Record" },
+  { value: "passport", label: "Equine Passport" },
   { value: "registration", label: "Registration Papers" },
   { value: "insurance", label: "Insurance Document" },
   { value: "competition", label: "Competition Results" },
+  { value: "training", label: "Training Record" },
+  { value: "feeding", label: "Feeding / Nutrition" },
+  { value: "invoice", label: "Invoice / Billing" },
   { value: "other", label: "Other" },
 ];
 
@@ -57,9 +69,13 @@ function DocumentsContent() {
     horseId: "",
     documentType: "other" as
       | "health"
+      | "passport"
       | "registration"
       | "insurance"
       | "competition"
+      | "training"
+      | "feeding"
+      | "invoice"
       | "other",
     title: "",
   });
@@ -161,11 +177,46 @@ function DocumentsContent() {
     }
   };
 
-  const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith("image/")) return <Image className="w-5 h-5" />;
-    if (mimeType.includes("spreadsheet") || mimeType.includes("excel"))
-      return <FileSpreadsheet className="w-5 h-5" />;
-    return <File className="w-5 h-5" />;
+  const getCategoryIcon = (category: string, mimeType?: string) => {
+    switch (category) {
+      case "health":
+        return <Heart className="w-5 h-5" />;
+      case "passport":
+        return <BookMarked className="w-5 h-5" />;
+      case "registration":
+        return <BookOpen className="w-5 h-5" />;
+      case "insurance":
+        return <Shield className="w-5 h-5" />;
+      case "competition":
+        return <Trophy className="w-5 h-5" />;
+      case "training":
+        return <Dumbbell className="w-5 h-5" />;
+      case "feeding":
+        return <Apple className="w-5 h-5" />;
+      case "invoice":
+        return <Receipt className="w-5 h-5" />;
+      default:
+        // Fall back to MIME-type icons for uncategorised files
+        if (mimeType?.startsWith("image/"))
+          return <Image className="w-5 h-5" />;
+        if (mimeType?.includes("spreadsheet") || mimeType?.includes("excel"))
+          return <FileSpreadsheet className="w-5 h-5" />;
+        return <FileText className="w-5 h-5" />;
+    }
+  };
+
+  const getCategoryColour = (category: string) => {
+    const colours: Record<string, string> = {
+      health: "bg-red-500/10 text-red-500",
+      passport: "bg-violet-500/10 text-violet-500",
+      registration: "bg-blue-500/10 text-blue-500",
+      insurance: "bg-emerald-500/10 text-emerald-500",
+      competition: "bg-amber-500/10 text-amber-500",
+      training: "bg-cyan-500/10 text-cyan-500",
+      feeding: "bg-lime-500/10 text-lime-500",
+      invoice: "bg-orange-500/10 text-orange-500",
+    };
+    return colours[category] ?? "bg-primary/10 text-primary";
   };
 
   const formatFileSize = (bytes: number) => {
@@ -355,9 +406,14 @@ function DocumentsContent() {
                     key={doc.id}
                     className="flex items-center gap-4 p-4 rounded-lg border hover:bg-muted/30 transition-colors"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                      {getFileIcon(doc.fileType || "application/pdf")}
-                    </div>
+                     <div
+                       className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${getCategoryColour(doc.category || "other")}`}
+                     >
+                       {getCategoryIcon(
+                         doc.category || "other",
+                         doc.fileType || undefined,
+                       )}
+                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">
                         {doc.description || doc.fileName}

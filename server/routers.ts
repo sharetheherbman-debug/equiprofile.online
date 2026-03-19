@@ -1822,9 +1822,13 @@ export const appRouter = router({
           category: z
             .enum([
               "health",
+              "passport",
               "registration",
               "insurance",
               "competition",
+              "training",
+              "feeding",
+              "invoice",
               "other",
             ])
             .optional(),

@@ -53,7 +53,9 @@ function HorseFormContent() {
   const horseId = isEditing ? parseInt(params.id!) : null;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [photoPreview, setPhotoPreview] = useState<string>("");
-  const [photoUploading, setPhotoUploading] = useState(false);
+  // Staged file — selected by user but not yet uploaded to server
+  const [stagedFile, setStagedFile] = useState<File | null>(null);
+  const stagedBlobRef = useRef<string>("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -123,7 +125,7 @@ function HorseFormContent() {
     }
   }, [horse]);
 
-  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const maxSize = 5 * 1024 * 1024; // 5MB
@@ -131,57 +133,65 @@ function HorseFormContent() {
       toast.error("Photo must be under 5MB");
       return;
     }
-    // Show preview immediately before upload starts
-    const objectUrl = URL.createObjectURL(file);
-    setPhotoPreview(objectUrl);
-    setPhotoUploading(true);
-    try {
-      const reader = new FileReader();
-      reader.onload = async (ev) => {
-        const dataUrl = ev.target?.result;
-        if (typeof dataUrl !== "string" || !dataUrl.includes(",")) {
-          toast.error("Failed to read file");
-          setPhotoUploading(false);
-          return;
-        }
-        const base64 = dataUrl.split(",")[1];
-        try {
-          const result = await uploadMutation.mutateAsync({
-            fileName: file.name,
-            fileType: file.type,
-            fileSize: file.size,
-            fileData: base64,
-            category: "other",
-            description: "Horse profile photo",
-          });
-          setFormData((prev) => ({ ...prev, photoUrl: result.url }));
-          // Update preview to the server URL to avoid stale blob references
-          setPhotoPreview(result.url);
-          URL.revokeObjectURL(objectUrl);
-          toast.success("Photo uploaded");
-        } catch (err: any) {
-          toast.error(err.message || "Failed to upload photo");
-        } finally {
-          setPhotoUploading(false);
-        }
-      };
-      reader.onerror = () => {
-        toast.error("Failed to read file");
-        setPhotoUploading(false);
-      };
-      reader.readAsDataURL(file);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to upload photo");
-      setPhotoUploading(false);
+    // Revoke any previous staged blob URL
+    if (stagedBlobRef.current) {
+      URL.revokeObjectURL(stagedBlobRef.current);
     }
+    // Show local preview — nothing is uploaded yet
+    const objectUrl = URL.createObjectURL(file);
+    stagedBlobRef.current = objectUrl;
+    setPhotoPreview(objectUrl);
+    setStagedFile(file);
+    // Clear any previously-saved server URL so the staged file is used on submit
+    setFormData((prev) => ({ ...prev, photoUrl: "" }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name.trim()) {
       toast.error("Please enter a name for your horse");
       return;
+    }
+
+    let resolvedPhotoUrl = formData.photoUrl;
+
+    // Upload staged photo now (only when user actually saves)
+    if (stagedFile) {
+      try {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const result = ev.target?.result;
+            if (typeof result === "string" && result.includes(",")) {
+              resolve(result);
+            } else {
+              reject(new Error("Failed to read file"));
+            }
+          };
+          reader.onerror = () => reject(new Error("Failed to read file"));
+          reader.readAsDataURL(stagedFile);
+        });
+        const base64 = dataUrl.split(",")[1];
+        const result = await uploadMutation.mutateAsync({
+          fileName: stagedFile.name,
+          fileType: stagedFile.type,
+          fileSize: stagedFile.size,
+          fileData: base64,
+          category: "other",
+          description: "Horse profile photo",
+        });
+        resolvedPhotoUrl = result.url;
+        // Revoke staged blob — we now have a real server URL
+        if (stagedBlobRef.current) {
+          URL.revokeObjectURL(stagedBlobRef.current);
+          stagedBlobRef.current = "";
+        }
+        setStagedFile(null);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to upload photo");
+        return;
+      }
     }
 
     const data = {
@@ -198,7 +208,7 @@ function HorseFormContent() {
       registrationNumber: formData.registrationNumber || undefined,
       microchipNumber: formData.microchipNumber || undefined,
       notes: formData.notes || undefined,
-      photoUrl: formData.photoUrl || undefined,
+      photoUrl: resolvedPhotoUrl || undefined,
     };
 
     if (isEditing && horseId) {
@@ -209,7 +219,7 @@ function HorseFormContent() {
   };
 
   const isSubmitting =
-    createMutation.isPending || updateMutation.isPending || photoUploading;
+    createMutation.isPending || updateMutation.isPending || uploadMutation.isPending;
 
   if (horseLoading) {
     return (
@@ -482,6 +492,11 @@ function HorseFormContent() {
                       type="button"
                       onClick={() => {
                         setPhotoPreview("");
+                        setStagedFile(null);
+                        if (stagedBlobRef.current) {
+                          URL.revokeObjectURL(stagedBlobRef.current);
+                          stagedBlobRef.current = "";
+                        }
                         setFormData((prev) => ({ ...prev, photoUrl: "" }));
                       }}
                       className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"
@@ -507,21 +522,18 @@ function HorseFormContent() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    disabled={photoUploading}
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    {photoUploading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Uploading...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-4 h-4 mr-2" />
-                        {photoPreview ? "Change Photo" : "Upload Photo"}
-                      </>
-                    )}
+                    <>
+                      <Upload className="w-4 h-4 mr-2" />
+                      {photoPreview ? "Change Photo" : "Select Photo"}
+                    </>
                   </Button>
+                  {stagedFile && (
+                    <p className="text-xs text-muted-foreground">
+                      Photo staged — will upload when you save.
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     JPG, PNG, WebP or HEIC. Max 5MB.
                   </p>

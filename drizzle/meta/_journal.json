@@ -43,6 +43,13 @@
       "when": 1742385760000,
       "tag": "0005_fix_site_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1742472000000,
+      "tag": "0006_document_categories",
+      "breakpoints": true
     }
   ]
 }
