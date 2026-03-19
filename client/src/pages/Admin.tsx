@@ -1011,7 +1011,7 @@ function AdminContent() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="smtp-host">SMTP Host</Label>
                     <Input

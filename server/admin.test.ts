@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
+import { TRPCError } from "@trpc/server";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
@@ -253,9 +254,12 @@ describe("admin.setSiteSetting", () => {
     const ctx = createAdminContext();
     const caller = appRouter.createCaller(ctx);
 
-    await expect(
-      caller.admin.setSiteSetting({ key: "openai_api_key", value: "sk-test" }),
-    ).rejects.toThrow("Database not available");
+    const err = await caller.admin
+      .setSiteSetting({ key: "openai_api_key", value: "sk-test" })
+      .catch((e) => e);
+    expect(err).toBeInstanceOf(TRPCError);
+    expect((err as TRPCError).code).toBe("INTERNAL_SERVER_ERROR");
+    expect((err as TRPCError).message).toContain("Database not available");
   });
 
   it("rejects keys with invalid characters", async () => {

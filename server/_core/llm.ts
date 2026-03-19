@@ -247,8 +247,13 @@ export async function isAIConfigured(): Promise<boolean> {
   if (ENV.openaiApiKey || process.env.HUGGINGFACE_API_KEY) {
     return true;
   }
-  const dbKey = await getRuntimeConfig("openai_api_key", "OPENAI_API_KEY");
-  return !!dbKey;
+  const dbOpenAi = await getRuntimeConfig("openai_api_key", "OPENAI_API_KEY");
+  if (dbOpenAi) return true;
+  const dbHf = await getRuntimeConfig(
+    "huggingface_api_key",
+    "HUGGINGFACE_API_KEY",
+  );
+  return !!dbHf;
 }
 
 const normalizeResponseFormat = ({

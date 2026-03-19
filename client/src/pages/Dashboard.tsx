@@ -55,11 +55,11 @@ const moduleSections = [
   {
     label: "Core",
     description: "Essential horse management",
-    ids: ["horses", "health", "training", "nutrition"],
+    ids: ["horses", "health", "nutrition", "training"],
   },
   {
     label: "Planning & Tools",
-    description: "Schedule, AI, and documents",
+    description: "Schedule, AI, weather and documents",
     ids: ["schedule", "ai", "documents", "reports"],
   },
   {
