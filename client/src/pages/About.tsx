@@ -70,7 +70,7 @@ export default function About() {
 
   return (
     <MarketingLayout>
-      <div className="min-h-screen bg-black relative overflow-hidden">
+      <div className="min-h-screen bg-[#0a1628] relative overflow-hidden">
         {/* Background Gradient Overlays */}
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/30 via-black to-cyan-950/30 pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent pointer-events-none" />

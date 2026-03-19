@@ -90,7 +90,6 @@ function AdminContent() {
   // API key configuration form state
   const [aiConfigForm, setAiConfigForm] = useState({
     openai_api_key: "",
-    huggingface_api_key: "",
   });
   const [smtpForm, setSmtpForm] = useState({
     smtp_host: "",
@@ -219,7 +218,6 @@ function AdminContent() {
       const s = siteSettingsQuery.data as Record<string, string>;
       setAiConfigForm({
         openai_api_key: s.openai_api_key ? "••••••••" : "",
-        huggingface_api_key: s.huggingface_api_key ? "••••••••" : "",
       });
       setSmtpForm({
         smtp_host: s.smtp_host ?? "",
@@ -406,32 +404,32 @@ function AdminContent() {
 
       {/* Main Tabs */}
       <Tabs defaultValue="users" className="space-y-4">
-        <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1">
-          <TabsTrigger value="users" className="flex items-center gap-2">
+        <TabsList className="flex overflow-x-auto h-auto gap-1 bg-muted/50 p-1 w-full">
+          <TabsTrigger value="users" className="flex items-center gap-2 shrink-0">
             <Users className="w-4 h-4" />
             Users
           </TabsTrigger>
-          <TabsTrigger value="overdue" className="flex items-center gap-2">
+          <TabsTrigger value="overdue" className="flex items-center gap-2 shrink-0">
             <AlertCircle className="w-4 h-4" />
             Overdue
           </TabsTrigger>
-          <TabsTrigger value="activity" className="flex items-center gap-2">
+          <TabsTrigger value="activity" className="flex items-center gap-2 shrink-0">
             <Activity className="w-4 h-4" />
             Activity
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
+          <TabsTrigger value="settings" className="flex items-center gap-2 shrink-0">
             <Settings className="w-4 h-4" />
             Settings
           </TabsTrigger>
-          <TabsTrigger value="system" className="flex items-center gap-2">
+          <TabsTrigger value="system" className="flex items-center gap-2 shrink-0">
             <Server className="w-4 h-4" />
             System
           </TabsTrigger>
-          <TabsTrigger value="leads" className="flex items-center gap-2">
+          <TabsTrigger value="leads" className="flex items-center gap-2 shrink-0">
             <MessageSquare className="w-4 h-4" />
             Leads
           </TabsTrigger>
-          <TabsTrigger value="whatsapp" className="flex items-center gap-2">
+          <TabsTrigger value="whatsapp" className="flex items-center gap-2 shrink-0">
             <MessageSquare className="w-4 h-4" />
             WhatsApp
           </TabsTrigger>
@@ -872,12 +870,12 @@ function AdminContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Server className="h-5 w-5" />
-                  AI Configuration (OpenAI)
+                  AI Configuration
                 </CardTitle>
                 <CardDescription>
-                  Configure the OpenAI API key used for the chat assistant and
-                  AI features. Keys saved here override environment variables
-                  and take effect immediately.
+                  Configure the OpenAI API key used for the AI assistant and
+                  automated features. Keys saved here override environment
+                  variables and take effect immediately.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -917,43 +915,7 @@ function AdminContent() {
                     Leave blank / unchanged to keep the existing key.
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="huggingface-key">Hugging Face API Key</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="huggingface-key"
-                      type="password"
-                      placeholder="Enter new key to update"
-                      value={aiConfigForm.huggingface_api_key}
-                      onChange={(e) =>
-                        setAiConfigForm((p) => ({
-                          ...p,
-                          huggingface_api_key: e.target.value,
-                        }))
-                      }
-                    />
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        setSiteSettingMutation.mutate({
-                          key: "huggingface_api_key",
-                          value: aiConfigForm.huggingface_api_key,
-                        })
-                      }
-                      disabled={
-                        setSiteSettingMutation.isPending ||
-                        !aiConfigForm.huggingface_api_key ||
-                        aiConfigForm.huggingface_api_key === "••••••••"
-                      }
-                    >
-                      <Save className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Used as fallback AI provider when OpenAI is not configured.
-                    Leave blank / unchanged to keep the existing key.
-                  </p>
-                </div>
+
               </CardContent>
             </Card>
 

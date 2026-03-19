@@ -113,7 +113,7 @@ export default function Login() {
             </Link>
 
             {/* Login Form Card */}
-            <Card className="bg-black/50 backdrop-blur-xl border border-white/10 shadow-2xl">
+            <Card className="bg-[#0a1628]/70 backdrop-blur-xl border border-white/10 shadow-2xl">
               <CardHeader className="space-y-3 pb-2">
                 {/* Step indicator */}
                 <div className="flex items-center justify-center gap-2 mb-2">
@@ -268,7 +268,7 @@ export default function Login() {
                     <span className="w-full border-t border-white/10" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-black/40 px-2 text-gray-400">Or</span>
+                    <span className="bg-[#0a1628]/60 px-2 text-gray-400">Or</span>
                   </div>
                 </div>
 

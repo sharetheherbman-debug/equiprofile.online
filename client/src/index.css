@@ -91,38 +91,38 @@
 }
 
 .dark {
-  /* Modern navy dark theme — slightly lighter and more premium */
+  /* Premium dark-blue theme — two shades of deep navy, no black */
   --primary: #6366f1; /* indigo accent */
   --primary-foreground: #ffffff;
   --sidebar-primary: #6366f1;
   --sidebar-primary-foreground: #ffffff;
-  --background: #111827; /* slightly lighter navy — less gloomy */
-  --foreground: #e8edf5; /* slightly brighter text for contrast */
-  --card: #1a2540; /* warmer card surface, distinct from bg */
+  --background: #0a1628; /* deep dark blue — primary surface */
+  --foreground: #e8edf5; /* bright readable text */
+  --card: #0f2040; /* second shade of dark blue — elevated surfaces */
   --card-foreground: #e8edf5;
-  --popover: #1a2540;
+  --popover: #0f2040;
   --popover-foreground: #e8edf5;
-  --secondary: #1a2540;
+  --secondary: #0f2040;
   --secondary-foreground: #e8edf5;
-  --muted: #2d3d56; /* lighter muted, better readability */
-  --muted-foreground: #9fb3cc; /* slightly brighter muted text */
+  --muted: #1a3050; /* mid-blue muted surface */
+  --muted-foreground: #9fb3cc;
   --accent: #a78bfa; /* violet highlight */
-  --accent-foreground: #111827;
+  --accent-foreground: #0a1628;
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: #ffffff;
-  --border: #2a3855; /* visible but subtle border */
-  --input: #1a2540;
+  --border: #1e3860; /* blue-tinted border */
+  --input: #0f2040;
   --ring: #6366f1;
   --chart-1: #6366f1;
   --chart-2: #a78bfa;
   --chart-3: #22d3ee;
   --chart-4: #34d399;
   --chart-5: #fbbf24;
-  --sidebar: #0e1a2e; /* slightly deeper sidebar for depth contrast */
+  --sidebar: #071220; /* deepest navy for sidebar depth */
   --sidebar-foreground: #e8edf5;
-  --sidebar-accent: #1a2540;
+  --sidebar-accent: #0f2040;
   --sidebar-accent-foreground: #e8edf5;
-  --sidebar-border: #2a3855;
+  --sidebar-border: #1e3860;
   --sidebar-ring: #6366f1;
 }
 

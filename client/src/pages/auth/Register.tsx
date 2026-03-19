@@ -94,7 +94,7 @@ export default function Register() {
 
   if (checkoutRedirecting) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a1628]">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-gray-400 text-sm">Preparing checkout…</p>
@@ -253,7 +253,7 @@ export default function Register() {
             </Link>
 
             {/* Dark Glass Form Card */}
-            <Card className="bg-black/50 backdrop-blur-xl border border-white/10 shadow-2xl">
+            <Card className="bg-[#0a1628]/70 backdrop-blur-xl border border-white/10 shadow-2xl">
               <CardHeader className="space-y-3 pb-2">
                 {/* Step progress indicator */}
                 <div className="flex items-center justify-center gap-1 mb-2">
@@ -624,7 +624,7 @@ export default function Register() {
                     <span className="w-full border-t border-white/10" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-black/40 px-2 text-gray-400">Or</span>
+                    <span className="bg-[#0a1628]/60 px-2 text-gray-400">Or</span>
                   </div>
                 </div>
 

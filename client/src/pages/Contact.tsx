@@ -75,7 +75,7 @@ export default function Contact() {
 
   return (
     <MarketingLayout>
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-[#0a1628]">
         {/* Page Banner */}
         <PageBanner
           title="Get in Touch"
@@ -92,7 +92,7 @@ export default function Contact() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="lg:col-span-2"
             >
-              <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur-md">
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#0f2040]/60 backdrop-blur-md">
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-cyan-500/10 pointer-events-none" />
                 <div className="relative p-8">
                   <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
@@ -212,7 +212,7 @@ export default function Contact() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="relative rounded-xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur-md p-6 hover:border-indigo-500/50 transition-colors duration-300 group"
+                className="relative rounded-xl overflow-hidden border border-white/10 bg-[#0f2040]/60 backdrop-blur-md p-6 hover:border-indigo-500/50 transition-colors duration-300 group"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 <div className="relative flex items-start gap-4">
@@ -238,7 +238,7 @@ export default function Contact() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
-                className="relative rounded-xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur-md p-6 hover:border-green-500/50 transition-colors duration-300 group"
+                className="relative rounded-xl overflow-hidden border border-white/10 bg-[#0f2040]/60 backdrop-blur-md p-6 hover:border-green-500/50 transition-colors duration-300 group"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 <div className="relative flex items-start gap-4">
@@ -270,7 +270,7 @@ export default function Contact() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
-                className="relative rounded-xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur-md p-6"
+                className="relative rounded-xl overflow-hidden border border-white/10 bg-[#0f2040]/60 backdrop-blur-md p-6"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-cyan-500/20 pointer-events-none" />
                 <div className="relative">

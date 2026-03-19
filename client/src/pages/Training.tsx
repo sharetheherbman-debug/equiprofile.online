@@ -38,6 +38,7 @@ import {
   Clock,
   CheckCircle,
   ChevronRight,
+  BookOpen,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -420,6 +421,26 @@ function TrainingContent() {
               })}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card className="border-dashed border-2 border-primary/20 bg-primary/5">
+        <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 py-5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <BookOpen className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm">Training Templates</p>
+              <p className="text-xs text-muted-foreground">Browse built-in templates or create your own training programmes</p>
+            </div>
+          </div>
+          <Link href="/training-templates">
+            <Button variant="outline" size="sm" className="shrink-0">
+              <BookOpen className="w-4 h-4 mr-2" />
+              Browse Templates
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     </div>

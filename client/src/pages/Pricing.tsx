@@ -279,7 +279,7 @@ export default function Pricing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
+            <div className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
               <div className="flex flex-col items-center text-center">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center justify-center mb-4">
                   <Check className="w-6 h-6 text-white" />
@@ -293,7 +293,7 @@ export default function Pricing() {
                 </p>
               </div>
             </div>
-            <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
+            <div className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
               <div className="flex flex-col items-center text-center">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center justify-center mb-4">
                   <Clock className="w-6 h-6 text-white" />
@@ -307,7 +307,7 @@ export default function Pricing() {
                 </p>
               </div>
             </div>
-            <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
+            <div className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
               <div className="flex flex-col items-center text-center">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center justify-center mb-4">
                   <XCircle className="w-6 h-6 text-white" />
@@ -339,7 +339,7 @@ export default function Pricing() {
 
             {/* Billing Period Toggle */}
             <motion.div
-              className="mt-8 inline-flex items-center gap-4 bg-black/40 backdrop-blur-md rounded-full p-2 border border-white/10"
+              className="mt-8 inline-flex items-center gap-4 bg-[#0f2040]/60 backdrop-blur-md rounded-full p-2 border border-white/10"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -377,7 +377,7 @@ export default function Pricing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <Alert className="mb-8 max-w-3xl mx-auto bg-black/40 backdrop-blur-md border-white/10 text-white">
+              <Alert className="mb-8 max-w-3xl mx-auto bg-[#0f2040]/60 backdrop-blur-md border-white/10 text-white">
                 <AlertDescription className="flex items-center justify-between">
                   <span>
                     Your current plan:{" "}
@@ -427,7 +427,7 @@ export default function Pricing() {
                         This ensures all cards have same height with footer aligned */}
                   <Card
                     className={`
-                    flex flex-col w-full bg-black/40 backdrop-blur-md border-white/10 
+                    flex flex-col w-full bg-[#0f2040]/60 backdrop-blur-md border-white/10 
                     hover:border-white/30 transition-all duration-300
                     ${planData.popular ? "border-2 border-indigo-500/50 shadow-xl shadow-indigo-500/20" : ""}
                     ${isCurrentPlanActive ? "ring-2 ring-cyan-400/50" : ""}
@@ -496,7 +496,7 @@ export default function Pricing() {
                           </Button>
                           {planData.plan === "pro" && (
                             <Button
-                              className="w-full bg-black/60 backdrop-blur-sm border border-white/20 text-white hover:bg-white/10"
+                              className="w-full bg-[#0f2040]/70 backdrop-blur-sm border border-white/20 text-white hover:bg-white/10"
                               onClick={handleManageBilling}
                             >
                               Manage Subscription
@@ -505,7 +505,7 @@ export default function Pricing() {
                         </>
                       ) : planData.plan === "trial" ? (
                         <Button
-                          className="w-full bg-black/60 backdrop-blur-sm border border-white/20 text-white hover:bg-white/10"
+                          className="w-full bg-[#0f2040]/70 backdrop-blur-sm border border-white/20 text-white hover:bg-white/10"
                           onClick={() => setLocation("/register")}
                         >
                           Start Free Trial
@@ -621,7 +621,7 @@ export default function Pricing() {
               ].map((faq, index) => (
                 <motion.div
                   key={index}
-                  className="bg-black/40 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300"
+                  className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}

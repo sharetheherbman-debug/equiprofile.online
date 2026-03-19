@@ -169,7 +169,7 @@ export default function Home() {
     <>
       <Navbar />
       <PageTransition>
-        <div className="min-h-screen overflow-hidden bg-black">
+        <div className="min-h-screen overflow-hidden bg-[#0a1628]">
           {/* Hero Section with Video Background */}
           <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-[72px]">
             {/* Video Background */}
@@ -186,7 +186,7 @@ export default function Home() {
                 <source src={marketingAssets.hero.video} type="video/mp4" />
               </video>
               {/* Black Transparent Overlay */}
-              <div className="absolute inset-0 bg-black/60" />
+              <div className="absolute inset-0 bg-[#0a1628]/50" />
             </div>
 
             {/* Hero Content */}
@@ -249,7 +249,7 @@ export default function Home() {
           </section>
 
           {/* Features Highlight Section */}
-          <section className="py-20 bg-gray-900 relative overflow-hidden">
+          <section className="py-20 bg-[#0f2040] relative overflow-hidden">
             <div className="container px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -314,7 +314,7 @@ export default function Home() {
           </section>
 
           {/* Premium CTA Quote Block */}
-          <section className="py-20 bg-black relative overflow-hidden">
+          <section className="py-20 bg-[#0a1628] relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/20 via-black to-cyan-900/20 pointer-events-none" />
             <div className="container px-4 relative z-10">
               <motion.div
@@ -349,7 +349,7 @@ export default function Home() {
           </section>
 
           {/* Features Grid */}
-          <section className="py-24 bg-black relative">
+          <section className="py-24 bg-[#0a1628] relative">
             <div className="container px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -408,7 +408,7 @@ export default function Home() {
           </section>
 
           {/* Testimonials Carousel */}
-          <section className="py-24 bg-gray-900 relative overflow-hidden">
+          <section className="py-24 bg-[#0f2040] relative overflow-hidden">
             <div className="container px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -510,7 +510,7 @@ export default function Home() {
           </section>
 
           {/* FAQ Section */}
-          <section className="py-24 bg-gray-900 relative">
+          <section className="py-24 bg-[#0f2040] relative">
             <div className="container px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -557,7 +557,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="max-w-4xl mx-auto text-center bg-black/20 backdrop-blur-md border border-white/20 p-12 md:p-16 rounded-3xl"
+                className="max-w-4xl mx-auto text-center bg-[#0a1628]/40 backdrop-blur-md border border-white/20 p-12 md:p-16 rounded-3xl"
               >
                 <Award className="w-20 h-20 text-white mx-auto mb-8" />
                 <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">

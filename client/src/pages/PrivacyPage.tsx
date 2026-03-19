@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function PrivacyPage() {
   return (
     <MarketingLayout>
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-[#0a1628]">
         <PageBanner
           title="Privacy Policy"
           subtitle="How we collect, use, and protect your personal information"

@@ -14,7 +14,7 @@ const fadeInUpVariants = {
 export default function Features() {
   return (
     <MarketingLayout>
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-[#0a1628] text-white">
         {/* Page Banner */}
         <PageBanner
           title="Powerful Features for Modern Horse Management"
@@ -37,7 +37,7 @@ export default function Features() {
                 viewport={{ once: true, margin: "-100px" }}
                 variants={fadeInUpVariants}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`py-16 ${index % 2 === 1 ? "bg-gray-900/30" : ""}`}
+                className={`py-16 ${index % 2 === 1 ? "bg-[#0f2040]/60" : ""}`}
               >
                 <div className="container mx-auto px-4">
                   <div

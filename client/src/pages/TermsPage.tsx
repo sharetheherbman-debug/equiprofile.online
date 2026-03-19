@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function TermsPage() {
   return (
     <MarketingLayout>
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-[#0a1628]">
         <PageBanner
           title="Terms of Service"
           subtitle="Legal terms and conditions for using EquiProfile"
