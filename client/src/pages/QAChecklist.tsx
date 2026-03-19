@@ -131,8 +131,10 @@ export default function QAChecklistPage() {
   }
 
   function qDetail(query: any): string | undefined {
+    if (query.isLoading) return undefined; // don't show "undefined" while waiting
     if (query.isError) return query.error?.message?.slice(0, 80);
-    if (query.data === null) return "null (may be expected)";
+    if (query.data === null || query.data === undefined)
+      return "null (may be expected)";
     if (Array.isArray(query.data)) return `${query.data.length} item(s)`;
     return typeof query.data === "object"
       ? "object received"

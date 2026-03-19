@@ -89,7 +89,6 @@ const menuItems = [
     path: "/training-templates",
   },
   { icon: Calendar, label: "Calendar", path: "/calendar" },
-  { icon: MessageSquare, label: "Messages", path: "/messages" },
   { icon: FileText, label: "Documents", path: "/documents" },
   { icon: Users, label: "Contacts", path: "/contacts" },
   { icon: BarChart3, label: "Analytics", path: "/analytics" },
@@ -106,6 +105,7 @@ const menuItems = [
 const stableMenuItems = [
   { icon: Building2, label: "Stable Dashboard", path: "/stable-dashboard" },
   { icon: Home, label: "Stable", path: "/stable" },
+  { icon: MessageSquare, label: "Messages", path: "/messages" },
   { icon: UserCog, label: "Staff", path: "/contacts" },
   { icon: Briefcase, label: "Owners", path: "/contacts" },
 ];
@@ -120,7 +120,7 @@ const bottomNavItems = [
   { icon: Home, label: "Home", path: "/dashboard" },
   { icon: CircleDot, label: "Horses", path: "/horses" },
   { icon: Calendar, label: "Calendar", path: "/calendar" },
-  { icon: MessageSquare, label: "Messages", path: "/messages" },
+  { icon: Brain, label: "AI Chat", path: "/ai-chat" },
 ];
 
 // All modules grouped for the "More" sheet
