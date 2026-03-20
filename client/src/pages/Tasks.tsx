@@ -46,7 +46,9 @@ function TasksContent() {
   const [localTasks, setLocalTasks] = useState(tasks || []);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<(typeof localTasks)[0] | null>(null);
+  const [editingTask, setEditingTask] = useState<(typeof localTasks)[0] | null>(
+    null,
+  );
   const [formData, setFormData] = useState({
     horseId: "",
     title: "",
@@ -520,7 +522,10 @@ function TasksContent() {
                   type="date"
                   value={editFormData.dueDate}
                   onChange={(e) =>
-                    setEditFormData({ ...editFormData, dueDate: e.target.value })
+                    setEditFormData({
+                      ...editFormData,
+                      dueDate: e.target.value,
+                    })
                   }
                 />
               </div>

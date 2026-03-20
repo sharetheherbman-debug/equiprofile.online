@@ -219,7 +219,9 @@ function HorseFormContent() {
   };
 
   const isSubmitting =
-    createMutation.isPending || updateMutation.isPending || uploadMutation.isPending;
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    uploadMutation.isPending;
 
   if (horseLoading) {
     return (

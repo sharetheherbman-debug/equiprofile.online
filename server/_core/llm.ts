@@ -228,6 +228,25 @@ const resolveApiUrl = async (): Promise<string | null> => {
   return `${base}/chat/completions`;
 };
 
+/**
+ * Resolve the AI model name with explicit precedence:
+ *   1. DB siteSettings key "ai_model"
+ *   2. OPENAI_MODEL env var  (getRuntimeConfig checks env first, then DB)
+ *   3. Safe OpenAI default: gpt-4o-mini
+ *
+ * This is the single source of truth for model selection.
+ * Never falls back to any Gemini model.
+ */
+const resolveModel = async (): Promise<string> => {
+  // getRuntimeConfig("ai_model", "OPENAI_MODEL") checks OPENAI_MODEL env var
+  // first; if not set, reads the "ai_model" key from the siteSettings DB table.
+  const dbModel = await getRuntimeConfig("ai_model", "OPENAI_MODEL");
+  if (dbModel && dbModel.trim().length > 0) {
+    return dbModel.trim();
+  }
+  return "gpt-4o-mini";
+};
+
 const assertApiKey = async (): Promise<string> => {
   const key =
     ENV.openaiApiKey ||
@@ -309,6 +328,8 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     throw new Error("AI service is not configured (API URL missing)");
   }
 
+  const model = await resolveModel();
+
   const {
     messages,
     tools,
@@ -321,7 +342,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   } = params;
 
   const payload: Record<string, unknown> = {
-    model: "gemini-2.5-flash",
+    model,
     messages: messages.map(normalizeMessage),
   };
 
@@ -337,10 +358,9 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.tool_choice = normalizedToolChoice;
   }
 
-  payload.max_tokens = 32768;
-  payload.thinking = {
-    budget_tokens: 128,
-  };
+  // Support both camelCase (maxTokens) and snake_case (max_tokens) for
+  // backward compatibility with callers using either naming convention.
+  payload.max_tokens = params.maxTokens || params.max_tokens || 2048;
 
   const normalizedResponseFormat = normalizeResponseFormat({
     responseFormat,

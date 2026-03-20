@@ -406,14 +406,14 @@ function DocumentsContent() {
                     key={doc.id}
                     className="flex items-center gap-4 p-4 rounded-lg border hover:bg-muted/30 transition-colors"
                   >
-                     <div
-                       className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${getCategoryColour(doc.category || "other")}`}
-                     >
-                       {getCategoryIcon(
-                         doc.category || "other",
-                         doc.fileType || undefined,
-                       )}
-                     </div>
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${getCategoryColour(doc.category || "other")}`}
+                    >
+                      {getCategoryIcon(
+                        doc.category || "other",
+                        doc.fileType || undefined,
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">
                         {doc.description || doc.fileName}

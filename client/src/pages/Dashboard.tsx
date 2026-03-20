@@ -318,7 +318,7 @@ function DashboardContent() {
         startDate: new Date().toISOString(),
         endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       },
-      { retry: false },
+      { retry: false, staleTime: 5 * 60 * 1000 },
     );
 
   // Today's calendar events
@@ -338,7 +338,7 @@ function DashboardContent() {
       startDate: todayStart.toISOString(),
       endDate: todayEnd.toISOString(),
     },
-    { retry: false },
+    { retry: false, staleTime: 5 * 60 * 1000 },
   );
 
   const getSubscriptionBadge = () => {

@@ -407,31 +407,52 @@ function AdminContent() {
       {/* Main Tabs */}
       <Tabs defaultValue="users" className="space-y-4">
         <TabsList className="flex overflow-x-auto h-auto gap-1 bg-muted/50 p-1 w-full">
-          <TabsTrigger value="users" className="flex items-center gap-2 shrink-0">
+          <TabsTrigger
+            value="users"
+            className="flex items-center gap-2 shrink-0"
+          >
             <Users className="w-4 h-4" />
             Users
           </TabsTrigger>
-          <TabsTrigger value="overdue" className="flex items-center gap-2 shrink-0">
+          <TabsTrigger
+            value="overdue"
+            className="flex items-center gap-2 shrink-0"
+          >
             <AlertCircle className="w-4 h-4" />
             Overdue
           </TabsTrigger>
-          <TabsTrigger value="activity" className="flex items-center gap-2 shrink-0">
+          <TabsTrigger
+            value="activity"
+            className="flex items-center gap-2 shrink-0"
+          >
             <Activity className="w-4 h-4" />
             Activity
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2 shrink-0">
+          <TabsTrigger
+            value="settings"
+            className="flex items-center gap-2 shrink-0"
+          >
             <Settings className="w-4 h-4" />
             Settings
           </TabsTrigger>
-          <TabsTrigger value="system" className="flex items-center gap-2 shrink-0">
+          <TabsTrigger
+            value="system"
+            className="flex items-center gap-2 shrink-0"
+          >
             <Server className="w-4 h-4" />
             System
           </TabsTrigger>
-          <TabsTrigger value="leads" className="flex items-center gap-2 shrink-0">
+          <TabsTrigger
+            value="leads"
+            className="flex items-center gap-2 shrink-0"
+          >
             <MessageSquare className="w-4 h-4" />
             Leads
           </TabsTrigger>
-          <TabsTrigger value="whatsapp" className="flex items-center gap-2 shrink-0">
+          <TabsTrigger
+            value="whatsapp"
+            className="flex items-center gap-2 shrink-0"
+          >
             <MessageSquare className="w-4 h-4" />
             WhatsApp
           </TabsTrigger>
@@ -954,7 +975,6 @@ function AdminContent() {
                     Leave blank / unchanged to keep the existing key.
                   </p>
                 </div>
-
               </CardContent>
             </Card>
 

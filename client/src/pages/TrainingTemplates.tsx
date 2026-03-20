@@ -474,23 +474,29 @@ const PREDESIGNED_TEMPLATES = [
     duration: 12,
     discipline: "general",
     level: "beginner",
-    goals: "Foundation training, build confidence, develop basic skills under saddle",
+    goals:
+      "Foundation training, build confidence, develop basic skills under saddle",
     isPredesigned: true,
     programData: JSON.stringify({
       weeks: [
         {
           week: 1,
           focus: "Building confidence and trust",
-          warmup: "10 min in-hand walking around arena, introducing new sights and sounds",
-          main_work: "Short groundwork sessions, gentle lunging, accepting tack",
-          cooldown: "5 min walking on long rein, gentle grooming and positive reinforcement",
-          safety_notes: "Keep sessions short (15–20 min). Never rush. End on a positive note.",
+          warmup:
+            "10 min in-hand walking around arena, introducing new sights and sounds",
+          main_work:
+            "Short groundwork sessions, gentle lunging, accepting tack",
+          cooldown:
+            "5 min walking on long rein, gentle grooming and positive reinforcement",
+          safety_notes:
+            "Keep sessions short (15–20 min). Never rush. End on a positive note.",
           sessions: [
             {
               day: "Monday",
               type: "groundwork",
               duration: 20,
-              description: "Groundwork and handling — leading, halting, backing",
+              description:
+                "Groundwork and handling — leading, halting, backing",
               intensity: "low",
             },
             {
@@ -548,17 +554,22 @@ const PREDESIGNED_TEMPLATES = [
     duration: 4,
     discipline: "general",
     level: "intermediate",
-    goals: "Improve responsiveness, establish rhythm, develop throughness and engagement",
+    goals:
+      "Improve responsiveness, establish rhythm, develop throughness and engagement",
     isPredesigned: true,
     programData: JSON.stringify({
       weeks: [
         {
           week: 1,
           focus: "Rhythm, relaxation, and contact",
-          warmup: "10 min walk on a long rein, progressing to working walk. 5 min rising trot both reins.",
-          main_work: "20 min focused schooling: transitions, serpentines, leg yields, lengthening and shortening strides.",
-          cooldown: "5 min walk on a long rein, stretching down. Finish with praise.",
-          safety_notes: "Warm up thoroughly before asking for collection. Check footing before work.",
+          warmup:
+            "10 min walk on a long rein, progressing to working walk. 5 min rising trot both reins.",
+          main_work:
+            "20 min focused schooling: transitions, serpentines, leg yields, lengthening and shortening strides.",
+          cooldown:
+            "5 min walk on a long rein, stretching down. Finish with praise.",
+          safety_notes:
+            "Warm up thoroughly before asking for collection. Check footing before work.",
           sessions: [
             {
               day: "Monday",
@@ -622,17 +633,21 @@ const PREDESIGNED_TEMPLATES = [
     duration: 3,
     discipline: "jumping",
     level: "beginner",
-    goals: "Improve rhythm over poles, develop lift and engagement, sharpen focus and footwork",
+    goals:
+      "Improve rhythm over poles, develop lift and engagement, sharpen focus and footwork",
     isPredesigned: true,
     programData: JSON.stringify({
       weeks: [
         {
           week: 1,
           focus: "Introducing poles and rhythm",
-          warmup: "10 min walk, 5 min trot. Walk over single pole x 4 passes before introducing multiple poles.",
-          main_work: "3 poles in a row (trot distance ~1.3m apart). Progress to 5 poles. Canter poles at 3m spacing.",
+          warmup:
+            "10 min walk, 5 min trot. Walk over single pole x 4 passes before introducing multiple poles.",
+          main_work:
+            "3 poles in a row (trot distance ~1.3m apart). Progress to 5 poles. Canter poles at 3m spacing.",
           cooldown: "5 min walk on long rein. Praise.",
-          safety_notes: "Ensure poles are bright and visible. Check distances suit your horse's stride length. Build gradually.",
+          safety_notes:
+            "Ensure poles are bright and visible. Check distances suit your horse's stride length. Build gradually.",
           sessions: [
             {
               day: "Monday",
@@ -696,17 +711,21 @@ const PREDESIGNED_TEMPLATES = [
     duration: 6,
     discipline: "jumping",
     level: "intermediate",
-    goals: "Build scope, consistency over fences, develop rider–horse jumping partnership",
+    goals:
+      "Build scope, consistency over fences, develop rider–horse jumping partnership",
     isPredesigned: true,
     programData: JSON.stringify({
       weeks: [
         {
           week: 1,
           focus: "Ground poles, trot poles, and small crosses",
-          warmup: "10 min flatwork on both reins. Walk and trot poles before fence work.",
-          main_work: "Grid work: 2 poles, then a small cross-pole. Maximum height 50cm. 4–6 repetitions.",
+          warmup:
+            "10 min flatwork on both reins. Walk and trot poles before fence work.",
+          main_work:
+            "Grid work: 2 poles, then a small cross-pole. Maximum height 50cm. 4–6 repetitions.",
           cooldown: "Walk on long rein for 5–10 min. Stretch and praise.",
-          safety_notes: "Never jump tired. Stop after refusals and reassess. Check tack before every session.",
+          safety_notes:
+            "Never jump tired. Stop after refusals and reassess. Check tack before every session.",
           sessions: [
             {
               day: "Monday",
@@ -770,17 +789,21 @@ const PREDESIGNED_TEMPLATES = [
     duration: 4,
     discipline: "general",
     level: "beginner",
-    goals: "Build cardiovascular fitness, strengthen topline, provide variety and mental stimulation",
+    goals:
+      "Build cardiovascular fitness, strengthen topline, provide variety and mental stimulation",
     isPredesigned: true,
     programData: JSON.stringify({
       weeks: [
         {
           week: 1,
           focus: "Building base fitness through varied terrain",
-          warmup: "First 10 min always walk to warm up tendons and muscles before trotting.",
-          main_work: "Include walk, trot, and short canter sections. Introduce gentle hills for hindquarter strength.",
+          warmup:
+            "First 10 min always walk to warm up tendons and muscles before trotting.",
+          main_work:
+            "Include walk, trot, and short canter sections. Introduce gentle hills for hindquarter strength.",
           cooldown: "Last 10 min walk to cool down. Check legs on return.",
-          safety_notes: "Always tell someone your route. Check footing before canter. Use hi-vis in low light.",
+          safety_notes:
+            "Always tell someone your route. Check footing before canter. Use hi-vis in low light.",
           sessions: [
             {
               day: "Monday",
@@ -844,17 +867,22 @@ const PREDESIGNED_TEMPLATES = [
     duration: 3,
     discipline: "general",
     level: "beginner",
-    goals: "Improve responsiveness, develop calmness and focus, build horse–handler relationship",
+    goals:
+      "Improve responsiveness, develop calmness and focus, build horse–handler relationship",
     isPredesigned: true,
     programData: JSON.stringify({
       weeks: [
         {
           week: 1,
           focus: "Establishing clear communication from the ground",
-          warmup: "5 min in-hand walk around arena. Introduce equipment calmly.",
-          main_work: "Lunging on 20m circle both directions. Walk, trot, canter transitions. Lateral movements in-hand.",
-          cooldown: "5 min walk on lunge, finishing with a pat and positive reward.",
-          safety_notes: "Always wear gloves when lunging. Keep safe distance. Work on non-slip footing.",
+          warmup:
+            "5 min in-hand walk around arena. Introduce equipment calmly.",
+          main_work:
+            "Lunging on 20m circle both directions. Walk, trot, canter transitions. Lateral movements in-hand.",
+          cooldown:
+            "5 min walk on lunge, finishing with a pat and positive reward.",
+          safety_notes:
+            "Always wear gloves when lunging. Keep safe distance. Work on non-slip footing.",
           sessions: [
             {
               day: "Monday",
@@ -888,7 +916,8 @@ const PREDESIGNED_TEMPLATES = [
               day: "Friday",
               type: "groundwork",
               duration: 25,
-              description: "In-hand lateral work: shoulder-in, turn on haunches",
+              description:
+                "In-hand lateral work: shoulder-in, turn on haunches",
               intensity: "low",
             },
             {
@@ -918,17 +947,21 @@ const PREDESIGNED_TEMPLATES = [
     duration: 1,
     discipline: "general",
     level: "beginner",
-    goals: "Allow physical and mental recovery, maintain light movement, assess soundness",
+    goals:
+      "Allow physical and mental recovery, maintain light movement, assess soundness",
     isPredesigned: true,
     programData: JSON.stringify({
       weeks: [
         {
           week: 1,
           focus: "Gentle movement and recovery",
-          warmup: "Always start with 5–10 min slow walk. Do not rush into trot.",
-          main_work: "Short walk or very light trot sessions only. Prioritise turnout and rest.",
+          warmup:
+            "Always start with 5–10 min slow walk. Do not rush into trot.",
+          main_work:
+            "Short walk or very light trot sessions only. Prioritise turnout and rest.",
           cooldown: "Always finish with walk. Check legs for heat or swelling.",
-          safety_notes: "If horse shows any lameness or discomfort, consult vet before continuing exercise.",
+          safety_notes:
+            "If horse shows any lameness or discomfort, consult vet before continuing exercise.",
           sessions: [
             {
               day: "Monday",
@@ -992,7 +1025,8 @@ const PREDESIGNED_TEMPLATES = [
     duration: 6,
     discipline: "general",
     level: "intermediate",
-    goals: "Systematically raise fitness level, build stamina, improve recovery time after work",
+    goals:
+      "Systematically raise fitness level, build stamina, improve recovery time after work",
     isPredesigned: true,
     programData: JSON.stringify({
       weeks: [
@@ -1000,9 +1034,12 @@ const PREDESIGNED_TEMPLATES = [
           week: 1,
           focus: "Establishing aerobic base",
           warmup: "10 min walk, increasing pace over the first 5 min.",
-          main_work: "20–30 min continuous trot with regular rest walks. Include 2× 5-min canter sets.",
-          cooldown: "10 min walk to let heart rate return to normal. Check breathing.",
-          safety_notes: "Monitor for excessive sweating, laboured breathing, or stumbling. Build up load progressively.",
+          main_work:
+            "20–30 min continuous trot with regular rest walks. Include 2× 5-min canter sets.",
+          cooldown:
+            "10 min walk to let heart rate return to normal. Check breathing.",
+          safety_notes:
+            "Monitor for excessive sweating, laboured breathing, or stumbling. Build up load progressively.",
           sessions: [
             {
               day: "Monday",
@@ -1029,7 +1066,8 @@ const PREDESIGNED_TEMPLATES = [
               day: "Thursday",
               type: "hack",
               duration: 50,
-              description: "Interval training: 3× 5-min canter with 5-min trot recovery",
+              description:
+                "Interval training: 3× 5-min canter with 5-min trot recovery",
               intensity: "moderate-high",
             },
             {
@@ -1066,17 +1104,22 @@ const PREDESIGNED_TEMPLATES = [
     duration: 8,
     discipline: "general",
     level: "beginner",
-    goals: "Restore confidence and willingness, re-establish trust, identify and address fear triggers",
+    goals:
+      "Restore confidence and willingness, re-establish trust, identify and address fear triggers",
     isPredesigned: true,
     programData: JSON.stringify({
       weeks: [
         {
           week: 1,
           focus: "Calm foundations — no pressure, only success",
-          warmup: "Always start further away from any feared object/area. Let the horse observe calmly.",
-          main_work: "Only ask for things horse is confident doing. Reward try and effort. Short sessions.",
-          cooldown: "Always end on a positive note, even something very small. Praise lavishly.",
-          safety_notes: "Never force or flood. If horse is very anxious, consult qualified trainer or behaviourist.",
+          warmup:
+            "Always start further away from any feared object/area. Let the horse observe calmly.",
+          main_work:
+            "Only ask for things horse is confident doing. Reward try and effort. Short sessions.",
+          cooldown:
+            "Always end on a positive note, even something very small. Praise lavishly.",
+          safety_notes:
+            "Never force or flood. If horse is very anxious, consult qualified trainer or behaviourist.",
           sessions: [
             {
               day: "Monday",
@@ -1103,7 +1146,8 @@ const PREDESIGNED_TEMPLATES = [
               day: "Thursday",
               type: "groundwork",
               duration: 25,
-              description: "Desensitisation — introduce calm new stimulus at distance",
+              description:
+                "Desensitisation — introduce calm new stimulus at distance",
               intensity: "low",
             },
             {

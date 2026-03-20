@@ -231,4 +231,8 @@ export const ENV = {
 
   // OpenAI
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
+  // AI model — used by resolveModel() in llm.ts.
+  // Override via OPENAI_MODEL env var or the "ai_model" DB siteSettings key.
+  // Default: gpt-4o-mini
+  openaiModel: process.env.OPENAI_MODEL ?? "",
 };

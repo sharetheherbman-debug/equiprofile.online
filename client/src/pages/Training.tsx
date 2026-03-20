@@ -463,7 +463,10 @@ function TrainingContent() {
           {templates && templates.length > 0 && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {templates.map((tpl) => (
-                <Card key={tpl.id} className="hover:shadow-md transition-shadow">
+                <Card
+                  key={tpl.id}
+                  className="hover:shadow-md transition-shadow"
+                >
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm">{tpl.name}</CardTitle>
                     {tpl.description && (
@@ -491,7 +494,11 @@ function TrainingContent() {
                       )}
                     </div>
                     <Link href="/training-templates">
-                      <Button size="sm" variant="outline" className="w-full text-xs">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full text-xs"
+                      >
                         <Play className="w-3 h-3 mr-1.5" />
                         View &amp; Apply
                       </Button>
@@ -510,9 +517,12 @@ function TrainingContent() {
                   <Sparkles className="w-5 h-5 text-indigo-500" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm">Starter Template Library</p>
+                  <p className="font-semibold text-sm">
+                    Starter Template Library
+                  </p>
                   <p className="text-xs text-muted-foreground">
-                    Browse &amp; apply professional equestrian training programmes
+                    Browse &amp; apply professional equestrian training
+                    programmes
                   </p>
                 </div>
               </div>

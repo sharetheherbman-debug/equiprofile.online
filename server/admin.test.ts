@@ -276,7 +276,10 @@ describe("admin.setSiteSetting", () => {
     const caller = appRouter.createCaller(ctx);
 
     await expect(
-      caller.admin.setSiteSetting({ key: "openai_api_key", value: "x".repeat(2001) }),
+      caller.admin.setSiteSetting({
+        key: "openai_api_key",
+        value: "x".repeat(2001),
+      }),
     ).rejects.toThrow();
   });
 });
