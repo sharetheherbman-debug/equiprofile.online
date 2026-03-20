@@ -42,6 +42,7 @@ export default function AIChat() {
 
   // Notes functionality
   const [isListening, setIsListening] = useState(false);
+  const [wasVoiceRecorded, setWasVoiceRecorded] = useState(false);
   const [noteContent, setNoteContent] = useState("");
   const [noteTitle, setNoteTitle] = useState("");
   const recognitionRef = useRef<any>(null);
@@ -55,6 +56,7 @@ export default function AIChat() {
       toast.success("Note saved successfully!");
       setNoteContent("");
       setNoteTitle("");
+      setWasVoiceRecorded(false);
       refetchNotes();
     },
     onError: (error) => {
@@ -103,6 +105,8 @@ export default function AIChat() {
 
       recognition.onend = () => {
         setIsListening(false);
+        // Mark that voice was used for this note so transcribed flag is set correctly on save
+        setWasVoiceRecorded(true);
       };
 
       recognitionRef.current = recognition;
@@ -125,6 +129,8 @@ export default function AIChat() {
       recognitionRef.current.stop();
       setIsListening(false);
     } else {
+      // Starting a new recording — reset the voice flag for fresh session
+      setWasVoiceRecorded(false);
       recognitionRef.current.start();
       setIsListening(true);
     }
@@ -139,7 +145,8 @@ export default function AIChat() {
     createNote.mutate({
       title: noteTitle.trim() || undefined,
       content: noteContent.trim(),
-      transcribed: isListening || noteContent.includes("[Voice]"),
+      // Mark as transcribed if voice was used (even after stopping recording)
+      transcribed: isListening || wasVoiceRecorded,
     });
   };
 
