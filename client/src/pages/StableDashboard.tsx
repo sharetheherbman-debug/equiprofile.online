@@ -144,7 +144,7 @@ const stableOperations = [
 function StableDashboardContent() {
   const { user } = useAuth();
   const { data: horses = [], isLoading: horsesLoading } =
-    trpc.horses.list.useQuery(undefined, { retry: false });
+    trpc.horses.list.useQuery(undefined, { retry: false, staleTime: 0 });
   const { data: subscriptionStatus, isLoading: subLoading } =
     trpc.user.getSubscriptionStatus.useQuery();
   const isStablePlan = subscriptionStatus?.planTier === "stable";

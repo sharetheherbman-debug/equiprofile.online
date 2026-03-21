@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useEffect } from "react";
+import { useLocation } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
   Card,
@@ -296,8 +297,10 @@ function PremiumModuleCard({
 
 function DashboardContent() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const { data: stats } = trpc.user.getDashboardStats.useQuery(undefined, {
     retry: false,
+    staleTime: 0,
   });
   const { data: subscription } = trpc.user.getSubscriptionStatus.useQuery();
   const { data: onboarding } = trpc.user.getOnboardingStatus.useQuery(
@@ -311,6 +314,7 @@ function DashboardContent() {
   );
   const { data: horses = [] } = trpc.horses.list.useQuery(undefined, {
     retry: false,
+    staleTime: 0,
   });
   const { data: upcomingAppointments = [] } = trpc.appointments.list.useQuery(
     undefined,
@@ -319,6 +323,13 @@ function DashboardContent() {
   const { data: tasks = [] } = trpc.tasks.list.useQuery(undefined, {
     retry: false,
   });
+
+  // Redirect Stable plan users to the Stable Dashboard when they land here.
+  useEffect(() => {
+    if (subscription?.planTier === "stable") {
+      setLocation("/stable-dashboard");
+    }
+  }, [subscription?.planTier, setLocation]);
 
   // Upcoming events (next 30 days) for "Next Event" quick card
   const { data: upcomingCalendarEvents = [] } =

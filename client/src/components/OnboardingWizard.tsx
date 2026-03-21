@@ -77,6 +77,7 @@ export function OnboardingWizard({
   const setExperience = trpc.user.setExperience.useMutation();
   const completeOnboarding = trpc.user.completeOnboarding.useMutation();
   const updateStep = trpc.user.updateOnboardingStep.useMutation();
+  const updateChecklist = trpc.user.updateActivationChecklist.useMutation();
 
   const goToStep = useCallback(
     (nextStep: number) => {
@@ -104,14 +105,19 @@ export function OnboardingWizard({
       await createHorse.mutateAsync({
         name: horseName.trim(),
         breed: horseBreed.trim() || undefined,
-        age:
-          horseAge
-            ? Number.isNaN(parseInt(horseAge, 10))
-              ? undefined
-              : parseInt(horseAge, 10)
-            : undefined,
+        age: horseAge
+          ? Number.isNaN(parseInt(horseAge, 10))
+            ? undefined
+            : parseInt(horseAge, 10)
+          : undefined,
       });
       setHorseAdded(true);
+      // Invalidate horse list and dashboard stats so the dashboard reflects
+      // the new horse immediately when the user returns to it.
+      utils.horses.list.invalidate();
+      utils.user.getDashboardStats.invalidate();
+      // Mark the "addedHorse" activation checklist item.
+      updateChecklist.mutate({ item: "addedHorse", value: true });
       goToStep(3);
     } catch (err: unknown) {
       setError(friendlyError(err));
@@ -120,9 +126,7 @@ export function OnboardingWizard({
     }
   };
 
-  const handleSelectExperience = async (
-    experience: "standard" | "stable",
-  ) => {
+  const handleSelectExperience = async (experience: "standard" | "stable") => {
     setSaving(true);
     setError("");
     try {
@@ -141,7 +145,13 @@ export function OnboardingWizard({
     try {
       await completeOnboarding.mutateAsync();
       await utils.auth.me.invalidate();
+      await utils.horses.list.invalidate();
+      await utils.user.getDashboardStats.invalidate();
       onComplete();
+      // Redirect Stable users to the Stable Dashboard after onboarding.
+      if (selectedExperience === "stable") {
+        setLocation("/stable-dashboard");
+      }
     } catch {
       // Proceed to dashboard even if the save failed
       onComplete();
@@ -303,7 +313,10 @@ export function OnboardingWizard({
 
                   <div className="space-y-3">
                     <div className="space-y-1.5">
-                      <Label htmlFor="horse-name" className="text-white text-sm">
+                      <Label
+                        htmlFor="horse-name"
+                        className="text-white text-sm"
+                      >
                         Horse Name <span className="text-red-400">*</span>
                       </Label>
                       <Input
@@ -319,7 +332,10 @@ export function OnboardingWizard({
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <Label htmlFor="horse-breed" className="text-white text-sm">
+                        <Label
+                          htmlFor="horse-breed"
+                          className="text-white text-sm"
+                        >
                           Breed{" "}
                           <span className="text-gray-500 font-normal text-xs">
                             (optional)
@@ -335,7 +351,10 @@ export function OnboardingWizard({
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="horse-age" className="text-white text-sm">
+                        <Label
+                          htmlFor="horse-age"
+                          className="text-white text-sm"
+                        >
                           Age{" "}
                           <span className="text-gray-500 font-normal text-xs">
                             (optional)
@@ -537,9 +556,7 @@ export function OnboardingWizard({
                           <p className="text-xs font-semibold text-white group-hover:text-indigo-300 transition-colors">
                             {label}
                           </p>
-                          <p className="text-xs text-gray-500">
-                            {description}
-                          </p>
+                          <p className="text-xs text-gray-500">{description}</p>
                         </div>
                       </button>
                     ))}
@@ -642,4 +659,3 @@ function StepContainer({ children }: { children: React.ReactNode }) {
     </motion.div>
   );
 }
-

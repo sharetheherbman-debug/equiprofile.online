@@ -49,6 +49,7 @@ const levels = [
 function HorseFormContent() {
   const params = useParams<{ id?: string }>();
   const [, navigate] = useLocation();
+  const utils = trpc.useUtils();
   const isEditing = params.id && params.id !== "new";
   const horseId = isEditing ? parseInt(params.id!) : null;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,6 +84,8 @@ function HorseFormContent() {
 
   const createMutation = trpc.horses.create.useMutation({
     onSuccess: (data) => {
+      utils.horses.list.invalidate();
+      utils.user.getDashboardStats.invalidate();
       toast.success("Horse added successfully!");
       navigate(`/horses/${data.id}`);
     },
@@ -93,6 +96,8 @@ function HorseFormContent() {
 
   const updateMutation = trpc.horses.update.useMutation({
     onSuccess: () => {
+      utils.horses.list.invalidate();
+      utils.user.getDashboardStats.invalidate();
       toast.success("Horse updated successfully!");
       navigate(`/horses/${horseId}`);
     },
