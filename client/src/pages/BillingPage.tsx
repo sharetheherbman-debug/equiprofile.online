@@ -379,7 +379,7 @@ export default function BillingPage() {
                     ) : (
                       <Button
                         onClick={() => handleSubscribe("pro")}
-                        className="w-full"
+                        className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white border-0"
                         disabled={createCheckout.isPending}
                       >
                         {createCheckout.isPending ? (
@@ -453,8 +453,7 @@ export default function BillingPage() {
                     ) : (
                       <Button
                         onClick={() => handleSubscribe("stable")}
-                        variant="outline"
-                        className="w-full"
+                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0"
                         disabled={createCheckout.isPending}
                       >
                         {createCheckout.isPending ? (

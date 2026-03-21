@@ -26,18 +26,25 @@ function WeatherContent() {
   const {
     data: currentWeather,
     isLoading: currentLoading,
+    isFetching: currentFetching,
     refetch: refetchCurrent,
   } = trpc.weather.getCurrent.useQuery(undefined, {
     retry: false,
     refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 
-  const { data: forecast, isLoading: forecastLoading } =
+  const { data: forecast, isLoading: forecastLoading, refetch: refetchForecast } =
     trpc.weather.getForecast.useQuery(undefined, {
       retry: false,
       refetchOnWindowFocus: false,
+      staleTime: 0,
     });
 
+  const handleRefresh = () => {
+    refetchCurrent();
+    refetchForecast();
+  };
   const getRecommendationColor = (rec: string) => {
     switch (rec) {
       case "excellent":
@@ -237,10 +244,11 @@ function WeatherContent() {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => refetchCurrent()}
+                onClick={handleRefresh}
+                disabled={currentFetching}
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
+                <RefreshCw className={`w-4 h-4 mr-2 ${currentFetching ? "animate-spin" : ""}`} />
+                {currentFetching ? "Refreshing..." : "Refresh"}
               </Button>
             </div>
           </CardHeader>

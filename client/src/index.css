@@ -110,8 +110,8 @@
   --accent-foreground: #0a1628;
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: #ffffff;
-  --border: #1e3860; /* blue-tinted border */
-  --input: #0f2040;
+  --border: #243d68; /* blue-tinted border, slightly brighter */
+  --input: #1a3258; /* lighter blue so inputs stand out from card bg */
   --ring: #6366f1;
   --chart-1: #6366f1;
   --chart-2: #a78bfa;

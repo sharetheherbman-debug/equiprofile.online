@@ -547,18 +547,31 @@ export const appRouter = router({
           }
           const ext = mimeType.split("/")[1];
           const fileKey = `${ctx.user.id}/avatars/${nanoid()}.${ext}`;
-          const { url } = await storagePut(fileKey, buffer, mimeType);
-          profileFields.profileImageUrl = url;
+          try {
+            const { url } = await storagePut(fileKey, buffer, mimeType);
+            profileFields.profileImageUrl = url;
+          } catch (err) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message:
+                "Failed to upload profile picture. Please try again or use a smaller image.",
+              cause: err,
+            });
+          }
         }
 
         await db.updateUser(ctx.user.id, profileFields);
-        await db.logActivity({
-          userId: ctx.user!.id,
-          action: "profile_updated",
-          entityType: "user",
-          entityId: ctx.user.id,
-          details: JSON.stringify(profileFields),
-        });
+        try {
+          await db.logActivity({
+            userId: ctx.user!.id,
+            action: "profile_updated",
+            entityType: "user",
+            entityId: ctx.user.id,
+            details: JSON.stringify({ updatedFields: Object.keys(profileFields) }),
+          });
+        } catch {
+          // Activity logging failure must not block the profile update response
+        }
         return { success: true };
       }),
 

@@ -20,7 +20,6 @@ import {
   FileText,
   Check,
   ChevronRight,
-  ChevronDown,
   Activity,
   Utensils,
   Star,
@@ -30,6 +29,10 @@ import {
   ChevronLeft,
   Shield,
   Clock,
+  AlertTriangle,
+  TrendingUp,
+  Folder,
+  Brain,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { marketingAssets } from "@/config/marketingAssets";
@@ -38,51 +41,50 @@ import { coreFeatures, featureHighlights } from "@/content/features";
 
 const TESTIMONIAL_ROTATION_INTERVAL = 6000;
 
-function FAQItem({
-  question,
-  answer,
-  index,
-}: {
-  question: string;
-  answer: string;
-  index: number;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      viewport={{ once: true }}
-      className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden"
-    >
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between gap-4 p-5 text-left text-white hover:bg-white/5 transition-colors"
-      >
-        <span className="font-medium text-base">{question}</span>
-        <ChevronDown
-          className={`w-5 h-5 shrink-0 text-white/50 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="px-5 pb-5 text-white/70 text-sm leading-relaxed">
-              {answer}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
+const painPoints = [
+  {
+    icon: AlertTriangle,
+    gradient: "from-rose-500 to-pink-500",
+    problem: "Lost in paperwork and missed records",
+    solution:
+      "Every vaccination, vet visit, farrier appointment, and treatment is logged and instantly searchable—no more digging through folders or relying on memory.",
+  },
+  {
+    icon: Calendar,
+    gradient: "from-amber-500 to-orange-500",
+    problem: "Forgotten schedules and missed appointments",
+    solution:
+      "Automated reminders for health events, training sessions, and farrier visits keep you ahead of every deadline—before it becomes a problem.",
+  },
+  {
+    icon: TrendingUp,
+    gradient: "from-cyan-500 to-blue-500",
+    problem: "No visibility into training progress",
+    solution:
+      "Track sessions, log performance, and spot trends over time. Know exactly what's working and when your horse needs adjustment.",
+  },
+  {
+    icon: Folder,
+    gradient: "from-indigo-500 to-violet-500",
+    problem: "Documents scattered across email and phone",
+    solution:
+      "Passports, insurance docs, competition records, and invoices stored in organised folders—accessible anywhere, at any time.",
+  },
+  {
+    icon: Brain,
+    gradient: "from-emerald-500 to-teal-500",
+    problem: "Inconsistent feeding across multiple horses",
+    solution:
+      "Build individual nutrition plans, track feed costs, and ensure every horse gets exactly what they need—regardless of who's doing the feeding.",
+  },
+  {
+    icon: CloudSun,
+    gradient: "from-sky-500 to-cyan-500",
+    problem: "Riding in unsafe weather without guidance",
+    solution:
+      "Live weather data with real-time riding suitability advice. Know before you tack up whether conditions are safe for outdoor work.",
+  },
+];
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -112,49 +114,6 @@ export default function Home() {
         "The training logs and analytics are phenomenal. I can see progress clearly, identify areas for improvement, and share detailed updates with clients easily. Game-changing!",
       rating: 5,
       avatar: "ER",
-    },
-  ];
-
-  const faqs = [
-    {
-      question: "How does the 7-day free trial work?",
-      answer:
-        "Start using EquiProfile immediately with full access to ALL features for 1 horse. No credit card required. After 7 days, choose a plan that fits your needs.",
-    },
-    {
-      question: "Can I manage multiple horses?",
-      answer:
-        "Absolutely! The trial supports 1 horse. Pro plan supports up to 5 horses, and Stable plan supports up to 20 horses. Each horse gets its own complete profile with health records, training logs, and more.",
-    },
-    {
-      question: "Is my data secure?",
-      answer:
-        "Yes! We use bank-level encryption (AES-256) for all data. Your information is stored securely in the cloud with automatic backups. We're GDPR compliant and never share your data with third parties.",
-    },
-    {
-      question: "Can I access EquiProfile on mobile?",
-      answer:
-        "Yes! EquiProfile works seamlessly on all devices - desktop, tablet, and mobile. Our responsive design ensures you have full access to your horses' information anywhere, anytime.",
-    },
-    {
-      question: "What happens if I cancel my subscription?",
-      answer:
-        "You can cancel anytime. Your data remains accessible in read-only mode for 30 days, giving you time to export everything. No long-term contracts or hidden fees.",
-    },
-    {
-      question: "Do you offer training or onboarding?",
-      answer:
-        "Yes! All new users get access to our comprehensive video tutorials and help center. We also provide email support to help you get started.",
-    },
-    {
-      question: "What payment methods do you accept?",
-      answer:
-        "We accept all major credit cards via Stripe. Your payment information is securely processed and never stored on our servers.",
-    },
-    {
-      question: "Can I upgrade or downgrade my plan?",
-      answer:
-        "Yes! You can change your plan at any time. Upgrades take effect immediately, and downgrades apply at the end of your current billing period.",
     },
   ];
 
@@ -207,11 +166,9 @@ export default function Home() {
                     </span>
                   </h1>
 
-                  <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-10 leading-relaxed max-w-4xl mx-auto drop-shadow-lg">
-                    Stop juggling spreadsheets and paper records. Manage
-                    everything about your horses in one powerful platform—health
-                    records, training schedules, feeding plans, and more. Start
-                    your free 7-day trial today.
+                  <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-10 leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
+                    One platform for health records, training, nutrition, and
+                    every decision that keeps your horse at their best.
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -509,7 +466,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* FAQ Section */}
+          {/* Pain Points Section */}
           <section className="py-24 bg-[#0f2040] relative">
             <div className="container px-4">
               <motion.div
@@ -520,35 +477,60 @@ export default function Home() {
                 className="text-center mb-16"
               >
                 <Badge className="mb-4 inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border-white/20 text-white">
-                  <ChevronDown className="w-4 h-4" />
-                  FAQ
+                  <AlertTriangle className="w-4 h-4" />
+                  The Problems We Solve
                 </Badge>
                 <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4 text-white">
-                  Frequently Asked{" "}
+                  Every horse owner knows{" "}
                   <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                    Questions
+                    these struggles
                   </span>
                 </h2>
                 <p className="text-xl text-white/70 max-w-2xl mx-auto">
-                  Everything you need to know about EquiProfile
+                  EquiProfile was built to solve the real, daily problems that
+                  make horse ownership harder than it should be.
                 </p>
               </motion.div>
 
-              <div className="max-w-3xl mx-auto space-y-3">
-                {faqs.map((faq, index) => (
-                  <FAQItem
-                    key={index}
-                    question={faq.question}
-                    answer={faq.answer}
-                    index={index}
-                  />
-                ))}
+              <div className="max-w-5xl mx-auto grid gap-6 md:grid-cols-2">
+                {painPoints.map((item, index) => {
+                  const ItemIcon = item.icon;
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 16 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.06 }}
+                      viewport={{ once: true }}
+                      className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-md p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div
+                          className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.gradient} p-3 flex items-center justify-center shrink-0`}
+                        >
+                          <ItemIcon className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white/50 text-xs font-medium uppercase tracking-wider mb-1">
+                            The problem
+                          </p>
+                          <h3 className="text-white font-semibold text-base mb-2">
+                            {item.problem}
+                          </h3>
+                          <p className="text-white/70 text-sm leading-relaxed">
+                            {item.solution}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </section>
 
           {/* Final CTA Section */}
-          <section className="py-32 relative overflow-hidden">
+          <section className="py-16 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-cyan-600" />
             <div className="absolute inset-0 bg-[url('/assets/pattern.svg')] opacity-10" />
             <div className="container px-4 relative z-10">
@@ -557,50 +539,49 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="max-w-4xl mx-auto text-center bg-[#0a1628]/40 backdrop-blur-md border border-white/20 p-12 md:p-16 rounded-3xl"
+                className="max-w-3xl mx-auto text-center bg-[#0a1628]/40 backdrop-blur-md border border-white/20 p-8 md:p-12 rounded-3xl"
               >
-                <Award className="w-20 h-20 text-white mx-auto mb-8" />
-                <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+                <Award className="w-14 h-14 text-white mx-auto mb-6" />
+                <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-4">
                   Ready to Transform Your
                   <br />
                   Horse Management?
                 </h2>
-                <p className="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed">
-                  Join thousands of equestrians who trust EquiProfile to care
-                  for their horses. Start your free 7-day trial today—no credit
-                  card required.
+                <p className="text-base md:text-lg text-white/80 mb-8 leading-relaxed">
+                  Join equestrians who trust EquiProfile to care for their
+                  horses. Start your free 7-day trial—no credit card required.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     size="lg"
-                    className="text-lg px-12 py-7 bg-white text-indigo-600 hover:bg-white/90 shadow-2xl hover:scale-105 transition-transform group border-0"
+                    className="text-base px-10 py-5 bg-white text-indigo-600 hover:bg-white/90 shadow-2xl hover:scale-105 transition-transform group border-0"
                     asChild
                   >
                     <Link href="/register">
                       Start Free Trial
-                      <ChevronRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
-                    className="text-lg px-12 py-7 bg-white/10 text-white border-white/30 hover:bg-white/20 backdrop-blur-md shadow-xl hover:scale-105 transition-transform"
+                    className="text-base px-10 py-5 bg-white/10 text-white border-white/30 hover:bg-white/20 backdrop-blur-md shadow-xl hover:scale-105 transition-transform"
                     asChild
                   >
                     <Link href="/contact">Contact Sales</Link>
                   </Button>
                 </div>
-                <div className="mt-12 flex items-center justify-center gap-8 text-white/80 text-sm flex-wrap">
+                <div className="mt-8 flex items-center justify-center gap-6 text-white/70 text-sm flex-wrap">
                   <div className="flex items-center gap-2">
-                    <Check className="w-5 h-5" />
+                    <Check className="w-4 h-4" />
                     <span>No credit card</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Check className="w-5 h-5" />
+                    <Check className="w-4 h-4" />
                     <span>7-day trial</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Check className="w-5 h-5" />
+                    <Check className="w-4 h-4" />
                     <span>Cancel anytime</span>
                   </div>
                 </div>

@@ -1398,8 +1398,9 @@ function TrainingTemplatesContent() {
         <div>
           <h1 className="text-2xl font-bold font-serif">Training Templates</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Browse predesigned templates or create your own reusable training
-            programs
+            Reusable training programs you can apply to any horse. A template
+            defines a structured plan — apply it to create an active training
+            schedule for a specific horse.
           </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -1417,7 +1418,7 @@ function TrainingTemplatesContent() {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <div>
+              <div className="space-y-1.5">
                 <Label htmlFor="name">Template Name *</Label>
                 <Input
                   id="name"
@@ -1428,7 +1429,7 @@ function TrainingTemplatesContent() {
                   placeholder="e.g., Jumping Fundamentals, Dressage Level 1"
                 />
               </div>
-              <div>
+              <div className="space-y-1.5">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
@@ -1441,7 +1442,7 @@ function TrainingTemplatesContent() {
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div>
+                <div className="space-y-1.5">
                   <Label htmlFor="duration">Duration (weeks)</Label>
                   <Input
                     id="duration"
@@ -1453,7 +1454,7 @@ function TrainingTemplatesContent() {
                     placeholder="e.g., 12"
                   />
                 </div>
-                <div>
+                <div className="space-y-1.5">
                   <Label htmlFor="level">Level</Label>
                   <Select
                     value={formData.level}
@@ -1473,7 +1474,7 @@ function TrainingTemplatesContent() {
                   </Select>
                 </div>
               </div>
-              <div>
+              <div className="space-y-1.5">
                 <Label htmlFor="discipline">Discipline</Label>
                 <Select
                   value={formData.discipline}
@@ -1494,7 +1495,7 @@ function TrainingTemplatesContent() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="space-y-1.5">
                 <Label htmlFor="goals">Goals</Label>
                 <Textarea
                   id="goals"
@@ -1781,7 +1782,7 @@ function TrainingTemplatesContent() {
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div>
+              <div className="space-y-1.5">
                 <Label htmlFor="edit-duration">Duration (weeks)</Label>
                 <Input
                   id="edit-duration"
@@ -1793,7 +1794,7 @@ function TrainingTemplatesContent() {
                   placeholder="e.g., 12"
                 />
               </div>
-              <div>
+              <div className="space-y-1.5">
                 <Label htmlFor="edit-level">Level</Label>
                 <Select
                   value={formData.level}
