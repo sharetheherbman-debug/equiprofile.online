@@ -25,16 +25,21 @@ import {
   MapPin,
   Loader2,
   Info,
-  Shield,
+  Smartphone,
+  Download,
+  Share,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { trpc } from "@/lib/trpc";
-import { AdminUnlockDialog } from "@/components/AdminUnlockDialog";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 export default function Settings() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isCapturingLocation, setIsCapturingLocation] = useState(false);
+  const pwa = usePWAInstall();
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
   const adminStatus = trpc.adminUnlock.getStatus.useQuery(undefined, {
     staleTime: 60_000,
@@ -204,42 +209,13 @@ export default function Settings() {
     <DashboardLayout>
       <PageTransition>
         <div className="container max-w-4xl py-8">
-          <div className="mb-8 flex items-start justify-between gap-4">
+          <div className="mb-8">
             <div>
               <h1 className="text-3xl font-bold font-serif mb-2">Settings</h1>
               <p className="text-muted-foreground">
                 Manage your account settings and preferences
               </p>
             </div>
-            {/* Admin panel shortcut — visible to users with role=admin */}
-            {user?.role === "admin" && (
-              <div className="shrink-0">
-                {adminStatus.data?.isUnlocked ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => (window.location.href = "/admin")}
-                    className="border-primary/40 text-primary hover:bg-primary/10"
-                  >
-                    <Shield className="mr-2 h-4 w-4" />
-                    Open Admin Panel
-                  </Button>
-                ) : (
-                  <AdminUnlockDialog
-                    trigger={
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-primary/40 text-primary hover:bg-primary/10"
-                      >
-                        <Shield className="mr-2 h-4 w-4" />
-                        Open Admin Panel
-                      </Button>
-                    }
-                  />
-                )}
-              </div>
-            )}
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
@@ -247,7 +223,7 @@ export default function Settings() {
               className={
                 adminStatus.data?.isUnlocked
                   ? "grid grid-cols-5 w-full max-w-2xl"
-                  : "grid grid-cols-4 w-full max-w-2xl"
+                  : "grid grid-cols-4 w-full max-w-xl"
               }
             >
               <TabsTrigger value="profile">
@@ -261,6 +237,10 @@ export default function Settings() {
               <TabsTrigger value="notifications">
                 <Bell className="w-4 h-4 mr-2" />
                 Notifications
+              </TabsTrigger>
+              <TabsTrigger value="install">
+                <Smartphone className="w-4 h-4 mr-2" />
+                App
               </TabsTrigger>
               {adminStatus.data?.isUnlocked && (
                 <TabsTrigger value="system">
@@ -562,6 +542,95 @@ export default function Settings() {
                       "Save Preferences"
                     )}
                   </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Install App Tab */}
+            <TabsContent value="install">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Smartphone className="w-5 h-5" />
+                    Install EquiProfile App
+                  </CardTitle>
+                  <CardDescription>
+                    Add EquiProfile to your phone home screen for instant access — works like a native app
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {pwa.isInstalled ? (
+                    <div className="flex items-center gap-3 p-4 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800">
+                      <Download className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <div>
+                        <p className="font-medium text-green-800 dark:text-green-300">App installed</p>
+                        <p className="text-sm text-green-700 dark:text-green-400">EquiProfile is installed on this device.</p>
+                      </div>
+                    </div>
+                  ) : pwa.canInstall ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 p-4 rounded-lg bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800">
+                        <Download className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                        <div className="flex-1">
+                          <p className="font-medium text-indigo-800 dark:text-indigo-300">Ready to install</p>
+                          <p className="text-sm text-indigo-700 dark:text-indigo-400">One tap to add EquiProfile to your home screen.</p>
+                        </div>
+                        <Button
+                          onClick={pwa.install}
+                          className="bg-gradient-to-r from-indigo-600 to-cyan-600 text-white border-0"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Install Now
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {/* Android instructions */}
+                      <div className="space-y-3">
+                        <h3 className="font-semibold flex items-center gap-2">
+                          <span className="text-lg">🤖</span> Android (Chrome)
+                        </h3>
+                        <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground ml-1">
+                          <li>Open EquiProfile in <strong>Chrome</strong></li>
+                          <li>Tap the <strong>⋮ menu</strong> (three dots, top-right)</li>
+                          <li>Select <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
+                          <li>Tap <strong>Install</strong> to confirm</li>
+                        </ol>
+                      </div>
+
+                      {/* iOS instructions */}
+                      <div className="space-y-3">
+                        <h3 className="font-semibold flex items-center gap-2">
+                          <span className="text-lg">🍎</span> iPhone / iPad (Safari)
+                        </h3>
+                        <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground ml-1">
+                          <li>Open EquiProfile in <strong>Safari</strong></li>
+                          <li>Tap the <strong><Share className="w-3.5 h-3.5 inline-block mb-0.5" /> Share</strong> button (bottom toolbar)</li>
+                          <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                          <li>Tap <strong>Add</strong> to confirm</li>
+                        </ol>
+                      </div>
+
+                      {isIOS && isSafari && (
+                        <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-sm">
+                          <p className="text-amber-800 dark:text-amber-300">
+                            <strong>Tip:</strong> You're on Safari — tap the Share button at the bottom of the screen, then "Add to Home Screen".
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="pt-2 border-t">
+                    <h3 className="font-semibold text-sm mb-2">What you get</h3>
+                    <ul className="space-y-1.5 text-sm text-muted-foreground">
+                      <li className="flex items-center gap-2">✓ Launch from home screen like a native app</li>
+                      <li className="flex items-center gap-2">✓ Full-screen experience (no browser bar)</li>
+                      <li className="flex items-center gap-2">✓ Push notifications for reminders</li>
+                      <li className="flex items-center gap-2">✓ Works offline for recent data</li>
+                    </ul>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

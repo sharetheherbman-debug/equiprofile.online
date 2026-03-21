@@ -530,7 +530,7 @@ function DashboardContent() {
   })();
 
   return (
-    <div className="space-y-6 pb-6">
+    <div className="space-y-4 sm:space-y-6 pb-4 sm:pb-6">
       {/* ── Dashboard Guided Tour ─────────────────────────────── */}
       {showDashboardTour && (
         <GuidedTour tourId="dashboard" steps={dashboardTourSteps} />
@@ -540,7 +540,7 @@ function DashboardContent() {
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800/90 to-emerald-950/30 p-6 text-white shadow-xl shadow-black/30 border border-white/10"
+        className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800/90 to-emerald-950/30 p-4 sm:p-6 text-white shadow-xl shadow-black/30 border border-white/10"
       >
         {/* decorative circles */}
         <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10" />

@@ -26,7 +26,7 @@ export function ProtectedRoute({
   requireAdmin = false,
   stableOnly = false,
 }: ProtectedRouteProps) {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading, isAuthenticated, error } = useAuth();
   const [, setLocation] = useLocation();
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
 
@@ -53,10 +53,10 @@ export function ProtectedRoute({
   useEffect(() => {
     if (loading) return;
 
-    if (!isAuthenticated) {
-      // Redirect to login. If OAuth is configured use the OAuth URL,
-      // otherwise fall back to the built-in /login route so we never
-      // produce an invalid URL (which causes a 404).
+    // If there's a network/fetch error but we had a previous user in cache,
+    // don't redirect — the user may still have a valid session and just had
+    // a momentary network issue. Only redirect if we definitively have no auth.
+    if (!isAuthenticated && !error) {
       const oauthUrl = getLoginUrl();
       const returnUrl = encodeURIComponent(
         window.location.pathname + window.location.search,
@@ -65,6 +65,19 @@ export function ProtectedRoute({
         ? `${oauthUrl}&returnUrl=${returnUrl}`
         : `/login?returnUrl=${returnUrl}`;
       window.location.href = loginUrl;
+      return;
+    }
+
+    // If there's a network error but no cached user, redirect to login
+    if (!isAuthenticated && error) {
+      // Check if we have cached user info — if so, don't redirect yet
+      const cachedUser = localStorage.getItem("equiprofile-user-info");
+      if (!cachedUser) {
+        const loginUrl = `/login?returnUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+        window.location.href = loginUrl;
+        return;
+      }
+      // If we have cached user but server returned error, wait for retry
       return;
     }
 
@@ -80,6 +93,7 @@ export function ProtectedRoute({
   }, [
     loading,
     isAuthenticated,
+    error,
     requireAdmin,
     stableOnly,
     isStablePlan,

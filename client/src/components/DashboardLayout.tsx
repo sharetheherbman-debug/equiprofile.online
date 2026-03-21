@@ -517,7 +517,7 @@ function DashboardLayoutContent({
             </div>
           </div>
         )}
-        <main className={`flex-1 p-4 sm:p-5 md:p-6 ${isMobile ? "pb-20" : ""}`}>
+        <main className={`flex-1 p-3 sm:p-5 md:p-6 ${isMobile ? "pb-20" : ""}`}>
           {children}
         </main>
 
