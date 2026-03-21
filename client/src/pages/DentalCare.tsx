@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
@@ -235,6 +236,7 @@ function DentalCareContent() {
               <DialogTitle>
                 {editingId ? "Edit Dental Record" : "New Dental Record"}
               </DialogTitle>
+              <DialogDescription className="sr-only">Manage dental care record details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">

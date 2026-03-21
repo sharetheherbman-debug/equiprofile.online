@@ -96,6 +96,7 @@ export default function Settings() {
     feedingReminders: true,
     weatherAlerts: true,
     weeklyDigest: true,
+    trainingCalendarIntegration: false,
   });
 
   // Sync notification prefs from server when loaded
@@ -512,6 +513,12 @@ export default function Settings() {
                         key: "weeklyDigest",
                         label: "Weekly Digest",
                         description: "Receive a weekly summary of activities",
+                      },
+                      {
+                        key: "trainingCalendarIntegration",
+                        label: "Training → Calendar Auto-Events",
+                        description:
+                          "When you apply a training template to a horse, automatically create calendar events for each training session in the plan.",
                       },
                     ].map((item) => (
                       <div

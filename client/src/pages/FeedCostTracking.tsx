@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
@@ -156,6 +157,7 @@ function FeedCostContent() {
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Record Feed Expense</DialogTitle>
+              <DialogDescription className="sr-only">Manage feed cost tracking details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>

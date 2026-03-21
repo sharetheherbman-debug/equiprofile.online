@@ -62,6 +62,11 @@ const queryClient = new QueryClient({
         return failureCount < 1;
       },
       staleTime: 60 * 1000, // 1 minute default stale time
+      // Disable automatic refetch on window focus globally to prevent request
+      // storms when users switch tabs. Sensitive queries (auth.me) opt back in
+      // explicitly with refetchOnWindowFocus: true at the call site.
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     },
     mutations: {
       retry: false,

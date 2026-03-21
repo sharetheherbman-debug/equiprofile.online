@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
@@ -199,6 +200,7 @@ function NutritionLogsContent() {
               <DialogTitle>
                 {editingLog ? "Edit" : "Add"} Nutrition Log
               </DialogTitle>
+              <DialogDescription className="sr-only">Manage nutrition log details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">

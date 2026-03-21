@@ -24,6 +24,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "../components/ui/dialog";
 import { trpc } from "../_core/trpc";
 import {
@@ -386,6 +387,7 @@ function RideTrackingContent() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Save Ride</DialogTitle>
+            <DialogDescription className="sr-only">Manage ride session details</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3 p-3 bg-muted rounded-lg text-sm">

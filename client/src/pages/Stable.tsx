@@ -33,6 +33,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "../components/ui/dialog";
 import {
@@ -397,6 +398,7 @@ export default function StablePage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create Your Stable</DialogTitle>
+            <DialogDescription className="sr-only">Manage stable management details</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -456,6 +458,7 @@ export default function StablePage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Invite a Member</DialogTitle>
+            <DialogDescription className="sr-only">Manage stable management details</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">

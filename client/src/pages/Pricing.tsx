@@ -252,7 +252,7 @@ export default function Pricing() {
           imageSrc="/images/price3.jpg"
           imagePosition="center"
         />
-        <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="min-h-screen bg-[#0a1628] bg-gradient-to-br from-[#0a1628] via-[#0f1f45] to-[#0a1628] flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="w-12 h-12 animate-spin text-cyan-400 mx-auto mb-4" />
             <p className="text-gray-400">Loading pricing information...</p>
@@ -270,7 +270,7 @@ export default function Pricing() {
         imageSrc="/images/price3.jpg"
         imagePosition="center"
       />
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+      <div className="min-h-screen bg-[#0a1628] bg-gradient-to-br from-[#0a1628] via-[#0f1f45] to-[#0a1628]">
         <div className="container mx-auto px-4 py-16">
           {/* Top 3 Blocks - What's included, Free trial, Cancel anytime */}
           <motion.div

@@ -108,7 +108,28 @@ export function getRidingAdvice(weather: WeatherData): RidingAdvice {
   const { temperature, windSpeed, precipitation } = weather;
   const warnings: string[] = [];
 
-  // Excellent conditions
+  // Build warnings first — these are referenced in all non-excellent condition blocks below.
+  // The "excellent" early-return explicitly uses [] since no warnings apply in perfect conditions.
+  if (windSpeed > 40) {
+    warnings.push("Strong winds may spook horses and make riding hazardous");
+  }
+  if (temperature > 35) {
+    warnings.push("Very hot — risk of heat stress for horse and rider");
+  }
+  if (temperature < -5) {
+    warnings.push("Freezing temperatures — icy ground and stiff muscles");
+  }
+  if (precipitation > 10) {
+    warnings.push(
+      "Heavy rainfall — poor footing, reduced visibility, high slip risk",
+    );
+  } else if (precipitation > 3) {
+    warnings.push("Significant rain — wet ground increases slip risk");
+  } else if (precipitation > 0) {
+    warnings.push("Light rain — monitor footing and reduce speed");
+  }
+
+  // Excellent conditions (must be checked AFTER warnings are built)
   if (
     temperature >= 15 &&
     temperature <= 25 &&
@@ -119,26 +140,12 @@ export function getRidingAdvice(weather: WeatherData): RidingAdvice {
       suitable: true,
       level: "excellent",
       message:
-        "Perfect weather for riding! Clear skies and comfortable temperatures make this an ideal time for outdoor work.",
+        "Perfect conditions for riding. Clear weather and comfortable temperature — ideal for any outdoor activity.",
       warnings: [],
     };
   }
 
-  // Check for unsafe conditions
-  if (windSpeed > 40) {
-    warnings.push("Strong winds may spook horses");
-  }
-  if (temperature > 35) {
-    warnings.push("Very hot - risk of overheating");
-  }
-  if (temperature < -5) {
-    warnings.push("Freezing temperatures - risk of slippery conditions");
-  }
-  if (precipitation > 10) {
-    warnings.push("Heavy rainfall - poor visibility and slippery ground");
-  }
 
-  // Unsafe conditions
   if (
     windSpeed > 50 ||
     temperature > 38 ||
@@ -149,12 +156,12 @@ export function getRidingAdvice(weather: WeatherData): RidingAdvice {
       suitable: false,
       level: "unsafe",
       message:
-        "Weather conditions are unsafe for riding. Consider postponing or working indoors. Horse and rider safety should come first.",
+        "Outdoor riding is not safe in these conditions. Stay off the horse or confine all activity to a covered arena. Safety must come first.",
       warnings,
     };
   }
 
-  // Poor conditions
+  // Poor conditions — outdoor riding strongly discouraged
   if (
     windSpeed > 35 ||
     temperature > 32 ||
@@ -165,12 +172,14 @@ export function getRidingAdvice(weather: WeatherData): RidingAdvice {
       suitable: false,
       level: "poor",
       message:
-        "Conditions are not ideal for riding. If you must ride, keep sessions short and monitor your horse closely. Indoor arena work recommended.",
+        precipitation > 5
+          ? "Heavy rain makes outdoor riding inadvisable — wet ground is slippery and dangerous. Stick to indoor work or groundwork in a covered area."
+          : "Outdoor conditions are poor. Keep any sessions short, stay in the arena, and monitor your horse closely throughout.",
       warnings,
     };
   }
 
-  // Fair conditions
+  // Fair conditions — riding possible with caution
   if (
     windSpeed > 25 ||
     temperature > 28 ||
@@ -181,7 +190,9 @@ export function getRidingAdvice(weather: WeatherData): RidingAdvice {
       suitable: true,
       level: "fair",
       message:
-        "Riding is possible but conditions aren't perfect. Take extra precautions and be prepared to cut your session short if needed.",
+        precipitation > 2
+          ? "It is raining — outdoor riding is possible but use caution. Choose firm ground, keep to a steady pace, and shorten the session if conditions worsen."
+          : "Conditions are workable but not ideal. Take extra warm-up time, keep a close eye on your horse, and be ready to cut the session short.",
       warnings,
     };
   }
@@ -191,7 +202,7 @@ export function getRidingAdvice(weather: WeatherData): RidingAdvice {
     suitable: true,
     level: "good",
     message:
-      "Good weather for riding. Conditions are favorable for most activities. Stay alert and adjust your plans if weather changes.",
+      "Good conditions for riding. Most outdoor activities are suitable — stay alert to any changes.",
     warnings,
   };
 }

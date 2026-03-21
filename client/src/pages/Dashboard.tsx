@@ -615,10 +615,10 @@ function DashboardContent() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="grid grid-cols-1 lg:grid-cols-5 gap-4"
+        className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start"
       >
         {/* LEFT — Recent Activity (60%) */}
-        <div className="lg:col-span-3 space-y-4">
+        <div className="lg:col-span-3 flex flex-col gap-4">
           <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
             <CardHeader className="pb-3">
               <CardTitle className="font-serif text-base flex items-center gap-2">
@@ -696,7 +696,7 @@ function DashboardContent() {
         </div>
 
         {/* RIGHT — Upcoming Events + Health Alerts (40%) */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 flex flex-col gap-4">
           {/* Upcoming Events */}
           <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
             <CardHeader className="pb-3">
@@ -943,44 +943,12 @@ function DashboardContent() {
           </CardContent>
         </Card>
 
-        {/* Notifications & Tasks */}
-        <div className="space-y-4">
-          {/* Notifications */}
-          <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="font-serif text-base flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-amber-500" />
-                Notifications
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {healthAlerts.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-3">
-                  No alerts
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {healthAlerts.map((alert) => (
-                    <Link key={alert.id} href={alert.href}>
-                      <div className="flex items-center justify-between p-2 rounded-lg hover:bg-amber-100/50 dark:hover:bg-amber-900/20 transition-colors cursor-pointer">
-                        <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                          {alert.message}
-                        </p>
-                        <ChevronRight className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Tasks */}
-          <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
+        {/* Active Tasks */}
+        <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
             <CardHeader className="pb-3">
               <CardTitle className="font-serif text-base flex items-center gap-2">
                 <Clock className="w-4 h-4 text-blue-500" />
-                Tasks
+                Active Tasks
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -999,7 +967,7 @@ function DashboardContent() {
                 </div>
               ) : (
                 <div className="space-y-1.5">
-                  {tasks.slice(0, 4).map((task: any) => (
+                  {tasks.slice(0, 6).map((task: any) => (
                     <div
                       key={task.id}
                       className="flex items-center gap-2 p-2 rounded-lg border border-muted/40 bg-muted/20"
@@ -1025,7 +993,6 @@ function DashboardContent() {
               )}
             </CardContent>
           </Card>
-        </div>
       </motion.div>
 
       {/* ── Module Grid with Section Headers ──────────────── */}

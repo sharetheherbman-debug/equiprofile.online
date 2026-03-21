@@ -24,6 +24,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Badge } from "../components/ui/badge";
@@ -203,6 +204,7 @@ function EquinePassportContent() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Passport Identification Numbers</DialogTitle>
+                    <DialogDescription className="sr-only">Manage passport details</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>

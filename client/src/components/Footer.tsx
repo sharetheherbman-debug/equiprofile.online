@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import { Heart } from "lucide-react";
 
 export function Footer() {
   return (
@@ -114,10 +113,6 @@ export function Footer() {
               Amarkt<span className="text-blue-400 font-semibold">AI</span>{" "}
               Network
             </a>
-          </p>
-          <p className="flex items-center gap-1 text-xs text-gray-600">
-            Made with <Heart className="w-3 h-3 text-rose-500" /> for
-            equestrians
           </p>
         </div>
       </div>

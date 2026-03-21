@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
@@ -187,6 +188,7 @@ export default function Pedigree() {
                     <DialogTitle>
                       {pedigreeData ? "Edit Pedigree" : "Add Pedigree"}
                     </DialogTitle>
+                    <DialogDescription className="sr-only">Manage pedigree record</DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">

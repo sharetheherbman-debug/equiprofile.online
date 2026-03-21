@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
@@ -189,6 +190,7 @@ export default function Dewormings() {
                 <DialogTitle>
                   {editingId ? "Edit Deworming" : "Add Deworming"}
                 </DialogTitle>
+                <DialogDescription className="sr-only">Manage deworming record details</DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
