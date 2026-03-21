@@ -1403,10 +1403,10 @@ function TrainingTemplatesContent() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
           <h1 className="text-2xl font-bold font-serif">Training Templates</h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Reusable training programs you can apply to any horse. A template
-            defines a structured plan — apply it to create an active training
-            schedule for a specific horse.
+          <p className="text-muted-foreground mt-1 text-sm max-w-xl">
+            Create structured weekly training programmes that can be applied to
+            any horse. Choose a pre-designed template below or build your own.
+            When applied, sessions are scheduled to your calendar automatically.
           </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>

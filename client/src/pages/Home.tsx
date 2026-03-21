@@ -36,9 +36,10 @@ import {
   Smartphone,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { marketingAssets } from "@/config/marketingAssets";
+import { marketingAssets, heroSlides } from "@/config/marketingAssets";
 import { motion, AnimatePresence } from "framer-motion";
 import { coreFeatures, featureHighlights } from "@/content/features";
+import { ImageSlider } from "@/components/ImageSlider";
 
 const TESTIMONIAL_ROTATION_INTERVAL = 6000;
 
@@ -130,23 +131,19 @@ export default function Home() {
       <Navbar />
       <PageTransition>
         <div className="min-h-screen overflow-hidden bg-[#0a1628]">
-          {/* Hero Section with Video Background */}
-          <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-[72px]">
-            {/* Video Background */}
+          {/* Hero Section with Image Slider Background */}
+          <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-[72px]">
+            {/* Image Slider Background */}
             <div className="absolute inset-0 z-0">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="none"
-                poster={marketingAssets.hero.heroHorse}
-                className="w-full h-full object-cover"
-              >
-                <source src={marketingAssets.hero.video} type="video/mp4" />
-              </video>
-              {/* Black Transparent Overlay */}
-              <div className="absolute inset-0 bg-[#0a1628]/50" />
+              <ImageSlider
+                slides={heroSlides}
+                interval={6000}
+                showArrows={false}
+                showDots={false}
+                showText={false}
+                className="w-full h-full"
+                overlayClass="bg-[#0a1628]/50"
+              />
             </div>
 
             {/* Hero Content */}
@@ -589,7 +586,9 @@ export default function Home() {
                 {/* PWA install hint */}
                 <div className="mt-6 inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-2 text-white/70 text-xs backdrop-blur-sm">
                   <Smartphone className="w-3.5 h-3.5 shrink-0" />
-                  <span>Install as an app on iPhone or Android — works offline</span>
+                  <span>
+                    Install as an app on iPhone or Android — works offline
+                  </span>
                 </div>
               </motion.div>
             </div>

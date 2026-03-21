@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
-import { trpc } from "../_core/trpc";
+import { trpc } from "@/lib/trpc";
 import { MedicalPassport } from "../components/MedicalPassport";
 import { Button } from "../components/ui/button";
 import {

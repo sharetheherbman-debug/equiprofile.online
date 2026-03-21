@@ -4,7 +4,7 @@
  *
  * All assets are stored in /assets/marketing/ with organized subfolders:
  * - brand/: Logos and brand assets
- * - hero/: Hero section images and video
+ * - hero/: Hero section images
  * - landing/: Landing page images
  * - about/: About page images
  * - features/: Feature section icons and images
@@ -23,7 +23,7 @@ const MARKETING_BASE = "/assets/marketing";
  *
  * Example usage:
  *   import { marketingAssets } from '@/config/marketingAssets';
- *   <img src={marketingAssets.heroVideo} />
+ *   <img src={marketingAssets.hero.heroHorse} />
  */
 export const marketingAssets = {
   // ========================================
@@ -42,7 +42,6 @@ export const marketingAssets = {
   // Hero Section
   // ========================================
   hero: {
-    video: `${MARKETING_BASE}/hero/golive.mp4`,
     heroHorse: `${MARKETING_BASE}/hero/hero-horse.jpg`,
     heroStable: `${MARKETING_BASE}/hero/hero-stable.jpg`,
   },
@@ -98,7 +97,6 @@ export const marketingAssets = {
   // ========================================
   auth: {
     background: `${MARKETING_BASE}/auth/auth-bg.svg`,
-    video: `/videos/LoginRegister.mp4`,
   },
 
   // ========================================
@@ -107,7 +105,81 @@ export const marketingAssets = {
   dashboard: {
     preview: `${MARKETING_BASE}/dashboard/dashboard-preview.svg`,
   },
+
+  // ========================================
+  // Gallery (for sliders)
+  // ========================================
+  gallery: {
+    image1: `/images/gallery/1.jpg`,
+    image2: `/images/gallery/2.jpg`,
+    image10: `/images/gallery/10.jpg`,
+    image12: `/images/gallery/12.jpg`,
+    image15: `/images/gallery/15.jpg`,
+    image17: `/images/gallery/17.jpg`,
+    image18: `/images/gallery/18.jpg`,
+    image19: `/images/gallery/19.jpg`,
+    image20: `/images/gallery/20.jpg`,
+    image21: `/images/gallery/21.jpg`,
+    image23: `/images/gallery/23.jpg`,
+  },
 } as const;
+
+/** Slides for the landing page hero image slider */
+export const heroSlides = [
+  {
+    image: marketingAssets.hero.heroHorse,
+    title: "Professional Horse Management",
+    subtitle:
+      "Everything you need to keep your horses healthy and performing their best.",
+  },
+  {
+    image: marketingAssets.hero.heroStable,
+    title: "Your Stable, Organised",
+    subtitle:
+      "Health records, training logs, nutrition plans — all in one place.",
+  },
+  {
+    image: marketingAssets.landing.training,
+    title: "Training & Progress Tracking",
+    subtitle: "Monitor every session, track trends, and celebrate progress.",
+  },
+  {
+    image: marketingAssets.landing.ridingLesson,
+    title: "Smarter Decisions, Happier Horses",
+    subtitle:
+      "AI-powered weather analysis and real-time riding recommendations.",
+  },
+  {
+    image: marketingAssets.landing.stable,
+    title: "Built for Professionals",
+    subtitle:
+      "From single-horse owners to multi-horse stables — scale as you grow.",
+  },
+];
+
+/** Slides for the auth (login/register) image slider */
+export const authSlides = [
+  {
+    image: `/images/gallery/1.jpg`,
+    caption: "Track every detail of your horse's health",
+  },
+  {
+    image: `/images/gallery/2.jpg`,
+    caption: "Organised training logs and analytics",
+  },
+  {
+    image: `/images/gallery/10.jpg`,
+    caption: "Beautiful interface, powerful features",
+  },
+  {
+    image: `/images/gallery/17.jpg`,
+    caption: "Manage your stable with confidence",
+  },
+  {
+    image: `/images/gallery/21.jpg`,
+    caption: "Join thousands of equestrians",
+  },
+];
 
 /**
  * Helper function to get all asset paths as an array
@@ -135,7 +207,7 @@ export function getAllAssetPaths(): string[] {
  */
 export const assetInventory = {
   totalImages: 26,
-  totalVideos: 2,
+  totalVideos: 0,
   breakdown: {
     brand: 6,
     hero: 2,
@@ -146,5 +218,6 @@ export const assetInventory = {
     contact: 1,
     auth: 1,
     dashboard: 1,
+    gallery: 11,
   },
 };

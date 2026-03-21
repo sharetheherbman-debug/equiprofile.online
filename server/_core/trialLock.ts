@@ -20,8 +20,17 @@ const EXEMPT_PATHS = [
   "/api/billing",
   "/api/health",
   "/api/build",
-  "/trpc/billing.", // Allow billing-related TRPC calls
+  "/trpc/billing.", // Allow billing-related TRPC calls (prefix match: billing.*)
   "/trpc/user.getProfile", // Allow getting profile
+  "/trpc/user.getOnboardingStatus", // Allow onboarding status checks
+  "/trpc/user.updateOnboardingStep", // Allow onboarding progress
+  "/trpc/user.completeOnboarding", // Allow completing onboarding
+  "/trpc/user.setExperience", // Allow setting experience during onboarding
+  "/trpc/user.getSubscriptionStatus", // Allow subscription status checks
+  "/trpc/user.dismissTour", // Allow dismissing tours
+  "/trpc/user.dismissTip", // Allow dismissing tips
+  "/trpc/user.updateActivationChecklist", // Allow activation tracking
+  "/trpc/auth.", // Allow all auth-related TRPC calls (prefix match: auth.*)
 ];
 
 /**

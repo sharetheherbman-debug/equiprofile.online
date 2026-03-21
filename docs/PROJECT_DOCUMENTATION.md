@@ -85,7 +85,7 @@ client/
 ├── public/
 │   ├── assets/
 │   │   ├── marketing/          # All marketing/public assets
-│   │   │   ├── hero/           # Hero section: landingfinal.mp4, hero-horse.jpg
+│   │   │   ├── hero/           # Hero section: hero-horse.jpg, hero-stable.jpg
 │   │   │   ├── auth/           # Auth pages: auth-bg.svg
 │   │   │   ├── brand/          # Logo SVGs, horse illustrations
 │   │   │   ├── features/       # Feature icons (SVG)
@@ -102,7 +102,7 @@ client/
 │   │   ├── price3.jpg          # Pricing page image
 │   │   └── stable.jpg          # Features page
 │   ├── videos/
-│   │   └── loginfinal.mp4      # Auth pages background video
+│   │   └── .gitkeep             # Auth uses image slider from gallery
 │   ├── favicon.svg
 │   ├── manifest.json
 │   ├── robots.txt
@@ -541,10 +541,10 @@ CodeQL JavaScript analysis returns **0 alerts** on the current codebase. The SPA
 
 ### Video / Media
 
-- **Hero video**: `landingfinal.mp4` (3.8MB) with `preload="none"` and `poster` fallback image — defers video load until after initial paint
-- **Auth video**: `/videos/loginfinal.mp4` with `preload="none"`
+- **Hero slider**: Image slider using existing hero/landing images with auto-rotation
+- **Auth slider**: Image slider using gallery images for login/register pages
 - **LCP preload hint**: `<link rel="preload" fetchpriority="high">` for hero poster image
-- **Unused assets removed**: Gallery images reduced from 22 to 11, old hero.mp4 (5.9MB) removed
+- **Unused assets removed**: All MP4 video files removed, replaced with image sliders. Gallery images reduced from 22 to 11
 
 ### CSS
 

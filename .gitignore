@@ -99,5 +99,6 @@ uploads/
 .cache/
 .parcel-cache/
 # Root-level video assets (served from client/public/videos/ and client/public/assets/marketing/)
-/landingfinal.mp4
+# All MP4 video files removed from repo - using image sliders instead
+*.mp4
 dist/

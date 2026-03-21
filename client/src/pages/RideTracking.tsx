@@ -26,7 +26,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../components/ui/dialog";
-import { trpc } from "../_core/trpc";
+import { trpc } from "@/lib/trpc";
 import {
   Play,
   Square,

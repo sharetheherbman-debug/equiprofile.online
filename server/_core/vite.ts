@@ -89,7 +89,6 @@ export function serveStatic(app: Express) {
     ".gif",
     ".ico",
     ".txt",
-    ".mp4",
     ".webm",
   ];
 

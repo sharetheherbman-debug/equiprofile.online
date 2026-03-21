@@ -21,13 +21,17 @@ export function useAuth(options?: UseAuthOptions) {
   const utils = trpc.useUtils();
 
   const meQuery = trpc.auth.me.useQuery(undefined, {
-    retry: 1,
-    retryDelay: 1000,
-    // Keep staleTime short so that after logout the next mount always
-    // fetches a fresh session check rather than serving stale data.
-    staleTime: 30000,
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
+    // Keep staleTime moderate so frequent re-fetches don't cause unnecessary
+    // flicker or race conditions. 60s is enough to detect logout quickly
+    // while avoiding excessive network requests.
+    staleTime: 60_000,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
+    // Keep cached data while refetching in background to prevent flash
+    // of unauthenticated state during network requests
+    placeholderData: (prev: any) => prev,
   });
 
   const logoutMutation = trpc.auth.logout.useMutation({

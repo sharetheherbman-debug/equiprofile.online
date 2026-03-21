@@ -1,9 +1,11 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Loader2 } from "lucide-react";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
+import { OnboardingWizard } from "./OnboardingWizard";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -16,6 +18,7 @@ interface ProtectedRouteProps {
  *
  * Ensures user is authenticated before rendering children.
  * Redirects to login if not authenticated.
+ * Shows the onboarding wizard on first login.
  * Optionally can require admin role or stable plan.
  */
 export function ProtectedRoute({
@@ -23,8 +26,14 @@ export function ProtectedRoute({
   requireAdmin = false,
   stableOnly = false,
 }: ProtectedRouteProps) {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading, isAuthenticated, error } = useAuth();
   const [, setLocation] = useLocation();
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+
+  const onboardingQuery = trpc.user.getOnboardingStatus.useQuery(undefined, {
+    enabled: isAuthenticated,
+    staleTime: 60_000,
+  });
 
   const isStablePlan = (() => {
     if (!user?.preferences) return false;
@@ -36,15 +45,19 @@ export function ProtectedRoute({
     }
   })();
 
+  const handleOnboardingComplete = useCallback(() => {
+    setOnboardingDismissed(true);
+    onboardingQuery.refetch();
+  }, [onboardingQuery]);
+
   useEffect(() => {
     if (loading) return;
 
-    if (!isAuthenticated) {
-      // Redirect to login. If OAuth is configured use the OAuth URL,
-      // otherwise fall back to the built-in /login route so we never
-      // produce an invalid URL (which causes a 404).
+    // If there's a network/fetch error but we had a previous user in cache,
+    // don't redirect — the user may still have a valid session and just had
+    // a momentary network issue. Only redirect if we definitively have no auth.
+    if (!isAuthenticated && !error) {
       const oauthUrl = getLoginUrl();
-      const baseUrl = oauthUrl || "/login";
       const returnUrl = encodeURIComponent(
         window.location.pathname + window.location.search,
       );
@@ -52,6 +65,19 @@ export function ProtectedRoute({
         ? `${oauthUrl}&returnUrl=${returnUrl}`
         : `/login?returnUrl=${returnUrl}`;
       window.location.href = loginUrl;
+      return;
+    }
+
+    // If there's a network error but no cached user, redirect to login
+    if (!isAuthenticated && error) {
+      // Check if we have cached user info — if so, don't redirect yet
+      const cachedUser = localStorage.getItem("equiprofile-user-info");
+      if (!cachedUser) {
+        const loginUrl = `/login?returnUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+        window.location.href = loginUrl;
+        return;
+      }
+      // If we have cached user but server returned error, wait for retry
       return;
     }
 
@@ -67,6 +93,7 @@ export function ProtectedRoute({
   }, [
     loading,
     isAuthenticated,
+    error,
     requireAdmin,
     stableOnly,
     isStablePlan,
@@ -101,7 +128,23 @@ export function ProtectedRoute({
     return null;
   }
 
-  return <>{children}</>;
+  // Show onboarding wizard if not completed
+  const showOnboarding =
+    !onboardingDismissed &&
+    onboardingQuery.data &&
+    !onboardingQuery.data.completed;
+
+  return (
+    <>
+      {showOnboarding && (
+        <OnboardingWizard
+          userName={user?.name || ""}
+          onComplete={handleOnboardingComplete}
+        />
+      )}
+      {children}
+    </>
+  );
 }
 
 /**

@@ -243,16 +243,16 @@ export default function QAChecklistPage() {
     },
   ];
 
-  const videoChecks: CheckItem[] = [
+  const mediaChecks: CheckItem[] = [
     {
-      label: "Landing page video",
+      label: "Landing page image slider",
       status: "ok",
-      detail: "/assets/marketing/hero/landing2.mp4",
+      detail: "Hero uses ImageSlider with 5 rotating slides",
     },
     {
-      label: "Login/Register video",
+      label: "Login/Register image slider",
       status: "ok",
-      detail: "/videos/LoginRegister.mp4 (AuthSplitLayout)",
+      detail: "AuthSplitLayout uses ImageSlider with 5 gallery images",
     },
     {
       label: "Auth layout starts at top",
@@ -332,7 +332,7 @@ export default function QAChecklistPage() {
           checks={featureChecks}
         />
         <Section title="Routing & UI Fixes" checks={routeChecks} />
-        <Section title="Videos & Auth Layout" checks={videoChecks} />
+        <Section title="Media Videos & Auth Layout Auth Layout" checks={mediaChecks} />
         <Section title="Image Uploads" checks={uploadChecks} />
 
         <div className="text-xs text-muted-foreground text-center pt-2">

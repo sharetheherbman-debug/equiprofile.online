@@ -485,7 +485,7 @@ export default function Pricing() {
                       </ul>
                     </CardContent>
 
-                    <CardFooter className="flex-col gap-2 mt-auto">
+                    <CardFooter className="flex-col gap-2 mt-auto pt-6">
                       {isCurrentPlanActive ? (
                         <>
                           <Button

@@ -280,7 +280,7 @@ check_env_vars() {
 # ──────────────────────────────────────────────────────────────────────────────
 check_static_assets() {
   local assets=(
-    "/assets/marketing/hero/hero.mp4"
+    "/assets/marketing/hero/hero-horse.jpg"
     "/images/hero-horse.jpg"
     "/images/riding-lesson.jpg"
     "/images/gallery/1.jpg"

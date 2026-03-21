@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
   Card,
@@ -10,6 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StatsOverview } from "@/components/StatsOverview";
+import { ActivationChecklist } from "@/components/ActivationChecklist";
+import { GuidedTour, type TourStep } from "@/components/GuidedTour";
+import { ContextualTip } from "@/components/ContextualTip";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
@@ -296,6 +300,11 @@ function DashboardContent() {
     retry: false,
   });
   const { data: subscription } = trpc.user.getSubscriptionStatus.useQuery();
+  const { data: onboarding } = trpc.user.getOnboardingStatus.useQuery(
+    undefined,
+    { staleTime: 60_000 },
+  );
+  const updateChecklist = trpc.user.updateActivationChecklist.useMutation();
   const { data: trainingStats } = trpc.analytics.getTrainingStats.useQuery(
     {},
     { retry: false },
@@ -340,6 +349,18 @@ function DashboardContent() {
     },
     { retry: false, staleTime: 5 * 60 * 1000 },
   );
+
+  // Mark "viewedDashboard" activation checklist item on first visit
+  useEffect(() => {
+    if (
+      onboarding?.completed &&
+      onboarding.activationChecklist &&
+      !onboarding.activationChecklist.viewedDashboard
+    ) {
+      updateChecklist.mutate({ item: "viewedDashboard", value: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onboarding?.completed, onboarding?.activationChecklist?.viewedDashboard]);
 
   const getSubscriptionBadge = () => {
     if (!subscription) return null;
@@ -471,14 +492,55 @@ function DashboardContent() {
         ]
       : [];
 
+  // Dashboard guided tour steps
+  const dashboardTourSteps: TourStep[] = [
+    {
+      title: "Your Dashboard",
+      content:
+        "Welcome! This is your equestrian command centre. Everything you need is accessible from here.",
+    },
+    {
+      title: "Quick Stats",
+      content:
+        "At the top you'll see a live overview of your horses, upcoming events, and weather conditions.",
+    },
+    {
+      title: "Module Grid",
+      content:
+        "Below are all the tools available to you — horse profiles, health records, training plans, documents and more. Click any card to get started.",
+    },
+    {
+      title: "Sidebar Navigation",
+      content:
+        "Use the sidebar (or the bottom menu on mobile) to jump between sections quickly.",
+    },
+  ];
+
+  const userPrefs = (() => {
+    try {
+      return JSON.parse(user?.preferences || "{}");
+    } catch {
+      return {};
+    }
+  })();
+
+  const showDashboardTour = (() => {
+    if (!onboarding?.completed) return false;
+    return !(userPrefs.dismissedTours || []).includes("dashboard");
+  })();
+
   return (
-    <div className="space-y-6 pb-6">
+    <div className="space-y-4 sm:space-y-6 pb-4 sm:pb-6">
+      {/* ── Dashboard Guided Tour ─────────────────────────────── */}
+      {showDashboardTour && (
+        <GuidedTour tourId="dashboard" steps={dashboardTourSteps} />
+      )}
       {/* ── Hero Section ─────────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800/90 to-emerald-950/30 p-6 text-white shadow-xl shadow-black/30 border border-white/10"
+        className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800/90 to-emerald-950/30 p-4 sm:p-6 text-white shadow-xl shadow-black/30 border border-white/10"
       >
         {/* decorative circles */}
         <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10" />
@@ -507,6 +569,23 @@ function DashboardContent() {
           </div>
         </div>
       </motion.div>
+
+      {/* ── Activation Checklist (trial users only) ───────────── */}
+      {subscription?.status === "trial" &&
+        onboarding?.completed &&
+        onboarding.activationChecklist && (
+          <ActivationChecklist items={onboarding.activationChecklist} />
+        )}
+
+      {/* ── Dashboard contextual tip ─────────────────────────── */}
+      {onboarding?.completed && (
+        <ContextualTip
+          tipId="dashboard-welcome"
+          title="Welcome to your dashboard"
+          message="This is your command centre. Explore the modules below to manage your horses, health records, training and more."
+          dismissedTips={userPrefs.dismissedTips || []}
+        />
+      )}
 
       {/* ── Quick-Access Stat Cards ───────────────────────────── */}
       <motion.div
@@ -945,54 +1024,54 @@ function DashboardContent() {
 
         {/* Active Tasks */}
         <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="font-serif text-base flex items-center gap-2">
-                <Clock className="w-4 h-4 text-blue-500" />
-                Active Tasks
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {tasks.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground">
-                  <p className="text-xs">No pending tasks</p>
-                  <Link href="/tasks">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-2 text-xs h-7"
-                    >
-                      Add task
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="space-y-1.5">
-                  {tasks.slice(0, 6).map((task: any) => (
+          <CardHeader className="pb-3">
+            <CardTitle className="font-serif text-base flex items-center gap-2">
+              <Clock className="w-4 h-4 text-blue-500" />
+              Active Tasks
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {tasks.length === 0 ? (
+              <div className="text-center py-4 text-muted-foreground">
+                <p className="text-xs">No pending tasks</p>
+                <Link href="/tasks">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-2 text-xs h-7"
+                  >
+                    Add task
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                {tasks.slice(0, 6).map((task: any) => (
+                  <div
+                    key={task.id}
+                    className="flex items-center gap-2 p-2 rounded-lg border border-muted/40 bg-muted/20"
+                  >
                     <div
-                      key={task.id}
-                      className="flex items-center gap-2 p-2 rounded-lg border border-muted/40 bg-muted/20"
-                    >
-                      <div
-                        className={`w-2 h-2 rounded-full shrink-0 ${task.priority === "high" ? "bg-red-500" : task.priority === "medium" ? "bg-amber-500" : "bg-green-500"}`}
-                      />
-                      <p className="text-xs font-medium truncate flex-1">
-                        {task.title}
-                      </p>
-                    </div>
-                  ))}
-                  <Link href="/tasks">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full text-xs text-muted-foreground hover:text-foreground mt-1"
-                    >
-                      View all tasks <ChevronRight className="w-3 h-3 ml-1" />
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                      className={`w-2 h-2 rounded-full shrink-0 ${task.priority === "high" ? "bg-red-500" : task.priority === "medium" ? "bg-amber-500" : "bg-green-500"}`}
+                    />
+                    <p className="text-xs font-medium truncate flex-1">
+                      {task.title}
+                    </p>
+                  </div>
+                ))}
+                <Link href="/tasks">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs text-muted-foreground hover:text-foreground mt-1"
+                  >
+                    View all tasks <ChevronRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </motion.div>
 
       {/* ── Module Grid with Section Headers ──────────────── */}

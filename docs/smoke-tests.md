@@ -59,9 +59,9 @@ Access the interactive QA dashboard at `/qa-check` (requires login + admin unloc
 
 ### Videos
 
-- [ ] Landing page (`/`) — hero background video plays (`landingfinal.mp4`)
-- [ ] Login page (`/login`) — background video plays (`LoginFinal2.mp4`)
-- [ ] Register page (`/register`) — background video plays (`LoginFinal2.mp4`)
+- [ ] Landing page (`/`) — hero image slider rotates through slides
+- [ ] Login page (`/login`) — image slider shows gallery images
+- [ ] Register page (`/register`) — image slider shows gallery images
 
 ### Auth Layout
 
@@ -98,9 +98,9 @@ Access the interactive QA dashboard at `/qa-check` (requires login + admin unloc
 
 | Page                   | Asset Path                                |
 | ---------------------- | ----------------------------------------- |
-| Landing (`/`)          | `/assets/marketing/hero/landingfinal.mp4` |
-| Login (`/login`)       | `/videos/LoginFinal2.mp4`                 |
-| Register (`/register`) | `/videos/LoginFinal2.mp4`                 |
+| Landing (`/`)          | Image slider (hero + landing images)      |
+| Login (`/login`)       | Image slider (gallery images)             |
+| Register (`/register`) | Image slider (gallery images)             |
 
 Both assets are served as static files from `client/public/`.
 
@@ -108,7 +108,7 @@ Both assets are served as static files from `client/public/`.
 
 | File                                   | Change                                             |
 | -------------------------------------- | -------------------------------------------------- |
-| `client/public/videos/LoginFinal2.mp4` | Moved from repo root to correct public path        |
-| `client/src/config/marketingAssets.ts` | Updated `auth.video` to `/videos/LoginFinal2.mp4`  |
+| All MP4 files removed                  | Replaced with image sliders using existing images  |
+| `client/src/config/marketingAssets.ts` | Removed video refs, added slider image arrays      |
 | `client/src/pages/QAChecklist.tsx`     | Added Videos, Auth Layout, and Image Upload checks |
-| `.gitignore`                           | Excluded root-level `landingfinal.mp4` duplicate   |
+| `client/src/components/ImageSlider.tsx` | New reusable image slider component               |

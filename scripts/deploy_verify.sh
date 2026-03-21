@@ -159,18 +159,18 @@ done
 # ── 8. Static Assets ──────────────────────────────────────────────────────
 header "8. Static Assets"
 
-hero_status=$(http_status "$BASE_URL/assets/marketing/hero/LANDINGPAGEV2.mp4")
-if [ "$hero_status" = "200" ] || [ "$hero_status" = "206" ]; then
-  pass "Hero video LANDINGPAGEV2.mp4 accessible"
+hero_img_status=$(http_status "$BASE_URL/assets/marketing/hero/hero-horse.jpg")
+if [ "$hero_img_status" = "200" ]; then
+  pass "Hero image hero-horse.jpg accessible"
 else
-  warn "Hero video LANDINGPAGEV2.mp4 returned $hero_status (may be normal if using CDN)"
+  warn "Hero image hero-horse.jpg returned $hero_img_status"
 fi
 
-auth_video_status=$(http_status "$BASE_URL/videos/LoginFinal2.mp4")
-if [ "$auth_video_status" = "200" ] || [ "$auth_video_status" = "206" ]; then
-  pass "Auth video LoginFinal2.mp4 accessible"
+gallery_status=$(http_status "$BASE_URL/images/gallery/1.jpg")
+if [ "$gallery_status" = "200" ]; then
+  pass "Gallery image accessible"
 else
-  warn "Auth video LoginFinal2.mp4 returned $auth_video_status (may be normal if using CDN)"
+  warn "Gallery image returned $gallery_status"
 fi
 
 # ── 9. API Safety Net ─────────────────────────────────────────────────────

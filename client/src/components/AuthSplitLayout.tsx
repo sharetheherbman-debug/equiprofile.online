@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { marketingAssets } from "@/config/marketingAssets";
+import { ImageSlider } from "@/components/ImageSlider";
+import { authSlides } from "@/config/marketingAssets";
 
 interface AuthSplitLayoutProps {
   children: ReactNode;
@@ -9,39 +10,36 @@ interface AuthSplitLayoutProps {
 /**
  * Auth Split Layout Component
  *
- * Desktop (md+): 50/50 split — left panel plays the auth video, right panel
+ * Desktop (md+): 50/50 split — left panel shows an image slider, right panel
  * hosts the form. The outer wrapper is locked to exactly one viewport height
  * (h-screen overflow-hidden) so there is zero page scroll on desktop.
- * The video panel starts from the very top of the screen and sits behind the
+ * The image panel starts from the very top of the screen and sits behind the
  * fixed navbar (z-50), giving a seamless edge-to-edge look.
  *
- * Mobile: Video fills the full background (including behind the navbar).
- * The panel itself is transparent so the video remains visible all around.
+ * Mobile: First image fills the background (including behind the navbar).
+ * The panel itself is transparent so the image remains visible all around.
  * Only the Card (form block) carries the glass-morphism effect via its own
  * backdrop-blur / bg classes.
  */
 export function AuthSplitLayout({ children }: AuthSplitLayoutProps) {
   return (
     <div className="w-full relative flex flex-col min-h-screen md:flex-row md:h-screen md:overflow-hidden md:bg-[#0a1628]">
-      {/* Video panel — absolute full-bg on mobile, left 50% on desktop.
+      {/* Image slider panel — absolute full-bg on mobile, left 50% on desktop.
           No top padding so it extends behind the fixed navbar. */}
       <div className="absolute inset-0 md:relative md:inset-auto md:w-1/2 md:flex-shrink-0 overflow-hidden">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="none"
-          className="w-full h-full object-cover"
-        >
-          <source src={marketingAssets.auth.video} type="video/mp4" />
-        </video>
-        {/* Mobile: very light scrim so the card stands out against the video */}
-        <div className="absolute inset-0 bg-black/30 md:hidden" />
+        <ImageSlider
+          slides={authSlides}
+          interval={6000}
+          showArrows={false}
+          showDots={true}
+          showText={true}
+          className="w-full h-full"
+          overlayClass="bg-black/30"
+        />
       </div>
 
       {/* Form panel
-          Mobile:  transparent + natural height so the video shows through
+          Mobile:  transparent + natural height so the image shows through
                    everywhere except the Card itself (which has its own glass).
                    pt-[72px] keeps the form content below the fixed navbar.
           Desktop: solid dark right half, locked height — no scroll.

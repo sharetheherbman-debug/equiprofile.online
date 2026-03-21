@@ -1,9 +1,15 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Clock } from "lucide-react";
+import { Clock, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
+import { motion } from "framer-motion";
 
+/**
+ * Trial-countdown banner shown at the top of protected pages.
+ *
+ * Only visible when `subscriptionStatus === "trial"` — paid / active
+ * users never see it. Admins are also excluded.
+ */
 export function TrialBanner() {
   const { user } = useAuth();
 
@@ -28,71 +34,63 @@ export function TrialBanner() {
     return null;
   }
 
-  // Trial ending soon (2 days or less)
-  if (isTrialActive && trialDaysLeft <= 2) {
-    return (
-      <Alert
-        variant="destructive"
-        className="border-orange-600 bg-orange-50 dark:bg-orange-950/20"
-      >
-        <Clock className="h-4 w-4 text-orange-600" />
-        <AlertDescription className="flex items-center justify-between w-full">
-          <span className="text-sm">
-            <strong>Trial ending soon!</strong> You have {trialDaysLeft}{" "}
-            {trialDaysLeft === 1 ? "day" : "days"} left. Subscribe to keep your
-            data and continue using all features.
-          </span>
-          <Link href="/billing">
-            <Button
-              variant="default"
-              size="sm"
-              className="ml-4 bg-orange-600 hover:bg-orange-700"
-            >
-              Upgrade Now
-            </Button>
-          </Link>
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  const isUrgent = isTrialActive && trialDaysLeft <= 2;
 
-  // Active trial (more than 2 days left)
-  if (isTrialActive) {
-    return (
-      <Alert className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900">
-        <Clock className="h-4 w-4 text-blue-600" />
-        <AlertDescription className="flex items-center justify-between w-full">
-          <span className="text-sm text-blue-900 dark:text-blue-100">
-            <strong>Free Trial:</strong> {trialDaysLeft} days remaining.
-            Enjoying EquiProfile?{" "}
-            <Link href="/billing" className="underline font-medium">
-              Subscribe now
-            </Link>
-          </span>
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  if (!isTrialActive && !isTrialExpired) return null;
 
-  // Trial expired
-  if (isTrialExpired) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription className="flex items-center justify-between w-full">
-          <span className="text-sm">
-            <strong>Trial Ended:</strong> Your free trial has expired. Subscribe
-            now to regain access to all features.
-          </span>
-          <Link href="/billing">
-            <Button variant="default" size="sm" className="ml-4">
-              Subscribe
-            </Button>
-          </Link>
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`rounded-xl border p-3 px-4 mb-4 flex items-center justify-between gap-3 flex-wrap ${
+        isTrialExpired
+          ? "bg-red-950/40 border-red-500/30"
+          : isUrgent
+            ? "bg-amber-950/40 border-amber-500/30"
+            : "bg-indigo-950/30 border-indigo-500/20"
+      }`}
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <Clock
+          className={`w-4 h-4 shrink-0 ${
+            isTrialExpired
+              ? "text-red-400"
+              : isUrgent
+                ? "text-amber-400"
+                : "text-indigo-400"
+          }`}
+        />
+        <p
+          className={`text-sm ${
+            isTrialExpired
+              ? "text-red-300"
+              : isUrgent
+                ? "text-amber-300"
+                : "text-gray-300"
+          }`}
+        >
+          {isTrialExpired
+            ? "Your free trial has ended. Subscribe to keep your data and continue using all features."
+            : isUrgent
+              ? `Trial ending soon! ${trialDaysLeft} day${trialDaysLeft === 1 ? "" : "s"} left. Subscribe to keep your data.`
+              : `Free Trial: ${trialDaysLeft} day${trialDaysLeft === 1 ? "" : "s"} remaining. Enjoying EquiProfile?`}
+        </p>
+      </div>
 
-  return null;
+      <Link href="/billing">
+        <Button
+          size="sm"
+          className={`shrink-0 text-white border-0 shadow-lg text-xs h-8 ${
+            isTrialExpired || isUrgent
+              ? "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 shadow-amber-500/20"
+              : "bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 shadow-indigo-500/20"
+          }`}
+        >
+          {isTrialExpired ? "Subscribe" : "View Plans"}
+          <ArrowRight className="w-3 h-3 ml-1" />
+        </Button>
+      </Link>
+    </motion.div>
+  );
 }
