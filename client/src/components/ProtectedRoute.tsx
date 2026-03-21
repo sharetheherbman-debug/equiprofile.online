@@ -18,7 +18,7 @@ interface ProtectedRouteProps {
  *
  * Ensures user is authenticated before rendering children.
  * Redirects to login if not authenticated.
- * Shows the onboarding wizard on first login.
+ * Shows the onboarding wizard on first login (unless already completed/skipped).
  * Optionally can require admin role or stable plan.
  */
 export function ProtectedRoute({
@@ -35,6 +35,8 @@ export function ProtectedRoute({
     staleTime: 60_000,
   });
 
+  const skipOnboarding = trpc.user.skipOnboarding.useMutation();
+
   const isStablePlan = (() => {
     if (!user?.preferences) return false;
     try {
@@ -49,6 +51,14 @@ export function ProtectedRoute({
     setOnboardingDismissed(true);
     onboardingQuery.refetch();
   }, [onboardingQuery]);
+
+  const handleOnboardingSkip = useCallback(async () => {
+    // Fire-and-forget — dismiss immediately, save in background
+    setOnboardingDismissed(true);
+    skipOnboarding.mutate(undefined, {
+      onSettled: () => onboardingQuery.refetch(),
+    });
+  }, [skipOnboarding, onboardingQuery]);
 
   useEffect(() => {
     if (loading) return;
@@ -128,11 +138,13 @@ export function ProtectedRoute({
     return null;
   }
 
-  // Show onboarding wizard if not completed
+  // Show onboarding wizard if not completed and not skipped
+  const onboardingData = onboardingQuery.data;
   const showOnboarding =
     !onboardingDismissed &&
-    onboardingQuery.data &&
-    !onboardingQuery.data.completed;
+    onboardingData != null &&
+    !onboardingData.completed &&
+    !onboardingData.skipped;
 
   return (
     <>
@@ -140,6 +152,7 @@ export function ProtectedRoute({
         <OnboardingWizard
           userName={user?.name || ""}
           onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
         />
       )}
       {children}

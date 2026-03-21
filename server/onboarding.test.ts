@@ -95,6 +95,7 @@ describe("onboarding endpoints", () => {
     it("returns defaults for a new user with no preferences", async () => {
       const result = await caller.user.getOnboardingStatus();
       expect(result.completed).toBe(false);
+      expect(result.skipped).toBe(false);
       expect(result.step).toBe(1);
       expect(result.selectedExperience).toBeNull();
       expect(result.activationChecklist).toEqual({
@@ -138,13 +139,37 @@ describe("onboarding endpoints", () => {
   });
 
   describe("user.completeOnboarding", () => {
-    it("sets onboardingCompleted to true", async () => {
+    it("sets onboardingCompleted to true and skipped to false", async () => {
       const result = await caller.user.completeOnboarding();
       expect(result.success).toBe(true);
       const callArgs = vi.mocked(db.updateUser).mock.calls[0];
       const savedPrefs = JSON.parse(callArgs[1].preferences as string);
       expect(savedPrefs.onboardingCompleted).toBe(true);
       expect(savedPrefs.onboardingStep).toBe(5);
+      expect(savedPrefs.onboardingSkipped).toBe(false);
+    });
+  });
+
+  describe("user.skipOnboarding", () => {
+    it("sets onboardingCompleted to true and skipped to true", async () => {
+      const result = await caller.user.skipOnboarding();
+      expect(result.success).toBe(true);
+      const callArgs = vi.mocked(db.updateUser).mock.calls[0];
+      const savedPrefs = JSON.parse(callArgs[1].preferences as string);
+      expect(savedPrefs.onboardingCompleted).toBe(true);
+      expect(savedPrefs.onboardingSkipped).toBe(true);
+    });
+  });
+
+  describe("user.resetOnboarding", () => {
+    it("resets onboarding state so setup can be restarted", async () => {
+      const result = await caller.user.resetOnboarding();
+      expect(result.success).toBe(true);
+      const callArgs = vi.mocked(db.updateUser).mock.calls[0];
+      const savedPrefs = JSON.parse(callArgs[1].preferences as string);
+      expect(savedPrefs.onboardingCompleted).toBe(false);
+      expect(savedPrefs.onboardingSkipped).toBe(false);
+      expect(savedPrefs.onboardingStep).toBe(1);
     });
   });
 

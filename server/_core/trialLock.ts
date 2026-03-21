@@ -30,6 +30,8 @@ const EXEMPT_PATHS = [
   "/trpc/user.dismissTour", // Allow dismissing tours
   "/trpc/user.dismissTip", // Allow dismissing tips
   "/trpc/user.updateActivationChecklist", // Allow activation tracking
+  "/trpc/user.skipOnboarding", // Allow skipping onboarding
+  "/trpc/user.resetOnboarding", // Allow resetting onboarding
   "/trpc/auth.", // Allow all auth-related TRPC calls (prefix match: auth.*)
 ];
 

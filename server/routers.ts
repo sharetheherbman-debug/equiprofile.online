@@ -681,6 +681,7 @@ export const appRouter = router({
       const prefs = parseUserPrefs(user.preferences);
       return {
         completed: prefs.onboardingCompleted === true,
+        skipped: prefs.onboardingSkipped === true,
         step: typeof prefs.onboardingStep === "number" ? prefs.onboardingStep : 1,
         selectedExperience: prefs.selectedExperience ?? null,
         activationChecklist: prefs.activationChecklist ?? {
@@ -708,6 +709,26 @@ export const appRouter = router({
       const prefs = parseUserPrefs(user?.preferences);
       prefs.onboardingCompleted = true;
       prefs.onboardingStep = 5;
+      prefs.onboardingSkipped = false;
+      await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+      return { success: true };
+    }),
+
+    skipOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
+      const user = await db.getUserById(ctx.user.id);
+      const prefs = parseUserPrefs(user?.preferences);
+      prefs.onboardingCompleted = true;
+      prefs.onboardingSkipped = true;
+      await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+      return { success: true };
+    }),
+
+    resetOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
+      const user = await db.getUserById(ctx.user.id);
+      const prefs = parseUserPrefs(user?.preferences);
+      prefs.onboardingCompleted = false;
+      prefs.onboardingSkipped = false;
+      prefs.onboardingStep = 1;
       await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
       return { success: true };
     }),

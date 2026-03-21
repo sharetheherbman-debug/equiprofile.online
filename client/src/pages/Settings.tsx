@@ -28,18 +28,34 @@ import {
   Smartphone,
   Download,
   Share,
+  HelpCircle,
+  RotateCcw,
+  Sparkles,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { trpc } from "@/lib/trpc";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
+import { OnboardingWizard } from "@/components/OnboardingWizard";
 
 export default function Settings() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isCapturingLocation, setIsCapturingLocation] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const pwa = usePWAInstall();
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  const resetOnboarding = trpc.user.resetOnboarding.useMutation();
+
+  const handleRestartSetup = async () => {
+    try {
+      await resetOnboarding.mutateAsync();
+      setShowOnboarding(true);
+    } catch {
+      toast.error("Unable to restart setup. Please try again.");
+    }
+  };
 
   const adminStatus = trpc.adminUnlock.getStatus.useQuery(undefined, {
     staleTime: 60_000,
@@ -207,6 +223,13 @@ export default function Settings() {
 
   return (
     <DashboardLayout>
+      {showOnboarding && (
+        <OnboardingWizard
+          userName={user?.name || ""}
+          onComplete={() => setShowOnboarding(false)}
+          onSkip={() => setShowOnboarding(false)}
+        />
+      )}
       <PageTransition>
         <div className="container max-w-4xl py-8">
           <div className="mb-8">
@@ -241,6 +264,10 @@ export default function Settings() {
               <TabsTrigger value="install">
                 <Smartphone className="w-4 h-4 mr-2" />
                 App
+              </TabsTrigger>
+              <TabsTrigger value="help">
+                <HelpCircle className="w-4 h-4 mr-2" />
+                Help
               </TabsTrigger>
               {adminStatus.data?.isUnlocked && (
                 <TabsTrigger value="system">
@@ -674,6 +701,75 @@ export default function Settings() {
                         ✓ Works offline for recent data
                       </li>
                     </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Help & Setup Tab */}
+            <TabsContent value="help">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <HelpCircle className="w-5 h-5" />
+                    Help & Setup
+                  </CardTitle>
+                  <CardDescription>
+                    Restart the guided setup, get orientated, or revisit key
+                    features
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-start gap-4 p-4 rounded-xl border border-indigo-500/20 bg-indigo-500/5">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shrink-0 mt-0.5">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <p className="font-semibold text-sm">Guided Setup</p>
+                      <p className="text-sm text-muted-foreground">
+                        Walk through adding your first horse, choosing your
+                        experience, and discovering the key areas of the
+                        dashboard.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleRestartSetup}
+                    disabled={resetOnboarding.isPending}
+                    className="flex items-center gap-2"
+                  >
+                    {resetOnboarding.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <RotateCcw className="w-4 h-4" />
+                    )}
+                    Restart Setup
+                  </Button>
+
+                  <Separator />
+
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold">Quick links</h3>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      {[
+                        { label: "My Horses", path: "/horses" },
+                        { label: "Health Records", path: "/health" },
+                        { label: "Training", path: "/training" },
+                        { label: "Documents", path: "/documents" },
+                        { label: "Calendar", path: "/calendar" },
+                        { label: "Dashboard", path: "/dashboard" },
+                      ].map(({ label, path }) => (
+                        <a
+                          key={path}
+                          href={path}
+                          className="flex items-center gap-2 p-2.5 rounded-lg border border-border hover:bg-accent transition-colors"
+                        >
+                          <span className="text-primary">→</span>
+                          {label}
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
