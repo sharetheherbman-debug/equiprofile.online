@@ -492,8 +492,46 @@ function DashboardContent() {
         ]
       : [];
 
+  // Dashboard guided tour steps
+  const dashboardTourSteps: TourStep[] = [
+    {
+      title: "Your Dashboard",
+      content:
+        "Welcome! This is your equestrian command centre. Everything you need is accessible from here.",
+    },
+    {
+      title: "Quick Stats",
+      content:
+        "At the top you'll see a live overview of your horses, upcoming events, and weather conditions.",
+    },
+    {
+      title: "Module Grid",
+      content:
+        "Below are all the tools available to you — horse profiles, health records, training plans, documents and more. Click any card to get started.",
+    },
+    {
+      title: "Sidebar Navigation",
+      content:
+        "Use the sidebar (or the bottom menu on mobile) to jump between sections quickly.",
+    },
+  ];
+
+  const showDashboardTour = (() => {
+    if (!onboarding?.completed) return false;
+    try {
+      const prefs = JSON.parse(user?.preferences || "{}");
+      return !(prefs.dismissedTours || []).includes("dashboard");
+    } catch {
+      return false;
+    }
+  })();
+
   return (
     <div className="space-y-6 pb-6">
+      {/* ── Dashboard Guided Tour ─────────────────────────────── */}
+      {showDashboardTour && (
+        <GuidedTour tourId="dashboard" steps={dashboardTourSteps} />
+      )}
       {/* ── Hero Section ─────────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
