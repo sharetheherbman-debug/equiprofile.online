@@ -81,19 +81,20 @@ export default function About() {
         <PageBanner
           title="About EquiProfile"
           subtitle="We're on a mission to revolutionize horse management with technology that empowers horse owners, trainers, and equestrian professionals."
-          imageSrc="/images/hero/image6.jpg"
+          imageSrc="/images/aboutus.jpg"
           imagePosition="center"
         />
 
-        <div className="relative z-10 py-16">
+        <div className="relative z-10">
           {/* Our Story Section */}
-          <section className="container mx-auto px-4 mb-20">
+          <section className="py-16">
+            <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
               <AnimatedSection>
                 <div className="relative aspect-[4/3] rounded-2xl overflow-hidden backdrop-blur-md bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-[0_0_40px_rgba(6,182,212,0.3)]">
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-indigo-500/20" />
                   <img
-                    src="/images/hero/image3.jpg"
+                    src="/images/gallery/19.jpg"
                     alt="Our Story"
                     className="relative z-10 w-full h-full object-cover object-[center_30%]"
                   />
@@ -130,10 +131,12 @@ export default function About() {
                 </div>
               </AnimatedSection>
             </div>
+            </div>
           </section>
 
           {/* Mission Section */}
-          <section className="container mx-auto px-4 mb-20">
+          <section className="py-16 bg-[#0f2040]/60">
+            <div className="container mx-auto px-4">
             <AnimatedSection>
               <div className="relative max-w-6xl mx-auto">
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-cyan-500/10 rounded-3xl blur-3xl" />
@@ -168,10 +171,12 @@ export default function About() {
                 </div>
               </div>
             </AnimatedSection>
+            </div>
           </section>
 
           {/* Values Section */}
-          <section className="container mx-auto px-4 mb-20">
+          <section className="py-16">
+            <div className="container mx-auto px-4">
             <AnimatedSection>
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 text-white">
@@ -213,10 +218,12 @@ export default function About() {
                 );
               })}
             </div>
+            </div>
           </section>
 
           {/* Team Section */}
-          <section className="container mx-auto px-4 mb-20">
+          <section className="py-16 bg-[#0f2040]/60">
+            <div className="container mx-auto px-4">
             <AnimatedSection>
               <div className="max-w-4xl mx-auto text-center">
                 <h2 className="text-3xl md:text-4xl font-bold font-serif mb-6 text-white">
@@ -243,10 +250,12 @@ export default function About() {
                 </div>
               </div>
             </AnimatedSection>
+            </div>
           </section>
 
           {/* Final CTA Section */}
-          <section className="container mx-auto px-4">
+          <section className="py-16">
+            <div className="container mx-auto px-4">
             <AnimatedSection>
               <div className="relative max-w-4xl mx-auto">
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 rounded-3xl blur-3xl" />
@@ -285,6 +294,7 @@ export default function About() {
                 </div>
               </div>
             </AnimatedSection>
+            </div>
           </section>
         </div>
       </div>

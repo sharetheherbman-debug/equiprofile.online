@@ -80,7 +80,7 @@ export const detailedFeatures = [
     title: "Complete Health Management",
     description:
       "Keep detailed health records for all your horses in one place",
-    image: "/images/hero/image1.jpg",
+    image: "/images/gallery/1.jpg",
     imagePosition: "right" as const,
     features: [
       "Track vaccinations, dewormings, and treatments",
@@ -94,7 +94,7 @@ export const detailedFeatures = [
   {
     title: "Advanced Analytics & Insights",
     description: "Data-driven decisions for optimal horse care and performance",
-    image: "/images/hero/image2.jpg",
+    image: "/images/gallery/2.jpg",
     imagePosition: "left" as const,
     features: [
       "Track training progress and performance metrics",
@@ -108,7 +108,7 @@ export const detailedFeatures = [
   {
     title: "Training & Performance Tracking",
     description: "Monitor and optimize every training session",
-    image: "/images/hero/image3.jpg",
+    image: "/images/gallery/10.jpg",
     imagePosition: "right" as const,
     features: [
       "Log training sessions with detailed notes",
@@ -122,7 +122,7 @@ export const detailedFeatures = [
   {
     title: "Smart Feeding & Nutrition",
     description: "Optimize nutrition plans for peak performance",
-    image: "/images/hero/image4.jpg",
+    image: "/images/gallery/12.jpg",
     imagePosition: "left" as const,
     features: [
       "Create custom feeding schedules",
@@ -136,7 +136,7 @@ export const detailedFeatures = [
   {
     title: "Scheduling & Calendar",
     description: "Never miss important appointments or events",
-    image: "/images/hero/image5.jpg",
+    image: "/images/gallery/15.jpg",
     imagePosition: "right" as const,
     features: [
       "Unified calendar for all horses and events",
@@ -150,7 +150,7 @@ export const detailedFeatures = [
   {
     title: "Stable & Team Management",
     description: "Coordinate care across your entire stable operation",
-    image: "/images/hero/image6.jpg",
+    image: "/images/gallery/18.jpg",
     imagePosition: "left" as const,
     features: [
       "Manage multiple horses efficiently",
