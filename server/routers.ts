@@ -584,6 +584,7 @@ export const appRouter = router({
           feedingReminders: z.boolean().optional(),
           weatherAlerts: z.boolean().optional(),
           weeklyDigest: z.boolean().optional(),
+          trainingCalendarIntegration: z.boolean().optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -610,6 +611,7 @@ export const appRouter = router({
         feedingReminders: true,
         weatherAlerts: true,
         weeklyDigest: true,
+        trainingCalendarIntegration: false,
       };
       return { ...defaults, ...existing.notifications };
     }),
@@ -3655,6 +3657,76 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           startDate: new Date(input.startDate),
           programData: template[0].programData,
         });
+
+        // If user enabled "Training → Calendar Auto-Events", create calendar
+        // events for each training session in the template's week 1 program.
+        try {
+          const userRecord = await db.getUserById(ctx.user!.id);
+          const prefs = userRecord?.preferences
+            ? JSON.parse(userRecord.preferences)
+            : {};
+          const calIntegration = prefs?.notifications?.trainingCalendarIntegration === true;
+
+          if (calIntegration && template[0].programData) {
+            const programData = JSON.parse(template[0].programData) as {
+              weeks?: Array<{
+                week: number;
+                sessions?: Array<{
+                  day: string;
+                  type: string;
+                  duration: number;
+                  description: string;
+                }>;
+              }>;
+            };
+
+            const DAY_OFFSET: Record<string, number> = {
+              Sunday: 0,
+              Monday: 1,
+              Tuesday: 2,
+              Wednesday: 3,
+              Thursday: 4,
+              Friday: 5,
+              Saturday: 6,
+            };
+
+            const baseDate = new Date(input.startDate);
+            const baseDayOfWeek = baseDate.getDay();
+
+            const calendarInserts: Array<typeof events.$inferInsert> = [];
+
+            for (const week of (programData.weeks ?? []).slice(0, 4)) {
+              const weekOffset = (week.week - 1) * 7;
+              for (const session of week.sessions ?? []) {
+                if (session.type === "rest") continue;
+                const dayOffset = DAY_OFFSET[session.day] ?? 0;
+                const diff = (dayOffset - baseDayOfWeek + 7) % 7;
+                const eventDate = new Date(baseDate);
+                eventDate.setDate(
+                  baseDate.getDate() + weekOffset + diff,
+                );
+                eventDate.setHours(9, 0, 0, 0);
+
+                calendarInserts.push({
+                  userId: ctx.user!.id,
+                  horseId: input.horseId,
+                  title: `${template[0].name} — ${session.type.charAt(0).toUpperCase() + session.type.slice(1)}`,
+                  description: session.description,
+                  eventType: "training",
+                  startDate: eventDate,
+                  isAllDay: false,
+                });
+              }
+            }
+
+            if (calendarInserts.length > 0) {
+              await db.insert(events).values(calendarInserts);
+            }
+          }
+        } catch (err) {
+          // Calendar event creation is non-critical — don't fail the apply mutation
+          console.error("[Templates] Failed to create calendar events:", err);
+        }
 
         return { id: result[0].insertId };
       }),

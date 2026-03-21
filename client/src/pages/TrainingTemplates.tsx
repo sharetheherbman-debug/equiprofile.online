@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
   Card,
@@ -1179,6 +1180,7 @@ const PREDESIGNED_TEMPLATES = [
 ];
 
 function TrainingTemplatesContent() {
+  const [, setLocation] = useLocation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isApplyOpen, setIsApplyOpen] = useState(false);
@@ -1250,13 +1252,17 @@ function TrainingTemplatesContent() {
 
   const applyMutation = trpc.trainingPrograms.applyTemplate.useMutation({
     onSuccess: () => {
-      toast.success("Template applied to horse successfully");
+      toast.success("Template applied! Redirecting to your training plan...");
       setIsApplyOpen(false);
       setSelectedTemplate(null);
       setApplyData({
         horseId: "",
         startDate: new Date().toISOString().split("T")[0],
       });
+      // Invalidate training sessions so the new plan appears immediately
+      utils.training.listAll.invalidate();
+      // Navigate to training page so user sees the result immediately
+      setLocation("/training");
     },
     onError: (error) => {
       toast.error(`Error: ${error.message}`);

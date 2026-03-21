@@ -46,6 +46,8 @@ import {
   FolderOpen,
   Folder,
   ArrowLeft,
+  Eye,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -131,6 +133,8 @@ function DocumentsContent() {
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
+  const [horseFilter, setHorseFilter] = useState<string>("all");
+  const [previewDoc, setPreviewDoc] = useState<{ url: string; name: string; type: string } | null>(null);
   const [formData, setFormData] = useState({
     horseId: "",
     documentType: "other" as
@@ -267,8 +271,23 @@ function DocumentsContent() {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  // Group documents by category
-  const docsByCategory = (documents ?? []).reduce(
+  const canPreview = (url: string, mimeType?: string) => {
+    if (!url) return false;
+    if (mimeType?.startsWith("image/")) return true;
+    if (mimeType === "application/pdf") return true;
+    const lower = url.toLowerCase();
+    return lower.endsWith(".pdf") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png") || lower.endsWith(".gif") || lower.endsWith(".webp");
+  };
+
+  // Filter docs by selected horse
+  const filteredDocs = (documents ?? []).filter((doc) => {
+    if (horseFilter === "all") return true;
+    if (horseFilter === "general") return !doc.horseId;
+    return doc.horseId === parseInt(horseFilter);
+  });
+
+  // Group filtered documents by category
+  const docsByCategory = filteredDocs.reduce(
     (acc, doc) => {
       const cat = doc.category || "other";
       if (!acc[cat]) acc[cat] = [];
@@ -480,6 +499,7 @@ function DocumentsContent() {
           <div className="space-y-3">
             {folderDocs.map((doc) => {
               const horse = horses?.find((h) => h.id === doc.horseId);
+              const previewable = doc.fileUrl ? canPreview(doc.fileUrl, doc.fileType || undefined) : false;
               return (
                 <div
                   key={doc.id}
@@ -515,6 +535,16 @@ function DocumentsContent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {previewable && doc.fileUrl && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setPreviewDoc({ url: doc.fileUrl!, name: doc.description || doc.fileName, type: doc.fileType || "" })}
+                        title="Preview"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    )}
                     {doc.fileUrl && (
                       <Button variant="outline" size="icon" asChild>
                         <a
@@ -540,12 +570,49 @@ function DocumentsContent() {
             })}
           </div>
         )}
+
+        {/* Inline preview dialog */}
+        {previewDoc && (
+          <Dialog open={!!previewDoc} onOpenChange={(o) => !o && setPreviewDoc(null)}>
+            <DialogContent className="max-w-3xl w-full">
+              <DialogHeader>
+                <DialogTitle className="truncate pr-8">{previewDoc.name}</DialogTitle>
+                <DialogDescription>Document preview</DialogDescription>
+              </DialogHeader>
+              <div className="min-h-[400px] flex items-center justify-center bg-muted/30 rounded-lg overflow-hidden">
+                {previewDoc.type?.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp)$/i.test(previewDoc.url) ? (
+                  <img
+                    src={previewDoc.url}
+                    alt={previewDoc.name}
+                    className="max-w-full max-h-[60vh] object-contain"
+                  />
+                ) : (
+                  <iframe
+                    src={previewDoc.url}
+                    title={previewDoc.name}
+                    className="w-full h-[60vh] border-0 rounded"
+                  />
+                )}
+              </div>
+              <DialogFooter>
+                <Button variant="outline" asChild>
+                  <a href={previewDoc.url} target="_blank" rel="noopener noreferrer" download>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
+                  </a>
+                </Button>
+                <Button onClick={() => setPreviewDoc(null)}>Close</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     );
   }
 
   // ── Folder grid view (main view) ──────────────────────────────────────
   const totalDocs = (documents ?? []).length;
+  const noDocsAtAll = totalDocs === 0;
 
   return (
     <div className="space-y-6">
@@ -557,13 +624,32 @@ function DocumentsContent() {
           <p className="text-muted-foreground mt-1">
             {totalDocs === 0
               ? "Store and manage important documents for your horses"
-              : `${totalDocs} document${totalDocs !== 1 ? "s" : ""} across ${Object.keys(docsByCategory).length} folder${Object.keys(docsByCategory).length !== 1 ? "s" : ""}`}
+              : `${filteredDocs.length} document${filteredDocs.length !== 1 ? "s" : ""} across ${Object.keys(docsByCategory).length} folder${Object.keys(docsByCategory).length !== 1 ? "s" : ""}`}
           </p>
         </div>
-        {uploadButton}
+        <div className="flex items-center gap-2">
+          {/* Horse filter — only show when there are multiple horses */}
+          {(horses ?? []).length > 0 && (
+            <Select value={horseFilter} onValueChange={setHorseFilter}>
+              <SelectTrigger className="w-[160px] h-9 text-sm">
+                <SelectValue placeholder="All horses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All horses</SelectItem>
+                <SelectItem value="general">General docs</SelectItem>
+                {horses?.map((h) => (
+                  <SelectItem key={h.id} value={h.id.toString()}>
+                    {h.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {uploadButton}
+        </div>
       </div>
 
-      {totalDocs === 0 ? (
+      {noDocsAtAll ? (
         <Card>
           <CardContent className="text-center py-12">
             <Folder className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />

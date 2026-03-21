@@ -2,15 +2,16 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
-  Calendar as CalendarIcon,
+  CalendarIcon as CalendarIcon,
   Plus,
   ChevronLeft,
   ChevronRight,
   Loader2,
-  X,
   Edit2,
   Trash2,
   Clock,
+  List,
+  LayoutGrid,
 } from "lucide-react";
 import {
   Card,
@@ -26,6 +27,7 @@ import { Textarea } from "../components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -118,6 +120,7 @@ function buildStartDate(date: string, time: string): string {
 export default function CalendarPage() {
   const { t } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [calendarView, setCalendarView] = useState<"month" | "agenda">("month");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
@@ -141,6 +144,9 @@ export default function CalendarPage() {
   const { data: events = [], refetch } = trpc.calendar.getEvents.useQuery({
     startDate: monthStart.toISOString(),
     endDate: monthEnd.toISOString(),
+  }, {
+    // 5-minute stale time prevents 429 storms when navigating between pages
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: horses = [] } = trpc.horses.list.useQuery();
@@ -300,58 +306,72 @@ export default function CalendarPage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-6 space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">{t("nav.calendar")}</h1>
-            <p className="text-muted-foreground">
+      <div className="container mx-auto px-4 py-4 sm:p-6 space-y-4 sm:space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold truncate">{t("nav.calendar")}</h1>
+            <p className="text-muted-foreground text-sm hidden sm:block">
               Schedule and manage all your equestrian activities
             </p>
           </div>
-          <Button
-            onClick={() => {
-              setNewEvent({ ...EMPTY_FORM });
-              setIsAddDialogOpen(true);
-            }}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add Event
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* View toggle — hidden on very small screens */}
+            <div className="hidden sm:flex border rounded-md overflow-hidden">
+              <button
+                onClick={() => setCalendarView("month")}
+                className={`p-2 text-xs flex items-center gap-1 transition-colors ${calendarView === "month" ? "bg-primary text-primary-foreground" : "hover:bg-muted/60"}`}
+                title="Month view"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                <span className="hidden md:inline">Month</span>
+              </button>
+              <button
+                onClick={() => setCalendarView("agenda")}
+                className={`p-2 text-xs flex items-center gap-1 transition-colors ${calendarView === "agenda" ? "bg-primary text-primary-foreground" : "hover:bg-muted/60"}`}
+                title="Agenda view"
+              >
+                <List className="h-3.5 w-3.5" />
+                <span className="hidden md:inline">Agenda</span>
+              </button>
+            </div>
+            <Button
+              size="sm"
+              onClick={() => {
+                setNewEvent({ ...EMPTY_FORM });
+                setIsAddDialogOpen(true);
+              }}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Add Event</span>
+              <span className="sm:hidden">Add</span>
+            </Button>
+          </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5" />
-                {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-              </CardTitle>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => navigateMonth(-1)}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentDate(new Date())}
-                >
-                  Today
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => navigateMonth(1)}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
+        {/* Month navigation bar — always shown */}
+        <div className="flex items-center justify-between bg-card border rounded-xl px-4 py-3">
+          <Button variant="ghost" size="icon" onClick={() => navigateMonth(-1)}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <div className="text-center">
+            <p className="font-semibold text-base">
+              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+            </p>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={() => setCurrentDate(new Date())} className="text-xs h-7">
+              Today
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => navigateMonth(1)}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* MONTH GRID — hidden on mobile (sm:), always visible on tablet+ */}
+        <Card className={`${calendarView === "agenda" ? "hidden" : "hidden sm:block"}`}>
+          <CardContent className="pt-4">
             <div className="grid grid-cols-7 gap-1">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div
@@ -397,12 +417,6 @@ export default function CalendarPage() {
                           }`}
                         >
                           {event.title}
-                          {event.horseId && getHorseName(event.horseId) && (
-                            <span className="opacity-80">
-                              {" "}
-                              · {getHorseName(event.horseId)}
-                            </span>
-                          )}
                         </div>
                       ))}
                       {dayEvents.length > 2 && (
@@ -429,20 +443,24 @@ export default function CalendarPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Upcoming Events</CardTitle>
+        {/* AGENDA / LIST VIEW — always shown on mobile, shown on desktop when agenda selected */}
+        <Card className={`${calendarView === "month" ? "sm:hidden" : ""}`}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <List className="h-4 w-4" />
+              Upcoming Events
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {upcomingEvents.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <CalendarIcon className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">No upcoming events</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Add events to your calendar to stay organised
+              <div className="flex flex-col items-center justify-center py-10 text-center">
+                <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                <p className="text-muted-foreground text-sm font-medium">No upcoming events</p>
+                <p className="text-xs text-muted-foreground mt-1 mb-4">
+                  Add events to stay organised
                 </p>
                 <Button
-                  className="mt-4"
+                  size="sm"
                   onClick={() => {
                     setNewEvent({ ...EMPTY_FORM });
                     setIsAddDialogOpen(true);
@@ -453,56 +471,54 @@ export default function CalendarPage() {
                 </Button>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {upcomingEvents.map((event: any) => {
                   const horseName = getHorseName(event.horseId);
+                  const eventDate = new Date(event.startDate);
+                  const isToday = eventDate.toDateString() === new Date().toDateString();
+                  const isTomorrow = eventDate.toDateString() === new Date(Date.now() + 86400000).toDateString();
+                  const dayLabel = isToday ? "Today" : isTomorrow ? "Tomorrow" : eventDate.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+
                   return (
                     <div
                       key={event.id}
-                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/20 cursor-pointer transition-colors"
+                      className="flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-muted/30 cursor-pointer transition-colors active:scale-[0.99]"
                       onClick={() => handleOpenEdit(event)}
                     >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-3 h-3 rounded-full shrink-0 ${EVENT_TYPE_COLORS[event.eventType] || "bg-gray-500"}`}
-                        />
-                        <div>
-                          <p className="font-medium text-sm">{event.title}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(event.startDate).toLocaleDateString(
-                              "en-GB",
-                              {
-                                weekday: "short",
-                                day: "numeric",
-                                month: "short",
-                              },
-                            )}
-                            {" · "}
-                            {new Date(event.startDate).toLocaleTimeString(
-                              "en-GB",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              },
-                            )}
-                            {event.location && ` · ${event.location}`}
+                      {/* Date badge */}
+                      <div className={`flex flex-col items-center justify-center min-w-[44px] h-[44px] rounded-lg ${isToday ? "bg-primary text-primary-foreground" : "bg-muted/60"}`}>
+                        <p className="text-[10px] font-medium uppercase leading-none">
+                          {isToday ? "Today" : eventDate.toLocaleDateString("en-GB", { month: "short" })}
+                        </p>
+                        {!isToday && (
+                          <p className="text-base font-bold leading-none mt-0.5">
+                            {eventDate.getDate()}
                           </p>
-                          {horseName && (
-                            <span className="text-[11px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded mt-0.5 inline-block">
-                              🐎 {horseName}
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-xs">
-                          {EVENT_TYPE_LABELS[event.eventType] ||
-                            event.eventType}
-                        </Badge>
+
+                      {/* Event details */}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{event.title}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {!isToday && `${dayLabel} · `}
+                          {eventDate.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+                          {event.location ? ` · ${event.location}` : ""}
+                        </p>
+                        {horseName && (
+                          <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded mt-0.5 inline-block">
+                            🐎 {horseName}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Type badge + edit */}
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <div className={`w-2.5 h-2.5 rounded-full ${EVENT_TYPE_COLORS[event.eventType] || "bg-gray-500"}`} />
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6"
+                          className="h-7 w-7"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleOpenEdit(event);
@@ -524,7 +540,10 @@ export default function CalendarPage() {
       <Dialog open={isDayDialogOpen} onOpenChange={setIsDayDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Events</DialogTitle>
+            <DialogTitle>Events on this day</DialogTitle>
+            <DialogDescription>
+              Tap any event to view or edit it, or add a new event.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             {selectedDayEvents.map((event: any) => {
@@ -577,6 +596,9 @@ export default function CalendarPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Add Event</DialogTitle>
+            <DialogDescription>
+              Schedule a new event for your calendar.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -702,6 +724,9 @@ export default function CalendarPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Event</DialogTitle>
+            <DialogDescription>
+              Update the details for this event.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
