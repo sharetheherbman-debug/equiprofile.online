@@ -463,7 +463,7 @@ function DashboardContent() {
         </div>
 
         {/* Quick action pills */}
-        <div className="relative mt-4 flex gap-2 overflow-x-auto pb-0.5 scrollbar-none">
+        <div className="relative mt-4 flex gap-2 overflow-x-auto pb-0.5 scrollbar-none -mx-1 px-1">
           {quickActions.map((action) => {
             const ActionIcon = action.icon;
             return (
@@ -487,7 +487,7 @@ function DashboardContent() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, delay: 0.05 }}
-        className="grid grid-cols-3 gap-2 sm:gap-3"
+        className="grid grid-cols-3 gap-3 sm:gap-4"
       >
         <Link href="/horses">
           <div className="flex flex-col items-center gap-1 p-3 rounded-xl border border-rose-500/20 bg-gradient-to-br from-rose-950/40 to-pink-950/30 hover:from-rose-950/60 transition-all cursor-pointer text-center">
@@ -917,7 +917,7 @@ function DashboardContent() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, delay: 0.22 }}
-        className="grid grid-cols-2 sm:grid-cols-4 gap-2"
+        className="grid grid-cols-2 sm:grid-cols-4 gap-3"
       >
         {[
           {
@@ -970,7 +970,7 @@ function DashboardContent() {
         <h2 className="font-serif text-base font-semibold px-0.5">
           All Modules
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {moduleCategories.map((cat, i) => (
             <ModuleCard key={cat.id} category={cat} index={i} />
           ))}

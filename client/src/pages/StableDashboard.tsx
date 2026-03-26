@@ -372,7 +372,7 @@ function StableDashboardContent() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, delay: 0.05 }}
-        className="grid grid-cols-3 gap-2 sm:gap-3"
+        className="grid grid-cols-3 gap-3 sm:gap-4"
       >
         <Link href="/horses">
           <div className="flex flex-col items-center gap-1 p-3 rounded-xl border border-rose-500/20 bg-gradient-to-br from-rose-950/40 to-pink-950/20 hover:from-rose-950/60 transition-all cursor-pointer text-center">
@@ -656,7 +656,7 @@ function StableDashboardContent() {
         <h2 className="font-serif text-base font-semibold px-0.5">
           Stable Operations
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {stableOps.map((module, index) => {
             const Icon = module.icon;
             return (

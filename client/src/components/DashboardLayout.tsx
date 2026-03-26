@@ -123,23 +123,32 @@ const adminMenuItems = [
   { icon: Shield, label: "QA Checklist", path: "/qa-check" },
 ];
 
-// Bottom nav tabs — plan-aware
+// Bottom nav tabs — plan-aware (5 primary actions + More)
 const standardBottomNavItems = [
   { icon: Home, label: "Home", path: "/dashboard" },
   { icon: CircleDot, label: "Horses", path: "/horses" },
   { icon: Calendar, label: "Calendar", path: "/calendar" },
-  { icon: Brain, label: "AI Chat", path: "/ai-chat" },
+  { icon: ListChecks, label: "Tasks", path: "/tasks" },
 ];
 
 const stableBottomNavItems = [
   { icon: Building2, label: "Stable", path: "/stable-dashboard" },
   { icon: CircleDot, label: "Horses", path: "/horses" },
   { icon: Calendar, label: "Calendar", path: "/calendar" },
-  { icon: UserCog, label: "Staff", path: "/staff" },
+  { icon: ListChecks, label: "Tasks", path: "/tasks" },
 ];
 
-// All modules grouped for the "More" sheet
+// All modules grouped for the "More" sheet — organised for clarity
 const moreModuleGroups = [
+  {
+    label: "Core",
+    items: [
+      { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
+      { icon: Cloud, label: "Weather", path: "/weather" },
+      { icon: Users, label: "Contacts", path: "/contacts" },
+      { icon: Clock, label: "Appointments", path: "/appointments" },
+    ],
+  },
   {
     label: "Health",
     items: [
@@ -153,13 +162,13 @@ const moreModuleGroups = [
     ],
   },
   {
-    label: "Training",
+    label: "Training & Activity",
     items: [
       { icon: Dumbbell, label: "Training Log", path: "/training" },
       { icon: BookOpen, label: "Templates", path: "/training-templates" },
+      { icon: Navigation, label: "GPS Tracking", path: "/ride-tracking" },
       { icon: Users, label: "Lessons", path: "/lessons" },
       { icon: Baby, label: "Breeding", path: "/breeding" },
-      { icon: Navigation, label: "GPS Ride Tracking", path: "/ride-tracking" },
     ],
   },
   {
@@ -172,35 +181,22 @@ const moreModuleGroups = [
     ],
   },
   {
-    label: "Schedule",
-    items: [
-      { icon: Clock, label: "Appointments", path: "/appointments" },
-      { icon: ListChecks, label: "Tasks", path: "/tasks" },
-    ],
-  },
-  {
-    label: "AI & Info",
-    items: [
-      { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
-      { icon: Cloud, label: "Weather", path: "/weather" },
-      { icon: GitBranch, label: "Pedigree", path: "/pedigree" },
-      { icon: Shield, label: "Equine Passport", path: "/equine-passport" },
-    ],
-  },
-  {
     label: "Data & Reports",
     items: [
       { icon: FileText, label: "Documents", path: "/documents" },
       { icon: BarChart3, label: "Analytics", path: "/analytics" },
       { icon: FileText, label: "Reports", path: "/reports" },
       { icon: Tag, label: "Tags", path: "/tags" },
+      { icon: GitBranch, label: "Pedigree", path: "/pedigree" },
+      { icon: Shield, label: "Equine Passport", path: "/equine-passport" },
     ],
   },
   {
     label: "Stable & People",
     items: [
       { icon: Home, label: "Stable Management", path: "/stable" },
-      { icon: Users, label: "Contacts", path: "/contacts" },
+      { icon: UserCog, label: "Staff", path: "/staff" },
+      { icon: MessageSquare, label: "Messages", path: "/messages" },
     ],
   },
   {
@@ -554,7 +550,7 @@ function DashboardLayoutContent({
             </div>
           </div>
         )}
-        <main className={`flex-1 p-3 sm:p-5 md:p-6`} style={isMobile ? { paddingBottom: 'calc(5rem + var(--safe-area-bottom, 0px))' } : undefined}>
+        <main className="flex-1 p-3 sm:p-5 md:p-6 overflow-x-hidden" style={isMobile ? { paddingBottom: 'calc(5rem + var(--safe-area-bottom, 0px))' } : undefined}>
           {children}
         </main>
 
@@ -631,7 +627,7 @@ function DashboardLayoutContent({
                           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                             {group.label}
                           </p>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
                             {items.map((item) => {
                               const Icon = item.icon;
                               const isActive = location === item.path;
@@ -642,7 +638,7 @@ function DashboardLayoutContent({
                                     setLocation(item.path);
                                     setMoreSheetOpen(false);
                                   }}
-                                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center min-h-[64px] ${
+                                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center min-h-[72px] ${
                                     isActive
                                       ? "border-primary bg-primary/10 text-primary"
                                       : "border-border bg-card hover:bg-accent"
