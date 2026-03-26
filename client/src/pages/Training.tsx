@@ -33,6 +33,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Plus,
   Calendar,
   Activity,
@@ -42,6 +52,8 @@ import {
   BookOpen,
   Sparkles,
   Play,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -56,8 +68,15 @@ const sessionTypes = [
   { value: "other", label: "Other" },
 ];
 
+type SessionType = "flatwork" | "jumping" | "hacking" | "lunging" | "groundwork" | "competition" | "lesson" | "other";
+type PerformanceType = "excellent" | "good" | "average" | "poor";
+
 function TrainingContent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [deletingSessionId, setDeletingSessionId] = useState<number | null>(null);
+  const [editingSession, setEditingSession] = useState<{ id: number } | null>(null);
   const [formData, setFormData] = useState({
     horseId: "",
     sessionDate: new Date().toISOString().split("T")[0],
@@ -69,13 +88,25 @@ function TrainingContent() {
     goals: "",
     notes: "",
   });
+  const [editFormData, setEditFormData] = useState({
+    horseId: "",
+    sessionDate: "",
+    startTime: "",
+    sessionType: "flatwork" as string,
+    duration: "",
+    trainer: "",
+    location: "",
+    goals: "",
+    notes: "",
+    performance: "" as string,
+  });
 
   // All hooks must be before any conditional returns
+  const utils = trpc.useUtils();
   const { data: horses } = trpc.horses.list.useQuery();
   const {
     data: sessions,
     isLoading,
-    refetch,
   } = trpc.training.listAll.useQuery();
   const { data: upcomingSessions } = trpc.training.getUpcoming.useQuery();
   const { data: templates } = trpc.trainingPrograms.listTemplates.useQuery();
@@ -84,7 +115,8 @@ function TrainingContent() {
     onSuccess: () => {
       toast.success("Training session scheduled!");
       setIsDialogOpen(false);
-      refetch();
+      utils.training.listAll.invalidate();
+      utils.training.getUpcoming.invalidate();
       setFormData({
         horseId: "",
         sessionDate: new Date().toISOString().split("T")[0],
@@ -103,7 +135,30 @@ function TrainingContent() {
   const completeMutation = trpc.training.complete.useMutation({
     onSuccess: () => {
       toast.success("Session marked as complete!");
-      refetch();
+      utils.training.listAll.invalidate();
+      utils.training.getUpcoming.invalidate();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const updateMutation = trpc.training.update.useMutation({
+    onSuccess: () => {
+      toast.success("Training session updated!");
+      setIsEditDialogOpen(false);
+      setEditingSession(null);
+      utils.training.listAll.invalidate();
+      utils.training.getUpcoming.invalidate();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const deleteMutation = trpc.training.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Training session deleted!");
+      setIsDeleteAlertOpen(false);
+      setDeletingSessionId(null);
+      utils.training.listAll.invalidate();
+      utils.training.getUpcoming.invalidate();
     },
     onError: (error) => toast.error(error.message),
   });
@@ -125,6 +180,61 @@ function TrainingContent() {
       goals: formData.goals || undefined,
       notes: formData.notes || undefined,
     });
+  };
+
+  const handleEdit = (session: {
+    id: number;
+    horseId: number;
+    sessionDate: string | Date;
+    startTime: string | null;
+    sessionType: string;
+    duration: number | null;
+    trainer: string | null;
+    location: string | null;
+    goals: string | null;
+    notes: string | null;
+    performance: string | null;
+  }) => {
+    setEditingSession(session);
+    setEditFormData({
+      horseId: session.horseId?.toString() || "",
+      sessionDate: session.sessionDate
+        ? new Date(session.sessionDate).toISOString().split("T")[0]
+        : "",
+      startTime: session.startTime || "",
+      sessionType: session.sessionType || "flatwork",
+      duration: session.duration?.toString() || "",
+      trainer: session.trainer || "",
+      location: session.location || "",
+      goals: session.goals || "",
+      notes: session.notes || "",
+      performance: session.performance || "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSession) return;
+    updateMutation.mutate({
+      id: editingSession.id,
+      sessionDate: editFormData.sessionDate || undefined,
+      startTime: editFormData.startTime || undefined,
+      sessionType: (editFormData.sessionType as SessionType) || undefined,
+      duration: editFormData.duration ? parseInt(editFormData.duration) : undefined,
+      trainer: editFormData.trainer || undefined,
+      location: editFormData.location || undefined,
+      goals: editFormData.goals || undefined,
+      notes: editFormData.notes || undefined,
+      performance: editFormData.performance
+        ? (editFormData.performance as PerformanceType)
+        : undefined,
+    });
+  };
+
+  const handleDeleteConfirm = (sessionId: number) => {
+    setDeletingSessionId(sessionId);
+    setIsDeleteAlertOpen(true);
   };
 
   if (isLoading) {
@@ -357,16 +467,34 @@ function TrainingContent() {
                             {session.startTime && ` at ${session.startTime}`}
                           </p>
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            completeMutation.mutate({ id: session.id })
-                          }
-                        >
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                          Complete
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              completeMutation.mutate({ id: session.id })
+                            }
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Complete
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => handleEdit(session)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            onClick={() => handleDeleteConfirm(session.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                     );
                   })}
@@ -433,6 +561,24 @@ function TrainingContent() {
                             {session.performance}
                           </Badge>
                         )}
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => handleEdit(session)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            onClick={() => handleDeleteConfirm(session.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                     );
                   })}
@@ -540,6 +686,215 @@ function TrainingContent() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Session?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this training session. This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() =>
+                deletingSessionId &&
+                deleteMutation.mutate({ id: deletingSessionId })
+              }
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit session dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <form onSubmit={handleEditSubmit}>
+            <DialogHeader>
+              <DialogTitle>Edit Training Session</DialogTitle>
+              <DialogDescription>
+                Update the details of this training session
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Horse</Label>
+                <Select
+                  value={editFormData.horseId}
+                  disabled
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select horse" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {horses?.map((horse) => (
+                      <SelectItem key={horse.id} value={horse.id.toString()}>
+                        {horse.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Date *</Label>
+                  <Input
+                    type="date"
+                    value={editFormData.sessionDate}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        sessionDate: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Time</Label>
+                  <Input
+                    type="time"
+                    value={editFormData.startTime}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        startTime: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Session Type *</Label>
+                  <Select
+                    value={editFormData.sessionType}
+                    onValueChange={(value: SessionType) =>
+                      setEditFormData({ ...editFormData, sessionType: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sessionTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Duration (min)</Label>
+                  <Input
+                    type="number"
+                    value={editFormData.duration}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        duration: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Trainer</Label>
+                  <Input
+                    value={editFormData.trainer}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        trainer: e.target.value,
+                      })
+                    }
+                    placeholder="Trainer name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Location</Label>
+                  <Input
+                    value={editFormData.location}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        location: e.target.value,
+                      })
+                    }
+                    placeholder="Arena, field, etc."
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Performance</Label>
+                <Select
+                  value={editFormData.performance}
+                  onValueChange={(value) =>
+                    setEditFormData({ ...editFormData, performance: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select performance" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="excellent">Excellent</SelectItem>
+                    <SelectItem value="good">Good</SelectItem>
+                    <SelectItem value="average">Average</SelectItem>
+                    <SelectItem value="poor">Poor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Goals</Label>
+                <Textarea
+                  value={editFormData.goals}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, goals: e.target.value })
+                  }
+                  placeholder="What do you want to achieve?"
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Notes</Label>
+                <Textarea
+                  value={editFormData.notes}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, notes: e.target.value })
+                  }
+                  placeholder="Session notes"
+                  rows={2}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={updateMutation.isPending}>
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
