@@ -68,6 +68,7 @@ import {
   Navigation,
   ShoppingCart,
   Wrench,
+  ArrowLeftRight,
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -308,6 +309,7 @@ function DashboardLayoutContent({
     { staleTime: 5 * 60 * 1000 },
   );
   const isStablePlan = subscriptionStatus?.planTier === "stable";
+  const bothDashboardsUnlocked = !!subscriptionStatus?.bothDashboardsUnlocked;
 
   // Build fingerprint — shown in sidebar footer for admins only
   const { data: buildInfo } = trpc.system.getBuildInfo.useQuery(undefined, {
@@ -315,9 +317,16 @@ function DashboardLayoutContent({
     staleTime: Infinity,
   });
 
+  // Determine which dashboard view is active for users with both dashboards
+  const isOnStablePages = location.startsWith("/stable");
+
   // Plan-aware nav and bottom nav
-  const activeNavItems = isStablePlan ? stableNavItems : menuItems;
-  const bottomNavItems = isStablePlan ? stableBottomNavItems : standardBottomNavItems;
+  const activeNavItems = bothDashboardsUnlocked
+    ? (isOnStablePages ? stableNavItems : menuItems)
+    : (isStablePlan ? stableNavItems : menuItems);
+  const bottomNavItems = bothDashboardsUnlocked
+    ? (isOnStablePages ? stableBottomNavItems : standardBottomNavItems)
+    : (isStablePlan ? stableBottomNavItems : standardBottomNavItems);
   const activeMenuItem = activeNavItems.find((item) => item.path === location);
 
   useEffect(() => {
@@ -385,6 +394,35 @@ function DashboardLayoutContent({
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
+              {bothDashboardsUnlocked && (
+                <>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      isActive={!isOnStablePages}
+                      onClick={() => setLocation("/dashboard")}
+                      tooltip="Standard Dashboard"
+                      className={`h-10 transition-all font-medium ${!isOnStablePages ? "bg-primary/10 text-primary font-semibold" : ""}`}
+                    >
+                      <LayoutDashboard className={`h-4 w-4 ${!isOnStablePages ? "text-primary" : ""}`} />
+                      <span>Standard</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      isActive={isOnStablePages}
+                      onClick={() => setLocation("/stable-dashboard")}
+                      tooltip="Stable Dashboard"
+                      className={`h-10 transition-all font-medium ${isOnStablePages ? "bg-primary/10 text-primary font-semibold" : ""}`}
+                    >
+                      <Building2 className={`h-4 w-4 ${isOnStablePages ? "text-primary" : ""}`} />
+                      <span>Stable</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <div className="my-2 px-2">
+                    <div className="h-px bg-border" />
+                  </div>
+                </>
+              )}
               {activeNavItems.map((item) => {
                 const isActive = location === item.path;
                 return (

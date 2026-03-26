@@ -650,6 +650,8 @@ export const appRouter = router({
         status: user.subscriptionStatus,
         plan: user.subscriptionPlan,
         planTier,
+        freeAccess: !!prefs.freeAccess,
+        bothDashboardsUnlocked: !!prefs.bothDashboardsUnlocked,
         trialEndsAt: user.trialEndsAt,
         subscriptionEndsAt: user.subscriptionEndsAt,
         lastPaymentAt: user.lastPaymentAt,
@@ -2596,6 +2598,57 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           entityType: "user",
           entityId: input.userId,
           details: JSON.stringify({ newRole: input.role }),
+        });
+        return { success: true };
+      }),
+
+    // Grant free access with both dashboards unlocked
+    grantFreeAccess: adminUnlockedProcedure
+      .input(z.object({ userId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const targetUser = await db.getUserById(input.userId);
+        if (!targetUser) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        }
+        const prefs = parseUserPrefs(targetUser.preferences);
+        prefs.planTier = "stable";
+        prefs.freeAccess = true;
+        prefs.bothDashboardsUnlocked = true;
+        await db.updateUser(input.userId, {
+          subscriptionStatus: "active",
+          preferences: JSON.stringify(prefs),
+        });
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: "free_access_granted",
+          entityType: "user",
+          entityId: input.userId,
+          details: JSON.stringify({ targetEmail: targetUser.email }),
+        });
+        return { success: true };
+      }),
+
+    // Revoke free access
+    revokeFreeAccess: adminUnlockedProcedure
+      .input(z.object({ userId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const targetUser = await db.getUserById(input.userId);
+        if (!targetUser) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        }
+        const prefs = parseUserPrefs(targetUser.preferences);
+        prefs.freeAccess = false;
+        prefs.bothDashboardsUnlocked = false;
+        await db.updateUser(input.userId, {
+          subscriptionStatus: "trial",
+          preferences: JSON.stringify(prefs),
+        });
+        await db.logActivity({
+          userId: ctx.user!.id,
+          action: "free_access_revoked",
+          entityType: "user",
+          entityId: input.userId,
+          details: JSON.stringify({ targetEmail: targetUser.email }),
         });
         return { success: true };
       }),

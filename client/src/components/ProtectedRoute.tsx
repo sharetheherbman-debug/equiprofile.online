@@ -30,7 +30,7 @@ export function ProtectedRoute({
     if (!user?.preferences) return false;
     try {
       const prefs = JSON.parse(user.preferences);
-      return prefs.planTier === "stable";
+      return prefs.planTier === "stable" || !!prefs.bothDashboardsUnlocked;
     } catch {
       return false;
     }

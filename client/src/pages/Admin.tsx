@@ -68,9 +68,20 @@ import {
   CheckCircle2,
   XCircle,
   Loader2,
+  Gift,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+
+function hasUserFreeAccess(user: { preferences?: string | null }): boolean {
+  if (!user.preferences) return false;
+  try {
+    const prefs = JSON.parse(user.preferences);
+    return !!prefs.freeAccess;
+  } catch {
+    return false;
+  }
+}
 
 function AdminContent() {
   const [, navigate] = useLocation();
@@ -199,6 +210,22 @@ function AdminContent() {
       toast.success("Password reset successfully");
       setResetPasswordUserId(null);
       setResetPasswordValue("");
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const grantFreeAccessMutation = trpc.admin.grantFreeAccess.useMutation({
+    onSuccess: () => {
+      toast.success("Free access granted successfully");
+      refetchUsers();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const revokeFreeAccessMutation = trpc.admin.revokeFreeAccess.useMutation({
+    onSuccess: () => {
+      toast.success("Free access revoked successfully");
+      refetchUsers();
     },
     onError: (error) => toast.error(error.message),
   });
@@ -523,7 +550,14 @@ function AdminContent() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            {getSubscriptionBadge(user.subscriptionStatus)}
+                            <div className="flex items-center gap-1">
+                              {getSubscriptionBadge(user.subscriptionStatus)}
+                              {hasUserFreeAccess(user) && (
+                                <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
+                                  Free Access
+                                </Badge>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell>
                             {user.isSuspended ? (
@@ -725,6 +759,63 @@ function AdminContent() {
                                       {user.role === "admin"
                                         ? "Revoke Admin"
                                         : "Grant Admin"}
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+
+                              {/* Grant / Revoke Free Access */}
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    title={
+                                      hasUserFreeAccess(user)
+                                        ? "Revoke free access"
+                                        : "Grant free access"
+                                    }
+                                    className={
+                                      hasUserFreeAccess(user)
+                                        ? "text-emerald-600 hover:text-emerald-700"
+                                        : "text-muted-foreground"
+                                    }
+                                  >
+                                    <Gift className="w-4 h-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      {hasUserFreeAccess(user)
+                                        ? "Revoke Free Access"
+                                        : "Grant Free Access"}
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      {hasUserFreeAccess(user)
+                                        ? `Remove free access from ${user.name || user.email}? Their subscription will revert to trial status.`
+                                        : `Grant free access to ${user.name || user.email}? They will get an active subscription with both Standard and Stable dashboards unlocked.`}
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      className={
+                                        hasUserFreeAccess(user)
+                                          ? "bg-amber-600 text-white hover:bg-amber-700"
+                                          : "bg-emerald-600 text-white hover:bg-emerald-700"
+                                      }
+                                      onClick={() =>
+                                        hasUserFreeAccess(user)
+                                          ? revokeFreeAccessMutation.mutate({ userId: user.id })
+                                          : grantFreeAccessMutation.mutate({ userId: user.id })
+                                      }
+                                    >
+                                      {hasUserFreeAccess(user)
+                                        ? "Revoke Free Access"
+                                        : "Grant Free Access"}
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
