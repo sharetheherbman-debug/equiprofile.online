@@ -225,6 +225,7 @@ function AdminContent() {
       toast.success("Password reset successfully");
       setResetPasswordUserId(null);
       setResetPasswordValue("");
+      refetchUsers();
     },
     onError: (error) => toast.error(error.message),
   });

@@ -87,6 +87,8 @@ export default function Reports() {
   const { data: generatedReports = [], refetch: refetchReports } =
     trpc.reports.list.useQuery({ limit: 50 });
   const { data: horses = [] } = trpc.horses.list.useQuery();
+  const { data: scheduledReports = [], refetch: refetchSchedules } =
+    trpc.reports.listSchedules.useQuery();
 
   // Mutations
   const generateReport = trpc.reports.generate.useMutation({
@@ -107,12 +109,21 @@ export default function Reports() {
       toast.success("Report scheduled successfully");
       setIsScheduleDialogOpen(false);
       resetScheduleForm();
+      refetchSchedules();
     },
     onError: (error) => {
       toast.error("Error", {
         description: error.message,
       });
     },
+  });
+
+  const deleteSchedule = trpc.reports.deleteSchedule.useMutation({
+    onSuccess: () => {
+      toast.success("Schedule removed");
+      refetchSchedules();
+    },
+    onError: (error) => toast.error(error.message),
   });
 
   const resetGenerateForm = () => {
@@ -466,24 +477,85 @@ export default function Reports() {
               </Button>
             </div>
 
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <Clock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">
-                  No scheduled reports yet
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Schedule reports to be generated and emailed automatically
-                </p>
-                <Button
-                  className="mt-4"
-                  onClick={() => setIsScheduleDialogOpen(true)}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Schedule Your First Report
-                </Button>
-              </CardContent>
-            </Card>
+            {scheduledReports.length === 0 ? (
+              <Card>
+                <CardContent className="pt-6 text-center">
+                  <Clock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">
+                    No scheduled reports yet
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Schedule reports to be generated and emailed automatically
+                  </p>
+                  <Button
+                    className="mt-4"
+                    onClick={() => setIsScheduleDialogOpen(true)}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Schedule Your First Report
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {scheduledReports.map((schedule) => {
+                  const recipients: string[] = (() => {
+                    try {
+                      return schedule.recipients
+                        ? JSON.parse(schedule.recipients)
+                        : [];
+                    } catch (err) {
+                      console.error("Invalid recipients JSON:", err);
+                      return [];
+                    }
+                  })();
+                  return (
+                    <Card key={schedule.id}>
+                      <CardContent className="pt-4 pb-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">
+                                {getReportTypeName(schedule.reportType)}
+                              </span>
+                              <Badge variant="secondary" className="capitalize">
+                                {schedule.frequency}
+                              </Badge>
+                            </div>
+                            {recipients.length > 0 && (
+                              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Mail className="w-3 h-3" />
+                                {recipients.join(", ")}
+                              </p>
+                            )}
+                            {schedule.nextRunAt && (
+                              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                Next run:{" "}
+                                {format(
+                                  new Date(schedule.nextRunAt),
+                                  "dd MMM yyyy",
+                                )}
+                              </p>
+                            )}
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              deleteSchedule.mutate({ id: schedule.id })
+                            }
+                            disabled={deleteSchedule.isPending}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
