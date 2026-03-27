@@ -206,6 +206,7 @@ class SDKServer {
     appId: string;
     name: string;
     userId?: number;
+    issuedAt?: number;
   } | null> {
     if (!cookieValue) {
       // Silently return null – missing cookies are normal for unauthenticated
@@ -220,7 +221,7 @@ class SDKServer {
       });
 
       // Support both OAuth format (openId, appId, name) and local auth format (userId)
-      const { openId, appId, name, userId } = payload as Record<
+      const { openId, appId, name, userId, iat } = payload as Record<
         string,
         unknown
       >;
@@ -232,6 +233,7 @@ class SDKServer {
           appId: ENV.appId,
           name: "", // Will be filled from DB
           userId,
+          issuedAt: typeof iat === "number" ? iat : undefined,
         };
       }
 
@@ -249,6 +251,7 @@ class SDKServer {
         openId,
         appId,
         name,
+        issuedAt: typeof iat === "number" ? iat : undefined,
       };
     } catch (error) {
       console.warn("[Auth] Session verification failed", String(error));
@@ -298,6 +301,15 @@ class SDKServer {
       user = await db.getUserById(session.userId);
       if (!user) {
         throw ForbiddenError("User not found");
+      }
+      // If the password was changed after this JWT was issued, the session is
+      // no longer valid — the user must log in again with the new password.
+      if (
+        user.passwordChangedAt &&
+        typeof session.issuedAt === "number" &&
+        user.passwordChangedAt > new Date(session.issuedAt * 1000)
+      ) {
+        throw ForbiddenError("Your session has expired. Please log in again.");
       }
     } else {
       // Handle OAuth (openId-based JWT)

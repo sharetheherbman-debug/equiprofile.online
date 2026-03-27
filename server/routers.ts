@@ -2747,6 +2747,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           passwordHash,
           resetToken: null,
           resetTokenExpiry: null,
+          passwordChangedAt: new Date(),
         });
         await db.logActivity({
           userId: ctx.user!.id,

@@ -791,6 +791,21 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       }
     }
     console.log("[Database] All required tables verified/created");
+
+    // Column migrations — add missing columns to existing tables.
+    // Uses ALTER TABLE … ADD COLUMN IF NOT EXISTS (supported by MariaDB 10.0+).
+    const columnMigrations: string[] = [
+      `ALTER TABLE \`users\` ADD COLUMN IF NOT EXISTS \`passwordChangedAt\` timestamp NULL`,
+    ];
+    for (const stmt of columnMigrations) {
+      try {
+        await db.execute(sql.raw(stmt));
+      } catch (colError) {
+        console.warn("[Database] Column migration failed (column may already exist):", colError);
+      }
+    }
+    console.log("[Database] Column migrations applied");
+
     _tablesEnsured = true;
   } catch (error) {
     console.error("[Database] Failed to ensure tables:", error);

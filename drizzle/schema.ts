@@ -61,6 +61,7 @@ export const users = mysqlTable("users", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+  passwordChangedAt: timestamp("passwordChangedAt"), // Set when password is changed; used to invalidate older JWTs
 });
 
 // Horse profiles
