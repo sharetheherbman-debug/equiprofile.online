@@ -71,6 +71,8 @@ interface RideDraft {
 }
 
 const RIDE_DRAFT_KEY = "equiprofile_ride_draft";
+const DRAFT_EXPIRY_MS = 24 * 60 * 60 * 1000;
+const AUTO_SAVE_INTERVAL_MS = 10_000;
 
 // ─── Leaflet icon fix (bundlers strip default icon URLs) ─────────────────────
 const defaultIcon = L.icon({
@@ -462,7 +464,7 @@ function RideTrackingContent() {
       try {
         localStorage.setItem(RIDE_DRAFT_KEY, JSON.stringify(draft));
       } catch { /* quota exceeded - ignore */ }
-    }, 10_000);
+    }, AUTO_SAVE_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [isTracking, currentPoints, currentDistance, elapsedTime, maxSpeed]);
 
@@ -472,7 +474,7 @@ function RideTrackingContent() {
       const raw = localStorage.getItem(RIDE_DRAFT_KEY);
       if (raw) {
         const draft: RideDraft = JSON.parse(raw);
-        if (Date.now() - draft.savedAt < 24 * 60 * 60 * 1000 && draft.currentPoints.length > 0) {
+        if (Date.now() - draft.savedAt < DRAFT_EXPIRY_MS && draft.currentPoints.length > 0) {
           setHasDraft(true);
         } else {
           localStorage.removeItem(RIDE_DRAFT_KEY);
