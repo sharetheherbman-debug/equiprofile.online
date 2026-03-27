@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
@@ -151,6 +151,13 @@ export default function CalendarPage() {
 
   const { data: horses = [] } = trpc.horses.list.useQuery();
 
+  const { data: tasks = [] } = trpc.tasks.list.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+  });
+  const { data: appointments = [] } = trpc.appointments.list.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+  });
+
   const createEvent = trpc.calendar.createEvent.useMutation({
     onSuccess: () => {
       toast.success("Event created");
@@ -182,6 +189,70 @@ export default function CalendarPage() {
     onError: (error) => toast.error(error.message),
   });
 
+  interface CalendarItem {
+    id: string;
+    source: "event" | "task" | "appointment";
+    title: string;
+    date: Date;
+    type: string;
+    colorClass: string;
+    isEditable: boolean;
+    originalData: any;
+  }
+
+  const calendarItems: CalendarItem[] = useMemo(() => {
+    const items: CalendarItem[] = [];
+
+    events.forEach((e: any) => {
+      items.push({
+        id: `evt-${e.id}`,
+        source: "event",
+        title: e.title,
+        date: new Date(e.startDate),
+        type: e.eventType,
+        colorClass: EVENT_TYPE_COLORS[e.eventType] || "bg-gray-500",
+        isEditable: true,
+        originalData: e,
+      });
+    });
+
+    tasks.forEach((t: any) => {
+      if (!t.dueDate || t.status === "completed" || t.status === "cancelled") return;
+      const d = new Date(t.dueDate + "T00:00:00");
+      if (d.getMonth() === currentDate.getMonth() && d.getFullYear() === currentDate.getFullYear()) {
+        items.push({
+          id: `task-${t.id}`,
+          source: "task",
+          title: t.title,
+          date: d,
+          type: t.taskType,
+          colorClass: "bg-orange-500",
+          isEditable: false,
+          originalData: t,
+        });
+      }
+    });
+
+    appointments.forEach((a: any) => {
+      if (a.status === "cancelled" || a.status === "completed") return;
+      const d = new Date(a.appointmentDate + "T00:00:00");
+      if (d.getMonth() === currentDate.getMonth() && d.getFullYear() === currentDate.getFullYear()) {
+        items.push({
+          id: `appt-${a.id}`,
+          source: "appointment",
+          title: a.title,
+          date: d,
+          type: a.appointmentType,
+          colorClass: "bg-pink-500",
+          isEditable: false,
+          originalData: a,
+        });
+      }
+    });
+
+    return items;
+  }, [events, tasks, appointments, currentDate]);
+
   const monthNames = [
     "January",
     "February",
@@ -207,24 +278,20 @@ export default function CalendarPage() {
     );
   };
 
-  const getEventsForDay = (day: number) => {
-    return events.filter((e: any) => {
-      const d = new Date(e.startDate);
+  const getItemsForDay = (day: number) => {
+    return calendarItems.filter((item) => {
       return (
-        d.getDate() === day &&
-        d.getMonth() === currentDate.getMonth() &&
-        d.getFullYear() === currentDate.getFullYear()
+        item.date.getDate() === day &&
+        item.date.getMonth() === currentDate.getMonth() &&
+        item.date.getFullYear() === currentDate.getFullYear()
       );
     });
   };
 
-  const upcomingEvents = events
-    .filter((e: any) => new Date(e.startDate) >= new Date())
-    .sort(
-      (a: any, b: any) =>
-        new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
-    )
-    .slice(0, 8);
+  const upcomingItems = calendarItems
+    .filter((item) => item.date >= new Date(new Date().setHours(0, 0, 0, 0)))
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .slice(0, 10);
 
   const handleAddEvent = () => {
     if (!newEvent.title.trim()) {
@@ -274,9 +341,9 @@ export default function CalendarPage() {
   };
 
   const handleDayClick = (day: number) => {
-    const dayEvents = getEventsForDay(day);
-    if (dayEvents.length > 0) {
-      setSelectedDayEvents(dayEvents);
+    const dayItems = getItemsForDay(day);
+    if (dayItems.length > 0) {
+      setSelectedDayEvents(dayItems);
       setIsDayDialogOpen(true);
     } else {
       setNewEvent({
@@ -393,7 +460,7 @@ export default function CalendarPage() {
                   day === today.getDate() &&
                   currentDate.getMonth() === today.getMonth() &&
                   currentDate.getFullYear() === today.getFullYear();
-                const dayEvents = getEventsForDay(day);
+                const dayItems = getItemsForDay(day);
 
                 return (
                   <div
@@ -409,19 +476,17 @@ export default function CalendarPage() {
                       {day}
                     </div>
                     <div className="space-y-0.5">
-                      {dayEvents.slice(0, 2).map((event: any) => (
+                      {dayItems.slice(0, 2).map((item) => (
                         <div
-                          key={event.id}
-                          className={`text-[10px] px-1 py-0.5 rounded text-white truncate ${
-                            EVENT_TYPE_COLORS[event.eventType] || "bg-gray-500"
-                          }`}
+                          key={item.id}
+                          className={`text-[10px] px-1 py-0.5 rounded text-white truncate ${item.colorClass} ${item.source !== "event" ? "opacity-80" : ""}`}
                         >
-                          {event.title}
+                          {item.source === "task" ? "📋 " : item.source === "appointment" ? "📅 " : ""}{item.title}
                         </div>
                       ))}
-                      {dayEvents.length > 2 && (
+                      {dayItems.length > 2 && (
                         <div className="text-[10px] text-muted-foreground">
-                          +{dayEvents.length - 2} more
+                          +{dayItems.length - 2} more
                         </div>
                       )}
                     </div>
@@ -439,6 +504,14 @@ export default function CalendarPage() {
                   <span className="text-xs text-muted-foreground">{label}</span>
                 </div>
               ))}
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-orange-500" />
+                <span className="text-xs text-muted-foreground">Task</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-pink-500" />
+                <span className="text-xs text-muted-foreground">Appointment</span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -452,7 +525,7 @@ export default function CalendarPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {upcomingEvents.length === 0 ? (
+            {upcomingItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mb-3" />
                 <p className="text-muted-foreground text-sm font-medium">No upcoming events</p>
@@ -472,18 +545,18 @@ export default function CalendarPage() {
               </div>
             ) : (
               <div className="space-y-2">
-                {upcomingEvents.map((event: any) => {
-                  const horseName = getHorseName(event.horseId);
-                  const eventDate = new Date(event.startDate);
+                {upcomingItems.map((item) => {
+                  const horseName = item.source === "event" ? getHorseName(item.originalData.horseId) : null;
+                  const eventDate = item.date;
                   const isToday = eventDate.toDateString() === new Date().toDateString();
                   const isTomorrow = eventDate.toDateString() === new Date(Date.now() + 86400000).toDateString();
                   const dayLabel = isToday ? "Today" : isTomorrow ? "Tomorrow" : eventDate.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
 
                   return (
                     <div
-                      key={event.id}
-                      className="flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-muted/30 cursor-pointer transition-colors active:scale-[0.99]"
-                      onClick={() => handleOpenEdit(event)}
+                      key={item.id}
+                      className={`flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-muted/30 transition-colors ${item.isEditable ? "cursor-pointer active:scale-[0.99]" : ""}`}
+                      onClick={() => item.isEditable && handleOpenEdit(item.originalData)}
                     >
                       {/* Date badge */}
                       <div className={`flex flex-col items-center justify-center min-w-[44px] h-[44px] rounded-lg ${isToday ? "bg-primary text-primary-foreground" : "bg-muted/60"}`}>
@@ -497,13 +570,17 @@ export default function CalendarPage() {
                         )}
                       </div>
 
-                      {/* Event details */}
+                      {/* Item details */}
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{event.title}</p>
+                        <p className="font-medium text-sm truncate">
+                          {item.source === "task" ? "📋 " : item.source === "appointment" ? "📅 " : ""}{item.title}
+                        </p>
                         <p className="text-xs text-muted-foreground truncate">
                           {!isToday && `${dayLabel} · `}
-                          {eventDate.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
-                          {event.location ? ` · ${event.location}` : ""}
+                          {item.source === "event"
+                            ? eventDate.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
+                            : item.source === "task" ? "Task" : "Appointment"}
+                          {item.source === "event" && item.originalData.location ? ` · ${item.originalData.location}` : ""}
                         </p>
                         {horseName && (
                           <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded mt-0.5 inline-block">
@@ -514,18 +591,20 @@ export default function CalendarPage() {
 
                       {/* Type badge + edit */}
                       <div className="flex flex-col items-end gap-1 shrink-0">
-                        <div className={`w-2.5 h-2.5 rounded-full ${EVENT_TYPE_COLORS[event.eventType] || "bg-gray-500"}`} />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenEdit(event);
-                          }}
-                        >
-                          <Edit2 className="h-3 w-3" />
-                        </Button>
+                        <div className={`w-2.5 h-2.5 rounded-full ${item.colorClass}`} />
+                        {item.isEditable && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenEdit(item.originalData);
+                            }}
+                          >
+                            <Edit2 className="h-3 w-3" />
+                          </Button>
+                        )}
                       </div>
                     </div>
                   );
@@ -540,37 +619,43 @@ export default function CalendarPage() {
       <Dialog open={isDayDialogOpen} onOpenChange={setIsDayDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Events on this day</DialogTitle>
+            <DialogTitle>Items on this day</DialogTitle>
             <DialogDescription>
               Tap any event to view or edit it, or add a new event.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
-            {selectedDayEvents.map((event: any) => {
-              const horseName = getHorseName(event.horseId);
+            {selectedDayEvents.map((item: any) => {
+              const horseName = item.source === "event" ? getHorseName(item.originalData.horseId) : null;
               return (
                 <div
-                  key={event.id}
-                  className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/20 cursor-pointer"
-                  onClick={() => handleOpenEdit(event)}
+                  key={item.id}
+                  className={`flex items-center justify-between p-3 rounded-lg border hover:bg-muted/20 ${item.isEditable ? "cursor-pointer" : ""}`}
+                  onClick={() => item.isEditable && handleOpenEdit(item.originalData)}
                 >
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-2.5 h-2.5 rounded-full ${EVENT_TYPE_COLORS[event.eventType] || "bg-gray-500"}`}
+                      className={`w-2.5 h-2.5 rounded-full ${item.colorClass}`}
                     />
                     <div>
-                      <p className="font-medium text-sm">{event.title}</p>
+                      <p className="font-medium text-sm">
+                        {item.source === "task" ? "📋 " : item.source === "appointment" ? "📅 " : ""}{item.title}
+                      </p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(event.startDate).toLocaleTimeString("en-GB", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {item.source === "event"
+                          ? item.date.toLocaleTimeString("en-GB", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : item.source === "task" ? "Task" : "Appointment"}
                         {horseName && ` · 🐎 ${horseName}`}
                       </p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-xs">
-                    {EVENT_TYPE_LABELS[event.eventType] || event.eventType}
+                    {item.source === "event"
+                      ? (EVENT_TYPE_LABELS[item.type] || item.type)
+                      : item.source === "task" ? "Task" : "Appointment"}
                   </Badge>
                 </div>
               );
