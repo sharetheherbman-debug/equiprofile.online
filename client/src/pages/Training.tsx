@@ -117,6 +117,8 @@ function TrainingContent() {
       setIsDialogOpen(false);
       utils.training.listAll.invalidate();
       utils.training.getUpcoming.invalidate();
+      // Also invalidate calendar cache since backend auto-creates a calendar event
+      utils.calendar.getEvents.invalidate();
       setFormData({
         horseId: "",
         sessionDate: new Date().toISOString().split("T")[0],

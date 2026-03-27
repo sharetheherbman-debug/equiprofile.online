@@ -3824,6 +3824,41 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         return { id: result[0].insertId };
       }),
+
+    listSchedules: subscribedProcedure.query(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) return [];
+
+      return db
+        .select()
+        .from(reportSchedules)
+        .where(
+          and(
+            eq(reportSchedules.userId, ctx.user!.id),
+            eq(reportSchedules.isActive, true),
+          ),
+        )
+        .orderBy(desc(reportSchedules.createdAt));
+    }),
+
+    deleteSchedule: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        await db
+          .update(reportSchedules)
+          .set({ isActive: false })
+          .where(
+            and(
+              eq(reportSchedules.id, input.id),
+              eq(reportSchedules.userId, ctx.user!.id),
+            ),
+          );
+
+        return { success: true };
+      }),
   }),
 
   // Calendar and Events
