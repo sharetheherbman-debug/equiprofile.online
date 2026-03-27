@@ -61,6 +61,17 @@ interface GpsPoint {
   speed?: number;
 }
 
+interface RideDraft {
+  currentPoints: GpsPoint[];
+  currentDistance: number;
+  elapsedTime: number;
+  maxSpeed: number;
+  startTime: number;
+  savedAt: number;
+}
+
+const RIDE_DRAFT_KEY = "equiprofile_ride_draft";
+
 // ─── Leaflet icon fix (bundlers strip default icon URLs) ─────────────────────
 const defaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -281,9 +292,14 @@ function RideTrackingContent() {
   const [rideHorseId, setRideHorseId] = useState("");
   const [rideNotes, setRideNotes] = useState("");
   const [viewingRideId, setViewingRideId] = useState<number | null>(null);
+  const [hasDraft, setHasDraft] = useState(false);
   const startTimeRef = useRef<number>(0);
   const watchIdRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const currentPointsRef = useRef<GpsPoint[]>([]);
+  const currentDistanceRef = useRef(0);
+  const elapsedTimeRef = useRef(0);
+  const maxSpeedRef = useRef(0);
 
   const { data: horses } = trpc.horses.list.useQuery();
   const { data: rides = [], isLoading: ridesLoading } =
@@ -397,6 +413,7 @@ function RideTrackingContent() {
       notes: rideNotes || undefined,
     });
 
+    localStorage.removeItem(RIDE_DRAFT_KEY);
     setShowSaveDialog(false);
     setRideName("");
     setRideHorseId("");
@@ -423,9 +440,90 @@ function RideTrackingContent() {
     [deleteRideMutation],
   );
 
+  // ── Auto-save draft to localStorage every 10s while tracking ────────────
+  useEffect(() => {
+    if (!isTracking || currentPoints.length === 0) return;
+
+    // Sync refs for unmount save
+    currentPointsRef.current = currentPoints;
+    currentDistanceRef.current = currentDistance;
+    elapsedTimeRef.current = elapsedTime;
+    maxSpeedRef.current = maxSpeed;
+
+    const interval = setInterval(() => {
+      const draft: RideDraft = {
+        currentPoints,
+        currentDistance,
+        elapsedTime,
+        maxSpeed,
+        startTime: startTimeRef.current,
+        savedAt: Date.now(),
+      };
+      try {
+        localStorage.setItem(RIDE_DRAFT_KEY, JSON.stringify(draft));
+      } catch { /* quota exceeded - ignore */ }
+    }, 10_000);
+    return () => clearInterval(interval);
+  }, [isTracking, currentPoints, currentDistance, elapsedTime, maxSpeed]);
+
+  // ── Check for recoverable draft on mount ────────────────────────────────
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RIDE_DRAFT_KEY);
+      if (raw) {
+        const draft: RideDraft = JSON.parse(raw);
+        if (Date.now() - draft.savedAt < 24 * 60 * 60 * 1000 && draft.currentPoints.length > 0) {
+          setHasDraft(true);
+        } else {
+          localStorage.removeItem(RIDE_DRAFT_KEY);
+        }
+      }
+    } catch {
+      localStorage.removeItem(RIDE_DRAFT_KEY);
+    }
+  }, []);
+
+  const resumeDraft = useCallback(() => {
+    try {
+      const raw = localStorage.getItem(RIDE_DRAFT_KEY);
+      if (!raw) return;
+      const draft: RideDraft = JSON.parse(raw);
+      setCurrentPoints(draft.currentPoints);
+      setCurrentDistance(draft.currentDistance);
+      setElapsedTime(draft.elapsedTime);
+      setMaxSpeed(draft.maxSpeed);
+      startTimeRef.current = draft.startTime;
+      setHasDraft(false);
+      setShowSaveDialog(true);
+      toast.success("Previous ride data recovered!");
+    } catch {
+      localStorage.removeItem(RIDE_DRAFT_KEY);
+      setHasDraft(false);
+    }
+  }, []);
+
+  const discardDraft = useCallback(() => {
+    localStorage.removeItem(RIDE_DRAFT_KEY);
+    setHasDraft(false);
+  }, []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      // Save draft on unmount if actively tracking
+      if (watchIdRef.current !== null && currentPointsRef.current.length > 0) {
+        const draft: RideDraft = {
+          currentPoints: currentPointsRef.current,
+          currentDistance: currentDistanceRef.current,
+          elapsedTime: elapsedTimeRef.current,
+          maxSpeed: maxSpeedRef.current,
+          startTime: startTimeRef.current,
+          savedAt: Date.now(),
+        };
+        try {
+          localStorage.setItem(RIDE_DRAFT_KEY, JSON.stringify(draft));
+        } catch { /* quota exceeded - ignore */ }
+      }
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
@@ -454,6 +552,24 @@ function RideTrackingContent() {
           Track your rides in real time with GPS and see your route on the map
         </p>
       </div>
+
+      {/* ── Draft Recovery Banner ────────────────────────────────────────── */}
+      {hasDraft && (
+        <Card className="border-amber-500/50 bg-amber-50 dark:bg-amber-950/20">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="font-medium text-amber-800 dark:text-amber-200">Unsaved ride found</p>
+                <p className="text-sm text-amber-600 dark:text-amber-400">A previous ride was interrupted. Would you like to recover it?</p>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <Button variant="outline" size="sm" onClick={discardDraft}>Discard</Button>
+                <Button size="sm" onClick={resumeDraft}>Recover</Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* ── Live Map (shown while tracking or if we have points) ──────────── */}
       {(isTracking || currentPoints.length > 0) && (
