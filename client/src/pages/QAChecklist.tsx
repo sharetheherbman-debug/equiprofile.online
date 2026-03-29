@@ -88,6 +88,7 @@ function Section({ title, checks }: { title: string; checks: CheckItem[] }) {
 export default function QAChecklistPage() {
   const [refetchKey, setRefetchKey] = useState(0);
   const [, navigate] = useLocation();
+  const [calendarTimedOut, setCalendarTimedOut] = useState(false);
 
   const adminStatus = trpc.adminUnlock.getStatus.useQuery(undefined, {
     retry: false,
@@ -113,6 +114,17 @@ export default function QAChecklistPage() {
     },
     { retry: false, staleTime: 30000 },
   );
+
+  // Detect if calendar query is still fetching after 15 seconds — avoids
+  // permanent "Checking..." display when the request hangs.
+  useEffect(() => {
+    if (!calEvents.isPending || calEvents.fetchStatus !== "fetching") {
+      setCalendarTimedOut(false);
+      return;
+    }
+    const timer = setTimeout(() => setCalendarTimedOut(true), 15000);
+    return () => clearTimeout(timer);
+  }, [calEvents.isPending, calEvents.fetchStatus]);
   const trainingStats = trpc.analytics.getTrainingStats.useQuery(
     {},
     { retry: false },
@@ -192,8 +204,10 @@ export default function QAChecklistPage() {
     },
     {
       label: "calendar.getEvents",
-      status: qStatus(calEvents),
-      detail: qDetail(calEvents),
+      status: calendarTimedOut ? "warn" : qStatus(calEvents),
+      detail: calendarTimedOut
+        ? "Request timed out (>15s) — check server calendar route"
+        : qDetail(calEvents),
     },
     {
       label: "adminUnlock.getStatus",

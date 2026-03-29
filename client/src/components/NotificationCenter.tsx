@@ -16,12 +16,14 @@ import { Button } from "./ui/button";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
 import { Badge } from "./ui/badge";
 import { useRealtime } from "../hooks/useRealtime";
+import { useAuth } from "../_core/hooks/useAuth";
 
 interface AppNotification {
   id: string;
@@ -40,21 +42,25 @@ interface AppNotification {
   actionUrl?: string;
 }
 
-const NOTIFICATIONS_KEY = "equiprofile-notifications";
+const LEGACY_NOTIFICATIONS_KEY = "equiprofile-notifications";
 const MAX_NOTIFICATIONS = 50;
 
-function getStoredNotifications(): AppNotification[] {
+function notificationsKey(userId: number): string {
+  return `equiprofile-notifications-${userId}`;
+}
+
+function getStoredNotifications(userId: number): AppNotification[] {
   try {
-    const stored = localStorage.getItem(NOTIFICATIONS_KEY);
+    const stored = localStorage.getItem(notificationsKey(userId));
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
   }
 }
 
-function storeNotifications(notifications: AppNotification[]) {
+function storeNotifications(userId: number, notifications: AppNotification[]) {
   const trimmed = notifications.slice(0, MAX_NOTIFICATIONS);
-  localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(trimmed));
+  localStorage.setItem(notificationsKey(userId), JSON.stringify(trimmed));
 }
 
 function getNotificationIcon(type: AppNotification["type"]) {
@@ -132,16 +138,33 @@ function mapRealtimeEventToNotification(
 }
 
 export function NotificationCenter() {
-  const [notifications, setNotifications] = useState<AppNotification[]>(
-    getStoredNotifications(),
+  const { user } = useAuth();
+  const userId = user?.id ?? 0;
+
+  const [notifications, setNotifications] = useState<AppNotification[]>(() =>
+    userId ? getStoredNotifications(userId) : [],
   );
   const [isOpen, setIsOpen] = useState(false);
   const { subscribe, isConnected } = useRealtime();
+
+  // When user changes (e.g. login/logout), load the correct notifications and
+  // clear the legacy browser-wide key to avoid cross-user leakage.
+  useEffect(() => {
+    if (userId) {
+      setNotifications(getStoredNotifications(userId));
+      // Remove the old unscoped key if it still exists
+      localStorage.removeItem(LEGACY_NOTIFICATIONS_KEY);
+    } else {
+      setNotifications([]);
+    }
+  }, [userId]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   // Subscribe to real-time events and create notifications
   useEffect(() => {
+    if (!userId) return;
+
     const eventTypes = [
       "horses:created",
       "horses:updated",
@@ -158,7 +181,7 @@ export function NotificationCenter() {
         if (notification) {
           setNotifications((prev) => {
             const updated = [notification, ...prev].slice(0, MAX_NOTIFICATIONS);
-            storeNotifications(updated);
+            storeNotifications(userId, updated);
             return updated;
           });
         }
@@ -168,36 +191,36 @@ export function NotificationCenter() {
     return () => {
       unsubscribers.forEach((unsub) => unsub());
     };
-  }, [subscribe]);
+  }, [subscribe, userId]);
 
   const markAsRead = useCallback((id: string) => {
     setNotifications((prev) => {
       const updated = prev.map((n) => (n.id === id ? { ...n, read: true } : n));
-      storeNotifications(updated);
+      if (userId) storeNotifications(userId, updated);
       return updated;
     });
-  }, []);
+  }, [userId]);
 
   const markAllAsRead = useCallback(() => {
     setNotifications((prev) => {
       const updated = prev.map((n) => ({ ...n, read: true }));
-      storeNotifications(updated);
+      if (userId) storeNotifications(userId, updated);
       return updated;
     });
-  }, []);
+  }, [userId]);
 
   const clearAll = useCallback(() => {
     setNotifications([]);
-    storeNotifications([]);
-  }, []);
+    if (userId) storeNotifications(userId, []);
+  }, [userId]);
 
   const deleteNotification = useCallback((id: string) => {
     setNotifications((prev) => {
       const updated = prev.filter((n) => n.id !== id);
-      storeNotifications(updated);
+      if (userId) storeNotifications(userId, updated);
       return updated;
     });
-  }, []);
+  }, [userId]);
 
   const formatTime = (timestamp: number) => {
     const diff = Date.now() - timestamp;
@@ -234,6 +257,9 @@ export function NotificationCenter() {
               )}
             </SheetTitle>
           </div>
+          <SheetDescription className="sr-only">
+            Your recent activity notifications
+          </SheetDescription>
           {notifications.length > 0 && (
             <div className="flex gap-2 pt-1">
               <Button

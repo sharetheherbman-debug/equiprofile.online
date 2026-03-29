@@ -22,6 +22,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -607,6 +608,9 @@ function DashboardLayoutContent({
                     <SheetTitle className="font-serif text-left">
                       All Features
                     </SheetTitle>
+                    <SheetDescription className="sr-only">
+                      Navigate to any feature in the app
+                    </SheetDescription>
                   </SheetHeader>
                   <div className="space-y-4" style={{ paddingBottom: 'calc(1.5rem + var(--safe-area-bottom, 0px))' }}>
                     {moreModuleGroups.map((group) => {
