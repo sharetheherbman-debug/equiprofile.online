@@ -402,7 +402,8 @@ function Router() {
             </Route>
 
             {/* Public horse passport — accessible without login (QR scan) */}
-            <Route path="/passport/:id" component={PassportView} />
+            {/* Uses a secure shareToken (not sequential integer ID) to prevent enumeration */}
+            <Route path="/passport/:token" component={PassportView} />
 
             {/* 404 */}
             <Route path="/404" component={NotFound} />

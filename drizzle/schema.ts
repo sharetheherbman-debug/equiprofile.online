@@ -80,6 +80,10 @@ export const horses = mysqlTable("horses", {
   level: varchar("level", { length: 50 }), // beginner, intermediate, advanced, competition
   registrationNumber: varchar("registrationNumber", { length: 100 }),
   microchipNumber: varchar("microchipNumber", { length: 100 }),
+  passportNumber: varchar("passportNumber", { length: 100 }),
+  feiId: varchar("feiId", { length: 50 }),
+  ueln: varchar("ueln", { length: 50 }),
+  shareToken: varchar("shareToken", { length: 64 }),
   notes: text("notes"),
   photoUrl: text("photoUrl"),
   isActive: boolean("isActive").default(true).notNull(),

@@ -23,6 +23,8 @@ interface MedicalPassportProps {
     gender?: string;
     dateOfBirth?: string;
     height?: string | number;
+    // Secure sharing token — used for QR code URL instead of sequential integer ID
+    shareToken?: string;
   };
   vaccinations?: Array<{
     vaccineName: string;
@@ -52,7 +54,12 @@ export function MedicalPassport({
   const passportRef = useRef<HTMLDivElement>(null);
 
   const handleGenerateQR = async () => {
-    const shareUrl = `${window.location.origin}/passport/${horse.id}`;
+    // Use shareToken for secure, non-enumerable QR links. Fall back to legacy
+    // integer ID only if shareToken is not yet available (pre-migration horses).
+    const passportPath = horse.shareToken
+      ? `/passport/${horse.shareToken}`
+      : `/passport/${horse.id}`;
+    const shareUrl = `${window.location.origin}${passportPath}`;
     const qr = await generateQRCode(shareUrl);
     setQrCodeUrl(qr);
   };
@@ -73,15 +80,21 @@ export function MedicalPassport({
   };
 
   const handleShare = async () => {
+    const passportPath = horse.shareToken
+      ? `/passport/${horse.shareToken}`
+      : `/passport/${horse.id}`;
+    const shareUrl = `${window.location.origin}${passportPath}`;
     if (navigator.share) {
       try {
         await navigator.share({
           title: `${horse.name} Medical Passport`,
           text: `View medical passport for ${horse.name}`,
-          url: `${window.location.origin}/passport/${horse.id}`,
+          url: shareUrl,
         });
       } catch (err) {
-        console.error("Error sharing:", err);
+        if ((err as any)?.name !== "AbortError") {
+          console.error("Error sharing:", err);
+        }
       }
     }
   };

@@ -383,7 +383,7 @@ export const appRouter = router({
     getPricing: publicProcedure.query(() => {
       // Always return pricing data so the UI never shows £0.
       // When Stripe is disabled, fall back to the hard-coded GBP defaults.
-      if (!ENV.enableStripe) {
+      if (!ENV.enableStripe && process.env.NODE_ENV !== "production") {
         console.info(
           "[Pricing] Stripe disabled – returning default GBP prices (£10/£100 Individual, £30/£300 Stable)",
         );
@@ -884,6 +884,59 @@ export const appRouter = router({
         return { horse, healthRecords: records };
       }),
 
+    getPassportByToken: publicProcedure
+      .input(z.object({ token: z.string().min(1).max(64) }))
+      .query(async ({ input }) => {
+        const drizzleDb = await getDb();
+        if (!drizzleDb) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        const horseRows = await drizzleDb
+          .select({
+            name: horses.name,
+            breed: horses.breed,
+            color: horses.color,
+            gender: horses.gender,
+            dateOfBirth: horses.dateOfBirth,
+            height: horses.height,
+            microchipNumber: horses.microchipNumber,
+            registrationNumber: horses.registrationNumber,
+          })
+          .from(horses)
+          .where(and(eq((horses as any).shareToken, input.token), eq(horses.isActive, true)))
+          .limit(1);
+
+        if (!horseRows[0]) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Passport not found" });
+        }
+
+        const horse = horseRows[0];
+
+        // Fetch health records by joining through shareToken — we don't expose horse.id
+        const horseIdRows = await drizzleDb
+          .select({ id: horses.id })
+          .from(horses)
+          .where(and(eq((horses as any).shareToken, input.token), eq(horses.isActive, true)))
+          .limit(1);
+
+        const horseId = horseIdRows[0]?.id;
+        if (!horseId) throw new TRPCError({ code: "NOT_FOUND" });
+
+        const records = await drizzleDb
+          .select({
+            id: healthRecords.id,
+            title: healthRecords.title,
+            recordType: healthRecords.recordType,
+            recordDate: healthRecords.recordDate,
+            nextDueDate: healthRecords.nextDueDate,
+          })
+          .from(healthRecords)
+          .where(eq(healthRecords.horseId, horseId))
+          .orderBy(desc(healthRecords.recordDate))
+          .limit(50);
+
+        return { horse, healthRecords: records };
+      }),
+
     get: subscribedProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ ctx, input }) => {
@@ -978,6 +1031,9 @@ export const appRouter = router({
           level: z.string().max(200).optional(),
           registrationNumber: z.string().max(100).optional(),
           microchipNumber: z.string().max(50).optional(),
+          passportNumber: z.string().max(100).optional(),
+          feiId: z.string().max(50).optional(),
+          ueln: z.string().max(50).optional(),
           notes: z.string().max(10000).optional(),
           photoUrl: z.string().max(2000).optional(),
         }),
@@ -4043,7 +4099,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // Log WhatsApp availability for reminders
         const waConfig = isWhatsAppEnabled();
-        if (waConfig.enabled) {
+        if (waConfig.enabled && process.env.NODE_ENV !== "production") {
           console.log(
             `[Calendar] WhatsApp enabled — reminders queued for event ${eventId}`,
           );

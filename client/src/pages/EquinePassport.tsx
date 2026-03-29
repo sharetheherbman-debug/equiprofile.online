@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { trpc } from "@/lib/trpc";
 import { MedicalPassport } from "../components/MedicalPassport";
@@ -47,10 +47,36 @@ function EquinePassportContent() {
     ueln: "",
   });
 
+  const utils = trpc.useUtils();
   const { data: horses } = trpc.horses.list.useQuery();
 
   // Get health data for selected horse
   const selectedHorse = horses?.find((h) => h.id === parseInt(selectedHorseId));
+
+  // Pre-populate passport fields from DB whenever the selected horse changes
+  useEffect(() => {
+    if (selectedHorse) {
+      setPassportData({
+        passportNumber: (selectedHorse as any).passportNumber || "",
+        feiId: (selectedHorse as any).feiId || "",
+        ueln: (selectedHorse as any).ueln || "",
+      });
+    } else {
+      setPassportData({ passportNumber: "", feiId: "", ueln: "" });
+    }
+  }, [selectedHorse?.id]);
+
+  const savePassportIdsMutation = trpc.horses.update.useMutation({
+    onSuccess: () => {
+      utils.horses.list.invalidate();
+      utils.horses.get.invalidate({ id: parseInt(selectedHorseId) });
+      setShowPassportFields(false);
+      toast.success("Passport IDs saved successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to save passport IDs");
+    },
+  });
 
   const { data: healthRecords } = trpc.healthRecords.listAll.useQuery(
     undefined,
@@ -258,12 +284,18 @@ function EquinePassportContent() {
                       </p>
                     </div>
                     <Button
+                      disabled={savePassportIdsMutation.isPending}
                       onClick={() => {
-                        setShowPassportFields(false);
-                        toast.success("Passport IDs updated");
+                        if (!selectedHorseId) return;
+                        savePassportIdsMutation.mutate({
+                          id: parseInt(selectedHorseId),
+                          passportNumber: passportData.passportNumber || undefined,
+                          feiId: passportData.feiId || undefined,
+                          ueln: passportData.ueln || undefined,
+                        });
                       }}
                     >
-                      Save IDs
+                      {savePassportIdsMutation.isPending ? "Saving…" : "Save IDs"}
                     </Button>
                   </div>
                 </DialogContent>
@@ -377,9 +409,10 @@ function EquinePassportContent() {
             height: selectedHorse.height
               ? `${(selectedHorse.height / 10).toFixed(1)} hh`
               : undefined,
-            passportNumber: passportData.passportNumber || undefined,
-            feiId: passportData.feiId || undefined,
-            ueln: passportData.ueln || undefined,
+            passportNumber: passportData.passportNumber || (selectedHorse as any).passportNumber || undefined,
+            feiId: passportData.feiId || (selectedHorse as any).feiId || undefined,
+            ueln: passportData.ueln || (selectedHorse as any).ueln || undefined,
+            shareToken: (selectedHorse as any).shareToken || undefined,
           }}
           vaccinations={vaccinations}
           dewormings={dewormings}

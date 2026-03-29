@@ -796,6 +796,10 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
     // Uses ALTER TABLE … ADD COLUMN IF NOT EXISTS (supported by MariaDB 10.0+).
     const columnMigrations: string[] = [
       `ALTER TABLE \`users\` ADD COLUMN IF NOT EXISTS \`passwordChangedAt\` timestamp NULL`,
+      `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`passportNumber\` varchar(100) NULL`,
+      `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`feiId\` varchar(50) NULL`,
+      `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`ueln\` varchar(50) NULL`,
+      `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`shareToken\` varchar(64) NULL`,
     ];
     for (const stmt of columnMigrations) {
       try {
@@ -805,6 +809,27 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       }
     }
     console.log("[Database] Column migrations applied");
+
+    // Generate shareTokens for any existing horses that don't have one yet.
+    // This ensures all passport QR codes resolve securely via token (not sequential ID).
+    try {
+      const { nanoid } = await import("nanoid");
+      const rows: any = await db.execute(
+        sql`SELECT id FROM \`horses\` WHERE shareToken IS NULL LIMIT 1000`,
+      );
+      const horseRows: Array<{ id: number }> = Array.isArray(rows[0]) ? rows[0] : [];
+      for (const row of horseRows) {
+        const token = nanoid(32);
+        await db.execute(
+          sql`UPDATE \`horses\` SET shareToken = ${token} WHERE id = ${row.id} AND shareToken IS NULL`,
+        );
+      }
+      if (horseRows.length > 0) {
+        console.log(`[Database] Generated shareTokens for ${horseRows.length} existing horse(s)`);
+      }
+    } catch (tokenErr) {
+      console.warn("[Database] Failed to generate horse shareTokens:", tokenErr);
+    }
 
     _tablesEnsured = true;
   } catch (error) {
@@ -1084,7 +1109,9 @@ export async function getExpiredTrials() {
 export async function createHorse(data: InsertHorse) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(horses).values(data);
+  const { nanoid } = await import("nanoid");
+  const shareToken = (data as any).shareToken || nanoid(32);
+  const result = await db.insert(horses).values({ ...data, shareToken } as any);
   return (result[0] as ResultSetHeader).insertId as number;
 }
 

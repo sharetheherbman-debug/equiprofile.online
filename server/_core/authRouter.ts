@@ -50,6 +50,22 @@ const loginLimiter = rateLimit({
   },
 });
 
+// Rate limiter for password reset requests — prevents email spam and enumeration.
+// 5 requests per IP per 15 minutes is generous enough for legitimate use.
+const resetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: {
+    error: "Too many requests",
+    message: "Too many password reset requests from this IP, please try again in 15 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, _next, options) => {
+    res.status(options.statusCode).json(options.message);
+  },
+});
+
 /**
  * POST /api/auth/signup
  * Create a new user account with email/password
@@ -107,9 +123,11 @@ router.post("/signup", async (req, res) => {
       return res.status(500).json({ error: "Failed to create user" });
     }
 
-    // Auto-grant admin role to primary admin email, and store plan type preference
+    // Auto-grant admin role to the configured primary admin email, and store plan type preference.
+    // ADMIN_EMAIL is set via environment variable — no credentials are hardcoded.
+    const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
     const userUpdates: Record<string, unknown> = {};
-    if (userEmail === "amarktainetwork@gmail.com" && user.role !== "admin") {
+    if (adminEmail && userEmail === adminEmail && user.role !== "admin") {
       userUpdates.role = "admin";
     }
     if (planType === "stable" || planType === "normal" || planType === "standard") {
@@ -213,8 +231,9 @@ router.post("/login", loginLimiter, async (req, res) => {
     // Update last signed in
     await db.updateUser(user.id, { lastSignedIn: new Date() });
 
-    // Auto-grant admin role to primary admin email if not already set
-    if (user.email === "amarktainetwork@gmail.com" && user.role !== "admin") {
+    // Auto-grant admin role to the configured primary admin email if not already set.
+    const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    if (adminEmail && user.email === adminEmail && user.role !== "admin") {
       await db.updateUser(user.id, { role: "admin" });
     }
 
@@ -257,7 +276,7 @@ router.post("/login", loginLimiter, async (req, res) => {
  * POST /api/auth/request-reset
  * Request a password reset email
  */
-router.post("/request-reset", async (req, res) => {
+router.post("/request-reset", resetLimiter, async (req, res) => {
   try {
     const { email: rawEmail } = req.body;
 
