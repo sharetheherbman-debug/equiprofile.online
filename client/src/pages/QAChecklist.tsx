@@ -105,13 +105,13 @@ export default function QAChecklistPage() {
     retry: false,
   });
   const horses = trpc.horses.list.useQuery(undefined, { retry: false });
-  const stables = trpc.stables.list.useQuery(undefined, { retry: false });
+  const stables = trpc.stables.list.useQuery(undefined, { retry: false, staleTime: 30000 });
   const calEvents = trpc.calendar.getEvents.useQuery(
     {
       startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     },
-    { retry: false },
+    { retry: false, staleTime: 30000 },
   );
   const trainingStats = trpc.analytics.getTrainingStats.useQuery(
     {},
@@ -125,10 +125,11 @@ export default function QAChecklistPage() {
   });
 
   function qStatus(query: any): CheckItem["status"] {
-    // isFetching but no data yet = loading; if query has not started (fetchStatus idle with no data), show error
+    // isFetching but no data yet = loading
     if (query.isError) return "error";
     if (query.isPending && query.fetchStatus === "fetching") return "loading";
-    if (query.isPending && query.fetchStatus === "idle") return "error";
+    // idle + pending means query was never enabled or has not started — treat as warn, not error
+    if (query.isPending && query.fetchStatus === "idle") return "warn";
     return "ok";
   }
 

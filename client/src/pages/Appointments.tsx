@@ -21,13 +21,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Plus, Pencil, Trash2, Clock } from "lucide-react";
+import { Calendar, Plus, Pencil, Trash2, Clock, Search } from "lucide-react";
 import DashboardLayout from "../components/DashboardLayout";
 
 function AppointmentsContent() {
   const { toast } = useToast();
   const utils = trpc.useUtils();
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [editingAppointment, setEditingAppointment] = useState<any>(null);
 
   const { data: appointments, refetch } = trpc.appointments.list.useQuery();
@@ -186,15 +187,30 @@ function AppointmentsContent() {
     }
   };
 
+  const apptMatchesSearch = (a: any) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    const horse = horses?.find((h: any) => h.id === a.horseId);
+    return (
+      (a.title || a.providerName || a.provider || "").toLowerCase().includes(q) ||
+      (a.appointmentType || a.type || "").toLowerCase().includes(q) ||
+      (a.status || "").toLowerCase().includes(q) ||
+      (a.notes || "").toLowerCase().includes(q) ||
+      horse?.name?.toLowerCase().includes(q)
+    );
+  };
+
   const upcomingAppointments = localAppointments.filter(
     (a: any) =>
       a.status !== "completed" &&
       a.status !== "cancelled" &&
-      new Date(a.appointmentDate) >= new Date(),
+      new Date(a.appointmentDate) >= new Date() &&
+      apptMatchesSearch(a),
   );
   const pastAppointments = localAppointments.filter(
     (a: any) =>
-      a.status === "completed" || new Date(a.appointmentDate) < new Date(),
+      (a.status === "completed" || new Date(a.appointmentDate) < new Date()) &&
+      apptMatchesSearch(a),
   );
 
   const getStatusBadge = (status: string) => {
@@ -229,7 +245,17 @@ function AppointmentsContent() {
           </h1>
           <p className="text-gray-600 mt-1">Schedule and manage appointments</p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search appointments..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 w-48 sm:w-56"
+            />
+          </div>
+          <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm}>
               <Plus className="h-4 w-4 mr-2" />
@@ -406,7 +432,8 @@ function AppointmentsContent() {
               </div>
             </form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Upcoming Appointments */}

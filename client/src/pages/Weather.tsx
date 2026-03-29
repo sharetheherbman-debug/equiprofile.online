@@ -489,6 +489,19 @@ function WeatherContent() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Safety Disclaimer */}
+      <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/20 dark:text-amber-300">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+        <p>
+          <strong>Safety disclaimer:</strong> Weather data and riding
+          recommendations on this page are provided for general guidance only.
+          Conditions can change rapidly — always exercise your own judgement and
+          consult a qualified instructor or veterinary professional before
+          riding. EquiProfile accepts no liability for decisions made based on
+          weather data or AI-generated riding advice.
+        </p>
+      </div>
     </div>
   );
 }

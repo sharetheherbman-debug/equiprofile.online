@@ -3008,18 +3008,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           status: !!process.env.DATABASE_URL,
           critical: true,
           conditional: false,
+          description: "MySQL/MariaDB connection string — required for all data storage",
         },
         {
           name: "JWT_SECRET",
           status: !!process.env.JWT_SECRET,
           critical: true,
           conditional: false,
+          description: "Secret used to sign authentication tokens — must be long and random",
         },
         {
           name: "ADMIN_UNLOCK_PASSWORD",
           status: !!process.env.ADMIN_UNLOCK_PASSWORD,
           critical: true,
           conditional: false,
+          description: "Password to unlock the admin panel — bcrypt hash recommended",
         },
 
         // Stripe vars (critical only if ENABLE_STRIPE=true)
@@ -3029,6 +3032,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: ENV.enableStripe,
           conditional: true,
           requiredWhen: "ENABLE_STRIPE=true",
+          description: "Stripe secret API key — required when billing is enabled",
         },
         {
           name: "STRIPE_WEBHOOK_SECRET",
@@ -3036,6 +3040,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: ENV.enableStripe,
           conditional: true,
           requiredWhen: "ENABLE_STRIPE=true",
+          description: "Stripe webhook signing secret — required to verify payment events",
         },
 
         // Upload/Storage vars (optional - falls back to local disk when not configured)
@@ -3047,6 +3052,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: false,
           conditional: true,
           requiredWhen: "ENABLE_UPLOADS=true with proxy storage",
+          description: "URL of the file storage proxy — falls back to local disk if unset",
         },
         {
           name: "STORAGE_PROXY_KEY",
@@ -3056,6 +3062,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: false,
           conditional: true,
           requiredWhen: "ENABLE_UPLOADS=true with proxy storage",
+          description: "API key for the storage proxy — required alongside STORAGE_PROXY_URL",
         },
 
         // Legacy AWS vars (optional - kept for backward compatibility)
@@ -3064,18 +3071,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           status: !!process.env.AWS_ACCESS_KEY_ID,
           critical: false,
           conditional: false,
+          description: "AWS credentials for S3 uploads (legacy — prefer storage proxy)",
         },
         {
           name: "AWS_SECRET_ACCESS_KEY",
           status: !!process.env.AWS_SECRET_ACCESS_KEY,
           critical: false,
           conditional: false,
+          description: "AWS secret key for S3 — required alongside AWS_ACCESS_KEY_ID",
         },
         {
           name: "AWS_S3_BUCKET",
           status: !!process.env.AWS_S3_BUCKET,
           critical: false,
           conditional: false,
+          description: "S3 bucket name for file storage (legacy)",
         },
 
         // Optional features
@@ -3084,12 +3094,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           status: aiConfigured,
           critical: false,
           conditional: false,
+          description: "OpenAI API key — enables AI chat assistant and weather analysis",
         },
         {
           name: "SMTP_HOST",
           status: !!process.env.SMTP_HOST,
           critical: false,
           conditional: false,
+          description: "SMTP server hostname — enables email notifications and password resets",
         },
       ];
 

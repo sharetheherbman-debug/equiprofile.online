@@ -529,7 +529,54 @@ export default function TermsPage() {
               <Card className="bg-white/5 backdrop-blur-md border-white/10">
                 <CardHeader>
                   <CardTitle className="text-white">
-                    13. Contact Information
+                    13. Weather &amp; Riding Guidance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-invert max-w-none">
+                  <p className="text-gray-300">
+                    EquiProfile provides weather data and AI-generated riding
+                    recommendations as a convenience feature to assist with
+                    planning. This information is sourced from third-party
+                    weather providers and is generated algorithmically.
+                  </p>
+                  <p className="font-semibold mt-4">
+                    IMPORTANT — WEATHER AND RIDING DISCLAIMER:
+                  </p>
+                  <ul>
+                    <li className="text-gray-300">
+                      Weather forecasts and riding condition assessments are
+                      provided for <strong>general guidance only</strong> and
+                      may not reflect actual local conditions.
+                    </li>
+                    <li className="text-gray-300">
+                      EquiProfile accepts no liability for personal injury,
+                      loss, or damage arising from decisions made in reliance on
+                      weather data or AI riding recommendations displayed in the
+                      Service.
+                    </li>
+                    <li className="text-gray-300">
+                      You are solely responsible for assessing whether
+                      conditions are safe for riding. Always consult a qualified
+                      instructor or veterinary professional where appropriate.
+                    </li>
+                    <li className="text-gray-300">
+                      Horse welfare and rider safety must take precedence over
+                      any automated recommendation produced by the Service.
+                    </li>
+                  </ul>
+                  <p className="text-gray-300">
+                    Nothing in this clause limits our liability for death or
+                    personal injury caused by our negligence, or for any other
+                    liability that cannot be excluded or limited under English
+                    law.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    14. Contact Information
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="prose prose-invert max-w-none">

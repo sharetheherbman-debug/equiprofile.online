@@ -328,10 +328,99 @@ export default function CalendarPage() {
     });
   };
 
-  const upcomingItems = calendarItems
-    .filter((item) => item.date >= new Date(new Date().setHours(0, 0, 0, 0)))
-    .sort((a, b) => a.date.getTime() - b.date.getTime())
-    .slice(0, 10);
+  const upcomingItems = useMemo(() => {
+    const today = new Date(new Date().setHours(0, 0, 0, 0));
+    const items: CalendarItem[] = [];
+
+    // Calendar events for the current month window (already fetched)
+    events.forEach((e: any) => {
+      const d = new Date(e.startDate);
+      if (d >= today) {
+        items.push({
+          id: `evt-${e.id}`,
+          source: "event",
+          title: e.title,
+          date: d,
+          type: e.eventType,
+          colorClass: EVENT_TYPE_COLORS[e.eventType] || "bg-gray-500",
+          isEditable: true,
+          originalData: e,
+        });
+      }
+    });
+
+    // Tasks — all future, not month-gated
+    tasks.forEach((t: any) => {
+      if (!t.dueDate || t.status === "completed" || t.status === "cancelled") return;
+      const d = new Date(t.dueDate + "T00:00:00");
+      if (d >= today) {
+        items.push({
+          id: `task-${t.id}`,
+          source: "task",
+          title: t.title,
+          date: d,
+          type: t.taskType,
+          colorClass: "bg-orange-500",
+          isEditable: false,
+          originalData: t,
+        });
+      }
+    });
+
+    // Appointments — all future, not month-gated
+    appointments.forEach((a: any) => {
+      if (a.status === "cancelled" || a.status === "completed") return;
+      const d = new Date(a.appointmentDate + "T00:00:00");
+      if (d >= today) {
+        items.push({
+          id: `appt-${a.id}`,
+          source: "appointment",
+          title: a.title,
+          date: d,
+          type: a.appointmentType,
+          colorClass: "bg-pink-500",
+          isEditable: false,
+          originalData: a,
+        });
+      }
+    });
+
+    // Training sessions — all future, not month-gated
+    const calendarEventTitles = new Set(
+      events
+        .filter((e: any) => e.eventType === "training")
+        .map((e: any) => e.title.toLowerCase().trim()),
+    );
+    trainingSessions.forEach((s: any) => {
+      if (s.isCompleted) return;
+      const sessionDateStr = s.sessionDate
+        ? typeof s.sessionDate === "string"
+          ? s.sessionDate.slice(0, 10)
+          : new Date(s.sessionDate).toISOString().slice(0, 10)
+        : null;
+      if (!sessionDateStr) return;
+      const d = new Date(sessionDateStr + "T00:00:00");
+      if (d < today) return;
+      const sessionTypeLabel =
+        (s.sessionType ?? "training").charAt(0).toUpperCase() +
+        (s.sessionType ?? "training").slice(1);
+      const title = s.location ? `${sessionTypeLabel} – ${s.location}` : sessionTypeLabel;
+      if (!calendarEventTitles.has(title.toLowerCase().trim())) {
+        items.push({
+          id: `training-${s.id}`,
+          source: "event" as const,
+          title,
+          date: d,
+          type: "training",
+          colorClass: "bg-blue-700",
+          isEditable: false,
+          originalData: s,
+        });
+      }
+    });
+
+    return items.sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 10);
+  }, [events, tasks, appointments, trainingSessions]);
 
   const handleAddEvent = () => {
     if (!newEvent.title.trim()) {

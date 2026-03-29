@@ -1404,6 +1404,7 @@ function AdminContent() {
                         <TableHead>Variable</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Priority</TableHead>
+                        <TableHead className="hidden md:table-cell">Description</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1427,6 +1428,9 @@ function AdminContent() {
                             >
                               {check.critical ? "Critical" : "Optional"}
                             </Badge>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                            {(check as any).description ?? ""}
                           </TableCell>
                         </TableRow>
                       ))}

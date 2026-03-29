@@ -54,6 +54,7 @@ import {
   Play,
   Pencil,
   Trash2,
+  Search,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -77,6 +78,7 @@ function TrainingContent() {
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [deletingSessionId, setDeletingSessionId] = useState<number | null>(null);
   const [editingSession, setEditingSession] = useState<{ id: number } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
     horseId: "",
     sessionDate: new Date().toISOString().split("T")[0],
@@ -264,13 +266,23 @@ function TrainingContent() {
             Sessions, schedules, and training programmes
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Schedule Session
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search sessions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 w-48 sm:w-56"
+            />
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Schedule Session
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-lg">
             <form onSubmit={handleSubmit}>
               <DialogHeader>
@@ -409,7 +421,8 @@ function TrainingContent() {
               </DialogFooter>
             </form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Tabs: Sessions / Templates */}
@@ -525,7 +538,21 @@ function TrainingContent() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {sessions.map((session) => {
+                  {sessions
+                    .filter((session) => {
+                      if (!searchQuery.trim()) return true;
+                      const q = searchQuery.toLowerCase();
+                      const horse = horses?.find((h) => h.id === session.horseId);
+                      return (
+                        session.sessionType?.toLowerCase().includes(q) ||
+                        session.trainer?.toLowerCase().includes(q) ||
+                        session.location?.toLowerCase().includes(q) ||
+                        session.goals?.toLowerCase().includes(q) ||
+                        session.notes?.toLowerCase().includes(q) ||
+                        horse?.name?.toLowerCase().includes(q)
+                      );
+                    })
+                    .map((session) => {
                     const horse = horses?.find((h) => h.id === session.horseId);
                     return (
                       <div

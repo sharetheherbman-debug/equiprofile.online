@@ -52,6 +52,7 @@ import {
   Calendar,
   Pencil,
   Trash2,
+  Search,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -68,6 +69,7 @@ const recordTypes = [
 function HealthContent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [editingRecord, setEditingRecord] = useState<any>(null);
   const [editFormData, setEditFormData] = useState({
     horseId: "",
@@ -237,13 +239,23 @@ function HealthContent() {
             Track vaccinations, vet visits, and medical history
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Record
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search records..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 w-48 sm:w-56"
+            />
+          </div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Record
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-lg">
             <form onSubmit={handleSubmit}>
               <DialogHeader>
@@ -385,7 +397,8 @@ function HealthContent() {
               </DialogFooter>
             </form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Upcoming Reminders */}
@@ -461,7 +474,20 @@ function HealthContent() {
             </div>
           ) : (
             <div className="space-y-3">
-              {records.map((record) => {
+              {records
+                .filter((record) => {
+                  if (!searchQuery.trim()) return true;
+                  const q = searchQuery.toLowerCase();
+                  const horse = horses?.find((h) => h.id === record.horseId);
+                  return (
+                    record.title?.toLowerCase().includes(q) ||
+                    record.recordType?.toLowerCase().includes(q) ||
+                    record.vetName?.toLowerCase().includes(q) ||
+                    record.description?.toLowerCase().includes(q) ||
+                    horse?.name?.toLowerCase().includes(q)
+                  );
+                })
+                .map((record) => {
                 const horse = horses?.find((h) => h.id === record.horseId);
                 return (
                   <div
