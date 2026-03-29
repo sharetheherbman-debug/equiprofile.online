@@ -52,7 +52,7 @@ export function MedicalPassport({
   const passportRef = useRef<HTMLDivElement>(null);
 
   const handleGenerateQR = async () => {
-    const shareUrl = `${window.location.origin}/share/medical/${horse.id}`;
+    const shareUrl = `${window.location.origin}/passport/${horse.id}`;
     const qr = await generateQRCode(shareUrl);
     setQrCodeUrl(qr);
   };
@@ -66,7 +66,7 @@ export function MedicalPassport({
   const handleExportPDF = async () => {
     if (passportRef.current) {
       await generatePDFFromHTML(passportRef.current, {
-        filename: `medical-passport-${horse.name.replace(/\s+/g, "-")}.pdf`,
+        filename: `${horse.name.toLowerCase().replace(/\s+/g, "-")}-passport.pdf`,
         orientation: "portrait",
       });
     }
@@ -78,7 +78,7 @@ export function MedicalPassport({
         await navigator.share({
           title: `${horse.name} Medical Passport`,
           text: `View medical passport for ${horse.name}`,
-          url: `${window.location.origin}/share/medical/${horse.id}`,
+          url: `${window.location.origin}/passport/${horse.id}`,
         });
       } catch (err) {
         console.error("Error sharing:", err);
