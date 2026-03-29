@@ -77,6 +77,7 @@ const Tags = lazy(() => import("./pages/Tags"));
 const FeedCostTracking = lazy(() => import("./pages/FeedCostTracking"));
 const RideTracking = lazy(() => import("./pages/RideTracking"));
 const EquinePassport = lazy(() => import("./pages/EquinePassport"));
+const PassportView = lazy(() => import("./pages/PassportView"));
 const StableStaff = lazy(() => import("./pages/StableStaff"));
 const StableSetup = lazy(() => import("./pages/StableSetup"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
@@ -399,6 +400,9 @@ function Router() {
                 <QAChecklist />
               </ProtectedRoute>
             </Route>
+
+            {/* Public horse passport — accessible without login (QR scan) */}
+            <Route path="/passport/:id" component={PassportView} />
 
             {/* 404 */}
             <Route path="/404" component={NotFound} />

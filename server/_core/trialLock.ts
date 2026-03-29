@@ -33,6 +33,7 @@ const EXEMPT_PATHS = [
   "/trpc/user.skipOnboarding", // Allow skipping onboarding
   "/trpc/user.resetOnboarding", // Allow resetting onboarding
   "/trpc/auth.", // Allow all auth-related TRPC calls (prefix match: auth.*)
+  "/trpc/horses.getPassport", // Public horse passport (QR code scan — no auth needed)
 ];
 
 /**

@@ -7,6 +7,57 @@ export interface PDFOptions {
   format?: "a4" | "letter";
 }
 
+/**
+ * Replaces oklch() CSS custom property values with safe hex/rgb fallbacks so
+ * that html2canvas can render the snapshot correctly.  The oklch() color space
+ * is not supported by the canvas 2D drawing model used internally by
+ * html2canvas, which causes the PDF to render with blank/black areas.
+ */
+function injectPdfSafeStyles(doc: Document): void {
+  const style = doc.createElement("style");
+  style.textContent = `
+    :root, * {
+      --background: #f7f8fc !important;
+      --foreground: #1a1a1a !important;
+      --card: #ffffff !important;
+      --card-foreground: #1a1a1a !important;
+      --popover: #ffffff !important;
+      --popover-foreground: #1a1a1a !important;
+      --primary: #2563eb !important;
+      --primary-foreground: #ffffff !important;
+      --secondary: #f1f5f9 !important;
+      --secondary-foreground: #1a1a1a !important;
+      --muted: #e2e8f0 !important;
+      --muted-foreground: #64748b !important;
+      --accent: #0d9488 !important;
+      --accent-foreground: #ffffff !important;
+      --destructive: #dc2626 !important;
+      --destructive-foreground: #ffffff !important;
+      --border: #cbd5e1 !important;
+      --input: #e2e8f0 !important;
+      --ring: #2563eb !important;
+      --sidebar: #1e293b !important;
+      --sidebar-foreground: #e2e8f0 !important;
+      --sidebar-accent: #334155 !important;
+      --sidebar-accent-foreground: #f1f5f9 !important;
+      --sidebar-border: #334155 !important;
+      --sidebar-ring: #2563eb !important;
+      --sidebar-primary: #2563eb !important;
+      --sidebar-primary-foreground: #ffffff !important;
+      --chart-1: #2563eb !important;
+      --chart-2: #7c3aed !important;
+      --chart-3: #0d9488 !important;
+      --chart-4: #16a34a !important;
+      --chart-5: #d97706 !important;
+    }
+    body, html {
+      background: #ffffff !important;
+      color: #1a1a1a !important;
+    }
+  `;
+  doc.head.appendChild(style);
+}
+
 export async function generatePDFFromHTML(
   element: HTMLElement,
   options: PDFOptions = {},
@@ -18,11 +69,15 @@ export async function generatePDFFromHTML(
   } = options;
 
   try {
-    // Convert HTML to canvas
+    // Convert HTML to canvas, sanitising oklch colours that html2canvas cannot render
     const canvas = await html2canvas(element, {
       scale: 2, // Higher quality
       logging: false,
       useCORS: true,
+      backgroundColor: "#ffffff",
+      onclone: (documentClone: Document) => {
+        injectPdfSafeStyles(documentClone);
+      },
     });
 
     const imgData = canvas.toDataURL("image/png");

@@ -838,6 +838,52 @@ export const appRouter = router({
       return db.getHorsesByUserId(ctx.user.id);
     }),
 
+    // Public read-only procedure — used by the /passport/:id QR-scanned page.
+    // Returns limited identification and vaccination data without requiring auth.
+    getPassport: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const drizzleDb = await getDb();
+        if (!drizzleDb) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        const horseRows = await drizzleDb
+          .select({
+            id: horses.id,
+            name: horses.name,
+            breed: horses.breed,
+            color: horses.color,
+            gender: horses.gender,
+            dateOfBirth: horses.dateOfBirth,
+            height: horses.height,
+            microchipNumber: horses.microchipNumber,
+            registrationNumber: horses.registrationNumber,
+          })
+          .from(horses)
+          .where(and(eq(horses.id, input.id), eq(horses.isActive, true)))
+          .limit(1);
+
+        if (!horseRows[0]) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+        }
+
+        const horse = horseRows[0];
+
+        const records = await drizzleDb
+          .select({
+            id: healthRecords.id,
+            title: healthRecords.title,
+            recordType: healthRecords.recordType,
+            recordDate: healthRecords.recordDate,
+            nextDueDate: healthRecords.nextDueDate,
+          })
+          .from(healthRecords)
+          .where(eq(healthRecords.horseId, input.id))
+          .orderBy(desc(healthRecords.recordDate))
+          .limit(50);
+
+        return { horse, healthRecords: records };
+      }),
+
     get: subscribedProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ ctx, input }) => {
