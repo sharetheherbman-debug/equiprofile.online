@@ -471,6 +471,7 @@ function RideTrackingContent() {
         localStorage.setItem(RIDE_DRAFT_KEY, JSON.stringify(draft));
       } catch (err) {
         console.warn("[RideTracking] Auto-save failed (storage quota?):", err);
+        toast.error("Auto-save failed — device storage may be full. Your ride data is held in memory.");
       }
     }, AUTO_SAVE_INTERVAL_MS);
     return () => clearInterval(interval);

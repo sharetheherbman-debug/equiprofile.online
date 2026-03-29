@@ -47,11 +47,12 @@ export default function Vaccinations() {
 
 function VaccinationsContent() {
   const { toast } = useToast();
+  const utils = trpc.useUtils();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingVaccination, setEditingVaccination] = useState<any>(null);
   const [localVaccinations, setLocalVaccinations] = useState<any[]>([]);
 
-  const { data: vaccinations = [], refetch } =
+  const { data: vaccinations = [] } =
     trpc.vaccinations.list.useQuery();
   const { data: horses = [] } = trpc.horses.list.useQuery();
   const createMutation = trpc.vaccinations.create.useMutation();
@@ -150,9 +151,11 @@ function VaccinationsContent() {
           id: editingVaccination.id,
           ...data,
         });
+        utils.vaccinations.list.invalidate();
         toast({ title: "Success", description: "Vaccination record updated" });
       } else {
         await createMutation.mutateAsync(data);
+        utils.vaccinations.list.invalidate();
         toast({ title: "Success", description: "Vaccination record created" });
       }
 
@@ -190,6 +193,7 @@ function VaccinationsContent() {
 
     try {
       await deleteMutation.mutateAsync({ id });
+      utils.vaccinations.list.invalidate();
       toast({ title: "Success", description: "Vaccination record deleted" });
     } catch (error: any) {
       toast({

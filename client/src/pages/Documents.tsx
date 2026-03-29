@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
   Card,
@@ -151,29 +151,38 @@ function DocumentsContent() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const utils = trpc.useUtils();
   const { data: horses } = trpc.horses.list.useQuery();
   const {
     data: documents,
     isLoading,
-    refetch,
   } = trpc.documents.list.useQuery();
+
+  const resetUploadForm = useCallback(() => {
+    setFormData({
+      horseId: "",
+      documentType: "other" as
+        | "health"
+        | "passport"
+        | "registration"
+        | "insurance"
+        | "competition"
+        | "training"
+        | "feeding"
+        | "invoice"
+        | "other",
+      title: "",
+    });
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
 
   const uploadMutation = trpc.documents.upload.useMutation({
     onSuccess: () => {
       toast.success("Document uploaded!");
       setIsDialogOpen(false);
-      refetch();
-      setFormData({
-        horseId: "",
-        documentType: "other" as
-          | "health"
-          | "registration"
-          | "insurance"
-          | "competition"
-          | "other",
-        title: "",
-      });
-      setSelectedFile(null);
+      utils.documents.list.invalidate();
+      resetUploadForm();
     },
     onError: (error) => toast.error(error.message),
   });
@@ -181,7 +190,7 @@ function DocumentsContent() {
   const deleteMutation = trpc.documents.delete.useMutation({
     onSuccess: () => {
       toast.success("Document deleted");
-      refetch();
+      utils.documents.list.invalidate();
     },
     onError: (error) => toast.error(error.message),
   });
@@ -310,7 +319,10 @@ function DocumentsContent() {
   ];
 
   const uploadButton = (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={(open) => {
+      setIsDialogOpen(open);
+      if (!open) resetUploadForm();
+    }}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="w-4 h-4 mr-2" />

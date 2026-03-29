@@ -1,4 +1,5 @@
 import { Download, FileSpreadsheet } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -25,7 +26,7 @@ export function ExportButton({
 }: ExportButtonProps) {
   const handleExport = () => {
     if (data.length === 0) {
-      alert("No data to export");
+      toast.error("No data to export");
       return;
     }
 
@@ -40,10 +41,7 @@ export function ExportButton({
         exportTrainingSessionsToCSV(data);
         break;
       case "all":
-        // Export all data types if available
-        if (confirm("Export all data? This will create multiple CSV files.")) {
-          exportHorsesToCSV(data);
-        }
+        exportHorsesToCSV(data);
         break;
     }
   };

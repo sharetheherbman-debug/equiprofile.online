@@ -97,6 +97,7 @@ function HorseFormContent() {
   const updateMutation = trpc.horses.update.useMutation({
     onSuccess: () => {
       utils.horses.list.invalidate();
+      utils.horses.get.invalidate({ id: horseId! });
       utils.user.getDashboardStats.invalidate();
       toast.success("Horse updated successfully!");
       navigate(`/horses/${horseId}`);

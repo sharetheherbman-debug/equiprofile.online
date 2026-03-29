@@ -28,6 +28,7 @@ function WeatherContent() {
     data: currentWeather,
     isLoading: currentLoading,
     isFetching: currentFetching,
+    isError: currentError,
     refetch: refetchCurrent,
   } = trpc.weather.getCurrent.useQuery(undefined, {
     retry: false,
@@ -35,7 +36,7 @@ function WeatherContent() {
     staleTime: 0,
   });
 
-  const { data: forecast, isLoading: forecastLoading, refetch: refetchForecast } =
+  const { data: forecast, isLoading: forecastLoading, isError: forecastError, refetch: refetchForecast } =
     trpc.weather.getForecast.useQuery(undefined, {
       retry: false,
       refetchOnWindowFocus: false,
@@ -329,6 +330,22 @@ function WeatherContent() {
             <div className="text-xs text-muted-foreground">
               Condition: {currentWeather.weather.condition} &bull; Last updated:{" "}
               {new Date(currentWeather.weather.timestamp).toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
+      ) : currentError ? (
+        <Card>
+          <CardContent className="py-8">
+            <div className="text-center space-y-3">
+              <AlertTriangle className="w-12 h-12 mx-auto text-amber-500" />
+              <p className="font-medium">Weather data unavailable</p>
+              <p className="text-sm text-muted-foreground">
+                Could not fetch weather data. Please check your internet connection or try again.
+              </p>
+              <Button variant="outline" onClick={handleRefresh}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Retry
+              </Button>
             </div>
           </CardContent>
         </Card>

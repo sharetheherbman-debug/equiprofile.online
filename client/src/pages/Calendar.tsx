@@ -139,7 +139,9 @@ export default function CalendarPage() {
     [currentDate],
   );
 
-  const { data: events = [], refetch } = trpc.calendar.getEvents.useQuery({
+  const utils = trpc.useUtils();
+
+  const { data: events = [] } = trpc.calendar.getEvents.useQuery({
     startDate: monthStart.toISOString(),
     endDate: monthEnd.toISOString(),
   }, {
@@ -166,7 +168,7 @@ export default function CalendarPage() {
       toast.success("Event created");
       setIsAddDialogOpen(false);
       setNewEvent({ ...EMPTY_FORM });
-      refetch();
+      utils.calendar.getEvents.invalidate();
     },
     onError: (error) => toast.error(error.message),
   });
@@ -176,7 +178,7 @@ export default function CalendarPage() {
       toast.success("Event updated");
       setIsEditDialogOpen(false);
       setSelectedEvent(null);
-      refetch();
+      utils.calendar.getEvents.invalidate();
     },
     onError: (error) => toast.error(error.message),
   });
@@ -187,7 +189,7 @@ export default function CalendarPage() {
       setIsDeleteAlertOpen(false);
       setIsEditDialogOpen(false);
       setSelectedEvent(null);
-      refetch();
+      utils.calendar.getEvents.invalidate();
     },
     onError: (error) => toast.error(error.message),
   });
