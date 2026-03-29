@@ -248,36 +248,30 @@ export default function Settings() {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList
-              className={
-                adminStatus.data?.isUnlocked
-                  ? "grid grid-cols-3 sm:grid-cols-6 w-full max-w-2xl"
-                  : "grid grid-cols-3 sm:grid-cols-5 w-full max-w-xl"
-              }
-            >
-              <TabsTrigger value="profile">
-                <User className="w-4 h-4 sm:mr-2" />
+            <TabsList className="flex flex-wrap h-auto gap-0.5 w-full">
+              <TabsTrigger value="profile" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+                <User className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Profile</span>
               </TabsTrigger>
-              <TabsTrigger value="security">
-                <Lock className="w-4 h-4 sm:mr-2" />
+              <TabsTrigger value="security" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+                <Lock className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Security</span>
               </TabsTrigger>
-              <TabsTrigger value="notifications">
-                <Bell className="w-4 h-4 sm:mr-2" />
+              <TabsTrigger value="notifications" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+                <Bell className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Notifications</span>
               </TabsTrigger>
-              <TabsTrigger value="install">
-                <Smartphone className="w-4 h-4 sm:mr-2" />
+              <TabsTrigger value="install" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+                <Smartphone className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">App</span>
               </TabsTrigger>
-              <TabsTrigger value="help">
-                <HelpCircle className="w-4 h-4 sm:mr-2" />
+              <TabsTrigger value="help" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+                <HelpCircle className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Help</span>
               </TabsTrigger>
               {adminStatus.data?.isUnlocked && (
-                <TabsTrigger value="system">
-                  <Info className="w-4 h-4 sm:mr-2" />
+                <TabsTrigger value="system" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+                  <Info className="w-4 h-4 shrink-0" />
                   <span className="hidden sm:inline">System</span>
                 </TabsTrigger>
               )}

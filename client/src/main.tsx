@@ -8,6 +8,7 @@ import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
+import { RealtimeProvider } from "./contexts/RealtimeContext";
 
 // Initialize bootstrap modules (service worker, analytics) - MUST be imported before App
 import { registerServiceWorker } from "./bootstrap";
@@ -145,7 +146,9 @@ const trpcClient = trpc.createClient({
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <RealtimeProvider>
+        <App />
+      </RealtimeProvider>
     </QueryClientProvider>
   </trpc.Provider>,
 );

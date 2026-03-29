@@ -466,62 +466,62 @@ function AdminContent() {
 
       {/* Main Tabs */}
       <Tabs defaultValue="users" className="space-y-4">
-        <TabsList className="flex overflow-x-auto h-auto gap-1 bg-muted/50 p-1 w-full">
+        <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1 w-full">
           <TabsTrigger
             value="users"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-1.5 shrink-0"
           >
             <Users className="w-4 h-4" />
-            Users
+            <span className="hidden sm:inline">Users</span>
           </TabsTrigger>
           <TabsTrigger
             value="overdue"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-1.5 shrink-0"
           >
             <AlertCircle className="w-4 h-4" />
-            Overdue
+            <span className="hidden sm:inline">Overdue</span>
           </TabsTrigger>
           <TabsTrigger
             value="activity"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-1.5 shrink-0"
           >
             <Activity className="w-4 h-4" />
-            Activity
+            <span className="hidden sm:inline">Activity</span>
           </TabsTrigger>
           <TabsTrigger
             value="settings"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-1.5 shrink-0"
           >
             <Settings className="w-4 h-4" />
-            Settings
+            <span className="hidden sm:inline">Settings</span>
           </TabsTrigger>
           <TabsTrigger
             value="system"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-1.5 shrink-0"
           >
             <Server className="w-4 h-4" />
-            System
+            <span className="hidden sm:inline">System</span>
           </TabsTrigger>
           <TabsTrigger
             value="leads"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-1.5 shrink-0"
           >
             <MessageSquare className="w-4 h-4" />
-            Leads
+            <span className="hidden sm:inline">Leads</span>
           </TabsTrigger>
           <TabsTrigger
             value="whatsapp"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-1.5 shrink-0"
           >
             <MessageSquare className="w-4 h-4" />
-            WhatsApp
+            <span className="hidden sm:inline">WhatsApp</span>
           </TabsTrigger>
           <TabsTrigger
             value="deleted"
-            className="flex items-center gap-2 shrink-0"
+            className="flex items-center gap-1.5 shrink-0"
           >
             <Trash2 className="w-4 h-4" />
-            Deleted
+            <span className="hidden sm:inline">Deleted</span>
           </TabsTrigger>
         </TabsList>
 
