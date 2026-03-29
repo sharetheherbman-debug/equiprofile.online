@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import type { User } from "../../drizzle/schema";
 import { getRuntimeConfig } from "../dynamicConfig";
+import { DEFAULT_PRICING } from "../../shared/pricing";
 
 // Initialize transporter lazily, checking DB settings as fallback
 async function getTransporter(): Promise<Transporter | null> {
@@ -200,7 +201,7 @@ export async function sendTrialReminderEmail(
       <div style="display: flex; gap: 20px; margin: 20px 0;">
         <div style="flex: 1; border: 2px solid #e5e7eb; border-radius: 8px; padding: 15px; text-align: center;">
           <h4 style="margin-top: 0;">Monthly</h4>
-          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">£7.99/mo</p>
+          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">${DEFAULT_PRICING.individual.monthly.display}/mo</p>
           <p style="font-size: 14px; color: #6b7280;">Billed monthly</p>
         </div>
         <div style="flex: 1; border: 2px solid #1e40af; border-radius: 8px; padding: 15px; text-align: center; background: #eff6ff;">
@@ -208,8 +209,8 @@ export async function sendTrialReminderEmail(
             SAVE 17%
           </div>
           <h4 style="margin-top: 0;">Yearly</h4>
-          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">£79.90/yr</p>
-          <p style="font-size: 14px; color: #6b7280;">Just £6.66/mo</p>
+          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">${DEFAULT_PRICING.individual.yearly.display}/yr</p>
+          <p style="font-size: 14px; color: #6b7280;">Just £${(DEFAULT_PRICING.individual.yearly.amount / 100 / 12).toFixed(2)}/mo</p>
         </div>
       </div>
       
@@ -239,7 +240,7 @@ export async function sendPaymentSuccessEmail(
   if (!user.email) return;
 
   const planName = plan === "yearly" ? "Yearly" : "Monthly";
-  const amount = plan === "yearly" ? "£79.90/year" : "£7.99/month";
+  const amount = plan === "yearly" ? `${DEFAULT_PRICING.individual.yearly.display}/year` : `${DEFAULT_PRICING.individual.monthly.display}/month`;
 
   const subject = "Payment successful - Welcome to EquiProfile Premium! 🎉";
   const html = `

@@ -876,14 +876,19 @@ export const appRouter = router({
         if (user) {
           const currentHorses = await db.getHorsesByUserId(ctx.user.id);
           const isTrial = user.subscriptionStatus === "trial";
-          // Trial = 1 horse; any paid plan = 20 horses max
-          const limit = isTrial ? 1 : 20;
+          const userPrefs =
+            typeof user.preferences === "string"
+              ? JSON.parse(user.preferences || "{}")
+              : (user.preferences ?? {});
+          const planTier: string = userPrefs.planTier || "pro";
+          // Trial = 1 horse; Pro = 5 horses; Stable = 20 horses
+          const limit = isTrial ? 1 : planTier === "stable" ? 20 : 5;
           if (currentHorses.length >= limit) {
             throw new TRPCError({
               code: "FORBIDDEN",
               message: isTrial
                 ? "Your free trial allows 1 horse. Upgrade to Pro or Stable to add more."
-                : `You have reached the maximum of ${limit} horses for your plan. Please contact support to add more.`,
+                : `You have reached the maximum of ${limit} horses for your plan. Upgrade to a higher plan to add more.`,
             });
           }
         }
