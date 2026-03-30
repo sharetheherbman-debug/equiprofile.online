@@ -156,7 +156,7 @@ export default function MessagesPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid md:grid-cols-[300px_1fr] gap-4 h-[calc(100vh-12rem)]">
+          <div className="grid md:grid-cols-[300px_1fr] gap-4 h-auto md:h-[calc(100vh-12rem)]">
             {/* Threads List */}
             <Card className="flex flex-col">
               <CardHeader className="pb-2">
