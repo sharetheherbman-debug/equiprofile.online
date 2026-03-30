@@ -163,6 +163,20 @@ async function main() {
     );
     const migration0008TablesExist = Number(m8Rows[0].cnt) > 0;
 
+    // Sentinel: if passportNumber column is missing from horses, migration 0009 must run.
+    const [passportRows] = await conn.execute(
+      "SELECT COUNT(*) AS cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'horses' AND COLUMN_NAME = 'passportNumber'",
+      [dbName]
+    );
+    const passportColumnExists = Number(passportRows[0].cnt) > 0;
+
+    // Sentinel: if 'gallery' is missing from documents.category ENUM, migration 0010 must run.
+    const [galleryRows] = await conn.execute(
+      "SELECT COUNT(*) AS cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'documents' AND COLUMN_NAME = 'category' AND COLUMN_TYPE LIKE '%gallery%'",
+      [dbName]
+    );
+    const galleryEnumExists = Number(galleryRows[0].cnt) > 0;
+
     for (const entry of entries) {
       const hash = entry.tag;
 
@@ -177,6 +191,20 @@ async function main() {
       // tables already exist; otherwise let drizzle run it to create them.
       if (hash === '0008_create_missing_tables' && !migration0008TablesExist) {
         console.log(`   ⚠️  Skipping baseline for ${hash} – missing tables detected, will run migration.`);
+        continue;
+      }
+
+      // For migration 0009 (adds passport columns to horses): only baseline if
+      // the columns already exist; otherwise let drizzle run it.
+      if (hash === '0009_passport_fields' && !passportColumnExists) {
+        console.log(`   ⚠️  Skipping baseline for ${hash} – passport columns missing, will run migration.`);
+        continue;
+      }
+
+      // For migration 0010 (adds gallery to documents.category ENUM): only
+      // baseline if the gallery value is already present in the ENUM.
+      if (hash === '0010_gallery_category' && !galleryEnumExists) {
+        console.log(`   ⚠️  Skipping baseline for ${hash} – gallery ENUM value missing, will run migration.`);
         continue;
       }
 

@@ -64,6 +64,27 @@
       "when": 1742644800000,
       "tag": "0008_create_missing_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1743264000000,
+      "tag": "0009_passport_fields",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1743264001000,
+      "tag": "0010_gallery_category",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1743264002000,
+      "tag": "0011_events_index",
+      "breakpoints": true
     }
   ]
 }

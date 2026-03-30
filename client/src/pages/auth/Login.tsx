@@ -88,7 +88,13 @@ export default function Login() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Login failed");
+        if (response.status === 429) {
+          setError(
+            "Too many login attempts from this network. Please wait a few minutes and try again.",
+          );
+        } else {
+          setError(data.error || data.message || "Login failed");
+        }
         setIsLoading(false);
         return;
       }
