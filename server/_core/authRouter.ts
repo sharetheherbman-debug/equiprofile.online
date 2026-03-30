@@ -50,6 +50,22 @@ const loginLimiter = rateLimit({
   },
 });
 
+// Stricter rate limiter for password reset requests — prevents email enumeration
+// and abuse of email sending. 5 requests per 15 minutes per IP.
+const passwordResetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: {
+    error: "Too many requests",
+    message: "Too many password reset requests. Please try again in 15 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, _next, options) => {
+    res.status(options.statusCode).json(options.message);
+  },
+});
+
 /**
  * POST /api/auth/signup
  * Create a new user account with email/password
@@ -109,7 +125,7 @@ router.post("/signup", async (req, res) => {
 
     // Auto-grant admin role to primary admin email, and store plan type preference
     const userUpdates: Record<string, unknown> = {};
-    if (userEmail === "amarktainetwork@gmail.com" && user.role !== "admin") {
+    if (ENV.primaryAdminEmail && userEmail === ENV.primaryAdminEmail && user.role !== "admin") {
       userUpdates.role = "admin";
     }
     if (planType === "stable" || planType === "normal" || planType === "standard") {
@@ -214,7 +230,7 @@ router.post("/login", loginLimiter, async (req, res) => {
     await db.updateUser(user.id, { lastSignedIn: new Date() });
 
     // Auto-grant admin role to primary admin email if not already set
-    if (user.email === "amarktainetwork@gmail.com" && user.role !== "admin") {
+    if (ENV.primaryAdminEmail && user.email === ENV.primaryAdminEmail && user.role !== "admin") {
       await db.updateUser(user.id, { role: "admin" });
     }
 
@@ -257,7 +273,7 @@ router.post("/login", loginLimiter, async (req, res) => {
  * POST /api/auth/request-reset
  * Request a password reset email
  */
-router.post("/request-reset", async (req, res) => {
+router.post("/request-reset", passwordResetLimiter, async (req, res) => {
   try {
     const { email: rawEmail } = req.body;
 

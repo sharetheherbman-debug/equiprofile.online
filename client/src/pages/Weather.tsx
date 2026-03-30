@@ -57,8 +57,8 @@ function WeatherContent() {
       case "poor":
         return "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950/30 dark:text-orange-300 dark:border-orange-800";
       case "not_recommended":
-        return "bg-red-100 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-300 dark:border-red-800";
-      default:
+      case "unsafe":
+        return "bg-red-100 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-300 dark:border-red-800";      default:
         return "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700";
     }
   };
@@ -71,7 +71,7 @@ function WeatherContent() {
       case "fair":
         return <AlertTriangle className="w-5 h-5" />;
       case "poor":
-      case "not_recommended":
+      case "unsafe":
         return <XCircle className="w-5 h-5" />;
       default:
         return <CloudSun className="w-5 h-5" />;
@@ -83,6 +83,10 @@ function WeatherContent() {
     const { temperature, windSpeed, precipitation } = weather.weather;
     const level = weather.advice.level;
 
+    // When conditions are unsafe (e.g. night-time, extreme weather), ALL outdoor
+    // activities are not recommended — override individual checks.
+    const isUnsafe = level === "unsafe";
+
     const recs: Array<{
       activity: string;
       advice: string;
@@ -92,7 +96,15 @@ function WeatherContent() {
     }> = [];
 
     // Flatwork / Dressage
-    if (level === "excellent" || level === "good") {
+    if (isUnsafe) {
+      recs.push({
+        activity: "Flatwork / Dressage",
+        advice:
+          "Outdoor schooling is not recommended in current conditions. Use an indoor arena only, or rest your horse until conditions improve.",
+        suitable: false,
+        icon: <Target className="w-4 h-4 text-red-500 dark:text-red-400" />,
+      });
+    } else if (level === "excellent" || level === "good") {
       recs.push({
         activity: "Flatwork / Dressage",
         advice:
@@ -122,7 +134,17 @@ function WeatherContent() {
     }
 
     // Jumping
-    if (level === "excellent") {
+    if (isUnsafe) {
+      recs.push({
+        activity: "Jumping / Grid Work",
+        advice:
+          "Jumping is not recommended in current conditions. Wait for safe daylight conditions with good footing before jumping.",
+        suitable: false,
+        icon: (
+          <Dumbbell className="w-4 h-4 text-red-500 dark:text-red-400" />
+        ),
+      });
+    } else if (level === "excellent") {
       recs.push({
         activity: "Jumping / Grid Work",
         advice:
@@ -157,7 +179,17 @@ function WeatherContent() {
     }
 
     // Hacking / Trail
-    if (level === "excellent" || level === "good") {
+    if (isUnsafe) {
+      recs.push({
+        activity: "Hacking / Trail Ride",
+        advice:
+          "Hacking outdoors is not safe in current conditions. Stay in the arena or rest your horse.",
+        suitable: false,
+        icon: (
+          <CloudSun className="w-4 h-4 text-red-500 dark:text-red-400" />
+        ),
+      });
+    } else if (level === "excellent" || level === "good") {
       recs.push({
         activity: "Hacking / Trail Ride",
         advice:
@@ -192,18 +224,28 @@ function WeatherContent() {
     }
 
     // Lunging / Groundwork
-    recs.push({
-      activity: "Lunging / Groundwork",
-      advice:
-        temperature < 5
-          ? "Groundwork is a good option in cold weather — lunging helps warm up muscles safely before ridden work."
-          : temperature > 30
-            ? "Keep lunging sessions short in the heat. Focus on walk and trot, avoid extended canter work."
-            : "Good conditions for groundwork. Use lunging to improve balance and obedience before riding.",
-      suitable: true,
-      duration: temperature > 30 ? "15-20 minutes" : "20-30 minutes",
-      icon: <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />,
-    });
+    if (isUnsafe) {
+      recs.push({
+        activity: "Lunging / Groundwork",
+        advice:
+          "Outdoor lunging is not recommended in current conditions. In-hand groundwork in a covered school is a safe alternative.",
+        suitable: false,
+        icon: <Shield className="w-4 h-4 text-red-500 dark:text-red-400" />,
+      });
+    } else {
+      recs.push({
+        activity: "Lunging / Groundwork",
+        advice:
+          temperature < 5
+            ? "Groundwork is a good option in cold weather — lunging helps warm up muscles safely before ridden work."
+            : temperature > 30
+              ? "Keep lunging sessions short in the heat. Focus on walk and trot, avoid extended canter work."
+              : "Good conditions for groundwork. Use lunging to improve balance and obedience before riding.",
+        suitable: true,
+        duration: temperature > 30 ? "15-20 minutes" : "20-30 minutes",
+        icon: <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />,
+      });
+    }
 
     return recs;
   };
@@ -297,9 +339,8 @@ function WeatherContent() {
                 <div className="flex-1">
                   <div className="font-semibold text-lg capitalize mb-1">
                     {currentWeather.advice.level === "unsafe"
-                      ? "Not Safe"
-                      : `${currentWeather.advice.level.charAt(0).toUpperCase() + currentWeather.advice.level.slice(1)}`}{" "}
-                    Riding Conditions
+                      ? "Not Safe to Ride"
+                      : `${currentWeather.advice.level.charAt(0).toUpperCase() + currentWeather.advice.level.slice(1)} Riding Conditions`}
                   </div>
                   <div className="text-xs font-medium opacity-70 mb-3 flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5" />

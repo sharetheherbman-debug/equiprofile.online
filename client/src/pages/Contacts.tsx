@@ -32,6 +32,10 @@ import {
   Edit,
   Building2,
   Search,
+  Eye,
+  Globe,
+  StickyNote,
+  Star,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRealtimeModule } from "@/hooks/useRealtime";
@@ -43,6 +47,7 @@ function ContactsContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<(typeof localContacts)[0] | null>(null);
+  const [viewingContact, setViewingContact] = useState<(typeof localContacts)[0] | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     contactType: "vet",
@@ -496,7 +501,8 @@ function ContactsContent() {
                   {typeContacts.map((contact) => (
                     <div
                       key={contact.id}
-                      className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                      className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => setViewingContact(contact)}
                     >
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-2 mb-2">
@@ -508,8 +514,16 @@ function ContactsContent() {
                               </p>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                             {getContactTypeBadge(contact.contactType)}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setViewingContact(contact)}
+                              title="View contact"
+                            >
+                              <Eye className="w-3 h-3" />
+                            </Button>
                             <Button
                               size="sm"
                               variant="ghost"
@@ -538,6 +552,7 @@ function ContactsContent() {
                               <a
                                 href={`mailto:${contact.email}`}
                                 className="hover:underline"
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 {contact.email}
                               </a>
@@ -549,6 +564,7 @@ function ContactsContent() {
                               <a
                                 href={`tel:${contact.phone}`}
                                 className="hover:underline"
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 {contact.phone}
                               </a>
@@ -574,6 +590,101 @@ function ContactsContent() {
           ))}
         </div>
       )}
+
+      {/* View Contact Dialog */}
+      <Dialog open={!!viewingContact} onOpenChange={(open) => { if (!open) setViewingContact(null); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {viewingContact?.name}
+              {viewingContact?.isPrimary && (
+                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              )}
+            </DialogTitle>
+            <DialogDescription>
+              {viewingContact && getContactTypeBadge(viewingContact.contactType)}
+            </DialogDescription>
+          </DialogHeader>
+          {viewingContact && (
+            <div className="space-y-3 py-2">
+              {viewingContact.company && (
+                <div className="flex items-start gap-3">
+                  <Building2 className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <span className="text-sm">{viewingContact.company}</span>
+                </div>
+              )}
+              {viewingContact.email && (
+                <div className="flex items-start gap-3">
+                  <Mail className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <a href={`mailto:${viewingContact.email}`} className="text-sm hover:underline text-primary">
+                    {viewingContact.email}
+                  </a>
+                </div>
+              )}
+              {viewingContact.phone && (
+                <div className="flex items-start gap-3">
+                  <Phone className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <a href={`tel:${viewingContact.phone}`} className="text-sm hover:underline">
+                    {viewingContact.phone}
+                  </a>
+                </div>
+              )}
+              {viewingContact.mobile && (
+                <div className="flex items-start gap-3">
+                  <Phone className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <a href={`tel:${viewingContact.mobile}`} className="text-sm hover:underline">
+                    {viewingContact.mobile} <span className="text-muted-foreground">(mobile)</span>
+                  </a>
+                </div>
+              )}
+              {(viewingContact.address || viewingContact.city || viewingContact.postcode) && (
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <span className="text-sm">
+                    {[viewingContact.address, viewingContact.city, viewingContact.postcode, viewingContact.country]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </span>
+                </div>
+              )}
+              {viewingContact.website && (
+                <div className="flex items-start gap-3">
+                  <Globe className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <a
+                    href={viewingContact.website.startsWith("http") ? viewingContact.website : `https://${viewingContact.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm hover:underline text-primary"
+                  >
+                    {viewingContact.website}
+                  </a>
+                </div>
+              )}
+              {viewingContact.notes && (
+                <div className="flex items-start gap-3">
+                  <StickyNote className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{viewingContact.notes}</p>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (viewingContact) {
+                  openEditDialog(viewingContact);
+                  setViewingContact(null);
+                }
+              }}
+            >
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </Button>
+            <Button onClick={() => setViewingContact(null)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Contact Dialog */}
       <Dialog open={!!editingContact} onOpenChange={(open) => { if (!open) setEditingContact(null); }}>

@@ -186,7 +186,7 @@ export const appRouter = router({
     // Initiate unlock (returns challenge)
     requestUnlock: protectedProcedure.mutation(async ({ ctx }) => {
       // Primary admin always gets access
-      if (ctx.user.email === "amarktainetwork@gmail.com") {
+      if (ENV.primaryAdminEmail && ctx.user.email === ENV.primaryAdminEmail) {
         return {
           challenge: "Admin mode requires password. Enter password:",
           attemptsRemaining: 10,
@@ -215,7 +215,7 @@ export const appRouter = router({
     submitPassword: protectedProcedure
       .input(z.object({ password: z.string() }))
       .mutation(async ({ ctx, input }) => {
-        const isPrimaryAdmin = ctx.user.email === "amarktainetwork@gmail.com";
+        const isPrimaryAdmin = ENV.primaryAdminEmail ? ctx.user.email === ENV.primaryAdminEmail : false;
         const adminPassword = process.env.ADMIN_UNLOCK_PASSWORD;
 
         if (!adminPassword) {
@@ -978,6 +978,9 @@ export const appRouter = router({
           level: z.string().max(200).optional(),
           registrationNumber: z.string().max(100).optional(),
           microchipNumber: z.string().max(50).optional(),
+          passportNumber: z.string().max(100).optional(),
+          feiId: z.string().max(100).optional(),
+          ueln: z.string().max(100).optional(),
           notes: z.string().max(10000).optional(),
           photoUrl: z.string().max(2000).optional(),
         }),
@@ -2103,6 +2106,7 @@ export const appRouter = router({
               "training",
               "feeding",
               "invoice",
+              "gallery",
               "other",
             ])
             .optional(),

@@ -794,8 +794,12 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
 
     // Column migrations — add missing columns to existing tables.
     // Uses ALTER TABLE … ADD COLUMN IF NOT EXISTS (supported by MariaDB 10.0+).
+    // On MySQL 8.0 these are caught and ignored; the Drizzle migration file handles MySQL 8.0.
     const columnMigrations: string[] = [
       `ALTER TABLE \`users\` ADD COLUMN IF NOT EXISTS \`passwordChangedAt\` timestamp NULL`,
+      `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`passportNumber\` varchar(100) DEFAULT NULL`,
+      `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`feiId\` varchar(100) DEFAULT NULL`,
+      `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`ueln\` varchar(100) DEFAULT NULL`,
     ];
     for (const stmt of columnMigrations) {
       try {
@@ -805,6 +809,20 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       }
     }
     console.log("[Database] Column migrations applied");
+
+    // Index migrations — add performance indexes if not already present.
+    const indexMigrations: string[] = [
+      // Events query: WHERE userId=? AND startDate BETWEEN ? AND ? ORDER BY startDate
+      `CREATE INDEX IF NOT EXISTS \`events_userId_startDate_idx\` ON \`events\` (\`userId\`, \`startDate\`)`,
+    ];
+    for (const stmt of indexMigrations) {
+      try {
+        await db.execute(sql.raw(stmt));
+      } catch (idxError) {
+        console.warn("[Database] Index migration warning (index may already exist):", idxError);
+      }
+    }
+    console.log("[Database] Index migrations applied");
 
     _tablesEnsured = true;
   } catch (error) {

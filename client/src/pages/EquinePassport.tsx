@@ -35,18 +35,20 @@ import {
   AlertCircle,
   CheckCircle2,
   Fingerprint,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
 function EquinePassportContent() {
   const [selectedHorseId, setSelectedHorseId] = useState<string>("");
   const [showPassportFields, setShowPassportFields] = useState(false);
-  const [passportData, setPassportData] = useState({
+  const [passportFormData, setPassportFormData] = useState({
     passportNumber: "",
     feiId: "",
     ueln: "",
   });
 
+  const utils = trpc.useUtils();
   const { data: horses } = trpc.horses.list.useQuery();
 
   // Get health data for selected horse
@@ -58,6 +60,40 @@ function EquinePassportContent() {
       enabled: !!selectedHorseId,
     },
   );
+
+  // Persist passport IDs via the horses.update mutation
+  const updateHorseMutation = trpc.horses.update.useMutation({
+    onSuccess: async () => {
+      await utils.horses.list.invalidate();
+      setShowPassportFields(false);
+      toast.success("Passport IDs saved");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to save passport IDs");
+    },
+  });
+
+  // Populate form when dialog opens or horse changes
+  const handleOpenPassportDialog = (open: boolean) => {
+    if (open && selectedHorse) {
+      setPassportFormData({
+        passportNumber: selectedHorse.passportNumber ?? "",
+        feiId: selectedHorse.feiId ?? "",
+        ueln: selectedHorse.ueln ?? "",
+      });
+    }
+    setShowPassportFields(open);
+  };
+
+  const handleSavePassportIds = () => {
+    if (!selectedHorse) return;
+    updateHorseMutation.mutate({
+      id: selectedHorse.id,
+      passportNumber: passportFormData.passportNumber || undefined,
+      feiId: passportFormData.feiId || undefined,
+      ueln: passportFormData.ueln || undefined,
+    });
+  };
 
   // Filter records for selected horse
   const horseHealthRecords = healthRecords?.filter(
@@ -89,7 +125,11 @@ function EquinePassportContent() {
       recordType: r.recordType,
     })) || [];
 
-  // Check FEI compliance
+  // Check FEI compliance — read passport IDs from the persisted horse record
+  const passportNumber = selectedHorse?.passportNumber ?? "";
+  const feiId = selectedHorse?.feiId ?? "";
+  const ueln = selectedHorse?.ueln ?? "";
+
   const complianceChecks = selectedHorse
     ? [
         {
@@ -129,17 +169,17 @@ function EquinePassportContent() {
         },
         {
           label: "Passport Number",
-          met: !!passportData.passportNumber,
+          met: !!passportNumber,
           required: false,
         },
         {
           label: "FEI ID",
-          met: !!passportData.feiId,
+          met: !!feiId,
           required: false,
         },
         {
           label: "UELN",
-          met: !!passportData.ueln,
+          met: !!ueln,
           required: false,
         },
       ]
@@ -193,12 +233,12 @@ function EquinePassportContent() {
             {selectedHorseId && (
               <Dialog
                 open={showPassportFields}
-                onOpenChange={setShowPassportFields}
+                onOpenChange={handleOpenPassportDialog}
               >
                 <DialogTrigger asChild>
                   <Button variant="outline">
                     <Fingerprint className="w-4 h-4 mr-2" />
-                    Add Passport IDs
+                    {passportNumber || feiId || ueln ? "Edit Passport IDs" : "Add Passport IDs"}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
@@ -210,9 +250,9 @@ function EquinePassportContent() {
                     <div>
                       <Label>Passport Number</Label>
                       <Input
-                        value={passportData.passportNumber}
+                        value={passportFormData.passportNumber}
                         onChange={(e) =>
-                          setPassportData((p) => ({
+                          setPassportFormData((p) => ({
                             ...p,
                             passportNumber: e.target.value,
                           }))
@@ -226,9 +266,9 @@ function EquinePassportContent() {
                     <div>
                       <Label>FEI ID</Label>
                       <Input
-                        value={passportData.feiId}
+                        value={passportFormData.feiId}
                         onChange={(e) =>
-                          setPassportData((p) => ({
+                          setPassportFormData((p) => ({
                             ...p,
                             feiId: e.target.value,
                           }))
@@ -243,9 +283,9 @@ function EquinePassportContent() {
                     <div>
                       <Label>UELN (Universal Equine Life Number)</Label>
                       <Input
-                        value={passportData.ueln}
+                        value={passportFormData.ueln}
                         onChange={(e) =>
-                          setPassportData((p) => ({
+                          setPassportFormData((p) => ({
                             ...p,
                             ueln: e.target.value,
                           }))
@@ -258,12 +298,17 @@ function EquinePassportContent() {
                       </p>
                     </div>
                     <Button
-                      onClick={() => {
-                        setShowPassportFields(false);
-                        toast.success("Passport IDs updated");
-                      }}
+                      onClick={handleSavePassportIds}
+                      disabled={updateHorseMutation.isPending}
                     >
-                      Save IDs
+                      {updateHorseMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Saving…
+                        </>
+                      ) : (
+                        "Save IDs"
+                      )}
                     </Button>
                   </div>
                 </DialogContent>
@@ -377,9 +422,9 @@ function EquinePassportContent() {
             height: selectedHorse.height
               ? `${(selectedHorse.height / 10).toFixed(1)} hh`
               : undefined,
-            passportNumber: passportData.passportNumber || undefined,
-            feiId: passportData.feiId || undefined,
-            ueln: passportData.ueln || undefined,
+            passportNumber: passportNumber || undefined,
+            feiId: feiId || undefined,
+            ueln: ueln || undefined,
           }}
           vaccinations={vaccinations}
           dewormings={dewormings}

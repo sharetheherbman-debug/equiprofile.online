@@ -1001,6 +1001,11 @@ async function startServer() {
   // Validate pricing configuration at startup
   validatePricingConfig();
 
+  // Verify SMTP configuration — non-blocking, logs result to console
+  email.verifySmtpConfig().catch((err) =>
+    console.error("[Startup] SMTP verification error:", err),
+  );
+
   server.listen(port, host, () => {
     console.log(`✓ Server running on http://${host}:${port}/`);
     console.log(`✓ Environment: ${process.env.NODE_ENV || "development"}`);

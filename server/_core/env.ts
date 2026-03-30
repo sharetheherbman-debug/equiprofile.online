@@ -211,8 +211,11 @@ export const ENV = {
       ? "/var/www/equiprofile/uploads"
       : "./uploads"),
 
-  // Admin unlock (no default - must be set via env var)
+  // Admin
   adminUnlockPassword: process.env.ADMIN_UNLOCK_PASSWORD ?? "",
+  // Primary admin email — if set, this user is automatically granted the admin role on
+  // first login/registration. Remove or leave blank to disable automatic admin promotion.
+  primaryAdminEmail: (process.env.PRIMARY_ADMIN_EMAIL ?? "").toLowerCase().trim(),
 
   // Security
   baseUrl: process.env.BASE_URL ?? "http://localhost:3000",

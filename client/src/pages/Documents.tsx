@@ -60,6 +60,7 @@ const documentTypes = [
   { value: "training", label: "Training Record" },
   { value: "feeding", label: "Feeding / Nutrition" },
   { value: "invoice", label: "Invoice / Billing" },
+  { value: "gallery", label: "Gallery (Photos)" },
   { value: "other", label: "Other" },
 ];
 
@@ -120,6 +121,12 @@ const folderConfig: Record<
     gradient: "from-orange-500 to-red-500",
     description: "Invoices, receipts, and expenses",
   },
+  gallery: {
+    label: "Gallery",
+    icon: Image,
+    gradient: "from-pink-500 to-rose-400",
+    description: "Photos and images",
+  },
   other: {
     label: "Other Documents",
     icon: FileText,
@@ -146,42 +153,39 @@ function DocumentsContent() {
       | "training"
       | "feeding"
       | "invoice"
+      | "gallery"
       | "other",
     title: "",
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const utils = trpc.useUtils();
   const { data: horses } = trpc.horses.list.useQuery();
   const {
     data: documents,
     isLoading,
-    refetch,
   } = trpc.documents.list.useQuery();
 
   const uploadMutation = trpc.documents.upload.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Document uploaded!");
       setIsDialogOpen(false);
-      refetch();
+      await utils.documents.list.invalidate();
       setFormData({
         horseId: "",
-        documentType: "other" as
-          | "health"
-          | "registration"
-          | "insurance"
-          | "competition"
-          | "other",
+        documentType: "other",
         title: "",
       });
       setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     },
     onError: (error) => toast.error(error.message),
   });
 
   const deleteMutation = trpc.documents.delete.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Document deleted");
-      refetch();
+      await utils.documents.list.invalidate();
     },
     onError: (error) => toast.error(error.message),
   });
@@ -194,9 +198,13 @@ function DocumentsContent() {
         return;
       }
       setSelectedFile(file);
-      if (!formData.title) {
-        setFormData({ ...formData, title: file.name.replace(/\.[^/.]+$/, "") });
-      }
+      // Auto-classify images as Gallery unless the user has already chosen a type
+      const isImage = file.type.startsWith("image/");
+      setFormData((prev) => ({
+        ...prev,
+        documentType: isImage && prev.documentType === "other" ? "gallery" : prev.documentType,
+        title: prev.title || file.name.replace(/\.[^/.]+$/, ""),
+      }));
     }
   };
 
@@ -217,12 +225,7 @@ function DocumentsContent() {
             formData.horseId && formData.horseId !== "none"
               ? parseInt(formData.horseId)
               : undefined,
-          category: formData.documentType as
-            | "health"
-            | "registration"
-            | "insurance"
-            | "competition"
-            | "other",
+          category: formData.documentType,
           description: formData.title,
           fileName: selectedFile.name,
           fileData: base64,
@@ -256,6 +259,8 @@ function DocumentsContent() {
         return <Apple className="w-5 h-5" />;
       case "invoice":
         return <Receipt className="w-5 h-5" />;
+      case "gallery":
+        return <Image className="w-5 h-5" />;
       default:
         if (mimeType?.startsWith("image/"))
           return <Image className="w-5 h-5" />;
@@ -306,12 +311,23 @@ function DocumentsContent() {
     "training",
     "feeding",
     "invoice",
+    "gallery",
     "other",
   ];
 
   const uploadButton = (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogTrigger asChild>
+    <Dialog
+      open={isDialogOpen}
+      onOpenChange={(open) => {
+        setIsDialogOpen(open);
+        if (!open) {
+          // Reset form state when dialog closes
+          setFormData({ horseId: "", documentType: "other", title: "" });
+          setSelectedFile(null);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+      }}
+    >      <DialogTrigger asChild>
         <Button>
           <Plus className="w-4 h-4 mr-2" />
           Upload Document

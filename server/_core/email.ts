@@ -509,3 +509,42 @@ function stripHtml(html: string): string {
     .replace(/\s\s+/g, " ")
     .trim();
 }
+
+/**
+ * Verify SMTP configuration at startup.
+ * Logs the result clearly; never throws — SMTP is optional.
+ * Call this once during server startup to surface misconfiguration early.
+ */
+export async function verifySmtpConfig(): Promise<void> {
+  const user = process.env.SMTP_USER || "";
+  const pass = process.env.SMTP_PASS || "";
+
+  if (!user || !pass) {
+    console.warn(
+      "⚠️  [Email] SMTP not configured — outbound email (registration, password reset) will not work.",
+    );
+    console.warn(
+      "   Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, and SMTP_FROM in your environment.",
+    );
+    return;
+  }
+
+  // Attempt a connection to verify credentials
+  try {
+    const transporter = await getTransporter();
+    if (!transporter) {
+      console.warn("⚠️  [Email] SMTP transporter could not be initialised.");
+      return;
+    }
+    await transporter.verify();
+    console.log(`✅ [Email] SMTP connected successfully (user: ${user})`);
+  } catch (err: any) {
+    console.error(
+      `❌ [Email] SMTP connection failed — emails will not send until this is fixed.`,
+    );
+    console.error(`   Error: ${err?.message ?? err}`);
+    console.error(
+      `   Check SMTP_HOST (${process.env.SMTP_HOST ?? "smtp.gmail.com"}), port, credentials, and firewall rules.`,
+    );
+  }
+}
