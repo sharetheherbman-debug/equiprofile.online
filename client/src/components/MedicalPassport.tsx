@@ -88,7 +88,7 @@ export function MedicalPassport({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 print:hidden">
+      <div className="flex flex-wrap gap-2 print:hidden">
         <Button onClick={handleGenerateQR} variant="outline">
           <QrCode className="mr-2 h-4 w-4" />
           Generate QR Code
