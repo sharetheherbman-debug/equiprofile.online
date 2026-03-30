@@ -490,7 +490,7 @@ function BreedingManagementContent() {
                         {breeding.cost && (
                           <div>
                             <p className="text-muted-foreground">Cost</p>
-                            <p className="font-medium">${breeding.cost}</p>
+                            <p className="font-medium">£{breeding.cost}</p>
                           </div>
                         )}
                         {breeding.dueDate && (

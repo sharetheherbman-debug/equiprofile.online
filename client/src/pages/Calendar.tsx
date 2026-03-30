@@ -145,6 +145,13 @@ export default function CalendarPage() {
   }, {
     // 5-minute stale time prevents 429 storms when navigating between pages
     staleTime: 5 * 60 * 1000,
+    // Don't retry on rate-limit or auth errors — retrying worsens the problem
+    retry: (failureCount, error: any) => {
+      const code = error?.data?.code;
+      if (code === "TOO_MANY_REQUESTS" || code === "UNAUTHORIZED") return false;
+      return failureCount < 2;
+    },
+    retryDelay: (attempt) => Math.min(2000 * 2 ** attempt, 10000),
   });
 
   const { data: horses = [] } = trpc.horses.list.useQuery(undefined, {

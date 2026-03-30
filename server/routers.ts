@@ -56,6 +56,7 @@ import {
   horses,
   siteSettings,
   chatLeads,
+  users,
 } from "../drizzle/schema";
 
 // Allowed MIME types for document and avatar uploads
@@ -3477,12 +3478,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const db = await getDb();
         if (!db) return [];
 
-        return db
-          .select()
+        const rows = await db
+          .select({
+            id: messages.id,
+            threadId: messages.threadId,
+            senderId: messages.senderId,
+            senderName: users.name,
+            content: messages.content,
+            attachments: messages.attachments,
+            isRead: messages.isRead,
+            createdAt: messages.createdAt,
+          })
           .from(messages)
+          .leftJoin(users, eq(messages.senderId, users.id))
           .where(eq(messages.threadId, input.threadId))
           .orderBy(desc(messages.createdAt))
           .limit(input.limit);
+        return rows;
       }),
 
     sendMessage: protectedProcedure

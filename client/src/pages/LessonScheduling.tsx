@@ -4,7 +4,7 @@ import {
   Calendar as CalendarIcon,
   Clock,
   MapPin,
-  DollarSign,
+  PoundSterling,
   User,
   Check,
   X,
@@ -227,7 +227,7 @@ function LessonSchedulingContent() {
       duration: parseInt(bookingForm.duration),
       lessonType: bookingForm.lessonType || undefined,
       location: bookingForm.location || undefined,
-      fee: bookingForm.fee ? parseInt(bookingForm.fee) : undefined,
+      fee: bookingForm.fee ? Math.round(parseFloat(bookingForm.fee) * 100) : undefined,
       notes: bookingForm.notes || undefined,
     });
   };
@@ -408,15 +408,17 @@ function LessonSchedulingContent() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="fee">Fee (cents)</Label>
+                    <Label htmlFor="fee">Fee (£)</Label>
                     <Input
                       id="fee"
                       type="number"
+                      step="0.01"
+                      min="0"
                       value={bookingForm.fee}
                       onChange={(e) =>
                         setBookingForm({ ...bookingForm, fee: e.target.value })
                       }
-                      placeholder="5000"
+                      placeholder="25.00"
                     />
                   </div>
                   <div>
@@ -509,9 +511,9 @@ function LessonSchedulingContent() {
                           )}
                           {booking.fee && (
                             <div className="flex items-center text-sm">
-                              <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />
+                              <PoundSterling className="mr-2 h-4 w-4 text-muted-foreground" />
                               <span>
-                                ${(booking.fee / 100).toFixed(2)}{" "}
+                                £{(booking.fee / 100).toFixed(2)}{" "}
                                 {booking.paid ? "(Paid)" : "(Unpaid)"}
                               </span>
                             </div>
@@ -590,9 +592,9 @@ function LessonSchedulingContent() {
                           )}
                           {booking.fee && (
                             <div className="flex items-center text-sm">
-                              <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />
+                              <PoundSterling className="mr-2 h-4 w-4 text-muted-foreground" />
                               <span>
-                                ${(booking.fee / 100).toFixed(2)}{" "}
+                                £{(booking.fee / 100).toFixed(2)}{" "}
                                 {booking.paid ? "(Paid)" : "(Unpaid)"}
                               </span>
                             </div>
