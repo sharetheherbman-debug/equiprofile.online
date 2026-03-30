@@ -541,12 +541,29 @@ function DashboardLayoutContent({
             <div className="flex items-center gap-1">
               <NotificationCenter />
               <ThemeToggle />
-              <Avatar className="h-7 w-7 border ml-1 cursor-pointer" onClick={toggleSidebar}>
-                <AvatarImage src={user?.profileImageUrl ?? undefined} alt={user?.name ?? ""} />
-                <AvatarFallback className="text-[10px] font-medium">
-                  {user?.name?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="h-7 w-7 border ml-1 cursor-pointer">
+                    <AvatarImage src={user?.profileImageUrl ?? undefined} alt={user?.name ?? ""} />
+                    <AvatarFallback className="text-[10px] font-medium">
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <div className="px-2 py-1.5 border-b mb-1">
+                    <p className="text-sm font-medium truncate">{user?.name || "-"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email || "-"}</p>
+                  </div>
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className="cursor-pointer text-destructive focus:text-destructive"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         )}
@@ -619,7 +636,9 @@ function DashboardLayoutContent({
                         if (
                           !isStablePlan &&
                           (item.label === "Breeding" ||
-                            item.label === "Stable Management")
+                            item.label === "Stable Management" ||
+                            item.label === "Staff" ||
+                            item.label === "Messages")
                         )
                           return false;
                         return true;

@@ -198,7 +198,7 @@ function generateInvoicePDF(pdf: jsPDF, data: any) {
   pdf.setFontSize(12);
   pdf.text(`Invoice #: ${data.invoiceNumber || "N/A"}`, 20, 40);
   pdf.text(`Date: ${data.date || "N/A"}`, 20, 50);
-  pdf.text(`Total: $${data.total || "0.00"}`, 20, 60);
+  pdf.text(`Total: £${data.total || "0.00"}`, 20, 60);
 }
 
 export async function generateBlobFromPDF(pdf: jsPDF): Promise<Blob> {
