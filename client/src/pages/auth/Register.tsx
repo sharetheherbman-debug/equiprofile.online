@@ -241,6 +241,11 @@ export default function Register() {
             {/* Dark Glass Form Card */}
             <Card className="bg-[#0a1628]/70 backdrop-blur-xl border border-white/10 shadow-2xl">
               <CardHeader className="space-y-3 pb-2">
+                {/* Brand logo */}
+                <div className="flex justify-center mb-2">
+                  <img src="/logo.png" alt="EquiProfile" className="h-14 w-auto object-contain" />
+                </div>
+
                 {/* Step progress indicator */}
                 <div className="flex items-center justify-center gap-1 mb-2">
                   {[1, 2, 3, 4].map(

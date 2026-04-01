@@ -102,3 +102,4 @@ uploads/
 # All MP4 video files removed from repo - using image sliders instead
 *.mp4
 dist/
+dist/

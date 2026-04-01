@@ -98,6 +98,9 @@ export default function ResetPassword() {
           >
             <Card className="bg-[#0a1628]/70 backdrop-blur-xl border border-white/10 shadow-2xl">
               <CardHeader className="space-y-3 pb-2">
+                <div className="flex justify-center mb-2">
+                  <img src="/logo.png" alt="EquiProfile" className="h-14 w-auto object-contain" />
+                </div>
                 <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                   Reset your password
                 </CardTitle>

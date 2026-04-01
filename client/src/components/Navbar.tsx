@@ -101,15 +101,15 @@ export function Navbar(_props: NavbarProps = {}) {
           {/* Logo */}
           <Link
             href={isAuthenticated ? "/dashboard" : "/"}
-            className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
             <img
               src="/logo.png"
               alt="EquiProfile"
-              className="h-10 w-auto object-contain"
+              className="h-12 sm:h-14 w-auto object-contain"
             />
             <span
-              className={`text-xl font-bold font-serif ${
+              className={`text-xl sm:text-2xl font-bold font-serif ${
                 showLight
                   ? "bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent"
                   : "text-white"
