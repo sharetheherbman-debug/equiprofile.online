@@ -67,6 +67,9 @@ function StatCard({
 
 // ─── main component ──────────────────────────────────────────────────────────
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+const MINUTES_PER_HOUR = 60;
+
 function StableReportsContent() {
   const [isExporting, setIsExporting] = useState(false);
 
@@ -101,8 +104,7 @@ function StableReportsContent() {
 
   // ── derived data ──
   const today = new Date();
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const thirtyDaysAhead = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAhead = new Date(Date.now() + THIRTY_DAYS_MS);
 
   const upcomingAppts = appointments.filter(
     (a: any) =>
@@ -231,7 +233,7 @@ function StableReportsContent() {
           "Completed sessions",
           trainingStats.completedSessions ?? 0,
         );
-        const hrs = Math.round((trainingStats.totalDuration ?? 0) / 60);
+        const hrs = Math.round((trainingStats.totalDuration ?? 0) / MINUTES_PER_HOUR);
         row("Total training hours", hrs);
       }
       y += 4;
@@ -532,7 +534,7 @@ function StableReportsContent() {
                   </div>
                   <div className="p-3 rounded-lg bg-muted/40">
                     <p className="text-2xl font-bold">
-                      {Math.round((trainingStats.totalDuration ?? 0) / 60)}
+                      {Math.round((trainingStats.totalDuration ?? 0) / MINUTES_PER_HOUR)}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">Total hours</p>
                   </div>
