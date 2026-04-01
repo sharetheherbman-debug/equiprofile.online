@@ -203,7 +203,7 @@ function NutritionLogsContent() {
               <DialogDescription className="sr-only">Manage nutrition log details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="horseId">Horse *</Label>
                   <Select
@@ -238,7 +238,7 @@ function NutritionLogsContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="feedType">Feed Type</Label>
                   <Input
@@ -265,7 +265,7 @@ function NutritionLogsContent() {
 
               <div className="space-y-2">
                 <Label>Meal Times</Label>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
                     value={formData.breakfast}
                     onChange={(e) =>
@@ -297,7 +297,7 @@ function NutritionLogsContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="supplements">Supplements</Label>
                   <Input

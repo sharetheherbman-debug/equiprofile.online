@@ -324,7 +324,7 @@ function BreedingManagementContent() {
                   placeholder="Stallion's name"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="breedingDate">Breeding Date *</Label>
                   <Input
@@ -636,7 +636,7 @@ function BreedingManagementContent() {
                 }
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="edit-breedingDate">Breeding Date</Label>
                 <Input

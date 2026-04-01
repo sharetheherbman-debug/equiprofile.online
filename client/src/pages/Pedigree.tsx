@@ -193,7 +193,7 @@ export default function Pedigree() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">
                       <h3 className="font-semibold text-lg">Parents</h3>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="sireName">Sire (Father)</Label>
                           <Input
@@ -229,7 +229,7 @@ export default function Pedigree() {
                         <p className="text-sm text-gray-600">
                           Paternal (Father's side)
                         </p>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="paternalGrandsireName">
                               Paternal Grandsire
@@ -266,7 +266,7 @@ export default function Pedigree() {
                         <p className="text-sm text-gray-600">
                           Maternal (Mother's side)
                         </p>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="maternalGrandsireName">
                               Maternal Grandsire
@@ -310,7 +310,7 @@ export default function Pedigree() {
                           <p className="text-sm text-gray-600 mb-2">
                             Paternal Grandsire's parents
                           </p>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="paternalGreatGrandsire1">
                                 Great-Grandsire
@@ -347,7 +347,7 @@ export default function Pedigree() {
                           <p className="text-sm text-gray-600 mb-2">
                             Paternal Granddam's parents
                           </p>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="paternalGreatGrandsire2">
                                 Great-Grandsire
@@ -384,7 +384,7 @@ export default function Pedigree() {
                           <p className="text-sm text-gray-600 mb-2">
                             Maternal Grandsire's parents
                           </p>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="maternalGreatGrandsire1">
                                 Great-Grandsire
@@ -421,7 +421,7 @@ export default function Pedigree() {
                           <p className="text-sm text-gray-600 mb-2">
                             Maternal Granddam's parents
                           </p>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="maternalGreatGrandsire2">
                                 Great-Grandsire
@@ -483,7 +483,7 @@ export default function Pedigree() {
                 <CardContent>
                   <div className="space-y-6">
                     {/* Generation 1: Parents */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Card className="bg-blue-50">
                         <CardContent className="pt-4">
                           <p className="text-sm text-gray-600">Sire (Father)</p>

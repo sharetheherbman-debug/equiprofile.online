@@ -270,7 +270,7 @@ function AppointmentsContent() {
               <DialogDescription className="sr-only">Manage appointment details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Horse *</Label>
                   <Select
@@ -312,7 +312,7 @@ function AppointmentsContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Date *</Label>
                   <Input
@@ -365,7 +365,7 @@ function AppointmentsContent() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Cost (£)</Label>
                   <Input

@@ -296,7 +296,7 @@ function HoofcareContent() {
                   </Select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="date">Date *</Label>
                     <Input
@@ -330,7 +330,7 @@ function HoofcareContent() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="farrierName">Farrier Name *</Label>
                     <Input
@@ -411,7 +411,7 @@ function HoofcareContent() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="nextDueDate">Next Due Date</Label>
                     <Input

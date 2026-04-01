@@ -191,7 +191,7 @@ function NutritionPlansContent() {
               <DialogDescription className="sr-only">Manage feeding plan details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="horseId">Horse *</Label>
                   <Select
@@ -238,7 +238,7 @@ function NutritionPlansContent() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="startDate">Start Date *</Label>
                   <Input
@@ -262,7 +262,7 @@ function NutritionPlansContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="targetWeight">Target Weight (kg)</Label>
                   <Input
@@ -330,7 +330,7 @@ function NutritionPlansContent() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="dailyCalories">Daily Calories</Label>
                   <Input

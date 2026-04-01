@@ -249,28 +249,28 @@ export default function Settings() {
 
           <Tabs defaultValue="profile" className="space-y-6">
             <TabsList className="flex flex-wrap h-auto gap-0.5 w-full">
-              <TabsTrigger value="profile" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+              <TabsTrigger value="profile" className="flex items-center gap-1.5 flex-1 min-w-[48px]">
                 <User className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Profile</span>
               </TabsTrigger>
-              <TabsTrigger value="security" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+              <TabsTrigger value="security" className="flex items-center gap-1.5 flex-1 min-w-[48px]">
                 <Lock className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Security</span>
               </TabsTrigger>
-              <TabsTrigger value="notifications" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+              <TabsTrigger value="notifications" className="flex items-center gap-1.5 flex-1 min-w-[48px]">
                 <Bell className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Notifications</span>
               </TabsTrigger>
-              <TabsTrigger value="install" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+              <TabsTrigger value="install" className="flex items-center gap-1.5 flex-1 min-w-[48px]">
                 <Smartphone className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">App</span>
               </TabsTrigger>
-              <TabsTrigger value="help" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+              <TabsTrigger value="help" className="flex items-center gap-1.5 flex-1 min-w-[48px]">
                 <HelpCircle className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Help</span>
               </TabsTrigger>
               {adminStatus.data?.isUnlocked && (
-                <TabsTrigger value="system" className="flex items-center gap-1.5 flex-1 min-w-[70px]">
+                <TabsTrigger value="system" className="flex items-center gap-1.5 flex-1 min-w-[48px]">
                   <Info className="w-4 h-4 shrink-0" />
                   <span className="hidden sm:inline">System</span>
                 </TabsTrigger>
@@ -808,7 +808,7 @@ export default function Settings() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                           Version
