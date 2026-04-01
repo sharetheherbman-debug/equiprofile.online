@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "../components/ui/button";
 import {
@@ -61,9 +61,9 @@ function DentalCareContent() {
   });
 
   // Update local state when data loads
-  if (dentalRecords && localRecords.length === 0) {
-    setLocalRecords(dentalRecords);
-  }
+  useEffect(() => {
+    if (dentalRecords) setLocalRecords(dentalRecords);
+  }, [dentalRecords]);
 
   const [formData, setFormData] = useState({
     horseId: 0,

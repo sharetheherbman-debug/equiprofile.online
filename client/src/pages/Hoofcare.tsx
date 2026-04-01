@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { Button } from "../components/ui/button";
@@ -79,9 +79,9 @@ function HoofcareContent() {
   });
 
   // Update local state when data loads
-  useState(() => {
+  useEffect(() => {
     if (records) setLocalRecords(records);
-  });
+  }, [records]);
 
   const createMutation = trpc.hoofcare.create.useMutation({
     onSuccess: () => {

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { Button } from "../components/ui/button";
@@ -84,9 +84,9 @@ function XraysContent() {
   });
 
   // Update local state when data loads
-  useState(() => {
+  useEffect(() => {
     if (xrays) setLocalXrays(xrays);
-  });
+  }, [xrays]);
 
   const createMutation = trpc.xrays.create.useMutation({
     onSuccess: () => {

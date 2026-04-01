@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { Button } from "../components/ui/button";
@@ -75,9 +75,9 @@ function TagsContent() {
   });
 
   // Update local state when data loads
-  useState(() => {
+  useEffect(() => {
     if (tags) setLocalTags(tags);
-  });
+  }, [tags]);
 
   const createMutation = trpc.tags.create.useMutation({
     onSuccess: () => {

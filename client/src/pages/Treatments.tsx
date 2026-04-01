@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useRealtimeModule } from "../hooks/useRealtime";
 import { Button } from "@/components/ui/button";
@@ -38,11 +38,11 @@ function TreatmentsContent() {
   const [localTreatments, setLocalTreatments] = useState(treatments || []);
 
   // Update local state when data changes
-  useState(() => {
+  useEffect(() => {
     if (treatments) {
       setLocalTreatments(treatments);
     }
-  });
+  }, [treatments]);
 
   // Real-time updates
   useRealtimeModule("treatments", (action, data) => {

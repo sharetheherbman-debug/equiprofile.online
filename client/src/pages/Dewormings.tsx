@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { trpc } from "../lib/trpc";
 import { Button } from "../components/ui/button";
@@ -56,9 +56,9 @@ export default function Dewormings() {
   const [localDewormings, setLocalDewormings] = useState(dewormings);
 
   // Update local state when query data changes
-  useState(() => {
+  useEffect(() => {
     setLocalDewormings(dewormings);
-  });
+  }, [dewormings]);
 
   // Real-time subscription
   useRealtimeModule("dewormings", (action, data) => {
