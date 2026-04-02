@@ -220,7 +220,7 @@ function HorseDetailContent() {
                   Vaccinations, vet visits, and medical history
                 </CardDescription>
               </div>
-              <Link href={`/health/new?horseId=${horse.id}`}>
+              <Link href={`/health?horseId=${horse.id}`}>
                 <Button size="sm">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Record
@@ -274,7 +274,7 @@ function HorseDetailContent() {
                   Scheduled and completed training activities
                 </CardDescription>
               </div>
-              <Link href={`/training/new?horseId=${horse.id}`}>
+              <Link href={`/training?horseId=${horse.id}`}>
                 <Button size="sm">
                   <Plus className="w-4 h-4 mr-2" />
                   Schedule Session
@@ -331,7 +331,7 @@ function HorseDetailContent() {
                   Daily feeding schedule and nutrition
                 </CardDescription>
               </div>
-              <Link href={`/feeding/new?horseId=${horse.id}`}>
+              <Link href={`/feeding?horseId=${horse.id}`}>
                 <Button size="sm">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Feed

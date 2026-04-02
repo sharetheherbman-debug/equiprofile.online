@@ -273,7 +273,7 @@ function ContactsContent() {
                 New Contact
               </Button>
             </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Contact</DialogTitle>
               <DialogDescription>
@@ -688,7 +688,7 @@ function ContactsContent() {
 
       {/* Edit Contact Dialog */}
       <Dialog open={!!editingContact} onOpenChange={(open) => { if (!open) setEditingContact(null); }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Contact</DialogTitle>
             <DialogDescription>Update contact details</DialogDescription>

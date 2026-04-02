@@ -139,7 +139,7 @@ export default function ClientPortal() {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                         <div>
                           <span className="text-muted-foreground">Gender:</span>
                           <div className="font-medium">
