@@ -323,11 +323,12 @@ function DashboardContent() {
   });
 
   // Redirect Stable plan users to the Stable Dashboard
+  // Skip redirect if user has both dashboards unlocked (admin-granted free access)
   useEffect(() => {
-    if (subscription?.planTier === "stable") {
+    if (subscription?.planTier === "stable" && !subscription?.bothDashboardsUnlocked) {
       setLocation("/stable-dashboard");
     }
-  }, [subscription?.planTier, setLocation]);
+  }, [subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
 
   const today = new Date();
   const todayStart = new Date(

@@ -702,7 +702,7 @@ function RideTrackingContent() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3 p-3 bg-muted rounded-lg text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-muted rounded-lg text-sm">
               <div>
                 <span className="text-muted-foreground">Duration:</span>{" "}
                 <span className="font-medium">

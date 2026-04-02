@@ -80,7 +80,7 @@ function PassportContent({ horseId }: { horseId: number }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <div>
               <dt className="text-muted-foreground">Name</dt>
               <dd className="font-medium">{horse.name}</dd>

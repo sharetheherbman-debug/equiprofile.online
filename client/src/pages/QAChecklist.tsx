@@ -140,7 +140,9 @@ export default function QAChecklistPage() {
     // isFetching but no data yet = loading
     if (query.isError) return "error";
     if (query.isPending && query.fetchStatus === "fetching") return "loading";
-    // idle + pending means query was never enabled or has not started — treat as warn, not error
+    // If query has cached data, it's ok even if technically pending/idle
+    if (query.data !== undefined) return "ok";
+    // idle + pending with no data means query was never enabled or has not started
     if (query.isPending && query.fetchStatus === "idle") return "warn";
     return "ok";
   }

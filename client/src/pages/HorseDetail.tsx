@@ -190,7 +190,7 @@ function HorseDetailContent() {
 
       {/* Tabs for Health, Training, Feeding, Medical Passport */}
       <Tabs defaultValue="health" className="space-y-4">
-        <TabsList className="flex overflow-x-auto gap-0 rounded-md h-auto p-1">
+        <TabsList className="flex w-full overflow-x-auto gap-0 rounded-md h-auto p-1">
           <TabsTrigger value="health" className="flex-shrink-0 flex items-center gap-1.5 text-xs sm:text-sm px-3 py-1.5">
             <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
             Health
@@ -220,7 +220,7 @@ function HorseDetailContent() {
                   Vaccinations, vet visits, and medical history
                 </CardDescription>
               </div>
-              <Link href={`/health/new?horseId=${horse.id}`}>
+              <Link href={`/health?horseId=${horse.id}`}>
                 <Button size="sm">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Record
@@ -274,7 +274,7 @@ function HorseDetailContent() {
                   Scheduled and completed training activities
                 </CardDescription>
               </div>
-              <Link href={`/training/new?horseId=${horse.id}`}>
+              <Link href={`/training?horseId=${horse.id}`}>
                 <Button size="sm">
                   <Plus className="w-4 h-4 mr-2" />
                   Schedule Session
@@ -331,7 +331,7 @@ function HorseDetailContent() {
                   Daily feeding schedule and nutrition
                 </CardDescription>
               </div>
-              <Link href={`/feeding/new?horseId=${horse.id}`}>
+              <Link href={`/feeding?horseId=${horse.id}`}>
                 <Button size="sm">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Feed

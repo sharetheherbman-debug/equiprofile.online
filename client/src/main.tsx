@@ -53,10 +53,13 @@ const queryClient = new QueryClient({
       retry: (failureCount, error) => {
         if (error instanceof TRPCClientError) {
           const code = (error as any)?.data?.code;
+          const httpStatus = (error as any)?.data?.httpStatus;
           if (
             code === "TOO_MANY_REQUESTS" ||
             code === "UNAUTHORIZED" ||
-            code === "FORBIDDEN"
+            code === "FORBIDDEN" ||
+            code === "PAYMENT_REQUIRED" ||
+            httpStatus === 402
           )
             return false;
         }
@@ -89,24 +92,39 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 const handleTrialLockError = (error: unknown) => {
   if (!(error instanceof TRPCClientError)) return;
 
-  // Check for 402 Payment Required or trial/subscription error messages
-  const isPaymentRequired =
-    error.data?.code === "PAYMENT_REQUIRED" ||
-    error.message?.toLowerCase().includes("trial") ||
-    error.message?.toLowerCase().includes("subscription") ||
-    error.message?.toLowerCase().includes("upgrade");
+  // Check for trial lock error codes returned by the middleware,
+  // TRPC PAYMENT_REQUIRED code, or message-based fallback detection
+  const errorCode = error.data?.code;
+  const httpStatus = error.data?.httpStatus;
+  const messageText = error.message?.toLowerCase() ?? "";
 
-  if (isPaymentRequired) {
-    // Open upgrade modal
-    const { open } = useUpgradeModal.getState();
+  const isTrialLockError =
+    errorCode === "PAYMENT_REQUIRED" ||
+    httpStatus === 402 ||
+    messageText.includes("trial expired") ||
+    messageText.includes("trial has ended") ||
+    messageText.includes("subscription expired") ||
+    messageText.includes("subscription has expired") ||
+    messageText.includes("subscription has ended");
 
-    if (error.message?.toLowerCase().includes("trial")) {
-      open("trial_expired", error.message);
-    } else if (error.message?.toLowerCase().includes("subscription")) {
-      open("subscription_expired", error.message);
-    } else {
-      open("payment_required", error.message);
-    }
+  if (!isTrialLockError) return;
+
+  // Open upgrade modal with the appropriate reason
+  const { open } = useUpgradeModal.getState();
+
+  if (
+    messageText.includes("trial") ||
+    errorCode === "TRIAL_EXPIRED"
+  ) {
+    open("trial_expired", error.message);
+  } else if (
+    messageText.includes("subscription") ||
+    errorCode === "SUBSCRIPTION_EXPIRED" ||
+    errorCode === "SUBSCRIPTION_ENDED"
+  ) {
+    open("subscription_expired", error.message);
+  } else {
+    open("payment_required", error.message);
   }
 };
 

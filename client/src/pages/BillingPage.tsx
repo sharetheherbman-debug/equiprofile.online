@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -39,9 +39,9 @@ export default function BillingPage() {
     "monthly",
   );
 
-  const { data: featureFlags } = trpc.system.getFeatureFlags.useQuery();
   const { data: pricing } = trpc.billing.getPricing.useQuery();
-  const { data: subscriptionStatus } = trpc.billing.getStatus.useQuery();
+  const { data: subscriptionStatus, refetch: refetchStatus } =
+    trpc.billing.getStatus.useQuery();
 
   const createCheckout = trpc.billing.createCheckout.useMutation({
     onError: (error) => {
@@ -53,6 +53,26 @@ export default function BillingPage() {
       toast.error("Portal failed", { description: error.message });
     },
   });
+
+  // Handle checkout success/cancelled URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "true") {
+      toast.success("Subscription activated!", {
+        description:
+          "Welcome to EquiProfile. Your subscription is now active.",
+      });
+      // Refetch subscription status to reflect the new state
+      refetchStatus();
+      // Clean up URL parameters
+      window.history.replaceState({}, "", "/billing");
+    } else if (params.get("canceled") === "true") {
+      toast.error("Checkout cancelled", {
+        description: "No charges were made. You can try again anytime.",
+      });
+      window.history.replaceState({}, "", "/billing");
+    }
+  }, [refetchStatus]);
 
   const trialDaysLeft = user?.trialEndsAt
     ? Math.ceil(
@@ -176,7 +196,7 @@ export default function BillingPage() {
           </div>
 
           {/* Stripe disabled state */}
-          {featureFlags && !featureFlags.enableStripe && (
+          {pricing && !pricing.enabled && (
             <Alert className="mb-8">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>

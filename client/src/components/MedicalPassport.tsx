@@ -1,11 +1,18 @@
 import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { QrCode, Download, Share2, Printer, Shield } from "lucide-react";
+import { QrCode, Download, Share2, Printer, Shield, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { generateQRCode } from "../lib/utils/qrcode";
 import { generatePDFFromHTML } from "../lib/utils/pdf";
 import { Badge } from "./ui/badge";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 interface MedicalPassportProps {
   horse: {
@@ -49,12 +56,15 @@ export function MedicalPassport({
 }: MedicalPassportProps) {
   const { t } = useTranslation();
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const passportRef = useRef<HTMLDivElement>(null);
 
   const handleGenerateQR = async () => {
     const shareUrl = `${window.location.origin}/passport/${horse.id}`;
     const qr = await generateQRCode(shareUrl);
     setQrCodeUrl(qr);
+    setQrModalOpen(true);
   };
 
   const handlePrintPassport = () => {
@@ -65,10 +75,19 @@ export function MedicalPassport({
 
   const handleExportPDF = async () => {
     if (passportRef.current) {
-      await generatePDFFromHTML(passportRef.current, {
-        filename: `${horse.name.toLowerCase().replace(/\s+/g, "-")}-passport.pdf`,
-        orientation: "portrait",
-      });
+      setIsExporting(true);
+      try {
+        await generatePDFFromHTML(passportRef.current, {
+          filename: `${horse.name.toLowerCase().replace(/\s+/g, "-")}-passport.pdf`,
+          orientation: "portrait",
+        });
+        toast.success("PDF exported successfully");
+      } catch (err) {
+        console.error("PDF export error:", err);
+        toast.error("Failed to export PDF. Please try again.");
+      } finally {
+        setIsExporting(false);
+      }
     }
   };
 
@@ -97,9 +116,13 @@ export function MedicalPassport({
           <Printer className="mr-2 h-4 w-4" />
           Print
         </Button>
-        <Button onClick={handleExportPDF} variant="outline">
-          <Download className="mr-2 h-4 w-4" />
-          Export PDF
+        <Button onClick={handleExportPDF} variant="outline" disabled={isExporting}>
+          {isExporting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="mr-2 h-4 w-4" />
+          )}
+          {isExporting ? "Exporting..." : "Export PDF"}
         </Button>
         {typeof navigator.share !== "undefined" && (
           <Button onClick={handleShare} variant="outline">
@@ -111,6 +134,26 @@ export function MedicalPassport({
 
       <Card ref={passportRef} className="medical-passport w-full overflow-hidden">
         <CardHeader>
+          {/* Branded Letterhead — visible in print and PDF export */}
+          <div className="flex items-center justify-between mb-4 pb-4 border-b">
+            <div className="flex items-center gap-3">
+              <img
+                src="/logo.png"
+                alt="EquiProfile"
+                className="h-10 w-auto object-contain"
+                crossOrigin="anonymous"
+              />
+              <div>
+                <p className="text-xs text-muted-foreground">Equine Health & Management</p>
+                <p className="text-xs text-muted-foreground">www.equiprofile.online</p>
+              </div>
+            </div>
+            <div className="text-right">
+              {qrCodeUrl && (
+                <img src={qrCodeUrl} alt="QR Code" className="w-20 h-20 sm:w-24 sm:h-24 ml-auto" />
+              )}
+            </div>
+          </div>
           <div className="flex justify-between items-start">
             <div>
               <div className="flex items-center gap-2">
@@ -122,9 +165,6 @@ export function MedicalPassport({
               </div>
               <p className="text-muted-foreground mt-1">{horse.name}</p>
             </div>
-            {qrCodeUrl && (
-              <img src={qrCodeUrl} alt="QR Code" className="w-24 h-24" />
-            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -351,6 +391,51 @@ export function MedicalPassport({
           }
         }
       `}</style>
+
+      {/* QR Code Modal — clean popup for mobile scanning */}
+      <Dialog open={qrModalOpen} onOpenChange={setQrModalOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-center">QR Code — {horse.name}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-4">
+            {qrCodeUrl && (
+              <img
+                src={qrCodeUrl}
+                alt={`QR Code for ${horse.name}`}
+                className="w-56 h-56 sm:w-64 sm:h-64 rounded-lg border p-2 bg-white"
+              />
+            )}
+            <p className="text-sm text-muted-foreground text-center px-4">
+              Scan this QR code to view {horse.name}'s passport on any device
+            </p>
+            <div className="flex gap-2">
+              {qrCodeUrl && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = qrCodeUrl;
+                    link.download = `${horse.name.toLowerCase().replace(/\s+/g, "-")}-qr.png`;
+                    link.click();
+                  }}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Save QR
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setQrModalOpen(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
