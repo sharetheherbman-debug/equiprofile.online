@@ -47,6 +47,7 @@ export default function Pricing() {
     {
       enabled: !!user,
       staleTime: 5 * 60 * 1000,
+      retry: false,
     },
   );
   const createCheckout = trpc.billing.createCheckout.useMutation();

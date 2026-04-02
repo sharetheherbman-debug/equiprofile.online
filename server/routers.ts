@@ -477,7 +477,7 @@ export const appRouter = router({
           user.id,
           user.email || "",
           priceId,
-          `${baseUrl}/dashboard?success=true`,
+          `${baseUrl}/billing?success=true`,
           `${baseUrl}/pricing?cancelled=true`,
           user.stripeCustomerId || undefined,
         );

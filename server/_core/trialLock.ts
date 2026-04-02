@@ -33,14 +33,32 @@ const EXEMPT_PATHS = [
   "/trpc/user.skipOnboarding", // Allow skipping onboarding
   "/trpc/user.resetOnboarding", // Allow resetting onboarding
   "/trpc/auth.", // Allow all auth-related TRPC calls (prefix match: auth.*)
+  "/trpc/system.getFeatureFlags", // Public read-only feature flags (used on billing pages)
   "/trpc/horses.getPassport", // Public horse passport (QR code scan — no auth needed)
 ];
 
 /**
- * Check if a path is exempt from trial checking
+ * Check if a single path/procedure is exempt from trial checking
+ */
+function isSinglePathExempt(path: string): boolean {
+  return EXEMPT_PATHS.some((exempt) => path.startsWith(exempt));
+}
+
+/**
+ * Check if a path is exempt from trial checking.
+ * Handles TRPC batch requests where multiple procedure names are
+ * comma-separated in the path (e.g. /trpc/billing.getStatus,system.getFeatureFlags).
+ * A batch is only exempt if EVERY procedure in it is individually exempt.
  */
 function isExemptPath(path: string): boolean {
-  return EXEMPT_PATHS.some((exempt) => path.startsWith(exempt));
+  // For TRPC batch requests, check each procedure individually
+  if (path.startsWith("/trpc/") && path.includes(",")) {
+    const procedurePart = path.slice("/trpc/".length);
+    const procedures = procedurePart.split(",");
+    return procedures.every((proc) => isSinglePathExempt(`/trpc/${proc}`));
+  }
+
+  return isSinglePathExempt(path);
 }
 
 /**
