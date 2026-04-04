@@ -13,6 +13,55 @@ export interface PDFOptions {
 }
 
 /**
+ * Safe CSS variable overrides for PDF export.
+ * All oklch() values are replaced with plain hex colours that
+ * html2canvas can render without errors.
+ */
+const PDF_SAFE_CSS = `
+  :root, *, .dark {
+    --background: #f7f8fc !important;
+    --foreground: #1a1a1a !important;
+    --card: #ffffff !important;
+    --card-foreground: #1a1a1a !important;
+    --popover: #ffffff !important;
+    --popover-foreground: #1a1a1a !important;
+    --primary: #2563eb !important;
+    --primary-foreground: #ffffff !important;
+    --secondary: #f1f5f9 !important;
+    --secondary-foreground: #1a1a1a !important;
+    --muted: #e2e8f0 !important;
+    --muted-foreground: #64748b !important;
+    --accent: #0d9488 !important;
+    --accent-foreground: #ffffff !important;
+    --destructive: #dc2626 !important;
+    --destructive-foreground: #ffffff !important;
+    --border: #cbd5e1 !important;
+    --input: #e2e8f0 !important;
+    --ring: #2563eb !important;
+    --sidebar: #1e293b !important;
+    --sidebar-foreground: #e2e8f0 !important;
+    --sidebar-accent: #334155 !important;
+    --sidebar-accent-foreground: #f1f5f9 !important;
+    --sidebar-border: #334155 !important;
+    --sidebar-ring: #2563eb !important;
+    --sidebar-primary: #2563eb !important;
+    --sidebar-primary-foreground: #ffffff !important;
+    --chart-1: #2563eb !important;
+    --chart-2: #7c3aed !important;
+    --chart-3: #0d9488 !important;
+    --chart-4: #16a34a !important;
+    --chart-5: #d97706 !important;
+  }
+  body, html {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+  }
+`;
+
+/** Unique marker so we can clean up the live-document injection after export. */
+const PDF_SAFE_STYLE_ID = "__equi-pdf-safe__";
+
+/**
  * Replaces oklch() CSS values throughout the cloned document so that
  * html2canvas can render the snapshot correctly.  The oklch() color space
  * is not supported by the canvas 2D drawing model used internally by
@@ -27,46 +76,7 @@ export interface PDFOptions {
 function injectPdfSafeStyles(doc: Document): void {
   // 1 ─ Override CSS custom properties with safe values
   const style = doc.createElement("style");
-  style.textContent = `
-    :root, *, .dark {
-      --background: #f7f8fc !important;
-      --foreground: #1a1a1a !important;
-      --card: #ffffff !important;
-      --card-foreground: #1a1a1a !important;
-      --popover: #ffffff !important;
-      --popover-foreground: #1a1a1a !important;
-      --primary: #2563eb !important;
-      --primary-foreground: #ffffff !important;
-      --secondary: #f1f5f9 !important;
-      --secondary-foreground: #1a1a1a !important;
-      --muted: #e2e8f0 !important;
-      --muted-foreground: #64748b !important;
-      --accent: #0d9488 !important;
-      --accent-foreground: #ffffff !important;
-      --destructive: #dc2626 !important;
-      --destructive-foreground: #ffffff !important;
-      --border: #cbd5e1 !important;
-      --input: #e2e8f0 !important;
-      --ring: #2563eb !important;
-      --sidebar: #1e293b !important;
-      --sidebar-foreground: #e2e8f0 !important;
-      --sidebar-accent: #334155 !important;
-      --sidebar-accent-foreground: #f1f5f9 !important;
-      --sidebar-border: #334155 !important;
-      --sidebar-ring: #2563eb !important;
-      --sidebar-primary: #2563eb !important;
-      --sidebar-primary-foreground: #ffffff !important;
-      --chart-1: #2563eb !important;
-      --chart-2: #7c3aed !important;
-      --chart-3: #0d9488 !important;
-      --chart-4: #16a34a !important;
-      --chart-5: #d97706 !important;
-    }
-    body, html {
-      background: #ffffff !important;
-      color: #1a1a1a !important;
-    }
-  `;
+  style.textContent = PDF_SAFE_CSS;
   doc.head.appendChild(style);
 
   // 2 ─ Walk every <style> element in the clone and replace oklch() values
@@ -102,6 +112,20 @@ export async function generatePDFFromHTML(
     format = "a4",
   } = options;
 
+  // ── Pre-inject safe CSS into the LIVE document ───────────────────────────
+  // html2canvas copies stylesheets from the live document when it builds its
+  // internal clone.  Injecting our safe overrides here (before html2canvas
+  // runs) guarantees that the cloned document inherits safe, non-oklch values
+  // for every CSS custom property — even from compiled stylesheet bundles that
+  // are copied after the onclone callback fires.
+  let liveOverrideStyle: HTMLStyleElement | null = null;
+  if (!document.getElementById(PDF_SAFE_STYLE_ID)) {
+    liveOverrideStyle = document.createElement("style");
+    liveOverrideStyle.id = PDF_SAFE_STYLE_ID;
+    liveOverrideStyle.textContent = PDF_SAFE_CSS;
+    document.head.appendChild(liveOverrideStyle);
+  }
+
   try {
     // Clone element for rendering to avoid modifying the DOM
     const clone = element.cloneNode(true) as HTMLElement;
@@ -126,6 +150,7 @@ export async function generatePDFFromHTML(
         width: renderWidth,
         height: clone.scrollHeight,
         onclone: (documentClone: Document) => {
+          // Belt-and-suspenders: also sanitise the internal clone
           injectPdfSafeStyles(documentClone);
         },
       });
@@ -164,6 +189,11 @@ export async function generatePDFFromHTML(
   } catch (error) {
     console.error("Error generating PDF:", error);
     throw new Error("Failed to generate PDF");
+  } finally {
+    // Always remove the live-document override so it does not affect normal page rendering
+    if (liveOverrideStyle) {
+      liveOverrideStyle.remove();
+    }
   }
 }
 

@@ -107,12 +107,19 @@ export async function getWeatherForecast(
 export function getRidingAdvice(weather: WeatherData, hourOfDay?: number): RidingAdvice {
   const { temperature, windSpeed, precipitation } = weather;
 
-  // Determine current hour from weather timestamp or injected hour
+  // Determine current hour from weather timestamp or injected hour.
+  // Open-Meteo with timezone=auto returns local-time strings like "2024-03-15T23:00".
+  // We extract the hour directly from the string to avoid Node.js treating the string
+  // as server-local time, which would produce the wrong hour for users in non-UTC
+  // timezones (e.g. someone riding at 11pm AEST would appear as midday in UTC).
   const hour =
     hourOfDay ??
     (() => {
       try {
-        return new Date(weather.timestamp).getHours();
+        // Prefer direct string extraction: "2024-03-15T23:00" → 23
+        const match = weather.timestamp.match(/T(\d{2}):/);
+        if (match) return parseInt(match[1], 10);
+        return new Date().getHours();
       } catch {
         return new Date().getHours();
       }

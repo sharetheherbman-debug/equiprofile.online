@@ -664,7 +664,7 @@ export default function Reports() {
             ) : (
               <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {generatedReports.map((report) => (
-                  <Card key={report.id}>
+                  <Card key={report.id} className="flex flex-col">
                     <CardHeader>
                       <div className="flex justify-between items-start">
                         <div>
@@ -679,7 +679,7 @@ export default function Reports() {
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="space-y-3">
+                    <CardContent className="flex flex-col flex-1 space-y-3">
                       <div className="flex items-center text-sm">
                         <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
@@ -691,14 +691,16 @@ export default function Reports() {
                           Horse: {getHorseName(report.horseId)}
                         </div>
                       )}
-                      <Button
-                        size="sm"
-                        className="w-full"
-                        onClick={() => handleDownloadReport(report)}
-                      >
-                        <Download className="mr-2 h-3 w-3" />
-                        Export Data
-                      </Button>
+                      <div className="mt-auto pt-2">
+                        <Button
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleDownloadReport(report)}
+                        >
+                          <Download className="mr-2 h-3 w-3" />
+                          Export PDF
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}

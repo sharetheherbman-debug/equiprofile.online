@@ -54,11 +54,14 @@ import {
   Zap,
 } from "lucide-react";
 
-// ─── All Modules data — mirrors mobile "More" sheet exactly ─────────────────
+// ─── Quick Links data — mirrors mobile "More" sheet exactly ─────────────────
+// Each group has a gradient used to colour-code the icon backgrounds.
 
 const dashboardModuleGroups = [
   {
     label: "Core",
+    gradient: "from-sky-500 to-blue-600",
+    labelColor: "text-sky-400",
     items: [
       { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
       { icon: Cloud, label: "Weather", path: "/weather" },
@@ -68,6 +71,8 @@ const dashboardModuleGroups = [
   },
   {
     label: "Health",
+    gradient: "from-rose-500 to-red-600",
+    labelColor: "text-rose-400",
     items: [
       { icon: Stethoscope, label: "Health Hub", path: "/health" },
       { icon: Syringe, label: "Vaccinations", path: "/vaccinations" },
@@ -80,6 +85,8 @@ const dashboardModuleGroups = [
   },
   {
     label: "Training & Activity",
+    gradient: "from-green-500 to-emerald-600",
+    labelColor: "text-emerald-400",
     items: [
       { icon: Dumbbell, label: "Training Log", path: "/training" },
       { icon: BookOpen, label: "Templates", path: "/training-templates" },
@@ -90,6 +97,8 @@ const dashboardModuleGroups = [
   },
   {
     label: "Nutrition",
+    gradient: "from-lime-500 to-green-600",
+    labelColor: "text-lime-400",
     items: [
       { icon: Apple, label: "Feeding Plans", path: "/feeding" },
       { icon: FileText, label: "Nutrition Plans", path: "/nutrition-plans" },
@@ -99,6 +108,8 @@ const dashboardModuleGroups = [
   },
   {
     label: "Data & Reports",
+    gradient: "from-indigo-500 to-violet-600",
+    labelColor: "text-indigo-400",
     items: [
       { icon: FileText, label: "Documents", path: "/documents" },
       { icon: BarChart3, label: "Analytics", path: "/analytics" },
@@ -110,6 +121,8 @@ const dashboardModuleGroups = [
   },
   {
     label: "Stable & People",
+    gradient: "from-cyan-500 to-teal-600",
+    labelColor: "text-cyan-400",
     items: [
       { icon: Home, label: "Stable Management", path: "/stable" },
       { icon: UserCog, label: "Staff", path: "/staff" },
@@ -118,6 +131,8 @@ const dashboardModuleGroups = [
   },
   {
     label: "Account",
+    gradient: "from-slate-500 to-gray-600",
+    labelColor: "text-slate-400",
     items: [
       { icon: Settings, label: "Settings", path: "/settings" },
       { icon: DollarSign, label: "Billing", path: "/billing" },
@@ -833,65 +848,74 @@ function DashboardContent() {
         ))}
       </motion.div>
 
-      {/* ── All Modules (same style as mobile More sheet) ───── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: 0.28 }}
-        className="space-y-4"
-      >
-        <h2 className="font-serif text-base font-semibold px-0.5">
-          All Modules
-        </h2>
-        <div className="space-y-4">
-          {dashboardModuleGroups.map((group) => {
-            const isStablePlan =
-              subscription?.bothDashboardsUnlocked ||
-              subscription?.planTier === "stable";
-            const items = group.items.filter((item) => {
-              if (
-                !isStablePlan &&
-                (item.label === "Breeding" ||
-                  item.label === "Stable Management" ||
-                  item.label === "Staff" ||
-                  item.label === "Messages")
-              )
-                return false;
-              return true;
-            });
-            if (items.length === 0) return null;
-            return (
-              <div key={group.label}>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
-                  {group.label}
-                </p>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2.5">
-                  {items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = location === item.path;
-                    return (
-                      <button
-                        key={item.path}
-                        onClick={() => setLocation(item.path)}
-                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center min-h-[72px] ${
-                          isActive
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border bg-card hover:bg-accent"
-                        }`}
-                      >
-                        <Icon className="h-5 w-5 shrink-0" />
-                        <span className="text-[11px] leading-tight font-medium">
-                          {item.label}
-                        </span>
-                      </button>
-                    );
-                  })}
+      {/* ── Quick Links — desktop-only feature directory ────── */}
+      {/* Mobile uses the "More" sheet in the bottom navigation bar instead */}
+      <div className="hidden md:block">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.28 }}
+          className="space-y-5"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-5 rounded-full bg-gradient-to-b from-indigo-500 to-purple-600" />
+            <h2 className="font-serif text-base font-semibold">Quick Links</h2>
+            <span className="text-xs text-muted-foreground">All features at a glance</span>
+          </div>
+          <div className="space-y-5">
+            {dashboardModuleGroups.map((group) => {
+              const isStablePlan =
+                subscription?.bothDashboardsUnlocked ||
+                subscription?.planTier === "stable";
+              const items = group.items.filter((item) => {
+                if (
+                  !isStablePlan &&
+                  (item.label === "Breeding" ||
+                    item.label === "Stable Management" ||
+                    item.label === "Staff" ||
+                    item.label === "Messages")
+                )
+                  return false;
+                return true;
+              });
+              if (items.length === 0) return null;
+              return (
+                <div key={group.label} className="space-y-2">
+                  <p className={`text-[11px] font-bold uppercase tracking-widest ${group.labelColor}`}>
+                    {group.label}
+                  </p>
+                  <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+                    {items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = location === item.path;
+                      return (
+                        <button
+                          key={item.path}
+                          onClick={() => setLocation(item.path)}
+                          className={`group flex flex-col items-center gap-2 p-3 rounded-xl border transition-all duration-200 text-center hover:scale-105 active:scale-95 ${
+                            isActive
+                              ? "border-primary/40 bg-primary/10 shadow-sm"
+                              : "border-white/5 bg-card/60 hover:bg-card hover:border-white/15 hover:shadow-sm"
+                          }`}
+                        >
+                          <div
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105 bg-gradient-to-br ${group.gradient}`}
+                          >
+                            <Icon className="h-4 w-4 text-white" />
+                          </div>
+                          <span className="text-[11px] leading-tight font-medium">
+                            {item.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+      </div>
 
     </div>
   );

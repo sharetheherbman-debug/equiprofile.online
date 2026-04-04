@@ -2425,7 +2425,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         user.latitude,
         user.longitude,
       );
-      const advice = weather.getRidingAdvice(current, new Date().getHours());
+      // Do not pass hourOfDay — let getRidingAdvice derive it from the weather
+      // timestamp returned by Open-Meteo (timezone=auto), which reflects the
+      // user's local time rather than the server's UTC clock.
+      const advice = weather.getRidingAdvice(current);
 
       return {
         weather: current,
