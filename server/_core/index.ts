@@ -301,6 +301,20 @@ async function startServer() {
                 subscriptionStatus: "cancelled",
                 subscriptionEndsAt: new Date(),
               });
+
+              // Send cancellation confirmation email
+              const cancelledUser = await db.getUserById(userId);
+              if (cancelledUser) {
+                email
+                  .sendCancellationEmail(cancelledUser)
+                  .catch((err) =>
+                    console.error(
+                      "[Stripe Webhook] Failed to send cancellation email:",
+                      err,
+                    ),
+                  );
+              }
+
               console.log(
                 `[Stripe Webhook] User ${userId} subscription cancelled`,
               );
@@ -319,6 +333,25 @@ async function startServer() {
                   subscriptionStatus: "active",
                   lastPaymentAt: new Date(),
                 });
+
+                // Send renewal receipt email (skip for first checkout — that's handled above)
+                if (invoice.billing_reason !== "subscription_create") {
+                  const paidUser = await db.getUserById(userId);
+                  if (paidUser) {
+                    email
+                      .sendRenewalReceiptEmail(
+                        paidUser,
+                        paidUser.subscriptionPlan as "monthly" | "yearly" | undefined,
+                      )
+                      .catch((err) =>
+                        console.error(
+                          "[Stripe Webhook] Failed to send renewal receipt email:",
+                          err,
+                        ),
+                      );
+                  }
+                }
+
                 console.log(
                   `[Stripe Webhook] User ${userId} payment succeeded`,
                 );
@@ -337,6 +370,20 @@ async function startServer() {
                 await db.updateUser(userId, {
                   subscriptionStatus: "overdue",
                 });
+
+                // Send payment failed email
+                const overdueUser = await db.getUserById(userId);
+                if (overdueUser) {
+                  email
+                    .sendPaymentFailedEmail(overdueUser)
+                    .catch((err) =>
+                      console.error(
+                        "[Stripe Webhook] Failed to send payment failed email:",
+                        err,
+                      ),
+                    );
+                }
+
                 console.log(`[Stripe Webhook] User ${userId} payment failed`);
               }
             }

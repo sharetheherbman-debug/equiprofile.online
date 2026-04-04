@@ -297,6 +297,138 @@ export async function sendPaymentSuccessEmail(
 }
 
 /**
+ * Send payment renewal / invoice receipt email (recurring payments)
+ */
+export async function sendRenewalReceiptEmail(
+  user: User,
+  plan?: "monthly" | "yearly",
+): Promise<void> {
+  if (!user.email) return;
+
+  const planName = plan === "yearly" ? "Yearly" : "Monthly";
+  const amount =
+    plan === "yearly"
+      ? `${DEFAULT_PRICING.individual.yearly.display}/year`
+      : `${DEFAULT_PRICING.individual.monthly.display}/month`;
+
+  const subject = "EquiProfile – Your payment receipt";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #10b981;">Payment Received ✓</h1>
+
+      <p>Hi ${user.name || "there"},</p>
+
+      <p>We've successfully processed your renewal payment for EquiProfile.</p>
+
+      <div style="background: #f0fdf4; border: 2px solid #10b981; border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <p style="margin: 4px 0;"><strong>Plan:</strong> ${planName}</p>
+        <p style="margin: 4px 0;"><strong>Amount:</strong> ${amount}</p>
+        <p style="margin: 4px 0;"><strong>Date:</strong> ${new Date().toLocaleDateString("en-GB")}</p>
+        <p style="margin: 4px 0;"><strong>Status:</strong> Active ✅</p>
+      </div>
+
+      <p style="color: #6b7280; font-size: 14px;">
+        Manage your subscription anytime from your
+        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing" style="color: #1e40af;">billing page</a>.
+      </p>
+
+      <p style="color: #6b7280;">The EquiProfile Team</p>
+    </div>
+  `;
+
+  await sendEmail(user.email, subject, html);
+}
+
+/**
+ * Send payment failed / overdue notification email
+ */
+export async function sendPaymentFailedEmail(
+  user: User,
+): Promise<void> {
+  if (!user.email) return;
+
+  const subject = "⚠️ EquiProfile – Payment failed";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #dc2626;">Payment Failed</h1>
+
+      <p>Hi ${user.name || "there"},</p>
+
+      <p>We were unable to process your latest payment for EquiProfile.
+      Your account has been marked as <strong>overdue</strong>.</p>
+
+      <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 16px; margin: 20px 0; border-radius: 4px;">
+        <p style="margin: 0;"><strong>What happens next?</strong></p>
+        <ul style="margin: 8px 0 0 0;">
+          <li>We'll try again automatically in a few days</li>
+          <li>You can update your payment method in your billing settings</li>
+          <li>If payment remains outstanding your access may be limited</li>
+        </ul>
+      </div>
+
+      <p style="text-align: center; margin: 30px 0;">
+        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing"
+           style="background: #1e40af; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
+          Update Payment Method
+        </a>
+      </p>
+
+      <p style="color: #6b7280; font-size: 14px;">
+        If you believe this is an error, please contact us.
+      </p>
+
+      <p style="color: #6b7280;">The EquiProfile Team</p>
+    </div>
+  `;
+
+  await sendEmail(user.email, subject, html);
+}
+
+/**
+ * Send cancellation confirmation email
+ */
+export async function sendCancellationEmail(
+  user: User,
+): Promise<void> {
+  if (!user.email) return;
+
+  const subject = "EquiProfile – Subscription cancelled";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #6b7280;">Subscription Cancelled</h1>
+
+      <p>Hi ${user.name || "there"},</p>
+
+      <p>Your EquiProfile subscription has been cancelled. We're sorry to see you go.</p>
+
+      <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 4px 0;"><strong>What happens now:</strong></p>
+        <ul style="margin: 8px 0 0 0;">
+          <li>Your data will be retained for 30 days</li>
+          <li>You can resubscribe at any time to restore full access</li>
+          <li>Your horse profiles and records remain safe</li>
+        </ul>
+      </div>
+
+      <p style="text-align: center; margin: 30px 0;">
+        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing"
+           style="background: #1e40af; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
+          Resubscribe
+        </a>
+      </p>
+
+      <p style="color: #6b7280; font-size: 14px;">
+        We'd love to know how we can improve. Reply to this email with any feedback.
+      </p>
+
+      <p style="color: #6b7280;">The EquiProfile Team</p>
+    </div>
+  `;
+
+  await sendEmail(user.email, subject, html);
+}
+
+/**
  * Send password reset email
  */
 export async function sendPasswordResetEmail(

@@ -1097,6 +1097,29 @@ export async function getExpiredTrials() {
     );
 }
 
+/**
+ * Get users whose trial ends within the given number of days (inclusive).
+ * Used by the reminder scheduler to send trial-ending emails.
+ */
+export async function getTrialsEndingSoon(withinDays: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const now = new Date();
+  const cutoff = new Date(now);
+  cutoff.setDate(cutoff.getDate() + withinDays);
+  return db
+    .select()
+    .from(users)
+    .where(
+      and(
+        eq(users.subscriptionStatus, "trial"),
+        gte(users.trialEndsAt, now),
+        lte(users.trialEndsAt, cutoff),
+        eq(users.isActive, true),
+      ),
+    );
+}
+
 // ============ HORSE QUERIES ============
 
 export async function createHorse(data: InsertHorse) {
