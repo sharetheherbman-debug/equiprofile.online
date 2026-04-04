@@ -107,9 +107,10 @@ export function startReminderScheduler() {
       }
 
       // ── Trial-ending reminders (daily at 9 AM UTC) ───────────
+      const TRIAL_REMINDER_LOOKAHEAD_DAYS = 3;
       if (now.getUTCHours() === 9) {
         try {
-          const trialUsers = await db.getTrialsEndingSoon(3);
+          const trialUsers = await db.getTrialsEndingSoon(TRIAL_REMINDER_LOOKAHEAD_DAYS);
           const emailModule = await import("./email");
 
           for (const user of trialUsers) {

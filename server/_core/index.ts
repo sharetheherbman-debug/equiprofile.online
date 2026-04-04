@@ -338,11 +338,11 @@ async function startServer() {
                 if (invoice.billing_reason !== "subscription_create") {
                   const paidUser = await db.getUserById(userId);
                   if (paidUser) {
+                    const plan = paidUser.subscriptionPlan === "monthly" || paidUser.subscriptionPlan === "yearly"
+                      ? paidUser.subscriptionPlan
+                      : undefined;
                     email
-                      .sendRenewalReceiptEmail(
-                        paidUser,
-                        paidUser.subscriptionPlan as "monthly" | "yearly" | undefined,
-                      )
+                      .sendRenewalReceiptEmail(paidUser, plan)
                       .catch((err) =>
                         console.error(
                           "[Stripe Webhook] Failed to send renewal receipt email:",
