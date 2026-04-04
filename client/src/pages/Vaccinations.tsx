@@ -590,7 +590,7 @@ function VaccinationsContent() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-1">
               <Button
                 type="button"
                 variant="outline"
@@ -605,7 +605,7 @@ function VaccinationsContent() {
                 type="submit"
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
-                {editingVaccination ? "Update" : "Create"} Vaccination
+                {editingVaccination ? "Update" : "Save"} Vaccination
               </Button>
             </div>
           </form>

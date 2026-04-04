@@ -1,10 +1,9 @@
-import { useState, useRef } from "react";
-import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import { QrCode, Download, Share2, Printer, Shield, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { generateQRCode } from "../lib/utils/qrcode";
-import { generatePassportPDF } from "../lib/utils/pdf";
+import { generatePassportPDF, loadLogoBase64 } from "../lib/utils/pdf";
 import { Badge } from "./ui/badge";
 import { toast } from "sonner";
 import {
@@ -54,11 +53,9 @@ export function MedicalPassport({
   dewormings = [],
   healthRecords = [],
 }: MedicalPassportProps) {
-  const { t } = useTranslation();
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const passportRef = useRef<HTMLDivElement>(null);
 
   const handleGenerateQR = async () => {
     const shareUrl = `${window.location.origin}/passport/${horse.id}`;
@@ -67,10 +64,198 @@ export function MedicalPassport({
     setQrModalOpen(true);
   };
 
-  const handlePrintPassport = () => {
-    if (passportRef.current) {
-      window.print();
+  const handlePrintPassport = async () => {
+    const printWindow = window.open("", "_blank", "width=900,height=700");
+    if (!printWindow) {
+      toast.error("Pop-up blocked — please allow pop-ups to print.");
+      return;
     }
+
+    const logoDataUrl = await loadLogoBase64();
+    const logoHtml = logoDataUrl
+      ? `<img src="${logoDataUrl}" alt="EquiProfile" style="height:40px;width:auto;object-fit:contain;" />`
+      : "";
+
+    const field = (label: string, value?: string | number | null) =>
+      value
+        ? `<tr><th>${label}</th><td>${value}</td></tr>`
+        : "";
+
+    const vaccRows = vaccinations.length
+      ? vaccinations
+          .map(
+            (v) =>
+              `<tr><td>${v.vaccineName}</td><td>${new Date(v.dateAdministered).toLocaleDateString("en-GB")}</td><td>${v.nextDueDate ? new Date(v.nextDueDate).toLocaleDateString("en-GB") : "—"}</td></tr>`,
+          )
+          .join("")
+      : `<tr><td colspan="3" class="empty">No vaccination records</td></tr>`;
+
+    const dewormRows = dewormings.length
+      ? dewormings
+          .map(
+            (d) =>
+              `<tr><td>${d.productName}</td><td>${new Date(d.dateAdministered).toLocaleDateString("en-GB")}</td><td>${d.nextDueDate ? new Date(d.nextDueDate).toLocaleDateString("en-GB") : "—"}</td></tr>`,
+          )
+          .join("")
+      : `<tr><td colspan="3" class="empty">No deworming records</td></tr>`;
+
+    const healthRows = healthRecords.length
+      ? healthRecords
+          .slice(0, 10)
+          .map(
+            (r) =>
+              `<tr><td>${r.title}</td><td>${r.recordType}</td><td>${new Date(r.recordDate).toLocaleDateString("en-GB")}</td></tr>`,
+          )
+          .join("")
+      : "";
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${horse.name} — Equine Medical Passport</title>
+  <style>
+    @page { margin: 15mm; size: A4 portrait; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; color: #1a1a1a; background: #fff; }
+
+    .letterhead {
+      background: #0c2352;
+      color: #fff;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .letterhead-left { display: flex; align-items: center; gap: 12px; }
+    .letterhead-text h1 { font-size: 16pt; font-weight: bold; margin-bottom: 2px; }
+    .letterhead-text p { font-size: 8pt; opacity: .85; }
+    .accent-line { height: 3px; background: #2563eb; }
+
+    .doc-title {
+      text-align: center;
+      font-size: 16pt;
+      font-weight: bold;
+      color: #0c2352;
+      margin: 16px 0 4px;
+    }
+    .divider { border: none; border-top: 1px solid #2563eb; margin: 0 0 14px; }
+
+    .section-title {
+      font-size: 11pt;
+      font-weight: bold;
+      color: #0c2352;
+      border-bottom: 1px solid #2563eb;
+      padding-bottom: 3px;
+      margin: 14px 0 8px;
+    }
+
+    table.fields { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
+    table.fields th {
+      text-align: left;
+      font-weight: bold;
+      color: #0c2352;
+      width: 38%;
+      padding: 3px 6px 3px 0;
+      font-size: 9.5pt;
+    }
+    table.fields td { padding: 3px 0; font-size: 9.5pt; }
+
+    table.records { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    table.records thead tr { background: #0c2352; color: #fff; }
+    table.records thead th { padding: 5px 8px; text-align: left; font-weight: bold; }
+    table.records tbody tr:nth-child(even) { background: #f3f6fb; }
+    table.records tbody td { padding: 5px 8px; }
+    table.records td.empty { color: #888; font-style: italic; }
+
+    .footer {
+      margin-top: 20px;
+      border-top: 1px solid #0c2352;
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 8pt;
+      color: #555;
+    }
+    .disclaimer {
+      font-size: 7.5pt;
+      color: #777;
+      font-style: italic;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="letterhead">
+    <div class="letterhead-left">
+      ${logoHtml}
+      <div class="letterhead-text">
+        <h1>EquiProfile</h1>
+        <p>Professional Equine Management &nbsp;|&nbsp; www.equiprofile.online</p>
+      </div>
+    </div>
+    <div style="font-size:8pt;opacity:.8;">${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</div>
+  </div>
+  <div class="accent-line"></div>
+
+  <div class="doc-title">Equine Medical Passport</div>
+  <hr class="divider" />
+
+  ${horse.passportNumber || horse.feiId || horse.ueln || horse.microchipNumber || horse.registrationNumber ? `
+  <div class="section-title">Passport Identification</div>
+  <table class="fields">
+    ${field("Passport No", horse.passportNumber)}
+    ${field("FEI ID", horse.feiId)}
+    ${field("UELN", horse.ueln)}
+    ${field("Microchip", horse.microchipNumber)}
+    ${field("Registration", horse.registrationNumber)}
+  </table>` : ""}
+
+  <div class="section-title">Horse Identification (Signalement)</div>
+  <table class="fields">
+    ${field("Name", horse.name)}
+    ${field("Breed", horse.breed)}
+    ${field("Colour", horse.color)}
+    ${field("Sex", horse.gender)}
+    ${horse.dateOfBirth ? field("Date of Birth", new Date(horse.dateOfBirth).toLocaleDateString("en-GB")) : ""}
+    ${horse.age ? field("Age", `${horse.age} years`) : ""}
+    ${horse.height ? field("Height", typeof horse.height === "number" ? `${horse.height} cm` : String(horse.height)) : ""}
+  </table>
+
+  <div class="section-title">Vaccinations (FEI Section V)</div>
+  <table class="records">
+    <thead><tr><th>Vaccine</th><th>Administered</th><th>Next Due</th></tr></thead>
+    <tbody>${vaccRows}</tbody>
+  </table>
+
+  <div class="section-title">Deworming History</div>
+  <table class="records">
+    <thead><tr><th>Product</th><th>Administered</th><th>Next Due</th></tr></thead>
+    <tbody>${dewormRows}</tbody>
+  </table>
+
+  ${healthRecords.length ? `
+  <div class="section-title">Recent Health Records</div>
+  <table class="records">
+    <thead><tr><th>Title</th><th>Type</th><th>Date</th></tr></thead>
+    <tbody>${healthRows}</tbody>
+  </table>` : ""}
+
+  <div class="footer">
+    <span>EquiProfile — Confidential Equine Passport &nbsp;|&nbsp; EP-${horse.id}</span>
+    <span>Generated: ${new Date().toLocaleDateString("en-GB")}</span>
+  </div>
+  <p class="disclaimer">
+    This digital passport is designed to complement, not replace, the official FEI/BEF equine passport.
+    Always carry the original passport when travelling or competing.
+  </p>
+  <script>window.onload = function() { window.print(); setTimeout(function() { window.close(); }, 800); };</script>
+</body>
+</html>`;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
   };
 
   const handleExportPDF = async () => {
@@ -136,7 +321,7 @@ export function MedicalPassport({
         )}
       </div>
 
-      <Card ref={passportRef} className="medical-passport w-full overflow-hidden">
+      <Card className="medical-passport w-full overflow-hidden">
         <CardHeader className="pb-4">
           {/* Branded Letterhead — visible in print and PDF export */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b-2 border-[#0c2352]">

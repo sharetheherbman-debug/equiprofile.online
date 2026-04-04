@@ -426,7 +426,7 @@ export default function AdminCampaigns() {
 
       {/* Create Campaign Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Campaign</DialogTitle>
             <DialogDescription>
@@ -514,6 +514,30 @@ export default function AdminCampaigns() {
                 </Select>
               </div>
             </div>
+            {/* Inline template preview card — shown immediately after selection */}
+            {newCampaign.templateId && (() => {
+              const selected = templates.data?.find((t) => t.id === newCampaign.templateId);
+              return selected ? (
+                <div className="flex items-start gap-3 rounded-lg border bg-muted/40 p-3">
+                  <div
+                    className="mt-0.5 h-8 w-8 shrink-0 rounded"
+                    style={{ background: selected.previewColor }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium leading-snug">{selected.name}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{selected.description}</p>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="mt-1 h-auto p-0 text-xs"
+                      onClick={() => handlePreview(selected.id)}
+                    >
+                      <Eye className="mr-1 w-3 h-3" /> Full preview →
+                    </Button>
+                  </div>
+                </div>
+              ) : null;
+            })()}
             {newCampaign.templateId === "general" && (
               <div className="space-y-2">
                 <Label htmlFor="campaign-content">Email Content</Label>
@@ -531,7 +555,7 @@ export default function AdminCampaigns() {
                 />
               </div>
             )}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
                 size="sm"

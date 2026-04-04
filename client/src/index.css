@@ -620,3 +620,34 @@
     transform: translateY(0);
   }
 }
+
+/* ── Print safety ─────────────────────────────────────────────────────────────
+   When users press Ctrl+P or click Print from the browser menu, hide all
+   chrome (sidebar, nav, banners) so only the main content is printed cleanly.
+   For passport / document printing, MedicalPassport.tsx uses window.open()
+   with a fully formatted print HTML, which takes precedence over these rules.
+*/
+@media print {
+  /* Reset colours to plain white/black so the page renders cleanly */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: #fff !important; color: #000 !important; }
+  @page { margin: 15mm; }
+
+  /* Hide sidebar, mobile nav, trial banners, toast overlays */
+  [data-slot="sidebar-wrapper"] > [data-slot="sidebar"],
+  [data-sidebar="sidebar"],
+  nav[aria-label="Mobile navigation"],
+  [data-radix-toast-viewport],
+  .print\:hidden { display: none !important; }
+
+  /* Let the main content area take full width */
+  [data-slot="sidebar-wrapper"] { display: block !important; }
+  main { padding: 0 !important; overflow: visible !important; }
+
+  /* Passport card */
+  .medical-passport {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    break-inside: avoid;
+  }
+}
