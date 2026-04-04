@@ -507,7 +507,7 @@ export default function Pedigree() {
                       <h4 className="text-sm font-medium text-gray-700 mb-2">
                         Grandparents
                       </h4>
-                      <div className="grid grid-cols-4 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <Card className="bg-blue-50">
                           <CardContent className="pt-3">
                             <p className="text-xs text-gray-600">

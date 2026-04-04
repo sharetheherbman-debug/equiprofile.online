@@ -12,7 +12,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM, isAIConfigured } from "./_core/llm";
-import { invalidateConfigCache } from "./dynamicConfig";
+import { invalidateConfigCache, getRuntimeConfig } from "./dynamicConfig";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 import {
@@ -3058,6 +3058,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // Environment Health Check
     getEnvHealth: adminUnlockedProcedure.query(async () => {
       const aiConfigured = await isAIConfigured();
+      // Check SMTP config from both env and dashboard settings (DB)
+      const smtpHost = process.env.SMTP_HOST || (await getRuntimeConfig("smtp_host", "SMTP_HOST"));
+      const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+      const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+      const smtpConfigured = !!(smtpUser && smtpPass);
+      const smtpHostSet = !!smtpHost;
+      const smtpSource = (process.env.SMTP_USER && process.env.SMTP_PASS)
+        ? "environment"
+        : smtpConfigured ? "dashboard settings" : "";
       const checks = [
         // Core required vars (always critical)
         {
@@ -3155,10 +3164,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         },
         {
           name: "SMTP_HOST",
-          status: !!process.env.SMTP_HOST,
+          status: smtpHostSet,
           critical: false,
           conditional: false,
-          description: "SMTP server hostname — enables email notifications and password resets",
+          description: smtpConfigured
+            ? `SMTP configured via ${smtpSource} — email is functional`
+            : "SMTP server hostname — set in environment or Admin → Settings to enable email",
         },
       ];
 

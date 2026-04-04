@@ -262,7 +262,7 @@ export function OnboardingWizard({
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 text-center py-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center py-2">
                     {[
                       { icon: Heart, label: "Add a horse" },
                       { icon: User, label: "Choose your setup" },
@@ -330,7 +330,7 @@ export function OnboardingWizard({
                         className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:bg-white/10 focus:border-white/20 h-11 text-sm"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <Label
                           htmlFor="horse-breed"
@@ -496,7 +496,7 @@ export function OnboardingWizard({
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {[
                       {
                         icon: Heart,

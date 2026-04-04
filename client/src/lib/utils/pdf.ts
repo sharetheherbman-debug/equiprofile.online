@@ -163,58 +163,161 @@ export async function generatePDFFromData(
 }
 
 function generateMedicalPassportPDF(pdf: jsPDF, data: any) {
+  const pageWidth = pdf.internal.pageSize.getWidth();
+
+  // Professional letterhead
+  pdf.setFillColor(15, 46, 107);
+  pdf.rect(0, 0, pageWidth, 32, "F");
+  pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(20);
-  pdf.text("Medical Passport", 105, 20, { align: "center" });
+  pdf.setFont("helvetica", "bold");
+  pdf.text("EquiProfile", 14, 15);
+  pdf.setFontSize(9);
+  pdf.setFont("helvetica", "normal");
+  pdf.text("Professional Equine Management  |  equiprofile.online", 14, 23);
 
+  // Title
+  pdf.setTextColor(15, 46, 107);
+  pdf.setFontSize(18);
+  pdf.setFont("helvetica", "bold");
+  pdf.text("Equine Medical Passport", 105, 45, { align: "center" });
+
+  pdf.setDrawColor(15, 46, 107);
+  pdf.setLineWidth(0.5);
+  pdf.line(14, 50, pageWidth - 14, 50);
+
+  pdf.setTextColor(20, 20, 20);
   pdf.setFontSize(12);
-  pdf.text(`Horse: ${data.horseName || "N/A"}`, 20, 40);
-  pdf.text(`Breed: ${data.breed || "N/A"}`, 20, 50);
-  pdf.text(`Age: ${data.age || "N/A"}`, 20, 60);
-
-  // Add more details as needed
-  let yPos = 80;
+  pdf.setFont("helvetica", "normal");
+  let yPos = 62;
+  pdf.text(`Horse: ${data.horseName || "N/A"}`, 20, yPos); yPos += 10;
+  pdf.text(`Breed: ${data.breed || "N/A"}`, 20, yPos); yPos += 10;
+  pdf.text(`Age: ${data.age || "N/A"}`, 20, yPos); yPos += 14;
 
   if (data.vaccinations && data.vaccinations.length > 0) {
     pdf.setFontSize(14);
+    pdf.setFont("helvetica", "bold");
+    pdf.setTextColor(15, 46, 107);
     pdf.text("Vaccinations", 20, yPos);
     yPos += 10;
 
+    pdf.setTextColor(20, 20, 20);
     pdf.setFontSize(10);
+    pdf.setFont("helvetica", "normal");
     data.vaccinations.forEach((vacc: any) => {
-      pdf.text(`• ${vacc.name} - ${vacc.date}`, 25, yPos);
+      pdf.text(`• ${vacc.name} — ${vacc.date}`, 25, yPos);
       yPos += 7;
     });
   }
 
-  // Add QR code if available
+  // QR code if available
   if (data.qrCode) {
-    pdf.addImage(data.qrCode, "PNG", 160, 20, 40, 40);
+    pdf.addImage(data.qrCode, "PNG", 155, 36, 40, 40);
   }
+
+  // Footer
+  const pageH = pdf.internal.pageSize.getHeight();
+  pdf.setDrawColor(15, 46, 107);
+  pdf.setLineWidth(0.3);
+  pdf.line(14, pageH - 14, pageWidth - 14, pageH - 14);
+  pdf.setFontSize(8);
+  pdf.setTextColor(100, 100, 100);
+  pdf.text("EquiProfile — Confidential Equine Passport", 14, pageH - 9);
+  pdf.text(`Generated: ${new Date().toLocaleDateString("en-GB")}`, pageWidth - 14, pageH - 9, { align: "right" });
 }
 
 function generateReportPDF(pdf: jsPDF, data: any) {
-  pdf.setFontSize(20);
-  pdf.text(data.title || "Report", 105, 20, { align: "center" });
+  const pageWidth = pdf.internal.pageSize.getWidth();
 
-  pdf.setFontSize(12);
-  let yPos = 40;
+  // Professional letterhead
+  pdf.setFillColor(15, 46, 107);
+  pdf.rect(0, 0, pageWidth, 32, "F");
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFontSize(20);
+  pdf.setFont("helvetica", "bold");
+  pdf.text("EquiProfile", 14, 15);
+  pdf.setFontSize(9);
+  pdf.setFont("helvetica", "normal");
+  pdf.text("Professional Equine Management  |  equiprofile.online", 14, 23);
+
+  // Title
+  pdf.setTextColor(15, 46, 107);
+  pdf.setFontSize(18);
+  pdf.setFont("helvetica", "bold");
+  pdf.text(data.title || "Report", 105, 45, { align: "center" });
+
+  pdf.setDrawColor(15, 46, 107);
+  pdf.setLineWidth(0.5);
+  pdf.line(14, 50, pageWidth - 14, 50);
+
+  pdf.setTextColor(20, 20, 20);
+  pdf.setFontSize(11);
+  pdf.setFont("helvetica", "normal");
+  let yPos = 60;
 
   Object.entries(data).forEach(([key, value]) => {
     if (key !== "title") {
-      pdf.text(`${key}: ${value}`, 20, yPos);
-      yPos += 10;
+      pdf.setFont("helvetica", "bold");
+      pdf.text(`${key}:`, 20, yPos);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(String(value), 80, yPos);
+      yPos += 8;
     }
   });
+
+  // Footer
+  const pageH = pdf.internal.pageSize.getHeight();
+  pdf.setDrawColor(15, 46, 107);
+  pdf.setLineWidth(0.3);
+  pdf.line(14, pageH - 14, pageWidth - 14, pageH - 14);
+  pdf.setFontSize(8);
+  pdf.setTextColor(100, 100, 100);
+  pdf.text("EquiProfile — Confidential Report", 14, pageH - 9);
+  pdf.text(`Generated: ${new Date().toLocaleDateString("en-GB")}`, pageWidth - 14, pageH - 9, { align: "right" });
 }
 
 function generateInvoicePDF(pdf: jsPDF, data: any) {
-  pdf.setFontSize(20);
-  pdf.text("Invoice", 105, 20, { align: "center" });
+  const pageWidth = pdf.internal.pageSize.getWidth();
 
+  // Professional letterhead
+  pdf.setFillColor(15, 46, 107);
+  pdf.rect(0, 0, pageWidth, 32, "F");
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFontSize(20);
+  pdf.setFont("helvetica", "bold");
+  pdf.text("EquiProfile", 14, 15);
+  pdf.setFontSize(9);
+  pdf.setFont("helvetica", "normal");
+  pdf.text("Professional Equine Management  |  equiprofile.online", 14, 23);
+
+  // Title
+  pdf.setTextColor(15, 46, 107);
+  pdf.setFontSize(18);
+  pdf.setFont("helvetica", "bold");
+  pdf.text("Invoice", 105, 45, { align: "center" });
+
+  pdf.setDrawColor(15, 46, 107);
+  pdf.setLineWidth(0.5);
+  pdf.line(14, 50, pageWidth - 14, 50);
+
+  pdf.setTextColor(20, 20, 20);
   pdf.setFontSize(12);
-  pdf.text(`Invoice #: ${data.invoiceNumber || "N/A"}`, 20, 40);
-  pdf.text(`Date: ${data.date || "N/A"}`, 20, 50);
-  pdf.text(`Total: £${data.total || "0.00"}`, 20, 60);
+  pdf.setFont("helvetica", "normal");
+  pdf.text(`Invoice #: ${data.invoiceNumber || "N/A"}`, 20, 60);
+  pdf.text(`Date: ${data.date || "N/A"}`, 20, 70);
+  pdf.setFontSize(14);
+  pdf.setFont("helvetica", "bold");
+  pdf.text(`Total: £${data.total || "0.00"}`, 20, 84);
+
+  // Footer
+  const pageH = pdf.internal.pageSize.getHeight();
+  pdf.setDrawColor(15, 46, 107);
+  pdf.setLineWidth(0.3);
+  pdf.line(14, pageH - 14, pageWidth - 14, pageH - 14);
+  pdf.setFontSize(8);
+  pdf.setTextColor(100, 100, 100);
+  pdf.text("EquiProfile — Confidential Invoice", 14, pageH - 9);
+  pdf.text(`Generated: ${new Date().toLocaleDateString("en-GB")}`, pageWidth - 14, pageH - 9, { align: "right" });
 }
 
 export async function generateBlobFromPDF(pdf: jsPDF): Promise<Blob> {

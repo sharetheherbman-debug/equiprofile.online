@@ -90,11 +90,12 @@ export function Navbar(_props: NavbarProps = {}) {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 h-[72px] transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         showLight
           ? "bg-white/95 backdrop-blur-md shadow-md border-b border-gray-200"
           : "bg-transparent"
       }`}
+      style={{ paddingTop: 'var(--safe-area-top, 0px)' }}
     >
       <div className="container mx-auto px-4 h-[72px]">
         <div className="flex items-center justify-between h-full">
