@@ -606,15 +606,12 @@ async function startServer() {
         },
         storage: (() => {
           const hasProxy = !!(process.env.STORAGE_PROXY_URL && process.env.STORAGE_PROXY_KEY);
-          const localAvailable = ENV.enableUploads || true; // local disk always available on VPS
-          const storageOk = hasProxy || localAvailable;
+          const storageOk = true; // Local disk storage is always available on VPS
           const storageMode = hasProxy ? "proxy storage" : "local disk (VPS)";
           return {
             status: toStatus(storageOk, !hasProxy),
             ok: storageOk,
-            message: storageOk
-              ? `Document uploads enabled via ${storageMode} (${ENV.storagePath})`
-              : "Configure storage — set ENABLE_UPLOADS=true or STORAGE_PROXY_URL",
+            message: `Document uploads enabled via ${storageMode} (${ENV.storagePath})`,
           };
         })(),
         realtime: {

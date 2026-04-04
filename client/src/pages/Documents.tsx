@@ -292,9 +292,14 @@ function DocumentsContent() {
   });
 
   // Group filtered documents by category
+  // Images stored under "other" (legacy uploads before gallery was added) are re-mapped to "gallery"
   const docsByCategory = filteredDocs.reduce(
     (acc, doc) => {
-      const cat = doc.category || "other";
+      let cat = doc.category || "other";
+      // Re-classify legacy image uploads as gallery
+      if (cat === "other" && doc.fileType?.startsWith("image/")) {
+        cat = "gallery";
+      }
       if (!acc[cat]) acc[cat] = [];
       acc[cat].push(doc);
       return acc;
