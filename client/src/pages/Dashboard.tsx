@@ -18,6 +18,7 @@ import {
   Heart,
   Calendar,
   CloudSun,
+  Cloud,
   Plus,
   ChevronRight,
   AlertCircle,
@@ -45,180 +46,84 @@ import {
   Sparkles,
   BookOpen,
   TrendingUp,
-  Zap,
-  Star,
   Navigation,
   ShoppingCart,
   Home,
   UserCog,
-  Building2,
-  GraduationCap,
+  Star,
+  Zap,
 } from "lucide-react";
 
-// ─── Module grid data ───────────────────────────────────────────────────────
+// ─── All Modules data — mirrors mobile "More" sheet exactly ─────────────────
 
-// Base module categories — shown to all users
-const moduleCategories = [
+const dashboardModuleGroups = [
   {
-    id: "horses",
-    name: "Horses",
-    description: "Profiles, pedigrees & records",
-    icon: Heart,
-    color: "from-rose-500 to-pink-600",
-    accent: "border-rose-500/30",
-    href: "/horses",
-    modules: [
-      { name: "All Horses", href: "/horses", icon: Heart },
-      { name: "Add Horse", href: "/horses/new", icon: Plus },
-      { name: "Pedigree", href: "/pedigree", icon: GitBranch },
+    label: "Core",
+    items: [
+      { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
+      { icon: Cloud, label: "Weather", path: "/weather" },
+      { icon: Users, label: "Contacts", path: "/contacts" },
+      { icon: Clock, label: "Appointments", path: "/appointments" },
     ],
   },
   {
-    id: "health",
-    name: "Health",
-    description: "Vets, vaccines & treatments",
-    icon: Stethoscope,
-    color: "from-blue-500 to-cyan-600",
-    accent: "border-blue-500/30",
-    href: "/health",
-    modules: [
-      { name: "Health Hub", href: "/health", icon: Stethoscope },
-      { name: "Vaccinations", href: "/vaccinations", icon: Syringe },
-      { name: "Dental Care", href: "/dental", icon: Scissors },
-      { name: "Hoof Care", href: "/hoofcare", icon: Activity },
-      { name: "Dewormings", href: "/dewormings", icon: Pill },
-      { name: "Treatments", href: "/treatments", icon: Heart },
-      { name: "X-Rays", href: "/xrays", icon: XCircle },
+    label: "Health",
+    items: [
+      { icon: Stethoscope, label: "Health Hub", path: "/health" },
+      { icon: Syringe, label: "Vaccinations", path: "/vaccinations" },
+      { icon: Scissors, label: "Dental Care", path: "/dental" },
+      { icon: Activity, label: "Hoof Care", path: "/hoofcare" },
+      { icon: Pill, label: "Dewormings", path: "/dewormings" },
+      { icon: Heart, label: "Treatments", path: "/treatments" },
+      { icon: XCircle, label: "X-Rays", path: "/xrays" },
     ],
   },
   {
-    id: "training",
-    name: "Training & Activity",
-    description: "Sessions, lessons & breeding",
-    icon: Dumbbell,
-    color: "from-green-500 to-emerald-600",
-    accent: "border-green-500/30",
-    href: "/training",
-    modules: [
-      { name: "Training Log", href: "/training", icon: Dumbbell },
-      { name: "Templates", href: "/training-templates", icon: BookOpen },
-      { name: "GPS Tracking", href: "/ride-tracking", icon: Navigation },
-      { name: "Lessons", href: "/lessons", icon: GraduationCap },
-      { name: "Breeding", href: "/breeding", icon: Baby },
+    label: "Training & Activity",
+    items: [
+      { icon: Dumbbell, label: "Training Log", path: "/training" },
+      { icon: BookOpen, label: "Templates", path: "/training-templates" },
+      { icon: Navigation, label: "GPS Tracking", path: "/ride-tracking" },
+      { icon: Users, label: "Lessons", path: "/lessons" },
+      { icon: Baby, label: "Breeding", path: "/breeding" },
     ],
   },
   {
-    id: "nutrition",
-    name: "Nutrition",
-    description: "Feed plans & diet tracking",
-    icon: Apple,
-    color: "from-orange-500 to-amber-600",
-    accent: "border-orange-500/30",
-    href: "/feeding",
-    modules: [
-      { name: "Feeding Plans", href: "/feeding", icon: Apple },
-      { name: "Nutrition Plans", href: "/nutrition-plans", icon: FileText },
-      { name: "Nutrition Logs", href: "/nutrition-logs", icon: BookOpen },
-      { name: "Feed Costs", href: "/feed-costs", icon: ShoppingCart },
+    label: "Nutrition",
+    items: [
+      { icon: Apple, label: "Feeding Plans", path: "/feeding" },
+      { icon: FileText, label: "Nutrition Plans", path: "/nutrition-plans" },
+      { icon: BookOpen, label: "Nutrition Logs", path: "/nutrition-logs" },
+      { icon: ShoppingCart, label: "Feed Costs", path: "/feed-costs" },
     ],
   },
   {
-    id: "schedule",
-    name: "Schedule",
-    description: "Calendar, tasks & appointments",
-    icon: CalendarDays,
-    color: "from-purple-500 to-violet-600",
-    accent: "border-purple-500/30",
-    href: "/calendar",
-    modules: [
-      { name: "Calendar", href: "/calendar", icon: Calendar },
-      { name: "Appointments", href: "/appointments", icon: Clock },
-      { name: "Tasks", href: "/tasks", icon: Activity },
+    label: "Data & Reports",
+    items: [
+      { icon: FileText, label: "Documents", path: "/documents" },
+      { icon: BarChart3, label: "Analytics", path: "/analytics" },
+      { icon: FileText, label: "Reports", path: "/reports" },
+      { icon: Tag, label: "Tags", path: "/tags" },
+      { icon: GitBranch, label: "Pedigree", path: "/pedigree" },
+      { icon: Shield, label: "Equine Passport", path: "/equine-passport" },
     ],
   },
   {
-    id: "ai",
-    name: "AI & Weather",
-    description: "Smart assistant & riding conditions",
-    icon: Brain,
-    color: "from-indigo-500 to-blue-600",
-    accent: "border-indigo-500/30",
-    href: "/ai-chat",
-    modules: [
-      { name: "AI Assistant", href: "/ai-chat", icon: Brain },
-      { name: "Weather", href: "/weather", icon: CloudSun },
+    label: "Stable & People",
+    items: [
+      { icon: Home, label: "Stable Management", path: "/stable" },
+      { icon: UserCog, label: "Staff", path: "/staff" },
+      { icon: MessageSquare, label: "Messages", path: "/messages" },
     ],
   },
   {
-    id: "documents",
-    name: "Documents",
-    description: "Secure file & record vault",
-    icon: FileText,
-    color: "from-slate-500 to-gray-600",
-    accent: "border-slate-500/30",
-    href: "/documents",
-    modules: [
-      { name: "Document Vault", href: "/documents", icon: FileText },
-      { name: "Equine Passport", href: "/equine-passport", icon: Shield },
-    ],
-  },
-  {
-    id: "reports",
-    name: "Reports",
-    description: "Analytics, tags & exports",
-    icon: BarChart3,
-    color: "from-cyan-500 to-blue-600",
-    accent: "border-cyan-500/30",
-    href: "/analytics",
-    modules: [
-      { name: "Analytics", href: "/analytics", icon: BarChart3 },
-      { name: "Reports", href: "/reports", icon: FileText },
-      { name: "Tags", href: "/tags", icon: Tag },
-    ],
-  },
-  {
-    id: "contacts",
-    name: "Contacts",
-    description: "Vets, farriers & network",
-    icon: Users,
-    color: "from-teal-500 to-cyan-600",
-    accent: "border-teal-500/30",
-    href: "/contacts",
-    modules: [
-      { name: "Contacts", href: "/contacts", icon: Users },
-      { name: "Messages", href: "/messages", icon: MessageSquare },
-    ],
-  },
-  {
-    id: "settings",
-    name: "Account",
-    description: "Billing & preferences",
-    icon: Settings,
-    color: "from-gray-500 to-slate-600",
-    accent: "border-gray-500/30",
-    href: "/settings",
-    modules: [
-      { name: "Settings", href: "/settings", icon: Settings },
-      { name: "Billing", href: "/billing", icon: DollarSign },
+    label: "Account",
+    items: [
+      { icon: Settings, label: "Settings", path: "/settings" },
+      { icon: DollarSign, label: "Billing", path: "/billing" },
     ],
   },
 ];
-
-// Stable-plan module category — only shown to users with the stable plan
-const stableModuleCategory = {
-  id: "stable",
-  name: "Stable",
-  description: "Yard management & staff",
-  icon: Building2,
-  color: "from-amber-500 to-yellow-600",
-  accent: "border-amber-500/30",
-  href: "/stable",
-  modules: [
-    { name: "Stable Profile", href: "/stable", icon: Home },
-    { name: "Stable Setup", href: "/stable-setup", icon: Settings },
-    { name: "Staff", href: "/staff", icon: UserCog },
-  ],
-};
 
 // Helper: map task priority to a dot color class
 const PRIORITY_COLOR: Record<string, string> = {
@@ -264,64 +169,9 @@ const quickActions = [
   },
 ];
 
-function ModuleCard({
-  category,
-  index,
-}: {
-  category: (typeof moduleCategories)[0] | typeof stableModuleCategory;
-  index: number;
-}) {
-  const Icon = category.icon;
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.04 }}
-    >
-      <Link href={category.href}>
-        <div
-          className={`group relative rounded-xl border ${category.accent} bg-card/60 backdrop-blur-sm p-4 h-full cursor-pointer hover:shadow-md hover:bg-card/80 transition-all duration-200 active:scale-[0.98]`}
-        >
-          <div className="flex items-start gap-3">
-            <div
-              className={`w-10 h-10 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center shadow-sm shrink-0`}
-            >
-              <Icon className="w-5 h-5 text-white" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-sm leading-tight">
-                {category.name}
-              </h3>
-              <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
-                {category.description}
-              </p>
-            </div>
-            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-muted-foreground shrink-0 mt-0.5 transition-colors" />
-          </div>
-          <div className="mt-3 flex flex-wrap gap-1">
-            {category.modules.slice(0, 3).map((m) => (
-              <span
-                key={m.href}
-                className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted/50 text-muted-foreground"
-              >
-                {m.name}
-              </span>
-            ))}
-            {category.modules.length > 3 && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted/50 text-muted-foreground">
-                +{category.modules.length - 3}
-              </span>
-            )}
-          </div>
-        </div>
-      </Link>
-    </motion.div>
-  );
-}
-
 function DashboardContent() {
   const { user } = useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
 
   const { data: stats } = trpc.user.getDashboardStats.useQuery(undefined, {
     retry: false,
@@ -983,25 +833,63 @@ function DashboardContent() {
         ))}
       </motion.div>
 
-      {/* ── Module Grid ───────────────────────────────────────── */}
+      {/* ── All Modules (same style as mobile More sheet) ───── */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, delay: 0.28 }}
-        className="space-y-3"
+        className="space-y-4"
       >
         <h2 className="font-serif text-base font-semibold px-0.5">
           All Modules
         </h2>
-        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {[
-            ...moduleCategories,
-            ...(subscription?.bothDashboardsUnlocked || subscription?.planTier === "stable"
-              ? [stableModuleCategory]
-              : []),
-          ].map((cat, i) => (
-            <ModuleCard key={cat.id} category={cat} index={i} />
-          ))}
+        <div className="space-y-4">
+          {dashboardModuleGroups.map((group) => {
+            const isStablePlan =
+              subscription?.bothDashboardsUnlocked ||
+              subscription?.planTier === "stable";
+            const items = group.items.filter((item) => {
+              if (
+                !isStablePlan &&
+                (item.label === "Breeding" ||
+                  item.label === "Stable Management" ||
+                  item.label === "Staff" ||
+                  item.label === "Messages")
+              )
+                return false;
+              return true;
+            });
+            if (items.length === 0) return null;
+            return (
+              <div key={group.label}>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
+                  {group.label}
+                </p>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2.5">
+                  {items.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = location === item.path;
+                    return (
+                      <button
+                        key={item.path}
+                        onClick={() => setLocation(item.path)}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center min-h-[72px] ${
+                          isActive
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-card hover:bg-accent"
+                        }`}
+                      >
+                        <Icon className="h-5 w-5 shrink-0" />
+                        <span className="text-[11px] leading-tight font-medium">
+                          {item.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </motion.div>
 
