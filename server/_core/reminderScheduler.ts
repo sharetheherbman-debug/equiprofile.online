@@ -31,7 +31,7 @@ export function startReminderScheduler() {
       const tomorrow = new Date(now);
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-      // Get event reminders that need to be sent
+      // ── Event reminders ──────────────────────────────────────
       const dueReminders = await db.getDueEventReminders(tomorrow);
 
       console.log(`[Reminders] Found ${dueReminders.length} due reminders`);
@@ -103,6 +103,42 @@ export function startReminderScheduler() {
             `[Reminders] Failed to send reminder ${reminder.id}:`,
             error,
           );
+        }
+      }
+
+      // ── Trial-ending reminders (daily at 9 AM UTC) ───────────
+      const TRIAL_REMINDER_LOOKAHEAD_DAYS = 3;
+      if (now.getUTCHours() === 9) {
+        try {
+          const trialUsers = await db.getTrialsEndingSoon(TRIAL_REMINDER_LOOKAHEAD_DAYS);
+          const emailModule = await import("./email");
+
+          for (const user of trialUsers) {
+            if (!user.email || !user.trialEndsAt) continue;
+            const daysLeft = Math.max(
+              0,
+              Math.ceil(
+                (user.trialEndsAt.getTime() - now.getTime()) /
+                  (1000 * 60 * 60 * 24),
+              ),
+            );
+            // Only send at key milestones: 2, 1, or 0 days remaining
+            if (daysLeft <= 2) {
+              await emailModule
+                .sendTrialReminderEmail(user, daysLeft)
+                .catch((err: any) =>
+                  console.error(
+                    `[Reminders] Failed to send trial reminder to ${user.email}:`,
+                    err,
+                  ),
+                );
+              console.log(
+                `[Reminders] Sent trial reminder (${daysLeft}d left) to ${user.email}`,
+              );
+            }
+          }
+        } catch (error) {
+          console.error("[Reminders] Error checking trial reminders:", error);
         }
       }
 

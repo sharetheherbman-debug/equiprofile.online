@@ -90,11 +90,12 @@ export function Navbar(_props: NavbarProps = {}) {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 h-[72px] transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         showLight
           ? "bg-white/95 backdrop-blur-md shadow-md border-b border-gray-200"
           : "bg-transparent"
       }`}
+      style={{ paddingTop: 'var(--safe-area-top, 0px)' }}
     >
       <div className="container mx-auto px-4 h-[72px]">
         <div className="flex items-center justify-between h-full">
@@ -103,15 +104,11 @@ export function Navbar(_props: NavbarProps = {}) {
             href={isAuthenticated ? "/dashboard" : "/"}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <span
-              className={`text-xl sm:text-2xl font-bold font-serif ${
-                showLight
-                  ? "bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent"
-                  : "text-white"
-              }`}
-            >
-              EquiProfile
-            </span>
+            <img
+              src="/logo.png"
+              alt="EquiProfile"
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}

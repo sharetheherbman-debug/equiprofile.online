@@ -135,16 +135,16 @@ export function MedicalPassport({
       <Card ref={passportRef} className="medical-passport w-full overflow-hidden">
         <CardHeader>
           {/* Branded Letterhead — visible in print and PDF export */}
-          <div className="flex items-center justify-between mb-4 pb-4 border-b">
+          <div className="flex items-center justify-between mb-4 pb-4 border-b-2 border-[#0f2e6b]">
             <div className="flex items-center gap-3">
               <img
                 src="/logo.png"
                 alt="EquiProfile"
-                className="h-10 w-auto object-contain"
+                className="h-14 w-auto object-contain"
                 crossOrigin="anonymous"
               />
               <div>
-                <p className="text-xs text-muted-foreground">Equine Health & Management</p>
+                <p className="text-sm font-semibold text-[#0f2e6b]">Equine Health & Management</p>
                 <p className="text-xs text-muted-foreground">www.equiprofile.online</p>
               </div>
             </div>
@@ -171,7 +171,7 @@ export function MedicalPassport({
           {/* Passport Identification (FEI/BEF Section I) */}
           <section>
             <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-              <Shield className="w-4 h-4 text-blue-500" />
+              <Shield className="w-4 h-4 text-[#0f2e6b]" />
               Passport Identification
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
@@ -366,8 +366,11 @@ export function MedicalPassport({
           )}
 
           {/* Footer — Compliance Note */}
-          <div className="text-xs text-muted-foreground pt-4 border-t space-y-1">
-            <p>Generated on: {new Date().toLocaleString()}</p>
+          <div className="text-xs text-muted-foreground pt-4 border-t-2 border-[#0f2e6b] space-y-1">
+            <div className="flex justify-between items-center">
+              <p className="font-medium text-[#0f2e6b]">EquiProfile — Professional Equine Management</p>
+              <p>Generated: {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</p>
+            </div>
             <p>
               Document ID: EP-{horse.id}-{Date.now()}
             </p>

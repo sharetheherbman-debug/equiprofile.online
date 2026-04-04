@@ -24,6 +24,7 @@ import { contactSubmissions } from "../../drizzle/schema";
 import { getStripe, validatePricingConfig, PRICING_PLANS } from "../stripe";
 import * as email from "./email";
 import { ENV } from "./env";
+import { getRuntimeConfig } from "../dynamicConfig";
 import { resolve } from "path";
 import path from "path";
 import fs from "fs";
@@ -300,6 +301,20 @@ async function startServer() {
                 subscriptionStatus: "cancelled",
                 subscriptionEndsAt: new Date(),
               });
+
+              // Send cancellation confirmation email
+              const cancelledUser = await db.getUserById(userId);
+              if (cancelledUser) {
+                email
+                  .sendCancellationEmail(cancelledUser)
+                  .catch((err) =>
+                    console.error(
+                      "[Stripe Webhook] Failed to send cancellation email:",
+                      err,
+                    ),
+                  );
+              }
+
               console.log(
                 `[Stripe Webhook] User ${userId} subscription cancelled`,
               );
@@ -318,6 +333,25 @@ async function startServer() {
                   subscriptionStatus: "active",
                   lastPaymentAt: new Date(),
                 });
+
+                // Send renewal receipt email (skip for first checkout — that's handled above)
+                if (invoice.billing_reason !== "subscription_create") {
+                  const paidUser = await db.getUserById(userId);
+                  if (paidUser) {
+                    const plan = paidUser.subscriptionPlan === "monthly" || paidUser.subscriptionPlan === "yearly"
+                      ? paidUser.subscriptionPlan
+                      : undefined;
+                    email
+                      .sendRenewalReceiptEmail(paidUser, plan)
+                      .catch((err) =>
+                        console.error(
+                          "[Stripe Webhook] Failed to send renewal receipt email:",
+                          err,
+                        ),
+                      );
+                  }
+                }
+
                 console.log(
                   `[Stripe Webhook] User ${userId} payment succeeded`,
                 );
@@ -336,6 +370,20 @@ async function startServer() {
                 await db.updateUser(userId, {
                   subscriptionStatus: "overdue",
                 });
+
+                // Send payment failed email
+                const overdueUser = await db.getUserById(userId);
+                if (overdueUser) {
+                  email
+                    .sendPaymentFailedEmail(overdueUser)
+                    .catch((err) =>
+                      console.error(
+                        "[Stripe Webhook] Failed to send payment failed email:",
+                        err,
+                      ),
+                    );
+                }
+
                 console.log(`[Stripe Webhook] User ${userId} payment failed`);
               }
             }
@@ -446,8 +494,11 @@ async function startServer() {
    * Returns which optional services are configured (boolean flags only, no secrets).
    * Used by the frontend and monitoring to show a "setup checklist".
    */
-  app.get("/api/system/config-status", (req, res) => {
-    const smtpConfigured = !!(process.env.SMTP_USER && process.env.SMTP_PASS);
+  app.get("/api/system/config-status", async (req, res) => {
+    // Check env vars first, then fall back to DB-stored dashboard settings
+    const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+    const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+    const smtpConfigured = !!(smtpUser && smtpPass);
     const stripeReady =
       ENV.enableStripe &&
       !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
@@ -478,7 +529,13 @@ async function startServer() {
    * Used by admin UI and audit scripts to show actionable "what's missing" info.
    */
   app.get("/api/admin/status", async (req, res) => {
-    const smtpConfigured = !!(process.env.SMTP_USER && process.env.SMTP_PASS);
+    // Check env vars first, then fall back to DB-stored dashboard settings
+    const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+    const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+    const smtpConfigured = !!(smtpUser && smtpPass);
+    const smtpSource = (process.env.SMTP_USER && process.env.SMTP_PASS)
+      ? "environment"
+      : smtpConfigured ? "dashboard settings" : "not configured";
     const stripeConfigured = !!(
       process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET
     );
@@ -523,8 +580,8 @@ async function startServer() {
           status: toStatus(smtpConfigured, true),
           ok: smtpConfigured,
           message: smtpConfigured
-            ? "SMTP configured"
-            : "Set SMTP_HOST, SMTP_USER, SMTP_PASS to enable email",
+            ? `SMTP configured (via ${smtpSource})`
+            : "Set SMTP_HOST, SMTP_USER, SMTP_PASS in environment or Admin → Settings to enable email",
         },
         stripe: {
           status: toStatus(stripeConfigured && stripePublicKey, true),

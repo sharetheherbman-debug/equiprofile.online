@@ -590,7 +590,7 @@ function DocumentsContent() {
         {/* Inline preview dialog */}
         {previewDoc && (
           <Dialog open={!!previewDoc} onOpenChange={(o) => !o && setPreviewDoc(null)}>
-            <DialogContent className="max-w-3xl w-full">
+            <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-3xl w-full">
               <DialogHeader>
                 <DialogTitle className="truncate pr-8">{previewDoc.name}</DialogTitle>
                 <DialogDescription>Document preview</DialogDescription>

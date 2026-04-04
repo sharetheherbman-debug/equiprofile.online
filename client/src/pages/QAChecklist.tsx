@@ -115,14 +115,14 @@ export default function QAChecklistPage() {
     { retry: false, staleTime: 30000 },
   );
 
-  // Detect if calendar query is still fetching after 15 seconds — avoids
+  // Detect if calendar query is still fetching after 30 seconds — avoids
   // permanent "Checking..." display when the request hangs.
   useEffect(() => {
     if (!calEvents.isPending || calEvents.fetchStatus !== "fetching") {
       setCalendarTimedOut(false);
       return;
     }
-    const timer = setTimeout(() => setCalendarTimedOut(true), 15000);
+    const timer = setTimeout(() => setCalendarTimedOut(true), 30000);
     return () => clearTimeout(timer);
   }, [calEvents.isPending, calEvents.fetchStatus]);
   const trainingStats = trpc.analytics.getTrainingStats.useQuery(
@@ -208,7 +208,7 @@ export default function QAChecklistPage() {
       label: "calendar.getEvents",
       status: calendarTimedOut ? "warn" : qStatus(calEvents),
       detail: calendarTimedOut
-        ? "Request timed out (>15s) — check server calendar route"
+        ? "Request timed out (>30s) — check server calendar route"
         : qDetail(calEvents),
     },
     {
