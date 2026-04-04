@@ -250,7 +250,7 @@ export function MedicalPassport({
     This digital passport is designed to complement, not replace, the official FEI/BEF equine passport.
     Always carry the original passport when travelling or competing.
   </p>
-  <script>window.onload = function() { window.print(); setTimeout(function() { window.close(); }, 800); };</script>
+  <script>window.onload = function() { window.print(); }; window.onafterprint = function() { window.close(); };</script>
 </body>
 </html>`;
 

@@ -527,7 +527,7 @@ export async function generatePassportPDF(
     doc.rect(0, 36, pageWidth, 1.5, "F");
 
     if (logoBase64) {
-      try { doc.addImage(logoBase64, "PNG", 12, 7, 24, 13.5); } catch { /* ignore */ }
+      try { doc.addImage(logoBase64, "PNG", 12, 7, 24, 13.5); } catch (e) { console.warn("PDF logo embed failed:", e); }
     }
 
     doc.setTextColor(255, 255, 255);
@@ -639,7 +639,7 @@ export async function generatePassportPDF(
 
   // QR code — top-right of first page alongside identification sections
   if (qrCode) {
-    try { doc.addImage(qrCode, "PNG", pageWidth - margin - 36, 57, 36, 36); } catch { /* ignore */ }
+    try { doc.addImage(qrCode, "PNG", pageWidth - margin - 36, 57, 36, 36); } catch (e) { console.warn("PDF QR code embed failed:", e); }
   }
 
   // ── Section III — Vaccinations (FEI Section V) ─────────────────────────
