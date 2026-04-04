@@ -48,6 +48,9 @@ import { trpc } from "../lib/trpc";
 import { format } from "date-fns";
 import jsPDF from "jspdf";
 
+/** Brand color for PDF letterhead */
+const BRAND_BLUE_RGB = [15, 46, 107] as const;
+
 const REPORT_TYPES = [
   { value: "monthly_summary", label: "Monthly Summary" },
   { value: "health_report", label: "Health Report" },
@@ -244,7 +247,7 @@ export default function Reports() {
       const logoBase64 = await loadLogoBase64();
 
       // Letterhead — darker premium blue
-      doc.setFillColor(15, 46, 107);
+      doc.setFillColor(...BRAND_BLUE_RGB);
       doc.rect(0, 0, pageWidth, 32, "F");
 
       // Add logo to letterhead if available
@@ -269,18 +272,18 @@ export default function Reports() {
       );
 
       // Accent line below header
-      doc.setDrawColor(15, 46, 107);
+      doc.setDrawColor(...BRAND_BLUE_RGB);
       doc.setLineWidth(0.8);
       doc.line(0, 32, pageWidth, 32);
 
       y = 44;
       // Report title
-      doc.setTextColor(15, 46, 107);
+      doc.setTextColor(...BRAND_BLUE_RGB);
       doc.setFontSize(18);
       doc.setFont("helvetica", "bold");
       doc.text(report.title, 14, y);
       y += 10;
-      doc.setDrawColor(15, 46, 107);
+      doc.setDrawColor(...BRAND_BLUE_RGB);
       doc.setLineWidth(0.5);
       doc.line(14, y, pageWidth - 14, y);
       y += 8;
@@ -290,7 +293,7 @@ export default function Reports() {
         if (y > 260) { doc.addPage(); y = 20; }
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
-        doc.setTextColor(15, 46, 107);
+        doc.setTextColor(...BRAND_BLUE_RGB);
         doc.text(text, 14, y);
         y += 7;
         doc.setTextColor(20, 20, 20);
@@ -442,7 +445,7 @@ export default function Reports() {
         doc.setPage(i);
         const pageH = doc.internal.pageSize.getHeight();
         // Footer line
-        doc.setDrawColor(15, 46, 107);
+        doc.setDrawColor(...BRAND_BLUE_RGB);
         doc.setLineWidth(0.3);
         doc.line(14, pageH - 14, pageWidth - 14, pageH - 14);
         doc.setFontSize(8);

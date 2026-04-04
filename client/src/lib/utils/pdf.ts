@@ -1,6 +1,10 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
+/** Brand color constants for PDF generation */
+const BRAND_BLUE_RGB = [15, 46, 107] as const;
+const PDF_JPEG_QUALITY = 0.95;
+
 export interface PDFOptions {
   filename?: string;
   orientation?: "portrait" | "landscape";
@@ -92,7 +96,7 @@ export async function generatePDFFromHTML(
         },
       });
 
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      const imgData = canvas.toDataURL("image/jpeg", PDF_JPEG_QUALITY);
       const imgWidth = format === "a4" ? 210 : 216; // A4 or Letter width in mm
       const pageHeight = format === "a4" ? 297 : 279; // A4 or Letter height in mm
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
@@ -166,7 +170,7 @@ function generateMedicalPassportPDF(pdf: jsPDF, data: any) {
   const pageWidth = pdf.internal.pageSize.getWidth();
 
   // Professional letterhead
-  pdf.setFillColor(15, 46, 107);
+  pdf.setFillColor(...BRAND_BLUE_RGB);
   pdf.rect(0, 0, pageWidth, 32, "F");
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(20);
@@ -177,12 +181,12 @@ function generateMedicalPassportPDF(pdf: jsPDF, data: any) {
   pdf.text("Professional Equine Management  |  equiprofile.online", 14, 23);
 
   // Title
-  pdf.setTextColor(15, 46, 107);
+  pdf.setTextColor(...BRAND_BLUE_RGB);
   pdf.setFontSize(18);
   pdf.setFont("helvetica", "bold");
   pdf.text("Equine Medical Passport", 105, 45, { align: "center" });
 
-  pdf.setDrawColor(15, 46, 107);
+  pdf.setDrawColor(...BRAND_BLUE_RGB);
   pdf.setLineWidth(0.5);
   pdf.line(14, 50, pageWidth - 14, 50);
 
@@ -197,7 +201,7 @@ function generateMedicalPassportPDF(pdf: jsPDF, data: any) {
   if (data.vaccinations && data.vaccinations.length > 0) {
     pdf.setFontSize(14);
     pdf.setFont("helvetica", "bold");
-    pdf.setTextColor(15, 46, 107);
+    pdf.setTextColor(...BRAND_BLUE_RGB);
     pdf.text("Vaccinations", 20, yPos);
     yPos += 10;
 
@@ -217,7 +221,7 @@ function generateMedicalPassportPDF(pdf: jsPDF, data: any) {
 
   // Footer
   const pageH = pdf.internal.pageSize.getHeight();
-  pdf.setDrawColor(15, 46, 107);
+  pdf.setDrawColor(...BRAND_BLUE_RGB);
   pdf.setLineWidth(0.3);
   pdf.line(14, pageH - 14, pageWidth - 14, pageH - 14);
   pdf.setFontSize(8);
@@ -230,7 +234,7 @@ function generateReportPDF(pdf: jsPDF, data: any) {
   const pageWidth = pdf.internal.pageSize.getWidth();
 
   // Professional letterhead
-  pdf.setFillColor(15, 46, 107);
+  pdf.setFillColor(...BRAND_BLUE_RGB);
   pdf.rect(0, 0, pageWidth, 32, "F");
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(20);
@@ -241,12 +245,12 @@ function generateReportPDF(pdf: jsPDF, data: any) {
   pdf.text("Professional Equine Management  |  equiprofile.online", 14, 23);
 
   // Title
-  pdf.setTextColor(15, 46, 107);
+  pdf.setTextColor(...BRAND_BLUE_RGB);
   pdf.setFontSize(18);
   pdf.setFont("helvetica", "bold");
   pdf.text(data.title || "Report", 105, 45, { align: "center" });
 
-  pdf.setDrawColor(15, 46, 107);
+  pdf.setDrawColor(...BRAND_BLUE_RGB);
   pdf.setLineWidth(0.5);
   pdf.line(14, 50, pageWidth - 14, 50);
 
@@ -267,7 +271,7 @@ function generateReportPDF(pdf: jsPDF, data: any) {
 
   // Footer
   const pageH = pdf.internal.pageSize.getHeight();
-  pdf.setDrawColor(15, 46, 107);
+  pdf.setDrawColor(...BRAND_BLUE_RGB);
   pdf.setLineWidth(0.3);
   pdf.line(14, pageH - 14, pageWidth - 14, pageH - 14);
   pdf.setFontSize(8);
@@ -280,7 +284,7 @@ function generateInvoicePDF(pdf: jsPDF, data: any) {
   const pageWidth = pdf.internal.pageSize.getWidth();
 
   // Professional letterhead
-  pdf.setFillColor(15, 46, 107);
+  pdf.setFillColor(...BRAND_BLUE_RGB);
   pdf.rect(0, 0, pageWidth, 32, "F");
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(20);
@@ -291,12 +295,12 @@ function generateInvoicePDF(pdf: jsPDF, data: any) {
   pdf.text("Professional Equine Management  |  equiprofile.online", 14, 23);
 
   // Title
-  pdf.setTextColor(15, 46, 107);
+  pdf.setTextColor(...BRAND_BLUE_RGB);
   pdf.setFontSize(18);
   pdf.setFont("helvetica", "bold");
   pdf.text("Invoice", 105, 45, { align: "center" });
 
-  pdf.setDrawColor(15, 46, 107);
+  pdf.setDrawColor(...BRAND_BLUE_RGB);
   pdf.setLineWidth(0.5);
   pdf.line(14, 50, pageWidth - 14, 50);
 
@@ -311,7 +315,7 @@ function generateInvoicePDF(pdf: jsPDF, data: any) {
 
   // Footer
   const pageH = pdf.internal.pageSize.getHeight();
-  pdf.setDrawColor(15, 46, 107);
+  pdf.setDrawColor(...BRAND_BLUE_RGB);
   pdf.setLineWidth(0.3);
   pdf.line(14, pageH - 14, pageWidth - 14, pageH - 14);
   pdf.setFontSize(8);
