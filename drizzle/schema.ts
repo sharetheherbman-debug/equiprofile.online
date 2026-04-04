@@ -1258,7 +1258,7 @@ export const emailCampaigns = mysqlTable("emailCampaigns", {
   subject: varchar("subject", { length: 500 }).notNull(),
   htmlBody: text("htmlBody").notNull(),
   templateId: varchar("templateId", { length: 50 }),
-  segment: varchar("segment", { length: 50 }).notNull(), // 'leads','trial','paid','all','custom'
+  segment: varchar("segment", { length: 50 }).notNull(), // 'leads','trial','paid','all'
   customFilter: text("customFilter"), // JSON filter criteria for custom segments
   recipientCount: int("recipientCount").default(0).notNull(),
   sentCount: int("sentCount").default(0).notNull(),

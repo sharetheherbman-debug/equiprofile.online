@@ -160,6 +160,20 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
   }
 }
 
+/** Format a date in en-GB style: "4 April 2026" */
+function formatDateGB(d: Date = new Date()): string {
+  return d.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+/** Extract first name from a full name string */
+function extractFirstName(name: string | null | undefined): string {
+  return name?.split(" ")[0] || "there";
+}
+
 // Day-of-week offset map used by applyTemplate to schedule calendar events
 const TRAINING_DAY_OFFSET: Record<string, number> = {
   Sunday: 0,
@@ -3290,11 +3304,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const html = applyMergeFields(tpl.getHtml(), {
           firstName: input.mergeFields?.firstName || "Preview User",
           email: "preview@example.com",
-          currentDate: new Date().toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          }),
+          currentDate: formatDateGB(),
           subject: input.mergeFields?.subject || "Campaign Subject",
           content: input.mergeFields?.content || "Your campaign content goes here.",
         });
@@ -3421,13 +3431,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!tpl) throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
 
         const html = applyMergeFields(tpl.getHtml(), {
-          firstName: input.mergeFields?.firstName || ctx.user.name?.split(" ")[0] || "Admin",
+          firstName: input.mergeFields?.firstName || extractFirstName(ctx.user.name) || "Admin",
           email: ctx.user.email || "",
-          currentDate: new Date().toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          }),
+          currentDate: formatDateGB(),
           subject: input.mergeFields?.subject || input.subject,
           content: input.mergeFields?.content || "",
         });
@@ -3516,26 +3522,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         // Insert recipient records and send emails
         let sentCount = 0;
         let failedCount = 0;
-        const currentDate = new Date().toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        });
+        const currentDate = formatDateGB();
 
         for (const recipient of uniqueRecipients) {
           try {
-            const firstName =
-              recipient.name?.split(" ")[0] || "there";
+            const firstName = extractFirstName(recipient.name);
             const html = applyMergeFields(campaign.htmlBody, {
               firstName,
               email: recipient.email,
               currentDate,
               trialEndDate: recipient.trialEndsAt
-                ? new Date(recipient.trialEndsAt).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })
+                ? formatDateGB(new Date(recipient.trialEndsAt))
                 : "",
             });
 

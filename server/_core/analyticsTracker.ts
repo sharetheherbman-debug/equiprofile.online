@@ -37,9 +37,21 @@ function parseDeviceType(
   ua: string,
 ): "mobile" | "tablet" | "desktop" {
   const lower = ua.toLowerCase();
-  if (/mobile|android.*mobile|iphone|ipod|blackberry|windows phone/i.test(lower))
+  if (
+    lower.includes("iphone") ||
+    lower.includes("ipod") ||
+    lower.includes("blackberry") ||
+    lower.includes("windows phone") ||
+    (lower.includes("mobile") && lower.includes("android")) ||
+    (lower.includes("mobile") && !lower.includes("tablet"))
+  )
     return "mobile";
-  if (/tablet|ipad|android(?!.*mobile)/i.test(lower)) return "tablet";
+  if (
+    lower.includes("tablet") ||
+    lower.includes("ipad") ||
+    (lower.includes("android") && !lower.includes("mobile"))
+  )
+    return "tablet";
   return "desktop";
 }
 
@@ -92,7 +104,7 @@ export function analyticsMiddleware() {
           deviceType: parseDeviceType(ua),
           duration: 0,
           isCtaClick: false,
-          userId: ((req as unknown as Record<string, unknown>).userId as number | undefined) ?? null,
+          userId: null, // Analytics middleware runs before auth; no user context available
         });
       }
     } catch {
