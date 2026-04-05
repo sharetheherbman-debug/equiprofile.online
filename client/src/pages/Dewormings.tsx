@@ -169,8 +169,8 @@ export default function Dewormings() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-6">
-        <div className="flex justify-between items-center">
+      <div className="px-4 py-6 sm:p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <h1 className="text-3xl font-bold">Dewormings</h1>
           <Dialog
             open={isDialogOpen}

@@ -35,6 +35,10 @@ import {
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
+import { loadLogoBase64 } from "@/lib/utils/pdf";
+
+const BRAND_BLUE_RGB = [12, 35, 82] as const;
+const BRAND_ACCENT_RGB = [37, 99, 235] as const;
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -169,43 +173,101 @@ function StableReportsContent() {
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
+      const logoBase64 = await loadLogoBase64();
       const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
       const pageWidth = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
       const margin = 14;
-      let y = 20;
 
-      // Header
-      doc.setFontSize(20);
+      // ── Letterhead ──────────────────────────────────────────────────────
+      doc.setFillColor(...BRAND_BLUE_RGB);
+      doc.rect(0, 0, pageWidth, 36, "F");
+      doc.setFillColor(...BRAND_ACCENT_RGB);
+      doc.rect(0, 36, pageWidth, 1.5, "F");
+
+      if (logoBase64) {
+        try { doc.addImage(logoBase64, "PNG", 12, 7, 24, 13.5); } catch (_) { /* logo optional */ }
+      }
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(22);
       doc.setFont("helvetica", "bold");
-      doc.text("Stable Operations Report", margin, y);
-      y += 8;
-      doc.setFontSize(10);
+      doc.text("EquiProfile", logoBase64 ? 39 : margin, 16);
+      doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(120);
+      doc.text("Professional Equine Management", logoBase64 ? 39 : margin, 24);
+      doc.setFontSize(8);
+      doc.text("www.equiprofile.online", logoBase64 ? 39 : margin, 30);
       doc.text(
-        `Generated: ${format(new Date(), "dd MMMM yyyy, HH:mm")}`,
-        margin,
-        y,
+        format(new Date(), "dd MMMM yyyy"),
+        pageWidth - margin, 30, { align: "right" },
       );
-      y += 10;
-      doc.setDrawColor(200);
-      doc.line(margin, y, pageWidth - margin, y);
-      y += 8;
-      doc.setTextColor(0);
+
+      // ── Document title ───────────────────────────────────────────────────
+      doc.setTextColor(...BRAND_BLUE_RGB);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("Stable Operations Report", pageWidth / 2, 48, { align: "center" });
+      doc.setDrawColor(...BRAND_ACCENT_RGB);
+      doc.setLineWidth(0.5);
+      doc.line(margin, 52, pageWidth - margin, 52);
+
+      let y = 62;
+
+      // ── Pagination guard ─────────────────────────────────────────────────
+      let pageNum = 1;
+      const checkPage = (needed = 12) => {
+        if (y + needed > pageH - 20) {
+          // Footer on current page
+          doc.setDrawColor(...BRAND_BLUE_RGB);
+          doc.setLineWidth(0.4);
+          doc.line(margin, pageH - 16, pageWidth - margin, pageH - 16);
+          doc.setFontSize(7.5);
+          doc.setTextColor(100, 100, 100);
+          doc.text("EquiProfile — Stable Operations Report", margin, pageH - 10);
+          doc.text(`Page ${pageNum}`, pageWidth / 2, pageH - 10, { align: "center" });
+          doc.text(`Generated: ${format(new Date(), "dd/MM/yyyy")}`, pageWidth - margin, pageH - 10, { align: "right" });
+          doc.addPage();
+          pageNum++;
+          // Compact header on continuation pages
+          doc.setFillColor(...BRAND_BLUE_RGB);
+          doc.rect(0, 0, pageWidth, 14, "F");
+          doc.setFillColor(...BRAND_ACCENT_RGB);
+          doc.rect(0, 14, pageWidth, 1, "F");
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(9);
+          doc.setFont("helvetica", "bold");
+          doc.text("EquiProfile — Stable Operations Report (continued)", margin, 10);
+          y = 22;
+        }
+      };
 
       const heading = (text: string) => {
-        doc.setFontSize(13);
+        checkPage(16);
+        doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
+        doc.setTextColor(...BRAND_BLUE_RGB);
         doc.text(text, margin, y);
-        y += 7;
+        y += 2;
+        doc.setDrawColor(...BRAND_ACCENT_RGB);
+        doc.setLineWidth(0.3);
+        doc.line(margin, y, pageWidth - margin, y);
+        y += 6;
         doc.setFont("helvetica", "normal");
         doc.setFontSize(10);
+        doc.setTextColor(40, 40, 40);
       };
 
       const row = (label: string, value: string | number) => {
+        checkPage(7);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...BRAND_BLUE_RGB);
         doc.text(`${label}:`, margin + 2, y);
-        doc.text(String(value), margin + 60, y);
-        y += 5.5;
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(40, 40, 40);
+        doc.text(String(value), margin + 65, y);
+        y += 6;
       };
 
       // Horse Summary
@@ -214,7 +276,7 @@ function StableReportsContent() {
       Object.entries(horseBreeds)
         .slice(0, 5)
         .forEach(([breed, count]) => row(`  ${breed}`, count));
-      y += 4;
+      y += 3;
 
       // Health & Vaccinations
       heading("Health & Vaccinations");
@@ -223,7 +285,7 @@ function StableReportsContent() {
       if (healthStats) {
         row("Total health records", healthStats.totalRecords ?? 0);
       }
-      y += 4;
+      y += 3;
 
       // Training
       heading("Training Activity");
@@ -236,7 +298,7 @@ function StableReportsContent() {
         const hrs = Math.round((trainingStats.totalDuration ?? 0) / MINUTES_PER_HOUR);
         row("Total training hours", hrs);
       }
-      y += 4;
+      y += 3;
 
       // Appointments
       heading("Appointments (Last / Next 30 Days)");
@@ -245,18 +307,28 @@ function StableReportsContent() {
       Object.entries(appointmentTypes)
         .slice(0, 5)
         .forEach(([type, count]) => row(`  ${type}`, count));
-      y += 4;
+      y += 3;
 
       // Tasks
       heading("Task Summary");
       row("Pending / In Progress", pendingTasks.length);
       row("Completed", completedTasks.length);
-      y += 4;
+      y += 3;
 
       // Contacts
       heading("Contacts & Clients");
       row("Total contacts", contacts.length);
-      y += 4;
+      y += 3;
+
+      // ── Footer on final page ─────────────────────────────────────────────
+      doc.setDrawColor(...BRAND_BLUE_RGB);
+      doc.setLineWidth(0.4);
+      doc.line(margin, pageH - 16, pageWidth - margin, pageH - 16);
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 100, 100);
+      doc.text("EquiProfile — Stable Operations Report", margin, pageH - 10);
+      doc.text(`Page ${pageNum}`, pageWidth / 2, pageH - 10, { align: "center" });
+      doc.text(`Generated: ${format(new Date(), "dd/MM/yyyy")}`, pageWidth - margin, pageH - 10, { align: "right" });
 
       doc.save(`stable-report-${format(new Date(), "yyyy-MM-dd")}.pdf`);
       toast.success("Report exported as PDF");
