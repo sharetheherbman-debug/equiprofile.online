@@ -60,6 +60,12 @@ import {
   emailCampaigns,
   emailCampaignRecipients,
   siteAnalytics,
+  vaccinations,
+  dewormings,
+  treatments,
+  appointments,
+  documents,
+  notes,
 } from "../drizzle/schema";
 import {
   CAMPAIGN_TEMPLATES,
@@ -6998,6 +7004,341 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           avgCost: result[0]?.avgCost || 0,
           perHorse,
         };
+      }),
+  }),
+
+  // ────────────────────────────────────────────────────────────
+  // Horse Timeline — aggregates events across all data sources
+  // ────────────────────────────────────────────────────────────
+  timeline: router({
+    getHorseTimeline: subscribedProcedure
+      .input(z.object({ horseId: z.number(), limit: z.number().default(50) }))
+      .query(async ({ ctx, input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) return [];
+
+        // Verify horse ownership
+        const horse = await db.getHorseById(input.horseId, ctx.user.id);
+        if (!horse) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+        }
+
+        type TimelineEvent = {
+          id: string;
+          date: string;
+          type: string;
+          category: "health" | "training" | "feeding" | "document" | "event" | "vaccination" | "treatment" | "appointment" | "note" | "competition";
+          title: string;
+          description?: string;
+          status?: string;
+        };
+
+        const items: TimelineEvent[] = [];
+
+        // Health records
+        const healthRows = await dbConn
+          .select({
+            id: healthRecords.id,
+            title: healthRecords.title,
+            recordDate: healthRecords.recordDate,
+            recordType: healthRecords.recordType,
+            description: healthRecords.description,
+          })
+          .from(healthRecords)
+          .where(and(eq(healthRecords.horseId, input.horseId), eq(healthRecords.userId, ctx.user.id)));
+        for (const r of healthRows) {
+          items.push({
+            id: `health-${r.id}`,
+            date: r.recordDate instanceof Date ? r.recordDate.toISOString() : String(r.recordDate),
+            type: r.recordType || "health",
+            category: "health",
+            title: r.title || "Health Record",
+            description: r.description || undefined,
+          });
+        }
+
+        // Training sessions
+        const trainingRows = await dbConn
+          .select({
+            id: trainingSessions.id,
+            sessionDate: trainingSessions.sessionDate,
+            sessionType: trainingSessions.sessionType,
+            location: trainingSessions.location,
+            isCompleted: trainingSessions.isCompleted,
+          })
+          .from(trainingSessions)
+          .where(and(eq(trainingSessions.horseId, input.horseId), eq(trainingSessions.userId, ctx.user.id)));
+        for (const s of trainingRows) {
+          items.push({
+            id: `training-${s.id}`,
+            date: s.sessionDate instanceof Date ? s.sessionDate.toISOString() : String(s.sessionDate),
+            type: s.sessionType || "training",
+            category: "training",
+            title: `${(s.sessionType || "Training").charAt(0).toUpperCase() + (s.sessionType || "training").slice(1)} Session`,
+            description: s.location ? `at ${s.location}` : undefined,
+            status: s.isCompleted ? "completed" : "scheduled",
+          });
+        }
+
+        // Vaccinations
+        const vaccRows = await dbConn
+          .select({
+            id: vaccinations.id,
+            vaccineName: vaccinations.vaccineName,
+            dateAdministered: vaccinations.dateAdministered,
+            vetName: vaccinations.vetName,
+          })
+          .from(vaccinations)
+          .where(and(eq(vaccinations.horseId, input.horseId), eq(vaccinations.userId, ctx.user.id)));
+        for (const v of vaccRows) {
+          items.push({
+            id: `vacc-${v.id}`,
+            date: v.dateAdministered instanceof Date ? v.dateAdministered.toISOString() : String(v.dateAdministered),
+            type: "vaccination",
+            category: "vaccination",
+            title: v.vaccineName || "Vaccination",
+            description: v.vetName ? `by ${v.vetName}` : undefined,
+          });
+        }
+
+        // Treatments
+        const treatmentRows = await dbConn
+          .select({
+            id: treatments.id,
+            treatmentType: treatments.treatmentType,
+            startDate: treatments.startDate,
+            description: treatments.description,
+          })
+          .from(treatments)
+          .where(and(eq(treatments.horseId, input.horseId), eq(treatments.userId, ctx.user.id)));
+        for (const t of treatmentRows) {
+          items.push({
+            id: `treat-${t.id}`,
+            date: t.startDate instanceof Date ? t.startDate.toISOString() : String(t.startDate),
+            type: t.treatmentType || "treatment",
+            category: "treatment",
+            title: `${(t.treatmentType || "Treatment").charAt(0).toUpperCase() + (t.treatmentType || "treatment").slice(1)}`,
+            description: t.description || undefined,
+          });
+        }
+
+        // Appointments
+        const apptRows = await dbConn
+          .select({
+            id: appointments.id,
+            title: appointments.title,
+            appointmentDate: appointments.appointmentDate,
+            appointmentType: appointments.appointmentType,
+            status: appointments.status,
+          })
+          .from(appointments)
+          .where(and(eq(appointments.horseId, input.horseId), eq(appointments.userId, ctx.user.id)));
+        for (const a of apptRows) {
+          items.push({
+            id: `appt-${a.id}`,
+            date: a.appointmentDate instanceof Date ? a.appointmentDate.toISOString() : String(a.appointmentDate),
+            type: a.appointmentType || "appointment",
+            category: "appointment",
+            title: a.title || "Appointment",
+            status: a.status || undefined,
+          });
+        }
+
+        // Documents
+        const docRows = await dbConn
+          .select({
+            id: documents.id,
+            fileName: documents.fileName,
+            createdAt: documents.createdAt,
+            category: documents.category,
+          })
+          .from(documents)
+          .where(and(eq(documents.horseId, input.horseId), eq(documents.userId, ctx.user.id)));
+        for (const d of docRows) {
+          items.push({
+            id: `doc-${d.id}`,
+            date: d.createdAt instanceof Date ? d.createdAt.toISOString() : String(d.createdAt),
+            type: d.category || "document",
+            category: "document",
+            title: d.fileName || "Document uploaded",
+          });
+        }
+
+        // Notes
+        const noteRows = await dbConn
+          .select({
+            id: notes.id,
+            title: notes.title,
+            createdAt: notes.createdAt,
+          })
+          .from(notes)
+          .where(and(eq(notes.horseId, input.horseId), eq(notes.userId, ctx.user.id)));
+        for (const n of noteRows) {
+          items.push({
+            id: `note-${n.id}`,
+            date: n.createdAt instanceof Date ? n.createdAt.toISOString() : String(n.createdAt),
+            type: "note",
+            category: "note",
+            title: n.title || "Note",
+          });
+        }
+
+        // Competitions
+        const compRows = await dbConn
+          .select({
+            id: competitions.id,
+            competitionName: competitions.competitionName,
+            date: competitions.date,
+            discipline: competitions.discipline,
+            placement: competitions.placement,
+          })
+          .from(competitions)
+          .where(and(eq(competitions.horseId, input.horseId), eq(competitions.userId, ctx.user.id)));
+        for (const c of compRows) {
+          items.push({
+            id: `comp-${c.id}`,
+            date: c.date instanceof Date ? c.date.toISOString() : String(c.date),
+            type: c.discipline || "competition",
+            category: "competition",
+            title: c.competitionName || "Competition",
+            description: c.placement ? `Placed: ${c.placement}` : undefined,
+          });
+        }
+
+        // Sort by date descending and limit
+        items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        return items.slice(0, input.limit);
+      }),
+
+    // Smart health alerts — vaccination/deworming/treatment due reminders
+    getHealthAlerts: subscribedProcedure
+      .input(z.object({ horseId: z.number().optional() }))
+      .query(async ({ ctx, input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) return [];
+
+        type HealthAlert = {
+          id: string;
+          horseId: number;
+          horseName: string;
+          type: "vaccination_due" | "deworming_due" | "treatment_due" | "no_recent_health" | "appointment_upcoming";
+          severity: "info" | "warning" | "urgent";
+          title: string;
+          dueDate?: string;
+          daysDue?: number;
+        };
+
+        const alerts: HealthAlert[] = [];
+        const now = new Date();
+        const thirtyDaysFromNow = new Date(now.getTime() + 30 * 86_400_000);
+        const sixtyDaysAgo = new Date(now.getTime() - 60 * 86_400_000);
+
+        // Get user's horses
+        const userHorses = input.horseId
+          ? [await db.getHorseById(input.horseId, ctx.user.id)].filter(Boolean) as any[]
+          : await db.getHorsesByUserId(ctx.user.id);
+
+        for (const horse of userHorses) {
+          if (!horse.isActive) continue;
+
+          // Check vaccination due dates
+          const vaccList = await dbConn
+            .select({ id: vaccinations.id, vaccineName: vaccinations.vaccineName, nextDueDate: vaccinations.nextDueDate })
+            .from(vaccinations)
+            .where(and(eq(vaccinations.horseId, horse.id), eq(vaccinations.userId, ctx.user.id)));
+
+          for (const v of vaccList) {
+            if (v.nextDueDate) {
+              const due = new Date(v.nextDueDate);
+              const daysDue = Math.ceil((due.getTime() - now.getTime()) / 86_400_000);
+              if (daysDue <= 30) {
+                alerts.push({
+                  id: `vacc-due-${v.id}`,
+                  horseId: horse.id,
+                  horseName: horse.name,
+                  type: "vaccination_due",
+                  severity: daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
+                  title: `${v.vaccineName || "Vaccination"} ${daysDue <= 0 ? "overdue" : "due soon"} for ${horse.name}`,
+                  dueDate: v.nextDueDate instanceof Date ? v.nextDueDate.toISOString() : String(v.nextDueDate),
+                  daysDue,
+                });
+              }
+            }
+          }
+
+          // Check deworming due dates
+          const dewormList = await dbConn
+            .select({ id: dewormings.id, productName: dewormings.productName, nextDueDate: dewormings.nextDueDate })
+            .from(dewormings)
+            .where(and(eq(dewormings.horseId, horse.id), eq(dewormings.userId, ctx.user.id)));
+
+          for (const d of dewormList) {
+            if (d.nextDueDate) {
+              const due = new Date(d.nextDueDate);
+              const daysDue = Math.ceil((due.getTime() - now.getTime()) / 86_400_000);
+              if (daysDue <= 30) {
+                alerts.push({
+                  id: `deworm-due-${d.id}`,
+                  horseId: horse.id,
+                  horseName: horse.name,
+                  type: "deworming_due",
+                  severity: daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
+                  title: `${d.productName || "Deworming"} ${daysDue <= 0 ? "overdue" : "due soon"} for ${horse.name}`,
+                  dueDate: d.nextDueDate instanceof Date ? d.nextDueDate.toISOString() : String(d.nextDueDate),
+                  daysDue,
+                });
+              }
+            }
+          }
+
+          // Check for no recent health activity (60 days)
+          const recentHealth = await dbConn
+            .select({ count: sql<number>`COUNT(*)` })
+            .from(healthRecords)
+            .where(and(
+              eq(healthRecords.horseId, horse.id),
+              eq(healthRecords.userId, ctx.user.id),
+              gte(healthRecords.recordDate, sixtyDaysAgo),
+            ));
+          if ((recentHealth[0]?.count || 0) === 0) {
+            alerts.push({
+              id: `no-health-${horse.id}`,
+              horseId: horse.id,
+              horseName: horse.name,
+              type: "no_recent_health",
+              severity: "info",
+              title: `No recent health records for ${horse.name} (60+ days)`,
+            });
+          }
+
+          // Upcoming appointments (next 7 days)
+          const sevenDaysFromNow = new Date(now.getTime() + 7 * 86_400_000);
+          const upcomingAppts = await dbConn
+            .select({ id: appointments.id, title: appointments.title, appointmentDate: appointments.appointmentDate })
+            .from(appointments)
+            .where(and(
+              eq(appointments.horseId, horse.id),
+              eq(appointments.userId, ctx.user.id),
+              gte(appointments.appointmentDate, now),
+              lte(appointments.appointmentDate, sevenDaysFromNow),
+            ));
+          for (const a of upcomingAppts) {
+            alerts.push({
+              id: `appt-soon-${a.id}`,
+              horseId: horse.id,
+              horseName: horse.name,
+              type: "appointment_upcoming",
+              severity: "info",
+              title: `${a.title || "Appointment"} coming up for ${horse.name}`,
+              dueDate: a.appointmentDate instanceof Date ? a.appointmentDate.toISOString() : String(a.appointmentDate),
+            });
+          }
+        }
+
+        // Sort alerts: urgent first, then warning, then info
+        const severityOrder = { urgent: 0, warning: 1, info: 2 };
+        alerts.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+        return alerts;
       }),
   }),
 });
