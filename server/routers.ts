@@ -2972,6 +2972,66 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return db.getExpiredTrials();
     }),
 
+    // Churn risk insights for admin
+    getChurnRisk: adminUnlockedProcedure.query(async () => {
+      const dbConn = await getDb();
+      if (!dbConn) return { atRisk: [], trialExpiring: [], inactive: [] };
+
+      const now = new Date();
+      const threeDaysFromNow = new Date(now.getTime() + 3 * 86_400_000);
+      const fourteenDaysAgo = new Date(now.getTime() - 14 * 86_400_000);
+
+      // Trials expiring within 3 days
+      const trialExpiring = await dbConn
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          trialEndsAt: users.trialEndsAt,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .where(and(
+          eq(users.subscriptionStatus, "trial"),
+          eq(users.isActive, true),
+          lte(users.trialEndsAt, threeDaysFromNow),
+          gte(users.trialEndsAt, now),
+        ));
+
+      // Overdue users (at risk of churning)
+      const atRisk = await dbConn
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          subscriptionStatus: users.subscriptionStatus,
+          lastPaymentAt: users.lastPaymentAt,
+        })
+        .from(users)
+        .where(and(
+          eq(users.isActive, true),
+          eq(users.subscriptionStatus, "overdue"),
+        ));
+
+      // Inactive users (no login in 14+ days with active subscription)
+      const inactive = await dbConn
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          subscriptionStatus: users.subscriptionStatus,
+          updatedAt: users.updatedAt,
+        })
+        .from(users)
+        .where(and(
+          eq(users.isActive, true),
+          or(eq(users.subscriptionStatus, "active"), eq(users.subscriptionStatus, "trial")),
+          lte(users.updatedAt, fourteenDaysAgo),
+        ));
+
+      return { atRisk, trialExpiring, inactive };
+    }),
+
     // Activity logs
     getActivityLogs: adminUnlockedProcedure
       .input(z.object({ limit: z.number().default(100) }))

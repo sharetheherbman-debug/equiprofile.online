@@ -176,6 +176,9 @@ function AdminContent() {
   const whatsappConfigQuery = trpc.admin.getWhatsAppConfig.useQuery(undefined, {
     enabled: isUnlocked,
   });
+  const churnRiskQuery = trpc.admin.getChurnRisk.useQuery(undefined, {
+    enabled: isUnlocked,
+  });
 
   // All mutations (lazy — no enabled needed)
   const setSiteSettingMutation = trpc.admin.setSiteSetting.useMutation({
@@ -583,6 +586,13 @@ function AdminContent() {
           >
             <BarChart3 className="w-4 h-4" />
             <span className="hidden sm:inline">Analytics</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="churn"
+            className="flex items-center gap-1.5 shrink-0"
+          >
+            <AlertCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">Churn Risk</span>
           </TabsTrigger>
         </TabsList>
 
@@ -1824,6 +1834,102 @@ function AdminContent() {
           >
             <AdminAnalytics />
           </Suspense>
+        </TabsContent>
+
+        {/* Churn Risk Tab */}
+        <TabsContent value="churn">
+          <div className="space-y-4">
+            {/* Trial Expiring Soon */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-500" />
+                  Trials Expiring Soon
+                </CardTitle>
+                <CardDescription>Users whose trial ends within 3 days</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!churnRiskQuery.data?.trialExpiring?.length ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">No trials expiring soon</p>
+                ) : (
+                  <div className="space-y-2">
+                    {churnRiskQuery.data.trialExpiring.map((u: any) => (
+                      <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-500/20">
+                        <div>
+                          <p className="text-sm font-medium">{u.name || "Unknown"}</p>
+                          <p className="text-xs text-muted-foreground">{u.email}</p>
+                        </div>
+                        <Badge variant="outline" className="text-amber-600 border-amber-500/30">
+                          Expires {u.trialEndsAt ? new Date(u.trialEndsAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "soon"}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Overdue / At Risk */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-500" />
+                  Overdue / At Risk
+                </CardTitle>
+                <CardDescription>Users with overdue payments at risk of churning</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!churnRiskQuery.data?.atRisk?.length ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">No users at risk</p>
+                ) : (
+                  <div className="space-y-2">
+                    {churnRiskQuery.data.atRisk.map((u: any) => (
+                      <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-red-50/50 dark:bg-red-950/20 border border-red-500/20">
+                        <div>
+                          <p className="text-sm font-medium">{u.name || "Unknown"}</p>
+                          <p className="text-xs text-muted-foreground">{u.email}</p>
+                        </div>
+                        <Badge variant="destructive" className="text-xs">Overdue</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Inactive Users */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-gray-500" />
+                  Inactive Users
+                </CardTitle>
+                <CardDescription>Active subscribers with no activity in 14+ days</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!churnRiskQuery.data?.inactive?.length ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">All users are active</p>
+                ) : (
+                  <div className="space-y-2">
+                    {churnRiskQuery.data.inactive.map((u: any) => (
+                      <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                        <div>
+                          <p className="text-sm font-medium">{u.name || "Unknown"}</p>
+                          <p className="text-xs text-muted-foreground">{u.email}</p>
+                        </div>
+                        <div className="text-right">
+                          <Badge variant="outline" className="text-xs">{u.subscriptionStatus}</Badge>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Last active: {u.updatedAt ? new Date(u.updatedAt).toLocaleDateString("en-GB") : "Unknown"}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
