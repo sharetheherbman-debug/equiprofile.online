@@ -101,6 +101,10 @@ import {
   InsertNote,
   rides,
   InsertRide,
+  accountFeatures,
+  tasks,
+  contacts,
+  siteAnalytics,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1119,8 +1123,47 @@ export async function deleteUser(id: number) {
 export async function hardDeleteUser(id: number) {
   const db = await getDb();
   if (!db) return;
-  // Permanently remove all user data then the user record itself
+  // Permanently remove all user-owned data across every table, then the user record.
+  // Order: leaf data first, then parent records, then user.
+  await db.delete(healthRecords).where(eq(healthRecords.userId, id));
+  await db.delete(trainingSessions).where(eq(trainingSessions.userId, id));
+  await db.delete(feedingPlans).where(eq(feedingPlans.userId, id));
+  await db.delete(documents).where(eq(documents.userId, id));
+  await db.delete(weatherLogs).where(eq(weatherLogs.userId, id));
+  await db.delete(vaccinations).where(eq(vaccinations.userId, id));
+  await db.delete(dewormings).where(eq(dewormings.userId, id));
+  await db.delete(treatments).where(eq(treatments.userId, id));
+  await db.delete(appointments).where(eq(appointments.userId, id));
+  await db.delete(dentalCare).where(eq(dentalCare.userId, id));
+  await db.delete(xrays).where(eq(xrays.userId, id));
+  await db.delete(hoofcare).where(eq(hoofcare.userId, id));
+  await db.delete(nutritionLogs).where(eq(nutritionLogs.userId, id));
+  await db.delete(nutritionPlans).where(eq(nutritionPlans.userId, id));
+  await db.delete(notes).where(eq(notes.userId, id));
+  await db.delete(rides).where(eq(rides.userId, id));
+  await db.delete(feedCosts).where(eq(feedCosts.userId, id));
+  await db.delete(tasks).where(eq(tasks.userId, id));
+  await db.delete(contacts).where(eq(contacts.userId, id));
+  await db.delete(tags).where(eq(tags.userId, id));
+  await db.delete(competitions).where(eq(competitions.userId, id));
+  await db.delete(competitionResults).where(eq(competitionResults.userId, id));
+  await db.delete(trainingProgramTemplates).where(eq(trainingProgramTemplates.userId, id));
+  await db.delete(trainingPrograms).where(eq(trainingPrograms.userId, id));
+  await db.delete(reports).where(eq(reports.userId, id));
+  await db.delete(reportSchedules).where(eq(reportSchedules.userId, id));
+  await db.delete(shareLinks).where(eq(shareLinks.userId, id));
   await db.delete(horses).where(eq(horses.userId, id));
+  await db.delete(events).where(eq(events.userId, id));
+  await db.delete(eventReminders).where(eq(eventReminders.userId, id));
+  await db.delete(stableMembers).where(eq(stableMembers.userId, id));
+  await db.delete(apiKeys).where(eq(apiKeys.userId, id));
+  await db.delete(webhooks).where(eq(webhooks.userId, id));
+  await db.delete(accountFeatures).where(eq(accountFeatures.userId, id));
+  await db.delete(adminSessions).where(eq(adminSessions.userId, id));
+  await db.delete(adminUnlockAttempts).where(eq(adminUnlockAttempts.userId, id));
+  await db.delete(activityLogs).where(eq(activityLogs.userId, id));
+  // Anonymise analytics rows rather than delete them (preserves visit counts)
+  await db.update(siteAnalytics).set({ userId: null }).where(eq(siteAnalytics.userId, id));
   await db.delete(users).where(eq(users.id, id));
 }
 
