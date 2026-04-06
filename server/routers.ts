@@ -15,6 +15,8 @@ import { invokeLLM, isAIConfigured } from "./_core/llm";
 import { invalidateConfigCache, getRuntimeConfig } from "./dynamicConfig";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
+import * as fs from "fs";
+import * as path from "path";
 import {
   createCheckoutSession,
   createPortalSession,
@@ -3054,13 +3056,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       const missing: Array<{ id: number; fileName: string; fileKey: string; userId: number; category: string | null }> = [];
       let orphaned = 0;
 
-      const fs = await import("fs");
-      const path = await import("path");
+      const uploadsDir = path.resolve(ENV.storagePath);
 
       for (const doc of allDocs) {
         // Check if file exists on disk
         if (doc.fileKey) {
-          const filePath = path.resolve(ENV.storagePath, doc.fileKey);
+          const filePath = path.resolve(uploadsDir, doc.fileKey);
+          // Path traversal protection — ensure file stays within uploads dir
+          if (!filePath.startsWith(uploadsDir + path.sep) && filePath !== uploadsDir) {
+            continue;
+          }
           if (!fs.existsSync(filePath)) {
             missing.push({
               id: doc.id,
