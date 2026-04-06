@@ -236,6 +236,7 @@ function DashboardContent() {
 
   // Stable calendar query dates — computed once per mount so the query key
   // doesn't change on every render (which would cause repeated fetches).
+  // Uses 31-day end window (midnight + 31 days) to include all events on day 30.
   const calendarQueryDates = useMemo(() => {
     const start = new Date();
     start.setHours(0, 0, 0, 0);

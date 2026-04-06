@@ -109,6 +109,7 @@ export default function QAChecklistPage() {
   const stables = trpc.stables.list.useQuery(undefined, { retry: false, staleTime: 30000 });
   // Stable query dates — computed once per mount to avoid creating new query
   // keys on every render (which would cause repeated calendar.getEvents fetches).
+  // Uses 31-day window (midnight + 31 days) to include all events on day 30.
   const calendarQueryDates = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
