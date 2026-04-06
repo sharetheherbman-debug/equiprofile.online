@@ -37,9 +37,11 @@ import {
   Trash2,
   Edit,
   Search,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRealtimeModule } from "@/hooks/useRealtime";
+import { downloadCSV } from "@/lib/csvDownload";
 
 function TasksContent() {
   const utils = trpc.useUtils();
@@ -146,6 +148,17 @@ function TasksContent() {
       toast.error(error.message || "Failed to delete task");
     },
   });
+
+  const exportQuery = trpc.tasks.exportCSV.useQuery(undefined, {
+    enabled: false,
+  });
+
+  const handleExport = async () => {
+    const result = await exportQuery.refetch();
+    if (result.data) {
+      downloadCSV(result.data.csv, result.data.filename);
+    }
+  };
 
   const openEdit = (task: (typeof localTasks)[0]) => {
     setEditingTask(task);
@@ -302,6 +315,16 @@ function TasksContent() {
               className="pl-9 w-full sm:w-56"
             />
           </div>
+          {localTasks.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              disabled={exportQuery.isFetching}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {exportQuery.isFetching ? "Exporting…" : "Export CSV"}
+            </Button>
+          )}
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
               <Button>

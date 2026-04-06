@@ -21,8 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Plus, Pencil, Trash2, Clock, Search } from "lucide-react";
+import { Calendar, Plus, Pencil, Trash2, Clock, Search, Download } from "lucide-react";
 import DashboardLayout from "../components/DashboardLayout";
+import { downloadCSV } from "@/lib/csvDownload";
 
 function AppointmentsContent() {
   const { toast } = useToast();
@@ -65,6 +66,17 @@ function AppointmentsContent() {
         break;
     }
   });
+
+  const exportQuery = trpc.appointments.exportCSV.useQuery(undefined, {
+    enabled: false,
+  });
+
+  const handleExport = async () => {
+    const result = await exportQuery.refetch();
+    if (result.data) {
+      downloadCSV(result.data.csv, result.data.filename);
+    }
+  };
 
   const [formData, setFormData] = useState({
     horseId: "",
@@ -255,6 +267,17 @@ function AppointmentsContent() {
               className="pl-8 w-full sm:w-56"
             />
           </div>
+          {localAppointments.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              disabled={exportQuery.isFetching}
+              className="shrink-0"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              {exportQuery.isFetching ? "Exporting…" : "Export CSV"}
+            </Button>
+          )}
           <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm} className="shrink-0">
