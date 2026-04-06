@@ -257,3 +257,84 @@ export function exportDocumentsCSV(documents: any[]): string {
 
   return arrayToCSV(data, headers);
 }
+
+/**
+ * Export tasks to CSV
+ */
+export function exportTasksCSV(tasks: any[]): string {
+  const rows = tasks.map((t) => [
+    escapeCSV(t.id),
+    escapeCSV(t.horseName || ""),
+    escapeCSV(t.title),
+    escapeCSV(t.taskType),
+    escapeCSV(t.priority),
+    escapeCSV(t.status),
+    escapeCSV(formatDate(t.dueDate)),
+    escapeCSV(t.assignedTo || ""),
+    escapeCSV(t.isRecurring ? "Yes" : "No"),
+    escapeCSV(t.recurringInterval || ""),
+    escapeCSV(t.notes || ""),
+    escapeCSV(formatDateTime(t.createdAt)),
+  ]);
+  const header = [
+    "ID","Horse","Title","Type","Priority","Status","Due Date",
+    "Assigned To","Recurring","Interval","Notes","Created At",
+  ];
+  return [header.map(escapeCSV).join(","), ...rows.map((r) => r.join(","))].join("\n");
+}
+
+/**
+ * Export appointments to CSV
+ */
+export function exportAppointmentsCSV(appointments: any[]): string {
+  const rows = appointments.map((a) => [
+    escapeCSV(a.id),
+    escapeCSV(a.horseName || ""),
+    escapeCSV(a.title),
+    escapeCSV(a.appointmentType),
+    escapeCSV(formatDate(a.appointmentDate)),
+    escapeCSV(a.appointmentTime || ""),
+    escapeCSV(a.duration ? `${a.duration} min` : ""),
+    escapeCSV(a.providerName || ""),
+    escapeCSV(a.providerPhone || ""),
+    escapeCSV(a.providerClinic || ""),
+    escapeCSV(a.location || ""),
+    escapeCSV(a.cost != null ? `${a.cost}` : ""),
+    escapeCSV(a.status),
+    escapeCSV(a.notes || ""),
+    escapeCSV(formatDateTime(a.createdAt)),
+  ]);
+  const header = [
+    "ID","Horse","Title","Type","Date","Time","Duration","Provider",
+    "Provider Phone","Clinic","Location","Cost","Status","Notes","Created At",
+  ];
+  return [header.map(escapeCSV).join(","), ...rows.map((r) => r.join(","))].join("\n");
+}
+
+/**
+ * Export contacts to CSV
+ */
+export function exportContactsCSV(contacts: any[]): string {
+  const rows = contacts.map((c) => [
+    escapeCSV(c.id),
+    escapeCSV(c.name),
+    escapeCSV(c.contactType),
+    escapeCSV(c.company || ""),
+    escapeCSV(c.email || ""),
+    escapeCSV(c.phone || ""),
+    escapeCSV(c.mobile || ""),
+    escapeCSV(c.address || ""),
+    escapeCSV(c.city || ""),
+    escapeCSV(c.postcode || ""),
+    escapeCSV(c.country || ""),
+    escapeCSV(c.website || ""),
+    escapeCSV(c.isPrimary ? "Yes" : "No"),
+    escapeCSV(c.notes || ""),
+    escapeCSV(formatDateTime(c.createdAt)),
+  ]);
+  const header = [
+    "ID","Name","Type","Company","Email","Phone","Mobile",
+    "Address","City","Postcode","Country","Website","Primary","Notes","Created At",
+  ];
+  return [header.map(escapeCSV).join(","), ...rows.map((r) => r.join(","))].join("\n");
+}
