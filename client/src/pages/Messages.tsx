@@ -49,7 +49,7 @@ export default function MessagesPage() {
     trpc.user.getSubscriptionStatus.useQuery();
   const isStablePlan =
     subscriptionStatus?.planTier === "stable" ||
-    !!subscriptionStatus?.bothDashboardsUnlocked;
+    subscriptionStatus?.bothDashboardsUnlocked;
 
   // Get user's stables — disabled until we know the user has stable plan
   const { data: stables = [] } = trpc.stables.list.useQuery(undefined, {
