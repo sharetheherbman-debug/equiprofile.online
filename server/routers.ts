@@ -962,6 +962,82 @@ export const appRouter = router({
         return { horse, healthRecords: records };
       }),
 
+    // Public endpoint — resolves a share token to passport data
+    getPassportByToken: publicProcedure
+      .input(z.object({ token: z.string().min(1).max(100) }))
+      .query(async ({ input }) => {
+        const drizzleDb = await getDb();
+        if (!drizzleDb) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        const linkRows = await drizzleDb
+          .select()
+          .from(shareLinks)
+          .where(
+            and(
+              eq(shareLinks.token, input.token),
+              eq(shareLinks.isActive, true),
+            ),
+          )
+          .limit(1);
+
+        const link = linkRows[0];
+        if (!link) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Share link not found or has been revoked" });
+        }
+
+        if (link.expiresAt && new Date(link.expiresAt) < new Date()) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "This share link has expired" });
+        }
+
+        if (link.linkType !== "medical_passport" || !link.horseId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid passport link" });
+        }
+
+        // Increment view count (fire-and-forget)
+        drizzleDb
+          .update(shareLinks)
+          .set({ viewCount: (link.viewCount ?? 0) + 1, lastViewedAt: new Date() })
+          .where(eq(shareLinks.id, link.id))
+          .catch(() => {});
+
+        const horseRows = await drizzleDb
+          .select({
+            id: horses.id,
+            name: horses.name,
+            breed: horses.breed,
+            color: horses.color,
+            gender: horses.gender,
+            dateOfBirth: horses.dateOfBirth,
+            height: horses.height,
+            microchipNumber: horses.microchipNumber,
+            registrationNumber: horses.registrationNumber,
+          })
+          .from(horses)
+          .where(and(eq(horses.id, link.horseId), eq(horses.isActive, true)))
+          .limit(1);
+
+        if (!horseRows[0]) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+        }
+
+        const horse = horseRows[0];
+
+        const records = await drizzleDb
+          .select({
+            id: healthRecords.id,
+            title: healthRecords.title,
+            recordType: healthRecords.recordType,
+            recordDate: healthRecords.recordDate,
+            nextDueDate: healthRecords.nextDueDate,
+          })
+          .from(healthRecords)
+          .where(eq(healthRecords.horseId, link.horseId))
+          .orderBy(desc(healthRecords.recordDate))
+          .limit(50);
+
+        return { horse, healthRecords: records };
+      }),
+
     get: subscribedProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ ctx, input }) => {

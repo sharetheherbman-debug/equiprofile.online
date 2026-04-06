@@ -422,7 +422,7 @@ function Router() {
             </Route>
 
             {/* Public horse passport — accessible without login (QR scan) */}
-            <Route path="/passport/:id" component={PassportView} />
+            <Route path="/passport/:token" component={PassportView} />
 
             {/* 404 */}
             <Route path="/404" component={NotFound} />

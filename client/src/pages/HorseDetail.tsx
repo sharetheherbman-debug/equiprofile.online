@@ -311,6 +311,45 @@ function HorseDetailContent() {
                 <p className="text-foreground">{horse.notes}</p>
               </div>
             )}
+
+            {/* Tags */}
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex items-center gap-2 mb-2">
+                <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Tags</p>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {(horseTags as any[]).map((tag: any) => (
+                  <Badge
+                    key={tag.id}
+                    variant="secondary"
+                    className="cursor-pointer pr-1 gap-1 hover:bg-destructive/10 transition-colors"
+                    style={tag.color ? { backgroundColor: tag.color + "22", borderColor: tag.color + "55", color: tag.color } : {}}
+                    onClick={() => detachTagMutation.mutate({ horseId, tagId: tag.id })}
+                  >
+                    {tag.name}
+                    <X className="w-3 h-3" />
+                  </Badge>
+                ))}
+                {/* Add tag dropdown */}
+                {(allTags as any[]).filter((t: any) => !(horseTags as any[]).some((ht: any) => ht.id === t.id)).length > 0 && (
+                  <select
+                    className="text-xs border rounded px-1.5 py-0.5 bg-background text-muted-foreground cursor-pointer"
+                    value=""
+                    onChange={(e) => {
+                      if (e.target.value) attachTagMutation.mutate({ horseId, tagId: parseInt(e.target.value) });
+                    }}
+                  >
+                    <option value="">+ Add tag</option>
+                    {(allTags as any[])
+                      .filter((t: any) => !(horseTags as any[]).some((ht: any) => ht.id === t.id))
+                      .map((t: any) => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                  </select>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </Card>
@@ -703,12 +742,74 @@ function HorseDetailContent() {
 
         {/* Medical Passport Tab */}
         <TabsContent value="passport">
+          {/* Share Link Card */}
+          <Card className="mb-4">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Share2 className="w-4 h-4 text-primary" />
+                  <CardTitle className="text-base">Shareable Passport Links</CardTitle>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => createShareLinkMutation.mutate({ linkType: "medical_passport", horseId, expiresInDays: 30 })}
+                  disabled={createShareLinkMutation.isPending}
+                >
+                  <QrCode className="w-4 h-4 mr-1.5" />
+                  Generate Link
+                </Button>
+              </div>
+              <CardDescription className="text-xs mt-1">
+                Anyone with the link can view this horse's medical passport (read-only, expires in 30 days)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {passportLinks.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2">No active share links. Generate one above.</p>
+              ) : (
+                <div className="space-y-2">
+                  {passportLinks.map((link: any) => {
+                    const url = `${window.location.origin}/passport/${link.token}`;
+                    return (
+                      <div key={link.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50 text-sm">
+                        <code className="flex-1 truncate text-xs text-muted-foreground">{url}</code>
+                        {link.expiresAt && (
+                          <span className="text-xs text-muted-foreground shrink-0">
+                            Exp: {new Date(link.expiresAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}
+                          </span>
+                        )}
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 shrink-0"
+                          onClick={() => copyShareLink(link.token)}
+                          title="Copy link"
+                        >
+                          {copiedToken === link.token ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 shrink-0 text-destructive hover:text-destructive"
+                          onClick={() => revokeShareLinkMutation.mutate({ id: link.id })}
+                          title="Revoke link"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Medical Passport Document */}
           <Card>
             <CardHeader>
               <CardTitle>Medical Passport</CardTitle>
               <CardDescription>
-                Comprehensive health record document with QR code for easy
-                sharing
+                Comprehensive health record document — print or export as PDF
               </CardDescription>
             </CardHeader>
             <CardContent>
