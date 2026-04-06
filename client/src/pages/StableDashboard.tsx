@@ -349,7 +349,7 @@ function StableDashboardContent() {
   const { data: smartAlerts = [] } = trpc.timeline.getHealthAlerts.useQuery({}, {
     retry: false,
     staleTime: 5 * 60 * 1000,
-  }) as { data: HealthAlert[] };
+  });
   const { data: trainingStats } = trpc.analytics.getTrainingStats.useQuery(
     {},
     { retry: false },
