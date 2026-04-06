@@ -168,7 +168,7 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
 const stablePlanProcedure = subscribedProcedure.use(async ({ ctx, next }) => {
   const user = await db.getUserById(ctx.user.id);
   if (!user) {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "User not found" });
+    throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
   }
   const prefs = parseUserPrefs(
     typeof user.preferences === "string"
