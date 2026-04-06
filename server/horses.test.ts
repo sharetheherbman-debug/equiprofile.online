@@ -141,7 +141,7 @@ describe("horses router", () => {
 
     const result = await caller.horses.delete({ id: 1 });
 
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual({ success: true, mode: "archive" });
   });
 });
 

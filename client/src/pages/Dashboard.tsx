@@ -466,6 +466,24 @@ function DashboardContent() {
                   <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50" />
                 </div>
               </Link>
+              <Link href="/documents">
+                <div className="flex items-center justify-between p-2.5 rounded-lg border border-indigo-500/15 bg-indigo-500/5 hover:bg-indigo-500/10 cursor-pointer transition-colors">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <p className="text-xs font-medium">Upload a document or photo</p>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50" />
+                </div>
+              </Link>
+              <Link href="/calendar">
+                <div className="flex items-center justify-between p-2.5 rounded-lg border border-indigo-500/15 bg-indigo-500/5 hover:bg-indigo-500/10 cursor-pointer transition-colors">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <p className="text-xs font-medium">Schedule your first event</p>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50" />
+                </div>
+              </Link>
               <Link href="/settings">
                 <div className="flex items-center justify-between p-2.5 rounded-lg border border-indigo-500/15 bg-indigo-500/5 hover:bg-indigo-500/10 cursor-pointer transition-colors">
                   <div className="flex items-center gap-2">
