@@ -131,8 +131,34 @@ export default function Pedigree() {
     <DashboardLayout>
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Pedigree</h1>
+          <div>
+            <h1 className="text-3xl font-bold font-serif">Pedigree</h1>
+            <p className="text-muted-foreground mt-1 text-sm max-w-xl">
+              Record and view your horse's lineage across up to four generations.
+              Knowing a horse's bloodline helps with breeding decisions, performance expectations, and registration.
+            </p>
+          </div>
         </div>
+
+        {/* Pedigree guide info */}
+        <Card className="border-indigo-500/20 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/20 dark:to-purple-950/20">
+          <CardContent className="pt-5 pb-4">
+            <div className="flex items-start gap-3">
+              <GitBranch className="h-5 w-5 text-indigo-500 mt-0.5 shrink-0" />
+              <div className="space-y-2 text-sm">
+                <p className="font-semibold text-foreground">How Pedigree Recording Works</p>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li><span className="font-medium text-foreground">Parents (Gen 1):</span> Sire (father) and Dam (mother) — the most important entries for identification.</li>
+                  <li><span className="font-medium text-foreground">Grandparents (Gen 2):</span> Paternal and maternal grandsires/granddams — useful for breed verification.</li>
+                  <li><span className="font-medium text-foreground">Great-Grandparents (Gen 3):</span> Optional deeper lineage — valuable for breeding programmes and performance analysis.</li>
+                </ul>
+                <p className="text-muted-foreground text-xs italic">
+                  Tip: Start with what you know. You can always add more generations later.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

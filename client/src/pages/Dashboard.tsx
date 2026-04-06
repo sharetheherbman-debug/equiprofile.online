@@ -208,6 +208,10 @@ function DashboardContent() {
   const { data: tasks = [] } = trpc.tasks.list.useQuery(undefined, {
     retry: false,
   });
+  const { data: smartAlerts = [] } = trpc.timeline.getHealthAlerts.useQuery({}, {
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+  });
 
   // Redirect Stable plan users to the Stable Dashboard
   // Skip redirect if user has both dashboards unlocked (admin-granted free access)
@@ -417,11 +421,12 @@ function DashboardContent() {
       </motion.div>
 
       {/* ── Alerts ───────────────────────────────────────────── */}
-      {healthAlerts.length > 0 && (
+      {(healthAlerts.length > 0 || smartAlerts.length > 0) && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
+          className="space-y-2"
         >
           {healthAlerts.map((alert) => (
             <Link key={alert.id} href={alert.href}>
@@ -433,6 +438,31 @@ function DashboardContent() {
                   </p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-amber-400 shrink-0" />
+              </div>
+            </Link>
+          ))}
+          {smartAlerts.slice(0, 3).map((alert: any) => (
+            <Link key={alert.id} href={`/horses/${alert.horseId}`}>
+              <div className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
+                alert.severity === "urgent"
+                  ? "border-red-500/30 bg-red-500/5 hover:bg-red-500/10"
+                  : alert.severity === "warning"
+                  ? "border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10"
+                  : "border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10"
+              }`}>
+                <div className="flex items-center gap-2">
+                  <AlertCircle className={`w-4 h-4 shrink-0 ${
+                    alert.severity === "urgent" ? "text-red-400" :
+                    alert.severity === "warning" ? "text-amber-400" : "text-blue-400"
+                  }`} />
+                  <p className={`text-sm font-medium ${
+                    alert.severity === "urgent" ? "text-red-300" :
+                    alert.severity === "warning" ? "text-amber-300" : "text-blue-300"
+                  }`}>
+                    {alert.title}
+                  </p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
               </div>
             </Link>
           ))}
@@ -462,6 +492,24 @@ function DashboardContent() {
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4 text-rose-400 shrink-0" />
                     <p className="text-xs font-medium">Add your first horse</p>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50" />
+                </div>
+              </Link>
+              <Link href="/documents">
+                <div className="flex items-center justify-between p-2.5 rounded-lg border border-indigo-500/15 bg-indigo-500/5 hover:bg-indigo-500/10 cursor-pointer transition-colors">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <p className="text-xs font-medium">Upload a document or photo</p>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50" />
+                </div>
+              </Link>
+              <Link href="/calendar">
+                <div className="flex items-center justify-between p-2.5 rounded-lg border border-indigo-500/15 bg-indigo-500/5 hover:bg-indigo-500/10 cursor-pointer transition-colors">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <p className="text-xs font-medium">Schedule your first event</p>
                   </div>
                   <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50" />
                 </div>
@@ -871,6 +919,7 @@ function DashboardContent() {
                 if (
                   !isStablePlan &&
                   (item.label === "Breeding" ||
+                    item.label === "Lessons" ||
                     item.label === "Stable Management" ||
                     item.label === "Staff" ||
                     item.label === "Messages")

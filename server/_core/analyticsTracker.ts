@@ -53,9 +53,89 @@ function parseDeviceType(
   return "desktop";
 }
 
+// ── Bot / probe detection ──────────────────────────────────────────────
+// Paths that are clearly scanner/probe traffic — never real user visits.
+const PROBE_PATHS = [
+  "/_profiler",
+  "/phpinfo",
+  "/wp-config",
+  "/wp-login",
+  "/wp-admin",
+  "/wp-includes",
+  "/xmlrpc.php",
+  "/.env",
+  "/.git",
+  "/actuator",
+  "/solr",
+  "/admin.php",
+  "/config.php",
+  "/info.php",
+  "/test.php",
+  "/cgi-bin",
+  "/phpmyadmin",
+];
+
+const BOT_UA_PATTERNS = [
+  "bot",
+  "crawler",
+  "spider",
+  "crawl",
+  "slurp",
+  "semrush",
+  "ahrefs",
+  "mj12bot",
+  "dotbot",
+  "petalbot",
+  "yandex",
+  "baiduspider",
+  "headlesschrome",
+  "python-requests",
+  "curl/",
+  "wget/",
+  "go-http-client",
+  "node-fetch",
+  "axios/",
+  "http-client",
+  "zgrab",
+  "masscan",
+  "nmap",
+  "nikto",
+  "sqlmap",
+  "nuclei",
+  "dirbuster",
+  "gobuster",
+  "whatweb",
+];
+
+function isBot(ua: string): boolean {
+  if (!ua || ua.length < 10) return true; // empty or suspiciously short UA = likely a scanner/probe
+  const lower = ua.toLowerCase();
+  return BOT_UA_PATTERNS.some((p) => lower.includes(p));
+}
+
+function isProbePath(path: string): boolean {
+  const lower = path.toLowerCase();
+  return PROBE_PATHS.some((p) => lower.startsWith(p));
+}
+
+// ── Session duration tracking (in-memory per visitor) ──────────────────
+// We store the timestamp of the last page-view per session so we can
+// compute a rough "session duration" on the NEXT request in the same session.
+const sessionLastSeen = new Map<string, number>();
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 min — a session expires after inactivity
+
+// Clean stale session entries every 5 minutes
+setInterval(() => {
+  const cutoff = Date.now() - SESSION_TIMEOUT_MS;
+  sessionLastSeen.forEach((ts, id) => {
+    if (ts < cutoff) sessionLastSeen.delete(id);
+  });
+}, 5 * 60_000);
+
 /**
  * Express middleware that records page views into siteAnalytics.
  * Only tracks HTML page requests (not API, static assets, etc.)
+ * Filters out bot/scanner traffic and probe paths.
  */
 export function analyticsMiddleware() {
   return async (req: Request, _res: Response, next: NextFunction) => {
@@ -71,13 +151,24 @@ export function analyticsMiddleware() {
       return next();
     }
 
+    // Filter out probe/scanner paths (phpinfo, wp-config, etc.)
+    if (isProbePath(req.path)) {
+      return next();
+    }
+
     try {
       const ua = req.headers["user-agent"] || "";
+
+      // Filter out known bots and scanners
+      if (isBot(ua as string)) {
+        return next();
+      }
+
       const ip =
         (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
         req.socket?.remoteAddress ||
         "";
-      const visitorId = hashFingerprint(ip, ua);
+      const visitorId = hashFingerprint(ip, ua as string);
       const referrer = (req.headers.referer || "") as string;
 
       // Update live visitors
@@ -87,6 +178,21 @@ export function analyticsMiddleware() {
       const sessionId =
         (req.cookies?.["__ep_sid"] as string) ||
         crypto.randomBytes(16).toString("hex");
+
+      // ── Estimate session duration ────────────────────────────────────
+      // On each new page view we compute how long since the LAST page view
+      // in the same session.  If within the session timeout, that delta is
+      // the "time on previous page" — stored as `duration` on this new row.
+      let duration = 0;
+      const now = Date.now();
+      const lastSeen = sessionLastSeen.get(sessionId);
+      if (lastSeen) {
+        const delta = now - lastSeen;
+        if (delta < SESSION_TIMEOUT_MS) {
+          duration = Math.round(delta / 1000); // seconds
+        }
+      }
+      sessionLastSeen.set(sessionId, now);
 
       // Lazy-import db to avoid circular deps
       const { getDb } = await import("../db");
@@ -98,9 +204,9 @@ export function analyticsMiddleware() {
           visitorId,
           path: req.path,
           referrer: referrer.slice(0, 500) || null,
-          userAgent: ua.slice(0, 500) || null,
-          deviceType: parseDeviceType(ua),
-          duration: 0,
+          userAgent: (ua as string).slice(0, 500) || null,
+          deviceType: parseDeviceType(ua as string),
+          duration,
           isCtaClick: false,
           userId: null, // Analytics middleware runs before auth; no user context available
         });

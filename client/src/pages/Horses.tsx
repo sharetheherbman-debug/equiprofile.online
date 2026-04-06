@@ -19,18 +19,26 @@ import {
   Edit,
   Trash2,
   Download,
+  Archive,
+  AlertTriangle,
+  ShieldAlert,
 } from "lucide-react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { downloadCSV } from "@/lib/csvDownload";
 import { useRealtimeModule } from "@/hooks/useRealtime";
@@ -67,17 +75,31 @@ function HorsesContent() {
   });
 
   const deleteMutation = trpc.horses.delete.useMutation({
-    onSuccess: () => {
-      toast.success("Horse removed successfully");
-      // Real-time will handle the UI update
+    onSuccess: (_data, variables) => {
+      const labels: Record<string, string> = {
+        archive: "Horse archived successfully",
+        delete: "Horse removed successfully",
+        delete_all: "Horse and all data permanently deleted",
+      };
+      toast.success(labels[variables.mode ?? "archive"] || "Done");
+      setDeleteTarget(null);
     },
     onError: (error) => {
       toast.error(error.message || "Failed to remove horse");
     },
   });
 
-  const handleDelete = (id: number) => {
-    deleteMutation.mutate({ id });
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+  const [confirmFullDelete, setConfirmFullDelete] = useState(false);
+
+  const handleDelete = (mode: "archive" | "delete" | "delete_all") => {
+    if (!deleteTarget) return;
+    if (mode === "delete_all" && !confirmFullDelete) {
+      setConfirmFullDelete(true);
+      return;
+    }
+    deleteMutation.mutate({ id: deleteTarget.id, mode });
+    setConfirmFullDelete(false);
   };
 
   const handleExport = async () => {
@@ -208,44 +230,143 @@ function HorsesContent() {
                       <Edit className="w-4 h-4" />
                     </Button>
                   </Link>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Remove {horse.name}?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will remove the horse from your profile. All
-                          associated health records, training sessions, and
-                          documents will also be removed.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDelete(horse.id)}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Remove
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => { setDeleteTarget(horse); setConfirmFullDelete(false); }}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
+
+      {/* Horse removal dialog — three safe options */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) { setDeleteTarget(null); setConfirmFullDelete(false); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Remove {deleteTarget?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Choose how you'd like to handle this horse and its records.
+            </DialogDescription>
+          </DialogHeader>
+
+          {!confirmFullDelete ? (
+            <div className="space-y-3 py-2">
+              {/* Option 1: Archive (safest) */}
+              <button
+                onClick={() => handleDelete("archive")}
+                disabled={deleteMutation.isPending}
+                className="w-full text-left p-4 rounded-lg border hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-colors group"
+              >
+                <div className="flex items-start gap-3">
+                  <Archive className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-medium text-sm">Archive Horse</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Hides {deleteTarget?.name} from your stable list. All records
+                      (health, training, documents) are preserved and can be restored later.
+                    </p>
+                    <Badge variant="secondary" className="mt-2 text-[10px]">Recommended</Badge>
+                  </div>
+                </div>
+              </button>
+
+              {/* Option 2: Delete horse only */}
+              <button
+                onClick={() => handleDelete("delete")}
+                disabled={deleteMutation.isPending}
+                className="w-full text-left p-4 rounded-lg border hover:border-amber-400 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 transition-colors group"
+              >
+                <div className="flex items-start gap-3">
+                  <Trash2 className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-medium text-sm">Remove Horse</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Removes {deleteTarget?.name} from your profile. Linked records remain
+                      in the system for your records.
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              {/* Option 3: Delete everything */}
+              <button
+                onClick={() => handleDelete("delete_all")}
+                disabled={deleteMutation.isPending}
+                className="w-full text-left p-4 rounded-lg border border-red-200 hover:border-red-400 hover:bg-red-50/50 dark:hover:bg-red-950/20 transition-colors group"
+              >
+                <div className="flex items-start gap-3">
+                  <ShieldAlert className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-medium text-sm text-red-600 dark:text-red-400">
+                      Delete Horse &amp; All Data
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Permanently removes {deleteTarget?.name} and all linked health records,
+                      training sessions, documents, appointments, and other data. This cannot be undone.
+                    </p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          ) : (
+            /* Confirmation step for full delete */
+            <div className="space-y-4 py-2">
+              <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900">
+                <p className="text-sm font-medium text-red-700 dark:text-red-400 mb-2">
+                  ⚠️ This will permanently delete:
+                </p>
+                <ul className="text-xs text-red-600 dark:text-red-400 space-y-1 list-disc list-inside">
+                  <li>All health records &amp; vaccinations</li>
+                  <li>Training sessions &amp; programmes</li>
+                  <li>Documents &amp; uploads</li>
+                  <li>Feeding plans &amp; nutrition logs</li>
+                  <li>Appointments, tasks &amp; calendar events</li>
+                  <li>Pedigree data &amp; competition records</li>
+                </ul>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setConfirmFullDelete(false)}
+                >
+                  Go Back
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="flex-1"
+                  onClick={() => {
+                    if (deleteTarget) {
+                      deleteMutation.mutate({ id: deleteTarget.id, mode: "delete_all" });
+                      setConfirmFullDelete(false);
+                    }
+                  }}
+                  disabled={deleteMutation.isPending}
+                >
+                  {deleteMutation.isPending ? "Deleting…" : "Delete Everything"}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {!confirmFullDelete && (
+            <div className="flex justify-end pt-1">
+              <Button variant="ghost" size="sm" onClick={() => { setDeleteTarget(null); setConfirmFullDelete(false); }}>
+                Cancel
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

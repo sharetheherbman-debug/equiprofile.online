@@ -1271,6 +1271,46 @@ export async function deleteHorse(id: number, userId: number) {
     .where(and(eq(horses.id, id), eq(horses.userId, userId)));
 }
 
+/**
+ * Permanently delete a horse AND all its linked data.
+ * This is destructive and cannot be undone.
+ */
+export async function deleteHorseAndData(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+
+  // Verify ownership
+  const [horse] = await db
+    .select({ id: horses.id })
+    .from(horses)
+    .where(and(eq(horses.id, id), eq(horses.userId, userId)));
+  if (!horse) return;
+
+  // Delete all linked data (order matters for FK constraints)
+  await db.delete(healthRecords).where(eq(healthRecords.horseId, id));
+  await db.delete(vaccinations).where(eq(vaccinations.horseId, id));
+  await db.delete(dewormings).where(eq(dewormings.horseId, id));
+  await db.delete(treatments).where(eq(treatments.horseId, id));
+  await db.delete(trainingSessions).where(eq(trainingSessions.horseId, id));
+  await db.delete(feedingPlans).where(eq(feedingPlans.horseId, id));
+  await db.delete(feedCosts).where(eq(feedCosts.horseId, id));
+  await db.delete(documents).where(eq(documents.horseId, id));
+  await db.delete(appointments).where(eq(appointments.horseId, id));
+  await db.delete(dentalCare).where(eq(dentalCare.horseId, id));
+  await db.delete(xrays).where(eq(xrays.horseId, id));
+  await db.delete(hoofcare).where(eq(hoofcare.horseId, id));
+  await db.delete(nutritionLogs).where(eq(nutritionLogs.horseId, id));
+  await db.delete(nutritionPlans).where(eq(nutritionPlans.horseId, id));
+  await db.delete(notes).where(eq(notes.horseId, id));
+  await db.delete(rides).where(eq(rides.horseId, id));
+  await db.delete(competitions).where(eq(competitions.horseId, id));
+  await db.delete(pedigree).where(eq(pedigree.horseId, id));
+  await db.delete(events).where(eq(events.horseId, id));
+
+  // Finally, hard-delete the horse record
+  await db.delete(horses).where(and(eq(horses.id, id), eq(horses.userId, userId)));
+}
+
 // ============ HEALTH RECORD QUERIES ============
 
 export async function createHealthRecord(data: InsertHealthRecord) {
@@ -1746,6 +1786,97 @@ export async function getSystemStats() {
     horses: horseStats,
     healthRecords: recordStats,
     trainingSessions: sessionStats,
+  };
+}
+
+// ============ USER SEGMENTATION ============
+
+export async function getUserSegmentation() {
+  const db = await getDb();
+  if (!db) return null;
+
+  // Get all users with their preferences to distinguish free-access from paid
+  const allUsers = await db
+    .select({
+      id: users.id,
+      isActive: users.isActive,
+      isSuspended: users.isSuspended,
+      subscriptionStatus: users.subscriptionStatus,
+      preferences: users.preferences,
+      createdAt: users.createdAt,
+      stripeCustomerId: users.stripeCustomerId,
+      lastPaymentAt: users.lastPaymentAt,
+    })
+    .from(users);
+
+  let leads = 0;
+  let freeAccessUsers = 0;
+  let trialUsers = 0;
+  let paidUsers = 0;
+  let overdueUsers = 0;
+  let deletedUsers = 0;
+  let cancelledUsers = 0;
+  let expiredUsers = 0;
+  const recentSignups: number[] = [];
+
+  const sevenDaysAgo = new Date(Date.now() - 7 * 86_400_000);
+
+  for (const u of allUsers) {
+    // Deleted users (soft-deleted)
+    if (!u.isActive) {
+      deletedUsers++;
+      continue;
+    }
+
+    // Parse preferences to check freeAccess
+    let prefs: { freeAccess?: boolean } = {};
+    try {
+      prefs = u.preferences ? JSON.parse(u.preferences as string) : {};
+    } catch { /* ignore */ }
+
+    const status = u.subscriptionStatus;
+
+    if (status === "overdue") {
+      overdueUsers++;
+    } else if (status === "cancelled") {
+      cancelledUsers++;
+    } else if (status === "expired") {
+      expiredUsers++;
+    } else if (status === "trial") {
+      trialUsers++;
+    } else if (status === "active") {
+      if (prefs.freeAccess) {
+        freeAccessUsers++;
+      } else {
+        paidUsers++;
+      }
+    }
+
+    // Recent signups (last 7 days)
+    if (u.createdAt && new Date(u.createdAt) >= sevenDaysAgo) {
+      recentSignups.push(u.id);
+    }
+  }
+
+  // Count leads from chatLeads table
+  const { chatLeads: chatLeadsTable } = await import("../drizzle/schema");
+  const [leadCount] = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(chatLeadsTable);
+
+  leads = leadCount?.count || 0;
+
+  return {
+    leads,
+    freeAccessUsers,
+    trialUsers,
+    paidUsers,
+    overdueUsers,
+    deletedUsers,
+    cancelledUsers,
+    expiredUsers,
+    recentSignups: recentSignups.length,
+    totalReal: trialUsers + paidUsers + freeAccessUsers, // active real users
   };
 }
 

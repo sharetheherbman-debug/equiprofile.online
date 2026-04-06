@@ -139,12 +139,20 @@ export default function CalendarPage() {
     [currentDate],
   );
 
+  // Stable query options shared by all calendar data sources — prevents
+  // duplicate fetches on window focus and keeps data alive across tab switches.
+  const calendarQueryOpts = {
+    staleTime: 5 * 60 * 1000,        // 5 min — don't refetch within this window
+    gcTime: 10 * 60 * 1000,          // 10 min — keep cached data alive longer
+    refetchOnWindowFocus: false,      // prevent focus-triggered duplicate fetches
+    refetchOnMount: false as const,   // reuse cached data when remounting
+  };
+
   const { data: events = [], refetch } = trpc.calendar.getEvents.useQuery({
     startDate: monthStart.toISOString(),
     endDate: monthEnd.toISOString(),
   }, {
-    // 5-minute stale time prevents 429 storms when navigating between pages
-    staleTime: 5 * 60 * 1000,
+    ...calendarQueryOpts,
     // Don't retry on rate-limit or auth errors — retrying worsens the problem
     retry: (failureCount, error: any) => {
       const code = error?.data?.code;
@@ -154,19 +162,11 @@ export default function CalendarPage() {
     retryDelay: (attempt) => Math.min(2000 * 2 ** attempt, 10000),
   });
 
-  const { data: horses = [] } = trpc.horses.list.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000,
-  });
+  const { data: horses = [] } = trpc.horses.list.useQuery(undefined, calendarQueryOpts);
 
-  const { data: tasks = [] } = trpc.tasks.list.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000,
-  });
-  const { data: appointments = [] } = trpc.appointments.list.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000,
-  });
-  const { data: trainingSessions = [] } = trpc.training.listAll.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000,
-  });
+  const { data: tasks = [] } = trpc.tasks.list.useQuery(undefined, calendarQueryOpts);
+  const { data: appointments = [] } = trpc.appointments.list.useQuery(undefined, calendarQueryOpts);
+  const { data: trainingSessions = [] } = trpc.training.listAll.useQuery(undefined, calendarQueryOpts);
 
   const createEvent = trpc.calendar.createEvent.useMutation({
     onSuccess: () => {

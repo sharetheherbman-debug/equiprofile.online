@@ -1041,6 +1041,21 @@ async function startServer() {
     }
 
     if (!fs.existsSync(filePath)) {
+      // For image files (logos, photos), serve a transparent 1px placeholder
+      // instead of a JSON 404 — prevents broken image icons in the UI.
+      const ext = path.extname(fileKey).toLowerCase();
+      if ([".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"].includes(ext)) {
+        console.warn(`[FileServe] 404 – serving placeholder for missing image: ${fileKey}`);
+        // 1×1 transparent PNG (67 bytes)
+        const placeholder = Buffer.from(
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQI12NgAAIABQABNjN9GQAAAAlwSFlzAAAWJQAAFiUBSVIk8AAAAA0lEQVQI12P4z8BQDwAEgAF/QualIQAAAABJRU5ErkJggg==",
+          "base64",
+        );
+        res.setHeader("Content-Type", "image/png");
+        res.setHeader("Cache-Control", "no-cache");
+        return res.send(placeholder);
+      }
+
       console.warn(`[FileServe] 404 – file not found on disk: ${filePath} (key: ${fileKey}, uploadsDir: ${uploadsDir})`);
       return res.status(404).json({ error: "File not found" });
     }

@@ -137,6 +137,10 @@ function AdminContent() {
     undefined,
     { enabled: isUnlocked },
   );
+  const { data: segmentation } = trpc.admin.getUserSegmentation.useQuery(
+    undefined,
+    { enabled: isUnlocked },
+  );
   const {
     data: users,
     isLoading: usersLoading,
@@ -170,6 +174,12 @@ function AdminContent() {
     enabled: isUnlocked,
   });
   const whatsappConfigQuery = trpc.admin.getWhatsAppConfig.useQuery(undefined, {
+    enabled: isUnlocked,
+  });
+  const churnRiskQuery = trpc.admin.getChurnRisk.useQuery(undefined, {
+    enabled: isUnlocked,
+  });
+  const docHealthQuery = trpc.admin.getDocumentHealth.useQuery(undefined, {
     enabled: isUnlocked,
   });
 
@@ -466,6 +476,47 @@ function AdminContent() {
         </Card>
       </div>
 
+      {/* User Segmentation — executive summary */}
+      {segmentation && (
+        <Card className="border-indigo-500/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">User Segmentation</CardTitle>
+            <CardDescription className="text-xs">Real-time breakdown of user lifecycle stages</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              <div className="text-center p-3 rounded-lg bg-green-50 dark:bg-green-950/30">
+                <p className="text-2xl font-bold text-green-600">{segmentation.paidUsers}</p>
+                <p className="text-[11px] text-muted-foreground font-medium">Paid Users</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30">
+                <p className="text-2xl font-bold text-blue-600">{segmentation.freeAccessUsers}</p>
+                <p className="text-[11px] text-muted-foreground font-medium">Free Access</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30">
+                <p className="text-2xl font-bold text-amber-600">{segmentation.trialUsers}</p>
+                <p className="text-[11px] text-muted-foreground font-medium">Trial Users</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-red-50 dark:bg-red-950/30">
+                <p className="text-2xl font-bold text-red-600">{segmentation.overdueUsers}</p>
+                <p className="text-[11px] text-muted-foreground font-medium">Overdue</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-950/30">
+                <p className="text-2xl font-bold text-gray-500">{segmentation.deletedUsers}</p>
+                <p className="text-[11px] text-muted-foreground font-medium">Deleted</p>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+              <span>Leads: <span className="font-semibold text-foreground">{segmentation.leads}</span></span>
+              <span>Cancelled: <span className="font-semibold text-foreground">{segmentation.cancelledUsers}</span></span>
+              <span>Expired: <span className="font-semibold text-foreground">{segmentation.expiredUsers}</span></span>
+              <span>Recent signups (7d): <span className="font-semibold text-foreground">{segmentation.recentSignups}</span></span>
+              <span>Total real users: <span className="font-semibold text-foreground">{segmentation.totalReal}</span></span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Main Tabs */}
       <Tabs defaultValue="users" className="space-y-4">
         <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1 w-full">
@@ -538,6 +589,13 @@ function AdminContent() {
           >
             <BarChart3 className="w-4 h-4" />
             <span className="hidden sm:inline">Analytics</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="churn"
+            className="flex items-center gap-1.5 shrink-0"
+          >
+            <AlertCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">Churn Risk</span>
           </TabsTrigger>
         </TabsList>
 
@@ -1419,6 +1477,61 @@ function AdminContent() {
               )}
             </CardContent>
           </Card>
+
+          {/* Document Health Checker */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Document Health Check
+              </CardTitle>
+              <CardDescription>
+                Detect missing files and broken references on disk
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!docHealthQuery.data ? (
+                <Skeleton className="h-20 w-full" />
+              ) : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-2xl font-bold">{docHealthQuery.data.total}</p>
+                      <p className="text-[11px] text-muted-foreground">Total Documents</p>
+                    </div>
+                    <div className={`text-center p-3 rounded-lg ${docHealthQuery.data.missing.length > 0 ? "bg-red-50 dark:bg-red-950/20" : "bg-green-50 dark:bg-green-950/20"}`}>
+                      <p className={`text-2xl font-bold ${docHealthQuery.data.missing.length > 0 ? "text-red-600" : "text-green-600"}`}>
+                        {docHealthQuery.data.missing.length}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">Missing Files</p>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20">
+                      <p className="text-2xl font-bold text-amber-600">{docHealthQuery.data.orphaned}</p>
+                      <p className="text-[11px] text-muted-foreground">No Horse Link</p>
+                    </div>
+                  </div>
+                  {docHealthQuery.data.missing.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-xs font-semibold mb-2">Missing Files:</p>
+                      <div className="max-h-40 overflow-y-auto space-y-1">
+                        {docHealthQuery.data.missing.map((doc: any) => (
+                          <div key={doc.id} className="flex items-center justify-between text-xs p-2 rounded bg-red-50/50 dark:bg-red-950/10">
+                            <span className="truncate max-w-[60%]">{doc.fileName}</span>
+                            <Badge variant="outline" className="text-[10px]">{doc.category || "other"}</Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {docHealthQuery.data.missing.length === 0 && (
+                    <p className="text-sm text-green-600 dark:text-green-400 text-center py-2">
+                      ✓ All document files are present on disk
+                    </p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Sales Leads Tab */}
@@ -1779,6 +1892,102 @@ function AdminContent() {
           >
             <AdminAnalytics />
           </Suspense>
+        </TabsContent>
+
+        {/* Churn Risk Tab */}
+        <TabsContent value="churn">
+          <div className="space-y-4">
+            {/* Trial Expiring Soon */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-500" />
+                  Trials Expiring Soon
+                </CardTitle>
+                <CardDescription>Users whose trial ends within 3 days</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!churnRiskQuery.data?.trialExpiring?.length ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">No trials expiring soon</p>
+                ) : (
+                  <div className="space-y-2">
+                    {churnRiskQuery.data.trialExpiring.map((u: any) => (
+                      <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-500/20">
+                        <div>
+                          <p className="text-sm font-medium">{u.name || "Unknown"}</p>
+                          <p className="text-xs text-muted-foreground">{u.email}</p>
+                        </div>
+                        <Badge variant="outline" className="text-amber-600 border-amber-500/30">
+                          Expires {u.trialEndsAt ? new Date(u.trialEndsAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "soon"}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Overdue / At Risk */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-500" />
+                  Overdue / At Risk
+                </CardTitle>
+                <CardDescription>Users with overdue payments at risk of churning</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!churnRiskQuery.data?.atRisk?.length ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">No users at risk</p>
+                ) : (
+                  <div className="space-y-2">
+                    {churnRiskQuery.data.atRisk.map((u: any) => (
+                      <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-red-50/50 dark:bg-red-950/20 border border-red-500/20">
+                        <div>
+                          <p className="text-sm font-medium">{u.name || "Unknown"}</p>
+                          <p className="text-xs text-muted-foreground">{u.email}</p>
+                        </div>
+                        <Badge variant="destructive" className="text-xs">Overdue</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Inactive Users */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-gray-500" />
+                  Inactive Users
+                </CardTitle>
+                <CardDescription>Active subscribers with no activity in 14+ days</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!churnRiskQuery.data?.inactive?.length ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">All users are active</p>
+                ) : (
+                  <div className="space-y-2">
+                    {churnRiskQuery.data.inactive.map((u: any) => (
+                      <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                        <div>
+                          <p className="text-sm font-medium">{u.name || "Unknown"}</p>
+                          <p className="text-xs text-muted-foreground">{u.email}</p>
+                        </div>
+                        <div className="text-right">
+                          <Badge variant="outline" className="text-xs">{u.subscriptionStatus}</Badge>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Last active: {u.updatedAt ? new Date(u.updatedAt).toLocaleDateString("en-GB") : "Unknown"}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
