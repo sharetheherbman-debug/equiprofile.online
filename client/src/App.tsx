@@ -82,6 +82,7 @@ const StableStaff = lazy(() => import("./pages/StableStaff"));
 const StableSetup = lazy(() => import("./pages/StableSetup"));
 const StableReports = lazy(() => import("./pages/StableReports"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
+const Competitions = lazy(() => import("./pages/Competitions"));
 
 // Minimal spinner shown while lazy chunks load (doesn't block FCP)
 function PageSpinner() {
@@ -275,6 +276,13 @@ function Router() {
               </ProtectedRoute>
             </Route>
 
+            {/* Competitions */}
+            <Route path="/competitions">
+              <ProtectedRoute>
+                <Competitions />
+              </ProtectedRoute>
+            </Route>
+
             {/* Documents */}
             <Route path="/documents">
               <ProtectedRoute>
@@ -414,7 +422,7 @@ function Router() {
             </Route>
 
             {/* Public horse passport — accessible without login (QR scan) */}
-            <Route path="/passport/:id" component={PassportView} />
+            <Route path="/passport/:token" component={PassportView} />
 
             {/* 404 */}
             <Route path="/404" component={NotFound} />

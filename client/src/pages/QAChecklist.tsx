@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, XCircle, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 
 interface CheckItem {
@@ -107,11 +107,22 @@ export default function QAChecklistPage() {
   });
   const horses = trpc.horses.list.useQuery(undefined, { retry: false });
   const stables = trpc.stables.list.useQuery(undefined, { retry: false, staleTime: 30000 });
+  // Stable query dates — computed once per mount to avoid creating new query
+  // keys on every render (which would cause repeated calendar.getEvents fetches).
+  // 61-day window: 30 days back + 31 days forward — wide enough to verify
+  // the calendar route responds correctly on the QA checklist.
+  const calendarQueryDates = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return {
+      startDate: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      endDate: new Date(today.getTime() + 31 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const calEvents = trpc.calendar.getEvents.useQuery(
-    {
-      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    },
+    calendarQueryDates,
     { retry: false, staleTime: 30000 },
   );
 

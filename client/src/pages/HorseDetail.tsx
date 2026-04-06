@@ -32,13 +32,22 @@ import {
   CalendarCheck,
   Upload,
   Bell,
+  Tag,
+  X,
+  Share2,
+  QrCode,
+  Trash2,
+  Copy,
+  Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import { MedicalPassport } from "@/components/MedicalPassport";
+import { useState } from "react";
 
 function HorseDetailContent() {
   const params = useParams<{ id: string }>();
   const horseId = parseInt(params.id);
+  const utils = trpc.useUtils();
 
   const { data: horse, isLoading } = trpc.horses.get.useQuery({ id: horseId });
   const { data: healthRecords } = trpc.healthRecords.listByHorse.useQuery({
@@ -48,8 +57,44 @@ function HorseDetailContent() {
     horseId,
   });
   const { data: feedingPlans } = trpc.feeding.listByHorse.useQuery({ horseId });
+  const { data: competitionRecords } = trpc.competitions.list.useQuery({ horseId });
   const { data: timeline } = trpc.timeline.getHorseTimeline.useQuery({ horseId, limit: 50 });
   const { data: healthAlerts } = trpc.timeline.getHealthAlerts.useQuery({ horseId });
+  const { data: horseTags = [] } = trpc.tags.listByHorse.useQuery({ horseId });
+  const { data: allTags = [] } = trpc.tags.list.useQuery();
+  const { data: shareLinks = [], refetch: refetchShareLinks } = trpc.sharing.list.useQuery();
+
+  const attachTagMutation = trpc.tags.attachToHorse.useMutation({
+    onSuccess: () => { utils.tags.listByHorse.invalidate({ horseId }); toast.success("Tag added"); },
+    onError: (e) => toast.error(e.message),
+  });
+  const detachTagMutation = trpc.tags.detachFromHorse.useMutation({
+    onSuccess: () => { utils.tags.listByHorse.invalidate({ horseId }); toast.success("Tag removed"); },
+    onError: (e) => toast.error(e.message),
+  });
+  const createShareLinkMutation = trpc.sharing.create.useMutation({
+    onSuccess: () => { refetchShareLinks(); toast.success("Share link created!"); },
+    onError: (e) => toast.error(e.message),
+  });
+  const revokeShareLinkMutation = trpc.sharing.revoke.useMutation({
+    onSuccess: () => { refetchShareLinks(); toast.success("Share link revoked"); },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
+
+  const copyShareLink = (token: string) => {
+    const url = `${window.location.origin}/passport/${token}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedToken(token);
+      setTimeout(() => setCopiedToken(null), 2000);
+    });
+  };
+
+  // Horse-specific share links for medical_passport type
+  const passportLinks = (shareLinks as any[]).filter(
+    (l) => l.linkType === "medical_passport" && l.horseId === horseId && l.isActive,
+  );
 
   if (isLoading) {
     return (
@@ -118,60 +163,104 @@ function HorseDetailContent() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/horses">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          <h1 className="font-serif text-3xl font-bold text-foreground">
-            {horse.name}
-          </h1>
-          <p className="text-muted-foreground">
-            {horse.breed || "Unknown breed"}
-            {horse.age && ` • ${horse.age} years old`}
-          </p>
+      {/* ── Hero Banner (when photo available) or plain header ── */}
+      {horse.photoUrl ? (
+        <div className="relative w-full rounded-2xl overflow-hidden shadow-lg">
+          {/* 3:1 banner */}
+          <div className="aspect-[3/1] w-full">
+            <img
+              src={horse.photoUrl}
+              alt={horse.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "/images/hero/image6.jpg";
+              }}
+            />
+          </div>
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          {/* Back + Edit buttons */}
+          <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+            <Link href="/horses">
+              <Button size="sm" variant="secondary" className="bg-black/40 border-white/20 text-white hover:bg-black/60 backdrop-blur-sm">
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Horses
+              </Button>
+            </Link>
+            <Link href={`/horses/${horse.id}/edit`}>
+              <Button size="sm" variant="secondary" className="bg-black/40 border-white/20 text-white hover:bg-black/60 backdrop-blur-sm">
+                <Edit className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            </Link>
+          </div>
+          {/* Horse name overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {horse.gender && <Badge className="capitalize bg-white/20 text-white border-white/30 backdrop-blur-sm text-xs">{horse.gender}</Badge>}
+              {horse.discipline && <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-xs">{horse.discipline}</Badge>}
+              {horse.level && <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-xs">{horse.level}</Badge>}
+            </div>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white drop-shadow-md">
+              {horse.name}
+            </h1>
+            <p className="text-white/70 text-sm mt-0.5">
+              {horse.breed || "Unknown breed"}
+              {horse.age && ` • ${horse.age} years old`}
+            </p>
+          </div>
         </div>
-        <Link href={`/horses/${horse.id}/edit`}>
-          <Button variant="outline">
-            <Edit className="w-4 h-4 mr-2" />
-            Edit
-          </Button>
-        </Link>
-      </div>
+      ) : (
+        /* Plain header when no photo */
+        <div className="flex items-center gap-4">
+          <Link href="/horses">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <div className="flex-1">
+            <h1 className="font-serif text-3xl font-bold text-foreground">
+              {horse.name}
+            </h1>
+            <p className="text-muted-foreground">
+              {horse.breed || "Unknown breed"}
+              {horse.age && ` • ${horse.age} years old`}
+            </p>
+          </div>
+          <Link href={`/horses/${horse.id}/edit`}>
+            <Button variant="outline">
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </Button>
+          </Link>
+        </div>
+      )}
 
       {/* Horse Profile Card */}
       <Card>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="aspect-square bg-muted rounded-l-lg overflow-hidden">
-            {horse.photoUrl ? (
-              <img
-                src={horse.photoUrl}
-                alt={horse.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/images/hero/image6.jpg";
-                }}
-              />
-            ) : (
+        <div className={horse.photoUrl ? "" : "grid md:grid-cols-3 gap-6"}>
+          {/* Only show the square thumbnail when there's no hero banner */}
+          {!horse.photoUrl && (
+            <div className="aspect-square bg-muted rounded-l-lg overflow-hidden">
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-rose-900/20 to-pink-900/20">
                 <Heart className="w-24 h-24 text-muted-foreground/30" />
               </div>
-            )}
-          </div>
-          <div className="md:col-span-2 p-6">
-            <div className="flex flex-wrap gap-2 mb-4">
-              {horse.gender && (
-                <Badge className="capitalize">{horse.gender}</Badge>
-              )}
-              {horse.discipline && (
-                <Badge variant="secondary">{horse.discipline}</Badge>
-              )}
-              {horse.level && <Badge variant="outline">{horse.level}</Badge>}
             </div>
+          )}
+          <div className={`${horse.photoUrl ? "" : "md:col-span-2"} p-6`}>
+            {/* Show badges here when there's no hero to show them */}
+            {!horse.photoUrl && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {horse.gender && (
+                  <Badge className="capitalize">{horse.gender}</Badge>
+                )}
+                {horse.discipline && (
+                  <Badge variant="secondary">{horse.discipline}</Badge>
+                )}
+                {horse.level && <Badge variant="outline">{horse.level}</Badge>}
+              </div>
+            )}
 
             <div className="grid sm:grid-cols-2 gap-4">
               {horse.color && (
@@ -222,6 +311,45 @@ function HorseDetailContent() {
                 <p className="text-foreground">{horse.notes}</p>
               </div>
             )}
+
+            {/* Tags */}
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex items-center gap-2 mb-2">
+                <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Tags</p>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {(horseTags as any[]).map((tag: any) => (
+                  <Badge
+                    key={tag.id}
+                    variant="secondary"
+                    className="cursor-pointer pr-1 gap-1 hover:bg-destructive/10 transition-colors"
+                    style={tag.color ? { backgroundColor: tag.color + "22", borderColor: tag.color + "55", color: tag.color } : {}}
+                    onClick={() => detachTagMutation.mutate({ horseId, tagId: tag.id })}
+                  >
+                    {tag.name}
+                    <X className="w-3 h-3" />
+                  </Badge>
+                ))}
+                {/* Add tag dropdown */}
+                {(allTags as any[]).filter((t: any) => !(horseTags as any[]).some((ht: any) => ht.id === t.id)).length > 0 && (
+                  <select
+                    className="text-xs border rounded px-1.5 py-0.5 bg-background text-muted-foreground cursor-pointer"
+                    value=""
+                    onChange={(e) => {
+                      if (e.target.value) attachTagMutation.mutate({ horseId, tagId: parseInt(e.target.value) });
+                    }}
+                  >
+                    <option value="">+ Add tag</option>
+                    {(allTags as any[])
+                      .filter((t: any) => !(horseTags as any[]).some((ht: any) => ht.id === t.id))
+                      .map((t: any) => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                  </select>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </Card>
@@ -275,6 +403,11 @@ function HorseDetailContent() {
           <TabsTrigger value="feeding" className="flex-shrink-0 flex items-center gap-1.5 text-xs sm:text-sm px-3 py-1.5">
             <Utensils className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
             Feeding
+          </TabsTrigger>
+          <TabsTrigger value="competitions" className="flex-shrink-0 flex items-center gap-1.5 text-xs sm:text-sm px-3 py-1.5">
+            <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="hidden sm:inline">Competitions</span>
+            <span className="sm:hidden">Comps</span>
           </TabsTrigger>
           <TabsTrigger value="passport" className="flex-shrink-0 flex items-center gap-1.5 text-xs sm:text-sm px-3 py-1.5">
             <FileHeart className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
@@ -525,14 +658,158 @@ function HorseDetailContent() {
           </Card>
         </TabsContent>
 
+        {/* Competitions Tab */}
+        <TabsContent value="competitions">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-amber-500" />
+                    Competition Record
+                  </CardTitle>
+                  <CardDescription>
+                    All competition entries and results for {horse.name}
+                  </CardDescription>
+                </div>
+                <Link href="/competitions">
+                  <Button variant="outline" size="sm">
+                    <Plus className="w-4 h-4 mr-1.5" />
+                    Log Competition
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {!competitionRecords || competitionRecords.length === 0 ? (
+                <div className="text-center py-8">
+                  <Trophy className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+                  <p className="text-muted-foreground text-sm">
+                    No competition records yet
+                  </p>
+                  <Link href="/competitions">
+                    <Button size="sm" className="mt-3">
+                      <Plus className="w-4 h-4 mr-1.5" />
+                      Log a Competition
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {(competitionRecords as any[]).map((comp) => (
+                    <div
+                      key={comp.id}
+                      className="flex items-start gap-3 p-3 rounded-lg border bg-muted/30"
+                    >
+                      <Trophy className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm leading-tight">
+                          {comp.competitionName}
+                        </p>
+                        <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-xs text-muted-foreground">
+                          {comp.date && (
+                            <span>
+                              {new Date(comp.date).toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </span>
+                          )}
+                          {comp.venue && <span>{comp.venue}</span>}
+                          {comp.discipline && <span>{comp.discipline}</span>}
+                        </div>
+                      </div>
+                      {comp.placement && (
+                        <Badge
+                          variant="outline"
+                          className={
+                            comp.placement === "1st"
+                              ? "bg-yellow-400/20 text-yellow-700 border-yellow-400/40 dark:text-yellow-300"
+                              : "bg-blue-100/50 text-blue-700 border-blue-300/40 dark:text-blue-300"
+                          }
+                        >
+                          {comp.placement}
+                        </Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Medical Passport Tab */}
         <TabsContent value="passport">
+          {/* Share Link Card */}
+          <Card className="mb-4">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Share2 className="w-4 h-4 text-primary" />
+                  <CardTitle className="text-base">Shareable Passport Links</CardTitle>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => createShareLinkMutation.mutate({ linkType: "medical_passport", horseId, expiresInDays: 30 })}
+                  disabled={createShareLinkMutation.isPending}
+                >
+                  <QrCode className="w-4 h-4 mr-1.5" />
+                  Generate Link
+                </Button>
+              </div>
+              <CardDescription className="text-xs mt-1">
+                Anyone with the link can view this horse's medical passport (read-only, expires in 30 days)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {passportLinks.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2">No active share links. Generate one above.</p>
+              ) : (
+                <div className="space-y-2">
+                  {passportLinks.map((link: any) => {
+                    const url = `${window.location.origin}/passport/${link.token}`;
+                    return (
+                      <div key={link.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50 text-sm">
+                        <code className="flex-1 truncate text-xs text-muted-foreground">{url}</code>
+                        {link.expiresAt && (
+                          <span className="text-xs text-muted-foreground shrink-0">
+                            Exp: {new Date(link.expiresAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}
+                          </span>
+                        )}
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 shrink-0"
+                          onClick={() => copyShareLink(link.token)}
+                          title="Copy link"
+                        >
+                          {copiedToken === link.token ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 shrink-0 text-destructive hover:text-destructive"
+                          onClick={() => revokeShareLinkMutation.mutate({ id: link.id })}
+                          title="Revoke link"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Medical Passport Document */}
           <Card>
             <CardHeader>
               <CardTitle>Medical Passport</CardTitle>
               <CardDescription>
-                Comprehensive health record document with QR code for easy
-                sharing
+                Comprehensive health record document — print or export as PDF
               </CardDescription>
             </CardHeader>
             <CardContent>

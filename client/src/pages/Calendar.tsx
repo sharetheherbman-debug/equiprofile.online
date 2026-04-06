@@ -51,6 +51,7 @@ import {
 } from "../components/ui/alert-dialog";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useRealtimeModule } from "@/hooks/useRealtime";
 
 const EVENT_TYPE_COLORS: Record<string, string> = {
   training: "bg-blue-500",
@@ -167,6 +168,11 @@ export default function CalendarPage() {
   const { data: tasks = [] } = trpc.tasks.list.useQuery(undefined, calendarQueryOpts);
   const { data: appointments = [] } = trpc.appointments.list.useQuery(undefined, calendarQueryOpts);
   const { data: trainingSessions = [] } = trpc.training.listAll.useQuery(undefined, calendarQueryOpts);
+
+  // Real-time subscriptions — refresh calendar when events change from other devices/tabs
+  useRealtimeModule("calendar", () => { refetch(); });
+  useRealtimeModule("tasks", () => { refetch(); });
+  useRealtimeModule("appointments", () => { refetch(); });
 
   const createEvent = trpc.calendar.createEvent.useMutation({
     onSuccess: () => {

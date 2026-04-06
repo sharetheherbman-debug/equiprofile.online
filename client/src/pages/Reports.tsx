@@ -47,6 +47,7 @@ import { toast } from "sonner";
 import { trpc } from "../lib/trpc";
 import { format } from "date-fns";
 import jsPDF from "jspdf";
+import { downloadCSV } from "@/lib/csvDownload";
 
 /** Brand color for PDF letterhead — premium dark navy */
 const BRAND_BLUE_RGB = [12, 35, 82] as const;
@@ -69,7 +70,7 @@ const FREQUENCIES = [
 
 export default function Reports() {
   const [activeTab, setActiveTab] = useState<
-    "generate" | "history" | "schedules"
+    "generate" | "history" | "schedules" | "exports"
   >("generate");
 
   // Generate report state
@@ -89,6 +90,7 @@ export default function Reports() {
   });
 
   // Queries
+  const utils = trpc.useUtils();
   const { data: generatedReports = [], refetch: refetchReports } =
     trpc.reports.list.useQuery({ limit: 50 });
   const { data: horses = [] } = trpc.horses.list.useQuery();
@@ -492,6 +494,7 @@ export default function Reports() {
               <TabsTrigger value="generate" className="text-xs sm:text-sm">Generate</TabsTrigger>
               <TabsTrigger value="history" className="text-xs sm:text-sm">History</TabsTrigger>
               <TabsTrigger value="schedules" className="text-xs sm:text-sm">Scheduled</TabsTrigger>
+              <TabsTrigger value="exports" className="text-xs sm:text-sm">Quick Exports</TabsTrigger>
             </TabsList>
           </div>
 
@@ -796,6 +799,55 @@ export default function Reports() {
                 })}
               </div>
             )}
+          </TabsContent>
+
+          {/* Quick CSV Exports */}
+          <TabsContent value="exports" className="space-y-4">
+            <h2 className="text-xl sm:text-2xl font-semibold">Quick CSV Exports</h2>
+            <p className="text-muted-foreground text-sm">
+              Download your data as CSV files for use in spreadsheets or backup.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  label: "Competitions",
+                  description: "All competition results, placements & prize money",
+                  icon: "🏆",
+                  onClick: async () => {
+                    try {
+                      const r = await utils.client.competitions.exportCSV.query();
+                      downloadCSV(r.csv, r.filename);
+                      toast.success("Competitions exported!");
+                    } catch {
+                      toast.error("Failed to export competitions");
+                    }
+                  },
+                },
+              ].map((item) => (
+                <Card key={item.label}>
+                  <CardContent className="pt-5 pb-4">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">{item.icon}</span>
+                      <div className="flex-1">
+                        <p className="font-semibold">{item.label}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {item.description}
+                        </p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-3"
+                          onClick={item.onClick}
+                        >
+                          <Download className="w-3.5 h-3.5 mr-1.5" />
+                          Export CSV
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
         </Tabs>
 

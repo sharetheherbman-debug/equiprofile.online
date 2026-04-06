@@ -36,6 +36,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { trpc } from "@/lib/trpc";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { OnboardingWizard } from "@/components/OnboardingWizard";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function Settings() {
   const { user } = useAuth();
@@ -396,6 +397,27 @@ export default function Settings() {
                       )}
                     </Button>
                   </form>
+                </CardContent>
+              </Card>
+
+              {/* Language Preference */}
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <HelpCircle className="w-5 h-5" />
+                    Language
+                  </CardTitle>
+                  <CardDescription>
+                    Choose your preferred language for the interface
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-3">
+                    <LanguageSwitcher />
+                    <span className="text-sm text-muted-foreground">
+                      Interface language
+                    </span>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

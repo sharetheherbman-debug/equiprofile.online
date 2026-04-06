@@ -180,27 +180,29 @@ function HorsesContent() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {localHorses.map((horse) => (
             <Card key={horse.id} className="card-hover overflow-hidden">
-              <div className="aspect-video bg-muted relative">
-                {horse.photoUrl ? (
-                  <img
-                    src={horse.photoUrl}
-                    alt={horse.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/images/hero/image6.jpg";
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-rose-900/20 to-pink-900/20">
-                    <Heart className="w-16 h-16 text-muted-foreground/30" />
-                  </div>
-                )}
-                {horse.gender && (
-                  <Badge className="absolute top-3 right-3 capitalize">
-                    {horse.gender}
-                  </Badge>
-                )}
+              <div className="p-3 pb-0">
+                <div className="aspect-[4/3] bg-muted rounded-xl overflow-hidden relative">
+                  {horse.photoUrl ? (
+                    <img
+                      src={horse.photoUrl}
+                      alt={horse.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/images/hero/image6.jpg";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-rose-900/20 to-pink-900/20">
+                      <Heart className="w-14 h-14 text-muted-foreground/30" />
+                    </div>
+                  )}
+                  {horse.gender && (
+                    <Badge className="absolute top-2.5 right-2.5 capitalize">
+                      {horse.gender}
+                    </Badge>
+                  )}
+                </div>
               </div>
               <CardHeader>
                 <CardTitle className="font-serif">{horse.name}</CardTitle>

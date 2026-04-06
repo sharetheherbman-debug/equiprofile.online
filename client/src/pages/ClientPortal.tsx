@@ -1,4 +1,5 @@
 import { useState } from "react";
+import DashboardLayout from "@/components/DashboardLayout";
 import {
   Eye,
   Heart,
@@ -23,7 +24,7 @@ import {
 import { trpc } from "../lib/trpc";
 import { format } from "date-fns";
 
-export default function ClientPortal() {
+function ClientPortalContent() {
   // Client portal shows the authenticated user's own horses in read-only view.
   // Useful for sharing a screen with your vet/client or reviewing your data.
   const { data: horses = [] } = trpc.horses.list.useQuery();
@@ -377,5 +378,13 @@ export default function ClientPortal() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ClientPortal() {
+  return (
+    <DashboardLayout>
+      <ClientPortalContent />
+    </DashboardLayout>
   );
 }

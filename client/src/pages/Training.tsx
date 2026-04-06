@@ -57,6 +57,7 @@ import {
   Search,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useRealtimeModule } from "@/hooks/useRealtime";
 
 const sessionTypes = [
   { value: "flatwork", label: "Flatwork" },
@@ -112,6 +113,12 @@ function TrainingContent() {
   } = trpc.training.listAll.useQuery();
   const { data: upcomingSessions } = trpc.training.getUpcoming.useQuery();
   const { data: templates } = trpc.trainingPrograms.listTemplates.useQuery();
+
+  // Real-time subscription — refresh when another device adds/updates a session
+  useRealtimeModule("training", () => {
+    utils.training.listAll.invalidate();
+    utils.training.getUpcoming.invalidate();
+  });
 
   const createMutation = trpc.training.create.useMutation({
     onSuccess: () => {

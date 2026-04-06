@@ -91,6 +91,8 @@ import {
   InsertXray,
   tags,
   InsertTag,
+  horseTags,
+  InsertHorseTag,
   hoofcare,
   InsertHoofcare,
   nutritionLogs,
@@ -717,6 +719,16 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
       CONSTRAINT \`tags_id\` PRIMARY KEY(\`id\`)
     )`,
+    // Horse-tag assignments (many-to-many)
+    `CREATE TABLE IF NOT EXISTS \`horseTags\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`horseId\` int NOT NULL,
+      \`tagId\` int NOT NULL,
+      \`userId\` int NOT NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`horseTags_id\` PRIMARY KEY(\`id\`),
+      UNIQUE KEY \`horseTags_horse_tag_unique\` (\`horseId\`, \`tagId\`)
+    )`,
     // Hoofcare
     `CREATE TABLE IF NOT EXISTS \`hoofcare\` (
       \`id\` int AUTO_INCREMENT NOT NULL,
@@ -1145,6 +1157,7 @@ export async function hardDeleteUser(id: number) {
   await db.delete(feedCosts).where(eq(feedCosts.userId, id));
   await db.delete(tasks).where(eq(tasks.userId, id));
   await db.delete(contacts).where(eq(contacts.userId, id));
+  await db.delete(horseTags).where(eq(horseTags.userId, id));
   await db.delete(tags).where(eq(tags.userId, id));
   await db.delete(competitions).where(eq(competitions.userId, id));
   await db.delete(competitionResults).where(eq(competitionResults.userId, id));
@@ -3083,6 +3096,42 @@ export async function deleteTag(id: number, userId: number) {
   if (!db) throw new Error("Database not available");
 
   await db.delete(tags).where(and(eq(tags.id, id), eq(tags.userId, userId)));
+}
+
+// ============ HORSE TAGS (many-to-many) ============
+
+export async function attachTagToHorse(horseId: number, tagId: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Upsert — ignore duplicate if already attached
+  await db
+    .insert(horseTags)
+    .values({ horseId, tagId, userId })
+    .onDuplicateKeyUpdate({ set: { horseId } }); // no-op update keeps the row
+}
+
+export async function detachTagFromHorse(horseId: number, tagId: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .delete(horseTags)
+    .where(and(eq(horseTags.horseId, horseId), eq(horseTags.tagId, tagId), eq(horseTags.userId, userId)));
+}
+
+export async function getTagsByHorse(horseId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const rows = await db
+    .select({ tag: tags })
+    .from(horseTags)
+    .innerJoin(tags, eq(horseTags.tagId, tags.id))
+    .where(and(eq(horseTags.horseId, horseId), eq(horseTags.userId, userId)))
+    .orderBy(tags.name);
+
+  return rows.map((r) => r.tag);
 }
 
 // ============ HOOFCARE ============

@@ -962,6 +962,82 @@ export const appRouter = router({
         return { horse, healthRecords: records };
       }),
 
+    // Public endpoint — resolves a share token to passport data
+    getPassportByToken: publicProcedure
+      .input(z.object({ token: z.string().min(1).max(100) }))
+      .query(async ({ input }) => {
+        const drizzleDb = await getDb();
+        if (!drizzleDb) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        const linkRows = await drizzleDb
+          .select()
+          .from(shareLinks)
+          .where(
+            and(
+              eq(shareLinks.token, input.token),
+              eq(shareLinks.isActive, true),
+            ),
+          )
+          .limit(1);
+
+        const link = linkRows[0];
+        if (!link) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Share link not found or has been revoked" });
+        }
+
+        if (link.expiresAt && new Date(link.expiresAt) < new Date()) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "This share link has expired" });
+        }
+
+        if (link.linkType !== "medical_passport" || !link.horseId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid passport link" });
+        }
+
+        // Increment view count (fire-and-forget)
+        drizzleDb
+          .update(shareLinks)
+          .set({ viewCount: (link.viewCount ?? 0) + 1, lastViewedAt: new Date() })
+          .where(eq(shareLinks.id, link.id))
+          .catch(() => {});
+
+        const horseRows = await drizzleDb
+          .select({
+            id: horses.id,
+            name: horses.name,
+            breed: horses.breed,
+            color: horses.color,
+            gender: horses.gender,
+            dateOfBirth: horses.dateOfBirth,
+            height: horses.height,
+            microchipNumber: horses.microchipNumber,
+            registrationNumber: horses.registrationNumber,
+          })
+          .from(horses)
+          .where(and(eq(horses.id, link.horseId), eq(horses.isActive, true)))
+          .limit(1);
+
+        if (!horseRows[0]) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+        }
+
+        const horse = horseRows[0];
+
+        const records = await drizzleDb
+          .select({
+            id: healthRecords.id,
+            title: healthRecords.title,
+            recordType: healthRecords.recordType,
+            recordDate: healthRecords.recordDate,
+            nextDueDate: healthRecords.nextDueDate,
+          })
+          .from(healthRecords)
+          .where(eq(healthRecords.horseId, link.horseId))
+          .orderBy(desc(healthRecords.recordDate))
+          .limit(50);
+
+        return { horse, healthRecords: records };
+      }),
+
     get: subscribedProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ ctx, input }) => {
@@ -3962,6 +4038,36 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           dailyTrend,
         };
       }),
+
+    // Reset analytics — wipes siteAnalytics rows older than a cutoff date so
+    // the admin can start fresh without touching user/business data.
+    resetAnalytics: adminUnlockedProcedure
+      .input(
+        z.object({
+          // 'all' deletes everything; 'before_today' deletes rows before today
+          mode: z.enum(["all", "before_today"]).default("all"),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
+
+        if (input.mode === "all") {
+          await dbConn.delete(siteAnalytics);
+        } else {
+          const todayStart = new Date();
+          todayStart.setHours(0, 0, 0, 0);
+          await dbConn
+            .delete(siteAnalytics)
+            .where(sql`${siteAnalytics.createdAt} < ${todayStart}`);
+        }
+
+        return { success: true, mode: input.mode };
+      }),
   }),
 
   // Stable management
@@ -4888,6 +4994,22 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           return db.getCompetitionsByHorseId(input.horseId, ctx.user.id);
         }
         return db.getCompetitionsByUserId(ctx.user.id);
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        await dbConn
+          .delete(competitions)
+          .where(
+            and(
+              eq(competitions.id, input.id),
+              eq(competitions.userId, ctx.user.id),
+            ),
+          );
+        return { success: true };
       }),
 
     exportCSV: subscribedProcedure.query(async ({ ctx }) => {
@@ -6646,6 +6768,34 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         });
 
         return { success: true };
+      }),
+
+    attachToHorse: protectedProcedure
+      .input(z.object({ horseId: z.number(), tagId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Verify horse ownership
+        const horse = await db.getHorseById(input.horseId, ctx.user.id);
+        if (!horse) throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+
+        // Verify tag ownership
+        const tag = await db.getTagById(input.tagId, ctx.user.id);
+        if (!tag) throw new TRPCError({ code: "NOT_FOUND", message: "Tag not found" });
+
+        await db.attachTagToHorse(input.horseId, input.tagId, ctx.user.id);
+        return { success: true };
+      }),
+
+    detachFromHorse: protectedProcedure
+      .input(z.object({ horseId: z.number(), tagId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.detachTagFromHorse(input.horseId, input.tagId, ctx.user.id);
+        return { success: true };
+      }),
+
+    listByHorse: protectedProcedure
+      .input(z.object({ horseId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getTagsByHorse(input.horseId, ctx.user.id);
       }),
   }),
 

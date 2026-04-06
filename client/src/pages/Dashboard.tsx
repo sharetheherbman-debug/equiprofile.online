@@ -1,5 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
@@ -234,13 +234,24 @@ function DashboardContent() {
     today.getDate() + 1,
   );
 
+  // Stable calendar query dates — computed once per mount so the query key
+  // doesn't change on every render (which would cause repeated fetches).
+  // Fetches from today (midnight) to 31 days forward — covers the full month
+  // ahead while keeping today's events visible at the top of the "Today" panel.
+  const calendarQueryDates = useMemo(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    return {
+      startDate: start.toISOString(),
+      endDate: new Date(start.getTime() + 31 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Single calendar query for the next 30 days — filtered client-side for "today"
   // to avoid two separate HTTP requests on every Dashboard mount.
   const { data: allCalendarEvents = [] } = trpc.calendar.getEvents.useQuery(
-    {
-      startDate: todayStart.toISOString(),
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    },
+    calendarQueryDates,
     { retry: false, staleTime: 5 * 60 * 1000 },
   );
 
@@ -426,69 +437,13 @@ function DashboardContent() {
         </Link>
       </motion.div>
 
-      {/* ── Feature Discovery Strip ────────────────────────────── */}
-      {(horses as any[]).length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.12 }}
-          className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0"
-        >
-          <div className="flex gap-2 min-w-max sm:min-w-0">
-            <Link href="/horses" className="flex-1 sm:flex-none">
-              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-teal-500/20 bg-gradient-to-r from-teal-950/30 to-cyan-950/20 hover:from-teal-950/50 hover:to-cyan-950/30 transition-all cursor-pointer min-w-[200px]">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center shrink-0">
-                  <Clock className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-teal-200">Horse Timeline</p>
-                  <p className="text-[10px] text-teal-300/60 leading-tight">View full history</p>
-                </div>
-              </div>
-            </Link>
-            <Link href="/equine-passport" className="flex-1 sm:flex-none">
-              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/30 to-blue-950/20 hover:from-indigo-950/50 hover:to-blue-950/30 transition-all cursor-pointer min-w-[200px]">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shrink-0">
-                  <Shield className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-indigo-200">Equine Passport</p>
-                  <p className="text-[10px] text-indigo-300/60 leading-tight">Digital passport & QR</p>
-                </div>
-              </div>
-            </Link>
-            <Link href="/training-templates" className="flex-1 sm:flex-none">
-              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-emerald-500/20 bg-gradient-to-r from-emerald-950/30 to-green-950/20 hover:from-emerald-950/50 hover:to-green-950/30 transition-all cursor-pointer min-w-[200px]">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shrink-0">
-                  <BookOpen className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-emerald-200">Training Templates</p>
-                  <p className="text-[10px] text-emerald-300/60 leading-tight">Expert training plans</p>
-                </div>
-              </div>
-            </Link>
-            <Link href="/ai-chat" className="flex-1 sm:flex-none">
-              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-purple-500/20 bg-gradient-to-r from-purple-950/30 to-violet-950/20 hover:from-purple-950/50 hover:to-violet-950/30 transition-all cursor-pointer min-w-[200px]">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shrink-0">
-                  <Brain className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-purple-200">AI Assistant</p>
-                  <p className="text-[10px] text-purple-300/60 leading-tight">Ask about your horses</p>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </motion.div>
-      )}
-
       {/* ── Care Insights ────────────────────────────────────── */}
       {(() => {
-        // Only show urgent/warning alerts and non-"no_recent_health" info alerts
+        // Show urgent/warning alerts only — never surface "no_recent_health"
+        // at any severity on the main dashboard (avoid raw warning spam).
         const actionableAlerts = (smartAlerts as any[]).filter(
-          (a) => a.severity === "urgent" || a.severity === "warning" ||
-            (a.severity === "info" && a.type !== "no_recent_health")
+          (a) => (a.severity === "urgent" || a.severity === "warning") &&
+            a.type !== "no_recent_health"
         );
         const hasContent = healthAlerts.length > 0 || actionableAlerts.length > 0;
         if (!hasContent) return null;
@@ -496,7 +451,7 @@ function DashboardContent() {
           ...healthAlerts.map((a) => ({ id: a.id, href: a.href, severity: "warning", title: a.message, horseId: null })),
           ...actionableAlerts,
         ];
-        const visibleAlerts = allAlerts.slice(0, 4);
+        const visibleAlerts = allAlerts.slice(0, 3);
         return (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -508,12 +463,12 @@ function DashboardContent() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="font-serif text-sm flex items-center gap-2">
                     <Stethoscope className="w-4 h-4 text-amber-400" />
-                    Care Insights
+                    Care Reminders
                   </CardTitle>
-                  {allAlerts.length > 4 && (
+                  {allAlerts.length > 3 && (
                     <Link href="/health">
                       <Button variant="ghost" size="sm" className="h-6 text-[11px] text-amber-400/80 hover:text-amber-300 px-2">
-                        View all {allAlerts.length} →
+                        View all →
                       </Button>
                     </Link>
                   )}
@@ -853,17 +808,6 @@ function DashboardContent() {
                     </Button>
                   </Link>
                 )}
-                {(horses as any[]).length > 0 && (
-                  <Link href="/horses">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full text-xs text-teal-400/80 hover:text-teal-300 mt-2 h-7 font-medium"
-                    >
-                      View timelines →
-                    </Button>
-                  </Link>
-                )}
               </div>
             )}
           </CardContent>
@@ -931,53 +875,30 @@ function DashboardContent() {
         </Card>
       </motion.div>
 
-      {/* ── KPI Strip ─────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: 0.22 }}
-        className="grid grid-cols-2 sm:grid-cols-4 gap-3"
-      >
-        {[
-          {
-            label: "Horses",
-            value: stats?.horseCount ?? (horses as any[]).length,
-            icon: Heart,
-            color: "text-rose-400",
-          },
-          {
-            label: "Training hrs",
-            value: Math.round((trainingStats?.totalDuration || 0) / 60),
-            icon: Dumbbell,
-            color: "text-green-400",
-          },
-          {
-            label: "Upcoming",
-            value: stats?.upcomingSessionCount || 0,
-            icon: Calendar,
-            color: "text-purple-400",
-          },
-          {
-            label: "Health alerts",
-            value: stats?.reminderCount || 0,
-            icon: Stethoscope,
-            color: "text-amber-400",
-          },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <div
-            key={label}
-            className="flex items-center gap-2.5 p-3 rounded-xl border border-muted/30 bg-card/60"
-          >
-            <Icon className={`w-4 h-4 shrink-0 ${color}`} />
+      {/* ── Training Summary Strip ─────────────────────────────── */}
+      {(trainingStats?.totalSessions || 0) > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.22 }}
+          className="grid grid-cols-2 gap-3"
+        >
+          <div className="flex items-center gap-2.5 p-3 rounded-xl border border-muted/30 bg-card/60">
+            <Dumbbell className="w-4 h-4 shrink-0 text-green-400" />
             <div>
-              <p className="text-lg font-bold leading-none">{value}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
-                {label}
-              </p>
+              <p className="text-lg font-bold leading-none">{Math.round((trainingStats?.totalDuration || 0) / 60)}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Training hrs logged</p>
             </div>
           </div>
-        ))}
-      </motion.div>
+          <div className="flex items-center gap-2.5 p-3 rounded-xl border border-muted/30 bg-card/60">
+            <Stethoscope className="w-4 h-4 shrink-0 text-amber-400" />
+            <div>
+              <p className="text-lg font-bold leading-none">{stats?.reminderCount || 0}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Health reminders</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* ── Quick Links — desktop-only feature directory ────── */}
       {/* Mobile uses the "More" sheet in the bottom navigation bar instead */}

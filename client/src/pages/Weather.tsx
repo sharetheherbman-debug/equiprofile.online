@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   CloudSun,
   Thermometer,
@@ -20,9 +22,14 @@ import {
   Target,
   Clock,
   Shield,
+  Loader2,
+  Navigation,
 } from "lucide-react";
 
 function WeatherContent() {
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const utils = trpc.useUtils();
+
   // Open-Meteo live weather endpoints
   const {
     data: currentWeather,
@@ -42,9 +49,49 @@ function WeatherContent() {
       staleTime: 0,
     });
 
+  const { data: hourly, isLoading: hourlyLoading, refetch: refetchHourly } =
+    trpc.weather.getHourly.useQuery(undefined, {
+      retry: false,
+      refetchOnWindowFocus: false,
+      staleTime: 0,
+    });
+
+  const updateLocation = trpc.weather.updateLocation.useMutation({
+    onSuccess: () => {
+      toast.success("Location saved — loading weather…");
+      refetchCurrent();
+      refetchForecast();
+    },
+    onError: (err) => toast.error(err.message || "Failed to save location"),
+    onSettled: () => setDetectingLocation(false),
+  });
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+    setDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        updateLocation.mutate({
+          latitude: position.coords.latitude.toString(),
+          longitude: position.coords.longitude.toString(),
+          location: undefined,
+        });
+      },
+      (error) => {
+        setDetectingLocation(false);
+        toast.error(`Could not detect location: ${error.message}`);
+      },
+      { timeout: 10000 },
+    );
+  };
+
   const handleRefresh = () => {
     refetchCurrent();
     refetchForecast();
+    refetchHourly();
   };
   const getRecommendationColor = (rec: string) => {
     switch (rec) {
@@ -375,20 +422,107 @@ function WeatherContent() {
         </Card>
       ) : (
         <Card>
-          <CardContent className="py-8">
-            <div className="text-center space-y-3">
+          <CardContent className="py-10">
+            <div className="text-center space-y-4 max-w-sm mx-auto">
               <MapPin className="w-12 h-12 mx-auto text-muted-foreground" />
-              <p className="text-muted-foreground">
-                Please set your location in Settings to see current weather
-                conditions
-              </p>
-              <Button onClick={() => (window.location.href = "/settings")}>
-                Go to Settings
-              </Button>
+              <div>
+                <p className="font-medium">Location not set</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Allow location access to see live weather conditions and
+                  riding recommendations for your area.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Button
+                  onClick={handleDetectLocation}
+                  disabled={detectingLocation}
+                >
+                  {detectingLocation ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Navigation className="w-4 h-4 mr-2" />
+                  )}
+                  {detectingLocation ? "Detecting…" : "Detect My Location"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => (window.location.href = "/settings")}
+                >
+                  <MapPin className="w-4 h-4 mr-2" />
+                  Set in Settings
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Hourly Forecast */}
+      {hourlyLoading ? (
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <Skeleton key={i} className="h-20 w-16 shrink-0" />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ) : hourly && (hourly as any[]).length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-blue-500" />
+              Hourly Forecast
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {(hourly as any[]).slice(0, 24).map((h: any, i: number) => {
+                const hourLabel = new Date(h.time).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                const isNow = i === 0;
+                return (
+                  <div
+                    key={i}
+                    className={cn(
+                      "flex flex-col items-center gap-1 p-2 rounded-lg text-center shrink-0 w-16",
+                      isNow
+                        ? "bg-primary/10 border border-primary/20"
+                        : "bg-muted/50",
+                    )}
+                  >
+                    <span className="text-[10px] font-medium text-muted-foreground">
+                      {isNow ? "Now" : hourLabel}
+                    </span>
+                    <CloudSun className="w-4 h-4 text-amber-400" />
+                    <span className="text-sm font-semibold">
+                      {Math.round(h.temperature ?? 0)}°
+                    </span>
+                    {(h.precipitation ?? 0) > 0 && (
+                      <span className="text-[10px] text-blue-500 flex items-center gap-0.5">
+                        <Droplets className="w-2.5 h-2.5" />
+                        {h.precipitation}mm
+                      </span>
+                    )}
+                    {(h.windSpeed ?? 0) > 0 && (
+                      <span className="text-[10px] text-muted-foreground">
+                        {Math.round(h.windSpeed)}
+                        <span className="text-[9px]">km/h</span>
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {/* 7-Day Forecast */}
       {forecastLoading ? (

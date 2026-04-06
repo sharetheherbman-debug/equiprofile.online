@@ -69,6 +69,7 @@ import {
   Navigation,
   ShoppingCart,
   Wrench,
+  Trophy,
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -143,6 +144,7 @@ const stableBottomNavItems = [
 const moreModuleGroups = [
   {
     label: "Core",
+    iconBg: "bg-gradient-to-br from-sky-500 to-blue-600",
     items: [
       { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
       { icon: Cloud, label: "Weather", path: "/weather" },
@@ -152,6 +154,7 @@ const moreModuleGroups = [
   },
   {
     label: "Health",
+    iconBg: "bg-gradient-to-br from-rose-500 to-red-600",
     items: [
       { icon: Stethoscope, label: "Health Hub", path: "/health" },
       { icon: Syringe, label: "Vaccinations", path: "/vaccinations" },
@@ -164,16 +167,19 @@ const moreModuleGroups = [
   },
   {
     label: "Training & Activity",
+    iconBg: "bg-gradient-to-br from-green-500 to-emerald-600",
     items: [
       { icon: Dumbbell, label: "Training Log", path: "/training" },
       { icon: BookOpen, label: "Templates", path: "/training-templates" },
       { icon: Navigation, label: "GPS Tracking", path: "/ride-tracking" },
+      { icon: Trophy, label: "Competitions", path: "/competitions" },
       { icon: Users, label: "Lessons", path: "/lessons" },
       { icon: Baby, label: "Breeding", path: "/breeding" },
     ],
   },
   {
     label: "Nutrition",
+    iconBg: "bg-gradient-to-br from-lime-500 to-green-600",
     items: [
       { icon: Apple, label: "Feeding Plans", path: "/feeding" },
       { icon: FileText, label: "Nutrition Plans", path: "/nutrition-plans" },
@@ -183,6 +189,7 @@ const moreModuleGroups = [
   },
   {
     label: "Data & Reports",
+    iconBg: "bg-gradient-to-br from-indigo-500 to-violet-600",
     items: [
       { icon: FileText, label: "Documents", path: "/documents" },
       { icon: BarChart3, label: "Analytics", path: "/analytics" },
@@ -194,6 +201,7 @@ const moreModuleGroups = [
   },
   {
     label: "Stable & People",
+    iconBg: "bg-gradient-to-br from-cyan-500 to-teal-600",
     items: [
       { icon: Home, label: "Stable Management", path: "/stable" },
       { icon: UserCog, label: "Staff", path: "/staff" },
@@ -202,6 +210,7 @@ const moreModuleGroups = [
   },
   {
     label: "Account",
+    iconBg: "bg-gradient-to-br from-slate-500 to-gray-600",
     items: [
       { icon: Settings, label: "Settings", path: "/settings" },
       { icon: DollarSign, label: "Billing", path: "/billing" },
@@ -610,15 +619,15 @@ function DashboardLayoutContent({
                   side="bottom"
                   className="max-h-[80vh] overflow-y-auto rounded-t-xl"
                 >
-                  <SheetHeader className="pb-2">
-                    <SheetTitle className="font-serif text-left">
+                  <SheetHeader className="pb-3">
+                    <SheetTitle className="font-serif text-left text-base">
                       All Features
                     </SheetTitle>
                     <SheetDescription className="sr-only">
                       Navigate to any feature in the app
                     </SheetDescription>
                   </SheetHeader>
-                  <div className="space-y-4" style={{ paddingBottom: 'calc(1.5rem + var(--safe-area-bottom, 0px))' }}>
+                  <div className="space-y-5" style={{ paddingBottom: 'calc(1.5rem + var(--safe-area-bottom, 0px))' }}>
                     {moreModuleGroups.map((group) => {
                       // Filter stable-only items for non-stable users
                       const items = group.items.filter((item) => {
@@ -636,10 +645,10 @@ function DashboardLayoutContent({
                       if (items.length === 0) return null;
                       return (
                         <div key={group.label}>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
-                          {group.label}
-                        </p>
-                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2.5 px-0.5">
+                            {group.label}
+                          </p>
+                          <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                             {items.map((item) => {
                               const Icon = item.icon;
                               const isActive = location === item.path;
@@ -650,14 +659,16 @@ function DashboardLayoutContent({
                                     setLocation(item.path);
                                     setMoreSheetOpen(false);
                                   }}
-                                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center min-h-[72px] ${
+                                  className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border transition-all text-center active:scale-95 ${
                                     isActive
-                                      ? "border-primary bg-primary/10 text-primary"
-                                      : "border-border bg-card hover:bg-accent"
+                                      ? "border-primary/40 bg-primary/10 text-primary"
+                                      : "border-border/60 bg-card hover:bg-accent/60"
                                   }`}
                                 >
-                                  <Icon className="h-5 w-5 shrink-0" />
-                                  <span className="text-[11px] leading-tight font-medium">
+                                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${isActive ? "bg-primary/20" : group.iconBg}`}>
+                                    <Icon className="h-4 w-4 text-white" />
+                                  </div>
+                                  <span className="text-[10px] leading-tight font-medium">
                                     {item.label}
                                   </span>
                                 </button>

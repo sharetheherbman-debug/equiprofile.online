@@ -74,16 +74,18 @@ const RIDE_DRAFT_KEY = "equiprofile_ride_draft";
 const DRAFT_EXPIRY_MS = 24 * 60 * 60 * 1000;
 const AUTO_SAVE_INTERVAL_MS = 10_000;
 
-// ─── Leaflet icon fix (bundlers strip default icon URLs) ─────────────────────
-const defaultIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+// ─── Leaflet icon fix — use bundled divIcon (no CDN dependency) ──────────────
+const defaultIcon = L.divIcon({
+  className: "",
+  html: `<div style="position:relative;width:25px;height:41px">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 41" width="25" height="41">
+      <path d="M12.5 0C5.596 0 0 5.596 0 12.5c0 9.932 12.5 28.5 12.5 28.5S25 22.432 25 12.5C25 5.596 19.404 0 12.5 0z" fill="#2563eb"/>
+      <circle cx="12.5" cy="12.5" r="6" fill="white"/>
+    </svg>
+  </div>`,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowSize: [41, 41],
 });
 
 const startIcon = L.divIcon({
@@ -446,6 +448,8 @@ function RideTrackingContent() {
     [deleteRideMutation],
   );
 
+  const storageWarningShownRef = useRef(false);
+
   // ── Auto-save draft to localStorage every 10s while tracking ────────────
   useEffect(() => {
     if (!isTracking || currentPoints.length === 0) return;
@@ -469,6 +473,16 @@ function RideTrackingContent() {
         localStorage.setItem(RIDE_DRAFT_KEY, JSON.stringify(draft));
       } catch (err) {
         console.warn("[RideTracking] Auto-save failed (storage quota?):", err);
+        // Warn the user once — private browsing on iOS Safari disables localStorage
+        if (!storageWarningShownRef.current) {
+          storageWarningShownRef.current = true;
+          toast.warning(
+            "Auto-save unavailable — your ride draft cannot be saved. " +
+            "This happens in private/incognito browsing mode. " +
+            "Make sure to save your ride before leaving this page.",
+            { duration: 8000 },
+          );
+        }
       }
     }, AUTO_SAVE_INTERVAL_MS);
     return () => clearInterval(interval);

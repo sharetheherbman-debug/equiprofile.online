@@ -1077,6 +1077,18 @@ export const tags = mysqlTable("tags", {
 export type Tag = typeof tags.$inferSelect;
 export type InsertTag = typeof tags.$inferInsert;
 
+// Horse tag assignments (many-to-many: horses ↔ tags)
+export const horseTags = mysqlTable("horseTags", {
+  id: int("id").autoincrement().primaryKey(),
+  horseId: int("horseId").notNull(),
+  tagId: int("tagId").notNull(),
+  userId: int("userId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type HorseTag = typeof horseTags.$inferSelect;
+export type InsertHorseTag = typeof horseTags.$inferInsert;
+
 // Hoofcare module
 export const hoofcare = mysqlTable("hoofcare", {
   id: int("id").autoincrement().primaryKey(),

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { trpc } from "@/lib/trpc";
 import { useRealtimeModule } from "../hooks/useRealtime";
@@ -35,8 +35,22 @@ import {
   DollarSign,
   TrendingUp,
   ShoppingCart,
-  PieChart,
+  PieChart as PieChartIcon,
+  BarChart2,
 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
 import { toast } from "sonner";
 
 const feedTypes = [
@@ -135,6 +149,33 @@ function FeedCostContent() {
     const horse = horses.find((h) => h.id === horseId);
     return horse?.name || "Unknown";
   };
+
+  // Aggregate monthly cost data for the bar chart
+  const monthlyData = useMemo(() => {
+    if (!costs) return [];
+    const byMonth: Record<string, number> = {};
+    (costs as any[]).forEach((c) => {
+      const d = new Date(c.purchaseDate);
+      const key = d.toLocaleString("default", { month: "short", year: "2-digit" });
+      byMonth[key] = (byMonth[key] ?? 0) + (c.costPerUnit ?? 0);
+    });
+    return Object.entries(byMonth)
+      .slice(-6)
+      .map(([month, total]) => ({ month, total }));
+  }, [costs]);
+
+  // Feed type pie data
+  const feedTypeData = useMemo(() => {
+    if (!costs) return [];
+    const byType: Record<string, number> = {};
+    (costs as any[]).forEach((c) => {
+      const t = c.feedType ?? "Other";
+      byType[t] = (byType[t] ?? 0) + (c.costPerUnit ?? 0);
+    });
+    return Object.entries(byType).map(([name, value]) => ({ name, value }));
+  }, [costs]);
+
+  const CHART_COLORS = ["#6366f1","#10b981","#f59e0b","#ef4444","#8b5cf6","#06b6d4","#84cc16","#f97316"];
 
   return (
     <div className="space-y-6">
@@ -375,7 +416,7 @@ function FeedCostContent() {
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-                  <PieChart className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  <PieChartIcon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">
@@ -396,7 +437,7 @@ function FeedCostContent() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PieChart className="w-5 h-5 text-indigo-500" />
+              <PieChartIcon className="w-5 h-5 text-indigo-500" />
               Cost Breakdown by Horse
             </CardTitle>
             <CardDescription>
@@ -428,6 +469,67 @@ function FeedCostContent() {
                 );
               })}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Monthly trend chart */}
+      {monthlyData.length > 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart2 className="w-5 h-5 text-blue-500" />
+              Monthly Spend Trend
+            </CardTitle>
+            <CardDescription>Feed costs over the last 6 months</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={monthlyData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `£${v}`} />
+                <Tooltip formatter={(v: any) => [`£${Number(v).toFixed(2)}`, "Total"]} />
+                <Bar dataKey="total" fill="#6366f1" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Feed type breakdown pie */}
+      {feedTypeData.length > 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PieChartIcon className="w-5 h-5 text-amber-500" />
+              Spend by Feed Type
+            </CardTitle>
+            <CardDescription>Distribution across feed categories</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie
+                  data={feedTypeData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  label={({ name, percent }) =>
+                    `${name} ${Math.round(percent * 100)}%`
+                  }
+                  labelLine={false}
+                >
+                  {feedTypeData.map((_: any, i: number) => (
+                    <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(v: any) => [`£${Number(v).toFixed(2)}`, "Cost"]} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       )}

@@ -4,9 +4,9 @@ import { Shield, AlertCircle, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-function PassportContent({ horseId }: { horseId: number }) {
-  const { data, isLoading, error } = trpc.horses.getPassport.useQuery(
-    { id: horseId },
+function PassportContent({ token }: { token: string }) {
+  const { data, isLoading, error } = trpc.horses.getPassportByToken.useQuery(
+    { token },
     { retry: 1 },
   );
 
@@ -19,14 +19,15 @@ function PassportContent({ horseId }: { horseId: number }) {
   }
 
   if (error || !data) {
+    const msg =
+      error?.data?.code === "FORBIDDEN"
+        ? "This share link has expired."
+        : "This horse passport could not be found. The link may be invalid or has been revoked.";
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
         <AlertCircle className="h-12 w-12 text-destructive" />
         <h2 className="text-xl font-semibold">Passport Not Found</h2>
-        <p className="text-muted-foreground max-w-sm">
-          This horse passport could not be found. The QR code may be invalid or
-          the record may have been removed.
-        </p>
+        <p className="text-muted-foreground max-w-sm">{msg}</p>
       </div>
     );
   }
@@ -244,16 +245,16 @@ function PassportContent({ horseId }: { horseId: number }) {
 }
 
 export default function PassportView() {
-  const params = useParams<{ id: string }>();
-  const horseId = parseInt(params.id ?? "", 10);
+  const params = useParams<{ token: string }>();
+  const token = params.token ?? "";
 
-  if (isNaN(horseId) || horseId <= 0) {
+  if (!token) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 text-center px-4">
         <AlertCircle className="h-12 w-12 text-destructive" />
         <h2 className="text-xl font-semibold">Invalid Passport Link</h2>
         <p className="text-muted-foreground max-w-sm">
-          The QR code does not contain a valid horse ID.
+          The QR code does not contain a valid share token.
         </p>
       </div>
     );
@@ -261,7 +262,7 @@ export default function PassportView() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PassportContent horseId={horseId} />
+      <PassportContent token={token} />
     </div>
   );
 }

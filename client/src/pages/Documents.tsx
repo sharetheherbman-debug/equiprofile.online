@@ -49,6 +49,7 @@ import {
   Eye,
   X,
 } from "lucide-react";
+import { Search } from "lucide-react";
 import { toast } from "sonner";
 
 const documentTypes = [
@@ -141,6 +142,7 @@ function DocumentsContent() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
   const [horseFilter, setHorseFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [previewDoc, setPreviewDoc] = useState<{ url: string; name: string; type: string } | null>(null);
   const [formData, setFormData] = useState({
     horseId: "",
@@ -284,11 +286,21 @@ function DocumentsContent() {
     return lower.endsWith(".pdf") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png") || lower.endsWith(".gif") || lower.endsWith(".webp");
   };
 
-  // Filter docs by selected horse
+  // Filter docs by selected horse and keyword search
   const filteredDocs = (documents ?? []).filter((doc) => {
-    if (horseFilter === "all") return true;
-    if (horseFilter === "general") return !doc.horseId;
-    return doc.horseId === parseInt(horseFilter);
+    const matchesHorse =
+      horseFilter === "all" ||
+      (horseFilter === "general" ? !doc.horseId : doc.horseId === parseInt(horseFilter));
+    if (!matchesHorse) return false;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      return (
+        doc.fileName?.toLowerCase().includes(q) ||
+        (doc.description ?? "").toLowerCase().includes(q) ||
+        (doc.category ?? "").toLowerCase().includes(q)
+      );
+    }
+    return true;
   });
 
   // Group filtered documents by category
@@ -648,7 +660,17 @@ function DocumentsContent() {
               : `${filteredDocs.length} document${filteredDocs.length !== 1 ? "s" : ""} across ${Object.keys(docsByCategory).length} folder${Object.keys(docsByCategory).length !== 1 ? "s" : ""}`}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Keyword search */}
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search documents…"
+              className="pl-8 h-9 w-44 text-sm"
+            />
+          </div>
           {/* Horse filter — only show when there are multiple horses */}
           {(horses ?? []).length > 0 && (
             <Select value={horseFilter} onValueChange={setHorseFilter}>
