@@ -219,6 +219,18 @@ const TRAINING_DAY_OFFSET: Record<string, number> = {
   Saturday: 6,
 };
 
+// Session type mapping: template type → trainingSessions sessionType
+function mapTemplateSessionType(type: string): "flatwork" | "jumping" | "hacking" | "lunging" | "groundwork" | "competition" | "lesson" | "other" {
+  const lowerType = type.toLowerCase();
+  if (lowerType === "flatwork") return "flatwork";
+  if (lowerType === "jumping") return "jumping";
+  if (lowerType === "hack" || lowerType === "hacking") return "hacking";
+  if (lowerType === "groundwork") return "groundwork";
+  if (lowerType === "lunging") return "lunging";
+  if (lowerType === "walk") return "hacking"; // walking is a form of hacking
+  return "other";
+}
+
 export const appRouter = router({
   system: systemRouter,
 
@@ -5102,44 +5114,46 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               }>;
             };
 
-            const baseDate = new Date(input.startDate);
-            const baseDayOfWeek = baseDate.getDay();
+            // Validate programData structure
+            if (!programData.weeks || !Array.isArray(programData.weeks)) {
+              console.warn("[Templates] Invalid programData structure, skipping session creation");
+            } else {
+              const baseDate = new Date(input.startDate);
+              const baseDayOfWeek = baseDate.getDay();
 
-            // Session type mapping: template type → trainingSessions sessionType
-            const mapSessionType = (type: string): "flatwork" | "jumping" | "hacking" | "lunging" | "groundwork" | "competition" | "lesson" | "other" => {
-              const lowerType = type.toLowerCase();
-              if (lowerType === "flatwork") return "flatwork";
-              if (lowerType === "jumping") return "jumping";
-              if (lowerType === "hack" || lowerType === "hacking") return "hacking";
-              if (lowerType === "groundwork") return "groundwork";
-              if (lowerType === "lunging") return "lunging";
-              if (lowerType === "walk") return "hacking"; // walking is a form of hacking
-              return "other";
-            };
-
-            // Create sessions for first 4 weeks
-            for (const week of (programData.weeks ?? []).slice(0, 4)) {
-              const weekOffset = (week.week - 1) * 7;
-              for (const session of week.sessions ?? []) {
-                if (session.type.toLowerCase() === "rest") continue;
+              // Create sessions for first 4 weeks
+              for (const week of programData.weeks.slice(0, 4)) {
+                if (!week.sessions || !Array.isArray(week.sessions)) continue;
                 
-                const dayOffset = TRAINING_DAY_OFFSET[session.day] ?? 0;
-                const diff = (dayOffset - baseDayOfWeek + 7) % 7;
-                const sessionDate = new Date(baseDate);
-                sessionDate.setDate(baseDate.getDate() + weekOffset + diff);
-                sessionDate.setHours(0, 0, 0, 0);
+                const weekOffset = (week.week - 1) * 7;
+                for (const session of week.sessions) {
+                  if (!session.type || !session.day) continue;
+                  if (session.type.toLowerCase() === "rest") continue;
+                  
+                  // Validate day is in the mapping
+                  if (!(session.day in TRAINING_DAY_OFFSET)) {
+                    console.warn(`[Templates] Unknown day: ${session.day}, skipping session`);
+                    continue;
+                  }
+                  
+                  const dayOffset = TRAINING_DAY_OFFSET[session.day];
+                  const diff = (dayOffset - baseDayOfWeek + 7) % 7;
+                  const sessionDate = new Date(baseDate);
+                  sessionDate.setDate(baseDate.getDate() + weekOffset + diff);
+                  sessionDate.setHours(0, 0, 0, 0);
 
-                await db.createTrainingSession({
-                  userId: ctx.user!.id,
-                  horseId: input.horseId,
-                  sessionDate,
-                  sessionType: mapSessionType(session.type),
-                  duration: session.duration,
-                  notes: session.description || undefined,
-                  isCompleted: false,
-                });
-                
-                sessionsCreated++;
+                  await db.createTrainingSession({
+                    userId: ctx.user!.id,
+                    horseId: input.horseId,
+                    sessionDate,
+                    sessionType: mapTemplateSessionType(session.type),
+                    duration: session.duration || 30,
+                    notes: session.description || undefined,
+                    isCompleted: false,
+                  });
+                  
+                  sessionsCreated++;
+                }
               }
             }
           }
