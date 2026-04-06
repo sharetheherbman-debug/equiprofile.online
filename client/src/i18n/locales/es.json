@@ -52,6 +52,67 @@
     "horseDetails": "Detalles del caballo",
     "noHorses": "No se encontraron caballos"
   },
+  "health": {
+    "title": "Registros de salud",
+    "addRecord": "Agregar registro",
+    "vaccinations": "Vacunaciones",
+    "deworming": "Desparasitación",
+    "dental": "Dental",
+    "farrier": "Herrador",
+    "veterinary": "Veterinario",
+    "medicalPassport": "Pasaporte médico",
+    "nextDue": "Próxima fecha",
+    "overdue": "Atrasado"
+  },
+  "training": {
+    "title": "Sesiones de entrenamiento",
+    "addSession": "Agregar sesión",
+    "editSession": "Editar sesión",
+    "templates": "Plantillas",
+    "applyTemplate": "Aplicar plantilla",
+    "createTemplate": "Crear plantilla"
+  },
+  "stable": {
+    "title": "Establo",
+    "createStable": "Crear establo",
+    "editStable": "Editar establo",
+    "inviteMembers": "Invitar miembros",
+    "members": "Miembros",
+    "roles": {
+      "owner": "Propietario",
+      "admin": "Administrador",
+      "trainer": "Entrenador",
+      "member": "Miembro",
+      "viewer": "Observador"
+    },
+    "settings": "Configuración del establo",
+    "activityFeed": "Actividad del establo",
+    "calendar": "Calendario del establo"
+  },
+  "messages": {
+    "title": "Mensajes",
+    "newMessage": "Nuevo mensaje",
+    "noMessages": "Sin mensajes",
+    "typeMessage": "Escribe un mensaje...",
+    "send": "Enviar",
+    "unread": "No leído"
+  },
+  "analytics": {
+    "title": "Analítica",
+    "trainingAnalytics": "Analítica de entrenamiento",
+    "healthAnalytics": "Analítica de salud",
+    "performanceMetrics": "Métricas de rendimiento",
+    "costAnalysis": "Análisis de costos"
+  },
+  "settings": {
+    "title": "Configuración",
+    "profile": "Perfil",
+    "account": "Cuenta",
+    "notifications": "Notificaciones",
+    "language": "Idioma",
+    "theme": "Tema",
+    "subscription": "Suscripción"
+  },
   "auth": {
     "signIn": "Iniciar sesión",
     "signOut": "Cerrar sesión",

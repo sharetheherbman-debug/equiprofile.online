@@ -52,6 +52,67 @@
     "horseDetails": "Pferdedetails",
     "noHorses": "Keine Pferde gefunden"
   },
+  "health": {
+    "title": "Gesundheitsakte",
+    "addRecord": "Eintrag hinzufügen",
+    "vaccinations": "Impfungen",
+    "deworming": "Entwurmung",
+    "dental": "Zahnpflege",
+    "farrier": "Hufschmied",
+    "veterinary": "Tierarzt",
+    "medicalPassport": "Medizinischer Pass",
+    "nextDue": "Nächste Fälligkeit",
+    "overdue": "Überfällig"
+  },
+  "training": {
+    "title": "Trainingseinheiten",
+    "addSession": "Einheit hinzufügen",
+    "editSession": "Einheit bearbeiten",
+    "templates": "Vorlagen",
+    "applyTemplate": "Vorlage anwenden",
+    "createTemplate": "Vorlage erstellen"
+  },
+  "stable": {
+    "title": "Stall",
+    "createStable": "Stall erstellen",
+    "editStable": "Stall bearbeiten",
+    "inviteMembers": "Mitglieder einladen",
+    "members": "Mitglieder",
+    "roles": {
+      "owner": "Eigentümer",
+      "admin": "Administrator",
+      "trainer": "Trainer",
+      "member": "Mitglied",
+      "viewer": "Betrachter"
+    },
+    "settings": "Stalleinstellungen",
+    "activityFeed": "Stallaktivität",
+    "calendar": "Stallkalender"
+  },
+  "messages": {
+    "title": "Nachrichten",
+    "newMessage": "Neue Nachricht",
+    "noMessages": "Keine Nachrichten",
+    "typeMessage": "Nachricht eingeben...",
+    "send": "Senden",
+    "unread": "Ungelesen"
+  },
+  "analytics": {
+    "title": "Analytik",
+    "trainingAnalytics": "Trainingsanalytik",
+    "healthAnalytics": "Gesundheitsanalytik",
+    "performanceMetrics": "Leistungskennzahlen",
+    "costAnalysis": "Kostenanalyse"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "profile": "Profil",
+    "account": "Konto",
+    "notifications": "Benachrichtigungen",
+    "language": "Sprache",
+    "theme": "Design",
+    "subscription": "Abonnement"
+  },
   "auth": {
     "signIn": "Anmelden",
     "signOut": "Abmelden",

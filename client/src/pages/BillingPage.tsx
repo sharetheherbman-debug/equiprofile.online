@@ -336,7 +336,7 @@ export default function BillingPage() {
 
               <div className="grid md:grid-cols-2 gap-6 mb-8 max-w-3xl mx-auto">
                 {/* Starter Plan */}
-                <Card className="border-2 border-primary relative">
+                <Card className="border-2 border-primary relative flex flex-col">
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <Badge className="bg-primary text-primary-foreground px-3">
                       Most Popular
@@ -348,7 +348,7 @@ export default function BillingPage() {
                         <Crown className="w-4 h-4 text-white" />
                       </div>
                       <CardTitle className="text-lg flex items-center gap-2">
-                        {"Starter"}
+                        {pricing?.pro?.name ?? "Starter"}
                         {isCurrentPlan("pro") && (
                           <Badge variant="secondary" className="text-xs">
                             Current Plan
@@ -360,7 +360,7 @@ export default function BillingPage() {
                       For individual horse owners — up to 5 horses
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex flex-col flex-1">
                     <div className="mb-5">
                       <div className="text-3xl font-bold">£{getProPrice()}</div>
                       <div className="text-muted-foreground text-sm">
@@ -379,7 +379,7 @@ export default function BillingPage() {
                         )}
                       </div>
                     </div>
-                    <ul className="space-y-2 mb-5">
+                    <ul className="space-y-2 mb-6 flex-1">
                       {proFeatures.map((f) => (
                         <li key={f} className="flex items-start gap-2">
                           <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -389,17 +389,17 @@ export default function BillingPage() {
                     </ul>
                     {isCurrentPlan("pro") ? (
                       <Button
-                        onClick={() => handleSubscribe("pro")}
-                        className="w-full"
+                        className="w-full mt-auto"
                         disabled
                         variant="secondary"
                       >
+                        <Check className="w-4 h-4 mr-2" />
                         Current Plan
                       </Button>
                     ) : (
                       <Button
                         onClick={() => handleSubscribe("pro")}
-                        className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white border-0"
+                        className="w-full mt-auto bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white border-0"
                         disabled={createCheckout.isPending}
                       >
                         {createCheckout.isPending ? (
@@ -417,7 +417,7 @@ export default function BillingPage() {
 
                 {/* Stable Plan */}
                 <Card
-                  className={`border-2 ${isCurrentPlan("stable") ? "border-primary" : "border-muted"}`}
+                  className={`border-2 flex flex-col ${isCurrentPlan("stable") ? "border-primary" : "border-muted"}`}
                 >
                   <CardHeader>
                     <div className="flex items-center gap-2 mb-1">
@@ -437,7 +437,7 @@ export default function BillingPage() {
                       For stables managing multiple horses, staff, and owners
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex flex-col flex-1">
                     <div className="mb-5">
                       <div className="text-3xl font-bold">
                         £{getStablePrice()}
@@ -458,7 +458,7 @@ export default function BillingPage() {
                         )}
                       </div>
                     </div>
-                    <ul className="space-y-2 mb-5">
+                    <ul className="space-y-2 mb-6 flex-1">
                       {stableFeatures.map((f) => (
                         <li key={f} className="flex items-start gap-2">
                           <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -467,13 +467,14 @@ export default function BillingPage() {
                       ))}
                     </ul>
                     {isCurrentPlan("stable") ? (
-                      <Button variant="secondary" className="w-full" disabled>
+                      <Button variant="secondary" className="w-full mt-auto" disabled>
+                        <Check className="w-4 h-4 mr-2" />
                         Current Plan
                       </Button>
                     ) : (
                       <Button
                         onClick={() => handleSubscribe("stable")}
-                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0"
+                        className="w-full mt-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0"
                         disabled={createCheckout.isPending}
                       >
                         {createCheckout.isPending ? (

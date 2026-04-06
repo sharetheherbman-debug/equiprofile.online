@@ -6846,6 +6846,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .query(async ({ ctx, input }) => {
         return await db.getTagsByHorse(input.horseId, ctx.user.id);
       }),
+
+    /** Return all horse IDs that have a specific tag — used for client-side filtering */
+    getHorsesByTag: protectedProcedure
+      .input(z.object({ tagId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getHorseIdsByTag(input.tagId, ctx.user.id);
+      }),
+
+    /** Return all tags with a count of horses assigned to each */
+    listWithCounts: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getTagsWithHorseCount(ctx.user.id);
+    }),
   }),
 
   // ============ HOOFCARE ROUTER ============
