@@ -363,6 +363,7 @@ function HorseDetailContent() {
               <p className="text-sm font-semibold">Health Alerts</p>
               <Badge variant="secondary" className="text-[10px]">{healthAlerts.length}</Badge>
             </div>
+            <p className="text-xs text-muted-foreground mb-2">Smart health alerts flag overdue or upcoming care tasks based on this horse's records — vaccinations, dewormings, and scheduled appointments.</p>
             <div className="space-y-1.5">
               {healthAlerts.slice(0, 5).map((alert: any) => (
                 <div key={alert.id} className="flex items-center gap-2 text-xs">
@@ -425,7 +426,7 @@ function HorseDetailContent() {
                 Horse Timeline
               </CardTitle>
               <CardDescription>
-                A complete chronological story of {horse.name}'s care, training, and milestones
+                A unified view of all activity for this horse — health records, training sessions, treatments, vaccinations, appointments, and more, in chronological order.
               </CardDescription>
             </CardHeader>
             <CardContent>

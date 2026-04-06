@@ -669,3 +669,23 @@
     break-inside: avoid;
   }
 }
+
+/* Mobile form improvements */
+@media (max-width: 640px) {
+  .form-section + .form-section {
+    margin-top: 1.5rem;
+  }
+
+  [role="dialog"] .space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+
+  [role="dialog"] h2,
+  [role="dialog"] h3 {
+    padding-bottom: 0.5rem;
+  }
+
+  [role="dialog"] .grid-cols-2 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}

@@ -300,14 +300,14 @@ function TrainingContent() {
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label>Horse *</Label>
+                  <Label htmlFor="train-horse">Horse *</Label>
                   <Select
                     value={formData.horseId}
                     onValueChange={(value) =>
                       setFormData({ ...formData, horseId: value })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="train-horse">
                       <SelectValue placeholder="Select horse" />
                     </SelectTrigger>
                     <SelectContent>
@@ -322,8 +322,9 @@ function TrainingContent() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Date *</Label>
+                    <Label htmlFor="train-date">Date *</Label>
                     <Input
+                      id="train-date"
                       type="date"
                       value={formData.sessionDate}
                       onChange={(e) =>
@@ -335,8 +336,9 @@ function TrainingContent() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Time</Label>
+                    <Label htmlFor="train-time">Time</Label>
                     <Input
+                      id="train-time"
                       type="time"
                       value={formData.startTime}
                       onChange={(e) =>
@@ -348,14 +350,14 @@ function TrainingContent() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Session Type *</Label>
+                    <Label htmlFor="train-session-type">Session Type *</Label>
                     <Select
                       value={formData.sessionType}
                       onValueChange={(value: any) =>
                         setFormData({ ...formData, sessionType: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="train-session-type">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -368,8 +370,9 @@ function TrainingContent() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Duration (min)</Label>
+                    <Label htmlFor="train-duration">Duration (min)</Label>
                     <Input
+                      id="train-duration"
                       type="number"
                       value={formData.duration}
                       onChange={(e) =>
@@ -381,8 +384,10 @@ function TrainingContent() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Trainer</Label>
+                    <Label htmlFor="train-trainer">Trainer</Label>
                     <Input
+                      id="train-trainer"
+                      autoComplete="name"
                       value={formData.trainer}
                       onChange={(e) =>
                         setFormData({ ...formData, trainer: e.target.value })
@@ -391,8 +396,10 @@ function TrainingContent() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Location</Label>
+                    <Label htmlFor="train-location">Location</Label>
                     <Input
+                      id="train-location"
+                      autoComplete="off"
                       value={formData.location}
                       onChange={(e) =>
                         setFormData({ ...formData, location: e.target.value })
@@ -403,8 +410,10 @@ function TrainingContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Goals</Label>
+                  <Label htmlFor="train-goals">Goals</Label>
                   <Textarea
+                    id="train-goals"
+                    autoComplete="off"
                     value={formData.goals}
                     onChange={(e) =>
                       setFormData({ ...formData, goals: e.target.value })
@@ -760,12 +769,12 @@ function TrainingContent() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Horse</Label>
+                <Label htmlFor="edit-train-horse">Horse</Label>
                 <Select
                   value={editFormData.horseId}
                   disabled
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="edit-train-horse">
                     <SelectValue placeholder="Select horse" />
                   </SelectTrigger>
                   <SelectContent>
@@ -780,10 +789,10 @@ function TrainingContent() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Date *</Label>
+                  <Label htmlFor="edit-train-date">Date *</Label>
                   <Input
+                    id="edit-train-date"
                     type="date"
-                    value={editFormData.sessionDate}
                     onChange={(e) =>
                       setEditFormData({
                         ...editFormData,
@@ -793,10 +802,10 @@ function TrainingContent() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Time</Label>
+                  <Label htmlFor="edit-train-time">Time</Label>
                   <Input
+                    id="edit-train-time"
                     type="time"
-                    value={editFormData.startTime}
                     onChange={(e) =>
                       setEditFormData({
                         ...editFormData,
@@ -809,14 +818,14 @@ function TrainingContent() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Session Type *</Label>
+                  <Label htmlFor="edit-train-session-type">Session Type *</Label>
                   <Select
                     value={editFormData.sessionType}
                     onValueChange={(value: SessionType) =>
                       setEditFormData({ ...editFormData, sessionType: value })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="edit-train-session-type">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -829,10 +838,10 @@ function TrainingContent() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Duration (min)</Label>
+                  <Label htmlFor="edit-train-duration">Duration (min)</Label>
                   <Input
+                    id="edit-train-duration"
                     type="number"
-                    value={editFormData.duration}
                     onChange={(e) =>
                       setEditFormData({
                         ...editFormData,
@@ -845,8 +854,10 @@ function TrainingContent() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Trainer</Label>
+                  <Label htmlFor="edit-train-trainer">Trainer</Label>
                   <Input
+                    id="edit-train-trainer"
+                    autoComplete="name"
                     value={editFormData.trainer}
                     onChange={(e) =>
                       setEditFormData({
@@ -858,8 +869,10 @@ function TrainingContent() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Location</Label>
+                  <Label htmlFor="edit-train-location">Location</Label>
                   <Input
+                    id="edit-train-location"
+                    autoComplete="off"
                     value={editFormData.location}
                     onChange={(e) =>
                       setEditFormData({
@@ -873,14 +886,14 @@ function TrainingContent() {
               </div>
 
               <div className="space-y-2">
-                <Label>Performance</Label>
+                <Label htmlFor="edit-train-performance">Performance</Label>
                 <Select
                   value={editFormData.performance}
                   onValueChange={(value) =>
                     setEditFormData({ ...editFormData, performance: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="edit-train-performance">
                     <SelectValue placeholder="Select performance" />
                   </SelectTrigger>
                   <SelectContent>
@@ -893,8 +906,10 @@ function TrainingContent() {
               </div>
 
               <div className="space-y-2">
-                <Label>Goals</Label>
+                <Label htmlFor="edit-train-goals">Goals</Label>
                 <Textarea
+                  id="edit-train-goals"
+                  autoComplete="off"
                   value={editFormData.goals}
                   onChange={(e) =>
                     setEditFormData({ ...editFormData, goals: e.target.value })
@@ -905,8 +920,10 @@ function TrainingContent() {
               </div>
 
               <div className="space-y-2">
-                <Label>Notes</Label>
+                <Label htmlFor="edit-train-notes">Notes</Label>
                 <Textarea
+                  id="edit-train-notes"
+                  autoComplete="off"
                   value={editFormData.notes}
                   onChange={(e) =>
                     setEditFormData({ ...editFormData, notes: e.target.value })

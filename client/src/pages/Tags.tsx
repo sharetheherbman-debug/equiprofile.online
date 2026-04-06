@@ -23,8 +23,9 @@ import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import { useToast } from "../hooks/use-toast";
 import { useRealtimeModule } from "../hooks/useRealtime";
-import { PlusCircle, Edit2, Trash2, Tag } from "lucide-react";
+import { PlusCircle, Edit2, Trash2, Tag, Filter } from "lucide-react";
 import { Badge } from "../components/ui/badge";
+import { Link } from "wouter";
 
 const PRESET_COLORS = [
   { name: "Red", value: "#ef4444" },
@@ -57,7 +58,7 @@ function TagsContent() {
     description: "",
   });
 
-  const { data: tags, refetch } = trpc.tags.list.useQuery();
+  const { data: tags, refetch } = trpc.tags.listWithCounts.useQuery();
   const [localTags, setLocalTags] = useState(tags || []);
 
   // Real-time updates
@@ -167,11 +168,11 @@ function TagsContent() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-start mb-6 gap-4">
         <div>
           <h1 className="text-3xl font-bold">Tags</h1>
-          <p className="text-muted-foreground">
-            Organize your horses, documents, and tasks
+          <p className="text-sm text-muted-foreground mt-1">
+            Organise your horses with colour-coded tags. Tags help you filter, group, and quickly identify horses by category, status, or any custom label.
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -307,23 +308,27 @@ function TagsContent() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {localTags && localTags.length > 0 ? (
           localTags.map((tag: any) => (
-            <Card key={tag.id}>
-              <CardHeader>
+            <Card key={tag.id} className="flex flex-col">
+              <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="flex items-center gap-2">
-                      <Tag className="h-5 w-5" />
-                      {tag.name}
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <span
+                        className="inline-block w-3 h-3 rounded-full shrink-0"
+                        style={{ backgroundColor: tag.color || "#6b7280" }}
+                      />
+                      <span className="truncate">{tag.name}</span>
                     </CardTitle>
                     {tag.category && (
-                      <CardDescription>{tag.category}</CardDescription>
+                      <CardDescription className="mt-0.5">{tag.category}</CardDescription>
                     )}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 shrink-0 ml-2">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleEdit(tag)}
+                      title="Edit tag"
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
@@ -331,27 +336,35 @@ function TagsContent() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDelete(tag.id)}
+                      title="Delete tag"
+                      className="text-destructive hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+              <CardContent className="flex flex-col flex-1 pt-0">
+                {tag.description && (
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {tag.description}
+                  </p>
+                )}
+                <div className="mt-auto pt-3 border-t flex items-center justify-between gap-2">
                   <Badge
-                    style={{
-                      backgroundColor: tag.color,
-                      color: "#ffffff",
-                    }}
+                    style={{ backgroundColor: tag.color, color: "#ffffff" }}
+                    className="shrink-0"
                   >
                     {tag.name}
                   </Badge>
-                  {tag.description && (
-                    <p className="text-sm text-muted-foreground">
-                      {tag.description}
-                    </p>
-                  )}
+                  <Link href={`/horses?tag=${tag.id}`}>
+                    <Button variant="ghost" size="sm" className="text-xs gap-1.5 h-7">
+                      <Filter className="w-3.5 h-3.5" />
+                      {(tag as any).horseCount === 1
+                        ? "1 horse"
+                        : `${(tag as any).horseCount ?? 0} horses`}
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -360,8 +373,9 @@ function TagsContent() {
           <Card className="col-span-full">
             <CardContent className="flex flex-col items-center justify-center py-12">
               <Tag className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                No tags yet. Create your first tag above.
+              <h3 className="font-semibold mb-1">No tags yet</h3>
+              <p className="text-sm text-muted-foreground text-center max-w-xs">
+                Create your first tag to start organising and filtering your horses.
               </p>
             </CardContent>
           </Card>

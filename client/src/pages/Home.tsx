@@ -165,8 +165,9 @@ export default function Home() {
                   </h1>
 
                   <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-10 leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
-                    One platform for health records, training, nutrition, and
-                    every decision that keeps your horse at their best.
+                    One platform for health records, GPS tracking, training,
+                    and the digital passport that keeps your horse's care
+                    organised and shareable.
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -191,7 +192,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-indigo-400" />
-                      <span>7-day free trial</span>
+                      <span>14-day free trial</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-cyan-400" />
@@ -547,7 +548,7 @@ export default function Home() {
                 </h2>
                 <p className="text-base md:text-lg text-white/80 mb-8 leading-relaxed">
                   Join equestrians who trust EquiProfile to care for their
-                  horses. Start your free 7-day trial—no credit card required.
+                  horses. Start your free 14-day trial—no credit card required.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
@@ -576,7 +577,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-4 h-4" />
-                    <span>7-day trial</span>
+                    <span>14-day trial</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-4 h-4" />

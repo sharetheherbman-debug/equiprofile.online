@@ -31,6 +31,9 @@ import {
   exportFeedCostsCSV,
   exportDocumentsCSV,
   generateCSVFilename,
+  exportTasksCSV,
+  exportAppointmentsCSV,
+  exportContactsCSV,
 } from "./csvExport";
 import { eq, and, desc, sql, gte, lte, or, inArray } from "drizzle-orm";
 import { getDb } from "./db";
@@ -1825,6 +1828,24 @@ export const appRouter = router({
 
         return { success: true };
       }),
+
+    exportCSV: subscribedProcedure.query(async ({ ctx }) => {
+      const tasks = await db.getTasksByUserId(ctx.user.id);
+      // Enrich with horse names
+      const horsesMap: Record<number, string> = {};
+      const horses = await db.getHorsesByUserId(ctx.user.id);
+      horses.forEach((h: any) => { horsesMap[h.id] = h.name; });
+      const enriched = tasks.map((t: any) => ({
+        ...t,
+        horseName: t.horseId ? (horsesMap[t.horseId] || "") : "",
+      }));
+      const csv = exportTasksCSV(enriched);
+      return {
+        csv,
+        filename: `tasks_${new Date().toISOString().split("T")[0]}.csv`,
+        mimeType: "text/csv",
+      };
+    }),
   }),
 
   // Contacts management
@@ -1961,6 +1982,16 @@ export const appRouter = router({
 
         return { success: true };
       }),
+
+    exportCSV: subscribedProcedure.query(async ({ ctx }) => {
+      const contacts = await db.getContactsByUserId(ctx.user.id);
+      const csv = exportContactsCSV(contacts);
+      return {
+        csv,
+        filename: `contacts_${new Date().toISOString().split("T")[0]}.csv`,
+        mimeType: "text/csv",
+      };
+    }),
   }),
 
   // Vaccinations management
@@ -6399,6 +6430,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         return { success: true };
       }),
+
+    exportCSV: protectedProcedure.query(async ({ ctx }) => {
+      const appointments = await db.getAppointmentsByUserId(ctx.user.id);
+      // Enrich with horse names
+      const horses = await db.getHorsesByUserId(ctx.user.id);
+      const horsesMap: Record<number, string> = {};
+      horses.forEach((h: any) => { horsesMap[h.id] = h.name; });
+      const enriched = appointments.map((a: any) => ({
+        ...a,
+        horseName: a.horseId ? (horsesMap[a.horseId] || "") : "",
+      }));
+      const csv = exportAppointmentsCSV(enriched);
+      return {
+        csv,
+        filename: `appointments_${new Date().toISOString().split("T")[0]}.csv`,
+        mimeType: "text/csv",
+      };
+    }),
   }),
 
   // ============ DENTAL CARE ROUTER ============
@@ -6797,6 +6846,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .query(async ({ ctx, input }) => {
         return await db.getTagsByHorse(input.horseId, ctx.user.id);
       }),
+
+    /** Return all horse IDs that have a specific tag — used for client-side filtering */
+    getHorsesByTag: protectedProcedure
+      .input(z.object({ tagId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return await db.getHorseIdsByTag(input.tagId, ctx.user.id);
+      }),
+
+    /** Return all tags with a count of horses assigned to each */
+    listWithCounts: protectedProcedure.query(async ({ ctx }) => {
+      return await db.getTagsWithHorseCount(ctx.user.id);
+    }),
   }),
 
   // ============ HOOFCARE ROUTER ============

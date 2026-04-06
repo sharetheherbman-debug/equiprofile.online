@@ -276,6 +276,7 @@ function HorseFormContent() {
                   }
                   placeholder="Enter horse's name"
                   required
+                  autoComplete="name"
                 />
               </div>
               <div className="space-y-2">
@@ -287,6 +288,7 @@ function HorseFormContent() {
                     setFormData({ ...formData, breed: e.target.value })
                   }
                   placeholder="e.g., Thoroughbred, Arabian"
+                  autoComplete="off"
                 />
               </div>
             </div>
@@ -315,6 +317,7 @@ function HorseFormContent() {
                   onChange={(e) =>
                     setFormData({ ...formData, dateOfBirth: e.target.value })
                   }
+                  autoComplete="bday"
                 />
               </div>
               <div className="space-y-2">
@@ -325,7 +328,7 @@ function HorseFormContent() {
                     setFormData({ ...formData, gender: value as any })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="gender">
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
@@ -376,6 +379,7 @@ function HorseFormContent() {
                     setFormData({ ...formData, color: e.target.value })
                   }
                   placeholder="e.g., Bay, Chestnut"
+                  autoComplete="off"
                 />
               </div>
             </div>
@@ -399,7 +403,7 @@ function HorseFormContent() {
                     setFormData({ ...formData, discipline: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="discipline">
                     <SelectValue placeholder="Select discipline" />
                   </SelectTrigger>
                   <SelectContent>
@@ -419,7 +423,7 @@ function HorseFormContent() {
                     setFormData({ ...formData, level: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="level">
                     <SelectValue placeholder="Select level" />
                   </SelectTrigger>
                   <SelectContent>
@@ -483,7 +487,7 @@ function HorseFormContent() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Photo</Label>
+              <Label htmlFor="photo">Photo</Label>
               <div className="flex items-start gap-4">
                 {photoPreview ? (
                   <div className="relative">
@@ -522,6 +526,7 @@ function HorseFormContent() {
                   <input
                     ref={fileInputRef}
                     type="file"
+                    id="photo"
                     accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
                     className="hidden"
                     onChange={handlePhotoChange}

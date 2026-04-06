@@ -829,8 +829,10 @@ export default function CalendarPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Title *</Label>
+              <Label htmlFor="add-title">Title *</Label>
               <Input
+                id="add-title"
+                autoComplete="off"
                 value={newEvent.title}
                 onChange={(e) =>
                   setNewEvent({ ...newEvent, title: e.target.value })
@@ -839,14 +841,14 @@ export default function CalendarPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Type</Label>
+              <Label htmlFor="add-eventType">Type</Label>
               <Select
                 value={newEvent.eventType}
                 onValueChange={(v) =>
                   setNewEvent({ ...newEvent, eventType: v as DbEventType })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger id="add-eventType">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -860,8 +862,9 @@ export default function CalendarPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Date</Label>
+                <Label htmlFor="add-startDate">Date</Label>
                 <Input
+                  id="add-startDate"
                   type="date"
                   value={newEvent.startDate}
                   onChange={(e) =>
@@ -870,11 +873,12 @@ export default function CalendarPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="flex items-center gap-1">
+                <Label htmlFor="add-startTime" className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   Time
                 </Label>
                 <Input
+                  id="add-startTime"
                   type="time"
                   value={newEvent.startTime}
                   onChange={(e) =>
@@ -907,8 +911,10 @@ export default function CalendarPage() {
               </div>
             )}
             <div className="space-y-2">
-              <Label>Location (optional)</Label>
+              <Label htmlFor="add-location">Location (optional)</Label>
               <Input
+                id="add-location"
+                autoComplete="off"
                 value={newEvent.location}
                 onChange={(e) =>
                   setNewEvent({ ...newEvent, location: e.target.value })
@@ -917,8 +923,9 @@ export default function CalendarPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Description (optional)</Label>
+              <Label htmlFor="add-description">Description (optional)</Label>
               <Textarea
+                id="add-description"
                 value={newEvent.description}
                 onChange={(e) =>
                   setNewEvent({ ...newEvent, description: e.target.value })
@@ -957,8 +964,10 @@ export default function CalendarPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Title *</Label>
+              <Label htmlFor="edit-title">Title *</Label>
               <Input
+                id="edit-title"
+                autoComplete="off"
                 value={editForm.title}
                 onChange={(e) =>
                   setEditForm({ ...editForm, title: e.target.value })
@@ -968,8 +977,9 @@ export default function CalendarPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Date</Label>
+                <Label htmlFor="edit-startDate">Date</Label>
                 <Input
+                  id="edit-startDate"
                   type="date"
                   value={editForm.startDate}
                   onChange={(e) =>
@@ -978,11 +988,12 @@ export default function CalendarPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="flex items-center gap-1">
+                <Label htmlFor="edit-startTime" className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   Time
                 </Label>
                 <Input
+                  id="edit-startTime"
                   type="time"
                   value={editForm.startTime}
                   onChange={(e) =>
@@ -992,8 +1003,9 @@ export default function CalendarPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Description (optional)</Label>
+              <Label htmlFor="edit-description">Description (optional)</Label>
               <Textarea
+                id="edit-description"
                 value={editForm.description}
                 onChange={(e) =>
                   setEditForm({ ...editForm, description: e.target.value })

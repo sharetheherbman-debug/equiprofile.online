@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -26,19 +26,21 @@ import { trpc } from "@/lib/trpc";
 import {
   Plus,
   Phone,
+  Smartphone,
   Mail,
   MapPin,
   Trash2,
   Edit,
   Building2,
   Search,
-  Eye,
   Globe,
   StickyNote,
   Star,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRealtimeModule } from "@/hooks/useRealtime";
+import { downloadCSV } from "@/lib/csvDownload";
 
 function ContactsContent() {
   const utils = trpc.useUtils();
@@ -47,7 +49,6 @@ function ContactsContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<(typeof localContacts)[0] | null>(null);
-  const [viewingContact, setViewingContact] = useState<(typeof localContacts)[0] | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     contactType: "vet",
@@ -117,6 +118,29 @@ function ContactsContent() {
       toast.error(error.message || "Failed to delete contact");
     },
   });
+
+  const exportQuery = trpc.contacts.exportCSV.useQuery(undefined, {
+    enabled: false,
+  });
+
+  const handleExport = async () => {
+    const result = await exportQuery.refetch();
+    if (result.data) {
+      downloadCSV(result.data.csv, result.data.filename);
+    }
+  };
+
+  const avatarColors: Record<string, string> = {
+    vet: "bg-blue-500",
+    farrier: "bg-amber-500",
+    trainer: "bg-purple-500",
+    instructor: "bg-pink-500",
+    stable: "bg-green-500",
+    breeder: "bg-indigo-500",
+    supplier: "bg-orange-500",
+    emergency: "bg-red-500",
+    other: "bg-gray-500",
+  };
 
   const resetForm = () => {
     setFormData({
@@ -266,6 +290,14 @@ function ContactsContent() {
               className="pl-9 w-full sm:w-64"
             />
           </div>
+          <Button
+            variant="outline"
+            onClick={handleExport}
+            disabled={exportQuery.isFetching}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exportQuery.isFetching ? "Exporting…" : "Export CSV"}
+          </Button>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -291,6 +323,7 @@ function ContactsContent() {
                       setFormData({ ...formData, name: e.target.value })
                     }
                     placeholder="Dr. Smith"
+                    autoComplete="name"
                   />
                 </div>
 
@@ -302,7 +335,7 @@ function ContactsContent() {
                       setFormData({ ...formData, contactType: value })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="contactType">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -343,6 +376,7 @@ function ContactsContent() {
                       setFormData({ ...formData, email: e.target.value })
                     }
                     placeholder="contact@example.com"
+                    autoComplete="email"
                   />
                 </div>
 
@@ -355,6 +389,7 @@ function ContactsContent() {
                       setFormData({ ...formData, phone: e.target.value })
                     }
                     placeholder="01234 567890"
+                    autoComplete="tel"
                   />
                 </div>
               </div>
@@ -369,6 +404,7 @@ function ContactsContent() {
                       setFormData({ ...formData, mobile: e.target.value })
                     }
                     placeholder="07123 456789"
+                    autoComplete="tel"
                   />
                 </div>
 
@@ -381,6 +417,7 @@ function ContactsContent() {
                       setFormData({ ...formData, website: e.target.value })
                     }
                     placeholder="https://example.com"
+                    autoComplete="url"
                   />
                 </div>
               </div>
@@ -407,6 +444,7 @@ function ContactsContent() {
                       setFormData({ ...formData, city: e.target.value })
                     }
                     placeholder="London"
+                    autoComplete="address-level2"
                   />
                 </div>
 
@@ -419,6 +457,7 @@ function ContactsContent() {
                       setFormData({ ...formData, postcode: e.target.value })
                     }
                     placeholder="SW1A 1AA"
+                    autoComplete="postal-code"
                   />
                 </div>
 
@@ -430,6 +469,7 @@ function ContactsContent() {
                     onChange={(e) =>
                       setFormData({ ...formData, country: e.target.value })
                     }
+                    autoComplete="country-name"
                   />
                 </div>
               </div>
@@ -487,204 +527,149 @@ function ContactsContent() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6">
+        <div className="space-y-8">
           {Object.entries(groupedContacts).map(([type, typeContacts]) => (
-            <Card key={type}>
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <CardTitle className="capitalize">{type}s</CardTitle>
-                  <Badge variant="secondary">{typeContacts.length}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {typeContacts.map((contact) => (
-                    <div
-                      key={contact.id}
-                      className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                      onClick={() => setViewingContact(contact)}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <div>
-                            <h4 className="font-semibold">{contact.name}</h4>
+            <div key={type}>
+              <div className="flex items-center gap-2 mb-3">
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground capitalize">
+                  {type}s
+                </h2>
+                <Badge variant="secondary" className="text-xs">{typeContacts.length}</Badge>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {typeContacts.map((contact) => {
+                  const addressParts = [contact.address, contact.city, contact.postcode, contact.country].filter(Boolean);
+                  const mapsUrl = addressParts.length
+                    ? `https://maps.google.com/?q=${encodeURIComponent(addressParts.join(", "))}`
+                    : null;
+                  const rawWebsite = contact.website ?? "";
+                  const websiteUrl = rawWebsite
+                    ? rawWebsite.startsWith("http") ? rawWebsite : `https://${rawWebsite}`
+                    : null;
+                  const avatarColor = avatarColors[contact.contactType] ?? "bg-gray-500";
+                  const initial = contact.name ? contact.name.charAt(0).toUpperCase() : "?";
+
+                  return (
+                    <Card key={contact.id} className="flex flex-col">
+                      <CardContent className="flex flex-col flex-1 p-4 gap-0">
+                        {/* Card header: avatar + name + badge */}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div
+                            className={`w-11 h-11 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold text-lg shrink-0`}
+                          >
+                            {initial}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <h4 className="font-semibold text-sm leading-tight truncate">
+                                {contact.name}
+                              </h4>
+                              {contact.isPrimary && (
+                                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />
+                              )}
+                            </div>
                             {contact.company && (
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-xs text-muted-foreground truncate mt-0.5">
                                 {contact.company}
                               </p>
                             )}
+                            <div className="mt-1">
+                              {getContactTypeBadge(contact.contactType)}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                            {getContactTypeBadge(contact.contactType)}
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => setViewingContact(contact)}
-                              title="View contact"
+                        </div>
+
+                        {/* Notes snippet */}
+                        {contact.notes && (
+                          <div className="flex items-start gap-1.5 mb-2 text-xs text-muted-foreground">
+                            <StickyNote className="w-3 h-3 shrink-0 mt-0.5" />
+                            <span className="line-clamp-2">{contact.notes}</span>
+                          </div>
+                        )}
+
+                        {/* Action icon buttons */}
+                        <div className="flex items-center gap-1 flex-wrap mt-auto pt-2 border-t">
+                          {contact.phone && (
+                            <a
+                              href={`tel:${contact.phone}`}
+                              title={`Call ${contact.phone}`}
+                              className="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                             >
-                              <Eye className="w-3 h-3" />
-                            </Button>
+                              <Phone className="w-4 h-4" />
+                            </a>
+                          )}
+                          {contact.mobile && (
+                            <a
+                              href={`tel:${contact.mobile}`}
+                              title={`Mobile ${contact.mobile}`}
+                              className="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            >
+                              <Smartphone className="w-4 h-4" />
+                            </a>
+                          )}
+                          {contact.email && (
+                            <a
+                              href={`mailto:${contact.email}`}
+                              title={contact.email}
+                              className="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            >
+                              <Mail className="w-4 h-4" />
+                            </a>
+                          )}
+                          {websiteUrl && (
+                            <a
+                              href={websiteUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={rawWebsite || "Website"}
+                              className="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            >
+                              <Globe className="w-4 h-4" />
+                            </a>
+                          )}
+                          {mapsUrl && (
+                            <a
+                              href={mapsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={addressParts.join(", ")}
+                              className="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            >
+                              <MapPin className="w-4 h-4" />
+                            </a>
+                          )}
+
+                          {/* Edit / Delete pushed to the right */}
+                          <div className="flex items-center gap-1 ml-auto">
                             <Button
-                              size="sm"
+                              size="icon"
                               variant="ghost"
+                              className="w-9 h-9"
                               onClick={() => openEditDialog(contact)}
                               title="Edit contact"
                             >
-                              <Edit className="w-3 h-3" />
+                              <Edit className="w-4 h-4" />
                             </Button>
                             <Button
-                              size="sm"
+                              size="icon"
                               variant="ghost"
-                              className="text-destructive hover:text-destructive"
-                              onClick={() =>
-                                deleteMutation.mutate({ id: contact.id })
-                              }
+                              className="w-9 h-9 text-destructive hover:text-destructive"
+                              onClick={() => deleteMutation.mutate({ id: contact.id })}
                               title="Delete contact"
                             >
-                              <Trash2 className="w-3 h-3" />
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
-                        <div className="space-y-1">
-                          {contact.email && (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Mail className="w-3 h-3" />
-                              <a
-                                href={`mailto:${contact.email}`}
-                                className="hover:underline"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {contact.email}
-                              </a>
-                            </div>
-                          )}
-                          {contact.phone && (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Phone className="w-3 h-3" />
-                              <a
-                                href={`tel:${contact.phone}`}
-                                className="hover:underline"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {contact.phone}
-                              </a>
-                            </div>
-                          )}
-                          {contact.address && (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <MapPin className="w-3 h-3" />
-                              <span>
-                                {contact.address}
-                                {contact.city && `, ${contact.city}`}
-                                {contact.postcode && ` ${contact.postcode}`}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </div>
       )}
-
-      {/* View Contact Dialog */}
-      <Dialog open={!!viewingContact} onOpenChange={(open) => { if (!open) setViewingContact(null); }}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {viewingContact?.name}
-              {viewingContact?.isPrimary && (
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-              )}
-            </DialogTitle>
-            <DialogDescription>
-              {viewingContact && getContactTypeBadge(viewingContact.contactType)}
-            </DialogDescription>
-          </DialogHeader>
-          {viewingContact && (
-            <div className="space-y-3 py-2">
-              {viewingContact.company && (
-                <div className="flex items-start gap-3">
-                  <Building2 className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <span className="text-sm">{viewingContact.company}</span>
-                </div>
-              )}
-              {viewingContact.email && (
-                <div className="flex items-start gap-3">
-                  <Mail className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <a href={`mailto:${viewingContact.email}`} className="text-sm hover:underline text-primary">
-                    {viewingContact.email}
-                  </a>
-                </div>
-              )}
-              {viewingContact.phone && (
-                <div className="flex items-start gap-3">
-                  <Phone className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <a href={`tel:${viewingContact.phone}`} className="text-sm hover:underline">
-                    {viewingContact.phone}
-                  </a>
-                </div>
-              )}
-              {viewingContact.mobile && (
-                <div className="flex items-start gap-3">
-                  <Phone className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <a href={`tel:${viewingContact.mobile}`} className="text-sm hover:underline">
-                    {viewingContact.mobile} <span className="text-muted-foreground">(mobile)</span>
-                  </a>
-                </div>
-              )}
-              {(viewingContact.address || viewingContact.city || viewingContact.postcode) && (
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <span className="text-sm">
-                    {[viewingContact.address, viewingContact.city, viewingContact.postcode, viewingContact.country]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </span>
-                </div>
-              )}
-              {viewingContact.website && (
-                <div className="flex items-start gap-3">
-                  <Globe className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <a
-                    href={viewingContact.website.startsWith("http") ? viewingContact.website : `https://${viewingContact.website}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm hover:underline text-primary"
-                  >
-                    {viewingContact.website}
-                  </a>
-                </div>
-              )}
-              {viewingContact.notes && (
-                <div className="flex items-start gap-3">
-                  <StickyNote className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{viewingContact.notes}</p>
-                </div>
-              )}
-            </div>
-          )}
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                if (viewingContact) {
-                  openEditDialog(viewingContact);
-                  setViewingContact(null);
-                }
-              }}
-            >
-              <Edit className="w-4 h-4 mr-2" />
-              Edit
-            </Button>
-            <Button onClick={() => setViewingContact(null)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Edit Contact Dialog */}
       <Dialog open={!!editingContact} onOpenChange={(open) => { if (!open) setEditingContact(null); }}>
@@ -701,6 +686,7 @@ function ContactsContent() {
                   id="edit-name"
                   value={editFormData.name}
                   onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                  autoComplete="name"
                 />
               </div>
               <div>
@@ -742,6 +728,7 @@ function ContactsContent() {
                   type="email"
                   value={editFormData.email}
                   onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                  autoComplete="email"
                 />
               </div>
               <div>
@@ -750,6 +737,7 @@ function ContactsContent() {
                   id="edit-phone"
                   value={editFormData.phone}
                   onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                  autoComplete="tel"
                 />
               </div>
             </div>
@@ -760,6 +748,7 @@ function ContactsContent() {
                   id="edit-mobile"
                   value={editFormData.mobile}
                   onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
+                  autoComplete="tel"
                 />
               </div>
               <div>
@@ -768,6 +757,7 @@ function ContactsContent() {
                   id="edit-website"
                   value={editFormData.website}
                   onChange={(e) => setEditFormData({ ...editFormData, website: e.target.value })}
+                  autoComplete="url"
                 />
               </div>
             </div>
@@ -786,6 +776,7 @@ function ContactsContent() {
                   id="edit-city"
                   value={editFormData.city}
                   onChange={(e) => setEditFormData({ ...editFormData, city: e.target.value })}
+                  autoComplete="address-level2"
                 />
               </div>
               <div>
@@ -794,6 +785,7 @@ function ContactsContent() {
                   id="edit-postcode"
                   value={editFormData.postcode}
                   onChange={(e) => setEditFormData({ ...editFormData, postcode: e.target.value })}
+                  autoComplete="postal-code"
                 />
               </div>
               <div>
@@ -802,6 +794,7 @@ function ContactsContent() {
                   id="edit-country"
                   value={editFormData.country}
                   onChange={(e) => setEditFormData({ ...editFormData, country: e.target.value })}
+                  autoComplete="country-name"
                 />
               </div>
             </div>

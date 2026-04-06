@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   Plus,
   Heart,
@@ -22,6 +22,8 @@ import {
   Archive,
   AlertTriangle,
   ShieldAlert,
+  Tag,
+  X,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -44,8 +46,41 @@ import { downloadCSV } from "@/lib/csvDownload";
 import { useRealtimeModule } from "@/hooks/useRealtime";
 
 function HorsesContent() {
+  const [, navigate] = useLocation();
+
+  // Read tag filter from URL query param
+  const urlTagId = typeof window !== "undefined"
+    ? Number(new URLSearchParams(window.location.search).get("tag") ?? "") || null
+    : null;
+  const [activeTagId, setActiveTagId] = useState<number | null>(urlTagId);
+
   const { data: horses, isLoading, refetch } = trpc.horses.list.useQuery();
   const [localHorses, setLocalHorses] = useState(horses || []);
+
+  // Load all tags for the filter bar
+  const { data: allTags = [] } = trpc.tags.list.useQuery();
+
+  // When a tag filter is active, fetch the horse IDs that have that tag
+  const { data: tagHorseIds } = trpc.tags.getHorsesByTag.useQuery(
+    { tagId: activeTagId! },
+    { enabled: activeTagId !== null },
+  );
+
+  // Derived: filtered horses
+  const displayedHorses = activeTagId !== null && tagHorseIds
+    ? localHorses.filter((h) => tagHorseIds.includes(h.id))
+    : localHorses;
+
+  const activeTag = (allTags as any[]).find((t: any) => t.id === activeTagId);
+
+  const handleSetTagFilter = (tagId: number | null) => {
+    setActiveTagId(tagId);
+    if (tagId) {
+      navigate(`/horses?tag=${tagId}`);
+    } else {
+      navigate("/horses");
+    }
+  };
 
   // Real-time updates
   useRealtimeModule("horses", (action, data) => {
@@ -157,13 +192,52 @@ function HorsesContent() {
         </div>
       </div>
 
+      {/* Tag filter bar */}
+      {(allTags as any[]).length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground flex items-center gap-1 shrink-0">
+            <Tag className="w-3.5 h-3.5" /> Filter by tag:
+          </span>
+          {(allTags as any[]).map((tag: any) => (
+            <button
+              key={tag.id}
+              onClick={() => handleSetTagFilter(activeTagId === tag.id ? null : tag.id)}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border transition-all ${
+                activeTagId === tag.id
+                  ? "ring-2 ring-offset-1 ring-primary"
+                  : "opacity-80 hover:opacity-100"
+              }`}
+              style={{
+                backgroundColor: (tag.color || "#6b7280") + "22",
+                borderColor: (tag.color || "#6b7280") + "66",
+                color: tag.color || "#6b7280",
+              }}
+            >
+              <span
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: tag.color || "#6b7280" }}
+              />
+              {tag.name}
+              {activeTagId === tag.id && <X className="w-3 h-3" />}
+            </button>
+          ))}
+          {activeTagId !== null && (
+            <button
+              onClick={() => handleSetTagFilter(null)}
+              className="text-xs text-muted-foreground hover:text-foreground underline"
+            >
+              Clear filter
+            </button>
+          )}
+        </div>
+      )}
+
       {!localHorses || localHorses.length === 0 ? (
         <Card className="text-center py-16">
           <CardContent>
             <Heart className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
             <h3 className="font-serif text-xl font-semibold mb-2">
-              No horses yet
-            </h3>
+              No horses yet</h3>
             <p className="text-muted-foreground mb-6">
               Add your first horse to start tracking their health, training, and
               care.
@@ -176,10 +250,22 @@ function HorsesContent() {
             </Link>
           </CardContent>
         </Card>
+      ) : displayedHorses.length === 0 && activeTagId !== null ? (
+        <Card className="text-center py-12">
+          <CardContent>
+            <Tag className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+            <p className="text-muted-foreground mb-2">
+              No horses tagged with <strong>{activeTag?.name}</strong>.
+            </p>
+            <Button variant="ghost" size="sm" onClick={() => handleSetTagFilter(null)}>
+              Clear filter
+            </Button>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {localHorses.map((horse) => (
-            <Card key={horse.id} className="card-hover overflow-hidden">
+          {displayedHorses.map((horse) => (
+            <Card key={horse.id} className="card-hover overflow-hidden flex flex-col">
               <div className="p-3 pb-0">
                 <div className="aspect-[4/3] bg-muted rounded-xl overflow-hidden relative">
                   {horse.photoUrl ? (
@@ -211,7 +297,7 @@ function HorsesContent() {
                   {horse.age && ` • ${horse.age} years old`}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex flex-col flex-1">
                 <div className="flex flex-wrap gap-2 mb-4">
                   {horse.discipline && (
                     <Badge variant="secondary">{horse.discipline}</Badge>
@@ -220,26 +306,30 @@ function HorsesContent() {
                     <Badge variant="outline">{horse.level}</Badge>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Link href={`/horses/${horse.id}`} className="flex-1">
-                    <Button variant="outline" className="w-full">
-                      View Profile
-                      <ChevronRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                  <Link href={`/horses/${horse.id}/edit`}>
-                    <Button variant="ghost" size="icon">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive hover:text-destructive"
-                    onClick={() => { setDeleteTarget(horse); setConfirmFullDelete(false); }}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                <div className="mt-auto">
+                  <div className="border-t pt-3 mt-3">
+                    <div className="flex items-center gap-2">
+                      <Link href={`/horses/${horse.id}`} className="flex-1">
+                        <Button variant="outline" className="w-full">
+                          View Profile
+                          <ChevronRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </Link>
+                      <Link href={`/horses/${horse.id}/edit`}>
+                        <Button variant="ghost" size="icon">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => { setDeleteTarget(horse); setConfirmFullDelete(false); }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

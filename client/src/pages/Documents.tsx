@@ -278,12 +278,26 @@ function DocumentsContent() {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const isHeic = (url: string, mimeType?: string) => {
+    if (mimeType === "image/heic" || mimeType === "image/heif") return true;
+    const lower = url.toLowerCase();
+    return lower.endsWith(".heic") || lower.endsWith(".heif");
+  };
+
   const canPreview = (url: string, mimeType?: string) => {
     if (!url) return false;
+    if (isHeic(url, mimeType)) return false; // HEIC can't render in browser
     if (mimeType?.startsWith("image/")) return true;
     if (mimeType === "application/pdf") return true;
     const lower = url.toLowerCase();
-    return lower.endsWith(".pdf") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png") || lower.endsWith(".gif") || lower.endsWith(".webp");
+    return (
+      lower.endsWith(".pdf") ||
+      lower.endsWith(".jpg") ||
+      lower.endsWith(".jpeg") ||
+      lower.endsWith(".png") ||
+      lower.endsWith(".gif") ||
+      lower.endsWith(".webp")
+    );
   };
 
   // Filter docs by selected horse and keyword search
@@ -528,7 +542,112 @@ function DocumentsContent() {
               </Button>
             </CardContent>
           </Card>
+        ) : activeFolder === "gallery" ? (
+          // ── Photo grid for Gallery folder ──────────────────────────────
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {folderDocs.map((doc) => {
+              const isImage = doc.fileType?.startsWith("image/");
+              const isHeicFile = doc.fileUrl ? isHeic(doc.fileUrl, doc.fileType || undefined) : false;
+              const showImg = isImage && !isHeicFile && !!doc.fileUrl;
+              return (
+                <div
+                  key={doc.id}
+                  className="group relative aspect-square rounded-lg overflow-hidden border bg-muted/30"
+                >
+                  {showImg && (
+                    <img
+                      src={doc.fileUrl!}
+                      alt={doc.description || doc.fileName}
+                      className="w-full h-full object-cover cursor-pointer transition-transform duration-200 group-hover:scale-105"
+                      onError={(e) => {
+                        const img = e.currentTarget;
+                        img.style.display = "none";
+                        const fallback = img.nextElementSibling as HTMLElement | null;
+                        if (fallback) fallback.classList.remove("hidden");
+                      }}
+                      onClick={() =>
+                        setPreviewDoc({
+                          url: doc.fileUrl!,
+                          name: doc.description || doc.fileName,
+                          type: doc.fileType || "",
+                        })
+                      }
+                    />
+                  )}
+                  {/* Fallback / HEIC placeholder */}
+                  <div
+                    className={`${showImg ? "hidden" : ""} absolute inset-0 flex flex-col items-center justify-center gap-2 p-2`}
+                  >
+                    <Image className="w-8 h-8 text-muted-foreground/50" />
+                    <p className="text-xs text-muted-foreground text-center truncate w-full px-1">
+                      {doc.description || doc.fileName}
+                    </p>
+                    {doc.fileUrl && (
+                      <Button variant="ghost" size="sm" asChild className="h-7 text-xs">
+                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                          <Download className="w-3 h-3 mr-1" />
+                          {isHeicFile ? "Download HEIC" : "Download"}
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                  {/* Dark overlay on hover */}
+                  {showImg && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors pointer-events-none" />
+                  )}
+                  {/* Action buttons overlay */}
+                  {showImg && doc.fileUrl && (
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="h-7 w-7 bg-white/90 hover:bg-white"
+                        onClick={() =>
+                          setPreviewDoc({
+                            url: doc.fileUrl!,
+                            name: doc.description || doc.fileName,
+                            type: doc.fileType || "",
+                          })
+                        }
+                        title="Preview"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="h-7 w-7 bg-white/90 hover:bg-white"
+                        asChild
+                      >
+                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                          <Download className="w-3.5 h-3.5" />
+                        </a>
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="h-7 w-7 bg-white/90 hover:bg-destructive hover:text-white"
+                        onClick={() => deleteMutation.mutate({ id: doc.id })}
+                        title="Delete"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  )}
+                  {/* Caption strip */}
+                  {showImg && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <p className="text-white text-xs truncate">
+                        {doc.description || doc.fileName}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         ) : (
+          // ── Generic list view for all other folders ──────────────────────
           <div className="space-y-3">
             {folderDocs.map((doc) => {
               const horse = horses?.find((h) => h.id === doc.horseId);
@@ -580,11 +699,7 @@ function DocumentsContent() {
                     )}
                     {doc.fileUrl && (
                       <Button variant="outline" size="icon" asChild>
-                        <a
-                          href={doc.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
                           <Download className="w-4 h-4" />
                         </a>
                       </Button>
@@ -613,11 +728,30 @@ function DocumentsContent() {
                 <DialogDescription>Document preview</DialogDescription>
               </DialogHeader>
               <div className="min-h-[400px] flex items-center justify-center bg-muted/30 rounded-lg overflow-hidden">
-                {previewDoc.type?.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp)$/i.test(previewDoc.url) ? (
+                {isHeic(previewDoc.url, previewDoc.type) ? (
+                  <div className="flex flex-col items-center gap-4 p-8 text-center">
+                    <Image className="w-12 h-12 text-muted-foreground/40" />
+                    <p className="text-muted-foreground text-sm">
+                      HEIC images cannot be previewed in the browser.
+                    </p>
+                    <Button asChild>
+                      <a href={previewDoc.url} target="_blank" rel="noopener noreferrer" download>
+                        <Download className="w-4 h-4 mr-2" />
+                        Download to view
+                      </a>
+                    </Button>
+                  </div>
+                ) : previewDoc.type?.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp)$/i.test(previewDoc.url) ? (
                   <img
                     src={previewDoc.url}
                     alt={previewDoc.name}
                     className="max-w-full max-h-[60vh] object-contain"
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      img.style.display = "none";
+                      const fallback = img.nextElementSibling as HTMLElement | null;
+                      if (fallback) fallback.style.display = "flex";
+                    }}
                   />
                 ) : (
                   <iframe

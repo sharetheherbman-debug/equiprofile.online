@@ -583,8 +583,8 @@ function RideTrackingContent() {
         <h1 className="font-serif text-2xl sm:text-3xl font-bold text-foreground">
           GPS Ride Tracking
         </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          Track your rides in real time with GPS and see your route on the map
+        <p className="text-sm text-muted-foreground mt-1">
+          Track your rides in real time using GPS. Record your route, distance, and duration — then save rides to your horse's activity history.
         </p>
       </div>
 

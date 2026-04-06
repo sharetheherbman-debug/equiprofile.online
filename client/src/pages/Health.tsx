@@ -267,14 +267,14 @@ function HealthContent() {
               <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Horse *</Label>
+                    <Label htmlFor="health-horse">Horse *</Label>
                     <Select
                       value={formData.horseId}
                       onValueChange={(value) =>
                         setFormData({ ...formData, horseId: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="health-horse">
                         <SelectValue placeholder="Select horse" />
                       </SelectTrigger>
                       <SelectContent>
@@ -290,14 +290,14 @@ function HealthContent() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Record Type *</Label>
+                    <Label htmlFor="health-record-type">Record Type *</Label>
                     <Select
                       value={formData.recordType}
                       onValueChange={(value: any) =>
                         setFormData({ ...formData, recordType: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="health-record-type">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -312,8 +312,10 @@ function HealthContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Title *</Label>
+                  <Label htmlFor="health-title">Title *</Label>
                   <Input
+                    id="health-title"
+                    autoComplete="off"
                     value={formData.title}
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
@@ -324,8 +326,9 @@ function HealthContent() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Date *</Label>
+                    <Label htmlFor="health-date">Date *</Label>
                     <Input
+                      id="health-date"
                       type="date"
                       value={formData.recordDate}
                       onChange={(e) =>
@@ -334,8 +337,9 @@ function HealthContent() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Next Due Date</Label>
+                    <Label htmlFor="health-next-due">Next Due Date</Label>
                     <Input
+                      id="health-next-due"
                       type="date"
                       value={formData.nextDueDate}
                       onChange={(e) =>
@@ -350,8 +354,10 @@ function HealthContent() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Vet Name</Label>
+                    <Label htmlFor="health-vet-name">Vet Name</Label>
                     <Input
+                      id="health-vet-name"
+                      autoComplete="name"
                       value={formData.vetName}
                       onChange={(e) =>
                         setFormData({ ...formData, vetName: e.target.value })
@@ -360,8 +366,10 @@ function HealthContent() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Vet Contact</Label>
+                    <Label htmlFor="health-vet-contact">Vet Contact</Label>
                     <Input
+                      id="health-vet-contact"
+                      autoComplete="tel"
                       value={formData.vetPhone}
                       onChange={(e) =>
                         setFormData({ ...formData, vetPhone: e.target.value })
@@ -372,8 +380,10 @@ function HealthContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label htmlFor="health-description">Description</Label>
                   <Textarea
+                    id="health-description"
+                    autoComplete="off"
                     value={formData.description}
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
@@ -582,9 +592,9 @@ function HealthContent() {
             <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Horse</Label>
+                  <Label htmlFor="edit-health-horse">Horse</Label>
                   <Select value={editFormData.horseId} disabled>
-                    <SelectTrigger>
+                    <SelectTrigger id="edit-health-horse">
                       <SelectValue placeholder="Select horse" />
                     </SelectTrigger>
                     <SelectContent>
@@ -600,14 +610,14 @@ function HealthContent() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Record Type *</Label>
+                  <Label htmlFor="edit-health-record-type">Record Type *</Label>
                   <Select
                     value={editFormData.recordType}
                     onValueChange={(value: any) =>
                       setEditFormData({ ...editFormData, recordType: value })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="edit-health-record-type">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -622,8 +632,10 @@ function HealthContent() {
               </div>
 
               <div className="space-y-2">
-                <Label>Title *</Label>
+                <Label htmlFor="edit-health-title">Title *</Label>
                 <Input
+                  id="edit-health-title"
+                  autoComplete="off"
                   value={editFormData.title}
                   onChange={(e) =>
                     setEditFormData({ ...editFormData, title: e.target.value })
@@ -634,10 +646,10 @@ function HealthContent() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Date *</Label>
+                  <Label htmlFor="edit-health-date">Date *</Label>
                   <Input
+                    id="edit-health-date"
                     type="date"
-                    value={editFormData.recordDate}
                     onChange={(e) =>
                       setEditFormData({
                         ...editFormData,
@@ -647,10 +659,10 @@ function HealthContent() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Next Due Date</Label>
+                  <Label htmlFor="edit-health-next-due">Next Due Date</Label>
                   <Input
+                    id="edit-health-next-due"
                     type="date"
-                    value={editFormData.nextDueDate}
                     onChange={(e) =>
                       setEditFormData({
                         ...editFormData,
@@ -663,8 +675,10 @@ function HealthContent() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Vet Name</Label>
+                  <Label htmlFor="edit-health-vet-name">Vet Name</Label>
                   <Input
+                    id="edit-health-vet-name"
+                    autoComplete="name"
                     value={editFormData.vetName}
                     onChange={(e) =>
                       setEditFormData({
@@ -676,8 +690,10 @@ function HealthContent() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Vet Contact</Label>
+                  <Label htmlFor="edit-health-vet-contact">Vet Contact</Label>
                   <Input
+                    id="edit-health-vet-contact"
+                    autoComplete="tel"
                     value={editFormData.vetPhone}
                     onChange={(e) =>
                       setEditFormData({
@@ -691,8 +707,10 @@ function HealthContent() {
               </div>
 
               <div className="space-y-2">
-                <Label>Description</Label>
+                <Label htmlFor="edit-health-description">Description</Label>
                 <Textarea
+                  id="edit-health-description"
+                  autoComplete="off"
                   value={editFormData.description}
                   onChange={(e) =>
                     setEditFormData({
@@ -706,8 +724,10 @@ function HealthContent() {
               </div>
 
               <div className="space-y-2">
-                <Label>Notes</Label>
+                <Label htmlFor="edit-health-notes">Notes</Label>
                 <Textarea
+                  id="edit-health-notes"
+                  autoComplete="off"
                   value={editFormData.notes}
                   onChange={(e) =>
                     setEditFormData({

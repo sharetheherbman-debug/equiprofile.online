@@ -21,8 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Plus, Pencil, Trash2, Clock, Search } from "lucide-react";
+import { Calendar, Plus, Pencil, Trash2, Clock, Search, Download } from "lucide-react";
 import DashboardLayout from "../components/DashboardLayout";
+import { downloadCSV } from "@/lib/csvDownload";
 
 function AppointmentsContent() {
   const { toast } = useToast();
@@ -65,6 +66,17 @@ function AppointmentsContent() {
         break;
     }
   });
+
+  const exportQuery = trpc.appointments.exportCSV.useQuery(undefined, {
+    enabled: false,
+  });
+
+  const handleExport = async () => {
+    const result = await exportQuery.refetch();
+    if (result.data) {
+      downloadCSV(result.data.csv, result.data.filename);
+    }
+  };
 
   const [formData, setFormData] = useState({
     horseId: "",
@@ -255,6 +267,17 @@ function AppointmentsContent() {
               className="pl-8 w-full sm:w-56"
             />
           </div>
+          {localAppointments.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              disabled={exportQuery.isFetching}
+              className="shrink-0"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              {exportQuery.isFetching ? "Exporting…" : "Export CSV"}
+            </Button>
+          )}
           <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm} className="shrink-0">
@@ -272,14 +295,14 @@ function AppointmentsContent() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label>Horse *</Label>
+                  <Label htmlFor="appt-horse">Horse *</Label>
                   <Select
                     value={formData.horseId}
                     onValueChange={(v) =>
                       setFormData({ ...formData, horseId: v })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="appt-horse">
                       <SelectValue placeholder="Select horse" />
                     </SelectTrigger>
                     <SelectContent>
@@ -292,12 +315,12 @@ function AppointmentsContent() {
                   </Select>
                 </div>
                 <div>
-                  <Label>Type *</Label>
+                  <Label htmlFor="appt-type">Type *</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(v) => setFormData({ ...formData, type: v })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="appt-type">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -314,8 +337,9 @@ function AppointmentsContent() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label>Date *</Label>
+                  <Label htmlFor="appt-date">Date *</Label>
                   <Input
+                    id="appt-date"
                     required
                     type="date"
                     value={formData.appointmentDate}
@@ -328,8 +352,9 @@ function AppointmentsContent() {
                   />
                 </div>
                 <div>
-                  <Label>Time</Label>
+                  <Label htmlFor="appt-time">Time</Label>
                   <Input
+                    id="appt-time"
                     type="time"
                     value={formData.appointmentTime}
                     onChange={(e) =>
@@ -343,9 +368,11 @@ function AppointmentsContent() {
               </div>
 
               <div>
-                <Label>Provider *</Label>
+                <Label htmlFor="appt-provider">Provider *</Label>
                 <Input
+                  id="appt-provider"
                   required
+                  autoComplete="name"
                   value={formData.provider}
                   onChange={(e) =>
                     setFormData({ ...formData, provider: e.target.value })
@@ -355,8 +382,10 @@ function AppointmentsContent() {
               </div>
 
               <div>
-                <Label>Location</Label>
+                <Label htmlFor="appt-location">Location</Label>
                 <Input
+                  id="appt-location"
+                  autoComplete="off"
                   value={formData.location}
                   onChange={(e) =>
                     setFormData({ ...formData, location: e.target.value })
@@ -367,8 +396,9 @@ function AppointmentsContent() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label>Cost (£)</Label>
+                  <Label htmlFor="appt-cost">Cost (£)</Label>
                   <Input
+                    id="appt-cost"
                     type="number"
                     step="0.01"
                     value={formData.cost}
@@ -379,14 +409,14 @@ function AppointmentsContent() {
                   />
                 </div>
                 <div>
-                  <Label>Status *</Label>
+                  <Label htmlFor="appt-status">Status *</Label>
                   <Select
                     value={formData.status}
                     onValueChange={(v) =>
                       setFormData({ ...formData, status: v })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="appt-status">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -402,8 +432,10 @@ function AppointmentsContent() {
               {/* Reminder feature — removed until backend scheduler is implemented */}
 
               <div>
-                <Label>Notes</Label>
+                <Label htmlFor="appt-notes">Notes</Label>
                 <Textarea
+                  id="appt-notes"
+                  autoComplete="off"
                   value={formData.notes}
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })

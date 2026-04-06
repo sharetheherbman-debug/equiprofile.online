@@ -3134,6 +3134,44 @@ export async function getTagsByHorse(horseId: number, userId: number) {
   return rows.map((r) => r.tag);
 }
 
+/** Return distinct horseIds that have a specific tag attached, for the user */
+export async function getHorseIdsByTag(tagId: number, userId: number): Promise<number[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  const rows = await db
+    .select({ horseId: horseTags.horseId })
+    .from(horseTags)
+    .where(and(eq(horseTags.tagId, tagId), eq(horseTags.userId, userId)));
+
+  return rows.map((r) => r.horseId);
+}
+
+/** Return all tags with a count of how many horses have each tag */
+export async function getTagsWithHorseCount(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const allTags = await db
+    .select()
+    .from(tags)
+    .where(eq(tags.userId, userId))
+    .orderBy(tags.name);
+
+  const counts = await db
+    .select({ tagId: horseTags.tagId, count: sql<number>`COUNT(*)` })
+    .from(horseTags)
+    .where(eq(horseTags.userId, userId))
+    .groupBy(horseTags.tagId);
+
+  const countMap = new Map(counts.map((c) => [c.tagId, Number(c.count)]));
+
+  return allTags.map((tag) => ({
+    ...tag,
+    horseCount: countMap.get(tag.id) ?? 0,
+  }));
+}
+
 // ============ HOOFCARE ============
 export async function createHoofcare(data: InsertHoofcare) {
   const db = await getDb();

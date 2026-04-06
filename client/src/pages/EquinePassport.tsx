@@ -199,9 +199,8 @@ function EquinePassportContent() {
           <Shield className="w-8 h-8 text-blue-500" />
           Equine Passport
         </h1>
-        <p className="text-muted-foreground mt-1">
-          FEI/BEF compliant digital equine passport with vaccination records and
-          identification
+        <p className="text-sm text-muted-foreground mt-1">
+          Generate a digital Medical Passport for each horse. Share a read-only view with vets, competition officials, or buyers using a secure link — no login required.
         </p>
       </div>
 

@@ -52,6 +52,67 @@
     "horseDetails": "Détails du cheval",
     "noHorses": "Aucun cheval trouvé"
   },
+  "health": {
+    "title": "Dossiers de santé",
+    "addRecord": "Ajouter un dossier",
+    "vaccinations": "Vaccinations",
+    "deworming": "Vermifugation",
+    "dental": "Dentaire",
+    "farrier": "Maréchal-ferrant",
+    "veterinary": "Vétérinaire",
+    "medicalPassport": "Passeport médical",
+    "nextDue": "Prochaine échéance",
+    "overdue": "En retard"
+  },
+  "training": {
+    "title": "Séances d'entraînement",
+    "addSession": "Ajouter une séance",
+    "editSession": "Modifier la séance",
+    "templates": "Modèles",
+    "applyTemplate": "Appliquer le modèle",
+    "createTemplate": "Créer un modèle"
+  },
+  "stable": {
+    "title": "Écurie",
+    "createStable": "Créer une écurie",
+    "editStable": "Modifier l'écurie",
+    "inviteMembers": "Inviter des membres",
+    "members": "Membres",
+    "roles": {
+      "owner": "Propriétaire",
+      "admin": "Administrateur",
+      "trainer": "Entraîneur",
+      "member": "Membre",
+      "viewer": "Observateur"
+    },
+    "settings": "Paramètres de l'écurie",
+    "activityFeed": "Activité de l'écurie",
+    "calendar": "Calendrier de l'écurie"
+  },
+  "messages": {
+    "title": "Messages",
+    "newMessage": "Nouveau message",
+    "noMessages": "Aucun message",
+    "typeMessage": "Tapez un message...",
+    "send": "Envoyer",
+    "unread": "Non lu"
+  },
+  "analytics": {
+    "title": "Analytique",
+    "trainingAnalytics": "Analytique d'entraînement",
+    "healthAnalytics": "Analytique de santé",
+    "performanceMetrics": "Métriques de performance",
+    "costAnalysis": "Analyse des coûts"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "profile": "Profil",
+    "account": "Compte",
+    "notifications": "Notifications",
+    "language": "Langue",
+    "theme": "Thème",
+    "subscription": "Abonnement"
+  },
   "auth": {
     "signIn": "Se connecter",
     "signOut": "Se déconnecter",
