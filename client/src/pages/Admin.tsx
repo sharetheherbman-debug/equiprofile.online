@@ -179,6 +179,9 @@ function AdminContent() {
   const churnRiskQuery = trpc.admin.getChurnRisk.useQuery(undefined, {
     enabled: isUnlocked,
   });
+  const docHealthQuery = trpc.admin.getDocumentHealth.useQuery(undefined, {
+    enabled: isUnlocked,
+  });
 
   // All mutations (lazy — no enabled needed)
   const setSiteSettingMutation = trpc.admin.setSiteSetting.useMutation({
@@ -1470,6 +1473,61 @@ function AdminContent() {
                       ))}
                     </TableBody>
                   </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Document Health Checker */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Document Health Check
+              </CardTitle>
+              <CardDescription>
+                Detect missing files and broken references on disk
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!docHealthQuery.data ? (
+                <Skeleton className="h-20 w-full" />
+              ) : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-2xl font-bold">{docHealthQuery.data.total}</p>
+                      <p className="text-[11px] text-muted-foreground">Total Documents</p>
+                    </div>
+                    <div className={`text-center p-3 rounded-lg ${docHealthQuery.data.missing.length > 0 ? "bg-red-50 dark:bg-red-950/20" : "bg-green-50 dark:bg-green-950/20"}`}>
+                      <p className={`text-2xl font-bold ${docHealthQuery.data.missing.length > 0 ? "text-red-600" : "text-green-600"}`}>
+                        {docHealthQuery.data.missing.length}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">Missing Files</p>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20">
+                      <p className="text-2xl font-bold text-amber-600">{docHealthQuery.data.orphaned}</p>
+                      <p className="text-[11px] text-muted-foreground">No Horse Link</p>
+                    </div>
+                  </div>
+                  {docHealthQuery.data.missing.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-xs font-semibold mb-2">Missing Files:</p>
+                      <div className="max-h-40 overflow-y-auto space-y-1">
+                        {docHealthQuery.data.missing.map((doc: any) => (
+                          <div key={doc.id} className="flex items-center justify-between text-xs p-2 rounded bg-red-50/50 dark:bg-red-950/10">
+                            <span className="truncate max-w-[60%]">{doc.fileName}</span>
+                            <Badge variant="outline" className="text-[10px]">{doc.category || "other"}</Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {docHealthQuery.data.missing.length === 0 && (
+                    <p className="text-sm text-green-600 dark:text-green-400 text-center py-2">
+                      ✓ All document files are present on disk
+                    </p>
+                  )}
                 </div>
               )}
             </CardContent>

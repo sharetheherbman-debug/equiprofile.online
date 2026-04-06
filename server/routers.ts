@@ -66,6 +66,7 @@ import {
   appointments,
   documents,
   notes,
+  shareLinks,
 } from "../drizzle/schema";
 import {
   CAMPAIGN_TEMPLATES,
@@ -3030,6 +3031,54 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         ));
 
       return { atRisk, trialExpiring, inactive };
+    }),
+
+    // Document health checker — detect missing files, broken references
+    getDocumentHealth: adminUnlockedProcedure.query(async () => {
+      const dbConn = await getDb();
+      if (!dbConn) return { total: 0, missing: [], orphaned: 0 };
+
+      const allDocs = await dbConn
+        .select({
+          id: documents.id,
+          fileName: documents.fileName,
+          fileKey: documents.fileKey,
+          fileUrl: documents.fileUrl,
+          userId: documents.userId,
+          horseId: documents.horseId,
+          category: documents.category,
+          createdAt: documents.createdAt,
+        })
+        .from(documents);
+
+      const missing: Array<{ id: number; fileName: string; fileKey: string; userId: number; category: string | null }> = [];
+      let orphaned = 0;
+
+      const fs = await import("fs");
+      const path = await import("path");
+
+      for (const doc of allDocs) {
+        // Check if file exists on disk
+        if (doc.fileKey) {
+          const filePath = path.resolve(ENV.storagePath, doc.fileKey);
+          if (!fs.existsSync(filePath)) {
+            missing.push({
+              id: doc.id,
+              fileName: doc.fileName,
+              fileKey: doc.fileKey,
+              userId: doc.userId,
+              category: doc.category,
+            });
+          }
+        }
+
+        // Check for orphaned documents (no associated horse)
+        if (!doc.horseId) {
+          orphaned++;
+        }
+      }
+
+      return { total: allDocs.length, missing, orphaned };
     }),
 
     // Activity logs
@@ -7064,6 +7113,68 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           avgCost: result[0]?.avgCost || 0,
           perHorse,
         };
+      }),
+  }),
+
+  // ────────────────────────────────────────────────────────────
+  // Branded Shareable Links
+  // ────────────────────────────────────────────────────────────
+  sharing: router({
+    create: subscribedProcedure
+      .input(z.object({
+        linkType: z.enum(["horse", "stable", "medical_passport"]),
+        horseId: z.number().optional(),
+        expiresInDays: z.number().min(1).max(90).default(30),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB unavailable" });
+
+        // Verify horse ownership if horse link
+        if (input.horseId) {
+          const horse = await db.getHorseById(input.horseId, ctx.user.id);
+          if (!horse) throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+        }
+
+        const token = nanoid(24);
+        const expiresAt = new Date(Date.now() + input.expiresInDays * 86_400_000);
+
+        await dbConn.insert(shareLinks).values({
+          userId: ctx.user.id,
+          horseId: input.horseId || null,
+          linkType: input.linkType,
+          token,
+          isPublic: true,
+          isActive: true,
+          expiresAt,
+        });
+
+        return { token, expiresAt: expiresAt.toISOString() };
+      }),
+
+    list: subscribedProcedure.query(async ({ ctx }) => {
+      const dbConn = await getDb();
+      if (!dbConn) return [];
+
+      return dbConn
+        .select()
+        .from(shareLinks)
+        .where(and(eq(shareLinks.userId, ctx.user.id), eq(shareLinks.isActive, true)))
+        .orderBy(desc(shareLinks.createdAt));
+    }),
+
+    revoke: subscribedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) return { success: false };
+
+        await dbConn
+          .update(shareLinks)
+          .set({ isActive: false })
+          .where(and(eq(shareLinks.id, input.id), eq(shareLinks.userId, ctx.user.id)));
+
+        return { success: true };
       }),
   }),
 
