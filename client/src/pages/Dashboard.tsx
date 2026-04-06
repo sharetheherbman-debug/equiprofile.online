@@ -1,5 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
@@ -187,6 +187,7 @@ const quickActions = [
 function DashboardContent() {
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const { data: stats } = trpc.user.getDashboardStats.useQuery(undefined, {
     retry: false,
@@ -339,7 +340,7 @@ function DashboardContent() {
               {greeting}, {user?.name?.split(" ")[0] || "Rider"} 🐎
             </p>
             <h1 className="font-serif text-2xl sm:text-3xl font-bold leading-tight">
-              My Dashboard
+              Dashboard
             </h1>
             <p className="text-white/50 text-xs mt-1">
               {today.toLocaleDateString("en-GB", {
@@ -348,6 +349,11 @@ function DashboardContent() {
                 month: "long",
               })}
             </p>
+            {(horses as any[]).length > 0 && (
+              <p className="text-emerald-300/60 text-xs mt-1">
+                Managing {(horses as any[]).length} horse{(horses as any[]).length !== 1 ? 's' : ''}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {getSubscriptionBadge()}
@@ -420,54 +426,120 @@ function DashboardContent() {
         </Link>
       </motion.div>
 
-      {/* ── Alerts ───────────────────────────────────────────── */}
-      {(healthAlerts.length > 0 || smartAlerts.length > 0) && (
+      {/* ── Feature Discovery Strip ────────────────────────────── */}
+      {(horses as any[]).length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-          className="space-y-2"
+          transition={{ duration: 0.3, delay: 0.12 }}
+          className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0"
         >
-          {healthAlerts.map((alert) => (
-            <Link key={alert.id} href={alert.href}>
-              <div className="flex items-center justify-between p-3 rounded-xl border border-amber-500/30 bg-amber-500/5 cursor-pointer hover:bg-amber-500/10 transition-colors">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-                  <p className="text-sm font-medium text-amber-300">
-                    {alert.message}
-                  </p>
+          <div className="flex gap-2 min-w-max sm:min-w-0">
+            <Link href="/horses" className="flex-1 sm:flex-none">
+              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-teal-500/20 bg-gradient-to-r from-teal-950/30 to-cyan-950/20 hover:from-teal-950/50 hover:to-cyan-950/30 transition-all cursor-pointer min-w-[200px]">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center shrink-0">
+                  <Clock className="w-4 h-4 text-white" />
                 </div>
-                <ChevronRight className="w-4 h-4 text-amber-400 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-teal-200">Horse Timeline</p>
+                  <p className="text-[10px] text-teal-300/60 leading-tight">View full history</p>
+                </div>
               </div>
             </Link>
-          ))}
-          {smartAlerts.slice(0, 3).map((alert: any) => (
-            <Link key={alert.id} href={`/horses/${alert.horseId}`}>
-              <div className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
-                alert.severity === "urgent"
-                  ? "border-red-500/30 bg-red-500/5 hover:bg-red-500/10"
-                  : alert.severity === "warning"
-                  ? "border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10"
-                  : "border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10"
-              }`}>
-                <div className="flex items-center gap-2">
-                  <AlertCircle className={`w-4 h-4 shrink-0 ${
-                    alert.severity === "urgent" ? "text-red-400" :
-                    alert.severity === "warning" ? "text-amber-400" : "text-blue-400"
-                  }`} />
-                  <p className={`text-sm font-medium ${
-                    alert.severity === "urgent" ? "text-red-300" :
-                    alert.severity === "warning" ? "text-amber-300" : "text-blue-300"
-                  }`}>
-                    {alert.title}
-                  </p>
+            <Link href="/equine-passport" className="flex-1 sm:flex-none">
+              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/30 to-blue-950/20 hover:from-indigo-950/50 hover:to-blue-950/30 transition-all cursor-pointer min-w-[200px]">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shrink-0">
+                  <Shield className="w-4 h-4 text-white" />
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-indigo-200">Equine Passport</p>
+                  <p className="text-[10px] text-indigo-300/60 leading-tight">Digital passport & QR</p>
+                </div>
               </div>
             </Link>
-          ))}
+            <Link href="/training-templates" className="flex-1 sm:flex-none">
+              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-emerald-500/20 bg-gradient-to-r from-emerald-950/30 to-green-950/20 hover:from-emerald-950/50 hover:to-green-950/30 transition-all cursor-pointer min-w-[200px]">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shrink-0">
+                  <BookOpen className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-emerald-200">Training Templates</p>
+                  <p className="text-[10px] text-emerald-300/60 leading-tight">Expert training plans</p>
+                </div>
+              </div>
+            </Link>
+            <Link href="/ai-chat" className="flex-1 sm:flex-none">
+              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-purple-500/20 bg-gradient-to-r from-purple-950/30 to-violet-950/20 hover:from-purple-950/50 hover:to-violet-950/30 transition-all cursor-pointer min-w-[200px]">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shrink-0">
+                  <Brain className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-purple-200">AI Assistant</p>
+                  <p className="text-[10px] text-purple-300/60 leading-tight">Ask about your horses</p>
+                </div>
+              </div>
+            </Link>
+          </div>
         </motion.div>
       )}
+
+      {/* ── Care Insights ────────────────────────────────────── */}
+      {(() => {
+        // Only show urgent/warning alerts and non-"no_recent_health" info alerts
+        const actionableAlerts = (smartAlerts as any[]).filter(
+          (a) => a.severity === "urgent" || a.severity === "warning" ||
+            (a.severity === "info" && a.type !== "no_recent_health")
+        );
+        const hasContent = healthAlerts.length > 0 || actionableAlerts.length > 0;
+        if (!hasContent) return null;
+        const allAlerts = [
+          ...healthAlerts.map((a) => ({ id: a.id, href: a.href, severity: "warning", title: a.message, horseId: null })),
+          ...actionableAlerts,
+        ];
+        const visibleAlerts = allAlerts.slice(0, 4);
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <Card className="border-amber-500/20 bg-gradient-to-br from-amber-950/20 to-slate-950/30">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="font-serif text-sm flex items-center gap-2">
+                    <Stethoscope className="w-4 h-4 text-amber-400" />
+                    Care Insights
+                  </CardTitle>
+                  {allAlerts.length > 4 && (
+                    <Link href="/health">
+                      <Button variant="ghost" size="sm" className="h-6 text-[11px] text-amber-400/80 hover:text-amber-300 px-2">
+                        View all {allAlerts.length} →
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-1.5">
+                {visibleAlerts.map((alert: any) => (
+                  <Link key={alert.id} href={alert.horseId ? `/horses/${alert.horseId}` : (alert.href || "/health")}>
+                    <div className={`flex items-center justify-between p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                      alert.severity === "urgent"
+                        ? "border-red-500/25 bg-red-500/5 hover:bg-red-500/10"
+                        : "border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10"
+                    }`}>
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className={`w-3.5 h-3.5 shrink-0 ${alert.severity === "urgent" ? "text-red-400" : "text-amber-400"}`} />
+                        <p className="text-xs font-medium leading-snug">{alert.title}</p>
+                      </div>
+                      <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 shrink-0" />
+                    </div>
+                  </Link>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
+        );
+      })()}
 
       {/* ── Getting Started (shown when user has no horses yet) ───── */}
       {(horses as any[]).length === 0 && (
@@ -781,6 +853,17 @@ function DashboardContent() {
                     </Button>
                   </Link>
                 )}
+                {(horses as any[]).length > 0 && (
+                  <Link href="/horses">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-xs text-teal-400/80 hover:text-teal-300 mt-2 h-7 font-medium"
+                    >
+                      View timelines →
+                    </Button>
+                  </Link>
+                )}
               </div>
             )}
           </CardContent>
@@ -903,14 +986,14 @@ function DashboardContent() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: 0.28 }}
-          className="space-y-5"
+          className="space-y-4"
         >
           <div className="flex items-center gap-3">
-            <div className="w-1 h-5 rounded-full bg-gradient-to-b from-indigo-500 to-purple-600" />
-            <h2 className="font-serif text-base font-semibold">Quick Links</h2>
-            <span className="text-xs text-muted-foreground">All features at a glance</span>
+            <div className="w-1 h-5 rounded-full bg-gradient-to-b from-indigo-500 via-purple-600 to-pink-600" />
+            <h2 className="font-serif text-base font-semibold">All Features</h2>
+            <span className="text-xs text-muted-foreground">Browse your complete toolkit</span>
           </div>
-          <div className="space-y-5">
+          <div className="space-y-3">
             {dashboardModuleGroups.map((group) => {
               const isStablePlan =
                 subscription?.bothDashboardsUnlocked ||
@@ -928,29 +1011,36 @@ function DashboardContent() {
                 return true;
               });
               if (items.length === 0) return null;
+              const isExpanded = expandedGroups.has(group.label);
+              const LIMIT = 5;
+              const visibleItems = isExpanded ? items : items.slice(0, LIMIT);
+              const hasMore = items.length > LIMIT;
               return (
-                <div key={group.label} className="space-y-2">
-                  <p className={`text-[11px] font-bold uppercase tracking-widest ${group.labelColor}`}>
-                    {group.label}
-                  </p>
-                  <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
-                    {items.map((item) => {
+                <div key={group.label} className="rounded-xl border border-white/5 bg-card/40 p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-sm bg-gradient-to-br ${group.gradient} shrink-0`} />
+                    <p className={`text-xs font-bold uppercase tracking-widest ${group.labelColor}`}>
+                      {group.label}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                    {visibleItems.map((item) => {
                       const Icon = item.icon;
                       const isActive = location === item.path;
                       return (
                         <button
                           key={item.path}
                           onClick={() => setLocation(item.path)}
-                          className={`group flex flex-col items-center gap-2 p-3 rounded-xl border transition-all duration-200 text-center hover:scale-105 active:scale-95 ${
+                          className={`group flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all duration-200 text-center active:scale-95 ${
                             isActive
                               ? "border-primary/40 bg-primary/10 shadow-sm"
                               : "border-white/5 bg-card/60 hover:bg-card hover:border-white/15 hover:shadow-sm"
                           }`}
                         >
                           <div
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105 bg-gradient-to-br ${group.gradient}`}
+                            className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${group.gradient}`}
                           >
-                            <Icon className="h-4 w-4 text-white" />
+                            <Icon className="h-5 w-5 text-white" />
                           </div>
                           <span className="text-[11px] leading-tight font-medium">
                             {item.label}
@@ -959,6 +1049,19 @@ function DashboardContent() {
                       );
                     })}
                   </div>
+                  {hasMore && (
+                    <button
+                      onClick={() => setExpandedGroups((prev) => {
+                        const next = new Set(prev);
+                        if (isExpanded) next.delete(group.label);
+                        else next.add(group.label);
+                        return next;
+                      })}
+                      className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {isExpanded ? "Show less ↑" : `See all ${items.length} →`}
+                    </button>
+                  )}
                 </div>
               );
             })}
