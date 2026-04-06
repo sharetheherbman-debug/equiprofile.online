@@ -219,6 +219,25 @@ const TRAINING_DAY_OFFSET: Record<string, number> = {
   Saturday: 6,
 };
 
+// Maximum number of weeks to schedule when applying a template
+// Limited to prevent excessive database operations and ensure reasonable initial load
+const MAX_WEEKS_TO_SCHEDULE = 4;
+
+// Default duration for training sessions when not specified in template
+const DEFAULT_SESSION_DURATION_MINUTES = 30;
+
+// Session type mapping: template type → trainingSessions sessionType
+function mapTemplateSessionType(type: string): "flatwork" | "jumping" | "hacking" | "lunging" | "groundwork" | "competition" | "lesson" | "other" {
+  const lowerType = type.toLowerCase();
+  if (lowerType === "flatwork") return "flatwork";
+  if (lowerType === "jumping") return "jumping";
+  if (lowerType === "hack" || lowerType === "hacking") return "hacking";
+  if (lowerType === "groundwork") return "groundwork";
+  if (lowerType === "lunging") return "lunging";
+  if (lowerType === "walk") return "hacking"; // walking is a form of hacking
+  return "other";
+}
+
 export const appRouter = router({
   system: systemRouter,
 
@@ -5086,6 +5105,70 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           programData: template[0].programData,
         });
 
+        // Create actual training sessions so they appear on the Training page
+        let sessionsCreated = 0;
+        try {
+          if (template[0].programData) {
+            const programData = JSON.parse(template[0].programData) as {
+              weeks?: Array<{
+                week: number;
+                sessions?: Array<{
+                  day: string;
+                  type: string;
+                  duration: number;
+                  description: string;
+                }>;
+              }>;
+            };
+
+            // Validate programData structure
+            if (!programData.weeks || !Array.isArray(programData.weeks)) {
+              console.warn("[Templates] Invalid programData structure, skipping session creation");
+            } else {
+              const baseDate = new Date(input.startDate);
+              const baseDayOfWeek = baseDate.getDay();
+
+              // Create sessions for first few weeks
+              for (const week of programData.weeks.slice(0, MAX_WEEKS_TO_SCHEDULE)) {
+                if (!week.sessions || !Array.isArray(week.sessions)) continue;
+                
+                const weekOffset = (week.week - 1) * 7;
+                for (const session of week.sessions) {
+                  if (!session.type || !session.day) continue;
+                  if (session.type.toLowerCase() === "rest") continue;
+                  
+                  // Validate day is in the mapping
+                  if (!(session.day in TRAINING_DAY_OFFSET)) {
+                    console.warn(`[Templates] Unknown day: ${session.day}, skipping session`);
+                    continue;
+                  }
+                  
+                  const dayOffset = TRAINING_DAY_OFFSET[session.day];
+                  const diff = (dayOffset - baseDayOfWeek + 7) % 7;
+                  const sessionDate = new Date(baseDate);
+                  sessionDate.setDate(baseDate.getDate() + weekOffset + diff);
+                  sessionDate.setHours(0, 0, 0, 0);
+
+                  await db.createTrainingSession({
+                    userId: ctx.user!.id,
+                    horseId: input.horseId,
+                    sessionDate,
+                    sessionType: mapTemplateSessionType(session.type),
+                    duration: session.duration || DEFAULT_SESSION_DURATION_MINUTES,
+                    notes: session.description || undefined,
+                    isCompleted: false,
+                  });
+                  
+                  sessionsCreated++;
+                }
+              }
+            }
+          }
+        } catch (err) {
+          // Training session creation errors should be logged but not fail the mutation
+          console.error("[Templates] Failed to create training sessions:", err);
+        }
+
         // If user enabled "Training → Calendar Auto-Events", create calendar
         // events for each training session in the template's week 1 program.
         try {
@@ -5113,7 +5196,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
             const calendarInserts: Array<typeof events.$inferInsert> = [];
 
-            for (const week of (programData.weeks ?? []).slice(0, 4)) {
+            for (const week of (programData.weeks ?? []).slice(0, MAX_WEEKS_TO_SCHEDULE)) {
               const weekOffset = (week.week - 1) * 7;
               for (const session of week.sessions ?? []) {
                 if (session.type === "rest") continue;
@@ -5146,7 +5229,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           console.error("[Templates] Failed to create calendar events:", err);
         }
 
-        return { id: result[0].insertId };
+        return { id: result[0].insertId, sessionsCreated };
       }),
   }),
 

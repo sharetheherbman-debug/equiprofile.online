@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -476,50 +477,10 @@ function AdminContent() {
         </Card>
       </div>
 
-      {/* User Segmentation — executive summary */}
-      {segmentation && (
-        <Card className="border-indigo-500/20">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">User Segmentation</CardTitle>
-            <CardDescription className="text-xs">Real-time breakdown of user lifecycle stages</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              <div className="text-center p-3 rounded-lg bg-green-50 dark:bg-green-950/30">
-                <p className="text-2xl font-bold text-green-600">{segmentation.paidUsers}</p>
-                <p className="text-[11px] text-muted-foreground font-medium">Paid Users</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30">
-                <p className="text-2xl font-bold text-blue-600">{segmentation.freeAccessUsers}</p>
-                <p className="text-[11px] text-muted-foreground font-medium">Free Access</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30">
-                <p className="text-2xl font-bold text-amber-600">{segmentation.trialUsers}</p>
-                <p className="text-[11px] text-muted-foreground font-medium">Trial Users</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-red-50 dark:bg-red-950/30">
-                <p className="text-2xl font-bold text-red-600">{segmentation.overdueUsers}</p>
-                <p className="text-[11px] text-muted-foreground font-medium">Overdue</p>
-              </div>
-              <div className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-950/30">
-                <p className="text-2xl font-bold text-gray-500">{segmentation.deletedUsers}</p>
-                <p className="text-[11px] text-muted-foreground font-medium">Deleted</p>
-              </div>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-              <span>Leads: <span className="font-semibold text-foreground">{segmentation.leads}</span></span>
-              <span>Cancelled: <span className="font-semibold text-foreground">{segmentation.cancelledUsers}</span></span>
-              <span>Expired: <span className="font-semibold text-foreground">{segmentation.expiredUsers}</span></span>
-              <span>Recent signups (7d): <span className="font-semibold text-foreground">{segmentation.recentSignups}</span></span>
-              <span>Total real users: <span className="font-semibold text-foreground">{segmentation.totalReal}</span></span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Main Tabs */}
       <Tabs defaultValue="users" className="space-y-4">
         <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1 w-full">
+          {/* Group 1: People */}
           <TabsTrigger
             value="users"
             className="flex items-center gap-1.5 shrink-0"
@@ -534,6 +495,42 @@ function AdminContent() {
             <AlertCircle className="w-4 h-4" />
             <span className="hidden sm:inline">Overdue</span>
           </TabsTrigger>
+          <TabsTrigger
+            value="churn"
+            className="flex items-center gap-1.5 shrink-0"
+          >
+            <AlertCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">Churn Risk</span>
+          </TabsTrigger>
+          
+          <Separator orientation="vertical" className="h-6 mx-1 self-center" />
+          
+          {/* Group 2: Comms */}
+          <TabsTrigger
+            value="leads"
+            className="flex items-center gap-1.5 shrink-0"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span className="hidden sm:inline">Leads</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="whatsapp"
+            className="flex items-center gap-1.5 shrink-0"
+          >
+            <Smartphone className="w-4 h-4" />
+            <span className="hidden sm:inline">WhatsApp</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="campaigns"
+            className="flex items-center gap-1.5 shrink-0"
+          >
+            <Mail className="w-4 h-4" />
+            <span className="hidden sm:inline">Campaigns</span>
+          </TabsTrigger>
+          
+          <Separator orientation="vertical" className="h-6 mx-1 self-center" />
+          
+          {/* Group 3: System */}
           <TabsTrigger
             value="activity"
             className="flex items-center gap-1.5 shrink-0"
@@ -556,33 +553,16 @@ function AdminContent() {
             <span className="hidden sm:inline">System</span>
           </TabsTrigger>
           <TabsTrigger
-            value="leads"
-            className="flex items-center gap-1.5 shrink-0"
-          >
-            <MessageSquare className="w-4 h-4" />
-            <span className="hidden sm:inline">Leads</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="whatsapp"
-            className="flex items-center gap-1.5 shrink-0"
-          >
-            <Smartphone className="w-4 h-4" />
-            <span className="hidden sm:inline">WhatsApp</span>
-          </TabsTrigger>
-          <TabsTrigger
             value="deleted"
             className="flex items-center gap-1.5 shrink-0"
           >
             <Trash2 className="w-4 h-4" />
             <span className="hidden sm:inline">Deleted</span>
           </TabsTrigger>
-          <TabsTrigger
-            value="campaigns"
-            className="flex items-center gap-1.5 shrink-0"
-          >
-            <Mail className="w-4 h-4" />
-            <span className="hidden sm:inline">Campaigns</span>
-          </TabsTrigger>
+          
+          <Separator orientation="vertical" className="h-6 mx-1 self-center" />
+          
+          {/* Group 4: Analytics */}
           <TabsTrigger
             value="analytics"
             className="flex items-center gap-1.5 shrink-0"
@@ -590,17 +570,51 @@ function AdminContent() {
             <BarChart3 className="w-4 h-4" />
             <span className="hidden sm:inline">Analytics</span>
           </TabsTrigger>
-          <TabsTrigger
-            value="churn"
-            className="flex items-center gap-1.5 shrink-0"
-          >
-            <AlertCircle className="w-4 h-4" />
-            <span className="hidden sm:inline">Churn Risk</span>
-          </TabsTrigger>
         </TabsList>
 
         {/* Users Tab */}
         <TabsContent value="users">
+          {/* User Segmentation — executive summary */}
+          {segmentation && (
+            <Card className="border-indigo-500/20 mb-4">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">User Segmentation</CardTitle>
+                <CardDescription className="text-xs">Real-time breakdown of user lifecycle stages</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                  <div className="text-center p-3 rounded-lg bg-green-50 dark:bg-green-950/30">
+                    <p className="text-2xl font-bold text-green-600">{segmentation.paidUsers}</p>
+                    <p className="text-[11px] text-muted-foreground font-medium">Paid Users</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30">
+                    <p className="text-2xl font-bold text-blue-600">{segmentation.freeAccessUsers}</p>
+                    <p className="text-[11px] text-muted-foreground font-medium">Free Access</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30">
+                    <p className="text-2xl font-bold text-amber-600">{segmentation.trialUsers}</p>
+                    <p className="text-[11px] text-muted-foreground font-medium">Trial Users</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-red-50 dark:bg-red-950/30">
+                    <p className="text-2xl font-bold text-red-600">{segmentation.overdueUsers}</p>
+                    <p className="text-[11px] text-muted-foreground font-medium">Overdue</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-950/30">
+                    <p className="text-2xl font-bold text-gray-500">{segmentation.deletedUsers}</p>
+                    <p className="text-[11px] text-muted-foreground font-medium">Deleted</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                  <span>Leads: <span className="font-semibold text-foreground">{segmentation.leads}</span></span>
+                  <span>Cancelled: <span className="font-semibold text-foreground">{segmentation.cancelledUsers}</span></span>
+                  <span>Expired: <span className="font-semibold text-foreground">{segmentation.expiredUsers}</span></span>
+                  <span>Recent signups (7d): <span className="font-semibold text-foreground">{segmentation.recentSignups}</span></span>
+                  <span>Total real users: <span className="font-semibold text-foreground">{segmentation.totalReal}</span></span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
           <Card>
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

@@ -1251,8 +1251,9 @@ function TrainingTemplatesContent() {
   );
 
   const applyMutation = trpc.trainingPrograms.applyTemplate.useMutation({
-    onSuccess: () => {
-      toast.success("Template applied! Redirecting to your training plan...");
+    onSuccess: (data) => {
+      const count = data.sessionsCreated || 0;
+      toast.success(`Training plan applied! ${count} sessions scheduled.`);
       setIsApplyOpen(false);
       setSelectedTemplate(null);
       setApplyData({
