@@ -87,7 +87,6 @@ function AppointmentsContent() {
     location: "",
     cost: "",
     status: "scheduled",
-    reminder: "",
     notes: "",
   });
 
@@ -101,7 +100,6 @@ function AppointmentsContent() {
       location: "",
       cost: "",
       status: "scheduled",
-      reminder: "",
       notes: "",
     });
     setEditingAppointment(null);
@@ -177,7 +175,6 @@ function AppointmentsContent() {
       location: appointment.location || "",
       cost: appointment.cost ? (appointment.cost / 100).toFixed(2) : "",
       status: appointment.status || "scheduled",
-      reminder: "",
       notes: appointment.notes || "",
     });
     setOpen(true);
@@ -428,8 +425,6 @@ function AppointmentsContent() {
                   </Select>
                 </div>
               </div>
-
-              {/* Reminder feature — removed until backend scheduler is implemented */}
 
               <div>
                 <Label htmlFor="appt-notes">Notes</Label>
