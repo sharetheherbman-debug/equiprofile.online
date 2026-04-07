@@ -1,5 +1,4 @@
 import DashboardLayout from "@/components/DashboardLayout";
-import { useTranslation } from "react-i18next";
 import {
   BarChart3,
   TrendingUp,
@@ -50,8 +49,6 @@ const COLORS = [
 ];
 
 export default function AnalyticsPage() {
-  const { t } = useTranslation();
-
   const { data: trainingSessions } = trpc.training.listAll.useQuery();
   const { data: healthRecords } = trpc.healthRecords.listAll.useQuery();
   const { data: competitions } = trpc.competitions.list.useQuery({});
@@ -157,7 +154,7 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">{t("analytics.title")}</h1>
+            <h1 className="text-3xl font-bold">Analytics</h1>
             <p className="text-muted-foreground">
               Comprehensive insights into your horses' performance and health
             </p>
