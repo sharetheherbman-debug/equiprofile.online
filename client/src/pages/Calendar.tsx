@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useState, useMemo } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
   CalendarIcon,
@@ -119,7 +120,6 @@ function buildStartDate(date: string, time: string): string {
 }
 
 export default function CalendarPage() {
-  const { t } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendarView, setCalendarView] = useState<"month" | "agenda">("month");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -524,7 +524,7 @@ export default function CalendarPage() {
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold truncate">{t("nav.calendar")}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold truncate">Calendar</h1>
             <p className="text-muted-foreground text-sm hidden sm:block">
               Schedule and manage all your equestrian activities
             </p>
