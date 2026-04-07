@@ -79,7 +79,7 @@ function StableReportsContent() {
 
   // ── data queries ──
   const { data: horses = [], isLoading: horsesLoading } =
-    trpc.horses.list.useQuery(undefined, { retry: false, staleTime: 0 });
+    trpc.horses.list.useQuery(undefined, { retry: false, staleTime: 5 * 60 * 1000 });
 
   const { data: tasks = [], isLoading: tasksLoading } =
     trpc.tasks.list.useQuery(undefined, { retry: false });
