@@ -163,104 +163,64 @@ function HorseDetailContent() {
 
   return (
     <div className="space-y-6">
-      {/* ── Hero Banner (when photo available) or plain header ── */}
-      {horse.photoUrl ? (
-        <div className="relative w-full rounded-2xl overflow-hidden shadow-lg">
-          {/* 3:1 banner */}
-          <div className="aspect-[3/1] w-full">
-            <img
-              src={horse.photoUrl}
-              alt={horse.name}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "/images/hero/image6.jpg";
-              }}
-            />
-          </div>
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          {/* Back + Edit buttons */}
-          <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-            <Link href="/horses">
-              <Button size="sm" variant="secondary" className="bg-black/40 border-white/20 text-white hover:bg-black/60 backdrop-blur-sm">
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Horses
-              </Button>
-            </Link>
-            <Link href={`/horses/${horse.id}/edit`}>
-              <Button size="sm" variant="secondary" className="bg-black/40 border-white/20 text-white hover:bg-black/60 backdrop-blur-sm">
-                <Edit className="w-4 h-4 mr-1" />
-                Edit
-              </Button>
-            </Link>
-          </div>
-          {/* Horse name overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-            <div className="flex flex-wrap gap-1.5 mb-2">
-              {horse.gender && <Badge className="capitalize bg-white/20 text-white border-white/30 backdrop-blur-sm text-xs">{horse.gender}</Badge>}
-              {horse.discipline && <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-xs">{horse.discipline}</Badge>}
-              {horse.level && <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-xs">{horse.level}</Badge>}
-            </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white drop-shadow-md">
-              {horse.name}
-            </h1>
-            <p className="text-white/70 text-sm mt-0.5">
-              {horse.breed || "Unknown breed"}
-              {horse.age && ` • ${horse.age} years old`}
-            </p>
-          </div>
-        </div>
-      ) : (
-        /* Plain header when no photo */
-        <div className="flex items-center gap-4">
-          <Link href="/horses">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div className="flex-1">
-            <h1 className="font-serif text-3xl font-bold text-foreground">
-              {horse.name}
-            </h1>
-            <p className="text-muted-foreground">
-              {horse.breed || "Unknown breed"}
-              {horse.age && ` • ${horse.age} years old`}
-            </p>
-          </div>
-          <Link href={`/horses/${horse.id}/edit`}>
-            <Button variant="outline">
-              <Edit className="w-4 h-4 mr-2" />
-              Edit
-            </Button>
-          </Link>
-        </div>
-      )}
+      {/* ── Back + Edit nav ──────────────────────────────────────── */}
+      <div className="flex items-center justify-between gap-3">
+        <Link href="/horses">
+          <Button variant="ghost" size="sm" className="gap-1.5">
+            <ArrowLeft className="w-4 h-4" />
+            Horses
+          </Button>
+        </Link>
+        <Link href={`/horses/${horse.id}/edit`}>
+          <Button variant="outline" size="sm" className="gap-1.5">
+            <Edit className="w-4 h-4" />
+            Edit
+          </Button>
+        </Link>
+      </div>
 
-      {/* Horse Profile Card */}
+      {/* Horse Profile Card — unified layout with contained image block */}
       <Card>
-        <div className={horse.photoUrl ? "" : "grid md:grid-cols-3 gap-6"}>
-          {/* Only show the square thumbnail when there's no hero banner */}
-          {!horse.photoUrl && (
-            <div className="aspect-square bg-muted rounded-l-lg overflow-hidden">
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-rose-900/20 to-pink-900/20">
-                <Heart className="w-24 h-24 text-muted-foreground/30" />
-              </div>
+        <div className="flex flex-col sm:flex-row gap-5 p-5 sm:p-6">
+          {/* Contained image — same card treatment as list view */}
+          <div className="w-full sm:w-52 lg:w-60 shrink-0">
+            <div className="aspect-[4/3] bg-muted rounded-xl overflow-hidden">
+              {horse.photoUrl ? (
+                <img
+                  src={horse.photoUrl}
+                  alt={horse.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/images/hero/image6.jpg";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-rose-900/20 to-pink-900/20">
+                  <Heart className="w-14 h-14 text-muted-foreground/30" />
+                </div>
+              )}
             </div>
-          )}
-          <div className={`${horse.photoUrl ? "" : "md:col-span-2"} p-6`}>
-            {/* Show badges here when there's no hero to show them */}
-            {!horse.photoUrl && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {horse.gender && (
-                  <Badge className="capitalize">{horse.gender}</Badge>
-                )}
-                {horse.discipline && (
-                  <Badge variant="secondary">{horse.discipline}</Badge>
-                )}
-                {horse.level && <Badge variant="outline">{horse.level}</Badge>}
-              </div>
-            )}
+          </div>
+
+          {/* Details */}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap gap-2 mb-3">
+              {horse.gender && (
+                <Badge className="capitalize">{horse.gender}</Badge>
+              )}
+              {horse.discipline && (
+                <Badge variant="secondary">{horse.discipline}</Badge>
+              )}
+              {horse.level && <Badge variant="outline">{horse.level}</Badge>}
+            </div>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-foreground leading-tight">
+              {horse.name}
+            </h1>
+            <p className="text-muted-foreground mt-0.5 mb-4">
+              {horse.breed || "Unknown breed"}
+              {horse.age && ` • ${horse.age} years old`}
+            </p>
 
             <div className="grid sm:grid-cols-2 gap-4">
               {horse.color && (
@@ -312,44 +272,46 @@ function HorseDetailContent() {
               </div>
             )}
 
-            {/* Tags */}
-            <div className="mt-4 pt-4 border-t">
-              <div className="flex items-center gap-2 mb-2">
-                <Tag className="w-3.5 h-3.5 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Tags</p>
+            {/* Tags — only render when tags exist for this user */}
+            {(allTags as any[]).length > 0 && (
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex items-center gap-2 mb-2">
+                  <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">Tags</p>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {(horseTags as any[]).map((tag: any) => (
+                    <Badge
+                      key={tag.id}
+                      variant="secondary"
+                      className="cursor-pointer pr-1 gap-1 hover:bg-destructive/10 transition-colors"
+                      style={tag.color ? { backgroundColor: tag.color + "22", borderColor: tag.color + "55", color: tag.color } : {}}
+                      onClick={() => detachTagMutation.mutate({ horseId, tagId: tag.id })}
+                    >
+                      {tag.name}
+                      <X className="w-3 h-3" />
+                    </Badge>
+                  ))}
+                  {/* Add tag dropdown */}
+                  {(allTags as any[]).filter((t: any) => !(horseTags as any[]).some((ht: any) => ht.id === t.id)).length > 0 && (
+                    <select
+                      className="text-xs border rounded px-1.5 py-0.5 bg-background text-muted-foreground cursor-pointer"
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) attachTagMutation.mutate({ horseId, tagId: parseInt(e.target.value) });
+                      }}
+                    >
+                      <option value="">+ Add tag</option>
+                      {(allTags as any[])
+                        .filter((t: any) => !(horseTags as any[]).some((ht: any) => ht.id === t.id))
+                        .map((t: any) => (
+                          <option key={t.id} value={t.id}>{t.name}</option>
+                        ))}
+                    </select>
+                  )}
+                </div>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {(horseTags as any[]).map((tag: any) => (
-                  <Badge
-                    key={tag.id}
-                    variant="secondary"
-                    className="cursor-pointer pr-1 gap-1 hover:bg-destructive/10 transition-colors"
-                    style={tag.color ? { backgroundColor: tag.color + "22", borderColor: tag.color + "55", color: tag.color } : {}}
-                    onClick={() => detachTagMutation.mutate({ horseId, tagId: tag.id })}
-                  >
-                    {tag.name}
-                    <X className="w-3 h-3" />
-                  </Badge>
-                ))}
-                {/* Add tag dropdown */}
-                {(allTags as any[]).filter((t: any) => !(horseTags as any[]).some((ht: any) => ht.id === t.id)).length > 0 && (
-                  <select
-                    className="text-xs border rounded px-1.5 py-0.5 bg-background text-muted-foreground cursor-pointer"
-                    value=""
-                    onChange={(e) => {
-                      if (e.target.value) attachTagMutation.mutate({ horseId, tagId: parseInt(e.target.value) });
-                    }}
-                  >
-                    <option value="">+ Add tag</option>
-                    {(allTags as any[])
-                      .filter((t: any) => !(horseTags as any[]).some((ht: any) => ht.id === t.id))
-                      .map((t: any) => (
-                        <option key={t.id} value={t.id}>{t.name}</option>
-                      ))}
-                  </select>
-                )}
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </Card>

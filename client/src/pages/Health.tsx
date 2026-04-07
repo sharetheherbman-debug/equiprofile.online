@@ -53,8 +53,10 @@ import {
   Pencil,
   Trash2,
   Search,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
+import { downloadCSV } from "@/lib/csvDownload";
 
 const recordTypes = [
   { value: "vaccination", label: "Vaccination", icon: Syringe },
@@ -103,6 +105,19 @@ function HealthContent() {
   const { data: reminders } = trpc.healthRecords.getReminders.useQuery({
     days: 30,
   });
+
+  const exportQuery = trpc.healthRecords.exportCSV.useQuery(undefined, {
+    enabled: false,
+  });
+  const handleExport = async () => {
+    const result = await exportQuery.refetch();
+    if (result.data) {
+      downloadCSV(result.data.csv, result.data.filename);
+      toast.success("Health records exported!");
+    } else {
+      toast.error("Failed to export health records");
+    }
+  };
 
   const createMutation = trpc.healthRecords.create.useMutation({
     onSuccess: () => {
@@ -249,6 +264,15 @@ function HealthContent() {
               className="pl-8 w-48 sm:w-56"
             />
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={exportQuery.isFetching}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exportQuery.isFetching ? "Exporting…" : "Export CSV"}
+          </Button>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>

@@ -55,9 +55,11 @@ import {
   Pencil,
   Trash2,
   Search,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRealtimeModule } from "@/hooks/useRealtime";
+import { downloadCSV } from "@/lib/csvDownload";
 
 const sessionTypes = [
   { value: "flatwork", label: "Flatwork" },
@@ -113,6 +115,19 @@ function TrainingContent() {
   } = trpc.training.listAll.useQuery();
   const { data: upcomingSessions } = trpc.training.getUpcoming.useQuery();
   const { data: templates } = trpc.trainingPrograms.listTemplates.useQuery();
+
+  const exportQuery = trpc.training.exportCSV.useQuery(undefined, {
+    enabled: false,
+  });
+  const handleExport = async () => {
+    const result = await exportQuery.refetch();
+    if (result.data) {
+      downloadCSV(result.data.csv, result.data.filename);
+      toast.success("Training sessions exported!");
+    } else {
+      toast.error("Failed to export training sessions");
+    }
+  };
 
   // Real-time subscription — refresh when another device adds/updates a session
   useRealtimeModule("training", () => {
@@ -283,6 +298,15 @@ function TrainingContent() {
               className="pl-8 w-48 sm:w-56"
             />
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={exportQuery.isFetching}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exportQuery.isFetching ? "Exporting…" : "Export CSV"}
+          </Button>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>

@@ -51,6 +51,7 @@ import {
 } from "lucide-react";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
+import { downloadCSV } from "@/lib/csvDownload";
 
 const documentTypes = [
   { value: "health", label: "Health Record" },
@@ -167,6 +168,19 @@ function DocumentsContent() {
     data: documents,
     isLoading,
   } = trpc.documents.list.useQuery();
+
+  const exportQuery = trpc.documents.exportCSV.useQuery(undefined, {
+    enabled: false,
+  });
+  const handleExport = async () => {
+    const result = await exportQuery.refetch();
+    if (result.data) {
+      downloadCSV(result.data.csv, result.data.filename);
+      toast.success("Documents index exported!");
+    } else {
+      toast.error("Failed to export documents");
+    }
+  };
 
   const uploadMutation = trpc.documents.upload.useMutation({
     onSuccess: async () => {
@@ -823,6 +837,16 @@ function DocumentsContent() {
             </Select>
           )}
           {uploadButton}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={exportQuery.isFetching}
+            className="h-9"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exportQuery.isFetching ? "Exporting…" : "Export CSV"}
+          </Button>
         </div>
       </div>
 

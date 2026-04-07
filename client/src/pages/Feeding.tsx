@@ -30,10 +30,11 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
-import { Plus, Utensils, Clock, Trash2 } from "lucide-react";
+import { Plus, Utensils, Clock, Trash2, Download } from "lucide-react";
 import { toast } from "sonner";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "../../../server/routers";
+import { downloadCSV } from "@/lib/csvDownload";
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 type FeedingPlan = RouterOutput["feeding"]["listAll"][number];
@@ -73,6 +74,19 @@ function FeedingContent() {
     isLoading,
     refetch,
   } = trpc.feeding.listAll.useQuery();
+
+  const exportQuery = trpc.feeding.exportCSV.useQuery(undefined, {
+    enabled: false,
+  });
+  const handleExport = async () => {
+    const result = await exportQuery.refetch();
+    if (result.data) {
+      downloadCSV(result.data.csv, result.data.filename);
+      toast.success("Feeding plans exported!");
+    } else {
+      toast.error("Failed to export feeding plans");
+    }
+  };
 
   const createMutation = trpc.feeding.create.useMutation({
     onSuccess: () => {
@@ -152,13 +166,23 @@ function FeedingContent() {
             Manage daily feeding schedules for your horses
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Feed
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={exportQuery.isFetching}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exportQuery.isFetching ? "Exporting…" : "Export CSV"}
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Feed
+              </Button>
+            </DialogTrigger>
           <DialogContent>
             <form onSubmit={handleSubmit}>
               <DialogHeader>
@@ -292,6 +316,7 @@ function FeedingContent() {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {!feedingPlans || feedingPlans.length === 0 ? (
