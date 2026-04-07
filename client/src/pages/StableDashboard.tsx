@@ -346,7 +346,7 @@ function StableDashboardContent() {
     undefined,
     { retry: false },
   );
-  const { data: smartAlerts = [] } = trpc.timeline.getHealthAlerts.useQuery({}, {
+  const { data: healthAlerts = [] } = trpc.timeline.getHealthAlerts.useQuery({}, {
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
@@ -554,10 +554,9 @@ function StableDashboardContent() {
 
       {/* ── Care Alerts ──────────────────────────────────────── */}
       {(() => {
-        const actionableAlerts = smartAlerts.filter(
-          (a) => (a.severity === "urgent" || a.severity === "warning") &&
-            a.type !== "no_recent_health"
-        );
+        const isActionableAlert = (a: HealthAlert) =>
+          (a.severity === "urgent" || a.severity === "warning") && a.type !== "no_recent_health";
+        const actionableAlerts = healthAlerts.filter(isActionableAlert);
         if (actionableAlerts.length === 0) return null;
         const visibleAlerts = actionableAlerts.slice(0, 3);
         return (
