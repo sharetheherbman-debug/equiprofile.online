@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
@@ -169,10 +169,15 @@ export default function CalendarPage() {
   const { data: appointments = [] } = trpc.appointments.list.useQuery(undefined, calendarQueryOpts);
   const { data: trainingSessions = [] } = trpc.training.listAll.useQuery(undefined, calendarQueryOpts);
 
+  // Stable SSE callback — passed by identity so useRealtimeModule doesn't
+  // re-subscribe on every render.  refetch() is safe to call: TanStack Query
+  // deduplicates concurrent fetches for the same query key.
+  const handleCalendarEvent = useCallback(() => { refetch(); }, [refetch]);
+
   // Real-time subscriptions — refresh calendar when events change from other devices/tabs
-  useRealtimeModule("calendar", () => { refetch(); });
-  useRealtimeModule("tasks", () => { refetch(); });
-  useRealtimeModule("appointments", () => { refetch(); });
+  useRealtimeModule("calendar", handleCalendarEvent);
+  useRealtimeModule("tasks", handleCalendarEvent);
+  useRealtimeModule("appointments", handleCalendarEvent);
 
   const createEvent = trpc.calendar.createEvent.useMutation({
     onSuccess: () => {

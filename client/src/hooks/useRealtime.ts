@@ -3,7 +3,7 @@
  * Delegates to the singleton RealtimeContext — one connection per session.
  */
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import { useRealtimeContext } from "../contexts/RealtimeContext";
 
 type EventHandler = (data: any) => void;
@@ -27,7 +27,13 @@ export function useRealtime(options: UseRealtimeOptions = {}) {
 }
 
 /**
- * Hook to subscribe to specific module events
+ * Hook to subscribe to specific module events.
+ *
+ * Uses a ref to hold the latest `onEvent` callback so that the subscription
+ * effect only re-runs when `module` or `enabled` changes — NOT every time the
+ * caller re-renders with a new inline function reference.  This prevents the
+ * repeated subscribe/unsubscribe churn that was causing the calendar refetch
+ * loop when multiple `useRealtimeModule` calls shared the same `refetch`.
  */
 export function useRealtimeModule(
   module: string,
@@ -36,6 +42,10 @@ export function useRealtimeModule(
 ) {
   const { isConnected, subscribe } = useRealtimeContext();
 
+  // Always keep the ref pointing at the latest callback without re-subscribing
+  const onEventRef = useRef(onEvent);
+  onEventRef.current = onEvent;
+
   useEffect(() => {
     if (!enabled) return;
 
@@ -43,14 +53,16 @@ export function useRealtimeModule(
     const unsubscribers = commonActions.map((action) => {
       const eventType = `${module}:${action}`;
       return subscribe(eventType, (data) => {
-        onEvent(action, data);
+        onEventRef.current(action, data);
       });
     });
 
     return () => {
       unsubscribers.forEach((unsub) => unsub());
     };
-  }, [module, onEvent, enabled, subscribe]);
+  // onEvent intentionally excluded — latest value always available via ref
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [module, enabled, subscribe]);
 
   return { isConnected };
 }

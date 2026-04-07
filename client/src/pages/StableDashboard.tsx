@@ -336,15 +336,16 @@ const stableOps = [
 function StableDashboardContent() {
   const { user } = useAuth();
   const { data: horses = [], isLoading: horsesLoading } =
-    trpc.horses.list.useQuery(undefined, { retry: false, staleTime: 0 });
+    trpc.horses.list.useQuery(undefined, { retry: false, staleTime: 5 * 60 * 1000 });
   const { data: subscriptionStatus, isLoading: subLoading } =
     trpc.user.getSubscriptionStatus.useQuery();
   const { data: tasks = [] } = trpc.tasks.list.useQuery(undefined, {
     retry: false,
+    staleTime: 2 * 60 * 1000,
   });
   const { data: upcomingAppointments = [] } = trpc.appointments.list.useQuery(
     undefined,
-    { retry: false },
+    { retry: false, staleTime: 2 * 60 * 1000 },
   );
   const { data: healthAlerts = [] } = trpc.timeline.getHealthAlerts.useQuery({}, {
     retry: false,
@@ -352,7 +353,7 @@ function StableDashboardContent() {
   });
   const { data: trainingStats } = trpc.analytics.getTrainingStats.useQuery(
     {},
-    { retry: false },
+    { retry: false, staleTime: 5 * 60 * 1000 },
   );
   const { data: stats } = trpc.user.getDashboardStats.useQuery(undefined, {
     retry: false,
