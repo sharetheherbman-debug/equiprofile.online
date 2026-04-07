@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Send, MessageSquare, Plus, Users, Shield, ChevronRight, Loader2 } from "lucide-react";
@@ -38,7 +37,6 @@ interface ThreadMessage {
 }
 
 export default function MessagesPage() {
-  const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const [selectedThreadId, setSelectedThreadId] = useState<number | null>(null);
   const [newThreadTitle, setNewThreadTitle] = useState("");
@@ -165,7 +163,7 @@ export default function MessagesPage() {
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-2xl font-bold">{t("messages.title")}</h1>
+            <h1 className="text-2xl font-bold">Messages</h1>
             {selectedStableId && stables[0] && (
               <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                 <Users className="h-3 w-3" />
@@ -180,7 +178,7 @@ export default function MessagesPage() {
               disabled={createThreadMutation.isPending}
             >
               <Plus className="h-4 w-4 mr-1" />
-              {t("messages.newMessage")}
+              New Message
             </Button>
           )}
         </div>
@@ -208,7 +206,7 @@ export default function MessagesPage() {
             <Card className="flex flex-col">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base">
-                  {t("messages.title")}
+                  Messages
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex-1 p-0">
@@ -239,7 +237,7 @@ export default function MessagesPage() {
                     <div className="flex flex-col items-center justify-center py-8 text-center px-4">
                       <MessageSquare className="h-10 w-10 text-muted-foreground mb-3" />
                       <p className="text-sm text-muted-foreground">
-                        {t("messages.noMessages")}
+                        No messages yet
                       </p>
                       <Button
                         variant="outline"
@@ -333,7 +331,7 @@ export default function MessagesPage() {
 
                     <div className="flex gap-2 p-3 border-t">
                       <Input
-                        placeholder={t("messages.typeMessage")}
+                        placeholder="Type a message..."
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         onKeyDown={handleKeyPress}

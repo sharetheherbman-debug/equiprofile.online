@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
   Users,
@@ -47,7 +46,6 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
 export default function StablePage() {
-  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("overview");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
@@ -144,7 +142,7 @@ export default function StablePage() {
       <div className="container mx-auto p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">{t("stable.title")}</h1>
+            <h1 className="text-3xl font-bold">Stable</h1>
             <p className="text-muted-foreground">
               {currentStable
                 ? `Managing: ${currentStable.name}`
@@ -155,12 +153,12 @@ export default function StablePage() {
             {!currentStable ? (
               <Button onClick={() => setIsCreateOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
-                {t("stable.createStable")}
+                Create Stable
               </Button>
             ) : (
               <Button variant="outline" onClick={() => setIsInviteOpen(true)}>
                 <Mail className="mr-2 h-4 w-4" />
-                {t("stable.inviteMembers")}
+                Invite Members
               </Button>
             )}
           </div>
@@ -291,7 +289,7 @@ export default function StablePage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
-                    <CardTitle>{t("stable.members")}</CardTitle>
+                    <CardTitle>Members</CardTitle>
                     <CardDescription>
                       Manage stable members and their roles
                     </CardDescription>
@@ -355,7 +353,7 @@ export default function StablePage() {
             <TabsContent value="settings" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("stable.settings")}</CardTitle>
+                  <CardTitle>Stable Settings</CardTitle>
                   <CardDescription>
                     Configure your stable settings
                   </CardDescription>
