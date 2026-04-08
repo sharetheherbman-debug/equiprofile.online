@@ -324,12 +324,13 @@ export default function HomeV2() {
             <div className="max-w-3xl mx-auto relative">
               {/* Testimonial card */}
               <div className="rounded-xl border border-[#e2e4ea] dark:border-white/10 bg-[#f7f8fa] dark:bg-[#1a1d24] p-8 md:p-12">
-                <div className="mb-6 flex gap-1" aria-label={`${testimonials[activeTestimonial].rating} out of 5 stars`}>
+                <div role="img" aria-label={`Rated ${testimonials[activeTestimonial].rating} out of 5 stars`} className="mb-6 flex gap-1">
                   {[...Array(testimonials[activeTestimonial].rating)].map(
                     (_, i) => (
                       <Star
                         key={i}
                         className="w-5 h-5 fill-amber-400 text-amber-400"
+                        aria-hidden="true"
                       />
                     ),
                   )}
