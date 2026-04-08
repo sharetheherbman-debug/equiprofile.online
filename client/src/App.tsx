@@ -17,6 +17,7 @@ import { ProtectedRoute, StableRoute } from "./components/ProtectedRoute";
 import { SalesChatWidget } from "./components/SalesChatWidget";
 import { CookieConsent } from "./components/CookieConsent";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { V2PreviewToggle } from "./v2/components/V2PreviewToggle";
 // Marketing Pages (Public) — kept eager for fast initial paint on public routes
 import Home from "./pages/Home";
 import Features from "./pages/Features";
@@ -460,8 +461,6 @@ function Router() {
     </>
   );
 }
-
-import { V2PreviewToggle } from "./v2/components/V2PreviewToggle";
 
 function App() {
   return (
