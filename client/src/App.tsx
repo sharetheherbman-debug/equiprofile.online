@@ -25,6 +25,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import { getUIVersion } from "./config/uiVersion";
 
 // Auth Pages — kept eager so login/register loads instantly
 import Login from "./pages/auth/Login";
@@ -82,6 +83,11 @@ const StableReports = lazy(() => import("./pages/StableReports"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Competitions = lazy(() => import("./pages/Competitions"));
 
+// V2 Frontend Pages — lazy-loaded for code splitting
+const HomeV2 = lazy(() => import("./v2/pages/HomeV2"));
+const DashboardV2 = lazy(() => import("./v2/pages/DashboardV2"));
+const StableDashboardV2 = lazy(() => import("./v2/pages/StableDashboardV2"));
+
 // Minimal spinner shown while lazy chunks load (doesn't block FCP)
 function PageSpinner() {
   return (
@@ -95,6 +101,13 @@ function Router() {
   useKeyboardNavigation();
   useScrollToTop();
   const upgradeModal = useUpgradeModal();
+  const uiVersion = getUIVersion();
+
+  // Version-aware component selection — when VITE_UI_VERSION=v2 or
+  // localStorage equiprofile-ui-version=v2, main routes serve V2 content
+  const ActiveHome = uiVersion === "v2" ? HomeV2 : Home;
+  const ActiveDashboard = uiVersion === "v2" ? DashboardV2 : Dashboard;
+  const ActiveStableDashboard = uiVersion === "v2" ? StableDashboardV2 : StableDashboard;
 
   return (
     <>
@@ -108,8 +121,8 @@ function Router() {
       <main id="main-content">
         <Suspense fallback={<PageSpinner />}>
           <Switch>
-            {/* Marketing Pages (Public) */}
-            <Route path="/" component={Home} />
+            {/* Marketing Pages (Public) — version-aware */}
+            <Route path="/" component={ActiveHome} />
             <Route path="/features" component={Features} />
             <Route path="/pricing" component={Pricing} />
             <Route path="/about" component={About} />
@@ -130,10 +143,10 @@ function Router() {
               </ProtectedRoute>
             </Route>
 
-            {/* App Pages (Protected - require auth) */}
+            {/* App Pages (Protected - require auth) — version-aware */}
             <Route path="/dashboard">
               <ProtectedRoute>
-                <Dashboard />
+                <ActiveDashboard />
               </ProtectedRoute>
             </Route>
 
@@ -309,10 +322,10 @@ function Router() {
               </StableRoute>
             </Route>
 
-            {/* Stable Dashboard (Stable plan users) */}
+            {/* Stable Dashboard (Stable plan users) — version-aware */}
             <Route path="/stable-dashboard">
               <StableRoute>
-                <StableDashboard />
+                <ActiveStableDashboard />
               </StableRoute>
             </Route>
 
@@ -422,6 +435,22 @@ function Router() {
             {/* Public horse passport — accessible without login (QR scan) */}
             <Route path="/passport/:token" component={PassportView} />
 
+            {/* ── V2 Frontend Routes ─────────────────────────────── */}
+            {/* Preview routes — legacy stays intact at original paths */}
+            <Route path="/v2" component={HomeV2} />
+
+            <Route path="/dashboard-v2">
+              <ProtectedRoute>
+                <DashboardV2 />
+              </ProtectedRoute>
+            </Route>
+
+            <Route path="/stable-dashboard-v2">
+              <StableRoute>
+                <StableDashboardV2 />
+              </StableRoute>
+            </Route>
+
             {/* 404 */}
             <Route path="/404" component={NotFound} />
             <Route component={NotFound} />
@@ -431,6 +460,8 @@ function Router() {
     </>
   );
 }
+
+import { V2PreviewToggle } from "./v2/components/V2PreviewToggle";
 
 function App() {
   return (
@@ -442,6 +473,7 @@ function App() {
           <SalesChatWidget />
           <PWAInstallPrompt />
           <CookieConsent />
+          <V2PreviewToggle />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

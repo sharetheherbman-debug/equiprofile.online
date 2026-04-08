@@ -330,11 +330,11 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 function StableDashboardContent() {
   const { user } = useAuth();
 
-  const { data: horses, isLoading: horsesLoading } = trpc.horses.getAll.useQuery();
-  const { data: healthAlerts } = trpc.timeline.getHealthAlerts.useQuery();
+  const { data: horses, isLoading: horsesLoading } = trpc.horses.list.useQuery();
+  const { data: healthAlerts } = trpc.timeline.getHealthAlerts.useQuery({});
   const { data: tasks } = trpc.tasks.list.useQuery();
   const { data: upcomingAppointments } = trpc.appointments.list.useQuery();
-  const { data: recentTraining } = trpc.trainingSessions.listByUser.useQuery();
+  const { data: recentTraining } = trpc.training.listAll.useQuery();
 
   const today = useMemo(() => formatDate(new Date()), []);
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
