@@ -1,108 +1,162 @@
 /**
- * WhatsApp Cloud API Integration Module
+ * WhatsApp Integration Module — Twilio Provider
  *
- * This module provides functions for sending WhatsApp messages via Meta's Cloud API.
- * It's designed to be feature-flagged (ENABLE_WHATSAPP) and fail gracefully if disabled.
+ * Sends WhatsApp messages via Twilio's REST API using axios.
+ * Feature-flagged (ENABLE_WHATSAPP) and fails gracefully when disabled or
+ * when Twilio credentials are missing.
  *
- * IMPORTANT: This requires WhatsApp Cloud API to be configured in Meta Developer Portal.
- * See docs/WHATSAPP_SETUP.md for complete setup instructions.
+ * Configuration priority: environment variable > DB siteSettings
+ *   ENABLE_WHATSAPP          — set to "true" to enable
+ *   TWILIO_ACCOUNT_SID       — Twilio Account SID
+ *   TWILIO_AUTH_TOKEN        — Twilio Auth Token
+ *   TWILIO_WHATSAPP_FROM     — Sender number in whatsapp:+E.164 format
+ *                              e.g. whatsapp:+14155238886
+ *
+ * The above can also be set via the Admin → WhatsApp dashboard which stores
+ * them in the siteSettings table (keys: twilio_account_sid, twilio_auth_token,
+ * twilio_whatsapp_from, whatsapp_enabled).
  */
 
 import axios from "axios";
-
-const WHATSAPP_API_URL = "https://graph.facebook.com/v18.0";
+import { getRuntimeConfig } from "../dynamicConfig";
 
 export interface WhatsAppMessage {
-  to: string; // Phone number in international format (e.g., +447123456789)
-  template: string;
-  language?: string;
+  to: string;          // Recipient phone in E.164 format, e.g. +447123456789
+  template: string;    // Logical message type — used to compose the body text
+  language?: string;   // Unused with Twilio free-form; retained for interface compat
   parameters: string[];
 }
 
 export interface WhatsAppConfig {
   enabled: boolean;
-  phoneNumberId?: string;
-  accessToken?: string;
+  accountSid?: string;
+  authToken?: string;
+  fromNumber?: string; // e.g. whatsapp:+14155238886
 }
 
 /**
- * Check if WhatsApp is enabled and properly configured
+ * Resolve Twilio credentials from env vars first, then DB siteSettings.
+ * This is the async version used at send-time so DB-configured credentials work.
  */
-export function isWhatsAppEnabled(): WhatsAppConfig {
-  const enabled = process.env.ENABLE_WHATSAPP === "true";
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
+export async function getWhatsAppConfig(): Promise<WhatsAppConfig> {
+  const enabledEnv = process.env.ENABLE_WHATSAPP === "true";
+  const enabledDb = (await getRuntimeConfig("whatsapp_enabled", "ENABLE_WHATSAPP")) === "true";
+  const enabled = enabledEnv || enabledDb;
 
-  return {
-    enabled,
-    phoneNumberId,
-    accessToken,
-  };
+  const accountSid =
+    process.env.TWILIO_ACCOUNT_SID ||
+    (await getRuntimeConfig("twilio_account_sid", "TWILIO_ACCOUNT_SID")) ||
+    undefined;
+
+  const authToken =
+    process.env.TWILIO_AUTH_TOKEN ||
+    (await getRuntimeConfig("twilio_auth_token", "TWILIO_AUTH_TOKEN")) ||
+    undefined;
+
+  const fromNumber =
+    process.env.TWILIO_WHATSAPP_FROM ||
+    (await getRuntimeConfig("twilio_whatsapp_from", "TWILIO_WHATSAPP_FROM")) ||
+    undefined;
+
+  return { enabled, accountSid, authToken, fromNumber };
 }
 
 /**
- * Send a WhatsApp message using a pre-approved template
+ * Synchronous env-only check — used for quick startup logging.
+ * For actual send-time checks, always use the async getWhatsAppConfig().
+ */
+export function isWhatsAppEnabled(): { enabled: boolean } {
+  return { enabled: process.env.ENABLE_WHATSAPP === "true" };
+}
+
+/**
+ * Compose a human-readable WhatsApp message body from a logical template name
+ * and its string parameters.
+ */
+function composeMessageBody(template: string, parameters: string[]): string {
+  const [p0, p1, p2, p3] = parameters;
+  switch (template) {
+    case "event_reminder":
+      // p0=name, p1=eventTitle, p2=dateString, p3=timeLabel
+      return `Hi ${p0}, just a reminder: *${p1}* is in ${p3} (${p2}). — EquiProfile`;
+
+    case "reminder_notification":
+      // p0=name, p1=reminderTitle, p2=horseName, p3=dueDate
+      return `Hi ${p0}, reminder: *${p1}* for ${p2} is due on ${p3}. — EquiProfile`;
+
+    case "vaccination_due":
+      // p0=name, p1=horseName, p2=vaccinationType, p3=dueDate
+      return `Hi ${p0}, ${p1}'s *${p2}* vaccination is due on ${p3}. — EquiProfile`;
+
+    case "trial_ending":
+      // p0=name, p1=daysRemaining
+      return `Hi ${p0}, your EquiProfile free trial ends in ${p1} day(s). Visit equiprofile.online to subscribe and keep all your data. — EquiProfile`;
+
+    default:
+      // Generic fallback — just join the parameters
+      return parameters.join(" — ");
+  }
+}
+
+/**
+ * Normalise a phone number so it has the whatsapp: prefix Twilio requires.
+ * Accepts:  +447123456789  or  whatsapp:+447123456789
+ * Returns:  whatsapp:+447123456789
+ */
+function toWhatsAppAddress(phone: string): string {
+  const trimmed = phone.trim();
+  return trimmed.startsWith("whatsapp:") ? trimmed : `whatsapp:${trimmed}`;
+}
+
+/**
+ * Send a WhatsApp message via Twilio's Messages API.
  *
- * @param message - Message configuration with template name and parameters
- * @returns true if message sent successfully, false otherwise
+ * @returns true on success, false on any failure (config missing, send error)
  */
 export async function sendWhatsAppMessage(
   message: WhatsAppMessage,
 ): Promise<boolean> {
-  const config = isWhatsAppEnabled();
+  const config = await getWhatsAppConfig();
 
-  // Check if WhatsApp is enabled
   if (!config.enabled) {
-    console.log("[WhatsApp] Feature disabled - skipping message");
+    console.log("[WhatsApp] Feature disabled — skipping message");
     return false;
   }
 
-  if (!config.phoneNumberId || !config.accessToken) {
+  if (!config.accountSid || !config.authToken || !config.fromNumber) {
     console.error(
-      "[WhatsApp] Missing credentials (WHATSAPP_PHONE_NUMBER_ID or WHATSAPP_ACCESS_TOKEN)",
+      "[WhatsApp] Missing Twilio credentials — check TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM",
     );
     return false;
   }
+
+  const toAddress = toWhatsAppAddress(message.to);
+  const fromAddress = toWhatsAppAddress(config.fromNumber);
+  const body = composeMessageBody(message.template, message.parameters);
 
   try {
-    const response = await axios.post(
-      `${WHATSAPP_API_URL}/${config.phoneNumberId}/messages`,
-      {
-        messaging_product: "whatsapp",
-        to: message.to,
-        type: "template",
-        template: {
-          name: message.template,
-          language: {
-            code: message.language || "en",
-          },
-          components: [
-            {
-              type: "body",
-              parameters: message.parameters.map((param) => ({
-                type: "text",
-                text: param,
-              })),
-            },
-          ],
-        },
+    const url = `https://api.twilio.com/2010-04-01/Accounts/${config.accountSid}/Messages.json`;
+
+    const params = new URLSearchParams();
+    params.append("From", fromAddress);
+    params.append("To", toAddress);
+    params.append("Body", body);
+
+    const response = await axios.post(url, params.toString(), {
+      auth: {
+        username: config.accountSid,
+        password: config.authToken,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${config.accessToken}`,
-          "Content-Type": "application/json",
-        },
-      },
-    );
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
 
     console.log(
-      "[WhatsApp] Message sent successfully:",
-      response.data.messages[0].id,
+      `[WhatsApp] Message sent via Twilio — SID: ${response.data.sid}`,
     );
     return true;
   } catch (error: any) {
     console.error(
-      "[WhatsApp] Send failed:",
+      "[WhatsApp] Twilio send failed:",
       error.response?.data || error.message,
     );
     return false;
@@ -110,8 +164,7 @@ export async function sendWhatsAppMessage(
 }
 
 /**
- * Send a reminder notification via WhatsApp
- * Uses the "reminder_notification" template
+ * Send an event reminder notification via WhatsApp.
  */
 export async function sendReminderNotification(
   userPhone: string,
@@ -128,8 +181,7 @@ export async function sendReminderNotification(
 }
 
 /**
- * Send a vaccination due reminder via WhatsApp
- * Uses the "vaccination_due" template
+ * Send a vaccination due reminder via WhatsApp.
  */
 export async function sendVaccinationReminder(
   userPhone: string,
@@ -146,8 +198,7 @@ export async function sendVaccinationReminder(
 }
 
 /**
- * Send a trial ending notification via WhatsApp
- * Uses the "trial_ending" template
+ * Send a trial ending notification via WhatsApp.
  */
 export async function sendTrialEndingNotification(
   userPhone: string,
@@ -162,22 +213,18 @@ export async function sendTrialEndingNotification(
 }
 
 /**
- * Validate phone number format
- * WhatsApp requires numbers in international format without spaces or dashes
+ * Validate phone number format.
+ * WhatsApp / Twilio requires E.164 format: +<country><number>
  *
- * @param phone - Phone number to validate
  * @returns Formatted phone number or null if invalid
  */
 export function validatePhoneNumber(phone: string): string | null {
-  // Remove all non-digit characters except +
   const cleaned = phone.replace(/[^\d+]/g, "");
 
-  // Must start with + and have 10-15 digits
   if (/^\+\d{10,15}$/.test(cleaned)) {
     return cleaned;
   }
 
-  // Try to add + if missing and phone starts with country code
   if (/^\d{10,15}$/.test(cleaned)) {
     return `+${cleaned}`;
   }
@@ -186,30 +233,22 @@ export function validatePhoneNumber(phone: string): string | null {
 }
 
 /**
- * Check if user has WhatsApp enabled in their preferences
- *
- * @param userPreferences - JSON preferences from user record
- * @returns true if user has opted in to WhatsApp notifications
+ * Check if a user has opted in to WhatsApp notifications in their preferences.
  */
 export function userHasWhatsAppEnabled(
   userPreferences: string | null,
 ): boolean {
   if (!userPreferences) return false;
-
   try {
     const prefs = JSON.parse(userPreferences);
     return prefs.whatsappReminders === true;
-  } catch (error) {
-    console.error("[WhatsApp] Error parsing user preferences:", error);
+  } catch {
     return false;
   }
 }
 
 /**
- * Format date for WhatsApp messages
- *
- * @param date - Date to format
- * @returns Human-readable date string
+ * Format a date for display inside WhatsApp messages.
  */
 export function formatDateForWhatsApp(date: Date): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -221,3 +260,4 @@ export function formatDateForWhatsApp(date: Date): string {
     minute: "2-digit",
   }).format(date);
 }
+

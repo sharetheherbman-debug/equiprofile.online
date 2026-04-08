@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import * as db from "../db";
 import {
-  isWhatsAppEnabled,
+  getWhatsAppConfig,
   sendWhatsAppMessage,
   formatDateForWhatsApp,
   userHasWhatsAppEnabled,
@@ -68,7 +68,7 @@ export function startReminderScheduler() {
           );
 
           // Send WhatsApp reminder if user has it enabled
-          const waConfig = isWhatsAppEnabled();
+          const waConfig = await getWhatsAppConfig();
           if (
             waConfig.enabled &&
             userHasWhatsAppEnabled(user.preferences || null)

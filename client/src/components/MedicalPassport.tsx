@@ -45,6 +45,12 @@ interface MedicalPassportProps {
     recordDate: string;
     recordType: string;
   }>;
+  /**
+   * A nanoid share token from the shareLinks table.
+   * When provided, QR code and Share button use /passport/:token.
+   * When omitted, those buttons are hidden (raw horse IDs are not valid public URLs).
+   */
+  shareToken?: string;
 }
 
 export function MedicalPassport({
@@ -52,13 +58,15 @@ export function MedicalPassport({
   vaccinations = [],
   dewormings = [],
   healthRecords = [],
+  shareToken,
 }: MedicalPassportProps) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
   const handleGenerateQR = async () => {
-    const shareUrl = `${window.location.origin}/passport/${horse.id}`;
+    if (!shareToken) return;
+    const shareUrl = `${window.location.origin}/passport/${shareToken}`;
     const qr = await generateQRCode(shareUrl);
     setQrCodeUrl(qr);
     setQrModalOpen(true);
@@ -283,26 +291,27 @@ export function MedicalPassport({
   };
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${horse.name} Medical Passport`,
-          text: `View medical passport for ${horse.name}`,
-          url: `${window.location.origin}/passport/${horse.id}`,
-        });
-      } catch (err) {
-        console.error("Error sharing:", err);
-      }
+    if (!shareToken || !navigator.share) return;
+    try {
+      await navigator.share({
+        title: `${horse.name} Medical Passport`,
+        text: `View medical passport for ${horse.name}`,
+        url: `${window.location.origin}/passport/${shareToken}`,
+      });
+    } catch (err) {
+      console.error("Error sharing:", err);
     }
   };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 print:hidden">
-        <Button onClick={handleGenerateQR} variant="outline">
-          <QrCode className="mr-2 h-4 w-4" />
-          Generate QR Code
-        </Button>
+        {shareToken && (
+          <Button onClick={handleGenerateQR} variant="outline">
+            <QrCode className="mr-2 h-4 w-4" />
+            Generate QR Code
+          </Button>
+        )}
         <Button onClick={handlePrintPassport} variant="outline">
           <Printer className="mr-2 h-4 w-4" />
           Print
@@ -315,7 +324,7 @@ export function MedicalPassport({
           )}
           {isExporting ? "Exporting..." : "Export PDF"}
         </Button>
-        {typeof navigator.share !== "undefined" && (
+        {typeof navigator.share !== "undefined" && shareToken && (
           <Button onClick={handleShare} variant="outline">
             <Share2 className="mr-2 h-4 w-4" />
             Share

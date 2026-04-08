@@ -810,6 +810,118 @@ export default function Reports() {
             <div className="grid gap-3 sm:grid-cols-2">
               {[
                 {
+                  label: "Horses",
+                  description: "All horse profiles, breeds, ages & registration details",
+                  icon: "🐴",
+                  onClick: async () => {
+                    try {
+                      const r = await utils.client.horses.exportCSV.query();
+                      downloadCSV(r.csv, r.filename);
+                      toast.success("Horses exported!");
+                    } catch {
+                      toast.error("Failed to export horses");
+                    }
+                  },
+                },
+                {
+                  label: "Health Records",
+                  description: "Vet visits, treatments, vaccinations & health history",
+                  icon: "🩺",
+                  onClick: async () => {
+                    try {
+                      const r = await utils.client.healthRecords.exportCSV.query();
+                      downloadCSV(r.csv, r.filename);
+                      toast.success("Health records exported!");
+                    } catch {
+                      toast.error("Failed to export health records");
+                    }
+                  },
+                },
+                {
+                  label: "Training Sessions",
+                  description: "Training logs, disciplines, duration & performance notes",
+                  icon: "🎯",
+                  onClick: async () => {
+                    try {
+                      const r = await utils.client.training.exportCSV.query();
+                      downloadCSV(r.csv, r.filename);
+                      toast.success("Training sessions exported!");
+                    } catch {
+                      toast.error("Failed to export training sessions");
+                    }
+                  },
+                },
+                {
+                  label: "Appointments",
+                  description: "Calendar appointments, vet & farrier bookings",
+                  icon: "📅",
+                  onClick: async () => {
+                    try {
+                      const r = await utils.client.appointments.exportCSV.query();
+                      downloadCSV(r.csv, r.filename);
+                      toast.success("Appointments exported!");
+                    } catch {
+                      toast.error("Failed to export appointments");
+                    }
+                  },
+                },
+                {
+                  label: "Tasks",
+                  description: "All tasks with status, priority & due dates",
+                  icon: "✅",
+                  onClick: async () => {
+                    try {
+                      const r = await utils.client.tasks.exportCSV.query();
+                      downloadCSV(r.csv, r.filename);
+                      toast.success("Tasks exported!");
+                    } catch {
+                      toast.error("Failed to export tasks");
+                    }
+                  },
+                },
+                {
+                  label: "Feeding & Nutrition",
+                  description: "Feed plans, supplement schedules & nutrition logs",
+                  icon: "🌾",
+                  onClick: async () => {
+                    try {
+                      const r = await utils.client.feeding.exportCSV.query();
+                      downloadCSV(r.csv, r.filename);
+                      toast.success("Feeding plans exported!");
+                    } catch {
+                      toast.error("Failed to export feeding plans");
+                    }
+                  },
+                },
+                {
+                  label: "Contacts",
+                  description: "Vets, farriers, trainers & other contacts",
+                  icon: "👤",
+                  onClick: async () => {
+                    try {
+                      const r = await utils.client.contacts.exportCSV.query();
+                      downloadCSV(r.csv, r.filename);
+                      toast.success("Contacts exported!");
+                    } catch {
+                      toast.error("Failed to export contacts");
+                    }
+                  },
+                },
+                {
+                  label: "Documents",
+                  description: "Document library metadata, names, types & upload dates",
+                  icon: "📄",
+                  onClick: async () => {
+                    try {
+                      const r = await utils.client.documents.exportCSV.query();
+                      downloadCSV(r.csv, r.filename);
+                      toast.success("Documents exported!");
+                    } catch {
+                      toast.error("Failed to export documents");
+                    }
+                  },
+                },
+                {
                   label: "Competitions",
                   description: "All competition results, placements & prize money",
                   icon: "🏆",

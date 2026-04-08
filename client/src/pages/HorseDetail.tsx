@@ -785,6 +785,7 @@ function HorseDetailContent() {
                   microchipNumber: horse.microchipNumber || undefined,
                   registrationNumber: horse.registrationNumber || undefined,
                 }}
+                shareToken={passportLinks[0]?.token}
                 vaccinations={healthRecords
                   ?.filter((r) => r.recordType === "vaccination")
                   .map((r) => ({

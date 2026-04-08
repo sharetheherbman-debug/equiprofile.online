@@ -108,8 +108,9 @@ function AdminContent() {
   const [freeAccessTier, setFreeAccessTier] = useState<"standard" | "stable">("standard");
   const [whatsappForm, setWhatsappForm] = useState({
     enabled: false,
-    phoneNumberId: "",
-    accessToken: "",
+    accountSid: "",
+    authToken: "",
+    fromNumber: "",
   });
 
   // API key configuration form state
@@ -1570,11 +1571,11 @@ function AdminContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Smartphone className="w-5 h-5" />
-                  WhatsApp Business Configuration
+                  WhatsApp Notifications — Twilio
                 </CardTitle>
                 <CardDescription>
-                  Configure WhatsApp Business API for event reminders and
-                  notifications.
+                  Send WhatsApp reminders via Twilio. Credentials are stored
+                  securely in the database and take effect immediately.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -1593,13 +1594,16 @@ function AdminContent() {
                         : "Disabled"}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Phone ID:{" "}
-                      {whatsappConfigQuery.data?.phoneNumberId ||
-                        "Not configured"}{" "}
-                      · Token:{" "}
-                      {whatsappConfigQuery.data?.hasAccessToken
+                      Account SID:{" "}
+                      {whatsappConfigQuery.data?.hasAccountSid
                         ? "Configured"
-                        : "Not set"}
+                        : "Not set"}{" "}
+                      · Auth Token:{" "}
+                      {whatsappConfigQuery.data?.hasAuthToken
+                        ? "Configured"
+                        : "Not set"}{" "}
+                      · From:{" "}
+                      {whatsappConfigQuery.data?.fromNumber || "Not set"}
                     </p>
                   </div>
                 </div>
@@ -1624,50 +1628,73 @@ function AdminContent() {
                       htmlFor="wa-enabled"
                       className="text-sm text-muted-foreground"
                     >
-                      Enable WhatsApp Business notifications
+                      Enable WhatsApp notifications via Twilio
                     </label>
                   </div>
                 </div>
 
-                {/* Phone Number ID */}
+                {/* Account SID */}
                 <div className="space-y-2">
-                  <Label>Phone Number ID</Label>
+                  <Label>Twilio Account SID</Label>
                   <Input
-                    placeholder="Meta Phone Number ID"
-                    value={whatsappForm.phoneNumberId}
+                    placeholder={
+                      whatsappConfigQuery.data?.hasAccountSid
+                        ? "••••••••• (already configured)"
+                        : "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    }
+                    value={whatsappForm.accountSid}
                     onChange={(e) =>
                       setWhatsappForm({
                         ...whatsappForm,
-                        phoneNumberId: e.target.value,
+                        accountSid: e.target.value,
                       })
                     }
                   />
                   <p className="text-xs text-muted-foreground">
-                    Found in Meta Business Manager → WhatsApp → Phone Numbers
+                    Found in Twilio Console → Account Info. Leave blank to keep existing.
                   </p>
                 </div>
 
-                {/* Access Token */}
+                {/* Auth Token */}
                 <div className="space-y-2">
-                  <Label>Access Token</Label>
+                  <Label>Twilio Auth Token</Label>
                   <Input
                     type="password"
                     placeholder={
-                      whatsappConfigQuery.data?.hasAccessToken
+                      whatsappConfigQuery.data?.hasAuthToken
                         ? "••••••••• (already configured)"
-                        : "Meta permanent access token"
+                        : "Your Twilio Auth Token"
                     }
-                    value={whatsappForm.accessToken}
+                    value={whatsappForm.authToken}
                     onChange={(e) =>
                       setWhatsappForm({
                         ...whatsappForm,
-                        accessToken: e.target.value,
+                        authToken: e.target.value,
                       })
                     }
                   />
                   <p className="text-xs text-muted-foreground">
-                    Permanent token from Meta Business Manager. Leave blank to
-                    keep existing.
+                    Found in Twilio Console → Account Info. Leave blank to keep existing.
+                  </p>
+                </div>
+
+                {/* From Number */}
+                <div className="space-y-2">
+                  <Label>WhatsApp From Number</Label>
+                  <Input
+                    placeholder="whatsapp:+14155238886"
+                    value={whatsappForm.fromNumber}
+                    onChange={(e) =>
+                      setWhatsappForm({
+                        ...whatsappForm,
+                        fromNumber: e.target.value,
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Your Twilio WhatsApp sender number in{" "}
+                    <code>whatsapp:+E.164</code> format. Found in Twilio Console
+                    → Messaging → Senders.
                   </p>
                 </div>
 
@@ -1675,8 +1702,9 @@ function AdminContent() {
                   onClick={() =>
                     updateWhatsAppMutation.mutate({
                       enabled: whatsappForm.enabled,
-                      phoneNumberId: whatsappForm.phoneNumberId || undefined,
-                      accessToken: whatsappForm.accessToken || undefined,
+                      accountSid: whatsappForm.accountSid || undefined,
+                      authToken: whatsappForm.authToken || undefined,
+                      fromNumber: whatsappForm.fromNumber || undefined,
                     })
                   }
                   disabled={updateWhatsAppMutation.isPending}
@@ -1699,32 +1727,36 @@ function AdminContent() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">
-                  Required Message Templates
+                  How It Works
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground mb-3">
-                  Pre-approve these templates in your Meta Business account:
+              <CardContent className="space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  EquiProfile uses Twilio's WhatsApp API to send reminders. When enabled,
+                  users can enter their mobile number in Settings → Notifications to
+                  opt in. Messages are sent automatically by the reminder scheduler.
                 </p>
                 <ul className="space-y-1.5">
                   {[
-                    "event_reminder — 24h and 1h before events",
-                    "reminder_notification — health and care reminders",
-                    "vaccination_due — upcoming vaccination alerts",
-                    "trial_ending — trial expiry notifications",
+                    "Event reminders — 24h before calendar events",
+                    "Health & care reminders — upcoming due dates",
+                    "Vaccination alerts — vaccination due notifications",
+                    "Trial expiry — 2 days, 1 day, and day-of warnings",
                   ].map((t) => (
                     <li key={t} className="flex items-start gap-2 text-sm">
                       <span className="text-primary">•</span>
-                      <code className="text-xs">{t}</code>
+                      <span className="text-xs text-muted-foreground">{t}</span>
                     </li>
                   ))}
                 </ul>
-                <Alert className="mt-4">
+                <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription className="text-xs">
-                    See{" "}
-                    <code className="text-primary">docs/WHATSAPP_SETUP.md</code>{" "}
-                    for full setup instructions.
+                    Credentials can also be set via environment variables:{" "}
+                    <code className="text-primary">TWILIO_ACCOUNT_SID</code>,{" "}
+                    <code className="text-primary">TWILIO_AUTH_TOKEN</code>,{" "}
+                    <code className="text-primary">TWILIO_WHATSAPP_FROM</code>.
+                    Environment variables take priority over dashboard settings.
                   </AlertDescription>
                 </Alert>
               </CardContent>

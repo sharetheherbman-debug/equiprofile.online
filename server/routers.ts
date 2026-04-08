@@ -3349,14 +3349,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }),
     }),
 
-    // WhatsApp configuration
+    // WhatsApp (Twilio) configuration
     getWhatsAppConfig: adminUnlockedProcedure.query(async () => {
+      const enabled =
+        process.env.ENABLE_WHATSAPP === "true" ||
+        (await getRuntimeConfig("whatsapp_enabled", "ENABLE_WHATSAPP")) === "true";
+      const hasAccountSid = !!(
+        process.env.TWILIO_ACCOUNT_SID ||
+        (await getRuntimeConfig("twilio_account_sid", "TWILIO_ACCOUNT_SID"))
+      );
+      const hasAuthToken = !!(
+        process.env.TWILIO_AUTH_TOKEN ||
+        (await getRuntimeConfig("twilio_auth_token", "TWILIO_AUTH_TOKEN"))
+      );
+      const fromNumber =
+        process.env.TWILIO_WHATSAPP_FROM ||
+        (await getRuntimeConfig("twilio_whatsapp_from", "TWILIO_WHATSAPP_FROM")) ||
+        "";
       return {
-        enabled: process.env.ENABLE_WHATSAPP === "true",
-        phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID
-          ? "***configured***"
-          : "",
-        hasAccessToken: !!process.env.WHATSAPP_ACCESS_TOKEN,
+        enabled,
+        hasAccountSid,
+        hasAuthToken,
+        fromNumber: fromNumber ? "***configured***" : "",
       };
     }),
 
@@ -3364,8 +3378,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .input(
         z.object({
           enabled: z.boolean(),
-          phoneNumberId: z.string().optional(),
-          accessToken: z.string().optional(),
+          accountSid: z.string().optional(),
+          authToken: z.string().optional(),
+          fromNumber: z.string().optional(),
         }),
       )
       .mutation(async ({ input }) => {
@@ -3380,11 +3395,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           invalidateConfigCache(key);
         };
         await upsert("whatsapp_enabled", String(input.enabled));
-        if (input.phoneNumberId) {
-          await upsert("whatsapp_phone_id", input.phoneNumberId);
+        if (input.accountSid) {
+          await upsert("twilio_account_sid", input.accountSid);
         }
-        if (input.accessToken) {
-          await upsert("whatsapp_token", input.accessToken);
+        if (input.authToken) {
+          await upsert("twilio_auth_token", input.authToken);
+        }
+        if (input.fromNumber) {
+          await upsert("twilio_whatsapp_from", input.fromNumber);
         }
         return { success: true };
       }),

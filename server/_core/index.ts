@@ -898,105 +898,63 @@ async function startServer() {
     }
   });
 
-  // WhatsApp webhook verification (GET) - required by Meta
-  // This endpoint must be publicly accessible for Meta to verify the webhook
-  app.get("/api/webhooks/whatsapp", (req, res) => {
-    const mode = req.query["hub.mode"];
-    const token = req.query["hub.verify_token"];
-    const challenge = req.query["hub.challenge"];
-
-    // Check if this is a webhook verification request
-    if (
-      mode === "subscribe" &&
-      token === process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN
-    ) {
-      console.log("[WhatsApp] Webhook verified successfully");
-      res.status(200).send(challenge);
-    } else {
-      console.warn("[WhatsApp] Webhook verification failed - incorrect token");
-      res.sendStatus(403);
-    }
-  });
-
-  // WhatsApp webhook events (POST) - receives message status updates
-  // This endpoint receives delivery status, read receipts, and user replies
-  app.post("/api/webhooks/whatsapp", express.json(), async (req, res) => {
+  // WhatsApp / Twilio delivery status webhook
+  // Twilio POSTs delivery status callbacks here (configure in Twilio Console → Messaging → Senders).
+  // Also handles inbound opt-out STOP messages so users can self-unsubscribe.
+  app.post("/api/webhooks/whatsapp", express.urlencoded({ extended: false }), async (req, res) => {
     try {
-      const { entry } = req.body;
+      const body = req.body as Record<string, string>;
 
-      if (!entry || !Array.isArray(entry)) {
-        console.warn("[WhatsApp] Invalid webhook payload");
-        return res.sendStatus(400);
+      // Delivery status update (MessageStatus field from Twilio)
+      if (body.MessageStatus) {
+        console.log(
+          `[WhatsApp] Delivery status: ${body.MessageSid} → ${body.MessageStatus}`,
+        );
       }
 
-      // Process each entry (usually just one)
-      for (const item of entry) {
-        const changes = item.changes || [];
+      // Inbound message (Body field from Twilio)
+      if (body.Body && body.From) {
+        const text = body.Body.trim().toUpperCase();
+        const from = body.From; // e.g. whatsapp:+447123456789
 
-        for (const change of changes) {
-          const value = change.value;
+        console.log(`[WhatsApp] Inbound message from ${from}: ${text}`);
 
-          // Handle message status updates (sent, delivered, read, failed)
-          if (value?.statuses) {
-            for (const status of value.statuses) {
-              console.log(
-                `[WhatsApp] Status update: ${status.id} -> ${status.status}`,
-              );
-              // Status tracking is logged for operational monitoring.
-              // Possible statuses: sent, delivered, read, failed
-            }
-          }
-
-          // Handle incoming messages (user replies)
-          if (value?.messages) {
-            for (const message of value.messages) {
-              console.log(
-                `[WhatsApp] Received message from ${message.from}: ${message.type}`,
-              );
-
-              // Handle opt-out (STOP) messages
-              if (message.type === "text") {
-                const text = (message.text?.body || "").trim().toUpperCase();
-                if (text === "STOP" || text === "UNSUBSCRIBE" || text === "OPT OUT" || text === "OPTOUT") {
-                  console.log(`[WhatsApp] Opt-out request from ${message.from}`);
-                  try {
-                    const { getDb } = await import("../db");
-                    const db = await getDb();
-                    if (db) {
-                      // Find users with this phone number and disable their WhatsApp preferences
-                      const phone = message.from.startsWith("+") ? message.from : `+${message.from}`;
-                      const matchedUsers = await db
-                        .select({ id: users.id, preferences: users.preferences })
-                        .from(users)
-                        .where(
-                          sql`JSON_UNQUOTE(JSON_EXTRACT(${users.preferences}, '$.whatsappPhone')) = ${phone}`,
-                        );
-                      for (const user of matchedUsers) {
-                        const prefs = user.preferences ? JSON.parse(user.preferences) : {};
-                        prefs.whatsappReminders = false;
-                        await db
-                          .update(users)
-                          .set({ preferences: JSON.stringify(prefs) })
-                          .where(eq(users.id, user.id));
-                        console.log(`[WhatsApp] Opted out user ${user.id} from WhatsApp notifications`);
-                      }
-                    }
-                  } catch (err) {
-                    console.error("[WhatsApp] Error processing opt-out:", err);
-                  }
-                }
+        if (text === "STOP" || text === "UNSUBSCRIBE" || text === "OPT OUT" || text === "OPTOUT") {
+          console.log(`[WhatsApp] Opt-out request from ${from}`);
+          try {
+            const { getDb } = await import("../db");
+            const db = await getDb();
+            if (db) {
+              // Normalise to E.164 format: strip whatsapp: prefix if present
+              const phone = from.replace(/^whatsapp:/, "");
+              const normalised = phone.startsWith("+") ? phone : `+${phone}`;
+              const matchedUsers = await db
+                .select({ id: users.id, preferences: users.preferences })
+                .from(users)
+                .where(
+                  sql`JSON_UNQUOTE(JSON_EXTRACT(${users.preferences}, '$.whatsappPhone')) = ${normalised}`,
+                );
+              for (const user of matchedUsers) {
+                const prefs = user.preferences ? JSON.parse(user.preferences) : {};
+                prefs.whatsappReminders = false;
+                await db
+                  .update(users)
+                  .set({ preferences: JSON.stringify(prefs) })
+                  .where(eq(users.id, user.id));
+                console.log(`[WhatsApp] Opted out user ${user.id}`);
               }
             }
+          } catch (err) {
+            console.error("[WhatsApp] Error processing opt-out:", err);
           }
         }
       }
 
-      // Always respond with 200 to acknowledge receipt
-      res.sendStatus(200);
+      // Twilio expects an empty 200 TwiML response (or plain 200)
+      res.status(200).send("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response></Response>");
     } catch (error) {
       console.error("[WhatsApp] Webhook error:", error);
-      // Still return 200 to prevent Meta from retrying
-      res.sendStatus(200);
+      res.status(200).send("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response></Response>");
     }
   });
 
