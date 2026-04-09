@@ -7,6 +7,7 @@
  */
 
 import { isV2 } from "@/config/uiVersion";
+import { cn } from "@/lib/utils";
 
 interface PageHeaderProps {
   title: string;
@@ -28,7 +29,7 @@ export function PageHeader({ title, subtitle, subtitleClassName }: PageHeaderPro
       )}
       <h1 className="font-serif text-3xl font-bold text-foreground">{title}</h1>
       {subtitle && (
-        <p className={`text-muted-foreground mt-1 text-sm${subtitleClassName ? ` ${subtitleClassName}` : ""}`}>
+        <p className={cn("text-muted-foreground mt-1 text-sm", subtitleClassName)}>
           {subtitle}
         </p>
       )}

@@ -345,7 +345,7 @@ function StableDashboardContent() {
   const { data: stableList } = trpc.stables.list.useQuery();
   const currentStableId = stableList?.[0]?.id;
   const { data: stableMembers } = trpc.stables.getMembers.useQuery(
-    { stableId: currentStableId! },
+    { stableId: currentStableId ?? 0 },
     { enabled: !!currentStableId },
   );
 
