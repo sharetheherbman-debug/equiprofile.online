@@ -223,6 +223,7 @@ function DashboardContent() {
   }, [subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
 
   const today = new Date();
+  const todayDateString = today.toDateString();
   const todayStart = new Date(
     today.getFullYear(),
     today.getMonth(),
@@ -576,7 +577,7 @@ function DashboardContent() {
 
       {/* ── Two-column live view ──────────────────────────────── */}
       {/* Today card — hidden when no events scheduled */}
-      {(calendarEvents.length > 0 || futureAppointments.some((a: any) => new Date(a.appointmentDate).toDateString() === new Date().toDateString())) && (
+      {(calendarEvents.length > 0 || futureAppointments.some((a: any) => new Date(a.appointmentDate).toDateString() === todayDateString)) && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -617,7 +618,7 @@ function DashboardContent() {
                 {futureAppointments.slice(0, 2).map((appt: any) => {
                   const d = new Date(appt.appointmentDate);
                   const isToday =
-                    d.toDateString() === new Date().toDateString();
+                    d.toDateString() === todayDateString;
                   if (!isToday) return null;
                   return (
                     <div
@@ -664,14 +665,14 @@ function DashboardContent() {
                 <Calendar className="w-4 h-4 text-indigo-400" />
                 Upcoming
               </CardTitle>
-              <CardDescription className="text-[11px]">Today &amp; tomorrow</CardDescription>
+              <CardDescription className="text-[11px]">Today & tomorrow</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-1.5">
                 {futureAppointments.map((appt: any) => {
                   const d = new Date(appt.appointmentDate);
                   const isToday =
-                    d.toDateString() === new Date().toDateString();
+                    d.toDateString() === todayDateString;
                   return (
                     <div
                       key={appt.id}
