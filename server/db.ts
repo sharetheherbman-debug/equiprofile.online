@@ -860,6 +860,12 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
     // On MySQL 8.0 these are caught and ignored; the Drizzle migration file handles MySQL 8.0.
     const columnMigrations: string[] = [
       `ALTER TABLE \`users\` ADD COLUMN IF NOT EXISTS \`passwordChangedAt\` timestamp NULL`,
+      // Email-verification columns (migration 0013) — added here as a runtime safety-net
+      // so that production databases that have not had the formal Drizzle migration applied
+      // do not throw "Unknown column 'verificationToken'" on every users SELECT query and
+      // cause POST /api/auth/login to return 500.
+      `ALTER TABLE \`users\` ADD COLUMN IF NOT EXISTS \`verificationToken\` varchar(255) DEFAULT NULL`,
+      `ALTER TABLE \`users\` ADD COLUMN IF NOT EXISTS \`verificationTokenExpiry\` timestamp NULL`,
       `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`passportNumber\` varchar(100) DEFAULT NULL`,
       `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`feiId\` varchar(100) DEFAULT NULL`,
       `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`ueln\` varchar(100) DEFAULT NULL`,

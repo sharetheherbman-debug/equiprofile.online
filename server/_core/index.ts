@@ -716,6 +716,30 @@ async function startServer() {
     }
   });
 
+  // Apple touch icon handler — iOS and Safari request these paths at the root
+  // level regardless of what is declared in <link> tags.  Without an explicit
+  // handler they would fall through to the SPA catch-all and receive HTML.
+  const appleTouchIconRoutes = [
+    "/apple-touch-icon.png",
+    "/apple-touch-icon-precomposed.png",
+    "/apple-touch-icon-120x120.png",
+    "/apple-touch-icon-120x120-precomposed.png",
+  ];
+  app.get(appleTouchIconRoutes, (req, res) => {
+    const iconPath =
+      process.env.NODE_ENV === "development"
+        ? resolve(process.cwd(), "client/public/icons/icon-192x192.png")
+        : resolve(import.meta.dirname, "public/icons/icon-192x192.png");
+
+    if (fs.existsSync(iconPath)) {
+      res.setHeader("Content-Type", "image/png");
+      res.setHeader("Cache-Control", "public, max-age=86400"); // 1 day
+      res.sendFile(iconPath);
+    } else {
+      res.status(404).send("Not Found");
+    }
+  });
+
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
 
