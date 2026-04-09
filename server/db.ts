@@ -1076,6 +1076,17 @@ export async function getUserByResetToken(token: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function getUserByVerificationToken(token: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.verificationToken, token))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function getUserByStripeSubscriptionId(subscriptionId: string) {
   const db = await getDb();
   if (!db) return undefined;

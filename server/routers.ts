@@ -78,7 +78,7 @@ import {
   getTemplateById,
   applyMergeFields,
 } from "./_core/emailTemplates";
-import { sendEmail } from "./_core/email";
+import { sendEmail, sendStableInviteEmail } from "./_core/email";
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
 
 // Allowed MIME types for document and avatar uploads
@@ -4019,11 +4019,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .from(chatLeads)
           .where(gte(chatLeads.createdAt, startDate));
 
-        // Signup conversions (new active users in period — excludes soft-deleted)
+        // Signup conversions (new verified active users in period — excludes soft-deleted and unverified)
         const [signupsResult] = await dbConn
           .select({ count: sql<number>`COUNT(*)` })
           .from(users)
-          .where(and(gte(users.createdAt, startDate), eq(users.isActive, true)));
+          .where(and(gte(users.createdAt, startDate), eq(users.isActive, true), eq(users.emailVerified, true)));
 
         // Trial-to-paid conversions
         const [t2pResult] = await dbConn
@@ -4294,6 +4294,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           token,
           expiresAt,
         });
+
+        // Fetch stable name for the email
+        const stableResult = await db
+          .select({ name: stables.name })
+          .from(stables)
+          .where(eq(stables.id, input.stableId))
+          .limit(1);
+        const stableName = stableResult[0]?.name ?? "a stable";
+        const inviterName = ctx.user.name ?? ctx.user.email ?? "A team member";
+
+        // Send invite email (async, don't block the response)
+        sendStableInviteEmail(
+          input.email,
+          inviterName,
+          stableName,
+          input.role,
+          token,
+        ).catch((err) =>
+          console.error("[Stable] Failed to send invite email:", err),
+        );
 
         return { token, expiresAt };
       }),

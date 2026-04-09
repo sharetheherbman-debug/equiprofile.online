@@ -9,6 +9,9 @@ import * as email from "./email";
 import { ENV } from "./env";
 import { COOKIE_NAME } from "@shared/const";
 
+/** Hours before a verification token expires */
+const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
+
 /** Extract plan-related flags from a JSON preferences string. */
 function extractPlanInfo(preferences: string | null | undefined): {
   planTier: string | null;
@@ -30,6 +33,36 @@ function extractPlanInfo(preferences: string | null | undefined): {
 }
 
 const router: Router = express.Router();
+
+// Rate limiter for signup attempts — prevents abuse and fake signups.
+const signupLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: {
+    error: "Too many requests",
+    message: "Too many signup attempts from this IP, please try again in 15 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, _next, options) => {
+    res.status(options.statusCode).json(options.message);
+  },
+});
+
+// Rate limiter for verification resend — prevents email abuse.
+const resendLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: {
+    error: "Too many requests",
+    message: "Too many resend requests. Please try again in 15 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, _next, options) => {
+    res.status(options.statusCode).json(options.message);
+  },
+});
 
 // Rate limiter for login attempts — limits failed login attempts per IP.
 // skipSuccessfulRequests: true means only failed attempts count toward the limit.
@@ -68,9 +101,10 @@ const passwordResetLimiter = rateLimit({
 
 /**
  * POST /api/auth/signup
- * Create a new user account with email/password
+ * Create a new user account with email/password.
+ * Account starts as unverified — a verification email is sent.
  */
-router.post("/signup", async (req, res) => {
+router.post("/signup", signupLimiter, async (req, res) => {
   try {
     const { email: rawEmail, password, name, planType } = req.body;
 
@@ -92,6 +126,30 @@ router.post("/signup", async (req, res) => {
     const existingUser = await db.getUserByEmail(userEmail);
 
     if (existingUser) {
+      // If user exists but is unverified, allow re-sending verification
+      if (existingUser.emailVerified === false && existingUser.loginMethod === "email") {
+        const verificationToken = nanoid(32);
+        const verificationTokenExpiry = new Date();
+        verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS);
+
+        await db.updateUser(existingUser.id, {
+          verificationToken,
+          verificationTokenExpiry,
+        } as any);
+
+        // Send verification email (async, don't wait)
+        email
+          .sendVerificationEmail(userEmail, verificationToken, existingUser.name || undefined)
+          .catch((err) =>
+            console.error("[Auth] Failed to send verification email:", err),
+          );
+
+        return res.json({
+          success: true,
+          requiresVerification: true,
+          message: "A verification email has been sent. Please check your inbox.",
+        });
+      }
       return res.status(400).json({ error: "Email already registered" });
     }
 
@@ -101,7 +159,12 @@ router.post("/signup", async (req, res) => {
     // Generate unique openId for local auth users
     const openId = `local_${nanoid(16)}`;
 
-    // Create user with trial period
+    // Generate verification token
+    const verificationToken = nanoid(32);
+    const verificationTokenExpiry = new Date();
+    verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS); // 24 hour expiry
+
+    // Create user with trial period — starts as unverified
     const trialEnd = new Date();
     trialEnd.setDate(trialEnd.getDate() + 7);
 
@@ -123,8 +186,13 @@ router.post("/signup", async (req, res) => {
       return res.status(500).json({ error: "Failed to create user" });
     }
 
-    // Auto-grant admin role to primary admin email, and store plan type preference
-    const userUpdates: Record<string, unknown> = {};
+    // Store verification token and plan type preference
+    const userUpdates: Record<string, unknown> = {
+      verificationToken,
+      verificationTokenExpiry,
+    };
+
+    // Auto-grant admin role to primary admin email
     if (ENV.primaryAdminEmail && userEmail === ENV.primaryAdminEmail && user.role !== "admin") {
       userUpdates.role = "admin";
     }
@@ -137,51 +205,28 @@ router.post("/signup", async (req, res) => {
           prefs = {};
         }
       }
-      // "standard" (formerly "normal") is the UI label for the non-stable plan;
-      // internally it is stored as "pro" to match the billing plan tier name used elsewhere.
       prefs.planTier = planType === "stable" ? "stable" : "pro";
       userUpdates.preferences = JSON.stringify(prefs);
     }
-    if (Object.keys(userUpdates).length > 0) {
-      await db.updateUser(user.id, userUpdates as any);
-    }
 
-    // Generate JWT token
-    const token = await new SignJWT({ userId: user.id })
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("30d")
-      .sign(new TextEncoder().encode(ENV.cookieSecret));
+    await db.updateUser(user.id, userUpdates as any);
 
-    // Set cookie
-    res.cookie(COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: ENV.cookieSecure,
-      sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      domain: ENV.cookieDomain,
-    });
-
-    // Send welcome email (async, don't wait)
+    // Send verification email (async, don't wait)
     email
-      .sendWelcomeEmail(user)
+      .sendVerificationEmail(userEmail, verificationToken, name || undefined)
       .catch((err) =>
-        console.error("[Auth] Failed to send welcome email:", err),
+        console.error("[Auth] Failed to send verification email:", err),
       );
 
-    // Re-fetch user to get latest preferences (including planTier from planType)
-    const freshUser = await db.getUserById(user.id);
-    const { planTier, freeAccess, bothDashboardsUnlocked } = extractPlanInfo(freshUser?.preferences ?? null);
-
+    // Do NOT auto-login — user must verify email first
     res.json({
       success: true,
-      planTier,
-      freeAccess,
-      bothDashboardsUnlocked,
+      requiresVerification: true,
+      message: "Account created! Please check your email to verify your account.",
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
       },
     });
   } catch (error) {
@@ -223,6 +268,16 @@ router.post("/login", loginLimiter, async (req, res) => {
       return res.status(403).json({
         error: "Account suspended",
         reason: user.suspendedReason,
+      });
+    }
+
+    // Check if email is verified
+    if (!user.emailVerified && user.loginMethod === "email") {
+      return res.status(403).json({
+        error: "Email not verified",
+        requiresVerification: true,
+        email: user.email,
+        message: "Please verify your email address before signing in. Check your inbox for the verification link.",
       });
     }
 
@@ -374,6 +429,129 @@ router.post("/reset-password", async (req, res) => {
     });
   } catch (error) {
     console.error("[Auth] Reset password error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/**
+ * POST /api/auth/verify-email
+ * Verify email address with token
+ */
+router.post("/verify-email", async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ error: "Verification token is required" });
+    }
+
+    // Find user by verification token
+    const user = await db.getUserByVerificationToken(token);
+
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or expired verification token" });
+    }
+
+    // Check token expiry
+    if (!user.verificationTokenExpiry || user.verificationTokenExpiry < new Date()) {
+      return res.status(400).json({ error: "Verification token has expired. Please request a new one." });
+    }
+
+    // Mark email as verified and clear token
+    await db.updateUser(user.id, {
+      emailVerified: true,
+      verificationToken: null,
+      verificationTokenExpiry: null,
+    } as any);
+
+    // Auto-login: generate JWT and set cookie
+    const jwtToken = await new SignJWT({ userId: user.id })
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime("30d")
+      .sign(new TextEncoder().encode(ENV.cookieSecret));
+
+    res.cookie(COOKIE_NAME, jwtToken, {
+      httpOnly: true,
+      secure: ENV.cookieSecure,
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      domain: ENV.cookieDomain,
+    });
+
+    // Send welcome email now that user is verified (async)
+    email
+      .sendWelcomeEmail(user)
+      .catch((err) =>
+        console.error("[Auth] Failed to send welcome email:", err),
+      );
+
+    const { planTier, freeAccess, bothDashboardsUnlocked } = extractPlanInfo(user.preferences);
+
+    res.json({
+      success: true,
+      message: "Email verified successfully! Welcome to EquiProfile.",
+      planTier,
+      freeAccess,
+      bothDashboardsUnlocked,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("[Auth] Verify email error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/**
+ * POST /api/auth/resend-verification
+ * Resend verification email
+ */
+router.post("/resend-verification", resendLimiter, async (req, res) => {
+  try {
+    const { email: rawEmail } = req.body;
+
+    if (!rawEmail) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const userEmail = rawEmail.trim().toLowerCase();
+    const user = await db.getUserByEmail(userEmail);
+
+    // Always return success to prevent email enumeration
+    if (!user || user.emailVerified) {
+      return res.json({
+        success: true,
+        message: "If that email needs verification, a new link has been sent.",
+      });
+    }
+
+    // Generate new verification token
+    const verificationToken = nanoid(32);
+    const verificationTokenExpiry = new Date();
+    verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS);
+
+    await db.updateUser(user.id, {
+      verificationToken,
+      verificationTokenExpiry,
+    } as any);
+
+    // Send verification email
+    await email.sendVerificationEmail(
+      userEmail,
+      verificationToken,
+      user.name || undefined,
+    );
+
+    res.json({
+      success: true,
+      message: "If that email needs verification, a new link has been sent.",
+    });
+  } catch (error) {
+    console.error("[Auth] Resend verification error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -218,10 +218,12 @@ function AlertItem({
   icon: Icon,
   text,
   variant = "info",
+  href,
 }: {
   icon: LucideIcon;
   text: string;
   variant?: "alert" | "warning" | "info";
+  href?: string;
 }) {
   const colors = {
     alert: "text-red-500 bg-red-50 dark:bg-red-950/30",
@@ -230,14 +232,20 @@ function AlertItem({
   };
   const iconBg = colors[variant];
 
-  return (
-    <div className="flex items-center gap-3 rounded-lg border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-4 transition-colors duration-200 hover:border-[#4f5fd6]/30">
+  const content = (
+    <div className={`flex items-center gap-3 rounded-lg border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-4 transition-colors duration-200 hover:border-[#4f5fd6]/30 ${href ? "cursor-pointer" : ""}`}>
       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${iconBg}`}>
         <Icon className="h-4 w-4" />
       </div>
-      <p className="text-sm text-[#1a1d24] dark:text-[#e8eaef]">{text}</p>
+      <p className="text-sm text-[#1a1d24] dark:text-[#e8eaef] flex-1">{text}</p>
+      {href && <ChevronRight className="h-4 w-4 shrink-0 text-[#5c6370]/40" />}
     </div>
   );
+
+  if (href) {
+    return <Link href={href}>{content}</Link>;
+  }
+  return content;
 }
 
 // ─── Quick Action Card ───────────────────────────────────────────────────────
@@ -375,19 +383,24 @@ function StableDashboardContent() {
     return healthAlerts.slice(0, 5).map((alert: any) => {
       const name = alert.horseName ?? alert.horse?.name ?? "A horse";
       const message = alert.message ?? alert.description ?? "needs attention";
-      return { icon: AlertCircle as LucideIcon, text: `${name}: ${message}`, variant: "alert" as const };
+      return { icon: AlertCircle as LucideIcon, text: `${name}: ${message}`, variant: "alert" as const, href: "/health" };
     });
   }, [healthAlerts]);
 
-  // Upcoming tasks & appointments combined
+  // Upcoming tasks & appointments — limited to today + tomorrow
   const upcomingItems = useMemo(() => {
-    const items: { icon: LucideIcon; text: string; variant: "alert" | "warning" | "info" }[] = [];
+    const items: { icon: LucideIcon; text: string; variant: "alert" | "warning" | "info"; href: string }[] = [];
+    const tomorrowDate = new Date();
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+    const tomorrowStr = tomorrowDate.toISOString().slice(0, 10);
 
     if (Array.isArray(tasks)) {
       tasks
         .filter((t: any) => {
           if (t.status === "completed" || t.status === "done") return false;
-          return true;
+          if (!t.dueDate) return false;
+          const due = String(t.dueDate).slice(0, 10);
+          return due <= tomorrowStr;
         })
         .slice(0, 4)
         .forEach((t: any) => {
@@ -397,18 +410,28 @@ function StableDashboardContent() {
             icon: ClipboardList,
             text: `${overdue ? "Overdue: " : ""}${t.title ?? t.name ?? "Task"}`,
             variant: overdue ? "warning" : "info",
+            href: "/tasks",
           });
         });
     }
 
     if (Array.isArray(upcomingAppointments)) {
-      upcomingAppointments.slice(0, 3).forEach((a: any) => {
-        items.push({
-          icon: Clock,
-          text: `Appointment: ${a.title ?? a.type ?? "Scheduled"}`,
-          variant: "info",
+      upcomingAppointments
+        .filter((a: any) => {
+          const d = a.date ?? a.appointmentDate ?? a.scheduledDate;
+          if (!d) return false;
+          const dateStr = String(d).slice(0, 10);
+          return dateStr >= todayStr && dateStr <= tomorrowStr;
+        })
+        .slice(0, 3)
+        .forEach((a: any) => {
+          items.push({
+            icon: Clock,
+            text: `Appointment: ${a.title ?? a.type ?? "Scheduled"}`,
+            variant: "info",
+            href: "/appointments",
+          });
         });
-      });
     }
 
     return items;
@@ -418,8 +441,15 @@ function StableDashboardContent() {
   const stableName = user?.name ? `${user.name.split(" ")[0]}'s Stable` : "Stable";
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219]">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219] relative overflow-hidden">
+      {/* ── Subtle Premium Background Depth ────────────────────── */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-[#4f5fd6]/[0.04] blur-3xl" />
+        <div className="absolute top-1/2 -left-20 h-64 w-64 rounded-full bg-[#3b7dd8]/[0.03] blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/3 h-56 w-56 rounded-full bg-[#2d8a56]/[0.03] blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {/* ── Stable Overview Header ─────────────────────────────── */}
         <header className="mb-8">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -496,7 +526,7 @@ function StableDashboardContent() {
               ) : healthAlertItems.length > 0 ? (
                 <div className="space-y-2">
                   {healthAlertItems.map((item, i) => (
-                    <AlertItem key={i} icon={item.icon} text={item.text} variant={item.variant} />
+                    <AlertItem key={i} icon={item.icon} text={item.text} variant={item.variant} href={item.href} />
                   ))}
                 </div>
               ) : (
@@ -519,7 +549,7 @@ function StableDashboardContent() {
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="flex items-center gap-2 text-sm font-semibold text-[#1a1d24] dark:text-[#e8eaef]">
                   <ClipboardList className="h-4 w-4" style={{ color: ACCENT }} />
-                  Upcoming Tasks &amp; Appointments
+                  Today &amp; Tomorrow
                 </h3>
                 <Link
                   href="/tasks"
@@ -535,7 +565,7 @@ function StableDashboardContent() {
               ) : upcomingItems.length > 0 ? (
                 <div className="space-y-2">
                   {upcomingItems.map((item, i) => (
-                    <AlertItem key={i} icon={item.icon} text={item.text} variant={item.variant} />
+                    <AlertItem key={i} icon={item.icon} text={item.text} variant={item.variant} href={item.href} />
                   ))}
                 </div>
               ) : (
@@ -565,8 +595,8 @@ function StableDashboardContent() {
           </div>
         </section>
 
-        {/* ── Stable Module Groups ────────────────────────────────── */}
-        <section aria-label="Stable modules" className="mb-8">
+        {/* ── Stable Module Groups — desktop only ────────────────── */}
+        <section aria-label="Stable modules" className="mb-8 hidden md:block">
           <SectionHeading>Modules</SectionHeading>
           <div className="mt-4 space-y-4">
             {stableModuleGroups.map((group) => (

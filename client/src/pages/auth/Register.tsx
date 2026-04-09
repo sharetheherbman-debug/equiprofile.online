@@ -56,6 +56,8 @@ export default function Register() {
   const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
 
+  const [verificationSent, setVerificationSent] = useState(false);
+
   // Detect subscription intent from query params (set by Pricing page)
   const searchParams = new URLSearchParams(window.location.search);
   const intentPlan = searchParams.get("plan"); // e.g. "pro"
@@ -187,12 +189,25 @@ export default function Register() {
       const data = await response.json();
 
       if (!response.ok) {
+        // If re-submitting with an unverified email, show verification state
+        if (data.requiresVerification) {
+          setVerificationSent(true);
+          setIsLoading(false);
+          return;
+        }
         setError(data.error || "Registration failed");
         setIsLoading(false);
         return;
       }
 
-      // If the user came from the Pricing page with a plan intent, redirect to
+      // New flow: backend returns requiresVerification=true, show verification screen
+      if (data.requiresVerification) {
+        setVerificationSent(true);
+        setIsLoading(false);
+        return;
+      }
+
+      // Fallback: If the user came from the Pricing page with a plan intent, redirect to
       // Stripe checkout.  Otherwise go to experience selection.
       if (hasSubscribeIntent) {
         try {
@@ -218,6 +233,78 @@ export default function Register() {
   };
 
   const stepLabels = ["Name", "Email", "Password", "Confirm"];
+
+  // Show verification email sent screen
+  if (verificationSent) {
+    return (
+      <>
+        <Navbar alwaysDark />
+        <PageTransition>
+          <AuthSplitLayout>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="bg-[#0a1628]/70 backdrop-blur-xl border border-white/10 shadow-2xl">
+                <CardHeader className="space-y-3 pb-2">
+                  <div className="flex justify-center mb-4">
+                    <div className="h-16 w-16 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                      <Mail className="h-8 w-8 text-indigo-400" />
+                    </div>
+                  </div>
+                  <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    Check Your Email
+                  </CardTitle>
+                  <CardDescription className="text-center text-gray-400">
+                    We&apos;ve sent a verification link to <span className="text-white font-medium">{email}</span>.
+                    Please click the link to verify your account.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-4">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-sm text-gray-400 space-y-2">
+                    <p>• The link will expire in 24 hours</p>
+                    <p>• Check your spam/junk folder if you don&apos;t see it</p>
+                    <p>• Make sure <span className="text-gray-300">noreply@equiprofile.online</span> is whitelisted</p>
+                  </div>
+
+                  <Button
+                    onClick={async () => {
+                      try {
+                        await fetch("/api/auth/resend-verification", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ email: email.trim().toLowerCase() }),
+                        });
+                        setError("");
+                      } catch {
+                        // silent
+                      }
+                    }}
+                    variant="outline"
+                    className="w-full border-white/10 text-white hover:bg-white/5 h-12"
+                  >
+                    Resend Verification Email
+                  </Button>
+
+                  <div className="text-center text-sm">
+                    <span className="text-gray-400">Already verified? </span>
+                    <Link
+                      href="/login"
+                      className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent font-medium hover:from-indigo-300 hover:to-cyan-300 transition-all duration-200"
+                    >
+                      Sign in
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </AuthSplitLayout>
+        </PageTransition>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>

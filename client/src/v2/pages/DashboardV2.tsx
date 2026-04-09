@@ -211,10 +211,12 @@ function FocusItem({
   icon: Icon,
   text,
   variant = "info",
+  href,
 }: {
   icon: LucideIcon;
   text: string;
   variant?: "alert" | "warning" | "info";
+  href?: string;
 }) {
   const colors = {
     alert: "text-red-500 bg-red-50 dark:bg-red-950/30",
@@ -223,14 +225,20 @@ function FocusItem({
   };
   const iconBg = colors[variant];
 
-  return (
-    <div className="flex items-center gap-3 rounded-lg border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-4 transition-colors duration-200 hover:border-[#4f5fd6]/30">
+  const content = (
+    <div className={`flex items-center gap-3 rounded-lg border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-4 transition-colors duration-200 hover:border-[#4f5fd6]/30 ${href ? "cursor-pointer" : ""}`}>
       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${iconBg}`}>
         <Icon className="h-4 w-4" />
       </div>
-      <p className="text-sm text-[#1a1d24] dark:text-[#e8eaef]">{text}</p>
+      <p className="text-sm text-[#1a1d24] dark:text-[#e8eaef] flex-1">{text}</p>
+      {href && <ChevronRight className="h-4 w-4 shrink-0 text-[#5c6370]/40" />}
     </div>
   );
+
+  if (href) {
+    return <Link href={href}>{content}</Link>;
+  }
+  return content;
 }
 
 // ─── Quick Action Card ───────────────────────────────────────────────────────
@@ -383,7 +391,7 @@ function DashboardContent() {
 
   // Build today's focus items
   const focusItems = useMemo(() => {
-    const items: { icon: LucideIcon; text: string; variant: "alert" | "warning" | "info" }[] = [];
+    const items: { icon: LucideIcon; text: string; variant: "alert" | "warning" | "info"; href: string }[] = [];
 
     if (Array.isArray(healthAlerts)) {
       healthAlerts.slice(0, 3).forEach((alert: any) => {
@@ -393,6 +401,7 @@ function DashboardContent() {
           icon: AlertCircle,
           text: `${name}: ${message}`,
           variant: "alert",
+          href: "/health",
         });
       });
     }
@@ -411,6 +420,7 @@ function DashboardContent() {
             icon: ClipboardList,
             text: `${overdue ? "Overdue: " : "Due today: "}${t.title ?? t.name ?? "Task"}`,
             variant: overdue ? "warning" : "info",
+            href: "/tasks",
           });
         });
     }
@@ -421,6 +431,7 @@ function DashboardContent() {
           icon: Clock,
           text: `Appointment: ${a.title ?? a.type ?? "Scheduled today"}`,
           variant: "info",
+          href: "/appointments",
         });
       });
     }
@@ -433,8 +444,15 @@ function DashboardContent() {
   const firstName = user?.name?.split(" ")[0] ?? "there";
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219]">
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219] relative overflow-hidden">
+      {/* ── Subtle Premium Background Depth ────────────────────── */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-[#4f5fd6]/[0.04] blur-3xl" />
+        <div className="absolute top-1/3 -left-24 h-72 w-72 rounded-full bg-[#3b7dd8]/[0.03] blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-[#2d8a56]/[0.03] blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
         {/* ── Header ─────────────────────────────────────────────── */}
         <header className="mb-8">
           <h1 className="font-serif text-2xl font-semibold text-[#1a1d24] dark:text-[#e8eaef] sm:text-3xl">
@@ -464,7 +482,7 @@ function DashboardContent() {
           </div>
         </section>
 
-        {/* ── Today's Focus ──────────────────────────────────────── */}
+        {/* ── Today's Focus — only show when items exist ──────────── */}
         {isLoading ? (
           <section aria-label="Today's focus" className="mb-8">
             <SectionHeading>Today&apos;s Focus</SectionHeading>
@@ -477,22 +495,8 @@ function DashboardContent() {
             <SectionHeading>Today&apos;s Focus</SectionHeading>
             <div className="mt-4 space-y-2">
               {focusItems.map((item, i) => (
-                <FocusItem key={i} icon={item.icon} text={item.text} variant={item.variant} />
+                <FocusItem key={i} icon={item.icon} text={item.text} variant={item.variant} href={item.href} />
               ))}
-            </div>
-          </section>
-        ) : hasHorses ? (
-          <section aria-label="Today's focus" className="mb-8">
-            <div className="flex items-center gap-3 rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5">
-              <div
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                style={{ backgroundColor: `${ACCENT}14` }}
-              >
-                <Star className="h-4.5 w-4.5" style={{ color: ACCENT }} />
-              </div>
-              <p className="text-sm text-[#5c6370] dark:text-[#9ca3b0]">
-                All clear — nothing needs your attention today.
-              </p>
             </div>
           </section>
         ) : null}
@@ -507,8 +511,8 @@ function DashboardContent() {
           </div>
         </section>
 
-        {/* ── Module Navigation ──────────────────────────────────── */}
-        <section aria-label="Modules" className="mb-8">
+        {/* ── Module Navigation — desktop only ───────────────────── */}
+        <section aria-label="Modules" className="mb-8 hidden md:block">
           <SectionHeading>Modules</SectionHeading>
           <div className="mt-4 space-y-4">
             {dashboardModuleGroups.map((group) => (
