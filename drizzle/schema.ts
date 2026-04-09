@@ -17,6 +17,8 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }),
   passwordHash: varchar("passwordHash", { length: 255 }), // For local email/password auth
   emailVerified: boolean("emailVerified").default(false), // Email verification status
+  verificationToken: varchar("verificationToken", { length: 255 }), // Email verification token
+  verificationTokenExpiry: timestamp("verificationTokenExpiry"), // Verification token expiration
   resetToken: varchar("resetToken", { length: 255 }), // Password reset token
   resetTokenExpiry: timestamp("resetTokenExpiry"), // Reset token expiration
   loginMethod: varchar("loginMethod", { length: 64 }),

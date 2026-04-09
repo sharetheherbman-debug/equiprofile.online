@@ -4019,11 +4019,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .from(chatLeads)
           .where(gte(chatLeads.createdAt, startDate));
 
-        // Signup conversions (new active users in period — excludes soft-deleted)
+        // Signup conversions (new verified active users in period — excludes soft-deleted and unverified)
         const [signupsResult] = await dbConn
           .select({ count: sql<number>`COUNT(*)` })
           .from(users)
-          .where(and(gte(users.createdAt, startDate), eq(users.isActive, true)));
+          .where(and(gte(users.createdAt, startDate), eq(users.isActive, true), eq(users.emailVerified, true)));
 
         // Trial-to-paid conversions
         const [t2pResult] = await dbConn

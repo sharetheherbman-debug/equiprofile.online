@@ -149,6 +149,60 @@ export async function sendWelcomeEmail(user: User): Promise<void> {
 }
 
 /**
+ * Send email verification email with a secure token link
+ */
+export async function sendVerificationEmail(
+  userEmail: string,
+  token: string,
+  userName?: string,
+): Promise<void> {
+  const baseUrl = process.env.BASE_URL || "https://equiprofile.online";
+  const verifyUrl = `${baseUrl}/verify-email?token=${encodeURIComponent(token)}`;
+
+  const subject = "Verify your EquiProfile email address";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="text-align: center; padding: 30px 0 20px;">
+        <h1 style="color: #1e40af; margin: 0;">Verify Your Email</h1>
+      </div>
+
+      <p>Hi ${userName || "there"},</p>
+
+      <p>Thank you for signing up for EquiProfile! Please verify your email address to activate your account and start your free trial.</p>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${verifyUrl}"
+           style="background: #1e40af; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold; font-size: 16px;">
+          Verify Email Address
+        </a>
+      </div>
+
+      <p style="color: #6b7280; font-size: 14px;">
+        If the button doesn't work, copy and paste this link into your browser:
+      </p>
+      <p style="word-break: break-all; color: #1e40af; font-size: 13px;">${verifyUrl}</p>
+
+      <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin: 24px 0; border-left: 4px solid #1e40af;">
+        <p style="margin: 0; color: #374151; font-size: 14px;">
+          <strong>This link expires in 24 hours.</strong> If it expires, you can request a new one from the login page.
+        </p>
+      </div>
+
+      <p style="color: #6b7280; font-size: 13px; margin-top: 30px;">
+        If you didn't create an EquiProfile account, you can safely ignore this email.
+      </p>
+
+      <p style="color: #6b7280;">
+        Best regards,<br/>
+        The EquiProfile Team
+      </p>
+    </div>
+  `;
+
+  await sendEmail(userEmail, subject, html);
+}
+
+/**
  * Send trial reminder email
  */
 export async function sendTrialReminderEmail(

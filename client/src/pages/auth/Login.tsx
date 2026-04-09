@@ -69,6 +69,10 @@ export default function Login() {
     setError("");
   };
 
+  const [showVerificationPrompt, setShowVerificationPrompt] = useState(false);
+  const [resendingVerification, setResendingVerification] = useState(false);
+  const [verificationResent, setVerificationResent] = useState(false);
+
   const handlePasswordStep = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
@@ -92,6 +96,8 @@ export default function Login() {
           setError(
             "Too many login attempts from this network. Please wait a few minutes and try again.",
           );
+        } else if (data.requiresVerification) {
+          setShowVerificationPrompt(true);
         } else {
           setError(data.error || data.message || "Login failed");
         }
@@ -100,14 +106,27 @@ export default function Login() {
       }
 
       // Redirect to the correct dashboard based on entitlement
-      // Free-access users with both dashboards unlocked go to stable dashboard
-      // Stable plan users go to stable dashboard
-      // All others go to standard dashboard
       const goToStable = data.planTier === "stable" || data.bothDashboardsUnlocked === true;
       window.location.href = goToStable ? "/stable-dashboard" : "/dashboard";
     } catch (err) {
       setError("An error occurred. Please try again.");
       setIsLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setResendingVerification(true);
+    try {
+      await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+      setVerificationResent(true);
+    } catch {
+      // silent
+    } finally {
+      setResendingVerification(false);
     }
   };
 
@@ -158,6 +177,57 @@ export default function Login() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
+                {showVerificationPrompt ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-4"
+                  >
+                    <div className="flex justify-center mb-2">
+                      <div className="h-14 w-14 rounded-full bg-amber-500/20 flex items-center justify-center">
+                        <Mail className="h-7 w-7 text-amber-400" />
+                      </div>
+                    </div>
+                    <p className="text-center text-sm text-gray-300">
+                      Your email address hasn&apos;t been verified yet. Please check your inbox for the verification link.
+                    </p>
+
+                    {verificationResent ? (
+                      <div className="bg-green-950/50 border border-green-500/30 rounded-lg p-3 text-center">
+                        <p className="text-sm text-green-300">
+                          A new verification link has been sent to your email.
+                        </p>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={handleResendVerification}
+                        disabled={resendingVerification}
+                        className="w-full bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white border-0 h-12"
+                      >
+                        {resendingVerification ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          "Resend Verification Email"
+                        )}
+                      </Button>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        setShowVerificationPrompt(false);
+                        setStep(1);
+                        setError("");
+                      }}
+                      className="w-full text-sm text-gray-400 hover:text-gray-300 transition-colors py-2"
+                    >
+                      Try a different account
+                    </button>
+                  </motion.div>
+                ) : (
+                <>
                 {error && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
@@ -307,6 +377,8 @@ export default function Login() {
                     Create account
                   </Link>
                 </div>
+                </>
+                )}
               </CardContent>
             </Card>
 
