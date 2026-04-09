@@ -523,7 +523,7 @@ export default function CalendarPage() {
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <PageHeader title="Calendar" subtitle="Schedule and manage all your equestrian activities" />
+            <PageHeader title="Calendar" subtitle="Schedule and manage all your equestrian activities" subtitleClassName="hidden sm:block" />
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {/* View toggle — hidden on very small screens */}

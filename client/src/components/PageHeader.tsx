@@ -11,9 +11,11 @@ import { isV2 } from "@/config/uiVersion";
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
+  /** Extra Tailwind classes applied to the subtitle paragraph (e.g. "hidden sm:block") */
+  subtitleClassName?: string;
 }
 
-export function PageHeader({ title, subtitle }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, subtitleClassName }: PageHeaderProps) {
   return (
     <div>
       {isV2() && (
@@ -26,7 +28,9 @@ export function PageHeader({ title, subtitle }: PageHeaderProps) {
       )}
       <h1 className="font-serif text-3xl font-bold text-foreground">{title}</h1>
       {subtitle && (
-        <p className="text-muted-foreground mt-1 text-sm">{subtitle}</p>
+        <p className={`text-muted-foreground mt-1 text-sm${subtitleClassName ? ` ${subtitleClassName}` : ""}`}>
+          {subtitle}
+        </p>
       )}
     </div>
   );
