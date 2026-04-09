@@ -493,41 +493,57 @@ async function startServer() {
   /**
    * GET /api/system/config-status
    * Returns which optional services are configured (boolean flags only, no secrets).
-   * Used by the frontend and monitoring to show a "setup checklist".
+   * Protected — requires authenticated admin user.
    */
   app.get("/api/system/config-status", async (req, res) => {
-    // Check env vars first, then fall back to DB-stored dashboard settings
-    const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
-    const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
-    const smtpConfigured = !!(smtpUser && smtpPass);
-    const stripeReady =
-      ENV.enableStripe &&
-      !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
-    const uploadsReady = true; // Local disk storage is always available on VPS
-    const aiOpenAI = !!process.env.OPENAI_API_KEY;
-    const aiHuggingFace = !!process.env.HUGGINGFACE_API_KEY;
+    try {
+      // @ts-expect-error - Express req/res is compatible with CreateExpressContextOptions
+      const context = await createContext({ req, res });
+      if (!context.user || context.user.role !== "admin") {
+        return res.status(403).json({ error: "Admin access required" });
+      }
 
-    res.json({
-      db: true, // If we got here the server started successfully
-      smtp: smtpConfigured,
-      stripe: stripeReady,
-      uploads: uploadsReady,
-      ai: {
-        openai: aiOpenAI,
-        huggingface: aiHuggingFace,
-        anyConfigured: aiOpenAI || aiHuggingFace,
-      },
-      weather: true, // Open-Meteo needs no key
-      adminPasswordSet: !!process.env.ADMIN_UNLOCK_PASSWORD,
-    });
+      // Check env vars first, then fall back to DB-stored dashboard settings
+      const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+      const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+      const smtpConfigured = !!(smtpUser && smtpPass);
+      const stripeReady =
+        ENV.enableStripe &&
+        !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
+      const uploadsReady = true; // Local disk storage is always available on VPS
+      const aiOpenAI = !!process.env.OPENAI_API_KEY;
+      const aiHuggingFace = !!process.env.HUGGINGFACE_API_KEY;
+
+      res.json({
+        db: true, // If we got here the server started successfully
+        smtp: smtpConfigured,
+        stripe: stripeReady,
+        uploads: uploadsReady,
+        ai: {
+          openai: aiOpenAI,
+          huggingface: aiHuggingFace,
+          anyConfigured: aiOpenAI || aiHuggingFace,
+        },
+        weather: true, // Open-Meteo needs no key
+        adminPasswordSet: !!process.env.ADMIN_UNLOCK_PASSWORD,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
   });
 
   /**
    * GET /api/admin/status
    * Returns red/yellow/green readiness report for each service.
-   * Used by admin UI and audit scripts to show actionable "what's missing" info.
+   * Protected — requires authenticated admin user.
    */
   app.get("/api/admin/status", async (req, res) => {
+    try {
+      // @ts-expect-error - Express req/res is compatible with CreateExpressContextOptions
+      const context = await createContext({ req, res });
+      if (!context.user || context.user.role !== "admin") {
+        return res.status(403).json({ error: "Admin access required" });
+      }
     // Check env vars first, then fall back to DB-stored dashboard settings
     const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
     const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
@@ -632,6 +648,9 @@ async function startServer() {
       },
       timestamp: new Date().toISOString(),
     });
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
   });
 
   // Simple ping endpoint (minimal response for monitoring)
@@ -815,6 +834,13 @@ async function startServer() {
     adminEmailLimiter,
     async (req, res) => {
       try {
+        // Require authenticated admin
+        // @ts-expect-error - Express req/res is compatible with CreateExpressContextOptions
+        const context = await createContext({ req, res });
+        if (!context.user || context.user.role !== "admin") {
+          return res.status(403).json({ error: "Admin access required" });
+        }
+
         const { to } = req.body;
         if (!to) {
           return res.status(400).json({ error: "Email address required" });
