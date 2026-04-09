@@ -54,6 +54,23 @@ async function handleLogin(
     };
   }
 
+  // Mirror the email verification logic from authRouter.ts
+  if (!user.emailVerified && user.loginMethod === "email") {
+    if (!user.verificationToken) {
+      // Legacy user — auto-verify (fire-and-forget)
+      db.updateUser(user.id, { emailVerified: true }).catch(() => {});
+    } else {
+      return {
+        status: 403,
+        body: {
+          error: "Email not verified",
+          requiresVerification: true,
+          email: user.email,
+        },
+      };
+    }
+  }
+
   await db.updateUser(user.id, { lastSignedIn: new Date() });
 
   return {
@@ -163,6 +180,46 @@ describe("auth login — status codes (not 500)", () => {
 
     expect(result.status).toBe(403);
     expect(result.body.error).toMatch(/suspended/i);
+  });
+
+  it("returns 403 with requiresVerification for unverified users with a pending token", async () => {
+    const password = "correctPassword123!";
+    const realHash = await bcrypt.hash(password, 4);
+    mockGetUserByEmail.mockResolvedValue({
+      id: 5,
+      email: "unverified@example.com",
+      passwordHash: realHash,
+      isSuspended: false,
+      emailVerified: false,
+      loginMethod: "email",
+      verificationToken: "some-token-abc",
+    });
+
+    const result = await handleLogin("unverified@example.com", password, db);
+
+    expect(result.status).toBe(403);
+    expect(result.body.requiresVerification).toBe(true);
+  });
+
+  it("returns 200 for legacy users (emailVerified=false, no verificationToken)", async () => {
+    const password = "correctPassword123!";
+    const realHash = await bcrypt.hash(password, 4);
+    mockGetUserByEmail.mockResolvedValue({
+      id: 6,
+      name: "Legacy User",
+      email: "legacy@example.com",
+      passwordHash: realHash,
+      isSuspended: false,
+      emailVerified: false,
+      loginMethod: "email",
+      verificationToken: null, // no token — pre-verification user
+    });
+
+    const result = await handleLogin("legacy@example.com", password, db);
+
+    // Legacy users must not be blocked — they should be auto-verified and logged in
+    expect(result.status).toBe(200);
+    expect(result.body.success).toBe(true);
   });
 });
 

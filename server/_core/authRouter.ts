@@ -273,12 +273,22 @@ router.post("/login", loginLimiter, async (req, res) => {
 
     // Check if email is verified
     if (!user.emailVerified && user.loginMethod === "email") {
-      return res.status(403).json({
-        error: "Email not verified",
-        requiresVerification: true,
-        email: user.email,
-        message: "Please verify your email address before signing in. Check your inbox for the verification link.",
-      });
+      // Legacy users created before email verification was introduced have
+      // emailVerified = false but no verificationToken. Auto-verify them so
+      // they are never locked out of an account they've always been able to use.
+      // The update is fire-and-forget so a transient DB failure never causes a 500.
+      if (!user.verificationToken) {
+        db.updateUser(user.id, { emailVerified: true }).catch((err) =>
+          console.error("[Auth] Failed to auto-verify legacy user:", err),
+        );
+      } else {
+        return res.status(403).json({
+          error: "Email not verified",
+          requiresVerification: true,
+          email: user.email,
+          message: "Please verify your email address before signing in. Check your inbox for the verification link.",
+        });
+      }
     }
 
     // Update last signed in
