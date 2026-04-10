@@ -4380,7 +4380,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (inv.status !== "pending") {
           throw new TRPCError({ code: "BAD_REQUEST", message: `Invite already ${inv.status}` });
         }
-        if (new Date() > new Date(inv.expiresAt)) {
+        const now = new Date();
+        if (now > new Date(inv.expiresAt)) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Invite has expired" });
         }
 
@@ -4419,7 +4420,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (invite.status !== "pending") {
           throw new TRPCError({ code: "BAD_REQUEST", message: `Invite already ${invite.status}` });
         }
-        if (new Date() > new Date(invite.expiresAt)) {
+        const now = new Date();
+        if (now > new Date(invite.expiresAt)) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Invite has expired" });
         }
 

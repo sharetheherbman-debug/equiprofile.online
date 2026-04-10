@@ -152,6 +152,7 @@ export default function StableInviteAccept() {
 
           <Button
             className="w-full"
+            aria-label={`Accept invite and join ${invite.stableName}`}
             onClick={() => acceptMutation.mutate({ token })}
             disabled={acceptMutation.isPending}
           >
