@@ -615,7 +615,7 @@ function TrainingView() {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <h4 className="text-sm font-semibold text-white">{entry.title}</h4>
-                  <p className="text-xs text-gray-500 mt-0.5">{entry.sessionDate} · {entry.sessionType}{entry.instructor ? ` · ${entry.instructor}` : ""}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{String(entry.sessionDate)} · {entry.sessionType}{entry.instructor ? ` · ${entry.instructor}` : ""}</p>
                 </div>
                 <button onClick={() => deleteMut.mutate({ id: entry.id })} className="text-gray-600 hover:text-red-400 transition-colors">
                   <X className="w-4 h-4" />
@@ -638,7 +638,7 @@ function StudyHubView() {
 
   if (isLoading) return <SCard><SkeletonBar className="w-full h-32" /></SCard>;
 
-  const categories = [...new Set((topics ?? []).map(t => t.category))];
+  const categories = Array.from(new Set((topics ?? []).map(t => t.category)));
   const catColors: Record<string, string> = {
     riding: "#6366f1", care: "#10b981", theory: "#f59e0b", safety: "#ef4444",
   };

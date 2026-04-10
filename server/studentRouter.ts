@@ -9,7 +9,7 @@ import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM, isAIConfigured } from "./_core/llm";
 import { getRuntimeConfig } from "./dynamicConfig";
-import { eq, and, desc, gte, lte } from "drizzle-orm";
+import { eq, and, desc, gte, lte, sql } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   virtualHorses,
@@ -131,7 +131,7 @@ export const studentRouter = router({
 
   // ── Overview ─────────────────────────────────────────────────────────────
   getOverview: studentProcedure.query(async ({ ctx }) => {
-    const dbConn = getDb();
+    const dbConn = await getDb();
     if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
     const userId = ctx.user.id;
@@ -162,7 +162,7 @@ export const studentRouter = router({
     const todayTasks = await dbConn.select().from(studentTasks)
       .where(and(
         eq(studentTasks.userId, userId),
-        eq(studentTasks.targetDate, today),
+        sql`${studentTasks.targetDate} = ${today}`,
       ))
       .orderBy(studentTasks.createdAt);
 
@@ -182,7 +182,7 @@ export const studentRouter = router({
     const recentTraining = await dbConn.select().from(studentTrainingEntries)
       .where(and(
         eq(studentTrainingEntries.userId, userId),
-        gte(studentTrainingEntries.sessionDate, weekAgoStr),
+        sql`${studentTrainingEntries.sessionDate} >= ${weekAgoStr}`,
       ))
       .orderBy(desc(studentTrainingEntries.sessionDate));
 
@@ -211,7 +211,7 @@ export const studentRouter = router({
 
   // ── Virtual Horse ────────────────────────────────────────────────────────
   getVirtualHorse: studentProcedure.query(async ({ ctx }) => {
-    const dbConn = getDb();
+    const dbConn = await getDb();
     if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
     const [vHorse] = await dbConn.select().from(virtualHorses)
       .where(and(eq(virtualHorses.userId, ctx.user.id), eq(virtualHorses.isActive, true)))
@@ -228,7 +228,7 @@ export const studentRouter = router({
       personality: z.string().max(100).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
       // Only allow one active virtual horse per student
@@ -260,7 +260,7 @@ export const studentRouter = router({
       personality: z.string().max(100).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
       const { id, ...updates } = input;
@@ -272,7 +272,7 @@ export const studentRouter = router({
 
   // ── Assigned Horse ───────────────────────────────────────────────────────
   getAssignedHorse: studentProcedure.query(async ({ ctx }) => {
-    const dbConn = getDb();
+    const dbConn = await getDb();
     if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
     const assignments = await dbConn.select({
       assignmentId: studentHorseAssignments.id,
@@ -303,7 +303,7 @@ export const studentRouter = router({
       completed: z.boolean().optional(),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
       const conditions = [eq(studentTasks.userId, ctx.user.id)];
@@ -311,10 +311,10 @@ export const studentRouter = router({
         conditions.push(eq(studentTasks.isCompleted, input.completed));
       }
       if (input?.dateFrom) {
-        conditions.push(gte(studentTasks.targetDate, input.dateFrom));
+        conditions.push(sql`${studentTasks.targetDate} >= ${input.dateFrom}` as any);
       }
       if (input?.dateTo) {
-        conditions.push(lte(studentTasks.targetDate, input.dateTo));
+        conditions.push(sql`${studentTasks.targetDate} <= ${input.dateTo}` as any);
       }
 
       return dbConn.select().from(studentTasks)
@@ -332,7 +332,7 @@ export const studentRouter = router({
       targetDate: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
       const [result] = await dbConn.insert(studentTasks).values({
         userId: ctx.user.id,
@@ -340,7 +340,7 @@ export const studentRouter = router({
         description: input.description ?? null,
         category: input.category,
         frequency: input.frequency,
-        targetDate: input.targetDate ?? null,
+        targetDate: input.targetDate ? new Date(input.targetDate) : null,
       });
       return { id: result.insertId, success: true };
     }),
@@ -348,7 +348,7 @@ export const studentRouter = router({
   completeTask: studentProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
       await dbConn.update(studentTasks)
         .set({ isCompleted: true, completedAt: new Date() })
@@ -359,7 +359,7 @@ export const studentRouter = router({
   uncompleteTask: studentProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
       await dbConn.update(studentTasks)
         .set({ isCompleted: false, completedAt: null })
@@ -370,7 +370,7 @@ export const studentRouter = router({
   deleteTask: studentProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
       await dbConn.delete(studentTasks)
         .where(and(eq(studentTasks.id, input.id), eq(studentTasks.userId, ctx.user.id)));
@@ -383,7 +383,7 @@ export const studentRouter = router({
       limit: z.number().int().min(1).max(100).default(20),
     }).optional())
     .query(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
       return dbConn.select().from(studentTrainingEntries)
         .where(eq(studentTrainingEntries.userId, ctx.user.id))
@@ -403,12 +403,12 @@ export const studentRouter = router({
       instructor: z.string().max(100).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
       const [result] = await dbConn.insert(studentTrainingEntries).values({
         userId: ctx.user.id,
         title: input.title,
-        sessionDate: input.sessionDate,
+        sessionDate: new Date(input.sessionDate),
         duration: input.duration ?? null,
         sessionType: input.sessionType,
         notes: input.notes ?? null,
@@ -422,7 +422,7 @@ export const studentRouter = router({
   deleteTraining: studentProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
       await dbConn.delete(studentTrainingEntries)
         .where(and(eq(studentTrainingEntries.id, input.id), eq(studentTrainingEntries.userId, ctx.user.id)));
@@ -431,7 +431,7 @@ export const studentRouter = router({
 
   // ── Progress ─────────────────────────────────────────────────────────────
   getProgress: studentProcedure.query(async ({ ctx }) => {
-    const dbConn = getDb();
+    const dbConn = await getDb();
     if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
     return dbConn.select().from(studentProgress)
       .where(eq(studentProgress.userId, ctx.user.id))
@@ -444,7 +444,7 @@ export const studentRouter = router({
       category: z.string().optional(),
     }).optional())
     .query(async ({ ctx: _ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
       // Seed defaults if table is empty
@@ -466,7 +466,7 @@ export const studentRouter = router({
   getStudyTopic: studentProcedure
     .input(z.object({ slug: z.string() }))
     .query(async ({ ctx: _ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
       const [topic] = await dbConn.select().from(studyTopics)
         .where(eq(studyTopics.slug, input.slug))
@@ -485,7 +485,7 @@ export const studentRouter = router({
       })).max(10).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const dbConn = getDb();
+      const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
       // Rate limit: check daily usage
@@ -565,7 +565,7 @@ export const studentRouter = router({
           tier,
           promptTokens: 0,
           completionTokens: 0,
-        }).catch((logErr) => {
+        }).catch((logErr: unknown) => {
           console.error("[AI Tutor] Failed to log error session:", logErr);
         }); // don't fail on logging failure
 
@@ -578,7 +578,7 @@ export const studentRouter = router({
     }),
 
   getTutorUsage: studentProcedure.query(async ({ ctx }) => {
-    const dbConn = getDb();
+    const dbConn = await getDb();
     if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
     const todayStart = new Date();

@@ -69,6 +69,7 @@ import {
   emailUnsubscribes,
   campaignSequences,
   campaignSequenceRecipients,
+  campaignSendLog,
   vaccinations,
   dewormings,
   treatments,
@@ -87,6 +88,19 @@ import {
 import { sendEmail, sendStableInviteEmail } from "./_core/email";
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
 import { studentRouter } from "./studentRouter";
+import {
+  normalizeCountry,
+  normalizeContactType,
+  isValidEmail,
+  parseCSV,
+  autoMapColumns,
+  mapRowToContact,
+  getTodayDateString,
+  DEFAULT_DAILY_LIMIT,
+  DEFAULT_FOLLOWUP_SCHEDULE,
+  getScheduledDate,
+  PRIORITY_COUNTRIES,
+} from "./_core/campaignService";
 
 // Allowed MIME types for document and avatar uploads
 const ALLOWED_UPLOAD_MIME_TYPES = [
@@ -3652,7 +3666,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
     getSegmentCounts: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
-      if (!dbConn) return { leads: 0, trial: 0, paid: 0, all: 0, marketing: 0, unsubscribed: 0 };
+      if (!dbConn) return { leads: 0, trial: 0, paid: 0, all: 0, marketing: 0, unsubscribed: 0, byCountry: [], byType: [] };
 
       const [leadsResult] = await dbConn
         .select({ count: sql<number>`COUNT(*)` })
@@ -3684,6 +3698,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         .select({ count: sql<number>`COUNT(*)` })
         .from(emailUnsubscribes);
 
+      // Country breakdown
+      const byCountry = await dbConn
+        .select({
+          country: marketingContacts.country,
+          count: sql<number>`COUNT(*)`,
+        })
+        .from(marketingContacts)
+        .where(eq(marketingContacts.status, "active"))
+        .groupBy(marketingContacts.country)
+        .orderBy(sql`COUNT(*) DESC`);
+
+      // Type breakdown
+      const byType = await dbConn
+        .select({
+          contactType: marketingContacts.contactType,
+          count: sql<number>`COUNT(*)`,
+        })
+        .from(marketingContacts)
+        .where(eq(marketingContacts.status, "active"))
+        .groupBy(marketingContacts.contactType)
+        .orderBy(sql`COUNT(*) DESC`);
+
       return {
         leads: leadsResult?.count || 0,
         trial: trialResult?.count || 0,
@@ -3691,6 +3727,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         all: allResult?.count || 0,
         marketing: marketingResult?.count || 0,
         unsubscribed: unsubResult?.count || 0,
+        byCountry: byCountry.map((r) => ({ country: r.country || "Unknown", count: r.count })),
+        byType: byType.map((r) => ({ type: r.contactType || "individual", count: r.count })),
       };
     }),
 
@@ -3730,6 +3768,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           subject: z.string().min(1).max(500),
           templateId: z.string(),
           segment: z.enum(["leads", "trial", "paid", "all", "marketing"]),
+          targetCountry: z.string().optional(),
+          targetType: z.string().optional(),
+          dailyLimit: z.number().min(1).max(500).default(DEFAULT_DAILY_LIMIT),
           mergeFields: z
             .object({
               subject: z.string().optional(),
@@ -3753,6 +3794,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           htmlBody,
           templateId: input.templateId,
           segment: input.segment,
+          targetCountry: normalizeCountry(input.targetCountry) || null,
+          targetType: input.targetType ? normalizeContactType(input.targetType) : null,
+          dailyLimit: input.dailyLimit,
           status: "draft",
           sentByUserId: ctx.user.id,
         });
@@ -3813,6 +3857,27 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (campaign.status === "sending")
           throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign is currently sending" });
 
+        // ── DAILY LIMIT CHECK ──
+        const today = getTodayDateString();
+        const dailyLimit = campaign.dailyLimit || DEFAULT_DAILY_LIMIT;
+        // Check how many we've already sent today for this campaign
+        const [todayLog] = await dbConn
+          .select({ sendCount: campaignSendLog.sendCount })
+          .from(campaignSendLog)
+          .where(and(
+            eq(campaignSendLog.campaignId, input.campaignId),
+            eq(campaignSendLog.sendDate, today),
+          ));
+        const alreadySentToday = todayLog?.sendCount || 0;
+        const remainingToday = Math.max(0, dailyLimit - alreadySentToday);
+
+        if (remainingToday === 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Daily send limit of ${dailyLimit} reached for today. Try again tomorrow.`,
+          });
+        }
+
         // Mark as sending
         await dbConn
           .update(emailCampaigns)
@@ -3827,9 +3892,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const leads = await dbConn.select().from(chatLeads);
           recipients = leads.map((l) => ({ email: l.email, name: l.name }));
         } else if (campaign.segment === "marketing") {
-          // Marketing contacts segment
+          // Marketing contacts segment — apply country/type filters
+          const mcConditions: ReturnType<typeof eq>[] = [eq(marketingContacts.status, "active")];
+          if (campaign.targetCountry) {
+            mcConditions.push(eq(marketingContacts.country, campaign.targetCountry));
+          }
+          if (campaign.targetType) {
+            mcConditions.push(eq(marketingContacts.contactType, campaign.targetType));
+          }
           const contacts = await dbConn.select().from(marketingContacts)
-            .where(eq(marketingContacts.status, "active"));
+            .where(and(...mcConditions));
           recipients = contacts.map((c) => ({ email: c.email, name: c.name, unsubscribeToken: c.unsubscribeToken }));
         } else {
           let condition;
@@ -3866,14 +3938,27 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .where(or(eq(marketingContacts.status, "unsubscribed"), eq(marketingContacts.status, "bounced")));
         for (const b of bouncedContacts) suppressedSet.add(b.email.toLowerCase());
 
-        // Deduplicate by email and remove suppressed
+        // Exclude already-sent recipients for this campaign
+        const alreadySent = await dbConn.select({ email: emailCampaignRecipients.email }).from(emailCampaignRecipients)
+          .where(and(
+            eq(emailCampaignRecipients.campaignId, input.campaignId),
+            eq(emailCampaignRecipients.status, "sent"),
+          ));
+        const alreadySentSet = new Set(alreadySent.map(r => r.email.toLowerCase()));
+
+        // Deduplicate by email, remove suppressed, remove already sent
         const seen = new Set<string>();
         const uniqueRecipients = recipients.filter((r) => {
           if (!r.email || seen.has(r.email.toLowerCase())) return false;
           if (suppressedSet.has(r.email.toLowerCase())) return false;
+          if (alreadySentSet.has(r.email.toLowerCase())) return false;
           seen.add(r.email.toLowerCase());
           return true;
         });
+
+        // ── ENFORCE DAILY LIMIT ── only send up to remainingToday
+        const recipientsToSend = uniqueRecipients.slice(0, remainingToday);
+        const recipientsDeferred = uniqueRecipients.length - recipientsToSend.length;
 
         // Update recipient count
         await dbConn
@@ -3887,7 +3972,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const currentDate = formatDateGB();
         const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
 
-        for (const recipient of uniqueRecipients) {
+        for (const recipient of recipientsToSend) {
           try {
             const firstName = extractFirstName(recipient.name);
             // Build unsubscribe link
@@ -3922,6 +4007,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               sentAt: new Date(),
             });
             sentCount++;
+
+            // Update lastContactedAt on marketing contact
+            await dbConn.update(marketingContacts)
+              .set({ lastContactedAt: new Date() })
+              .where(eq(marketingContacts.email, recipient.email.toLowerCase()))
+              .catch(() => {}); // non-critical
           } catch (err) {
             await dbConn.insert(emailCampaignRecipients).values({
               campaignId: input.campaignId,
@@ -3934,14 +4025,38 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }
         }
 
-        // Mark campaign as sent
+        // ── LOG DAILY SEND COUNT ──
+        if (sentCount > 0) {
+          if (todayLog) {
+            await dbConn.update(campaignSendLog)
+              .set({ sendCount: alreadySentToday + sentCount })
+              .where(and(
+                eq(campaignSendLog.campaignId, input.campaignId),
+                eq(campaignSendLog.sendDate, today),
+              ));
+          } else {
+            await dbConn.insert(campaignSendLog).values({
+              campaignId: input.campaignId,
+              sendDate: today,
+              sendCount: sentCount,
+            });
+          }
+        }
+
+        // Determine final status — paused if there are deferred recipients
+        const finalStatus = recipientsDeferred > 0 ? "paused" : "sent";
+
+        // Mark campaign status
         await dbConn
           .update(emailCampaigns)
           .set({
-            status: "sent",
-            sentCount,
-            failedCount,
-            sentAt: new Date(),
+            status: finalStatus,
+            sentCount: (campaign.sentCount || 0) + sentCount,
+            failedCount: (campaign.failedCount || 0) + failedCount,
+            sentToday: alreadySentToday + sentCount,
+            lastSendDate: today,
+            sentAt: finalStatus === "sent" ? new Date() : campaign.sentAt,
+            pausedAt: finalStatus === "paused" ? new Date() : null,
           })
           .where(eq(emailCampaigns.id, input.campaignId));
 
@@ -3956,10 +4071,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             segment: campaign.segment,
             sentCount,
             failedCount,
+            deferred: recipientsDeferred,
+            dailyLimit,
           }),
         });
 
-        return { sentCount, failedCount, total: uniqueRecipients.length };
+        return { sentCount, failedCount, total: uniqueRecipients.length, deferred: recipientsDeferred, dailyLimit };
       }),
 
     deleteCampaign: adminUnlockedProcedure
@@ -3972,10 +4089,156 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .delete(emailCampaignRecipients)
           .where(eq(emailCampaignRecipients.campaignId, input.campaignId));
         await dbConn
+          .delete(campaignSendLog)
+          .where(eq(campaignSendLog.campaignId, input.campaignId));
+        await dbConn
+          .delete(campaignSequenceRecipients)
+          .where(eq(campaignSequenceRecipients.campaignId, input.campaignId));
+        await dbConn
+          .delete(campaignSequences)
+          .where(eq(campaignSequences.campaignId, input.campaignId));
+        await dbConn
           .delete(emailCampaigns)
           .where(eq(emailCampaigns.id, input.campaignId));
 
         return { success: true };
+      }),
+
+    pauseCampaign: adminUnlockedProcedure
+      .input(z.object({ campaignId: z.number() }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        await dbConn.update(emailCampaigns)
+          .set({ status: "paused", pausedAt: new Date() })
+          .where(eq(emailCampaigns.id, input.campaignId));
+        return { success: true };
+      }),
+
+    resumeCampaign: adminUnlockedProcedure
+      .input(z.object({ campaignId: z.number() }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        const [campaign] = await dbConn.select().from(emailCampaigns)
+          .where(eq(emailCampaigns.id, input.campaignId));
+        if (!campaign) throw new TRPCError({ code: "NOT_FOUND" });
+        if (campaign.status !== "paused") throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign is not paused" });
+        await dbConn.update(emailCampaigns)
+          .set({ status: "draft", pausedAt: null })
+          .where(eq(emailCampaigns.id, input.campaignId));
+        return { success: true };
+      }),
+
+    getDailyLimitStatus: adminUnlockedProcedure
+      .input(z.object({ campaignId: z.number() }))
+      .query(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) return { sentToday: 0, dailyLimit: DEFAULT_DAILY_LIMIT, remaining: DEFAULT_DAILY_LIMIT };
+        const today = getTodayDateString();
+        const [campaign] = await dbConn.select().from(emailCampaigns)
+          .where(eq(emailCampaigns.id, input.campaignId));
+        const dailyLimit = campaign?.dailyLimit || DEFAULT_DAILY_LIMIT;
+        const [log] = await dbConn.select({ sendCount: campaignSendLog.sendCount }).from(campaignSendLog)
+          .where(and(
+            eq(campaignSendLog.campaignId, input.campaignId),
+            eq(campaignSendLog.sendDate, today),
+          ));
+        const sentToday = log?.sendCount || 0;
+        return { sentToday, dailyLimit, remaining: Math.max(0, dailyLimit - sentToday) };
+      }),
+
+    parseImportFile: adminUnlockedProcedure
+      .input(z.object({
+        fileContent: z.string(), // base64 or raw CSV text
+        fileType: z.enum(["csv", "xlsx"]),
+        fileName: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        let rows: Array<Record<string, string>> = [];
+
+        if (input.fileType === "csv") {
+          // Decode base64 if needed or use directly
+          let csvText = input.fileContent;
+          if (!csvText.includes(",") && !csvText.includes("\n")) {
+            // Likely base64 encoded
+            try {
+              csvText = Buffer.from(csvText, "base64").toString("utf-8");
+            } catch { /* use as-is */ }
+          }
+          rows = parseCSV(csvText);
+        } else {
+          // XLSX parsing
+          try {
+            const ExcelJS = await import("exceljs");
+            const workbook = new ExcelJS.Workbook();
+            const buffer = Buffer.from(input.fileContent, "base64");
+            await workbook.xlsx.load(buffer as any);
+            const worksheet = workbook.worksheets[0];
+            if (!worksheet) throw new Error("No worksheet found");
+
+            const headers: string[] = [];
+            const firstRow = worksheet.getRow(1);
+            firstRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+              headers[colNumber - 1] = String(cell.value || `Column ${colNumber}`);
+            });
+
+            worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+              if (rowNumber === 1) return; // skip header
+              const record: Record<string, string> = {};
+              row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                const header = headers[colNumber - 1] || `Column ${colNumber}`;
+                record[header] = String(cell.value || "");
+              });
+              rows.push(record);
+            });
+          } catch (err) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Failed to parse XLSX file: ${err instanceof Error ? err.message : "Unknown error"}`,
+            });
+          }
+        }
+
+        if (rows.length === 0) {
+          return { headers: [], rows: [], mapping: {}, totalRows: 0 };
+        }
+
+        const headers = Object.keys(rows[0]);
+        const mapping = autoMapColumns(headers);
+        // Return preview (first 10 rows)
+        const preview = rows.slice(0, 10);
+
+        return {
+          headers,
+          rows: preview,
+          mapping,
+          totalRows: rows.length,
+          allRows: rows, // for the import step
+        };
+      }),
+
+    addSuppression: adminUnlockedProcedure
+      .input(z.object({ email: z.string().email(), reason: z.string().optional() }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        const email = input.email.toLowerCase();
+        const [existing] = await dbConn.select().from(emailUnsubscribes)
+          .where(eq(emailUnsubscribes.email, email));
+        if (existing) return { success: true, message: "Already suppressed" };
+        await dbConn.insert(emailUnsubscribes).values({
+          email,
+          token: nanoid(32),
+          reason: input.reason || "Manual suppression by admin",
+          source: "admin",
+        });
+        // Also mark marketing contact as unsubscribed if exists
+        await dbConn.update(marketingContacts)
+          .set({ status: "unsubscribed" })
+          .where(eq(marketingContacts.email, email))
+          .catch(() => {});
+        return { success: true, message: "Email added to suppression list" };
       }),
 
     // ──────────────────────────────────────────────────────────
@@ -3986,18 +4249,40 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .input(z.object({
         status: z.enum(["active", "unsubscribed", "bounced", "all"]).default("all"),
         contactType: z.string().optional(),
+        country: z.string().optional(),
         search: z.string().optional(),
+        limit: z.number().min(1).max(500).default(200),
+        offset: z.number().min(0).default(0),
       }).optional())
       .query(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) return [];
-        const statusFilter = input?.status;
-        if (statusFilter && statusFilter !== "all") {
-          return dbConn.select().from(marketingContacts)
-            .where(eq(marketingContacts.status, statusFilter))
-            .orderBy(desc(marketingContacts.createdAt));
+        const conditions: ReturnType<typeof eq>[] = [];
+        if (input?.status && input.status !== "all") {
+          conditions.push(eq(marketingContacts.status, input.status));
         }
-        return dbConn.select().from(marketingContacts).orderBy(desc(marketingContacts.createdAt));
+        if (input?.contactType) {
+          conditions.push(eq(marketingContacts.contactType, input.contactType));
+        }
+        if (input?.country) {
+          conditions.push(eq(marketingContacts.country, input.country));
+        }
+        if (input?.search) {
+          conditions.push(
+            or(
+              sql`${marketingContacts.email} LIKE ${"%" + input.search + "%"}`,
+              sql`${marketingContacts.name} LIKE ${"%" + input.search + "%"}`,
+              sql`${marketingContacts.businessName} LIKE ${"%" + input.search + "%"}`,
+              sql`${marketingContacts.organizationName} LIKE ${"%" + input.search + "%"}`,
+            )! as any,
+          );
+        }
+        const where = conditions.length > 0 ? and(...conditions) : undefined;
+        return dbConn.select().from(marketingContacts)
+          .where(where)
+          .orderBy(desc(marketingContacts.createdAt))
+          .limit(input?.limit ?? 200)
+          .offset(input?.offset ?? 0);
       }),
 
     createMarketingContact: adminUnlockedProcedure
@@ -4005,10 +4290,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         email: z.string().email(),
         name: z.string().optional(),
         businessName: z.string().optional(),
-        contactType: z.enum(["individual", "riding_school", "stable"]).default("individual"),
+        organizationName: z.string().optional(),
+        contactType: z.string().default("individual"),
         source: z.string().default("manual"),
         tags: z.string().optional(), // JSON array string
         region: z.string().optional(),
+        country: z.string().optional(),
+        leadFocus: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
@@ -4027,10 +4315,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           email: input.email.toLowerCase(),
           name: input.name || null,
           businessName: input.businessName || null,
-          contactType: input.contactType,
+          organizationName: input.organizationName || null,
+          contactType: normalizeContactType(input.contactType),
           source: input.source,
           tags: input.tags || null,
           region: input.region || null,
+          country: normalizeCountry(input.country) || null,
+          leadFocus: input.leadFocus || null,
           unsubscribeToken: token,
         });
         return { success: true };
@@ -4042,9 +4333,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           email: z.string().email(),
           name: z.string().optional(),
           businessName: z.string().optional(),
-          contactType: z.enum(["individual", "riding_school", "stable"]).default("individual"),
+          organizationName: z.string().optional(),
+          contactType: z.string().default("individual"),
           tags: z.string().optional(),
           region: z.string().optional(),
+          country: z.string().optional(),
+          leadFocus: z.string().optional(),
         })),
         source: z.string().default("csv_import"),
       }))
@@ -4060,23 +4354,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         let imported = 0;
         let skipped = 0;
+        let invalid = 0;
         for (const c of input.contacts) {
+          if (!isValidEmail(c.email)) { invalid++; continue; }
           const email = c.email.toLowerCase();
           if (suppressedSet.has(email) || existingSet.has(email)) { skipped++; continue; }
           await dbConn.insert(marketingContacts).values({
             email,
             name: c.name || null,
             businessName: c.businessName || null,
-            contactType: c.contactType,
+            organizationName: c.organizationName || null,
+            contactType: normalizeContactType(c.contactType),
             source: input.source,
             tags: c.tags || null,
             region: c.region || null,
+            country: normalizeCountry(c.country) || null,
+            leadFocus: c.leadFocus || null,
             unsubscribeToken: nanoid(32),
           });
           existingSet.add(email); // prevent duplicates within batch
           imported++;
         }
-        return { imported, skipped, total: input.contacts.length };
+        return { imported, skipped, invalid, total: input.contacts.length };
       }),
 
     deleteMarketingContact: adminUnlockedProcedure

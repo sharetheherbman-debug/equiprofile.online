@@ -1272,13 +1272,19 @@ export const emailCampaigns = mysqlTable("emailCampaigns", {
   subject: varchar("subject", { length: 500 }).notNull(),
   htmlBody: text("htmlBody").notNull(),
   templateId: varchar("templateId", { length: 50 }),
-  segment: varchar("segment", { length: 50 }).notNull(), // 'leads','trial','paid','all'
+  segment: varchar("segment", { length: 50 }).notNull(), // 'leads','trial','paid','all','marketing'
   customFilter: text("customFilter"), // JSON filter criteria for custom segments
+  targetCountry: varchar("targetCountry", { length: 100 }), // UK, Ireland, USA, etc.
+  targetType: varchar("targetType", { length: 100 }), // school, stable, etc.
+  dailyLimit: int("dailyLimit").default(50).notNull(),
+  sentToday: int("sentToday").default(0).notNull(),
+  lastSendDate: varchar("lastSendDate", { length: 10 }), // YYYY-MM-DD
   recipientCount: int("recipientCount").default(0).notNull(),
   sentCount: int("sentCount").default(0).notNull(),
   failedCount: int("failedCount").default(0).notNull(),
-  status: varchar("status", { length: 30 }).default("draft").notNull(), // draft, sending, sent, failed
+  status: varchar("status", { length: 30 }).default("draft").notNull(), // draft, sending, sent, paused, failed
   sentAt: timestamp("sentAt"),
+  pausedAt: timestamp("pausedAt"),
   sentByUserId: int("sentByUserId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -1333,14 +1339,18 @@ export const marketingContacts = mysqlTable("marketingContacts", {
   email: varchar("email", { length: 320 }).notNull(),
   name: varchar("name", { length: 200 }),
   businessName: varchar("businessName", { length: 300 }),
-  contactType: varchar("contactType", { length: 50 }).default("individual"), // individual, riding_school, stable
-  source: varchar("source", { length: 100 }).default("manual"), // manual, csv_import, website, referral
+  contactType: varchar("contactType", { length: 50 }).default("individual"), // individual, riding_school, stable, school, college, academy, venue, federation, governance, health_vet, elite_luxury, racing, breeding
+  source: varchar("source", { length: 100 }).default("manual"), // manual, csv_import, xlsx_import, website, referral
   tags: text("tags"), // JSON array of tag strings
   region: varchar("region", { length: 100 }),
+  country: varchar("country", { length: 100 }), // UK, Ireland, USA, etc.
+  leadFocus: varchar("leadFocus", { length: 200 }), // what the lead is interested in
+  organizationName: varchar("organizationName", { length: 300 }), // org name if different from businessName
   status: varchar("status", { length: 30 }).default("active").notNull(), // active, unsubscribed, bounced
   unsubscribeToken: varchar("unsubscribeToken", { length: 64 }).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  lastContactedAt: timestamp("lastContactedAt"),
 });
 
 export type MarketingContact = typeof marketingContacts.$inferSelect;
@@ -1368,7 +1378,8 @@ export const campaignSequences = mysqlTable("campaignSequences", {
   id: int("id").autoincrement().primaryKey(),
   campaignId: int("campaignId").notNull(),
   stepNumber: int("stepNumber").notNull(), // 1,2,3,4
-  delayDays: int("delayDays").notNull(), // days from initial send (0,3,6,10)
+  delayDays: int("delayDays").notNull(), // days from initial send (0,3,7,14)
+  scheduledDate: varchar("scheduledDate", { length: 10 }), // YYYY-MM-DD when this step should send
   subject: varchar("subject", { length: 500 }).notNull(),
   htmlBody: text("htmlBody").notNull(),
   templateId: varchar("templateId", { length: 50 }),
@@ -1394,6 +1405,19 @@ export const campaignSequenceRecipients = mysqlTable("campaignSequenceRecipients
   sentAt: timestamp("sentAt"),
   error: text("error"),
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Campaign send log — tracks daily send counts for rate limiting
+// ─────────────────────────────────────────────────────────────────────────────
+export const campaignSendLog = mysqlTable("campaignSendLog", {
+  id: int("id").autoincrement().primaryKey(),
+  campaignId: int("campaignId").notNull(),
+  sendDate: varchar("sendDate", { length: 10 }).notNull(), // YYYY-MM-DD
+  sendCount: int("sendCount").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CampaignSendLogRow = typeof campaignSendLog.$inferSelect;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Student System (Phase 2) — Virtual Horses, Tasks, Training, Progress, Study Hub, AI Tutor
