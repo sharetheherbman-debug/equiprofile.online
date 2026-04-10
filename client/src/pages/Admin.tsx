@@ -97,6 +97,18 @@ function hasUserFreeAccess(user: { preferences?: string | null }): boolean {
   }
 }
 
+function getUserPlanTier(user: { preferences?: string | null }): "standard" | "stable" | null {
+  if (!user.preferences) return null;
+  try {
+    const prefs = JSON.parse(user.preferences);
+    if (prefs.planTier === "stable" || prefs.bothDashboardsUnlocked) return "stable";
+    if (prefs.planTier === "standard") return "standard";
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function AdminContent() {
   const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
@@ -637,13 +649,30 @@ function AdminContent() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-1">
-                              {getSubscriptionBadge(user.subscriptionStatus)}
-                              {hasUserFreeAccess(user) && (
-                                <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
-                                  Free Access
-                                </Badge>
-                              )}
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-1">
+                                {getSubscriptionBadge(user.subscriptionStatus)}
+                                {hasUserFreeAccess(user) && (
+                                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
+                                    Free Access
+                                  </Badge>
+                                )}
+                              </div>
+                              {(() => {
+                                const tier = getUserPlanTier(user);
+                                if (!tier) return null;
+                                return (
+                                  <Badge
+                                    variant="outline"
+                                    className={tier === "stable"
+                                      ? "text-xs border-violet-400/50 text-violet-700 bg-violet-50 dark:bg-violet-950/30 dark:text-violet-300"
+                                      : "text-xs border-blue-400/50 text-blue-700 bg-blue-50 dark:bg-blue-950/30 dark:text-blue-300"
+                                    }
+                                  >
+                                    {tier === "stable" ? "Stable" : "Standard"}
+                                  </Badge>
+                                );
+                              })()}
                             </div>
                           </TableCell>
                           <TableCell>

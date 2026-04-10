@@ -656,7 +656,7 @@ function DashboardLayoutContent({
                       if (items.length === 0) return null;
                       return (
                         <div key={group.label}>
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1">
+                          <p className="text-xs font-semibold uppercase tracking-wider mb-3 px-1" style={{ color: "#4f5fd6" }}>
                             {group.label}
                           </p>
                           <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">

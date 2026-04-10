@@ -65,6 +65,10 @@ import {
   emailCampaigns,
   emailCampaignRecipients,
   siteAnalytics,
+  marketingContacts,
+  emailUnsubscribes,
+  campaignSequences,
+  campaignSequenceRecipients,
   vaccinations,
   dewormings,
   treatments,
@@ -76,6 +80,8 @@ import {
 import {
   CAMPAIGN_TEMPLATES,
   getTemplateById,
+  getSequenceTemplates,
+  buildSequenceStepHtml,
   applyMergeFields,
 } from "./_core/emailTemplates";
 import { sendEmail, sendStableInviteEmail } from "./_core/email";
@@ -3638,7 +3644,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
     getSegmentCounts: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
-      if (!dbConn) return { leads: 0, trial: 0, paid: 0, all: 0 };
+      if (!dbConn) return { leads: 0, trial: 0, paid: 0, all: 0, marketing: 0, unsubscribed: 0 };
 
       const [leadsResult] = await dbConn
         .select({ count: sql<number>`COUNT(*)` })
@@ -3662,12 +3668,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         .select({ count: sql<number>`COUNT(*)` })
         .from(users)
         .where(eq(users.isActive, true));
+      const [marketingResult] = await dbConn
+        .select({ count: sql<number>`COUNT(*)` })
+        .from(marketingContacts)
+        .where(eq(marketingContacts.status, "active"));
+      const [unsubResult] = await dbConn
+        .select({ count: sql<number>`COUNT(*)` })
+        .from(emailUnsubscribes);
 
       return {
         leads: leadsResult?.count || 0,
         trial: trialResult?.count || 0,
         paid: paidResult?.count || 0,
         all: allResult?.count || 0,
+        marketing: marketingResult?.count || 0,
+        unsubscribed: unsubResult?.count || 0,
       };
     }),
 
@@ -3706,7 +3721,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           name: z.string().min(1).max(200),
           subject: z.string().min(1).max(500),
           templateId: z.string(),
-          segment: z.enum(["leads", "trial", "paid", "all"]),
+          segment: z.enum(["leads", "trial", "paid", "all", "marketing"]),
           mergeFields: z
             .object({
               subject: z.string().optional(),
@@ -3797,12 +3812,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .where(eq(emailCampaigns.id, input.campaignId));
 
         // Build recipient list based on segment
-        type Recipient = { email: string; name: string | null; trialEndsAt?: Date | null };
+        type Recipient = { email: string; name: string | null; trialEndsAt?: Date | null; unsubscribeToken?: string };
         let recipients: Recipient[] = [];
 
         if (campaign.segment === "leads") {
           const leads = await dbConn.select().from(chatLeads);
           recipients = leads.map((l) => ({ email: l.email, name: l.name }));
+        } else if (campaign.segment === "marketing") {
+          // Marketing contacts segment
+          const contacts = await dbConn.select().from(marketingContacts)
+            .where(eq(marketingContacts.status, "active"));
+          recipients = contacts.map((c) => ({ email: c.email, name: c.name, unsubscribeToken: c.unsubscribeToken }));
         } else {
           let condition;
           if (campaign.segment === "trial") {
@@ -3830,10 +3850,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           recipients = userList.filter((u) => u.email) as Recipient[];
         }
 
-        // Deduplicate by email
+        // ── SUPPRESSION CHECK (UK GDPR + PECR compliance) ──
+        const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
+        const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+        // Also exclude bounced marketing contacts
+        const bouncedContacts = await dbConn.select({ email: marketingContacts.email }).from(marketingContacts)
+          .where(or(eq(marketingContacts.status, "unsubscribed"), eq(marketingContacts.status, "bounced")));
+        for (const b of bouncedContacts) suppressedSet.add(b.email.toLowerCase());
+
+        // Deduplicate by email and remove suppressed
         const seen = new Set<string>();
         const uniqueRecipients = recipients.filter((r) => {
           if (!r.email || seen.has(r.email.toLowerCase())) return false;
+          if (suppressedSet.has(r.email.toLowerCase())) return false;
           seen.add(r.email.toLowerCase());
           return true;
         });
@@ -3848,10 +3877,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         let sentCount = 0;
         let failedCount = 0;
         const currentDate = formatDateGB();
+        const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
 
         for (const recipient of uniqueRecipients) {
           try {
             const firstName = extractFirstName(recipient.name);
+            // Build unsubscribe link
+            let unsubToken = recipient.unsubscribeToken || "";
+            if (!unsubToken) {
+              // Look up marketing contact token or generate fallback
+              const [mc] = await dbConn.select().from(marketingContacts)
+                .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
+              unsubToken = mc?.unsubscribeToken || "";
+            }
+            const unsubLink = unsubToken
+              ? `${BASE_URL}/unsubscribe?token=${unsubToken}`
+              : `${BASE_URL}/unsubscribe`;
+
             const html = applyMergeFields(campaign.htmlBody, {
               firstName,
               email: recipient.email,
@@ -3859,6 +3901,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               trialEndDate: recipient.trialEndsAt
                 ? formatDateGB(new Date(recipient.trialEndsAt))
                 : "",
+              unsubscribeLink: unsubLink,
             });
 
             await sendEmail(recipient.email, campaign.subject, html);
@@ -3928,8 +3971,306 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     // ──────────────────────────────────────────────────────────
-    // Internal Site Analytics
+    // Marketing Contacts CRUD
     // ──────────────────────────────────────────────────────────
+
+    getMarketingContacts: adminUnlockedProcedure
+      .input(z.object({
+        status: z.enum(["active", "unsubscribed", "bounced", "all"]).default("all"),
+        contactType: z.string().optional(),
+        search: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) return [];
+        const statusFilter = input?.status;
+        if (statusFilter && statusFilter !== "all") {
+          return dbConn.select().from(marketingContacts)
+            .where(eq(marketingContacts.status, statusFilter))
+            .orderBy(desc(marketingContacts.createdAt));
+        }
+        return dbConn.select().from(marketingContacts).orderBy(desc(marketingContacts.createdAt));
+      }),
+
+    createMarketingContact: adminUnlockedProcedure
+      .input(z.object({
+        email: z.string().email(),
+        name: z.string().optional(),
+        businessName: z.string().optional(),
+        contactType: z.enum(["individual", "riding_school", "stable"]).default("individual"),
+        source: z.string().default("manual"),
+        tags: z.string().optional(), // JSON array string
+        region: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        const token = nanoid(32);
+        // Check if already exists in suppression list
+        const [suppressed] = await dbConn.select().from(emailUnsubscribes)
+          .where(eq(emailUnsubscribes.email, input.email.toLowerCase()));
+        if (suppressed) throw new TRPCError({ code: "BAD_REQUEST", message: "This email is on the suppression list (previously unsubscribed)" });
+        // Check duplicate
+        const [existing] = await dbConn.select().from(marketingContacts)
+          .where(eq(marketingContacts.email, input.email.toLowerCase()));
+        if (existing) throw new TRPCError({ code: "BAD_REQUEST", message: "Contact already exists" });
+
+        await dbConn.insert(marketingContacts).values({
+          email: input.email.toLowerCase(),
+          name: input.name || null,
+          businessName: input.businessName || null,
+          contactType: input.contactType,
+          source: input.source,
+          tags: input.tags || null,
+          region: input.region || null,
+          unsubscribeToken: token,
+        });
+        return { success: true };
+      }),
+
+    importMarketingContacts: adminUnlockedProcedure
+      .input(z.object({
+        contacts: z.array(z.object({
+          email: z.string().email(),
+          name: z.string().optional(),
+          businessName: z.string().optional(),
+          contactType: z.enum(["individual", "riding_school", "stable"]).default("individual"),
+          tags: z.string().optional(),
+          region: z.string().optional(),
+        })),
+        source: z.string().default("csv_import"),
+      }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        // Get suppression list
+        const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
+        const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+        // Get existing contacts
+        const existing = await dbConn.select({ email: marketingContacts.email }).from(marketingContacts);
+        const existingSet = new Set(existing.map(e => e.email.toLowerCase()));
+
+        let imported = 0;
+        let skipped = 0;
+        for (const c of input.contacts) {
+          const email = c.email.toLowerCase();
+          if (suppressedSet.has(email) || existingSet.has(email)) { skipped++; continue; }
+          await dbConn.insert(marketingContacts).values({
+            email,
+            name: c.name || null,
+            businessName: c.businessName || null,
+            contactType: c.contactType,
+            source: input.source,
+            tags: c.tags || null,
+            region: c.region || null,
+            unsubscribeToken: nanoid(32),
+          });
+          existingSet.add(email); // prevent duplicates within batch
+          imported++;
+        }
+        return { imported, skipped, total: input.contacts.length };
+      }),
+
+    deleteMarketingContact: adminUnlockedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        await dbConn.delete(marketingContacts).where(eq(marketingContacts.id, input.id));
+        return { success: true };
+      }),
+
+    // ──────────────────────────────────────────────────────────
+    // Suppression / Unsubscribe management
+    // ──────────────────────────────────────────────────────────
+
+    getUnsubscribes: adminUnlockedProcedure.query(async () => {
+      const dbConn = await getDb();
+      if (!dbConn) return [];
+      return dbConn.select().from(emailUnsubscribes).orderBy(desc(emailUnsubscribes.unsubscribedAt));
+    }),
+
+    // ──────────────────────────────────────────────────────────
+    // Campaign sequences (drip steps)
+    // ──────────────────────────────────────────────────────────
+
+    getCampaignSequences: adminUnlockedProcedure
+      .input(z.object({ campaignId: z.number() }))
+      .query(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) return [];
+        return dbConn.select().from(campaignSequences)
+          .where(eq(campaignSequences.campaignId, input.campaignId))
+          .orderBy(campaignSequences.stepNumber);
+      }),
+
+    addCampaignSequenceStep: adminUnlockedProcedure
+      .input(z.object({
+        campaignId: z.number(),
+        stepNumber: z.number(),
+        delayDays: z.number(),
+        subject: z.string(),
+        htmlBody: z.string(),
+        templateId: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        await dbConn.insert(campaignSequences).values({
+          campaignId: input.campaignId,
+          stepNumber: input.stepNumber,
+          delayDays: input.delayDays,
+          subject: input.subject,
+          htmlBody: input.htmlBody,
+          templateId: input.templateId || null,
+        });
+        return { success: true };
+      }),
+
+    sendSequenceStep: adminUnlockedProcedure
+      .input(z.object({ sequenceId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        const [step] = await dbConn.select().from(campaignSequences).where(eq(campaignSequences.id, input.sequenceId));
+        if (!step) throw new TRPCError({ code: "NOT_FOUND" });
+        if (step.status === "sent") throw new TRPCError({ code: "BAD_REQUEST", message: "Step already sent" });
+
+        // Get original campaign recipients who were successfully sent
+        const recipients = await dbConn.select().from(emailCampaignRecipients)
+          .where(and(
+            eq(emailCampaignRecipients.campaignId, step.campaignId),
+            eq(emailCampaignRecipients.status, "sent"),
+          ));
+
+        // Get suppression list
+        const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
+        const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+
+        // Also check marketing contact status
+        const mcBounced = await dbConn.select({ email: marketingContacts.email }).from(marketingContacts)
+          .where(or(eq(marketingContacts.status, "unsubscribed"), eq(marketingContacts.status, "bounced")));
+        for (const b of mcBounced) suppressedSet.add(b.email.toLowerCase());
+
+        let sentCount = 0;
+        let failedCount = 0;
+        const currentDate = formatDateGB();
+        const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
+
+        for (const recipient of recipients) {
+          if (suppressedSet.has(recipient.email.toLowerCase())) {
+            await dbConn.insert(campaignSequenceRecipients).values({
+              sequenceId: input.sequenceId,
+              campaignId: step.campaignId,
+              email: recipient.email,
+              status: "skipped",
+            });
+            continue;
+          }
+          try {
+            // Build unsubscribe link from marketing contact token
+            const [mc] = await dbConn.select().from(marketingContacts)
+              .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
+            const unsubToken = mc?.unsubscribeToken || nanoid(32);
+            const unsubLink = `${BASE_URL}/unsubscribe?token=${unsubToken}`;
+
+            const html = applyMergeFields(step.htmlBody, {
+              firstName: extractFirstName(recipient.name),
+              email: recipient.email,
+              currentDate,
+              unsubscribeLink: unsubLink,
+            });
+            await sendEmail(recipient.email, step.subject, html);
+            await dbConn.insert(campaignSequenceRecipients).values({
+              sequenceId: input.sequenceId,
+              campaignId: step.campaignId,
+              email: recipient.email,
+              status: "sent",
+              sentAt: new Date(),
+            });
+            sentCount++;
+          } catch (err) {
+            await dbConn.insert(campaignSequenceRecipients).values({
+              sequenceId: input.sequenceId,
+              campaignId: step.campaignId,
+              email: recipient.email,
+              status: "failed",
+              error: err instanceof Error ? err.message : "Unknown error",
+            });
+            failedCount++;
+          }
+        }
+
+        await dbConn.update(campaignSequences)
+          .set({ status: "sent", sentAt: new Date(), sentCount, failedCount })
+          .where(eq(campaignSequences.id, input.sequenceId));
+
+        return { sentCount, failedCount, total: recipients.length };
+      }),
+
+    // ──────────────────────────────────────────────────────────
+    // Pre-built campaign sequence templates
+    // ──────────────────────────────────────────────────────────
+
+    getSequenceTemplates: adminUnlockedProcedure.query(() => {
+      return getSequenceTemplates().map((t) => ({
+        id: t.id,
+        name: t.name,
+        description: t.description,
+        targetAudience: t.targetAudience,
+        stepCount: t.steps.length,
+        steps: t.steps.map((s) => ({
+          stepNumber: s.stepNumber,
+          delayDays: s.delayDays,
+          subject: s.subject,
+          tone: s.tone,
+        })),
+      }));
+    }),
+
+    launchSequenceFromTemplate: adminUnlockedProcedure
+      .input(z.object({
+        templateId: z.string(),
+        segment: z.enum(["leads", "trial", "paid", "all", "marketing"]),
+        campaignName: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        const template = getSequenceTemplates().find((t) => t.id === input.templateId);
+        if (!template) throw new TRPCError({ code: "NOT_FOUND", message: "Sequence template not found" });
+
+        // Create the parent campaign using step 1 as the initial email
+        const step1 = template.steps[0];
+        const step1Html = buildSequenceStepHtml(step1.body);
+        const campaignName = input.campaignName || `${template.name} — Sequence`;
+
+        const result = await dbConn.insert(emailCampaigns).values({
+          name: campaignName,
+          subject: step1.subject,
+          htmlBody: step1Html,
+          templateId: template.id,
+          segment: input.segment,
+          status: "draft",
+        });
+        const campaignId = Number(result[0].insertId);
+
+        // Create sequence steps for steps 2-4
+        for (const step of template.steps.slice(1)) {
+          const stepHtml = buildSequenceStepHtml(step.body);
+          await dbConn.insert(campaignSequences).values({
+            campaignId,
+            stepNumber: step.stepNumber,
+            delayDays: step.delayDays,
+            subject: step.subject,
+            htmlBody: stepHtml,
+            templateId: template.id,
+          });
+        }
+
+        return { campaignId, stepsCreated: template.steps.length - 1 };
+      }),
 
     getAnalytics: adminUnlockedProcedure
       .input(
@@ -7951,6 +8292,75 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const severityOrder = { urgent: 0, warning: 1, info: 2 };
         alerts.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
         return alerts;
+      }),
+  }),
+
+  // ── Marketing (public routes for unsubscribe + lead capture) ────────────
+  marketing: router({
+    unsubscribe: publicProcedure
+      .input(z.object({ token: z.string().min(1) }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        // Look up contact by unsubscribe token
+        const [contact] = await dbConn.select().from(marketingContacts)
+          .where(eq(marketingContacts.unsubscribeToken, input.token));
+
+        if (!contact) {
+          // Token not found — might be invalid or already processed
+          return { success: true, message: "You have been unsubscribed." };
+        }
+
+        // Mark contact as unsubscribed
+        await dbConn.update(marketingContacts)
+          .set({ status: "unsubscribed" })
+          .where(eq(marketingContacts.id, contact.id));
+
+        // Add to global suppression list (prevents re-adding)
+        const [existing] = await dbConn.select().from(emailUnsubscribes)
+          .where(eq(emailUnsubscribes.email, contact.email.toLowerCase()));
+        if (!existing) {
+          await dbConn.insert(emailUnsubscribes).values({
+            email: contact.email.toLowerCase(),
+            token: input.token,
+            reason: "User clicked unsubscribe link",
+            source: "link",
+          });
+        }
+
+        return { success: true, message: "You have been unsubscribed. You will no longer receive marketing emails from EquiProfile." };
+      }),
+
+    captureLead: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        name: z.string().optional(),
+        source: z.string().default("website"),
+      }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        const email = input.email.toLowerCase();
+
+        // Check suppression
+        const [suppressed] = await dbConn.select().from(emailUnsubscribes)
+          .where(eq(emailUnsubscribes.email, email));
+        if (suppressed) return { success: true }; // silently accept, don't add
+
+        // Check existing
+        const [existing] = await dbConn.select().from(marketingContacts)
+          .where(eq(marketingContacts.email, email));
+        if (existing) return { success: true }; // already in system
+
+        await dbConn.insert(marketingContacts).values({
+          email,
+          name: input.name || null,
+          source: input.source,
+          contactType: "individual",
+          unsubscribeToken: nanoid(32),
+        });
+        return { success: true };
       }),
   }),
 });

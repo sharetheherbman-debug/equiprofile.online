@@ -85,65 +85,95 @@ export async function sendEmail(
 }
 
 /**
- * Send welcome email on first signup
+ * Shared branded email wrapper — EquiProfile letterhead
+ * Wraps all transactional email content with a consistent professional layout.
  */
+function brandedEmail(body: string): string {
+  const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
+  const LOGO_URL = `${BASE_URL}/logo.png`;
+  const year = new Date().getFullYear();
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>EquiProfile</title>
+</head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;">
+<tr><td align="center" style="padding:24px 12px;">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+
+    <!-- Letterhead header -->
+    <tr><td style="background:linear-gradient(135deg,#0f2e6b 0%,#4f5fd6 100%);padding:28px 40px;text-align:center;">
+      <img src="${LOGO_URL}" alt="EquiProfile" width="120" style="display:block;margin:0 auto 10px auto;height:auto;max-width:120px;"/>
+      <p style="margin:0;color:#ffffff;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.85;">Professional Equine Management</p>
+    </td></tr>
+
+    <!-- Body content -->
+    <tr><td style="padding:32px 40px 24px;">
+      ${body}
+    </td></tr>
+
+    <!-- Footer -->
+    <tr><td style="padding:20px 40px;border-top:1px solid #e8edf2;background:#f8fafc;text-align:center;">
+      <p style="margin:0 0 6px;font-size:12px;color:#94a3b8;">EquiProfile — Professional Horse Management</p>
+      <p style="margin:0;font-size:12px;color:#94a3b8;">
+        <a href="${BASE_URL}" style="color:#4f5fd6;text-decoration:none;">equiprofile.online</a>
+        &nbsp;·&nbsp;
+        <a href="mailto:support@equiprofile.online" style="color:#4f5fd6;text-decoration:none;">support@equiprofile.online</a>
+      </p>
+      <p style="margin:8px 0 0;font-size:11px;color:#c0c8d4;">© ${year} EquiProfile. All rights reserved.</p>
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
+/**
+ * Branded CTA button HTML helper
+ */
+function ctaBtn(text: string, url: string): string {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px auto;">
+<tr><td style="border-radius:8px;background:linear-gradient(135deg,#4f5fd6,#3b82f6);">
+  <a href="${url}" target="_blank" style="display:inline-block;padding:14px 36px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;">${text}</a>
+</td></tr>
+</table>`;
+}
+
+
 export async function sendWelcomeEmail(user: User): Promise<void> {
   if (!user.email) {
     console.warn("[Email] Cannot send welcome email - user has no email");
     return;
   }
 
+  const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
   const trialDays = user.trialEndsAt
     ? Math.ceil(
         (user.trialEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
       )
     : 7;
 
-  const subject = "Welcome to EquiProfile!";
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #1e40af;">Welcome to EquiProfile, ${user.name || "there"}! 🐴</h1>
-      
-      <p>Thank you for joining EquiProfile, the comprehensive horse management platform!</p>
-      
-      <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h2 style="margin-top: 0; color: #1e40af;">Your ${trialDays}-Day Free Trial</h2>
-        <p>You have <strong>${trialDays} days</strong> to explore all premium features:</p>
-        <ul>
-          <li>📋 Health records and vaccination tracking</li>
-          <li>🏋️ Training session management</li>
-          <li>🍽️ Feeding schedules and nutrition plans</li>
-          <li>📅 Calendar and event reminders</li>
-          <li>☁️ AI-powered weather analysis</li>
-          <li>📄 Secure document storage</li>
-        </ul>
-      </div>
-      
-      <h3>Getting Started:</h3>
-      <ol>
-        <li>Add your first horse profile</li>
-        <li>Log health records and vaccinations</li>
-        <li>Set up feeding schedules</li>
-        <li>Explore the dashboard analytics</li>
-      </ol>
-      
-      <p style="margin-top: 30px;">
-        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/dashboard" 
-           style="background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-          Go to Dashboard
-        </a>
-      </p>
-      
-      <p style="color: #6b7280; margin-top: 30px;">
-        Questions? Reply to this email or contact our support team.
-      </p>
-      
-      <p style="color: #6b7280;">
-        Best regards,<br/>
-        The EquiProfile Team
-      </p>
+  const subject = "Welcome to EquiProfile! 🐴";
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Welcome, ${user.name || "there"}!</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      You're now part of EquiProfile — the professional horse management platform trusted by yards, trainers, and horse owners.
+    </p>
+    <div style="background:#f0f4ff;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #dde3f8;">
+      <p style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1a2340;">Your ${trialDays}-Day Free Trial includes:</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        ${["Health records &amp; vaccination tracking", "Training session management", "Feeding schedules &amp; nutrition plans", "Calendar &amp; event reminders", "AI-powered weather analysis", "Secure document storage"].map(f =>
+          `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+      </table>
     </div>
-  `;
+    ${ctaBtn("Go to Dashboard →", `${BASE_URL}/dashboard`)}
+    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:8px 0 0;">Questions? Simply reply to this email — we're happy to help.</p>
+  `);
 
   await sendEmail(user.email, subject, html);
 }
@@ -160,44 +190,21 @@ export async function sendVerificationEmail(
   const verifyUrl = `${baseUrl}/verify-email?token=${encodeURIComponent(token)}`;
 
   const subject = "Verify your EquiProfile email address";
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <div style="text-align: center; padding: 30px 0 20px;">
-        <h1 style="color: #1e40af; margin: 0;">Verify Your Email</h1>
-      </div>
-
-      <p>Hi ${userName || "there"},</p>
-
-      <p>Thank you for signing up for EquiProfile! Please verify your email address to activate your account and start your free trial.</p>
-
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${verifyUrl}"
-           style="background: #1e40af; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold; font-size: 16px;">
-          Verify Email Address
-        </a>
-      </div>
-
-      <p style="color: #6b7280; font-size: 14px;">
-        If the button doesn't work, copy and paste this link into your browser:
-      </p>
-      <p style="word-break: break-all; color: #1e40af; font-size: 13px;">${verifyUrl}</p>
-
-      <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin: 24px 0; border-left: 4px solid #1e40af;">
-        <p style="margin: 0; color: #374151; font-size: 14px;">
-          <strong>This link expires in 24 hours.</strong> If it expires, you can request a new one from the login page.
-        </p>
-      </div>
-
-      <p style="color: #6b7280; font-size: 13px; margin-top: 30px;">
-        If you didn't create an EquiProfile account, you can safely ignore this email.
-      </p>
-
-      <p style="color: #6b7280;">
-        Best regards,<br/>
-        The EquiProfile Team
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Verify Your Email Address</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      Hi ${userName || "there"}, please verify your email to activate your account and start your free trial.
+    </p>
+    ${ctaBtn("Verify Email Address →", verifyUrl)}
+    <div style="background:#f0f4ff;border-radius:8px;padding:16px 20px;margin:24px 0;border:1px solid #dde3f8;">
+      <p style="margin:0;font-size:14px;color:#374151;">
+        <strong>This link expires in 24 hours.</strong> If it expires, you can request a new one from the login page.
       </p>
     </div>
-  `;
+    <p style="font-size:13px;color:#94a3b8;margin:0 0 8px;">Button not working? Copy and paste this link:</p>
+    <p style="font-size:12px;color:#4f5fd6;word-break:break-all;margin:0 0 16px;">${verifyUrl}</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">Didn't create an account? You can safely ignore this email.</p>
+  `);
 
   await sendEmail(userEmail, subject, html);
 }
@@ -228,58 +235,41 @@ export async function sendTrialReminderEmail(
     urgency = `Your trial ends in ${daysLeft} days`;
   }
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #dc2626;">${urgency}</h1>
-      
-      <p>Hi ${user.name || "there"},</p>
-      
-      ${
-        daysLeft > 0
-          ? `<p>Your EquiProfile free trial will end in <strong>${daysLeft} day${daysLeft === 1 ? "" : "s"}</strong>. 
-             After that, you'll need an active subscription to continue using premium features.</p>`
-          : `<p>Your EquiProfile free trial has ended. To continue using all features, please upgrade to a paid plan.</p>`
-      }
-      
-      <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
-        <p style="margin: 0;"><strong>Don't lose access to:</strong></p>
-        <ul style="margin: 10px 0 0 0;">
-          <li>Your horse profiles and health records</li>
-          <li>Training logs and progress tracking</li>
-          <li>Document storage and reminders</li>
-          <li>Calendar and event management</li>
-        </ul>
-      </div>
-      
-      <h3>Choose Your Plan:</h3>
-      <div style="display: flex; gap: 20px; margin: 20px 0;">
-        <div style="flex: 1; border: 2px solid #e5e7eb; border-radius: 8px; padding: 15px; text-align: center;">
-          <h4 style="margin-top: 0;">Monthly</h4>
-          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">${DEFAULT_PRICING.individual.monthly.display}/mo</p>
-          <p style="font-size: 14px; color: #6b7280;">Billed monthly</p>
-        </div>
-        <div style="flex: 1; border: 2px solid #1e40af; border-radius: 8px; padding: 15px; text-align: center; background: #eff6ff;">
-          <div style="background: #1e40af; color: white; font-size: 12px; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;">
-            SAVE 17%
-          </div>
-          <h4 style="margin-top: 0;">Yearly</h4>
-          <p style="font-size: 24px; font-weight: bold; color: #1e40af;">${DEFAULT_PRICING.individual.yearly.display}/yr</p>
-          <p style="font-size: 14px; color: #6b7280;">Just £${(DEFAULT_PRICING.individual.yearly.amount / 100 / 12).toFixed(2)}/mo</p>
-        </div>
-      </div>
-      
-      <p style="text-align: center; margin-top: 30px;">
-        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing" 
-           style="background: #1e40af; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
-          Upgrade Now
-        </a>
-      </p>
-      
-      <p style="color: #6b7280; margin-top: 30px; font-size: 14px;">
-        Questions about billing? Contact us anytime.
-      </p>
+  const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:22px;color:${daysLeft === 0 ? "#dc2626" : "#1a2340"};font-weight:700;">${urgency}</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">Hi ${user.name || "there"},</p>
+    ${daysLeft > 0
+      ? `<p style="margin:0 0 20px;font-size:15px;color:#374151;">Your free trial ends in <strong>${daysLeft} day${daysLeft === 1 ? "" : "s"}</strong>. Upgrade now to keep access to all your data and features.</p>`
+      : `<p style="margin:0 0 20px;font-size:15px;color:#374151;">Your free trial has ended. Subscribe to restore full access.</p>`}
+    <div style="background:#fff7ed;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #fed7aa;">
+      <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#92400e;">Don't lose access to:</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        ${["Horse profiles &amp; health records", "Training logs &amp; progress tracking", "Document storage &amp; reminders", "Calendar &amp; event management"].map(f =>
+          `<tr><td style="padding:4px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+      </table>
     </div>
-  `;
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;">
+      <tr>
+        <td style="padding:0 8px 0 0;" width="50%">
+          <div style="border:2px solid #e2e8f0;border-radius:8px;padding:16px;text-align:center;">
+            <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#64748b;text-transform:uppercase;">Monthly</p>
+            <p style="margin:0;font-size:22px;font-weight:700;color:#1a2340;">${DEFAULT_PRICING.individual.monthly.display}<span style="font-size:13px;font-weight:400;color:#94a3b8;">/mo</span></p>
+          </div>
+        </td>
+        <td style="padding:0 0 0 8px;" width="50%">
+          <div style="border:2px solid #4f5fd6;border-radius:8px;padding:16px;text-align:center;background:#f0f4ff;">
+            <p style="margin:0 0 4px;font-size:11px;font-weight:700;color:#4f5fd6;text-transform:uppercase;letter-spacing:0.5px;">Save 17%</p>
+            <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#64748b;text-transform:uppercase;">Yearly</p>
+            <p style="margin:0;font-size:22px;font-weight:700;color:#1a2340;">${DEFAULT_PRICING.individual.yearly.display}<span style="font-size:13px;font-weight:400;color:#94a3b8;">/yr</span></p>
+            <p style="margin:4px 0 0;font-size:12px;color:#94a3b8;">Just £${(DEFAULT_PRICING.individual.yearly.amount / 100 / 12).toFixed(2)}/mo</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+    ${ctaBtn("Upgrade Now →", `${BASE_URL}/billing`)}
+    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:8px 0 0;">Questions about billing? Reply to this email.</p>
+  `);
 
   await sendEmail(user.email, subject, html);
 }
@@ -297,55 +287,30 @@ export async function sendPaymentSuccessEmail(
   const amount = plan === "yearly" ? `${DEFAULT_PRICING.individual.yearly.display}/year` : `${DEFAULT_PRICING.individual.monthly.display}/month`;
 
   const subject = "Payment successful - Welcome to EquiProfile Premium! 🎉";
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #10b981;">Payment Successful! 🎉</h1>
-      
-      <p>Hi ${user.name || "there"},</p>
-      
-      <p>Thank you for subscribing to EquiProfile Premium! Your payment has been processed successfully.</p>
-      
-      <div style="background: #f0fdf4; border: 2px solid #10b981; border-radius: 8px; padding: 20px; margin: 20px 0;">
-        <h2 style="margin-top: 0; color: #10b981;">Subscription Details</h2>
-        <p><strong>Plan:</strong> ${planName}</p>
-        <p><strong>Amount:</strong> ${amount}</p>
-        <p><strong>Status:</strong> Active ✅</p>
-        ${
-          user.subscriptionEndsAt
-            ? `<p><strong>Next billing date:</strong> ${user.subscriptionEndsAt.toLocaleDateString()}</p>`
-            : ""
-        }
-      </div>
-      
-      <p>You now have unlimited access to all premium features:</p>
-      <ul>
-        <li>✅ Unlimited horse profiles</li>
-        <li>✅ Complete health record tracking</li>
-        <li>✅ Training session management</li>
-        <li>✅ Document storage (up to 5GB)</li>
-        <li>✅ Advanced analytics and reports</li>
-        <li>✅ Calendar and reminders</li>
-        <li>✅ Priority support</li>
-      </ul>
-      
-      <p style="margin-top: 30px;">
-        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/dashboard" 
-           style="background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-          Go to Dashboard
-        </a>
-      </p>
-      
-      <p style="color: #6b7280; margin-top: 30px; font-size: 14px;">
-        You can manage your subscription, update payment methods, or view invoices anytime from your 
-        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing">billing page</a>.
-      </p>
-      
-      <p style="color: #6b7280;">
-        Thank you for choosing EquiProfile!<br/>
-        The EquiProfile Team
-      </p>
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#059669;font-weight:700;">Payment Successful! 🎉</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      Hi ${user.name || "there"}, thank you for subscribing to EquiProfile Premium!
+    </p>
+    <div style="background:#f0fdf4;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #86efac;">
+      <p style="margin:0 0 10px;font-size:15px;font-weight:600;color:#065f46;">Subscription Details</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        <tr><td style="padding:4px 0;font-size:14px;color:#374151;width:140px;"><strong>Plan:</strong></td><td style="padding:4px 0;font-size:14px;color:#374151;">${planName}</td></tr>
+        <tr><td style="padding:4px 0;font-size:14px;color:#374151;"><strong>Amount:</strong></td><td style="padding:4px 0;font-size:14px;color:#374151;">${amount}</td></tr>
+        <tr><td style="padding:4px 0;font-size:14px;color:#374151;"><strong>Status:</strong></td><td style="padding:4px 0;font-size:14px;color:#059669;font-weight:600;">Active ✅</td></tr>
+        ${user.subscriptionEndsAt ? `<tr><td style="padding:4px 0;font-size:14px;color:#374151;"><strong>Next billing:</strong></td><td style="padding:4px 0;font-size:14px;color:#374151;">${user.subscriptionEndsAt.toLocaleDateString()}</td></tr>` : ""}
+      </table>
     </div>
-  `;
+    <p style="margin:0 0 12px;font-size:14px;color:#374151;">You now have full access to all premium features:</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;">
+      ${["Unlimited horse profiles", "Complete health record tracking", "Training session management", "Document storage (up to 5GB)", "Advanced analytics &amp; reports", "Calendar &amp; reminders", "Priority support"].map(f =>
+        `<tr><td style="padding:4px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+    </table>
+    ${ctaBtn("Go to Dashboard →", `${process.env.BASE_URL || "https://equiprofile.online"}/dashboard`)}
+    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:8px 0 0;">
+      Manage your subscription anytime from your <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing" style="color:#4f5fd6;text-decoration:none;">billing page</a>.
+    </p>
+  `);
 
   await sendEmail(user.email, subject, html);
 }
@@ -366,29 +331,23 @@ export async function sendRenewalReceiptEmail(
       : `${DEFAULT_PRICING.individual.monthly.display}/month`;
 
   const subject = "EquiProfile – Your payment receipt";
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #10b981;">Payment Received ✓</h1>
-
-      <p>Hi ${user.name || "there"},</p>
-
-      <p>We've successfully processed your renewal payment for EquiProfile.</p>
-
-      <div style="background: #f0fdf4; border: 2px solid #10b981; border-radius: 8px; padding: 20px; margin: 20px 0;">
-        <p style="margin: 4px 0;"><strong>Plan:</strong> ${planName}</p>
-        <p style="margin: 4px 0;"><strong>Amount:</strong> ${amount}</p>
-        <p style="margin: 4px 0;"><strong>Date:</strong> ${new Date().toLocaleDateString("en-GB")}</p>
-        <p style="margin: 4px 0;"><strong>Status:</strong> Active ✅</p>
-      </div>
-
-      <p style="color: #6b7280; font-size: 14px;">
-        Manage your subscription anytime from your
-        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing" style="color: #1e40af;">billing page</a>.
-      </p>
-
-      <p style="color: #6b7280;">The EquiProfile Team</p>
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#059669;font-weight:700;">Payment Received ✓</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      Hi ${user.name || "there"}, we've successfully processed your renewal payment.
+    </p>
+    <div style="background:#f0fdf4;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #86efac;">
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        <tr><td style="padding:4px 0;font-size:14px;color:#374151;width:120px;"><strong>Plan:</strong></td><td style="padding:4px 0;font-size:14px;color:#374151;">${planName}</td></tr>
+        <tr><td style="padding:4px 0;font-size:14px;color:#374151;"><strong>Amount:</strong></td><td style="padding:4px 0;font-size:14px;color:#374151;">${amount}</td></tr>
+        <tr><td style="padding:4px 0;font-size:14px;color:#374151;"><strong>Date:</strong></td><td style="padding:4px 0;font-size:14px;color:#374151;">${new Date().toLocaleDateString("en-GB")}</td></tr>
+        <tr><td style="padding:4px 0;font-size:14px;color:#374151;"><strong>Status:</strong></td><td style="padding:4px 0;font-size:14px;color:#059669;font-weight:600;">Active ✅</td></tr>
+      </table>
     </div>
-  `;
+    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:0;">
+      Manage your subscription anytime from your <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing" style="color:#4f5fd6;text-decoration:none;">billing page</a>.
+    </p>
+  `);
 
   await sendEmail(user.email, subject, html);
 }
@@ -402,38 +361,21 @@ export async function sendPaymentFailedEmail(
   if (!user.email) return;
 
   const subject = "⚠️ EquiProfile – Payment failed";
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #dc2626;">Payment Failed</h1>
-
-      <p>Hi ${user.name || "there"},</p>
-
-      <p>We were unable to process your latest payment for EquiProfile.
-      Your account has been marked as <strong>overdue</strong>.</p>
-
-      <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 16px; margin: 20px 0; border-radius: 4px;">
-        <p style="margin: 0;"><strong>What happens next?</strong></p>
-        <ul style="margin: 8px 0 0 0;">
-          <li>We'll try again automatically in a few days</li>
-          <li>You can update your payment method in your billing settings</li>
-          <li>If payment remains outstanding your access may be limited</li>
-        </ul>
-      </div>
-
-      <p style="text-align: center; margin: 30px 0;">
-        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing"
-           style="background: #1e40af; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
-          Update Payment Method
-        </a>
-      </p>
-
-      <p style="color: #6b7280; font-size: 14px;">
-        If you believe this is an error, please contact us.
-      </p>
-
-      <p style="color: #6b7280;">The EquiProfile Team</p>
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#dc2626;font-weight:700;">Payment Failed</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      Hi ${user.name || "there"}, we were unable to process your latest payment and your account has been marked as <strong>overdue</strong>.
+    </p>
+    <div style="background:#fef2f2;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #fca5a5;">
+      <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#991b1b;">What happens next?</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        ${["We'll retry your payment automatically in a few days", "You can update your payment method in billing settings", "If payment remains outstanding, your access may be limited"].map(f =>
+          `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#8226;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+      </table>
     </div>
-  `;
+    ${ctaBtn("Update Payment Method →", `${process.env.BASE_URL || "https://equiprofile.online"}/billing`)}
+    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:8px 0 0;">Think this is a mistake? Reply to this email and we'll help.</p>
+  `);
 
   await sendEmail(user.email, subject, html);
 }
@@ -447,37 +389,21 @@ export async function sendCancellationEmail(
   if (!user.email) return;
 
   const subject = "EquiProfile – Subscription cancelled";
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #6b7280;">Subscription Cancelled</h1>
-
-      <p>Hi ${user.name || "there"},</p>
-
-      <p>Your EquiProfile subscription has been cancelled. We're sorry to see you go.</p>
-
-      <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <p style="margin: 4px 0;"><strong>What happens now:</strong></p>
-        <ul style="margin: 8px 0 0 0;">
-          <li>Your data will be retained for 30 days</li>
-          <li>You can resubscribe at any time to restore full access</li>
-          <li>Your horse profiles and records remain safe</li>
-        </ul>
-      </div>
-
-      <p style="text-align: center; margin: 30px 0;">
-        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/billing"
-           style="background: #1e40af; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
-          Resubscribe
-        </a>
-      </p>
-
-      <p style="color: #6b7280; font-size: 14px;">
-        We'd love to know how we can improve. Reply to this email with any feedback.
-      </p>
-
-      <p style="color: #6b7280;">The EquiProfile Team</p>
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Subscription Cancelled</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      Hi ${user.name || "there"}, your EquiProfile subscription has been cancelled. We're sorry to see you go.
+    </p>
+    <div style="background:#f8fafc;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #e2e8f0;">
+      <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#1a2340;">What happens now:</p>
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        ${["Your data will be retained for 30 days", "You can resubscribe at any time to restore full access", "Your horse profiles and records remain safe"].map(f =>
+          `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#8226;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+      </table>
     </div>
-  `;
+    ${ctaBtn("Resubscribe →", `${process.env.BASE_URL || "https://equiprofile.online"}/billing`)}
+    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:8px 0 0;">We'd love your feedback — reply to this email to let us know how we can improve.</p>
+  `);
 
   await sendEmail(user.email, subject, html);
 }
@@ -493,38 +419,21 @@ export async function sendPasswordResetEmail(
   const resetUrl = `${process.env.BASE_URL || "https://equiprofile.online"}/reset-password?token=${resetToken}`;
 
   const subject = "Reset your EquiProfile password";
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #1e40af;">Password Reset Request</h1>
-      
-      <p>Hi ${name || "there"},</p>
-      
-      <p>We received a request to reset your EquiProfile password. Click the button below to create a new password:</p>
-      
-      <p style="text-align: center; margin: 30px 0;">
-        <a href="${resetUrl}" 
-           style="background: #1e40af; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
-          Reset Password
-        </a>
-      </p>
-      
-      <p style="color: #dc2626; background: #fef2f2; padding: 15px; border-radius: 6px;">
-        ⚠️ This link will expire in <strong>1 hour</strong> for security reasons.
-      </p>
-      
-      <p>If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
-      
-      <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-        If the button doesn't work, copy and paste this link into your browser:<br/>
-        <a href="${resetUrl}" style="color: #1e40af; word-break: break-all;">${resetUrl}</a>
-      </p>
-      
-      <p style="color: #6b7280; margin-top: 30px;">
-        Best regards,<br/>
-        The EquiProfile Team
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Password Reset Request</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      Hi ${name || "there"}, we received a request to reset your EquiProfile password. Click the button below to create a new one.
+    </p>
+    ${ctaBtn("Reset Password →", resetUrl)}
+    <div style="background:#fef2f2;border-radius:8px;padding:16px 20px;margin:24px 0;border:1px solid #fca5a5;">
+      <p style="margin:0;font-size:14px;color:#991b1b;">
+        ⚠️ This link expires in <strong>1 hour</strong> for security reasons.
       </p>
     </div>
-  `;
+    <p style="font-size:13px;color:#94a3b8;margin:0 0 8px;">Button not working? Copy and paste this link:</p>
+    <p style="font-size:12px;color:#4f5fd6;word-break:break-all;margin:0 0 16px;">${resetUrl}</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">Didn't request a reset? You can safely ignore this email — your password won't change.</p>
+  `);
 
   await sendEmail(email, subject, html);
 }

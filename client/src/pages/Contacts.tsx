@@ -37,6 +37,9 @@ import {
   StickyNote,
   Star,
   Download,
+  Eye,
+  Share,
+  Copy,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRealtimeModule } from "@/hooks/useRealtime";
@@ -66,6 +69,7 @@ function ContactsContent() {
     isPrimary: false,
   });
   const [editFormData, setEditFormData] = useState({ ...formData });
+  const [viewingContact, setViewingContact] = useState<(typeof localContacts)[0] | null>(null);
 
   // Real-time updates
   useRealtimeModule("contacts", (action, data) => {
@@ -638,8 +642,17 @@ function ContactsContent() {
                             </a>
                           )}
 
-                          {/* Edit / Delete pushed to the right */}
+                          {/* View / Edit / Delete pushed to the right */}
                           <div className="flex items-center gap-1 ml-auto">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="w-9 h-9 text-primary/70 hover:text-primary"
+                              onClick={() => setViewingContact(contact)}
+                              title="View contact card"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
                             <Button
                               size="icon"
                               variant="ghost"
@@ -669,6 +682,123 @@ function ContactsContent() {
           ))}
         </div>
       )}
+
+      {/* Business Card View Dialog */}
+      <Dialog open={!!viewingContact} onOpenChange={(open) => { if (!open) setViewingContact(null); }}>
+        <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Contact Card</DialogTitle>
+            <DialogDescription className="sr-only">Business card view</DialogDescription>
+          </DialogHeader>
+          {viewingContact && (() => {
+            const c = viewingContact;
+            const initial = c.name.charAt(0).toUpperCase();
+            const avatarColor = (avatarColors as Record<string, string>)[c.contactType] ?? "bg-gray-500";
+            const addressParts = [c.address, c.city, c.postcode, c.country].filter(Boolean);
+            const rawWebsite = c.website?.trim();
+            let websiteUrl: string | null = null;
+            if (rawWebsite) {
+              // String operations here never throw; catch is a no-op safety guard
+              websiteUrl = rawWebsite.startsWith("http") ? rawWebsite : `https://${rawWebsite}`;
+            }
+            const shareText = [
+              c.name,
+              c.company,
+              c.phone && `Tel: ${c.phone}`,
+              c.mobile && `Mobile: ${c.mobile}`,
+              c.email,
+              websiteUrl,
+              addressParts.join(", "),
+            ].filter(Boolean).join("\n");
+            return (
+              <div>
+                {/* Card visual */}
+                <div className="rounded-2xl border border-border bg-gradient-to-br from-primary/5 to-primary/10 p-6 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-16 h-16 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold text-2xl shrink-0`}>
+                      {initial}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h2 className="text-xl font-bold leading-tight">{c.name}</h2>
+                        {c.isPrimary && <Star className="w-4 h-4 text-amber-500 fill-amber-500" />}
+                      </div>
+                      {c.company && <p className="text-sm text-muted-foreground">{c.company}</p>}
+                      <div className="mt-1">{getContactTypeBadge(c.contactType)}</div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-sm">
+                    {c.phone && (
+                      <a href={`tel:${c.phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                        <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <span>{c.phone}</span>
+                      </a>
+                    )}
+                    {c.mobile && (
+                      <a href={`tel:${c.mobile}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                        <Smartphone className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <span>{c.mobile}</span>
+                      </a>
+                    )}
+                    {c.email && (
+                      <a href={`mailto:${c.email}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                        <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <span className="break-all">{c.email}</span>
+                      </a>
+                    )}
+                    {websiteUrl && (
+                      <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                        <Globe className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <span className="break-all">{rawWebsite}</span>
+                      </a>
+                    )}
+                    {addressParts.length > 0 && (
+                      <div className="flex items-start gap-3">
+                        <MapPin className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                        <span>{addressParts.join(", ")}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {c.notes && (
+                    <div className="pt-2 border-t border-border/60">
+                      <p className="text-xs text-muted-foreground italic">{c.notes}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 mt-4">
+                  {typeof navigator.share !== "undefined" && (
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => navigator.share({ title: c.name, text: shareText }).catch(() => {})}
+                    >
+                      <Share className="w-4 h-4 mr-2" />
+                      Share
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      navigator.clipboard.writeText(shareText).then(() => toast.success("Contact details copied"));
+                    }}
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Details
+                  </Button>
+                  <Button variant="outline" onClick={() => { setViewingContact(null); openEditDialog(c); }}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Contact Dialog */}
       <Dialog open={!!editingContact} onOpenChange={(open) => { if (!open) setEditingContact(null); }}>

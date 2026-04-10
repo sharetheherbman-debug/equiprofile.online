@@ -84,6 +84,7 @@ const StableSetup = lazy(() => import("./pages/StableSetup"));
 const StableReports = lazy(() => import("./pages/StableReports"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Competitions = lazy(() => import("./pages/Competitions"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 
 // V2 Frontend Pages — lazy-loaded for code splitting
 const HomeV2 = lazy(() => import("./v2/pages/HomeV2"));
@@ -138,6 +139,7 @@ function Router() {
             <Route path="/forgot-password" component={ForgotPassword} />
             <Route path="/reset-password" component={ResetPassword} />
             <Route path="/verify-email" component={VerifyEmail} />
+            <Route path="/unsubscribe" component={Unsubscribe} />
 
             {/* Onboarding — experience selection for new users */}
             <Route path="/onboarding">

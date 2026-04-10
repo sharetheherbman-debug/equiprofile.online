@@ -1324,3 +1324,73 @@ export const siteAnalytics = mysqlTable("siteAnalytics", {
 
 export type SiteAnalytic = typeof siteAnalytics.$inferSelect;
 export type InsertSiteAnalytic = typeof siteAnalytics.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Marketing contacts – external leads imported via CSV / manual entry
+// ─────────────────────────────────────────────────────────────────────────────
+export const marketingContacts = mysqlTable("marketingContacts", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull(),
+  name: varchar("name", { length: 200 }),
+  businessName: varchar("businessName", { length: 300 }),
+  contactType: varchar("contactType", { length: 50 }).default("individual"), // individual, riding_school, stable
+  source: varchar("source", { length: 100 }).default("manual"), // manual, csv_import, website, referral
+  tags: text("tags"), // JSON array of tag strings
+  region: varchar("region", { length: 100 }),
+  status: varchar("status", { length: 30 }).default("active").notNull(), // active, unsubscribed, bounced
+  unsubscribeToken: varchar("unsubscribeToken", { length: 64 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingContact = typeof marketingContacts.$inferSelect;
+export type InsertMarketingContact = typeof marketingContacts.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Email unsubscribes – global suppression list (UK GDPR / PECR compliant)
+// ─────────────────────────────────────────────────────────────────────────────
+export const emailUnsubscribes = mysqlTable("emailUnsubscribes", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull(),
+  token: varchar("token", { length: 64 }).notNull(),
+  reason: varchar("reason", { length: 200 }),
+  source: varchar("source", { length: 50 }).default("link"), // link, admin, bounce, complaint
+  unsubscribedAt: timestamp("unsubscribedAt").defaultNow().notNull(),
+});
+
+export type EmailUnsubscribe = typeof emailUnsubscribes.$inferSelect;
+export type InsertEmailUnsubscribe = typeof emailUnsubscribes.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Campaign sequences – multi-step drip sequences for campaigns
+// ─────────────────────────────────────────────────────────────────────────────
+export const campaignSequences = mysqlTable("campaignSequences", {
+  id: int("id").autoincrement().primaryKey(),
+  campaignId: int("campaignId").notNull(),
+  stepNumber: int("stepNumber").notNull(), // 1,2,3,4
+  delayDays: int("delayDays").notNull(), // days from initial send (0,3,6,10)
+  subject: varchar("subject", { length: 500 }).notNull(),
+  htmlBody: text("htmlBody").notNull(),
+  templateId: varchar("templateId", { length: 50 }),
+  status: varchar("status", { length: 30 }).default("pending").notNull(), // pending, sent, skipped
+  sentAt: timestamp("sentAt"),
+  sentCount: int("sentCount").default(0).notNull(),
+  failedCount: int("failedCount").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CampaignSequence = typeof campaignSequences.$inferSelect;
+export type InsertCampaignSequence = typeof campaignSequences.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Campaign sequence recipients – tracks per-step delivery
+// ─────────────────────────────────────────────────────────────────────────────
+export const campaignSequenceRecipients = mysqlTable("campaignSequenceRecipients", {
+  id: int("id").autoincrement().primaryKey(),
+  sequenceId: int("sequenceId").notNull(),
+  campaignId: int("campaignId").notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  status: varchar("status", { length: 30 }).default("pending").notNull(), // pending, sent, failed, skipped
+  sentAt: timestamp("sentAt"),
+  error: text("error"),
+});

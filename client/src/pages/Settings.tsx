@@ -24,13 +24,13 @@ import {
   Moon,
   MapPin,
   Loader2,
-  Info,
   Smartphone,
   Download,
   Share,
   HelpCircle,
   RotateCcw,
   Sparkles,
+  Tag,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { trpc } from "@/lib/trpc";
@@ -60,10 +60,6 @@ export default function Settings() {
 
   const adminStatus = trpc.adminUnlock.getStatus.useQuery(undefined, {
     staleTime: 60_000,
-  });
-  const buildInfo = trpc.system.getBuildInfo.useQuery(undefined, {
-    enabled: !!adminStatus.data?.isUnlocked,
-    staleTime: Infinity,
   });
 
   const updateLocation = trpc.weather.updateLocation.useMutation({
@@ -268,12 +264,7 @@ export default function Settings() {
                 <HelpCircle className="w-4 h-4 shrink-0" />
                 <span className="hidden sm:inline">Help</span>
               </TabsTrigger>
-              {adminStatus.data?.isUnlocked && (
-                <TabsTrigger value="system" className="flex items-center gap-1.5 flex-1 min-w-[48px]">
-                  <Info className="w-4 h-4 shrink-0" />
-                  <span className="hidden sm:inline">System</span>
-                </TabsTrigger>
-              )}
+
             </TabsList>
 
             {/* Profile Tab */}
@@ -793,70 +784,50 @@ export default function Settings() {
                       ))}
                     </div>
                   </div>
+
+                  <Separator />
+
+                  {/* Tags Help */}
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold flex items-center gap-2">
+                      <Tag className="w-4 h-4 text-primary" />
+                      Using Tags
+                    </h3>
+                    <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3 text-sm text-muted-foreground">
+                      <p>
+                        <strong className="text-foreground">What are tags?</strong> Tags are
+                        coloured labels you can attach to horses to group and categorise them
+                        however suits your yard.
+                      </p>
+                      <p>
+                        <strong className="text-foreground">Why use them?</strong> Tags make it
+                        easy to filter your horse list at a glance — for example, showing only
+                        horses currently in training, or those owned by a specific client.
+                      </p>
+                      <p>
+                        <strong className="text-foreground">How to use them:</strong>
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 ml-1">
+                        <li>Go to <strong>Tags</strong> in the sidebar to create and manage tags</li>
+                        <li>Open any horse profile and add tags from the horse detail page</li>
+                        <li>On the Horses list, click a tag chip to filter by that tag instantly</li>
+                      </ul>
+                      <p>
+                        <strong className="text-foreground">Examples:</strong>{" "}
+                        <span className="inline-flex flex-wrap gap-1">
+                          {["In Training", "For Sale", "Competition Horse", "Retired", "Client: Smith"].map((t) => (
+                            <span key={t} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20">
+                              <Tag className="w-2.5 h-2.5" />{t}
+                            </span>
+                          ))}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* System Tab — admin only */}
-            {adminStatus.data?.isUnlocked && (
-              <TabsContent value="system">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>System Information</CardTitle>
-                    <CardDescription>
-                      Build fingerprint and deployment details (admin only)
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                          Version
-                        </p>
-                        <p className="font-mono text-sm">
-                          {buildInfo.data?.version ?? "—"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                          Build SHA
-                        </p>
-                        <p className="font-mono text-sm">
-                          {buildInfo.data?.sha ?? "—"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                          Build Time
-                        </p>
-                        <p className="font-mono text-sm">
-                          {buildInfo.data?.buildTime ?? "—"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                          Dashboard
-                        </p>
-                        <p className="font-mono text-sm font-semibold text-primary">
-                          v2
-                        </p>
-                      </div>
-                    </div>
-                    <Separator />
-                    <p className="text-xs text-muted-foreground">
-                      Full build info is also available at{" "}
-                      <a
-                        href="/build.txt"
-                        target="_blank"
-                        className="underline hover:text-foreground"
-                      >
-                        /build.txt
-                      </a>
-                    </p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            )}
           </Tabs>
         </div>
       </PageTransition>

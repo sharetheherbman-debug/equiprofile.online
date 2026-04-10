@@ -36,6 +36,11 @@ import {
   CheckCircle2,
   Fingerprint,
   Loader2,
+  QrCode,
+  Share2,
+  Copy,
+  Check,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
@@ -48,9 +53,34 @@ function EquinePassportContent() {
     feiId: "",
     ueln: "",
   });
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
   const utils = trpc.useUtils();
   const { data: horses } = trpc.horses.list.useQuery();
+
+  // Share links for passport
+  const { data: shareLinks = [], refetch: refetchShareLinks } = trpc.sharing.list.useQuery();
+  const horseId = selectedHorseId ? parseInt(selectedHorseId) : null;
+  const passportLinks = (shareLinks as any[]).filter(
+    (l) => l.linkType === "medical_passport" && l.horseId === horseId && l.isActive,
+  );
+
+  const createShareLinkMutation = trpc.sharing.create.useMutation({
+    onSuccess: () => { refetchShareLinks(); toast.success("Shareable link created"); },
+    onError: () => toast.error("Failed to create link"),
+  });
+  const revokeShareLinkMutation = trpc.sharing.revoke.useMutation({
+    onSuccess: () => { refetchShareLinks(); toast.success("Link revoked"); },
+  });
+
+  const copyShareLink = (token: string) => {
+    const url = `${window.location.origin}/passport/${token}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedToken(token);
+      setTimeout(() => setCopiedToken(null), 2000);
+      toast.success("Link copied to clipboard");
+    });
+  };
 
   // Get health data for selected horse
   const selectedHorse = horses?.find((h) => h.id === parseInt(selectedHorseId));
@@ -402,6 +432,70 @@ function EquinePassportContent() {
         </Card>
       )}
 
+      {/* Share Link Card */}
+      {selectedHorse && (
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Share2 className="w-4 h-4 text-primary" />
+                <CardTitle className="text-base">Shareable Passport Links</CardTitle>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => createShareLinkMutation.mutate({ linkType: "medical_passport", horseId: selectedHorse.id, expiresInDays: 30 })}
+                disabled={createShareLinkMutation.isPending}
+              >
+                <QrCode className="w-4 h-4 mr-1.5" />
+                Generate Link
+              </Button>
+            </div>
+            <CardDescription className="text-xs mt-1">
+              Anyone with the link can view this passport (read-only, expires in 30 days)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            {passportLinks.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-2">No active share links. Generate one above.</p>
+            ) : (
+              <div className="space-y-2">
+                {passportLinks.map((link: any) => {
+                  const url = `${window.location.origin}/passport/${link.token}`;
+                  return (
+                    <div key={link.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50 text-sm">
+                      <code className="flex-1 truncate text-xs text-muted-foreground">{url}</code>
+                      {link.expiresAt && (
+                        <span className="text-xs text-muted-foreground shrink-0">
+                          Exp: {new Date(link.expiresAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}
+                        </span>
+                      )}
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 shrink-0"
+                        onClick={() => copyShareLink(link.token)}
+                        title="Copy link"
+                      >
+                        {copiedToken === link.token ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 shrink-0 text-destructive hover:text-destructive"
+                        onClick={() => revokeShareLinkMutation.mutate({ id: link.id })}
+                        title="Revoke link"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Generated Passport */}
       {selectedHorse && (
         <MedicalPassport
@@ -423,6 +517,7 @@ function EquinePassportContent() {
             feiId: feiId || undefined,
             ueln: ueln || undefined,
           }}
+          shareToken={passportLinks[0]?.token}
           vaccinations={vaccinations}
           dewormings={dewormings}
           healthRecords={recentRecords}

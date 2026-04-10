@@ -166,12 +166,21 @@ export function getRidingAdvice(weather: WeatherData, hourOfDay?: number): Ridin
     temperature < -10 ||
     precipitation > 15
   ) {
+    const reason = isNighttime
+      ? `Reason: darkness severely limits visibility for both horse and rider, significantly increasing the risk of falls and injury.`
+      : windSpeed > 50
+        ? `Reason: extreme wind speed (${windSpeed} km/h) makes it unsafe to control a horse outdoors.`
+        : temperature > 38
+          ? `Reason: temperature is dangerously high (${temperature}°C) — severe heat stress and dehydration risk for horse and rider.`
+          : temperature < -10
+            ? `Reason: extreme cold (${temperature}°C) causes icy ground, frozen muscles, and high injury risk.`
+            : `Reason: heavy rainfall (${precipitation} mm) creates dangerous footing and near-zero visibility.`;
     return {
       suitable: false,
       level: "unsafe",
       message: isNighttime
-        ? "Night-time riding is not recommended — darkness significantly increases risk for both horse and rider. Wait for daylight before riding outdoors."
-        : "Outdoor riding is not safe in these conditions. Stay off the horse or confine all activity to a covered arena. Safety must come first.",
+        ? `Night-time riding is not recommended — wait for daylight before riding outdoors. ${reason}`
+        : `Outdoor riding is not safe in these conditions. Confine all activity to a covered arena or rest your horse. ${reason}`,
       warnings,
     };
   }
@@ -189,7 +198,7 @@ export function getRidingAdvice(weather: WeatherData, hourOfDay?: number): Ridin
       suitable: true,
       level: "excellent",
       message:
-        "Perfect conditions for riding. Clear weather and comfortable temperature — ideal for any outdoor activity.",
+        `Perfect conditions for riding. Reason: temperature is comfortable (${temperature}°C), wind is calm (${windSpeed} km/h), and no rain — ideal for any outdoor activity.`,
       warnings: [],
     };
   }
@@ -203,15 +212,25 @@ export function getRidingAdvice(weather: WeatherData, hourOfDay?: number): Ridin
     isDusk ||
     isDawn
   ) {
+    const reason =
+      precipitation > 5
+        ? `Reason: heavy rain (${precipitation} mm) makes the ground slippery and dangerous.`
+        : isDusk || isDawn
+          ? `Reason: low-light conditions reduce visibility and increase the risk of misjudging terrain.`
+          : windSpeed > 35
+            ? `Reason: strong winds (${windSpeed} km/h) can spook horses and make outdoor control difficult.`
+            : temperature > 32
+              ? `Reason: high temperature (${temperature}°C) increases heat stress and dehydration risk for your horse.`
+              : `Reason: near-freezing temperature (${temperature}°C) risks icy ground and stiff, injury-prone muscles.`;
     return {
       suitable: false,
       level: "poor",
       message:
         precipitation > 5
-          ? "Heavy rain makes outdoor riding inadvisable — wet ground is slippery and dangerous. Stick to indoor work or groundwork in a covered area."
+          ? `Heavy rain makes outdoor riding inadvisable — stick to indoor work or groundwork in a covered area. ${reason}`
           : isDusk || isDawn
-            ? "Low-light conditions make outdoor riding risky. If you must ride, use hi-vis equipment and stick to familiar, safe terrain."
-            : "Outdoor conditions are poor. Keep any sessions short, stay in the arena, and monitor your horse closely throughout.",
+            ? `Low-light conditions make outdoor riding risky. If you must ride, use hi-vis gear and stay on familiar terrain. ${reason}`
+            : `Outdoor conditions are poor today. Keep any sessions short, stay in the arena, and monitor your horse closely. ${reason}`,
       warnings,
     };
   }
@@ -223,23 +242,32 @@ export function getRidingAdvice(weather: WeatherData, hourOfDay?: number): Ridin
     temperature < 5 ||
     precipitation > 2
   ) {
+    const reason =
+      precipitation > 2
+        ? `Reason: rain (${precipitation} mm) makes ground wetter — choose firm footing and keep a steady pace.`
+        : temperature > 28
+          ? `Reason: warm temperature (${temperature}°C) means your horse may tire and dehydrate more quickly — keep sessions shorter and ensure fresh water.`
+          : temperature < 5
+            ? `Reason: cool temperature (${temperature}°C) means muscles take longer to warm up — extend your warm-up and cool-down.`
+            : `Reason: moderate wind (${windSpeed} km/h) may affect your horse's focus — give extra time to settle before asking for precision work.`;
     return {
       suitable: true,
       level: "fair",
       message:
         precipitation > 2
-          ? "It is raining — outdoor riding is possible but use caution. Choose firm ground, keep to a steady pace, and shorten the session if conditions worsen."
-          : "Conditions are workable but not ideal. Take extra warm-up time, keep a close eye on your horse, and be ready to cut the session short.",
+          ? `Riding is possible but use caution in current rain. ${reason}`
+          : `Conditions are workable but not ideal. ${reason}`,
       warnings,
     };
   }
 
   // Good conditions (default)
+  const reason = `Reason: temperature (${temperature}°C) and wind (${windSpeed} km/h) are within comfortable ranges and no precipitation is expected.`;
   return {
     suitable: true,
     level: "good",
     message:
-      "Good conditions for riding. Most outdoor activities are suitable — stay alert to any changes.",
+      `Good conditions for riding. Most outdoor activities are suitable — stay alert to any changes. ${reason}`,
     warnings,
   };
 }
