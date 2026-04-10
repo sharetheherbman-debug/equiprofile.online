@@ -115,7 +115,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { icon: Flame, label: "Streak", value: `${weekSessions > 0 ? weekSessions : 0} days`, color: "#f59e0b" },
+          { icon: Flame, label: "Active Days", value: `${weekSessions > 0 ? weekSessions : 0} this week`, color: "#f59e0b" },
           { icon: ClipboardList, label: "Tasks Today", value: `${completedCount}/${completedCount + pendingCount}`, color: "#6366f1" },
           { icon: TrendingUp, label: "This Week", value: `${weekSessions} sessions`, color: "#10b981" },
           { icon: Trophy, label: "Level", value: avgLevel > 0 ? `Level ${avgLevel}` : "—", color: "#f97316" },
@@ -802,6 +802,7 @@ function ProgressView() {
                   <span className="text-sm text-white font-medium">{formatSkillName(skill.skillArea)}</span>
                   <span className="text-xs text-gray-500">Level {skill.level} · {skill.xp} XP</span>
                 </div>
+                {/* XP bar: 100 XP per level; modulo shows progress toward next level */}
                 <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all"

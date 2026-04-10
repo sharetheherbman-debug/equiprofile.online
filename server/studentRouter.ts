@@ -565,7 +565,9 @@ export const studentRouter = router({
           tier,
           promptTokens: 0,
           completionTokens: 0,
-        }).catch(() => {}); // don't fail on logging failure
+        }).catch((logErr) => {
+          console.error("[AI Tutor] Failed to log error session:", logErr);
+        }); // don't fail on logging failure
 
         return {
           answer: "Sorry, the AI Tutor encountered an error. Please try again in a moment.",
