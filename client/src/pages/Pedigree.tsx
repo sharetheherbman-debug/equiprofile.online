@@ -220,11 +220,12 @@ export default function Pedigree() {
                     <div className="space-y-4">
                       <h3 className="font-semibold text-lg">Parents</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
+                        <div className="space-y-1.5">
                           <Label htmlFor="sireName">Sire (Father)</Label>
                           <Input
                             id="sireName"
                             value={formData.sireName}
+                            placeholder="e.g. Frankel"
                             onChange={(e) =>
                               setFormData({
                                 ...formData,
@@ -233,11 +234,12 @@ export default function Pedigree() {
                             }
                           />
                         </div>
-                        <div>
+                        <div className="space-y-1.5">
                           <Label htmlFor="damName">Dam (Mother)</Label>
                           <Input
                             id="damName"
                             value={formData.damName}
+                            placeholder="e.g. Harbour Watch"
                             onChange={(e) =>
                               setFormData({
                                 ...formData,
@@ -252,11 +254,11 @@ export default function Pedigree() {
                     <div className="space-y-4">
                       <h3 className="font-semibold text-lg">Grandparents</h3>
                       <div className="space-y-2">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           Paternal (Father's side)
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div>
+                          <div className="space-y-1.5">
                             <Label htmlFor="paternalGrandsireName">
                               Paternal Grandsire
                             </Label>
@@ -271,7 +273,7 @@ export default function Pedigree() {
                               }
                             />
                           </div>
-                          <div>
+                          <div className="space-y-1.5">
                             <Label htmlFor="paternalGrandamName">
                               Paternal Granddam
                             </Label>
@@ -289,11 +291,11 @@ export default function Pedigree() {
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           Maternal (Mother's side)
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div>
+                          <div className="space-y-1.5">
                             <Label htmlFor="maternalGrandsireName">
                               Maternal Grandsire
                             </Label>
@@ -308,7 +310,7 @@ export default function Pedigree() {
                               }
                             />
                           </div>
-                          <div>
+                          <div className="space-y-1.5">
                             <Label htmlFor="maternalGrandamName">
                               Maternal Granddam
                             </Label>
@@ -333,11 +335,11 @@ export default function Pedigree() {
                       </h3>
                       <div className="space-y-4">
                         <div>
-                          <p className="text-sm text-gray-600 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             Paternal Grandsire's parents
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
+                            <div className="space-y-1.5">
                               <Label htmlFor="paternalGreatGrandsire1">
                                 Great-Grandsire
                               </Label>
@@ -352,7 +354,7 @@ export default function Pedigree() {
                                 }
                               />
                             </div>
-                            <div>
+                            <div className="space-y-1.5">
                               <Label htmlFor="paternalGreatGranddam1">
                                 Great-Granddam
                               </Label>
@@ -370,11 +372,11 @@ export default function Pedigree() {
                           </div>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             Paternal Granddam's parents
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
+                            <div className="space-y-1.5">
                               <Label htmlFor="paternalGreatGrandsire2">
                                 Great-Grandsire
                               </Label>
@@ -389,7 +391,7 @@ export default function Pedigree() {
                                 }
                               />
                             </div>
-                            <div>
+                            <div className="space-y-1.5">
                               <Label htmlFor="paternalGreatGranddam2">
                                 Great-Granddam
                               </Label>
@@ -407,11 +409,11 @@ export default function Pedigree() {
                           </div>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             Maternal Grandsire's parents
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
+                            <div className="space-y-1.5">
                               <Label htmlFor="maternalGreatGrandsire1">
                                 Great-Grandsire
                               </Label>
@@ -426,7 +428,7 @@ export default function Pedigree() {
                                 }
                               />
                             </div>
-                            <div>
+                            <div className="space-y-1.5">
                               <Label htmlFor="maternalGreatGranddam1">
                                 Great-Granddam
                               </Label>
@@ -444,11 +446,11 @@ export default function Pedigree() {
                           </div>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             Maternal Granddam's parents
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
+                            <div className="space-y-1.5">
                               <Label htmlFor="maternalGreatGrandsire2">
                                 Great-Grandsire
                               </Label>
@@ -463,7 +465,7 @@ export default function Pedigree() {
                                 }
                               />
                             </div>
-                            <div>
+                            <div className="space-y-1.5">
                               <Label htmlFor="maternalGreatGranddam2">
                                 Great-Granddam
                               </Label>
@@ -512,7 +514,7 @@ export default function Pedigree() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Card className="bg-blue-50">
                         <CardContent className="pt-4">
-                          <p className="text-sm text-gray-600">Sire (Father)</p>
+                          <p className="text-sm text-muted-foreground">Sire (Father)</p>
                           <p className="font-semibold">
                             {pedigreeData.sireName || "Not recorded"}
                           </p>
@@ -520,7 +522,7 @@ export default function Pedigree() {
                       </Card>
                       <Card className="bg-pink-50">
                         <CardContent className="pt-4">
-                          <p className="text-sm text-gray-600">Dam (Mother)</p>
+                          <p className="text-sm text-muted-foreground">Dam (Mother)</p>
                           <p className="font-semibold">
                             {pedigreeData.damName || "Not recorded"}
                           </p>
@@ -536,7 +538,7 @@ export default function Pedigree() {
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <Card className="bg-blue-50">
                           <CardContent className="pt-3">
-                            <p className="text-xs text-gray-600">
+                            <p className="text-xs text-muted-foreground">
                               Paternal Grandsire
                             </p>
                             <p className="text-sm font-medium">
@@ -546,7 +548,7 @@ export default function Pedigree() {
                         </Card>
                         <Card className="bg-pink-50">
                           <CardContent className="pt-3">
-                            <p className="text-xs text-gray-600">
+                            <p className="text-xs text-muted-foreground">
                               Paternal Granddam
                             </p>
                             <p className="text-sm font-medium">
@@ -556,7 +558,7 @@ export default function Pedigree() {
                         </Card>
                         <Card className="bg-blue-50">
                           <CardContent className="pt-3">
-                            <p className="text-xs text-gray-600">
+                            <p className="text-xs text-muted-foreground">
                               Maternal Grandsire
                             </p>
                             <p className="text-sm font-medium">
@@ -566,7 +568,7 @@ export default function Pedigree() {
                         </Card>
                         <Card className="bg-pink-50">
                           <CardContent className="pt-3">
-                            <p className="text-xs text-gray-600">
+                            <p className="text-xs text-muted-foreground">
                               Maternal Granddam
                             </p>
                             <p className="text-sm font-medium">
@@ -632,7 +634,7 @@ export default function Pedigree() {
               <Card>
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <GitBranch className="h-12 w-12 text-gray-400 mb-4" />
-                  <p className="text-gray-600">
+                  <p className="text-muted-foreground">
                     No pedigree information recorded
                   </p>
                   <p className="text-sm text-gray-500 mb-4">
@@ -648,7 +650,7 @@ export default function Pedigree() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <GitBranch className="h-12 w-12 text-gray-400 mb-4" />
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Select a horse to view or edit pedigree
               </p>
             </CardContent>

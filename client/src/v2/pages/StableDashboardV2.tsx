@@ -184,13 +184,15 @@ function MetricCard({
   icon: Icon,
   label,
   value,
+  href,
 }: {
   icon: LucideIcon;
   label: string;
   value: number | string;
+  href?: string;
 }) {
-  return (
-    <div className="rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5 transition-shadow duration-200 hover:shadow-md">
+  const card = (
+    <div className={`rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5 transition-all duration-200 hover:shadow-md ${href ? "cursor-pointer hover:border-[#4f5fd6]/40" : ""}`}>
       <div className="flex items-center gap-4">
         <div
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg"
@@ -198,7 +200,7 @@ function MetricCard({
         >
           <Icon className="h-5 w-5" style={{ color: ACCENT }} />
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-[#5c6370] dark:text-[#9ca3b0]">
             {label}
           </p>
@@ -206,9 +208,12 @@ function MetricCard({
             {value}
           </p>
         </div>
+        {href && <ChevronRight className="h-4 w-4 shrink-0 text-[#5c6370]/40" />}
       </div>
     </div>
   );
+  if (href) return <Link href={href}>{card}</Link>;
+  return card;
 }
 
 // ─── Alert Item ──────────────────────────────────────────────────────────────
@@ -495,12 +500,12 @@ function StableDashboardContent() {
               </>
             ) : (
               <>
-                <MetricCard icon={Heart} label="Total Horses" value={horseCount} />
-                <MetricCard icon={Users} label="Active Staff" value={stableMembers?.length ?? "—"} />
-                <MetricCard icon={AlertCircle} label="Health Alerts" value={alertCount} />
-                <MetricCard icon={ClipboardList} label="Tasks Due" value={pendingTasks.length} />
-                <MetricCard icon={Calendar} label="Appointments Today" value={todayAppointments.length} />
-                <MetricCard icon={Dumbbell} label="Training This Week" value={weekTrainingCount} />
+                <MetricCard icon={Heart} label="Total Horses" value={horseCount} href="/horses" />
+                <MetricCard icon={Users} label="Active Staff" value={stableMembers?.length ?? "—"} href="/staff" />
+                <MetricCard icon={AlertCircle} label="Health Alerts" value={alertCount} href="/health" />
+                <MetricCard icon={ClipboardList} label="Tasks Due" value={pendingTasks.length} href="/tasks" />
+                <MetricCard icon={Calendar} label="Appointments Today" value={todayAppointments.length} href="/appointments" />
+                <MetricCard icon={Dumbbell} label="Training This Week" value={weekTrainingCount} href="/training" />
               </>
             )}
           </div>
