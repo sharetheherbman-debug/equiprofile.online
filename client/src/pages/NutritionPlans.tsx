@@ -30,6 +30,7 @@ import {
 import { Badge } from "../components/ui/badge";
 import { Switch } from "../components/ui/switch";
 import { Pencil, Trash2, ClipboardList } from "lucide-react";
+import { PageHeader } from "../components/PageHeader";
 import { toast } from "sonner";
 
 function NutritionPlansContent() {
@@ -172,7 +173,7 @@ function NutritionPlansContent() {
   return (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Nutrition Plans</h1>
+        <PageHeader title="Nutrition Plans" />
         <Dialog
           open={isDialogOpen}
           onOpenChange={(open) => {

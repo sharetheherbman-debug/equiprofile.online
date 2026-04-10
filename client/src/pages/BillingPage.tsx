@@ -25,6 +25,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DEFAULT_PRICING, penceToGBP } from "@shared/pricing";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 const YEARLY_SAVINGS_PERCENTAGE = Math.round(
   ((DEFAULT_PRICING.individual.monthly.amount * 12 -
@@ -189,7 +190,7 @@ export default function BillingPage() {
       <PageTransition>
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Billing & Subscription</h1>
+            <PageHeader title="Billing & Subscription" />
             <p className="text-muted-foreground">
               Manage your subscription and billing information
             </p>

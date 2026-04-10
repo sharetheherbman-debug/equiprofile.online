@@ -40,6 +40,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 const CHAT_SESSION_KEY = "equiprofile_ai_chat_session";
 
@@ -472,7 +473,7 @@ export default function AIChat() {
     <DashboardLayout>
       <div className="container mx-auto p-3 sm:p-6 max-w-6xl">
         <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
-          <h1 className="text-2xl sm:text-3xl font-bold">AI Assistant & Notes</h1>
+          <PageHeader title="AI Assistant & Notes" />
           {adminStatus.isUnlocked && (
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
               <Alert className="w-full sm:w-auto border-green-500/50 bg-green-500/10 py-2">

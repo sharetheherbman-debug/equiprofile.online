@@ -41,16 +41,34 @@ export default function Login() {
   const { isAuthenticated, user } = useAuth();
   const [, setLocation] = useLocation();
 
-  // Redirect if already authenticated — go to the correct dashboard
+  // Honour ?redirect= param so invite links work correctly.
+  // SECURITY: only allow same-origin relative paths (must start with '/' and not '//').
+  const redirectParam =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("redirect")
+      : null;
+  const postLoginUrl = (() => {
+    if (!redirectParam) return null;
+    const decoded = decodeURIComponent(redirectParam);
+    // Reject anything that looks like an absolute URL or protocol-relative URL
+    if (!decoded.startsWith("/") || decoded.startsWith("//")) return null;
+    return decoded;
+  })();
+
+  // Redirect if already authenticated — honour ?redirect= or go to default dashboard
   if (isAuthenticated) {
-    let goToStable = false;
-    try {
-      if (user?.preferences) {
-        const prefs = JSON.parse(user.preferences);
-        goToStable = prefs?.planTier === "stable" || !!prefs?.bothDashboardsUnlocked;
-      }
-    } catch { /* ignore */ }
-    setLocation(goToStable ? "/stable-dashboard" : "/dashboard");
+    if (postLoginUrl) {
+      setLocation(postLoginUrl);
+    } else {
+      let goToStable = false;
+      try {
+        if (user?.preferences) {
+          const prefs = JSON.parse(user.preferences);
+          goToStable = prefs?.planTier === "stable" || !!prefs?.bothDashboardsUnlocked;
+        }
+      } catch { /* ignore */ }
+      setLocation(goToStable ? "/stable-dashboard" : "/dashboard");
+    }
     return null;
   }
 
@@ -105,9 +123,19 @@ export default function Login() {
         return;
       }
 
-      // Redirect to the correct dashboard based on entitlement
-      const goToStable = data.planTier === "stable" || data.bothDashboardsUnlocked === true;
-      window.location.href = goToStable ? "/stable-dashboard" : "/dashboard";
+      // Redirect — honour ?redirect= (e.g. from stable invite link), otherwise go to dashboard
+      if (postLoginUrl) {
+        // Use URL constructor to guarantee same-origin redirect (satisfies static analysis)
+        const safe = new URL(postLoginUrl, window.location.origin);
+        if (safe.origin === window.location.origin) {
+          window.location.href = safe.href;
+        } else {
+          window.location.href = "/dashboard";
+        }
+      } else {
+        const goToStable = data.planTier === "stable" || data.bothDashboardsUnlocked === true;
+        window.location.href = goToStable ? "/stable-dashboard" : "/dashboard";
+      }
     } catch (err) {
       setError("An error occurred. Please try again.");
       setIsLoading(false);

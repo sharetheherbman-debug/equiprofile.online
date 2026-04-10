@@ -30,6 +30,7 @@ import {
 import { Badge } from "../components/ui/badge";
 import { Pencil, Trash2, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "../components/PageHeader";
 
 function NutritionLogsContent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -184,7 +185,7 @@ function NutritionLogsContent() {
   return (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Nutrition Logs</h1>
+        <PageHeader title="Nutrition Logs" />
         <Dialog
           open={isDialogOpen}
           onOpenChange={(open) => {

@@ -140,6 +140,29 @@ export function serveStatic(app: Express) {
     }),
   );
 
+  // Known scanner/exploit probe paths — return 404 immediately so they are
+  // never served the SPA shell (which would return 200 and mask the attack).
+  const PROBE_PATH_PREFIXES = [
+    "/.env",
+    "/.git",
+    "/_profiler",
+    "/actuator",
+    "/admin.php",
+    "/cgi-bin",
+    "/config.php",
+    "/info.php",
+    "/phpmyadmin",
+    "/phpinfo",
+    "/shell",
+    "/solr",
+    "/test.php",
+    "/wp-admin",
+    "/wp-config",
+    "/wp-includes",
+    "/wp-login",
+    "/xmlrpc.php",
+  ];
+
   // SPA fallback - serve index.html for all navigation requests.
   // NOTE: express.static above is configured with index:false so directory
   // requests (e.g. "/") fall through to here.
@@ -150,6 +173,13 @@ export function serveStatic(app: Express) {
       req.originalUrl.startsWith("/trpc")
     ) {
       return next();
+    }
+
+    // Return 404 for known scanner / exploit probe paths so they are never
+    // served the SPA shell (which would respond 200 and mislead security tools).
+    const lowerPath = req.path.toLowerCase();
+    if (PROBE_PATH_PREFIXES.some((p) => lowerPath.startsWith(p))) {
+      return res.status(404).send("Not Found");
     }
 
     // Don't fallback to index.html for asset paths or files with extensions

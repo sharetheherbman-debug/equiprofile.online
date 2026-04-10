@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, XCircle, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/PageHeader";
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 
@@ -327,7 +328,7 @@ export default function QAChecklistPage() {
       <div className="container max-w-3xl py-6 space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">QA Checklist</h1>
+            <PageHeader title="QA Checklist" />
             <p className="text-sm text-muted-foreground mt-0.5">
               Live connectivity audit — verifies all key modules are connected
             </p>

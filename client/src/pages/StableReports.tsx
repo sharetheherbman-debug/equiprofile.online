@@ -33,6 +33,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { loadLogoBase64 } from "@/lib/utils/pdf";
@@ -353,13 +354,10 @@ function StableReportsContent() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-            <BarChart3 className="h-7 w-7" />
-            Stable Reports
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Operational overview across your stable — powered by live data
-          </p>
+          <PageHeader
+            title="Stable Reports"
+            subtitle="Operational overview across your stable — powered by live data"
+          />
         </div>
         <Button
           onClick={handleExportPDF}

@@ -41,6 +41,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 // Predesigned training templates with week 1 program data
 // Note: These templates provide week 1 as a starter. Users can extend
@@ -1417,10 +1418,10 @@ function TrainingTemplatesContent() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-serif">Training Templates</h1>
-          <p className="text-sm text-muted-foreground mt-1 max-w-xl">
-            Create reusable training session templates to quickly log consistent workouts. Templates save your common exercises, durations, and goals — apply them to any horse in seconds.
-          </p>
+          <PageHeader
+            title="Training Templates"
+            subtitle="Create reusable training session templates to quickly log consistent workouts. Templates save your common exercises, durations, and goals — apply them to any horse in seconds."
+          />
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>

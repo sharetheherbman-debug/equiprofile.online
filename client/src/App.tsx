@@ -78,6 +78,7 @@ const FeedCostTracking = lazy(() => import("./pages/FeedCostTracking"));
 const RideTracking = lazy(() => import("./pages/RideTracking"));
 const EquinePassport = lazy(() => import("./pages/EquinePassport"));
 const PassportView = lazy(() => import("./pages/PassportView"));
+const StableInviteAccept = lazy(() => import("./pages/StableInviteAccept"));
 const StableStaff = lazy(() => import("./pages/StableStaff"));
 const StableSetup = lazy(() => import("./pages/StableSetup"));
 const StableReports = lazy(() => import("./pages/StableReports"));
@@ -436,6 +437,9 @@ function Router() {
 
             {/* Public horse passport — accessible without login (QR scan) */}
             <Route path="/passport/:token" component={PassportView} />
+
+            {/* Stable team invite acceptance — handles /stable-invite?token=... */}
+            <Route path="/stable-invite" component={StableInviteAccept} />
 
             {/* 404 */}
             <Route path="/404" component={NotFound} />

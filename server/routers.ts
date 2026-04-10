@@ -4350,6 +4350,110 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             ),
           );
       }),
+
+    getInviteByToken: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+        const invite = await db
+          .select({
+            id: stableInvites.id,
+            stableId: stableInvites.stableId,
+            email: stableInvites.email,
+            role: stableInvites.role,
+            status: stableInvites.status,
+            expiresAt: stableInvites.expiresAt,
+            stableName: stables.name,
+          })
+          .from(stableInvites)
+          .leftJoin(stables, eq(stableInvites.stableId, stables.id))
+          .where(eq(stableInvites.token, input.token))
+          .limit(1);
+
+        if (invite.length === 0) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Invite not found" });
+        }
+
+        const inv = invite[0];
+        if (inv.status !== "pending") {
+          throw new TRPCError({ code: "BAD_REQUEST", message: `Invite already ${inv.status}` });
+        }
+        const now = new Date();
+        if (now > new Date(inv.expiresAt)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invite has expired" });
+        }
+
+        if (!inv.stableName) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Stable not found" });
+        }
+
+        return {
+          stableId: inv.stableId,
+          stableName: inv.stableName,
+          email: inv.email,
+          role: inv.role,
+          expiresAt: inv.expiresAt,
+        };
+      }),
+
+    acceptInvite: protectedProcedure
+      .input(z.object({ token: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+        // Load invite
+        const inviteRows = await db
+          .select()
+          .from(stableInvites)
+          .where(eq(stableInvites.token, input.token))
+          .limit(1);
+
+        if (inviteRows.length === 0) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Invite not found" });
+        }
+
+        const invite = inviteRows[0];
+
+        if (invite.status !== "pending") {
+          throw new TRPCError({ code: "BAD_REQUEST", message: `Invite already ${invite.status}` });
+        }
+        const now = new Date();
+        if (now > new Date(invite.expiresAt)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invite has expired" });
+        }
+
+        // Check already a member
+        const existing = await db
+          .select()
+          .from(stableMembers)
+          .where(
+            and(
+              eq(stableMembers.stableId, invite.stableId),
+              eq(stableMembers.userId, ctx.user.id),
+            ),
+          )
+          .limit(1);
+
+        if (existing.length === 0) {
+          await db.insert(stableMembers).values({
+            stableId: invite.stableId,
+            userId: ctx.user.id,
+            role: invite.role,
+            isActive: true,
+          });
+        }
+
+        // Mark invite accepted
+        await db
+          .update(stableInvites)
+          .set({ status: "accepted", acceptedAt: new Date() })
+          .where(eq(stableInvites.token, input.token));
+
+        return { stableId: invite.stableId };
+      }),
   }),
 
   // Messages

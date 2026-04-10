@@ -22,7 +22,7 @@ This PR implements a complete hidden admin panel system with AI chat-based unloc
 #### 3. Secure Unlock System
 
 - Environment variable password (`ADMIN_UNLOCK_PASSWORD`)
-- Default password: `Ashmor12@`
+- Default password: `YOUR_SECURE_ADMIN_PASSWORD_HERE` (set `ADMIN_UNLOCK_PASSWORD` in `.env`)
 - 30-minute session duration
 - Rate limiting: 5 attempts = 15-minute lockout
 - Activity logging for all attempts
@@ -107,7 +107,7 @@ This PR implements a complete hidden admin panel system with AI chat-based unloc
 ### Password Protection
 
 ```env
-ADMIN_UNLOCK_PASSWORD=Ashmor12@  # Default, change in production
+ADMIN_UNLOCK_PASSWORD=YOUR_SECURE_ADMIN_PASSWORD_HERE  # Change in production
 ```
 
 ### Rate Limiting
@@ -245,7 +245,7 @@ Response: {
 1. Login as admin user
 2. Navigate to `/ai-chat`
 3. Type: `show admin`
-4. Enter password: `Ashmor12@`
+4. Enter password: `<your ADMIN_UNLOCK_PASSWORD from .env>`
 5. Verify: Success message appears
 6. Verify: Admin panel accessible at `/admin`
 7. Verify: Session badge shows in AI chat header

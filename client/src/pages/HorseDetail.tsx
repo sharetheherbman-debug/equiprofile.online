@@ -1,4 +1,5 @@
 import DashboardLayout from "@/components/DashboardLayout";
+import { isV2 } from "@/config/uiVersion";
 import {
   Card,
   CardContent,
@@ -214,6 +215,14 @@ function HorseDetailContent() {
               )}
               {horse.level && <Badge variant="outline">{horse.level}</Badge>}
             </div>
+            {isV2() && (
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <div className="w-4 h-[2px] rounded-full bg-[#4f5fd6]" />
+                <span className="text-[10px] tracking-[0.15em] uppercase text-[#4f5fd6] font-semibold">
+                  EquiProfile
+                </span>
+              </div>
+            )}
             <h1 className="font-serif text-2xl sm:text-3xl font-bold text-foreground leading-tight">
               {horse.name}
             </h1>
