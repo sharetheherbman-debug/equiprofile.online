@@ -21,12 +21,12 @@ ALTER TABLE `emailCampaigns`
   ADD COLUMN `targetType` varchar(100) DEFAULT NULL AFTER `targetCountry`,
   ADD COLUMN `dailyLimit` int DEFAULT 50 AFTER `targetType`,
   ADD COLUMN `sentToday` int DEFAULT 0 AFTER `dailyLimit`,
-  ADD COLUMN `lastSendDate` date DEFAULT NULL AFTER `sentToday`,
+  ADD COLUMN `lastSendDate` varchar(10) DEFAULT NULL AFTER `sentToday`,
   ADD COLUMN `pausedAt` timestamp NULL DEFAULT NULL AFTER `lastSendDate`;
 
 -- Campaign sequences: add scheduledDate for follow-up scheduling
 ALTER TABLE `campaignSequences`
-  ADD COLUMN `scheduledDate` date DEFAULT NULL AFTER `delayDays`;
+  ADD COLUMN `scheduledDate` varchar(10) DEFAULT NULL AFTER `delayDays`;
 
 -- Campaign send log for daily limit tracking
 CREATE TABLE IF NOT EXISTS `campaignSendLog` (
