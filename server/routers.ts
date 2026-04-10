@@ -3883,14 +3883,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           try {
             const firstName = extractFirstName(recipient.name);
             // Build unsubscribe link
-            let unsubToken = (recipient as any).unsubscribeToken || "";
+            let unsubToken = recipient.unsubscribeToken || "";
             if (!unsubToken) {
-              // Look up marketing contact token or generate one
+              // Look up marketing contact token or generate fallback
               const [mc] = await dbConn.select().from(marketingContacts)
                 .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
-              unsubToken = mc?.unsubscribeToken || nanoid(32);
+              unsubToken = mc?.unsubscribeToken || "";
             }
-            const unsubLink = `${BASE_URL}/unsubscribe?token=${unsubToken}`;
+            const unsubLink = unsubToken
+              ? `${BASE_URL}/unsubscribe?token=${unsubToken}`
+              : `${BASE_URL}/unsubscribe`;
 
             const html = applyMergeFields(campaign.htmlBody, {
               firstName,

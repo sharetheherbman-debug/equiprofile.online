@@ -845,7 +845,7 @@ function MarketingContactsSection() {
         email: cols[0],
         name: cols[1] || undefined,
         businessName: cols[2] || undefined,
-        contactType: (cols[3] as "individual" | "riding_school" | "stable") || "individual",
+        contactType: (["individual", "riding_school", "stable"].includes(cols[3]?.toLowerCase()) ? cols[3].toLowerCase() : "individual") as "individual" | "riding_school" | "stable",
         region: cols[4] || undefined,
       });
     }

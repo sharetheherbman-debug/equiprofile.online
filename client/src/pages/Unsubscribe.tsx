@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
@@ -10,6 +10,7 @@ import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 export default function Unsubscribe() {
   const [status, setStatus] = useState<"loading" | "success" | "error" | "no-token">("loading");
   const [message, setMessage] = useState("");
+  const calledRef = useRef(false);
 
   const unsubscribeMutation = trpc.marketing.unsubscribe.useMutation({
     onSuccess: (data) => {
@@ -30,6 +31,8 @@ export default function Unsubscribe() {
       setMessage("No unsubscribe token provided.");
       return;
     }
+    if (calledRef.current) return;
+    calledRef.current = true;
     unsubscribeMutation.mutate({ token });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
