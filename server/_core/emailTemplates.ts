@@ -408,3 +408,285 @@ export function getTemplateById(
 ): CampaignTemplate | undefined {
   return CAMPAIGN_TEMPLATES.find((t) => t.id === templateId);
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CAMPAIGN SEQUENCE TEMPLATES — 3 ready-to-run drip sequences
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface SequenceStep {
+  stepNumber: number;
+  delayDays: number;
+  subject: string;
+  body: string; // plain body content (will be wrapped in wrapEmail)
+  tone: string;
+}
+
+export interface CampaignSequenceTemplate {
+  id: string;
+  name: string;
+  description: string;
+  targetAudience: string;
+  steps: SequenceStep[];
+}
+
+// ── Campaign 1: Individual Horse Owners ──────────────────────────────────────
+
+const campaign1_individualOwners: CampaignSequenceTemplate = {
+  id: "individual-owners",
+  name: "Individual Horse Owners",
+  description: "4-step sequence targeting individual owners. Focus: organisation, reminders, health tracking.",
+  targetAudience: "individual",
+  steps: [
+    {
+      stepNumber: 1,
+      delayDays: 0,
+      subject: "Keep your horse's records in one place",
+      tone: "helpful, personal",
+      body: `Hi {{firstName}},
+
+Managing vaccinations, farrier visits, and health records can be overwhelming — especially when everything is scattered across notebooks, photos, and memory.
+
+EquiProfile puts it all in one place. Track health, set reminders, log training, and share a medical passport — all from your phone.
+
+It's free to try for 7 days, no credit card needed.`,
+    },
+    {
+      stepNumber: 2,
+      delayDays: 3,
+      subject: "Never miss a vaccination or farrier visit again",
+      tone: "problem-focused",
+      body: `Hi {{firstName}},
+
+How do you currently remember when your horse's next vaccination is due? Or the last time the farrier visited?
+
+Most owners rely on memory, paper diaries, or phone notes — and things slip through the cracks.
+
+EquiProfile sends smart reminders before anything is overdue. Vaccinations, dewormings, dental checks, farrier visits — all tracked and prompted automatically.
+
+No more missed appointments.`,
+    },
+    {
+      stepNumber: 3,
+      delayDays: 6,
+      subject: "Your horse deserves a digital health record",
+      tone: "value-focused",
+      body: `Hi {{firstName}},
+
+Imagine having your horse's complete medical history, training log, and passport available instantly — on any device.
+
+When your vet asks "When was the last vaccination?" you'll know in seconds.
+
+EquiProfile gives you:
+• Complete health timeline
+• Medical passport (shareable)
+• Training & performance logs
+• AI-powered weather riding advice
+• Smart reminders
+
+Join hundreds of horse owners who've gone digital.`,
+    },
+    {
+      stepNumber: 4,
+      delayDays: 10,
+      subject: "Your free trial is waiting, {{firstName}}",
+      tone: "follow-up, gentle close",
+      body: `Hi {{firstName}},
+
+Just a quick note — your 7-day free trial of EquiProfile is still available.
+
+No credit card. No obligation. Just a cleaner, smarter way to manage your horse's care.
+
+If it's not for you, no worries at all. But if you've been meaning to get more organised with your horse's records, now's a great time to start.`,
+    },
+  ],
+};
+
+// ── Campaign 2: Riding Schools ───────────────────────────────────────────────
+
+const campaign2_ridingSchools: CampaignSequenceTemplate = {
+  id: "riding-schools",
+  name: "Riding Schools",
+  description: "4-step sequence for riding schools. Focus: scheduling, efficiency, professionalism.",
+  targetAudience: "riding_school",
+  steps: [
+    {
+      stepNumber: 1,
+      delayDays: 0,
+      subject: "Managing multiple horses shouldn't be this hard",
+      tone: "operational benefit",
+      body: `Hi {{firstName}},
+
+Running a riding school means managing multiple horses, clients, schedules, and health records — often across different systems (or just your head).
+
+EquiProfile is built for exactly this. One platform for all your horses: health records, training logs, schedules, staff tasks, and client communication.
+
+See how it works — free for 7 days.`,
+    },
+    {
+      stepNumber: 2,
+      delayDays: 3,
+      subject: "How much time do you spend on admin each week?",
+      tone: "time-saving",
+      body: `Hi {{firstName}},
+
+Between lesson scheduling, horse health tracking, and managing your team — admin can eat up hours every week.
+
+EquiProfile automates the tedious parts:
+• Smart health reminders (no more missed vaccinations)
+• Calendar management for the whole yard
+• Task assignment for staff
+• Exportable reports
+
+Spend less time on paperwork. More time with the horses.`,
+    },
+    {
+      stepNumber: 3,
+      delayDays: 6,
+      subject: "Professional records make a professional school",
+      tone: "professionalism",
+      body: `Hi {{firstName}},
+
+Parents and clients notice when a riding school runs professionally. Clean records, organised schedules, and proactive health management build trust.
+
+EquiProfile gives you that professional edge:
+• Medical passports for every horse
+• Digital health records (instant access for vets)
+• Training progress tracking
+• Client-facing reports
+
+It's the system your school deserves.`,
+    },
+    {
+      stepNumber: 4,
+      delayDays: 10,
+      subject: "Ready to streamline your school?",
+      tone: "follow-up",
+      body: `Hi {{firstName}},
+
+Just checking in — have you had a chance to look at EquiProfile?
+
+We built it specifically for equestrian businesses like yours. It's free to try for 7 days, and there's no credit card needed to get started.
+
+If you have questions, just reply to this email — we're happy to help.`,
+    },
+  ],
+};
+
+// ── Campaign 3: Stables / Professional Yards ─────────────────────────────────
+
+const campaign3_stables: CampaignSequenceTemplate = {
+  id: "stables-yards",
+  name: "Stables & Professional Yards",
+  description: "4-step sequence for livery yards and professional stables. Focus: structured management, team coordination.",
+  targetAudience: "stable",
+  steps: [
+    {
+      stepNumber: 1,
+      delayDays: 0,
+      subject: "Run your yard with the system it deserves",
+      tone: "premium, business-level",
+      body: `Hi {{firstName}},
+
+Managing a professional yard requires precision — across health, training, staffing, scheduling, and client expectations.
+
+EquiProfile's Stable Plan is designed for exactly this. Multi-horse management, team coordination, client portals, and complete health records — all in one platform.
+
+Start your free 7-day trial today.`,
+    },
+    {
+      stepNumber: 2,
+      delayDays: 3,
+      subject: "Your staff, your horses, one system",
+      tone: "team coordination",
+      body: `Hi {{firstName}},
+
+When multiple people manage multiple horses, things get complicated fast. Different spreadsheets, WhatsApp groups, paper lists — information gets lost.
+
+EquiProfile gives your entire team one source of truth:
+• Assign tasks to specific staff members
+• Shared calendar for the whole yard
+• Real-time updates across devices
+• Role-based permissions
+
+Everyone on the same page. Every horse accounted for.`,
+    },
+    {
+      stepNumber: 3,
+      delayDays: 6,
+      subject: "What your clients see matters",
+      tone: "client-facing professionalism",
+      body: `Hi {{firstName}},
+
+Horse owners trust yards that communicate professionally. Digital health records, shareable medical passports, and organised reporting show your clients that their horses are in expert hands.
+
+EquiProfile includes:
+• Shareable medical passports
+• Detailed health & training records
+• Exportable PDF reports
+• AI-powered care recommendations
+
+Give your clients the confidence they expect from a premium yard.`,
+    },
+    {
+      stepNumber: 4,
+      delayDays: 10,
+      subject: "Let's get your yard set up, {{firstName}}",
+      tone: "follow-up, personal",
+      body: `Hi {{firstName}},
+
+We know running a yard is busy work. That's exactly why we built EquiProfile — to make the management side faster, cleaner, and more professional.
+
+Your free trial is still available. No credit card. No commitment. Just a better way to run your yard.
+
+If you'd like a quick walkthrough, just reply — we're happy to help.`,
+    },
+  ],
+};
+
+export const CAMPAIGN_SEQUENCE_TEMPLATES: CampaignSequenceTemplate[] = [
+  campaign1_individualOwners,
+  campaign2_ridingSchools,
+  campaign3_stables,
+];
+
+/**
+ * Generate full HTML for a sequence step body.
+ */
+export function buildSequenceStepHtml(body: string): string {
+  const htmlBody = body
+    .split("\n\n")
+    .map((p) => {
+      const trimmed = p.trim();
+      if (!trimmed) return "";
+      // Handle bullet lines (starting with •)
+      if (trimmed.includes("\n•") || trimmed.startsWith("•")) {
+        const lines = trimmed.split("\n");
+        const items = lines
+          .map((l) => l.trim())
+          .filter((l) => l.startsWith("•"))
+          .map((l) => `<li style="padding:2px 0;font-size:14px;color:#334155;">${l.replace("•", "").trim()}</li>`)
+          .join("");
+        const intro = lines.find((l) => !l.trim().startsWith("•"));
+        return `${intro ? `<p style="margin:0 0 8px;font-size:15px;color:#475569;line-height:1.6;">${intro}</p>` : ""}
+<ul style="margin:0 0 16px;padding-left:20px;">${items}</ul>`;
+      }
+      return `<p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.6;">${trimmed}</p>`;
+    })
+    .join("");
+
+  return wrapEmail(`
+${headerBlock("#0f2e6b")}
+<tr><td style="padding:32px 40px;">
+  ${htmlBody}
+  ${ctaButton("Start Free Trial →", "{{signupLink}}", "#4f5fd6")}
+  <p style="margin:8px 0 0;font-size:12px;color:#94a3b8;text-align:center;">No credit card needed. Cancel anytime.</p>
+</td></tr>
+`);
+}
+
+/**
+ * Return all sequence templates for admin listing.
+ */
+export function getSequenceTemplates(): CampaignSequenceTemplate[] {
+  return CAMPAIGN_SEQUENCE_TEMPLATES;
+}

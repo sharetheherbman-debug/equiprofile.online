@@ -80,6 +80,8 @@ import {
 import {
   CAMPAIGN_TEMPLATES,
   getTemplateById,
+  getSequenceTemplates,
+  buildSequenceStepHtml,
   applyMergeFields,
 } from "./_core/emailTemplates";
 import { sendEmail, sendStableInviteEmail } from "./_core/email";
@@ -3979,12 +3981,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .query(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) return [];
-        const filter = input || {};
-        let query = dbConn.select().from(marketingContacts).orderBy(desc(marketingContacts.createdAt));
-        if (filter.status && filter.status !== "all") {
-          query = query.where(eq(marketingContacts.status, filter.status)) as typeof query;
+        const statusFilter = input?.status;
+        if (statusFilter && statusFilter !== "all") {
+          return dbConn.select().from(marketingContacts)
+            .where(eq(marketingContacts.status, statusFilter))
+            .orderBy(desc(marketingContacts.createdAt));
         }
-        return query;
+        return dbConn.select().from(marketingContacts).orderBy(desc(marketingContacts.createdAt));
       }),
 
     createMarketingContact: adminUnlockedProcedure
@@ -4201,6 +4204,70 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .where(eq(campaignSequences.id, input.sequenceId));
 
         return { sentCount, failedCount, total: recipients.length };
+      }),
+
+    // ──────────────────────────────────────────────────────────
+    // Pre-built campaign sequence templates
+    // ──────────────────────────────────────────────────────────
+
+    getSequenceTemplates: adminUnlockedProcedure.query(() => {
+      return getSequenceTemplates().map((t) => ({
+        id: t.id,
+        name: t.name,
+        description: t.description,
+        targetAudience: t.targetAudience,
+        stepCount: t.steps.length,
+        steps: t.steps.map((s) => ({
+          stepNumber: s.stepNumber,
+          delayDays: s.delayDays,
+          subject: s.subject,
+          tone: s.tone,
+        })),
+      }));
+    }),
+
+    launchSequenceFromTemplate: adminUnlockedProcedure
+      .input(z.object({
+        templateId: z.string(),
+        segment: z.enum(["leads", "trial", "paid", "all", "marketing"]),
+        campaignName: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        const template = getSequenceTemplates().find((t) => t.id === input.templateId);
+        if (!template) throw new TRPCError({ code: "NOT_FOUND", message: "Sequence template not found" });
+
+        // Create the parent campaign using step 1 as the initial email
+        const step1 = template.steps[0];
+        const step1Html = buildSequenceStepHtml(step1.body);
+        const campaignName = input.campaignName || `${template.name} — Sequence`;
+
+        const result = await dbConn.insert(emailCampaigns).values({
+          name: campaignName,
+          subject: step1.subject,
+          htmlBody: step1Html,
+          templateId: template.id,
+          segment: input.segment,
+          status: "draft",
+        });
+        const campaignId = Number(result[0].insertId);
+
+        // Create sequence steps for steps 2-4
+        for (const step of template.steps.slice(1)) {
+          const stepHtml = buildSequenceStepHtml(step.body);
+          await dbConn.insert(campaignSequences).values({
+            campaignId,
+            stepNumber: step.stepNumber,
+            delayDays: step.delayDays,
+            subject: step.subject,
+            htmlBody: stepHtml,
+            templateId: template.id,
+          });
+        }
+
+        return { campaignId, stepsCreated: template.steps.length - 1 };
       }),
 
     getAnalytics: adminUnlockedProcedure

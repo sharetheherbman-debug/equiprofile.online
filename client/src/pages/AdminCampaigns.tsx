@@ -334,6 +334,9 @@ export default function AdminCampaigns() {
         </CardHeader>
       </Card>
 
+      {/* Sequence Templates — Pre-built Drip Campaigns */}
+      <SequenceTemplatesSection />
+
       {/* Campaign History */}
       <Card>
         <CardHeader>
@@ -683,6 +686,95 @@ export default function AdminCampaigns() {
       {/* Marketing Contacts Section */}
       <MarketingContactsSection />
     </div>
+  );
+}
+
+// ─── Sequence Templates Sub-Component ─────────────────────────────────────────
+
+function SequenceTemplatesSection() {
+  const seqTemplates = trpc.admin.getSequenceTemplates.useQuery();
+  const utils = trpc.useUtils();
+  const [launchingId, setLaunchingId] = useState<string | null>(null);
+  const [segment, setSegment] = useState<"marketing" | "leads" | "trial" | "paid" | "all">("marketing");
+  const segments = trpc.admin.getSegmentCounts.useQuery();
+
+  const launchMutation = trpc.admin.launchSequenceFromTemplate.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Campaign created with ${data.stepsCreated} follow-up steps`);
+      setLaunchingId(null);
+      utils.admin.getCampaigns.invalidate();
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          📧 Ready-to-Run Campaign Sequences
+        </CardTitle>
+        <CardDescription>
+          Pre-built 4-step drip sequences. Launch creates a campaign + follow-up steps (Day 1 → 3 → 6 → 10).
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {seqTemplates.isLoading ? (
+          <div className="space-y-2"><Skeleton className="h-20 w-full" /><Skeleton className="h-20 w-full" /></div>
+        ) : (
+          <div className="space-y-4">
+            {seqTemplates.data?.map((tpl) => (
+              <div key={tpl.id} className="border rounded-lg p-4">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm">{tpl.name}</h4>
+                    <p className="text-xs text-muted-foreground mt-1">{tpl.description}</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {tpl.steps.map((s) => (
+                        <Badge key={s.stepNumber} variant="outline" className="text-xs">
+                          Day {s.delayDays}: {s.subject.slice(0, 40)}{s.subject.length > 40 ? "…" : ""}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 items-end">
+                    {launchingId === tpl.id ? (
+                      <div className="flex items-center gap-2">
+                        <Select value={segment} onValueChange={(v) => setSegment(v as typeof segment)}>
+                          <SelectTrigger className="w-40 h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="marketing">Marketing ({segments.data?.marketing || 0})</SelectItem>
+                            <SelectItem value="leads">Chat Leads ({segments.data?.leads || 0})</SelectItem>
+                            <SelectItem value="trial">Trial ({segments.data?.trial || 0})</SelectItem>
+                            <SelectItem value="paid">Paid ({segments.data?.paid || 0})</SelectItem>
+                            <SelectItem value="all">All ({segments.data?.all || 0})</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => launchMutation.mutate({ templateId: tpl.id, segment })}
+                          disabled={launchMutation.isPending}
+                        >
+                          {launchMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : "Create"}
+                        </Button>
+                        <Button variant="ghost" size="sm" className="text-xs" onClick={() => setLaunchingId(null)}>
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button variant="outline" size="sm" className="text-xs" onClick={() => setLaunchingId(tpl.id)}>
+                        <Plus className="w-3 h-3 mr-1" />
+                        Launch Sequence
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
