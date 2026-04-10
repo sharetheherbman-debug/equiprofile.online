@@ -166,7 +166,7 @@ export default function HomeV2() {
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-white/50" />
-                <span>14-day free trial</span>
+                <span>7-day free trial</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-white/50" />
@@ -473,7 +473,7 @@ export default function HomeV2() {
             </h2>
             <p className="text-base md:text-lg text-white/80 mb-8 leading-relaxed font-sans">
               Join equestrians who trust EquiProfile to care for their horses.
-              Start your free 14-day trial—no credit card required.
+              Start your free 7-day trial—no credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -497,7 +497,7 @@ export default function HomeV2() {
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4" />
-                <span>14-day trial</span>
+                <span>7-day trial</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4" />
