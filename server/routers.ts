@@ -3789,15 +3789,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const htmlBody = tpl.getHtml();
 
         const result = await dbConn.insert(emailCampaigns).values({
-          name: input.name,
-          subject: input.subject,
+          name: input.name.slice(0, 200),
+          subject: input.subject.slice(0, 500),
           htmlBody,
-          templateId: input.templateId,
+          templateId: input.templateId.slice(0, 50),
           segment: input.segment,
+          customFilter: null,
           targetCountry: normalizeCountry(input.targetCountry) || null,
           targetType: input.targetType ? normalizeContactType(input.targetType) : null,
           dailyLimit: input.dailyLimit,
+          sentToday: 0,
+          lastSendDate: null,
+          recipientCount: 0,
+          sentCount: 0,
+          failedCount: 0,
           status: "draft",
+          sentAt: null,
+          pausedAt: null,
           sentByUserId: ctx.user.id,
         });
 
@@ -4541,7 +4549,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         segment: z.enum(["leads", "trial", "paid", "all", "marketing"]),
         campaignName: z.string().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
@@ -4554,12 +4562,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const campaignName = input.campaignName || `${template.name} — Sequence`;
 
         const result = await dbConn.insert(emailCampaigns).values({
-          name: campaignName,
-          subject: step1.subject,
+          name: campaignName.slice(0, 200),
+          subject: step1.subject.slice(0, 500),
           htmlBody: step1Html,
-          templateId: template.id,
+          templateId: template.id.slice(0, 50),
           segment: input.segment,
+          customFilter: null,
+          targetCountry: null,
+          targetType: null,
+          dailyLimit: DEFAULT_DAILY_LIMIT,
+          sentToday: 0,
+          lastSendDate: null,
+          recipientCount: 0,
+          sentCount: 0,
+          failedCount: 0,
           status: "draft",
+          sentAt: null,
+          pausedAt: null,
+          sentByUserId: ctx.user.id,
         });
         const campaignId = Number(result[0].insertId);
 

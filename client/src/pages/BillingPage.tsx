@@ -21,6 +21,7 @@ import {
   Sparkles,
   Crown,
   Building2,
+  GraduationCap,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DEFAULT_PRICING, penceToGBP } from "@shared/pricing";
@@ -148,6 +149,8 @@ export default function BillingPage() {
         (subscriptionStatus.plan as string) === "stable_monthly" ||
         (subscriptionStatus.plan as string) === "stable_yearly"
       );
+    if (plan === "student")
+      return (subscriptionStatus.plan as string) === "student";
     return false;
   };
 
@@ -183,6 +186,26 @@ export default function BillingPage() {
     "Advanced analytics",
     "Priority email support",
     "WhatsApp support",
+  ];
+
+  const studentFeatures: readonly string[] = [
+    "1 virtual or assigned horse",
+    "Daily care task tracking",
+    "Training log & progress",
+    "Study hub access",
+    "AI tutor support",
+    "Achievement badges",
+    "Progress reports",
+  ];
+
+  const freeFeatures: readonly string[] = pricing?.trial?.features ?? [
+    "7-day free trial",
+    "1 horse only",
+    "ALL features enabled",
+    "Basic health records",
+    "Training session logging",
+    "Secure storage",
+    "Email support",
   ];
 
   return (
@@ -335,8 +358,119 @@ export default function BillingPage() {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6 mb-8 max-w-3xl mx-auto">
-                {/* Starter Plan */}
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 max-w-6xl mx-auto">
+                {/* Free Trial */}
+                <Card className={`border-2 flex flex-col ${isCurrentPlan("trial") ? "border-primary" : "border-muted"}`}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center">
+                        <Sparkles className="w-4 h-4 text-white" />
+                      </div>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        Free Trial
+                        {isCurrentPlan("trial") && (
+                          <Badge variant="secondary" className="text-xs">
+                            Current
+                          </Badge>
+                        )}
+                      </CardTitle>
+                    </div>
+                    <CardDescription>
+                      Try all features with 1 horse
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col flex-1">
+                    <div className="mb-5">
+                      <div className="text-3xl font-bold">Free</div>
+                      <div className="text-muted-foreground text-sm">
+                        for 7 days
+                      </div>
+                    </div>
+                    <ul className="space-y-2 mb-6 flex-1">
+                      {freeFeatures.map((f) => (
+                        <li key={f} className="flex items-start gap-2">
+                          <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm">{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    {isCurrentPlan("trial") ? (
+                      <Button variant="secondary" className="w-full mt-auto" disabled>
+                        <Check className="w-4 h-4 mr-2" />
+                        Current Plan
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        className="w-full mt-auto"
+                        disabled
+                      >
+                        Trial Only
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Student Plan */}
+                <Card className={`border-2 flex flex-col ${isCurrentPlan("student") ? "border-primary" : "border-muted"}`}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center">
+                        <GraduationCap className="w-4 h-4 text-white" />
+                      </div>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        Student
+                        {isCurrentPlan("student") && (
+                          <Badge variant="secondary" className="text-xs">
+                            Current
+                          </Badge>
+                        )}
+                      </CardTitle>
+                    </div>
+                    <CardDescription>
+                      For equestrian learners
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col flex-1">
+                    <div className="mb-5">
+                      <div className="text-3xl font-bold">
+                        £{billingPeriod === "monthly" ? "5.00" : "50.00"}
+                      </div>
+                      <div className="text-muted-foreground text-sm">
+                        per {billingPeriod === "monthly" ? "month" : "year"}
+                        {billingPeriod === "yearly" && (
+                          <span className="ml-2 text-xs text-green-600">
+                            (£4.17/mo)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <ul className="space-y-2 mb-6 flex-1">
+                      {studentFeatures.map((f) => (
+                        <li key={f} className="flex items-start gap-2">
+                          <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm">{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    {isCurrentPlan("student") ? (
+                      <Button variant="secondary" className="w-full mt-auto" disabled>
+                        <Check className="w-4 h-4 mr-2" />
+                        Current Plan
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        className="w-full mt-auto"
+                        onClick={() => window.location.href = "/students"}
+                      >
+                        Learn More
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Pro Plan */}
                 <Card className="border-2 border-primary relative flex flex-col">
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <Badge className="bg-primary text-primary-foreground px-3">
@@ -349,10 +483,10 @@ export default function BillingPage() {
                         <Crown className="w-4 h-4 text-white" />
                       </div>
                       <CardTitle className="text-lg flex items-center gap-2">
-                        {pricing?.pro?.name ?? "Starter"}
+                        {pricing?.pro?.name ?? "Pro"}
                         {isCurrentPlan("pro") && (
                           <Badge variant="secondary" className="text-xs">
-                            Current Plan
+                            Current
                           </Badge>
                         )}
                       </CardTitle>
@@ -409,7 +543,7 @@ export default function BillingPage() {
                             Processing...
                           </>
                         ) : (
-                          "Choose Starter"
+                          "Choose Pro"
                         )}
                       </Button>
                     )}
@@ -429,7 +563,7 @@ export default function BillingPage() {
                         {pricing?.stable?.name ?? "Stable"}
                         {isCurrentPlan("stable") && (
                           <Badge variant="secondary" className="text-xs">
-                            Current Plan
+                            Current
                           </Badge>
                         )}
                       </CardTitle>

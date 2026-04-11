@@ -470,17 +470,18 @@ export default function HomeV2() {
         >
           <div className="max-w-5xl mx-auto px-4">
             <div className="text-center mb-12">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-4">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#4f5fd6]/10 dark:bg-[#4f5fd6]/15 text-[#4f5fd6] dark:text-[#8b9cf7] text-sm font-medium mb-4">
                 <GraduationCap className="w-4 h-4" />
-                New: For Students
+                Equestrian Education
               </span>
               <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-[#1a1d24] dark:text-white tracking-tight">
-                Now Supporting{" "}
-                <span className="text-[#4f5fd6]">Students & Schools</span>
+                Built for the Next Generation of{" "}
+                <span className="text-[#4f5fd6]">Horsemen &amp; Horsewomen</span>
               </h2>
               <p className="text-lg text-[#5a5e6b] dark:text-white/60 max-w-2xl mx-auto font-sans">
-                A dedicated learning dashboard for equestrian students. Manage a
-                virtual or real horse, track progress, and build real care skills.
+                EquiProfile for Students gives every learner a professional-grade
+                dashboard — the same tools working yards rely on, adapted for education.
+                From £5/month.
               </p>
             </div>
 
@@ -488,21 +489,21 @@ export default function HomeV2() {
               {[
                 {
                   icon: Sparkles,
-                  title: "Virtual & Real Horse",
+                  title: "Your Own Horse to Manage",
                   description:
-                    "Start with a simulated horse or work with a real one assigned by your school. Learn at your own pace.",
+                    "Start with a virtual horse to practise care routines safely, or manage a real horse assigned by your school. Build genuine responsibility from day one.",
                 },
                 {
                   icon: BookOpen,
                   title: "Study Hub & AI Tutor",
                   description:
-                    "Access learning materials, quizzes, and intelligent help with equine topics — all in one place.",
+                    "Access structured learning materials aligned to BHS and Pony Club syllabi. Get instant, knowledgeable answers from an AI tutor whenever you need them.",
                 },
                 {
                   icon: Trophy,
-                  title: "Progress & Achievements",
+                  title: "Portfolios & Progress Reports",
                   description:
-                    "Track your learning journey, earn badges, and generate reports for parents, trainers, and schools.",
+                    "Log every lesson, task, and care session. Earn achievement badges, build a verifiable portfolio, and generate reports for parents, trainers, and assessors.",
                 },
               ].map((item, i) => {
                 const ItemIcon = item.icon;
@@ -511,8 +512,8 @@ export default function HomeV2() {
                     key={i}
                     className="rounded-xl border border-[#e2e4ea] dark:border-white/10 bg-[#f7f8fa] dark:bg-[#1a1d24] p-7 hover:border-[#4f5fd6]/30 dark:hover:border-[#4f5fd6]/40 transition-colors duration-200"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 flex items-center justify-center mb-5">
-                      <ItemIcon className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                    <div className="w-12 h-12 rounded-xl bg-[#4f5fd6]/10 dark:bg-[#4f5fd6]/15 flex items-center justify-center mb-5">
+                      <ItemIcon className="w-6 h-6 text-[#4f5fd6] dark:text-[#8b9cf7]" />
                     </div>
                     <h3 className="text-lg font-semibold mb-2 text-[#1a1d24] dark:text-white font-sans">
                       {item.title}
@@ -530,7 +531,7 @@ export default function HomeV2() {
                 href="/students"
                 className="inline-flex items-center gap-2 text-base px-7 py-3 bg-[#4f5fd6] hover:bg-[#4554c4] text-white font-medium rounded-lg transition-colors duration-200 shadow-sm"
               >
-                Learn More About Student Plans
+                Explore the Student Programme
                 <ChevronRight className="w-5 h-5" />
               </Link>
             </div>

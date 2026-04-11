@@ -17,15 +17,18 @@ function extractPlanInfo(preferences: string | null | undefined): {
   planTier: string | null;
   freeAccess: boolean;
   bothDashboardsUnlocked: boolean;
+  needsOnboarding: boolean;
 } {
-  const emptyPlanInfo = { planTier: null, freeAccess: false, bothDashboardsUnlocked: false } as const;
+  const emptyPlanInfo = { planTier: null, freeAccess: false, bothDashboardsUnlocked: false, needsOnboarding: true } as const;
   if (!preferences) return emptyPlanInfo;
   try {
     const prefs = JSON.parse(preferences);
+    const choseExperience = !!prefs?.activationChecklist?.choseExperience;
     return {
       planTier: prefs?.planTier ?? null,
       freeAccess: !!prefs?.freeAccess,
       bothDashboardsUnlocked: !!prefs?.bothDashboardsUnlocked,
+      needsOnboarding: !choseExperience,
     };
   } catch {
     return emptyPlanInfo;
@@ -317,13 +320,14 @@ router.post("/login", loginLimiter, async (req, res) => {
       domain: ENV.cookieDomain,
     });
 
-    const { planTier, freeAccess, bothDashboardsUnlocked } = extractPlanInfo(user.preferences);
+    const { planTier, freeAccess, bothDashboardsUnlocked, needsOnboarding } = extractPlanInfo(user.preferences);
 
     res.json({
       success: true,
       planTier,
       freeAccess,
       bothDashboardsUnlocked,
+      needsOnboarding,
       user: {
         id: user.id,
         name: user.name,
@@ -498,7 +502,7 @@ router.post("/verify-email", async (req, res) => {
         console.error("[Auth] Failed to send welcome email:", err),
       );
 
-    const { planTier, freeAccess, bothDashboardsUnlocked } = extractPlanInfo(user.preferences);
+    const { planTier, freeAccess, bothDashboardsUnlocked, needsOnboarding } = extractPlanInfo(user.preferences);
 
     res.json({
       success: true,
@@ -506,6 +510,7 @@ router.post("/verify-email", async (req, res) => {
       planTier,
       freeAccess,
       bothDashboardsUnlocked,
+      needsOnboarding,
       user: {
         id: user.id,
         name: user.name,

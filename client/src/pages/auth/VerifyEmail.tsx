@@ -58,8 +58,16 @@ export default function VerifyEmail() {
           setMessage(data.message || "Email verified successfully!");
           // Auto-redirect after 3 seconds
           setTimeout(() => {
-            const goToStable = data.planTier === "stable" || data.bothDashboardsUnlocked === true;
-            window.location.href = goToStable ? "/stable-dashboard" : "/dashboard";
+            // If user hasn't chosen an experience, send to onboarding
+            if (data.needsOnboarding) {
+              window.location.href = "/onboarding";
+            } else if (data.planTier === "student") {
+              window.location.href = "/student-dashboard";
+            } else if (data.planTier === "stable" || data.bothDashboardsUnlocked === true) {
+              window.location.href = "/stable-dashboard";
+            } else {
+              window.location.href = "/dashboard";
+            }
           }, 3000);
         } else {
           const isExpired = data.error?.toLowerCase().includes("expired");
@@ -141,13 +149,13 @@ export default function VerifyEmail() {
                 {status === "success" && (
                   <div className="text-center space-y-3">
                     <p className="text-sm text-gray-400">
-                      Redirecting you to your dashboard...
+                      Redirecting you to get started...
                     </p>
                     <Link
-                      href="/dashboard"
+                      href="/onboarding"
                       className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
                     >
-                      Go to Dashboard
+                      Choose Your Experience
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>

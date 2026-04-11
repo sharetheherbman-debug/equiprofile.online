@@ -12,89 +12,81 @@ import {
   Users,
   Brain,
   ClipboardList,
-  Calendar,
   TrendingUp,
-  Shield,
-  ChevronRight,
   CheckCircle2,
   School,
   Sparkles,
   Star,
+  ArrowRight,
+  Mail,
 } from "lucide-react";
 
 const studentFeatures = [
   {
     icon: Heart,
-    title: "My Horse — Virtual or Real",
+    title: "Your Own Horse to Manage",
     description:
-      "Every student gets a horse to manage. Learn with a virtual horse, or track a real horse assigned by your school or stable. Build real care skills from day one.",
+      "Every student is paired with a horse — virtual or real. Record feeds, log health observations, manage turnout schedules, and develop the instincts that only come from genuine daily responsibility.",
     color: "from-rose-500 to-pink-500",
   },
   {
     icon: ClipboardList,
-    title: "Daily Care Tasks",
+    title: "Structured Daily Routines",
     description:
-      "Follow structured daily routines — feeding, grooming, health checks, and turnout. Build discipline and confidence through hands-on responsibility.",
+      "Follow professional yard routines covering mucking out, grooming, tack checks, and health inspections. Build the discipline and attention to detail that top yards expect.",
     color: "from-amber-500 to-orange-500",
   },
   {
     icon: BookOpen,
-    title: "Study Hub & Learning Resources",
+    title: "Equine Study Hub",
     description:
-      "Access educational materials, quizzes, and study guides covering equine anatomy, nutrition, first aid, and stable management theory.",
+      "Dive into guided learning covering anatomy, nutrition, common ailments, first aid, and stable management — structured around real BHS and Pony Club syllabi to complement your studies.",
     color: "from-blue-500 to-indigo-500",
   },
   {
     icon: TrendingUp,
-    title: "Training Logs & Progress",
+    title: "Training & Progress Tracking",
     description:
-      "Record riding lessons, track skill development, and see your progress over time. Trainers and parents can follow along with detailed summaries.",
+      "Log every flatwork session, jumping lesson, and lunge workout. Track your riding hours, monitor skill development over time, and share detailed summaries with trainers and parents.",
     color: "from-green-500 to-emerald-500",
   },
   {
     icon: Brain,
-    title: "AI Tutor Support",
+    title: "AI-Powered Learning Support",
     description:
-      "Get intelligent help with equine topics. Ask questions, get explanations, and deepen your understanding with AI-powered learning assistance.",
+      "Ask questions about equine care and get clear, knowledgeable answers instantly. From understanding lameness signs to calculating feed ratios — your AI tutor is always available.",
     color: "from-violet-500 to-purple-500",
   },
   {
     icon: Trophy,
-    title: "Achievements & Reports",
+    title: "Achievements & Portfolios",
     description:
-      "Earn badges for milestones, track completed tasks, and generate progress reports. Perfect for portfolios, assessments, and goal-setting.",
+      "Earn recognition for milestones — first solo health check, 100 logged care tasks, consistent training streaks. Build a verifiable portfolio for assessments, interviews, and qualifications.",
     color: "from-cyan-500 to-teal-500",
   },
 ];
 
 const schoolBenefits = [
   {
-    title: "Structured Curriculum Support",
+    title: "Curriculum-Aligned Learning",
     description:
-      "Align student activities with your teaching syllabus. Track progress against learning objectives.",
+      "Map student activities directly to your syllabus — BHS stages, Pony Club badges, NVQ modules, or your own bespoke programme. Every task contributes to measurable learning outcomes.",
   },
   {
-    title: "Multi-Student Management",
+    title: "Cohort & Horse Management",
     description:
-      "Oversee all students from a single dashboard. Assign horses, set tasks, and monitor engagement.",
+      "Assign horses to students, organise groups by level or class, set differentiated tasks, and monitor who's engaged — all from a single instructor dashboard.",
   },
   {
-    title: "Progress Reporting",
+    title: "Automated Progress Reports",
     description:
-      "Generate progress reports for students, parents, and accreditation bodies with real data.",
+      "Generate detailed, data-driven reports for parents, inspectors, and accreditation bodies. Evidence student progress with real activity logs, not just instructor notes.",
   },
   {
-    title: "Volume Pricing",
+    title: "School Pricing on Request",
     description:
-      "Affordable pricing that scales. The more students you enrol, the more you save — up to 20% off.",
+      "We offer tailored pricing for riding schools, colleges, and training centres. Contact us to discuss a plan that works for your student numbers and budget.",
   },
-];
-
-const volumePricing = [
-  { range: "1–19 students", discount: "Standard pricing", price: "£5/student/month" },
-  { range: "20+ students", discount: "10% discount", price: "£4.50/student/month" },
-  { range: "50+ students", discount: "15% discount", price: "£4.25/student/month" },
-  { range: "100+ students", discount: "20% discount", price: "£4/student/month" },
 ];
 
 export default function Students() {
@@ -102,8 +94,8 @@ export default function Students() {
     <MarketingLayout>
       <PageBanner
         title="For Students"
-        subtitle="Learn, train, and grow with real equine management tools"
-        imageSrc="/images/hero/image4.jpg"
+        subtitle="Professional equine management tools built for the next generation of horsemen and horsewomen"
+        imageSrc="/images/hero/image6.jpg"
         imagePosition="center"
       />
 
@@ -119,19 +111,21 @@ export default function Students() {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4f5fd6]/15 border border-[#4f5fd6]/30 mb-6">
               <GraduationCap className="w-5 h-5 text-[#8b9cf7]" />
               <span className="text-sm font-medium text-[#8b9cf7]">
-                Student Programme
+                Student Programme — £5/month
               </span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-serif text-white mb-6 tracking-tight">
-              The Modern Way to{" "}
+              Where Serious Equestrian{" "}
               <span className="bg-gradient-to-r from-[#8b9cf7] to-cyan-400 bg-clip-text text-transparent">
-                Learn Horse Care
+                Learning Begins
               </span>
             </h2>
             <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
-              EquiProfile for Students gives learners a dedicated dashboard with
-              real tools — manage a virtual horse or a real one, track progress,
-              complete daily tasks, and build the skills that matter.
+              EquiProfile gives every student their own professional-grade
+              dashboard — the same tools used by working yards, adapted for
+              learners. Manage a horse, track your training, study equine
+              theory, and build a portfolio that proves your knowledge is more
+              than classroom deep.
             </p>
           </motion.div>
         </section>
@@ -149,19 +143,20 @@ export default function Students() {
                 <Sparkles className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">
-                Your Virtual Horse
+                Start with a Virtual Horse
               </h3>
               <p className="text-gray-400 leading-relaxed mb-4">
-                Start learning with a simulated horse. Practice care routines,
-                feeding schedules, and health monitoring in a safe environment
-                — perfect for beginners building confidence before working
-                with real animals.
+                No yard access? No problem. Begin with a realistic simulated
+                horse that responds to your care decisions. Practice feeding
+                plans, spot early health concerns, and develop professional
+                routines — all before setting foot in a stable. Ideal for
+                building confidence and core knowledge from anywhere.
               </p>
               <ul className="space-y-2">
                 {[
-                  "Realistic care simulation",
-                  "Safe learning environment",
-                  "Build core skills first",
+                  "Realistic daily care simulation",
+                  "Learn at your own pace, risk-free",
+                  "Master fundamentals before the real thing",
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
                     <CheckCircle2 className="w-4 h-4 text-violet-400 shrink-0" />
@@ -176,18 +171,20 @@ export default function Students() {
                 <Heart className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">
-                Your Assigned Horse
+                Work with a Real Horse
               </h3>
               <p className="text-gray-400 leading-relaxed mb-4">
-                For students at riding schools and stables — work with a real
-                horse assigned by your instructor. Log actual care activities,
-                track real training sessions, and build genuine experience.
+                At a riding school or training yard? Your instructor assigns
+                you a real horse to manage through EquiProfile. Log every
+                feed, record health checks after each session, and track
+                genuine training progress — building the kind of verifiable
+                experience that qualifications and employers look for.
               </p>
               <ul className="space-y-2">
                 {[
-                  "Real horse, real responsibility",
-                  "Assigned by school or trainer",
-                  "Genuine care experience",
+                  "Hands-on care with real accountability",
+                  "Instructor-assigned and supervised",
+                  "Build a verified experience portfolio",
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -208,14 +205,15 @@ export default function Students() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4 tracking-tight">
-              Everything Students{" "}
+              Tools That Develop{" "}
               <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                Need to Succeed
+                Real Horsemen
               </span>
             </h2>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              A dedicated learning environment built specifically for equestrian
-              students, from beginners to advanced riders
+              Not a watered-down demo — a professional management platform
+              designed to teach through doing, from first-time handlers to
+              competition-level riders
             </p>
           </motion.div>
 
@@ -254,32 +252,36 @@ export default function Students() {
           >
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4 tracking-tight">
-                Built for{" "}
+                Designed for the{" "}
                 <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                  Everyone in Education
+                  Whole Equestrian Journey
                 </span>
               </h2>
+              <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+                Whether you're mucking out for the first time or preparing for
+                professional qualifications — EquiProfile meets you where you are
+              </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
               {[
                 {
                   icon: GraduationCap,
-                  title: "Students",
+                  title: "Students & Young Riders",
                   description:
-                    "Learn horse care with real tools. Track your progress, complete tasks, and build skills whether you're a complete beginner or working towards qualifications.",
+                    "Own your learning. Log daily care, track riding hours, study equine theory, and build a portfolio that shows what you can actually do — not just what you've been told. From Pony Club to BHS Stage exams, EquiProfile keeps you organised and motivated.",
                 },
                 {
                   icon: School,
-                  title: "Schools & Academies",
+                  title: "Riding Schools & Colleges",
                   description:
-                    "Manage student cohorts, assign horses, set structured tasks, and generate progress reports. Integrate EquiProfile into your teaching programme.",
+                    "Give every student a structured, measurable learning path without adding admin burden. Assign horses, set care tasks that align to your syllabus, and generate progress evidence your inspectors and parents will value.",
                 },
                 {
                   icon: Users,
                   title: "Parents & Trainers",
                   description:
-                    "Stay informed about student progress. View achievements, training summaries, and care logs. Support learning with clear visibility.",
+                    "See exactly what your child or student is learning — not vague updates, but real data. Care logs, training records, achievement milestones, and progress summaries that give you confidence their time in the saddle and on the yard is time well spent.",
                 },
               ].map((item, index) => (
                 <div
@@ -301,7 +303,7 @@ export default function Students() {
           </motion.div>
         </section>
 
-        {/* Schools Section */}
+        {/* For Schools Section */}
         <section className="container mx-auto px-4 py-16">
           <motion.div
             className="max-w-5xl mx-auto"
@@ -315,23 +317,32 @@ export default function Students() {
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#4f5fd6]/15 border border-[#4f5fd6]/30 mb-5">
                     <School className="w-4 h-4 text-[#8b9cf7]" />
                     <span className="text-xs font-medium text-[#8b9cf7] uppercase tracking-wider">
-                      For Schools
+                      For Riding Schools
                     </span>
                   </div>
                   <h2 className="text-2xl md:text-3xl font-bold font-serif text-white mb-4 tracking-tight">
-                    Bring EquiProfile to Your{" "}
-                    <span className="text-[#8b9cf7]">Riding School</span>
+                    Equip Your{" "}
+                    <span className="text-[#8b9cf7]">Entire Yard</span>
                   </h2>
+                  <p className="text-gray-400 leading-relaxed mb-4">
+                    EquiProfile transforms how riding schools deliver equine
+                    education. Replace paper worksheets and informal assessments
+                    with a professional digital platform your students will
+                    actually want to use — and your inspectors will be
+                    impressed by.
+                  </p>
                   <p className="text-gray-400 leading-relaxed mb-6">
-                    EquiProfile helps riding schools, equestrian colleges, and
-                    training academies deliver structured, trackable learning
-                    experiences. Give every student the tools to learn
-                    effectively — and give your team the oversight to ensure it.
+                    Individual student plans start at just{" "}
+                    <span className="text-white font-semibold">£5/month</span>.
+                    For schools and academies enrolling multiple students, we
+                    offer tailored pricing to fit your budget. Get in touch and
+                    we'll build a plan around your needs.
                   </p>
                   <Link href="/contact">
-                    <Button className="bg-[#4f5fd6] hover:bg-[#4554c4] text-white px-6 py-3 rounded-lg">
-                      Contact Us for Schools
-                      <ChevronRight className="w-4 h-4 ml-1" />
+                    <Button className="bg-[#4f5fd6] hover:bg-[#4554c4] text-white px-6 py-3 rounded-lg group">
+                      <Mail className="w-4 h-4 mr-2" />
+                      Contact Us for School Pricing
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
                 </div>
@@ -359,76 +370,6 @@ export default function Students() {
           </motion.div>
         </section>
 
-        {/* Volume Pricing */}
-        <section className="container mx-auto px-4 py-16">
-          <motion.div
-            className="max-w-4xl mx-auto text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4 tracking-tight">
-              Simple,{" "}
-              <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                Affordable Pricing
-              </span>
-            </h2>
-            <p className="text-lg text-gray-400 mb-10 max-w-2xl mx-auto">
-              From £5 per month per student. Schools enrolling more students save
-              more — up to 20% off.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-              {volumePricing.map((tier, index) => (
-                <div
-                  key={index}
-                  className={`rounded-xl p-6 border transition-colors duration-300 ${
-                    index === 3
-                      ? "bg-[#4f5fd6]/15 border-[#4f5fd6]/40"
-                      : "bg-[#0f2040]/60 border-white/10 hover:border-white/25"
-                  }`}
-                >
-                  <p className="text-sm font-medium text-gray-400 mb-2">
-                    {tier.range}
-                  </p>
-                  <p className="text-xl font-bold text-white mb-1">
-                    {tier.price}
-                  </p>
-                  <p className="text-xs text-[#8b9cf7] font-medium">
-                    {tier.discount}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-sm text-gray-500 mb-8">
-              Yearly billing available at £50/student/year (save over 15%).
-              Volume discounts apply to yearly billing too.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register?plan=student">
-                <Button
-                  size="lg"
-                  className="text-lg px-10 py-6 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white border-0 shadow-xl"
-                >
-                  Start Free Trial
-                  <ChevronRight className="w-5 h-5 ml-1" />
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="text-lg px-10 py-6 border-white/20 text-white hover:bg-white/10"
-                >
-                  Contact for Schools
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        </section>
-
         {/* Final CTA */}
         <section className="container mx-auto px-4 py-16 pb-24">
           <motion.div
@@ -449,22 +390,27 @@ export default function Students() {
                     <Star className="w-5 h-5 text-amber-400" />
                   </div>
                   <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 text-white">
-                    Ready to Transform{" "}
+                    Your Equestrian Career{" "}
                     <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                      Equestrian Education?
+                      Starts Here
                     </span>
                   </h2>
-                  <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                    Join riding schools and students already using EquiProfile to
-                    learn smarter, train better, and care with confidence.
+                  <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
+                    The riders who stand out aren't just talented — they're
+                    knowledgeable, organised, and dedicated. EquiProfile gives
+                    you the tools to prove all three.
+                  </p>
+                  <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+                    Start your free 7-day trial today. Just £5/month after that
+                    — less than a single riding lesson.
                   </p>
                   <Link href="/register?plan=student">
                     <Button
                       size="lg"
-                      className="text-lg px-10 py-6 bg-[#4f5fd6] hover:bg-[#4554c4] text-white border-0 shadow-xl"
+                      className="text-lg px-10 py-6 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white border-0 shadow-2xl shadow-indigo-500/20 hover:scale-105 transition-transform group"
                     >
-                      Get Started — It's Free for 7 Days
-                      <ChevronRight className="w-5 h-5 ml-1" />
+                      Start Your Free Trial
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
                 </div>
