@@ -255,7 +255,7 @@ export default function Pricing() {
     {
       name: "Student",
       plan: "student",
-      description: "For students & riding schools",
+      description: "For equestrian learners",
       price: billingPeriod === "monthly" ? "5.00" : "50.00",
       period: billingPeriod === "monthly" ? "/month" : "/year",
       yearlyPrice: "50.00",
@@ -599,56 +599,36 @@ export default function Pricing() {
             })}
           </div>
 
-          {/* Student Volume Pricing */}
+          {/* School & Academy Pricing CTA */}
           <motion.div
             className="mt-16 max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.35 }}
           >
-            <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/20 rounded-2xl p-8 md:p-10">
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 mb-4">
-                  <GraduationCap className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs font-medium text-emerald-400 uppercase tracking-wider">
-                    Schools & Academies
-                  </span>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  Student Volume Pricing
-                </h3>
-                <p className="text-gray-400 text-sm max-w-xl mx-auto">
-                  Enrolling multiple students? The more students you add, the more
-                  you save. Contact us for custom school packages.
-                </p>
+            <div className="bg-gradient-to-br from-indigo-500/10 to-cyan-500/5 border border-indigo-500/20 rounded-2xl p-8 md:p-10 text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 mb-4">
+                <Building2 className="w-4 h-4 text-indigo-400" />
+                <span className="text-xs font-medium text-indigo-400 uppercase tracking-wider">
+                  Schools & Academies
+                </span>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {[
-                  { range: "1–19", discount: "Standard", price: "£5/mo" },
-                  { range: "20+", discount: "10% off", price: "£4.50/mo" },
-                  { range: "50+", discount: "15% off", price: "£4.25/mo" },
-                  { range: "100+", discount: "20% off", price: "£4/mo" },
-                ].map((tier, i) => (
-                  <div
-                    key={i}
-                    className={`rounded-xl p-5 text-center border ${
-                      i === 3
-                        ? "bg-emerald-500/10 border-emerald-500/30"
-                        : "bg-white/5 border-white/10"
-                    }`}
-                  >
-                    <p className="text-xs text-gray-400 mb-1">{tier.range} students</p>
-                    <p className="text-lg font-bold text-white">{tier.price}</p>
-                    <p className="text-xs text-emerald-400 font-medium mt-1">
-                      {tier.discount}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <p className="text-center text-xs text-gray-500 mt-5">
-                Per student pricing. Yearly billing available at £50/student/year.
-                Volume discounts apply to all billing periods.
+              <h3 className="text-2xl font-bold text-white mb-3">
+                Pricing for Schools & Academies
+              </h3>
+              <p className="text-gray-400 text-sm max-w-xl mx-auto mb-6">
+                EquiProfile offers tailored pricing for riding schools, colleges,
+                and training centres enrolling multiple students. Get in touch and
+                we'll create a plan that works for your institution.
               </p>
+              <Link href="/contact">
+                <Button
+                  variant="outline"
+                  className="border-indigo-500/40 text-indigo-300 hover:bg-indigo-500/10 hover:text-white transition-colors"
+                >
+                  Contact Us
+                </Button>
+              </Link>
             </div>
           </motion.div>
 
@@ -715,7 +695,7 @@ export default function Pricing() {
                 {
                   question: "Do schools get volume discounts?",
                   answer:
-                    "Yes! Schools enrolling 20+ students get 10% off, 50+ students get 15% off, and 100+ students get 20% off. Contact us for custom school packages.",
+                    "Yes — we offer tailored pricing for riding schools, colleges, and training centres enrolling multiple students. Contact us to discuss a plan that works for your institution.",
                 },
               ].map((faq, index) => (
                 <motion.div
