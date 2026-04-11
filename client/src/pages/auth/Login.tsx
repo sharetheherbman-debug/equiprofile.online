@@ -147,7 +147,8 @@ export default function Login() {
       } else {
         const goToStable = data.planTier === "stable" || data.bothDashboardsUnlocked === true;
         const goToStudent = data.planTier === "student";
-        window.location.href = goToStable ? "/stable-dashboard" : goToStudent ? "/student-dashboard" : "/dashboard";
+        const goToTeacher = data.planTier === "teacher";
+        window.location.href = goToTeacher ? "/teacher-dashboard" : goToStable ? "/stable-dashboard" : goToStudent ? "/student-dashboard" : "/dashboard";
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
