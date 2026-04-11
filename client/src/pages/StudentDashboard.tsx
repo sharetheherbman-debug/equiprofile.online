@@ -52,6 +52,12 @@ import type { StudentView as ActiveView } from "@/components/StudentDashboardLay
 
 // ─── Sub-components ───────────────────────────────────────────
 
+/** Format a date value to YYYY-MM-DD string safely. */
+function formatDate(d: Date | string | null | undefined): string {
+  if (!d) return "";
+  return String(d).slice(0, 10);
+}
+
 function SkeletonBar({ className = "" }: { className?: string }) {
   return (
     <div
@@ -552,7 +558,7 @@ function TrainingView() {
     setEditingId(entry.id);
     setEditForm({
       title: entry.title,
-      sessionDate: String(entry.sessionDate).slice(0, 10),
+    sessionDate: formatDate(entry.sessionDate),
       sessionType: entry.sessionType as typeof form.sessionType,
       notes: entry.notes ?? "",
       wentWell: entry.wentWell ?? "",
@@ -678,7 +684,7 @@ function TrainingView() {
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <h4 className="text-sm font-semibold text-white">{entry.title}</h4>
-                    <p className="text-xs text-gray-500 mt-0.5">{String(entry.sessionDate).slice(0, 10)} · {entry.sessionType}{entry.instructor ? ` · ${entry.instructor}` : ""}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{formatDate(entry.sessionDate)} · {entry.sessionType}{entry.instructor ? ` · ${entry.instructor}` : ""}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button onClick={() => startEdit(entry)} className="text-gray-600 hover:text-indigo-400 transition-colors">
@@ -1059,7 +1065,7 @@ function ProgressView() {
                     }}
                   />
                 </div>
-                <p className="text-[10px] text-gray-600 mt-1">{100 - (skill.xp % 100)} XP to next level</p>
+                <p className="text-[10px] text-gray-600 mt-1">{skill.xp % 100 === 0 ? "Level up!" : `${100 - (skill.xp % 100)} XP to next level`}</p>
               </div>
             ))}
           </div>
