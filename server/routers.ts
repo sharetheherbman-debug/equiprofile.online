@@ -193,6 +193,18 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
   }
 }
 
+type PlanTier = "free" | "student" | "pro" | "stable";
+const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "pro", "stable"];
+
+/** Extract and validate planTier from parsed preferences, defaulting to "pro". */
+function parsePlanTier(prefs: Record<string, unknown>): PlanTier {
+  const raw = prefs.planTier;
+  if (typeof raw === "string" && (VALID_PLAN_TIERS as readonly string[]).includes(raw)) {
+    return raw as PlanTier;
+  }
+  return "pro";
+}
+
 /**
  * Stable-plan procedure — extends subscribedProcedure with a planTier check.
  * Only users whose planTier is "stable" (or who have bothDashboardsUnlocked)
@@ -638,7 +650,7 @@ export const appRouter = router({
       return {
         status: user.subscriptionStatus,
         plan: user.subscriptionPlan,
-        planTier: (prefs.planTier as string) || "pro",
+        planTier: parsePlanTier(prefs),
         trialEndsAt: user.trialEndsAt,
         subscriptionEndsAt: user.subscriptionEndsAt,
         lastPaymentAt: user.lastPaymentAt,
@@ -776,7 +788,7 @@ export const appRouter = router({
 
       // Determine plan tier from preferences (set at checkout)
       const prefs = parseUserPrefs(user.preferences);
-      const planTier: "free" | "student" | "pro" | "stable" = (prefs.planTier as any) || "pro";
+      const planTier: PlanTier = parsePlanTier(prefs);
 
       return {
         status: user.subscriptionStatus,

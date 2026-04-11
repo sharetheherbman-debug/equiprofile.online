@@ -138,17 +138,17 @@ export default function BillingPage() {
 
   const isCurrentPlan = (plan: string) => {
     if (!subscriptionStatus) return false;
+    const planTier = (subscriptionStatus as { planTier?: string }).planTier;
     if (plan === "trial") return subscriptionStatus.status === "trial";
-    if (plan === "student")
-      return (subscriptionStatus as any).planTier === "student";
+    if (plan === "student") return planTier === "student";
     if (plan === "pro")
       return (
-        ((subscriptionStatus as any).planTier === "pro" || !(subscriptionStatus as any).planTier) &&
+        (planTier === "pro" || !planTier) &&
         (subscriptionStatus.plan === "monthly" || subscriptionStatus.plan === "yearly")
       );
     if (plan === "stable")
       return (
-        (subscriptionStatus as any).planTier === "stable" ||
+        planTier === "stable" ||
         (subscriptionStatus.plan as string) === "stable_monthly" ||
         (subscriptionStatus.plan as string) === "stable_yearly"
       );
