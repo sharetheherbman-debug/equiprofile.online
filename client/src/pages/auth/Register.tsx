@@ -98,6 +98,8 @@ export default function Register() {
             destination = "/stable-dashboard";
           } else if (prefs.planTier === "student") {
             destination = "/student-dashboard";
+          } else if (prefs.planTier === "teacher" || prefs.selectedExperience === "teacher") {
+            destination = "/teacher-dashboard";
           }
         }
       } catch { /* ignore */ }

@@ -63,6 +63,8 @@ export default function VerifyEmail() {
               window.location.href = "/onboarding";
             } else if (data.planTier === "student") {
               window.location.href = "/student-dashboard";
+            } else if (data.planTier === "teacher") {
+              window.location.href = "/teacher-dashboard";
             } else if (data.planTier === "stable" || data.bothDashboardsUnlocked === true) {
               window.location.href = "/stable-dashboard";
             } else {

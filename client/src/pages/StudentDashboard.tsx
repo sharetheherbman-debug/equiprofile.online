@@ -29,6 +29,9 @@ import {
   Lightbulb,
   Shield,
   Leaf,
+  MessageSquare,
+  AlertCircle,
+  Route,
 } from "lucide-react";
 
 /**
@@ -85,6 +88,177 @@ function SectionHeading({ icon: Icon, title }: { icon: React.ComponentType<{ cla
       <Icon className="w-5 h-5 text-indigo-300" />
       <h2 className="text-lg font-semibold text-white">{title}</h2>
     </div>
+  );
+}
+
+// ─── Overview View ────────────────────────────────────────────
+// ─── Teacher Integration Panels ───────────────────────────────
+
+const FEEDBACK_STYLES: Record<string, { label: string; color: string; bg: string }> = {
+  good: { label: "Good Work", color: "#10b981", bg: "rgba(16,185,129,0.08)" },
+  needs_improvement: { label: "Needs Improvement", color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
+  urgent: { label: "Urgent", color: "#ef4444", bg: "rgba(239,68,68,0.08)" },
+  general: { label: "Comment", color: "#6366f1", bg: "rgba(99,102,241,0.08)" },
+};
+
+function TeacherFeedbackPanel() {
+  const utils = trpc.useUtils();
+  const { data: feedback, isLoading } = trpc.student.listMyFeedback.useQuery();
+  const markReadMut = trpc.student.markFeedbackRead.useMutation({
+    onSuccess: () => utils.student.listMyFeedback.invalidate(),
+  });
+
+  if (isLoading || !feedback?.length) return null;
+
+  const unread = feedback.filter(f => !f.isRead);
+  const shown = feedback.slice(0, 4);
+
+  return (
+    <section>
+      <SectionHeading icon={MessageSquare} title={`Instructor Feedback${unread.length > 0 ? ` (${unread.length} new)` : ""}`} />
+      <div className="space-y-3">
+        {shown.map(f => {
+          const style = FEEDBACK_STYLES[f.feedbackType] ?? FEEDBACK_STYLES.general;
+          return (
+            <SCard key={f.id} className={`!p-4 ${!f.isRead ? "ring-1 ring-indigo-500/30" : ""}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: style.bg, color: style.color }}>
+                      {style.label}
+                    </span>
+                    <span className="text-[10px] text-gray-500 capitalize">{f.entryType?.replace(/_/g, " ")}</span>
+                    {f.teacherName && <span className="text-[10px] text-gray-600">from {f.teacherName}</span>}
+                    {!f.isRead && <span className="text-[10px] text-indigo-400 font-semibold">● New</span>}
+                  </div>
+                  <p className="text-sm text-gray-300">{f.comment}</p>
+                  <p className="text-[10px] text-gray-600 mt-1">{String(f.createdAt).slice(0, 10)}</p>
+                </div>
+                {!f.isRead && (
+                  <button
+                    onClick={() => markReadMut.mutate({ id: f.id })}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 shrink-0 mt-0.5"
+                    title="Mark as read"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </SCard>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function AssignedTasksPanel({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
+  const utils = trpc.useUtils();
+  const { data: assignedTasks, isLoading } = trpc.student.listAssignedTasksForMe.useQuery();
+  const completeMut = trpc.student.completeAssignedTask.useMutation({
+    onSuccess: () => utils.student.listAssignedTasksForMe.invalidate(),
+  });
+
+  if (isLoading || !assignedTasks?.length) return null;
+
+  const pending = assignedTasks.filter(t => !t.isCompleted).slice(0, 5);
+  if (!pending.length) return null;
+
+  return (
+    <section>
+      <SectionHeading icon={AlertCircle} title={`Assigned Tasks (${pending.length} pending)`} />
+      <SCard>
+        <div className="space-y-3">
+          {pending.map(t => (
+            <div key={t.id} className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/15">
+              <div className="w-6 h-6 rounded-full border-2 border-amber-500/50 flex items-center justify-center shrink-0">
+                <ClipboardList className="w-3 h-3 text-amber-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white font-medium truncate">{t.title}</p>
+                <p className="text-[10px] text-amber-400/70">
+                  {t.category} · {t.frequency}
+                  {t.dueDate ? ` · Due ${String(t.dueDate).slice(0, 10)}` : ""}
+                  {t.groupId ? " · Class task" : " · Personal task"}
+                </p>
+              </div>
+              <button
+                onClick={() => completeMut.mutate({ id: t.id })}
+                disabled={completeMut.isPending}
+                className="text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors shrink-0"
+              >
+                Done
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={() => onNavigate("tasks")}
+            className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1 pt-1"
+          >
+            View all tasks <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </SCard>
+    </section>
+  );
+}
+
+const LEVEL_PATHWAY_ITEMS: Record<string, string[]> = {
+  beginner: ["riding-position", "aids-and-control", "grooming-basics", "feeding-basics", "tack-and-equipment", "horse-behaviour", "stable-safety", "horse-health-awareness"],
+  developing: ["transitions", "trot-work", "nutrition-in-depth", "hoof-care", "rugging", "horse-behaviour-advanced", "first-aid-basics", "warming-up"],
+  intermediate: ["canter-work", "lateral-work-intro", "health-monitoring", "lameness-awareness", "competition-basics", "arena-figures"],
+  advanced: ["collection-and-engagement", "horse-biomechanics", "nutrition-advanced", "accident-management"],
+};
+
+const LEVEL_LABELS: Record<string, string> = {
+  beginner: "Beginner", developing: "Developing", intermediate: "Intermediate", advanced: "Advanced",
+};
+
+function PathwayProgressPanel({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
+  const { data: pathwayData, isLoading } = trpc.student.getPathwayProgress.useQuery();
+
+  if (isLoading || !pathwayData) return null;
+
+  const { completed, currentLevel } = pathwayData;
+  const allItemsForLevel = LEVEL_PATHWAY_ITEMS[currentLevel] ?? LEVEL_PATHWAY_ITEMS.beginner;
+  const completedSlugs = new Set(completed.filter(c => c.pathwayLevel === currentLevel).map(c => c.itemSlug));
+  const completedCount = completedSlugs.size;
+  const totalCount = allItemsForLevel.length;
+  const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const nextItem = allItemsForLevel.find(slug => !completedSlugs.has(slug));
+
+  return (
+    <section>
+      <SectionHeading icon={Route} title="Learning Pathway" />
+      <SCard>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-white">{LEVEL_LABELS[currentLevel] ?? "Beginner"} Pathway</p>
+              <p className="text-xs text-gray-500">{completedCount} of {totalCount} topics completed</p>
+            </div>
+            <span className="text-lg font-bold text-indigo-400">{pct}%</span>
+          </div>
+          <div className="h-2.5 bg-white/[0.06] rounded-full overflow-hidden">
+            <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: "linear-gradient(90deg, #6366f1, #818cf8)" }} />
+          </div>
+          {nextItem && (
+            <div className="flex items-center gap-2 pt-1">
+              <Lightbulb className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+              <p className="text-xs text-gray-400">
+                Next: <span className="text-indigo-300 capitalize">{nextItem.replace(/-/g, " ")}</span>
+              </p>
+            </div>
+          )}
+          <button
+            onClick={() => onNavigate("study-hub")}
+            className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+          >
+            Open Study Hub <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </SCard>
+    </section>
   );
 }
 
@@ -269,6 +443,15 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
           })}
         </div>
       </section>
+
+      {/* ─── Teacher Feedback ─────────────────────────── */}
+      <TeacherFeedbackPanel />
+
+      {/* ─── Assigned Tasks ───────────────────────────── */}
+      <AssignedTasksPanel onNavigate={onNavigate} />
+
+      {/* ─── Pathway Progress ─────────────────────────── */}
+      <PathwayProgressPanel onNavigate={onNavigate} />
     </div>
   );
 }
