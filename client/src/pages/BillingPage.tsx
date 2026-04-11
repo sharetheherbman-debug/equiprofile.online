@@ -138,12 +138,13 @@ export default function BillingPage() {
 
   const isCurrentPlan = (plan: string) => {
     if (!subscriptionStatus) return false;
-    const planTier = (subscriptionStatus as { planTier?: string }).planTier;
+    // planTier is included in the response from billing.getStatus (tRPC inferred type)
+    const planTier = (subscriptionStatus as { planTier?: string }).planTier ?? "pro";
     if (plan === "trial") return subscriptionStatus.status === "trial";
     if (plan === "student") return planTier === "student";
     if (plan === "pro")
       return (
-        (planTier === "pro" || !planTier) &&
+        planTier === "pro" &&
         (subscriptionStatus.plan === "monthly" || subscriptionStatus.plan === "yearly")
       );
     if (plan === "stable")

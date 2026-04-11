@@ -196,7 +196,11 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
 type PlanTier = "free" | "student" | "pro" | "stable";
 const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "pro", "stable"];
 
-/** Extract and validate planTier from parsed preferences, defaulting to "pro". */
+/**
+ * Extract and validate planTier from parsed preferences.
+ * Defaults to "pro" for backward-compatibility: existing users who subscribed
+ * before the planTier field was introduced are on the Standard/Pro plan.
+ */
 function parsePlanTier(prefs: Record<string, unknown>): PlanTier {
   const raw = prefs.planTier;
   if (typeof raw === "string" && (VALID_PLAN_TIERS as readonly string[]).includes(raw)) {
