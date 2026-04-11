@@ -634,9 +634,11 @@ export const appRouter = router({
       const user = await db.getUserById(ctx.user.id);
       if (!user) return null;
 
+      const prefs = parseUserPrefs(user.preferences);
       return {
         status: user.subscriptionStatus,
         plan: user.subscriptionPlan,
+        planTier: (prefs.planTier as string) || "pro",
         trialEndsAt: user.trialEndsAt,
         subscriptionEndsAt: user.subscriptionEndsAt,
         lastPaymentAt: user.lastPaymentAt,
@@ -774,7 +776,7 @@ export const appRouter = router({
 
       // Determine plan tier from preferences (set at checkout)
       const prefs = parseUserPrefs(user.preferences);
-      const planTier: "pro" | "stable" = prefs.planTier || "pro";
+      const planTier: "free" | "student" | "pro" | "stable" = (prefs.planTier as any) || "pro";
 
       return {
         status: user.subscriptionStatus,
@@ -3786,7 +3788,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const tpl = getTemplateById(input.templateId);
         if (!tpl) throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
 
-        const htmlBody = tpl.getHtml();
+        // Apply static merge fields (content, subject) at creation time so the
+        // stored htmlBody contains the admin's actual copy. Per-recipient fields
+        // (firstName, email, unsubscribeLink) are applied at send time.
+        const htmlBody = applyMergeFields(tpl.getHtml(), {
+          subject: input.mergeFields?.subject || input.subject,
+          content: input.mergeFields?.content || "",
+        });
 
         const result = await dbConn.insert(emailCampaigns).values({
           name: input.name.slice(0, 200),

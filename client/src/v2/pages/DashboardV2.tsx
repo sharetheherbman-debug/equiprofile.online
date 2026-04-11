@@ -541,6 +541,16 @@ function DashboardContent() {
 
 export default function DashboardV2() {
   const { loading } = useAuth({ redirectOnUnauthenticated: true });
+  const { data: subscription } = trpc.user.getSubscriptionStatus.useQuery();
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (subscription?.planTier === "stable" && !subscription?.bothDashboardsUnlocked) {
+      setLocation("/stable-dashboard");
+    } else if (subscription?.planTier === "student") {
+      setLocation("/student-dashboard");
+    }
+  }, [subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
 
   if (loading) {
     return (
