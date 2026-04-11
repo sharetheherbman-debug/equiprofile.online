@@ -199,7 +199,7 @@ router.post("/signup", signupLimiter, async (req, res) => {
     if (ENV.primaryAdminEmail && userEmail === ENV.primaryAdminEmail && user.role !== "admin") {
       userUpdates.role = "admin";
     }
-    if (planType === "stable" || planType === "normal" || planType === "standard") {
+    if (planType === "stable" || planType === "normal" || planType === "standard" || planType === "student") {
       let prefs: Record<string, unknown> = {};
       if (user.preferences) {
         try {
@@ -208,7 +208,13 @@ router.post("/signup", signupLimiter, async (req, res) => {
           prefs = {};
         }
       }
-      prefs.planTier = planType === "stable" ? "stable" : "pro";
+      if (planType === "stable") {
+        prefs.planTier = "stable";
+      } else if (planType === "student") {
+        prefs.planTier = "student";
+      } else {
+        prefs.planTier = "pro";
+      }
       userUpdates.preferences = JSON.stringify(prefs);
     }
 

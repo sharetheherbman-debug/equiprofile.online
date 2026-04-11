@@ -214,11 +214,13 @@ function DashboardContent() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Redirect Stable plan users to the Stable Dashboard
+  // Redirect Stable plan users to the Stable Dashboard, Student plan users to the Student Dashboard
   // Skip redirect if user has both dashboards unlocked (admin-granted free access)
   useEffect(() => {
     if (subscription?.planTier === "stable" && !subscription?.bothDashboardsUnlocked) {
       setLocation("/stable-dashboard");
+    } else if (subscription?.planTier === "student") {
+      setLocation("/student-dashboard");
     }
   }, [subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
 

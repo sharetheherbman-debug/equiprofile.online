@@ -61,13 +61,17 @@ export default function Login() {
       setLocation(postLoginUrl);
     } else {
       let goToStable = false;
+      let goToStudent = false;
       try {
         if (user?.preferences) {
           const prefs = JSON.parse(user.preferences);
           goToStable = prefs?.planTier === "stable" || !!prefs?.bothDashboardsUnlocked;
+          goToStudent = prefs?.planTier === "student";
         }
       } catch { /* ignore */ }
-      setLocation(goToStable ? "/stable-dashboard" : "/dashboard");
+      if (goToStable) setLocation("/stable-dashboard");
+      else if (goToStudent) setLocation("/student-dashboard");
+      else setLocation("/dashboard");
     }
     return null;
   }
@@ -134,7 +138,8 @@ export default function Login() {
         }
       } else {
         const goToStable = data.planTier === "stable" || data.bothDashboardsUnlocked === true;
-        window.location.href = goToStable ? "/stable-dashboard" : "/dashboard";
+        const goToStudent = data.planTier === "student";
+        window.location.href = goToStable ? "/stable-dashboard" : goToStudent ? "/student-dashboard" : "/dashboard";
       }
     } catch (err) {
       setError("An error occurred. Please try again.");

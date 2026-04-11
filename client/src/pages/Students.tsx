@@ -95,7 +95,7 @@ export default function Students() {
       <PageBanner
         title="For Students"
         subtitle="Professional equine management tools built for the next generation of horsemen and horsewomen"
-        imageSrc="/images/hero/image6.jpg"
+        imageSrc="/images/hero/image4.jpg"
         imagePosition="center"
       />
 
