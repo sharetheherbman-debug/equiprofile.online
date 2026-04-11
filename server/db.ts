@@ -839,6 +839,83 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       \`createdAt\` timestamp NOT NULL DEFAULT (now()),
       CONSTRAINT \`siteAnalytics_id\` PRIMARY KEY(\`id\`)
     )`,
+    // Marketing contacts — external leads (migration 0014 + 0016)
+    `CREATE TABLE IF NOT EXISTS \`marketingContacts\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`email\` varchar(320) NOT NULL,
+      \`name\` varchar(200),
+      \`businessName\` varchar(300),
+      \`organizationName\` varchar(300),
+      \`contactType\` varchar(50) DEFAULT 'individual',
+      \`source\` varchar(100) DEFAULT 'manual',
+      \`tags\` text,
+      \`region\` varchar(100),
+      \`country\` varchar(100),
+      \`leadFocus\` varchar(200),
+      \`status\` varchar(30) NOT NULL DEFAULT 'active',
+      \`unsubscribeToken\` varchar(64) NOT NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      \`lastContactedAt\` timestamp NULL,
+      CONSTRAINT \`marketingContacts_id\` PRIMARY KEY(\`id\`),
+      UNIQUE KEY \`idx_mc_email\` (\`email\`),
+      KEY \`idx_mc_status\` (\`status\`),
+      KEY \`idx_mc_unsub_token\` (\`unsubscribeToken\`)
+    )`,
+    // Email unsubscribes — global suppression list (migration 0014)
+    `CREATE TABLE IF NOT EXISTS \`emailUnsubscribes\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`email\` varchar(320) NOT NULL,
+      \`token\` varchar(64) NOT NULL,
+      \`reason\` varchar(200),
+      \`source\` varchar(50) DEFAULT 'link',
+      \`unsubscribedAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`emailUnsubscribes_id\` PRIMARY KEY(\`id\`),
+      UNIQUE KEY \`idx_unsub_email\` (\`email\`),
+      KEY \`idx_unsub_token\` (\`token\`)
+    )`,
+    // Campaign sequences — drip steps (migration 0014 + 0016)
+    `CREATE TABLE IF NOT EXISTS \`campaignSequences\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`campaignId\` int NOT NULL,
+      \`stepNumber\` int NOT NULL,
+      \`delayDays\` int NOT NULL,
+      \`scheduledDate\` varchar(10),
+      \`subject\` varchar(500) NOT NULL,
+      \`htmlBody\` text NOT NULL,
+      \`templateId\` varchar(50),
+      \`status\` varchar(30) NOT NULL DEFAULT 'pending',
+      \`sentAt\` timestamp NULL,
+      \`sentCount\` int NOT NULL DEFAULT 0,
+      \`failedCount\` int NOT NULL DEFAULT 0,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`campaignSequences_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_seq_campaign\` (\`campaignId\`)
+    )`,
+    // Campaign sequence recipients — per-step delivery tracking (migration 0014)
+    `CREATE TABLE IF NOT EXISTS \`campaignSequenceRecipients\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`sequenceId\` int NOT NULL,
+      \`campaignId\` int NOT NULL,
+      \`email\` varchar(320) NOT NULL,
+      \`status\` varchar(30) NOT NULL DEFAULT 'pending',
+      \`sentAt\` timestamp NULL,
+      \`error\` text,
+      CONSTRAINT \`campaignSequenceRecipients_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_seqr_sequence\` (\`sequenceId\`),
+      KEY \`idx_seqr_campaign\` (\`campaignId\`),
+      KEY \`idx_seqr_email\` (\`email\`)
+    )`,
+    // Campaign send log — daily send count for rate limiting (migration 0016)
+    `CREATE TABLE IF NOT EXISTS \`campaignSendLog\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`campaignId\` int NOT NULL,
+      \`sendDate\` varchar(10) NOT NULL,
+      \`sendCount\` int NOT NULL DEFAULT 0,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`campaignSendLog_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_csl_campaign_date\` (\`campaignId\`, \`sendDate\`)
+    )`,
   ];
 
   try {
@@ -869,6 +946,20 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`passportNumber\` varchar(100) DEFAULT NULL`,
       `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`feiId\` varchar(100) DEFAULT NULL`,
       `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`ueln\` varchar(100) DEFAULT NULL`,
+      // Campaign enhancements (migration 0016) — add country targeting + daily limit to emailCampaigns
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`targetCountry\` varchar(100) DEFAULT NULL`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`targetType\` varchar(100) DEFAULT NULL`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`dailyLimit\` int NOT NULL DEFAULT 50`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`sentToday\` int NOT NULL DEFAULT 0`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`lastSendDate\` varchar(10) DEFAULT NULL`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`pausedAt\` timestamp NULL DEFAULT NULL`,
+      // Campaign enhancements (migration 0016) — add country/lead fields to marketingContacts
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`country\` varchar(100) DEFAULT NULL`,
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`leadFocus\` varchar(200) DEFAULT NULL`,
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`organizationName\` varchar(300) DEFAULT NULL`,
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`lastContactedAt\` timestamp NULL DEFAULT NULL`,
+      // Campaign enhancements (migration 0016) — add scheduledDate to campaignSequences
+      `ALTER TABLE \`campaignSequences\` ADD COLUMN IF NOT EXISTS \`scheduledDate\` varchar(10) DEFAULT NULL`,
     ];
     for (const stmt of columnMigrations) {
       try {
@@ -891,6 +982,9 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       // Campaign recipients indexes (migration 0012)
       `CREATE INDEX IF NOT EXISTS \`ecr_campaign_idx\` ON \`emailCampaignRecipients\` (\`campaignId\`)`,
       `CREATE INDEX IF NOT EXISTS \`ecr_email_idx\` ON \`emailCampaignRecipients\` (\`email\`)`,
+      // Campaign enhancements indexes (migration 0016)
+      `CREATE INDEX IF NOT EXISTS \`idx_mc_country\` ON \`marketingContacts\` (\`country\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mc_contact_type\` ON \`marketingContacts\` (\`contactType\`)`,
     ];
     for (const stmt of indexMigrations) {
       try {
