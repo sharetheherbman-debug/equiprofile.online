@@ -4519,3 +4519,887 @@ Equipment should never be used to mask a problem (e.g., using a stronger bit ins
     ],
   },
 
+  // ── Pathway 6: Developing Rider Skills ──────────────────────────────────────
+  {
+    slug: "walk-trot-transitions-developing",
+    pathwaySlug: "developing-rider-skills",
+    title: "Walk to Trot Transitions",
+    level: "developing",
+    category: "Flatwork",
+    sortOrder: 1,
+    objectives: [
+      "Understand the correct aids for upward and downward transitions between walk and trot",
+      "Develop the ability to maintain a balanced position during transitions",
+      "Learn to prepare the horse before asking for a transition",
+      "Recognise and correct common faults in transitions",
+    ],
+    content: `Walk to trot transitions are one of the most fundamental skills a developing rider must master. A good transition demonstrates harmony between horse and rider and lays the groundwork for all future schooling work. Understanding how to ride smooth, balanced transitions will improve every aspect of your riding.
+
+Before asking for an upward transition from walk to trot, the rider must first establish a good quality walk. The horse should be walking with purpose and energy, stepping actively forward into a light, elastic contact. The rider's position should be tall and balanced, with the weight distributed evenly through both seat bones, the shoulders back and the lower leg resting quietly on the horse's side just behind the girth.
+
+Preparation is the key to a successful transition. Before applying the aids, the rider should use a half-halt to rebalance the horse and gain its attention. A half-halt involves a momentary closing of the fingers on the reins combined with a brief engagement of the seat and leg. This tells the horse to listen for the next instruction. Without adequate preparation, the horse may fall onto the forehand during the transition or rush into a hurried trot.
+
+The aids for a walk to trot transition are as follows: the rider closes both legs gently against the horse's sides, just behind the girth, while softening the hands slightly to allow the horse to move forward into the new gait. The seat should remain deep and following. It is important that the rider does not tip forward, grip with the knees, or throw the hands forward, as these common faults will unbalance both horse and rider.
+
+The trot should begin smoothly and in a consistent rhythm. If the horse rushes, the rider should sit quietly and use half-halts to steady the pace rather than pulling on the reins. If the horse is sluggish or ignores the leg, a tap with the schooling whip behind the leg may be needed to reinforce the aid. The goal is for the horse to respond promptly to a light aid.
+
+For the downward transition from trot to walk, the rider sits deep in the saddle, braces the lower back slightly, and closes the fingers on the reins. The legs remain in contact to prevent the horse from falling behind the leg or stopping abruptly. The transition should feel as though the horse gently steps from trot into a purposeful, active walk — not a shuffling halt.
+
+Practising transitions at specific markers in the arena helps develop accuracy and discipline. For example, the rider might plan to trot at A and return to walk at C. Over time, this develops the rider's ability to plan ahead and communicate clearly with the horse. Transitions ridden at set points also encourage the horse to pay attention to the rider rather than drifting along on autopilot.
+
+Common problems in transitions include the horse hollowing its back, throwing its head up, or leaning on the rider's hands. These issues often stem from the rider applying the aids too sharply or without sufficient preparation. A calm, methodical approach — prepare, ask, allow — will produce the best results. Riders should also be aware of their own body, ensuring they do not collapse at the waist or round the shoulders during transitions.
+
+Regular practice of walk to trot and trot to walk transitions builds the rider's coordination, timing, and feel. These are the building blocks upon which more advanced work, such as canter transitions, lateral movements, and collected work, are developed.`,
+    keyPoints: [
+      "Always prepare the horse with a half-halt before asking for a transition",
+      "Close both legs gently behind the girth for the upward transition while softening the hand",
+      "For the downward transition, sit deep, brace the back, and close the fingers on the reins",
+      "Maintain a balanced, upright position throughout the transition",
+      "Practise transitions at specific markers to develop accuracy and timing",
+    ],
+    safetyNote:
+      "Always ensure the girth is correctly tightened before beginning flatwork. If the horse becomes excited or strong during transitions, use calming half-halts and circles to regain control rather than pulling sharply on the reins.",
+    practicalApplication:
+      "During your next schooling session, plan a series of transitions at set markers around the arena. Aim for at least ten upward and ten downward transitions, focusing on smooth preparation and a calm, balanced execution. Ask your instructor for feedback on your position and the quality of your horse's response.",
+    commonMistakes: [
+      "Tipping forward or collapsing the upper body during the upward transition",
+      "Gripping with the knees, which pushes the lower leg away from the horse's side",
+      "Using the reins to pull the horse into a downward transition rather than using the seat and back",
+      "Failing to prepare the horse with a half-halt before the transition",
+      "Allowing the horse to rush into the trot or fall into a lazy walk",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What should a rider do immediately before asking for a walk to trot transition?",
+        options: [
+          "Lean forward to encourage the horse",
+          "Apply a half-halt to prepare and rebalance the horse",
+          "Kick the horse firmly with both heels",
+          "Drop the reins to give the horse freedom",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A half-halt prepares the horse by rebalancing it and gaining its attention. This ensures the transition is smooth and the horse does not fall onto the forehand.",
+      },
+      {
+        question: "Where should the rider's legs be positioned when asking for a trot transition?",
+        options: [
+          "Well behind the girth near the horse's flank",
+          "On the girth",
+          "Just behind the girth",
+          "In front of the girth",
+        ],
+        correctIndex: 2,
+        explanation:
+          "The rider's legs should close gently just behind the girth. This is the correct position for asking the horse to move forward into a new gait.",
+      },
+      {
+        question: "What is a common fault when transitioning from trot to walk?",
+        options: [
+          "Sitting too deep in the saddle",
+          "Pulling sharply on the reins without using the seat",
+          "Looking straight ahead",
+          "Keeping the legs in contact with the horse",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Pulling on the reins without engaging the seat and back causes the horse to hollow its back and raise its head. The downward transition should be ridden primarily from the seat.",
+      },
+      {
+        question: "Why is practising transitions at specific markers beneficial?",
+        options: [
+          "It makes the lesson shorter",
+          "It develops accuracy, planning, and clear communication with the horse",
+          "It is only needed for competition riders",
+          "It tires the horse out more quickly",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Riding transitions at specific markers teaches the rider to plan ahead, prepare the horse in good time, and develop accuracy — all essential skills for progression.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you explain what a half-halt is and how I should use it before a transition?",
+      "What exercises can help me stop tipping forward during walk to trot transitions?",
+      "How can I tell if my horse is properly prepared for a transition?",
+    ],
+  },
+  {
+    slug: "trot-rhythm-and-balance",
+    pathwaySlug: "developing-rider-skills",
+    title: "Trot Rhythm and Balance",
+    level: "developing",
+    category: "Flatwork",
+    sortOrder: 2,
+    objectives: [
+      "Understand the mechanics of the trot gait and why rhythm is important",
+      "Develop the ability to rise (post) in rhythm with the horse's trot",
+      "Learn to maintain balance in both rising and sitting trot",
+      "Identify and correct loss of rhythm or balance in the trot",
+    ],
+    content: `The trot is a two-beat diagonal gait in which the horse's legs move in diagonal pairs — the left fore and right hind strike the ground at the same time, followed by the right fore and left hind. Between each pair of steps there is a brief moment of suspension when all four feet are off the ground. This natural rhythm gives the trot its characteristic bouncy feel, and learning to move in harmony with it is one of the most important skills for the developing rider.
+
+Rhythm refers to the regularity and consistency of the horse's steps. A good working trot should have an even, metronome-like beat — one-two, one-two — that the rider can feel through the saddle. When rhythm is lost, it usually indicates that either the horse is unbalanced, the rider is interfering with the horse's movement, or the pace is too fast or too slow.
+
+Rising trot, also known as posting trot, is the most common way for riders to trot. The rider rises out of the saddle on one beat and sits lightly back into the saddle on the next, in time with the horse's movement. To rise correctly, the rider should allow the horse's movement to push the hips slightly forward and upward rather than actively standing in the stirrups. The movement comes from the thigh and hip joint, not the knee or ankle. The upper body should remain balanced over the centre of the saddle, not tipping forward or falling behind the movement.
+
+Rising on the correct diagonal is an important concept. In rising trot, the rider should rise when the outside foreleg moves forward and sit when it returns to the ground. This can be checked by glancing briefly at the horse's outside shoulder — the rider should rise as the shoulder moves forward. Riding on the correct diagonal helps the horse to balance, especially on circles and turns. The diagonal should be changed when the rider changes direction by sitting for an extra beat.
+
+Sitting trot requires the rider to remain seated in the saddle throughout the trot. This is more challenging because the rider must absorb the horse's movement through a supple lower back and relaxed seat muscles. Stiffness in the back, gripping with the thighs, or bracing in the stirrups will cause the rider to bounce uncomfortably and disturb the horse's rhythm. To sit the trot effectively, the rider should think of allowing the hips to follow the horse's movement, keeping the core engaged but not rigid, and maintaining a deep, draped leg.
+
+Balance in the trot is influenced by the rider's position, the horse's way of going, and the quality of the contact. A balanced rider sits centrally in the saddle with equal weight on both seat bones, the shoulders directly above the hips, and the heels below the hips. If the rider leans to one side, grips with one leg more than the other, or collapses through the waist, the horse will compensate by drifting, falling in on circles, or becoming crooked.
+
+To develop trot rhythm and balance, riders should practise trotting on large circles, changing the rein frequently, and riding transitions within the trot — lengthening and shortening the stride. Exercises without stirrups are also invaluable for building an independent seat, though these should only be attempted when the rider feels confident and the horse is calm.
+
+A useful exercise is to count the rhythm aloud — "one-two, one-two" — while trotting. This helps the rider internalise the beat and immediately notice if the rhythm changes. Over time, the rider develops an instinctive feel for the correct tempo and can adjust the horse's pace with subtle aids.
+
+The quality of the trot is a direct reflection of the partnership between horse and rider. When both are balanced, relaxed, and moving in harmony, the trot feels effortless and flowing. This is the foundation upon which all further schooling in trot — shoulder-in, half-pass, medium and collected trot — is built.`,
+    keyPoints: [
+      "The trot is a two-beat diagonal gait with a moment of suspension between each stride",
+      "In rising trot, allow the horse's movement to push the hips forward rather than actively standing",
+      "Rise on the correct diagonal — rise when the outside foreleg moves forward",
+      "In sitting trot, absorb the movement through a supple lower back and relaxed seat",
+      "Maintain equal weight on both seat bones and keep the shoulders above the hips for balance",
+      "Count the rhythm aloud to develop feel and recognise changes in tempo",
+    ],
+    safetyNote:
+      "When practising sitting trot or exercises without stirrups, only do so on a calm, well-mannered horse in an enclosed arena. If you feel insecure, return to rising trot immediately and discuss your concerns with your instructor.",
+    practicalApplication:
+      "During your next ride, spend time in rising trot focusing on the correct diagonal. Change the rein at least four times, checking your diagonal each time. Then attempt short periods of sitting trot on a large circle, counting the rhythm aloud to maintain an even tempo.",
+    commonMistakes: [
+      "Rising too high out of the saddle, which makes the rider unsteady and behind the movement",
+      "Gripping with the knees in sitting trot, causing the lower leg to swing and the rider to bounce",
+      "Forgetting to check and change the diagonal when changing direction",
+      "Allowing the upper body to tip forward in rising trot",
+      "Losing rhythm by letting the horse speed up or slow down without correction",
+    ],
+    knowledgeCheck: [
+      {
+        question: "How many beats does the trot have?",
+        options: [
+          "One beat",
+          "Two beats",
+          "Three beats",
+          "Four beats",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The trot is a two-beat diagonal gait. The horse's legs move in diagonal pairs with a moment of suspension between each step.",
+      },
+      {
+        question: "When should the rider rise in rising trot?",
+        options: [
+          "When the inside foreleg moves forward",
+          "When the outside foreleg moves forward",
+          "On every third beat",
+          "It does not matter when the rider rises",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The rider should rise when the outside foreleg moves forward and sit when it comes back to the ground. This helps the horse balance, particularly on circles and turns.",
+      },
+      {
+        question: "What is the main cause of bouncing in sitting trot?",
+        options: [
+          "The horse trotting too slowly",
+          "The saddle being too large",
+          "Stiffness in the rider's lower back and gripping with the thighs",
+          "Holding the reins too long",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Stiffness in the lower back and gripping with the thighs prevents the rider from absorbing the horse's movement, causing them to bounce in the saddle.",
+      },
+      {
+        question: "How does the rider change the diagonal?",
+        options: [
+          "By changing the rein length",
+          "By sitting for one extra beat before resuming rising",
+          "By rising faster",
+          "By leaning to the opposite side",
+        ],
+        correctIndex: 1,
+        explanation:
+          "To change the diagonal, the rider simply sits for one extra beat — sit-sit instead of sit-rise — and then continues rising. This shifts them onto the other diagonal pair.",
+      },
+      {
+        question: "Why is counting the rhythm aloud useful?",
+        options: [
+          "It calms the horse down",
+          "It helps the rider internalise the beat and notice tempo changes",
+          "It is required in dressage tests",
+          "It helps the horse change pace",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Counting the rhythm aloud helps the rider develop an internal sense of the correct tempo. If the counting speeds up or slows down, the rider can immediately feel that the rhythm has changed and make corrections.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What exercises can help me develop a more independent seat in sitting trot?",
+      "How do I know if I am on the correct diagonal without looking down?",
+      "Can you explain why rhythm is considered one of the scales of training?",
+    ],
+  },
+  {
+    slug: "steering-and-accuracy",
+    pathwaySlug: "developing-rider-skills",
+    title: "Steering and Accuracy",
+    level: "developing",
+    category: "Flatwork",
+    sortOrder: 3,
+    objectives: [
+      "Understand the aids for turning and steering at walk and trot",
+      "Learn to plan lines and ride accurately to specific markers",
+      "Develop coordination of the inside and outside aids",
+      "Recognise when the horse is falling in or drifting out on turns",
+    ],
+    content: `Steering a horse accurately is far more complex than simply pulling on one rein. Effective steering requires the coordinated use of the hands, legs, seat, and eyes, and it is a skill that develops progressively as the rider gains experience and body awareness. For the developing rider, learning to steer with precision lays the groundwork for all future school figures, dressage movements, and even jumping courses.
+
+The rider's eyes play a critical role in steering. Looking in the direction of travel — well ahead and around the turn — naturally aligns the rider's shoulders and hips with the intended line. If the rider looks down at the horse's neck or at the ground, the body tends to collapse and the horse receives mixed signals. A simple rule to remember is: look where you want to go, and the horse will follow.
+
+The inside rein is used to ask for flexion — a slight bend through the horse's poll and neck in the direction of the turn. This should be a gentle, guiding action, not a strong pull. Over-use of the inside rein is one of the most common faults in developing riders. It causes the horse to tilt its head rather than bend evenly through the body, and it can also cause the horse to fall inward on the turn.
+
+The outside rein is equally important, if not more so, than the inside rein. It controls the degree of bend, prevents the horse's outside shoulder from drifting outward, and maintains the horse's balance. The outside rein should maintain a steady, supportive contact while the inside rein asks for flexion. Thinking of the outside rein as a guiding wall or boundary can help the rider understand its role.
+
+The rider's legs are essential for steering. The inside leg, applied on or just behind the girth, acts as a pillar around which the horse bends. It also maintains impulsion and prevents the horse from falling inward. The outside leg, positioned slightly further behind the girth, prevents the horse's hindquarters from swinging out and supports the bend. Together, the inside and outside legs create a channel through which the horse moves.
+
+The rider's seat and weight also contribute to steering. Sitting centrally and weighting the inside seat bone slightly (without collapsing the hip) helps the horse understand the direction of the turn. However, excessive weight shifts can unbalance both horse and rider, so subtlety is key.
+
+Accuracy means riding exactly where you intend to go — hitting the markers, making turns at the correct points, and maintaining straight lines on the long sides. This requires planning ahead. The rider should be thinking about the next movement two or three strides before it happens. For example, when approaching the corner of the arena, the rider should begin preparing the aids a few strides before the turn, not in the middle of it.
+
+Common accuracy exercises include riding from marker to marker in straight lines, making turns at specific letters, and changing the rein through the diagonal or across the centre line. The rider should aim to ride deep into the corners of the arena, using them as quarter-circles rather than cutting across them. Good use of corners is one of the hallmarks of an educated rider.
+
+When the horse falls in on a turn — drifting towards the inside of the arena — it is usually because the rider's inside leg is not active enough or the rider is pulling on the inside rein. The correction is to apply more inside leg and steady the outside rein. When the horse drifts out — moving towards the outside — the outside rein and outside leg need to be more effective.
+
+Practising steering exercises at walk before attempting them at trot allows the rider to develop the coordination of the aids without the added complexity of the trot's movement. As confidence grows, the same exercises can be ridden at trot, and eventually at canter, building progressively towards more demanding school figures and lateral movements.`,
+    keyPoints: [
+      "Always look in the direction of travel — the rider's eyes lead the turn",
+      "The inside rein asks for flexion; the outside rein controls the bend and supports the horse's balance",
+      "The inside leg on the girth creates a pillar for the horse to bend around and maintains impulsion",
+      "The outside leg behind the girth prevents the hindquarters from swinging out",
+      "Plan ahead — begin preparing aids two or three strides before a turn or transition",
+      "Ride deep into corners to develop accuracy and improve the horse's balance",
+    ],
+    safetyNote:
+      "When practising steering exercises, be aware of other riders in the arena. Follow the rules of the school — pass left hand to left hand — and always call out when changing the rein. Avoid sudden turns that could startle other horses.",
+    practicalApplication:
+      "Set up a simple course of cones or markers around the arena. Ride the course at walk first, focusing on looking ahead, coordinating your aids, and hitting each marker precisely. Then ride the course at trot. Note any points where you lose accuracy and discuss corrections with your instructor.",
+    commonMistakes: [
+      "Over-using the inside rein and pulling the horse around the turn instead of guiding with all aids",
+      "Looking down at the horse's neck instead of ahead around the turn",
+      "Failing to use the outside rein to support the horse's balance",
+      "Cutting corners instead of riding deep into them",
+      "Not planning ahead, leading to late and rushed turns",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the primary role of the outside rein during a turn?",
+        options: [
+          "To pull the horse around the turn",
+          "To control the degree of bend and support the horse's balance",
+          "To slow the horse down",
+          "To signal a change of gait",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The outside rein controls the degree of bend in the horse's neck, prevents the outside shoulder from drifting, and supports overall balance during the turn.",
+      },
+      {
+        question: "Where should the rider look when making a turn?",
+        options: [
+          "At the horse's ears",
+          "At the ground near the horse's feet",
+          "In the direction of travel, well ahead around the turn",
+          "At the inside rein",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Looking in the direction of travel naturally aligns the rider's body and helps guide the horse accurately through the turn.",
+      },
+      {
+        question: "What does the inside leg do during a turn?",
+        options: [
+          "It pushes the horse sideways",
+          "It acts as a pillar for the horse to bend around and maintains impulsion",
+          "It has no role during turning",
+          "It slows the horse down",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The inside leg, applied on or just behind the girth, acts as the central point around which the horse bends. It also keeps the horse moving forward with impulsion.",
+      },
+      {
+        question: "What should a rider do if the horse falls in on a circle?",
+        options: [
+          "Pull on the inside rein more firmly",
+          "Lean to the outside",
+          "Apply more inside leg and steady the outside rein",
+          "Let go of the reins entirely",
+        ],
+        correctIndex: 2,
+        explanation:
+          "When a horse falls in, the rider should use more inside leg to push the horse out onto the line of the circle, supported by a steady outside rein to prevent the horse from over-bending.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How can I improve my coordination between inside and outside aids?",
+      "What exercises can help me ride more accurately to markers?",
+      "Can you explain why pulling on the inside rein actually makes steering worse?",
+    ],
+  },
+  {
+    slug: "circles-and-school-figures",
+    pathwaySlug: "developing-rider-skills",
+    title: "Circles and School Figures",
+    level: "intermediate",
+    category: "Flatwork",
+    sortOrder: 4,
+    objectives: [
+      "Understand the geometry and purpose of common school figures",
+      "Learn to ride accurate 20-metre and 15-metre circles",
+      "Develop the ability to maintain bend, rhythm, and balance on curved lines",
+      "Know when and how to use school figures to improve the horse's way of going",
+    ],
+    content: `School figures are the geometric shapes and patterns ridden in a manège or arena. They are not merely exercises for the rider to follow; they are fundamental training tools that develop the horse's suppleness, straightness, balance, and obedience. Understanding the purpose behind each figure — and riding it with accuracy — is a mark of an educated rider and a well-schooled horse.
+
+The standard dressage arena measures 20 metres by 40 metres (or 20 metres by 60 metres for the large arena). The letters around the arena — A, K, E, H, C, M, B, F, and the centre line markers D, X, and G — provide reference points for planning and executing school figures. Every rider should memorise these letters and be able to navigate to any point in the arena confidently.
+
+The 20-metre circle is the most basic circle and is ridden by touching the track at one end of the arena and passing through the centre point X. For example, a 20-metre circle at A would touch the track at A, pass through the centre line at X, touch the long side at E or B (depending on direction), and return to A. The shape should be truly round — not egg-shaped, diamond-shaped, or lopsided. Riding an accurate circle requires the rider to use all four aids: the inside leg on the girth to maintain bend and impulsion, the outside leg behind the girth to prevent the quarters from swinging out, the inside rein for flexion, and the outside rein to control the bend and the size of the circle.
+
+A 15-metre circle is smaller and more demanding. It is ridden within the arena without touching the opposite long side. For example, a 15-metre circle at E would loop inward from the track by approximately 2.5 metres on each side. The smaller radius requires more bend from the horse and greater balance from the rider. It is an excellent exercise for developing the horse's suppleness and engagement.
+
+A 10-metre circle is used primarily in canter work and more advanced schooling. It requires a significant degree of collection and bend and should only be attempted when both horse and rider are sufficiently trained.
+
+Other important school figures include the half-circle and return to the track (sometimes called a demi-volte), the figure of eight, the serpentine, and the shallow loop. A serpentine consists of a series of equal-sized loops across the width of the arena, with each loop touching the long side. A three-loop serpentine in a 40-metre arena produces loops of approximately 13 metres each. When riding a serpentine, the rider must change the bend each time the centre line is crossed, which develops coordination and the horse's ability to change flexion smoothly.
+
+Shallow loops are ridden along the long side of the arena. A 5-metre loop, for instance, requires the horse to leave the track, loop inward by 5 metres, and return to the track. This exercise tests the rider's ability to maintain a consistent bend while keeping the horse balanced on a gentle curve.
+
+Straightness on the long sides and centre line is just as important as accuracy on curved lines. The horse should travel parallel to the sides of the arena, not drifting inward or outward. On the centre line, the horse should be perfectly straight, with the nose, shoulders, and hindquarters all aligned. Any deviation is immediately visible and is penalised in dressage tests.
+
+To ride accurate school figures, the rider must plan each figure before beginning it, identify reference points to guide the shape, and maintain a consistent rhythm and tempo throughout. Looking up and around the figure — rather than down — is essential for accuracy. The rider should also be aware of the horse's balance and adjust the aids accordingly: applying more inside leg if the horse falls in, or more outside rein if the horse drifts out.
+
+Regular practice of school figures at walk, trot, and canter develops the rider's spatial awareness, coordination, and feel. It also systematically improves the horse's suppleness, balance, and responsiveness to the aids. School figures are not just patterns on a page — they are the language of classical equitation.`,
+    keyPoints: [
+      "School figures are training tools that develop suppleness, straightness, and balance in the horse",
+      "A 20-metre circle should be truly round, touching the track and passing through the centre of the arena",
+      "Smaller circles demand more bend and balance; only attempt them when horse and rider are ready",
+      "Serpentines require a change of bend each time the centre line is crossed",
+      "Accurate riding of school figures requires planning, looking ahead, and coordinated use of all aids",
+    ],
+    safetyNote:
+      "When riding school figures in a shared arena, be aware of other riders' lines. Call out clearly when changing the rein or riding across the arena. Give way to riders on the outside track and adjust your figures to avoid collisions.",
+    practicalApplication:
+      "Practise riding a 20-metre circle at E or B in trot. Use markers or cones to check accuracy — place them at the four key points of the circle. Once the 20-metre circle is consistent, try reducing to a 15-metre circle and note how the aids need to change. Finish with a three-loop serpentine, focusing on smooth changes of bend.",
+    commonMistakes: [
+      "Riding egg-shaped or lopsided circles instead of truly round ones",
+      "Losing rhythm or balance when riding smaller circles",
+      "Failing to change the bend when crossing the centre line on serpentines",
+      "Cutting corners instead of riding them as quarter-circles",
+      "Looking down instead of ahead around the figure, causing loss of accuracy",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What are the four key points of a 20-metre circle at A in a 20x40 arena?",
+        options: [
+          "A, E or B, X, and C",
+          "A, the centre line at X, the opposite long side at E or B, and back to A",
+          "K, H, M, F",
+          "A, B, C, D",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A 20-metre circle at A touches the track at A, passes through X on the centre line, touches the long side at E or B, and returns to A, creating a truly round shape.",
+      },
+      {
+        question: "How many loops does a standard three-loop serpentine have, and where does the bend change?",
+        options: [
+          "Three loops, with the bend changing at each long side",
+          "Three loops, with the bend changing each time the centre line is crossed",
+          "Two loops, with the bend changing at X",
+          "Four loops, with the bend changing at each letter",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A three-loop serpentine has three equal loops, each touching the long side. The bend must change smoothly each time the rider crosses the centre line.",
+      },
+      {
+        question: "What is the purpose of a shallow loop along the long side?",
+        options: [
+          "To practise canter transitions",
+          "To test the rider's ability to maintain bend and balance on a gentle curve",
+          "To warm the horse up before jumping",
+          "To practise halting at markers",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Shallow loops develop the rider's ability to maintain consistent bend and balance while keeping the horse on a gentle curve away from and back to the track.",
+      },
+      {
+        question: "Why is straightness on the centre line important?",
+        options: [
+          "It is only important in competitions",
+          "Because the horse naturally goes straight on the centre line",
+          "Because any deviation is clearly visible and indicates lack of balance or rider control",
+          "It is not particularly important",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Straightness on the centre line demonstrates the rider's control and the horse's balance. Any deviation — the horse drifting left or right — is immediately obvious and indicates a training issue.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I know if my circle is truly round and not egg-shaped?",
+      "What are the key differences in the aids for a 20-metre circle versus a 15-metre circle?",
+      "Can you explain the correct way to ride a three-loop serpentine with changes of bend?",
+    ],
+  },
+  {
+    slug: "rider-balance-independent-seat",
+    pathwaySlug: "developing-rider-skills",
+    title: "Rider Balance and Independent Seat",
+    level: "intermediate",
+    category: "Rider Development",
+    sortOrder: 5,
+    objectives: [
+      "Understand what an independent seat is and why it matters for effective riding",
+      "Identify the key elements of a balanced riding position",
+      "Learn exercises to develop core stability and an independent seat",
+      "Recognise how rider balance directly affects the horse's way of going",
+    ],
+    content: `An independent seat is the ability to maintain a stable, balanced position in the saddle without relying on the reins for support or the stirrups for security. It means the rider can use each aid — hands, legs, and seat — independently and with precision, without one action interfering with another. Developing an independent seat is one of the most important goals for any rider, as it directly affects how well the rider communicates with the horse and how freely the horse can move.
+
+The foundation of the independent seat is correct alignment. When viewed from the side, the rider's ear, shoulder, hip, and heel should be in a vertical line. This alignment places the rider's centre of gravity directly over the horse's centre of gravity, creating a partnership in balance. If any of these points fall out of alignment — the shoulder ahead of the hip, the heel drawn up, or the hip behind the shoulder — the rider becomes unbalanced and must compensate, often by gripping with the knees, hanging on the reins, or bracing in the stirrups.
+
+Core stability is central to the independent seat. The rider's core muscles — the abdominals, obliques, and lower back muscles — act as the stabilising centre from which all movement radiates. A strong core allows the rider to absorb the horse's movement without stiffening, to follow the motion of each gait, and to apply aids clearly and effectively. However, core engagement does not mean rigidity; the rider must be firm yet elastic, stable yet supple.
+
+The pelvis plays a crucial role in balance. The rider should sit on the two seat bones and the pubic bone — the three-point seat — with the pelvis in a neutral position, neither tipped too far forward (which hollows the back) nor too far back (which rounds the back and causes the rider to sit on the back of the seat bones). A neutral pelvis allows the lower back to absorb movement and the hips to follow the horse's stride.
+
+The legs contribute to balance but should not be the primary source of stability. The thigh should lie flat against the saddle with a long, draped feel. The knee should be soft and slightly bent, not gripping. The lower leg should hang naturally at the horse's side, with the ball of the foot on the stirrup and the heel gently stretching down. Gripping with the knee or calf is a common fault that actually reduces stability by lifting the rider out of the saddle and preventing the seat from deepening.
+
+The hands and arms must operate independently of the rider's balance. Many developing riders use the reins as a balancing aid, holding on when they feel insecure. This creates a hard, unforgiving contact that restricts the horse's movement and causes the horse to resist or become tense. The arms should hang naturally from relaxed shoulders, with a straight line from elbow to hand to the horse's mouth. The fingers should close softly around the reins, maintaining an elastic contact that follows the horse's head movement.
+
+Exercises to develop an independent seat include riding without stirrups at walk and trot, arm exercises while riding (such as placing hands on hips, raising arms to the side, or touching the horse's ears and tail), and transitions within and between gaits. Lunging lessons — where the rider is on a lunge line controlled by the instructor — are particularly valuable because the rider can focus entirely on position without worrying about steering.
+
+Off-horse exercises are equally important. Yoga, Pilates, and core stability work all develop the suppleness, strength, and body awareness that transfer directly to riding. Specific exercises include the plank, single-leg balance work, hip flexor stretches, and exercises on a stability ball that mimic the movement of the saddle.
+
+The independent seat is not achieved overnight. It is a gradual process that requires patience, consistent practice, and honest self-assessment. Riders should regularly check their position — are the shoulders back, is the core engaged, is the seat deep, are the hands independent? — and be willing to return to basics whenever faults creep in. The reward is a rider who sits in true harmony with the horse, communicating through subtle shifts of weight and gentle aids rather than force and tension.`,
+    keyPoints: [
+      "An independent seat means the rider can use hands, legs, and seat independently without relying on any one for balance",
+      "Correct alignment — ear, shoulder, hip, heel in a vertical line — is the foundation of balance",
+      "Core stability provides the stabilising centre for all rider movement; it should be firm yet elastic",
+      "The pelvis should be in a neutral position, allowing the lower back to absorb the horse's movement",
+      "Riding without stirrups and lunge lessons are invaluable for developing an independent seat",
+      "Off-horse exercises such as Pilates and core stability work directly benefit the rider's position",
+    ],
+    safetyNote:
+      "Riding without stirrups should only be done on a calm, reliable horse in an enclosed arena and under supervision. If you feel unbalanced, take your stirrups back immediately. Never attempt exercises without stirrups at canter until your instructor confirms you are ready.",
+    practicalApplication:
+      "During your next lesson, ask your instructor for five minutes of walk work without stirrups. Focus on letting your legs hang long and heavy, sitting on your seat bones, and maintaining a tall upper body. If comfortable, try a short period of trot without stirrups on a 20-metre circle. Between rides, practise a two-minute plank and single-leg balance exercises at home.",
+    commonMistakes: [
+      "Gripping with the knees, which lifts the seat out of the saddle and reduces stability",
+      "Using the reins for balance, creating a hard contact that restricts the horse",
+      "Tipping forward from the waist, placing the rider ahead of the horse's centre of gravity",
+      "Rounding the lower back and sitting on the back of the seat bones instead of maintaining a neutral pelvis",
+      "Stiffening through the hips and lower back instead of absorbing the horse's movement",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is an independent seat?",
+        options: [
+          "The ability to ride without a saddle",
+          "The ability to maintain balance without relying on the reins or stirrups, using each aid independently",
+          "A type of saddle designed for balance",
+          "The ability to ride with one hand",
+        ],
+        correctIndex: 1,
+        explanation:
+          "An independent seat means the rider can maintain a stable, balanced position without using the reins for support or stirrups for security, and can apply each aid independently.",
+      },
+      {
+        question: "Which alignment is correct for a balanced riding position?",
+        options: [
+          "Ear, knee, toe in a line",
+          "Shoulder, hand, heel in a line",
+          "Ear, shoulder, hip, heel in a vertical line",
+          "Head, elbow, knee, ankle in a line",
+        ],
+        correctIndex: 2,
+        explanation:
+          "The ear, shoulder, hip, and heel should form a vertical line when viewed from the side. This places the rider's centre of gravity over the horse's centre of gravity.",
+      },
+      {
+        question: "Why is gripping with the knee a fault?",
+        options: [
+          "It causes the rider to lean forward",
+          "It lifts the seat out of the saddle and pushes the lower leg away, reducing stability",
+          "It makes the horse go faster",
+          "It wears out the saddle",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Gripping with the knee acts as a pivot point, lifting the seat out of the saddle and swinging the lower leg away from the horse's side. This reduces stability and makes it harder to apply effective leg aids.",
+      },
+      {
+        question: "What off-horse activity is particularly beneficial for developing rider balance?",
+        options: [
+          "Running long distances",
+          "Weightlifting with heavy weights",
+          "Pilates or core stability exercises",
+          "Swimming",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Pilates and core stability exercises develop the suppleness, strength, and body awareness that directly transfer to the riding position. They specifically target the core muscles that stabilise the rider in the saddle.",
+      },
+      {
+        question: "What is the benefit of lunge lessons for developing an independent seat?",
+        options: [
+          "The rider can go faster on the lunge",
+          "The rider can focus entirely on position without worrying about steering",
+          "The horse learns to lunge better",
+          "The instructor can stand further away",
+        ],
+        correctIndex: 1,
+        explanation:
+          "On the lunge, the instructor controls the horse, freeing the rider to concentrate fully on their position, balance, and the feel of the horse's movement without the distraction of steering.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What are the best off-horse exercises I can do to improve my seat and core stability?",
+      "How do I know if I am gripping with my knees, and what does it feel like when I stop?",
+      "Can you explain the concept of a three-point seat and neutral pelvis in more detail?",
+    ],
+  },
+  {
+    slug: "warmup-cooldown-basics",
+    pathwaySlug: "developing-rider-skills",
+    title: "Warm-Up and Cool-Down Basics",
+    level: "beginner",
+    category: "Lesson Management",
+    sortOrder: 6,
+    objectives: [
+      "Understand why warming up and cooling down are essential for horse welfare and performance",
+      "Learn a structured warm-up routine suitable for flatwork sessions",
+      "Know how to cool a horse down properly after exercise",
+      "Recognise signs that a horse is adequately warmed up or insufficiently cooled down",
+    ],
+    content: `Every riding session should begin with a thorough warm-up and end with a proper cool-down. These are not optional extras or time-fillers — they are essential for the horse's physical welfare, mental preparation, and long-term soundness. A well-planned warm-up prepares the horse's muscles, tendons, and joints for the work ahead, while a proper cool-down allows the body to recover gradually and prevents stiffness or injury.
+
+The warm-up should begin on a long rein at walk. Walking allows the horse to stretch its muscles gently, loosen its joints, and settle mentally into the session. The rider should walk on both reins, using large figures such as 20-metre circles and changes of rein through the diagonal. This initial walking phase should last at least five to ten minutes, longer in cold weather or if the horse has been standing in a stable. During this time, the rider should observe the horse's way of going — is it stepping under with the hind legs, is the walk relaxed and purposeful, is there any stiffness or unevenness?
+
+After the initial walk, the rider can pick up a working trot. The trot should be established gradually, beginning with a forward, active rhythm on a long rein before shortening the reins and taking up a contact. Rising trot is preferable during the warm-up as it is easier on the horse's back. The rider should trot on both reins, incorporating 20-metre circles, changes of rein, and transitions between walk and trot. The goal is to encourage the horse to swing through its back, step under with the hind legs, and seek the contact forward and down.
+
+As the horse loosens up, the rider can begin to introduce more demanding exercises — smaller circles, changes of bend, and transitions within the trot (lengthening and shortening the stride). However, the warm-up is not the time for intense collected work, lateral movements, or demanding exercises. These should be saved for the main body of the session when the horse's muscles are fully warmed and ready.
+
+Signs that the horse is warmed up include a relaxed, swinging back, an even rhythm, willingness to stretch into the contact, and a general sense of looseness and suppleness. If the horse feels stiff, tight, or resistant, more time should be spent warming up before progressing to harder work. Pushing a horse into demanding exercises before it is properly warmed up significantly increases the risk of muscle strain or soft tissue injury.
+
+The cool-down is equally important. After the main work of the session, the rider should gradually reduce the intensity — returning to a working trot, then a free walk on a long rein. The walk phase at the end of the session should last at least ten minutes, allowing the horse's heart rate, breathing, and body temperature to return to normal gradually.
+
+During the cool-down, the horse should be encouraged to stretch its neck forward and down, which helps release tension in the back muscles. The rider should walk on both reins, using gentle changes of direction to keep the horse attentive but relaxed. If the horse has worked hard, particularly in warm weather, the rider should check for excessive sweating, rapid breathing, or signs of distress.
+
+In hot weather, additional cooling measures may be necessary. Sponging the horse with cool water on the neck, chest, and between the hind legs helps reduce body temperature. The horse should be offered small sips of water but not allowed to drink large quantities while still hot. Walking the horse in hand after dismounting can also aid the cooling process.
+
+In cold weather, the horse may need a cooler rug placed over its quarters during the walking phase to prevent the muscles from cooling too rapidly, which can cause stiffness and discomfort.
+
+Failing to cool a horse down properly can lead to muscle stiffness, tying-up (a painful muscle condition), dehydration, and general discomfort. It also makes the horse less willing to work in future sessions, as it associates exercise with the unpleasant feeling of not being properly looked after afterwards.
+
+A responsible rider always prioritises the horse's welfare by allowing adequate time for both warming up and cooling down. This is a fundamental principle of good horsemanship that applies to every riding session, regardless of its intensity or duration.`,
+    keyPoints: [
+      "Every session must begin with at least five to ten minutes of walk on a long rein",
+      "The warm-up should progress gradually from walk to trot, using large figures on both reins",
+      "Signs of a warmed-up horse include a relaxed back, even rhythm, and willingness to stretch into the contact",
+      "The cool-down should include at least ten minutes of walk to return the horse's heart rate and breathing to normal",
+      "In hot weather, sponge the horse with cool water; in cold weather, use a cooler rug during the walk phase",
+    ],
+    safetyNote:
+      "Never skip the warm-up, especially in cold weather. A horse with cold, stiff muscles is more likely to stumble, spook, or injure itself. If the horse shows signs of distress during or after exercise — excessive sweating, rapid breathing, trembling, or reluctance to move — stop work immediately and seek advice.",
+    practicalApplication:
+      "Before your next lesson, arrive early enough to walk the horse for ten minutes on a long rein before the instructor begins the session. After the lesson, spend a full ten minutes walking on a long rein, changing the rein several times. Note how the horse's way of going changes from the beginning of the warm-up to the end.",
+    commonMistakes: [
+      "Rushing the warm-up and asking for demanding work before the horse is ready",
+      "Skipping the cool-down walk and putting the horse away while it is still hot or breathing heavily",
+      "Using the warm-up for intense schooling rather than gentle preparation",
+      "Not walking on both reins during the warm-up and cool-down",
+      "Ignoring signs that the horse is still stiff or not properly warmed up",
+    ],
+    knowledgeCheck: [
+      {
+        question: "How long should the initial walk phase of a warm-up last?",
+        options: [
+          "One to two minutes",
+          "At least five to ten minutes",
+          "Thirty seconds",
+          "Warming up at walk is not necessary",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The initial walk phase should last at least five to ten minutes to allow the horse's muscles, tendons, and joints to warm up gradually. Longer may be needed in cold weather.",
+      },
+      {
+        question: "What is a sign that a horse is properly warmed up?",
+        options: [
+          "The horse is sweating profusely",
+          "The horse has a relaxed, swinging back and even rhythm",
+          "The horse is moving very slowly",
+          "The horse is trying to canter",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A properly warmed-up horse shows a relaxed, swinging back, an even and consistent rhythm, and willingness to stretch into the contact. These signs indicate the muscles are loose and ready for work.",
+      },
+      {
+        question: "Why is the cool-down important?",
+        options: [
+          "It is only important for competition horses",
+          "It allows the horse's heart rate, breathing, and temperature to return to normal gradually",
+          "It teaches the horse to walk slowly",
+          "It is not particularly important if the horse was not worked hard",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The cool-down allows the horse's body to recover gradually. Without it, the horse risks muscle stiffness, tying-up, dehydration, and general discomfort.",
+      },
+      {
+        question: "What additional measure should be taken when cooling down in hot weather?",
+        options: [
+          "Put a heavy rug on the horse",
+          "Allow the horse to drink as much water as it wants immediately",
+          "Sponge the horse with cool water on the neck, chest, and between the hind legs",
+          "Trot the horse to cool it down faster",
+        ],
+        correctIndex: 2,
+        explanation:
+          "In hot weather, sponging with cool water on key areas — the neck, chest, and between the hind legs — helps reduce the horse's body temperature safely and effectively.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How should I adjust my warm-up routine in very cold or very hot weather?",
+      "What are the signs of tying-up, and how does a proper cool-down help prevent it?",
+      "Can you suggest a ten-minute warm-up plan I can use before my flatwork sessions?",
+    ],
+  },
+  {
+    slug: "preparing-for-a-lesson",
+    pathwaySlug: "developing-rider-skills",
+    title: "Preparing for a Lesson",
+    level: "beginner",
+    category: "Lesson Management",
+    sortOrder: 7,
+    objectives: [
+      "Understand how to prepare yourself and the horse before a riding lesson",
+      "Learn the importance of punctuality, appropriate clothing, and equipment checks",
+      "Know how to groom, tack up, and present a horse ready for a lesson",
+      "Develop a pre-lesson routine that promotes safety and good horsemanship",
+    ],
+    content: `Preparing properly for a riding lesson is a skill in itself and one that is often overlooked by beginner riders. Good preparation ensures that the lesson time is used effectively, that the horse is comfortable and ready to work, and that safety standards are maintained. Arriving flustered, improperly dressed, or with a poorly groomed horse wastes valuable lesson time and can create unnecessary risks.
+
+The first aspect of preparation is the rider. Every rider should arrive at the yard with enough time to get ready before the lesson begins — at least thirty minutes for riders who need to catch, groom, and tack up their horse. Appropriate clothing is essential: a correctly fitted, current-standard riding hat (meeting PAS015, SNELL, or ASTM/SEI standards), jodhpurs or breeches, riding boots with a small heel (not trainers or wellington boots), and gloves. A body protector is recommended for jumping and cross-country work and may be required by the riding school. Jewellery should be removed, and long hair tied back. These are not arbitrary rules — they are safety measures designed to protect the rider.
+
+Grooming the horse before riding is both a welfare requirement and a bonding opportunity. The rider should check the horse over for any signs of injury, swelling, heat in the legs, or changes in behaviour that might indicate discomfort. Begin grooming with a rubber curry comb or plastic curry comb in circular motions to loosen dirt and mud, paying particular attention to the areas where the saddle and girth will sit. Follow with a dandy brush to remove the loosened debris, then a body brush for a finer finish. The feet should be picked out thoroughly — checking for stones, signs of thrush, and the condition of the shoes. A dirty hoof or a loose shoe can cause serious problems during a ride.
+
+Tacking up correctly is a critical skill. The saddle should be placed gently on the horse's back, positioned behind the withers with the girth hanging evenly on both sides. The girth should be tightened gradually and checked again before mounting. The bridle should be fitted so that the bit sits comfortably in the corners of the horse's mouth, the browband is not pinching the ears, and the noseband allows two fingers' width of space. The throatlatch should permit a fist's width between it and the horse's cheek.
+
+Before mounting, the rider should perform a final safety check: is the girth tight enough, are the stirrups the correct length, is the bridle fitted properly, are all buckles and straps fastened securely? The rider should also check the arena or riding area for hazards — loose poles, puddles, uneven ground, or anything that might spook the horse.
+
+Mental preparation is often neglected but equally important. Before mounting, the rider should think about what they want to achieve in the lesson. Do they have specific goals — improving their rising trot, working on transitions, or practising a dressage test? Having a focus helps the rider engage with the lesson and make progress rather than simply going through the motions. If the rider has concerns or questions, these should be discussed with the instructor before mounting.
+
+Warming up the horse properly is the final step in preparation and is covered in detail in the warm-up lesson. However, the rider should know that the first few minutes of the lesson should always be spent walking on a long rein to allow the horse to stretch and settle.
+
+After the lesson, the rider's responsibilities continue. The horse should be untacked carefully, checked over for any rubs or injuries, and rugged or turned out as appropriate. Tack should be cleaned and put away tidily. Leaving a horse sweaty and unkempt after a lesson is poor horsemanship and reflects badly on the rider.
+
+Good preparation becomes second nature with practice, and it is a mark of a committed, responsible rider. Whether you are preparing for a casual hack, a schooling session, or a competition, the principles are the same: plan ahead, check everything twice, and always put the horse's welfare first.`,
+    keyPoints: [
+      "Arrive at least thirty minutes before the lesson to allow time for grooming and tacking up",
+      "Wear appropriate, correctly fitted safety equipment including a current-standard riding hat",
+      "Groom the horse thoroughly, paying attention to the saddle and girth areas, and pick out all four feet",
+      "Tack up carefully, checking the fit of the saddle, girth, and bridle before mounting",
+      "Perform a final safety check of all equipment and the riding area before getting on",
+      "Set a mental goal for the lesson to make the most of the time with your instructor",
+    ],
+    safetyNote:
+      "Never ride without a correctly fitted, current-standard riding hat. Check that the hat's harness is fastened securely and that the hat has not been dropped or damaged. If in doubt about the hat's safety, replace it before riding.",
+    practicalApplication:
+      "Create a personal pre-lesson checklist that you can follow each time you ride. Include items such as: hat check, clothing check, grooming routine, tacking-up checks, girth tightness, stirrup length, bridle fit, and a mental goal for the session. Use the checklist for your next three lessons and note how it improves your preparation.",
+    commonMistakes: [
+      "Arriving late and rushing through grooming and tacking up",
+      "Not picking out the horse's feet before riding",
+      "Failing to check the girth before mounting, leading to a slipping saddle",
+      "Wearing inappropriate footwear such as trainers or shoes without a heel",
+      "Neglecting to check the bridle fit, resulting in a pinching browband or incorrectly adjusted noseband",
+    ],
+    knowledgeCheck: [
+      {
+        question: "How early should a rider aim to arrive before a lesson if they need to groom and tack up?",
+        options: [
+          "Five minutes before",
+          "At least thirty minutes before",
+          "Exactly on time",
+          "One hour before",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Arriving at least thirty minutes before the lesson allows adequate time to groom the horse properly, tack up carefully, and perform all safety checks without rushing.",
+      },
+      {
+        question: "What should the rider check when picking out the horse's feet?",
+        options: [
+          "Only whether the shoes are shiny",
+          "Stones, signs of thrush, and the condition of the shoes",
+          "Only the colour of the hoof",
+          "Whether the feet are wet",
+        ],
+        correctIndex: 1,
+        explanation:
+          "When picking out feet, the rider should check for lodged stones, signs of thrush (a foul-smelling black discharge), and the condition of the shoes — looking for loose nails, worn shoes, or risen clenches.",
+      },
+      {
+        question: "How should a noseband be fitted?",
+        options: [
+          "As tight as possible",
+          "So loose that it hangs below the bit",
+          "Allowing two fingers' width of space",
+          "It does not matter how tight the noseband is",
+        ],
+        correctIndex: 2,
+        explanation:
+          "A correctly fitted noseband allows two fingers' width of space between the noseband and the horse's face. Too tight causes discomfort; too loose serves no purpose and may interfere with the bit.",
+      },
+      {
+        question: "Why is mental preparation before a lesson important?",
+        options: [
+          "It is not important",
+          "It helps the rider set goals and engage with the lesson for better progress",
+          "It makes the horse behave better",
+          "It is only necessary for competition riders",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Mental preparation — setting goals and thinking about what to work on — helps the rider focus during the lesson, engage with the instructor's guidance, and make measurable progress.",
+      },
+      {
+        question: "What standard should a riding hat meet?",
+        options: [
+          "Any standard is acceptable",
+          "PAS015, SNELL, or ASTM/SEI current standards",
+          "The hat only needs to fit well",
+          "Standards are only important for competitions",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Riding hats must meet current safety standards such as PAS015, SNELL, or ASTM/SEI. These standards ensure the hat provides adequate protection in the event of a fall.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you walk me through the correct order for grooming a horse before a lesson?",
+      "How do I check that my saddle and bridle are fitted correctly?",
+      "What should I include in a pre-lesson safety checklist?",
+    ],
+  },
+  {
+    slug: "reflecting-on-performance",
+    pathwaySlug: "developing-rider-skills",
+    title: "Reflecting on Performance and Improvement",
+    level: "developing",
+    category: "Rider Development",
+    sortOrder: 8,
+    objectives: [
+      "Understand the value of self-reflection and feedback in rider development",
+      "Learn how to evaluate a riding session objectively",
+      "Develop the habit of setting specific, measurable goals for improvement",
+      "Know how to use a riding journal or diary to track progress over time",
+    ],
+    content: `Reflection is one of the most powerful tools available to any rider, yet it is one of the most underused. Many riders finish a lesson, untack their horse, and move on without pausing to consider what went well, what was difficult, and what they should focus on next time. Developing the habit of structured reflection transforms the learning process, turning every ride into a stepping stone towards genuine improvement.
+
+Reflection begins during the lesson itself. A good rider pays attention to how things feel — not just whether they got the right answer, but how they got it. Did the transition feel smooth? Was the circle truly round? Did the horse respond to a light aid, or did the rider have to ask repeatedly? This kind of in-the-moment awareness is sometimes called proprioception or kinaesthetic awareness, and it develops with practice. The rider who can feel a good canter transition without being told by the instructor is further along in their development than the rider who only knows it was good because someone said so.
+
+After the lesson, the rider should spend a few minutes reviewing the session. This can be done mentally or, even better, by writing in a riding journal or diary. A useful framework for reflection is to ask three questions: What went well? What was challenging? What will I focus on next time? This simple structure ensures that the rider acknowledges progress (which builds confidence), identifies areas for improvement (which gives direction), and sets a specific goal for the next session (which creates motivation).
+
+Setting goals is a critical part of the improvement process. Goals should be specific, measurable, and realistic. "I want to be a better rider" is too vague to be useful. "I want to ride three smooth walk-to-trot transitions on each rein in my next lesson" is specific, measurable, and achievable. Specific goals give the rider something concrete to work towards and make it easier to evaluate progress.
+
+A riding journal or diary is an invaluable tool. Each entry might include the date, the horse ridden, the exercises covered, the rider's assessment of what went well and what was difficult, any feedback from the instructor, and a goal for the next session. Over time, the journal becomes a detailed record of the rider's development. Looking back through previous entries reveals patterns — recurring difficulties, gradual improvements, and the exercises or techniques that made the biggest difference.
+
+Feedback from the instructor is another essential component of reflection. A good instructor observes the rider objectively and provides clear, constructive feedback. However, the rider's role is not passive — they should actively listen to feedback, ask questions if something is unclear, and consider how the feedback relates to their own experience during the ride. Did the instructor's comment match what the rider felt? If not, why not? This kind of engaged dialogue between rider and instructor accelerates learning.
+
+Video can be a powerful aid to reflection. Having a friend or family member film part of a lesson allows the rider to see their position and the horse's way of going from the outside. Many riders are surprised by what they see — they may feel straight but appear crooked, or think they are sitting deeply but can see their seat lifting out of the saddle. Video provides objective evidence that complements the rider's subjective feel.
+
+It is also important to reflect on the horse's performance, not just the rider's. Was the horse relaxed and willing, or tense and resistant? Did it respond to light aids, or was it dull and unresponsive? Were there any signs of discomfort or unwillingness that might indicate a physical issue? The rider's reflection should always include consideration of the horse's welfare and way of going.
+
+Emotional reflection is part of the process too. Riding is an emotional activity — riders experience frustration, elation, anxiety, and satisfaction, sometimes all in the same lesson. Acknowledging these emotions is healthy and helps the rider understand their own responses. A rider who recognises that they become tense and grip with their legs when anxious can work on relaxation techniques. A rider who celebrates small victories maintains motivation through difficult periods.
+
+Finally, reflection should be balanced. It is easy to focus only on what went wrong and ignore what went right. Equally, it is tempting to gloss over difficulties and only remember the highlights. A balanced, honest assessment — recognising both strengths and weaknesses — is the hallmark of a mature and developing rider. Every ride offers lessons, and the rider who takes time to learn from each one will progress faster and with greater enjoyment than the rider who simply turns up and rides without thinking.`,
+    keyPoints: [
+      "Structured reflection after every session accelerates learning and improvement",
+      "Use the framework: What went well? What was challenging? What will I focus on next time?",
+      "Set specific, measurable goals rather than vague aspirations",
+      "Keep a riding journal to track progress, feedback, and goals over time",
+      "Actively engage with instructor feedback and consider how it relates to what you felt during the ride",
+    ],
+    safetyNote:
+      "Reflection includes considering the horse's physical state. If you notice any signs of discomfort, lameness, or unusual behaviour during your review, report these to the yard manager or instructor immediately, even if the lesson has ended.",
+    practicalApplication:
+      "Start a riding journal today. After your next lesson, write down three things that went well, two things that were challenging, and one specific goal for your next session. Include any feedback your instructor gave you. Review your journal entries after five lessons and note any patterns or improvements.",
+    commonMistakes: [
+      "Not reflecting at all — finishing a lesson and moving on without considering what was learned",
+      "Focusing only on negatives and ignoring what went well, which erodes confidence",
+      "Setting vague goals such as 'ride better' instead of specific, measurable targets",
+      "Ignoring instructor feedback or not asking for clarification when something is unclear",
+      "Forgetting to reflect on the horse's performance and welfare alongside the rider's own progress",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is a useful framework for reflecting on a riding session?",
+        options: [
+          "Rate the session out of ten",
+          "What went well? What was challenging? What will I focus on next time?",
+          "Only think about what the horse did wrong",
+          "Ask the instructor to write a report",
+        ],
+        correctIndex: 1,
+        explanation:
+          "This three-question framework ensures the rider acknowledges progress, identifies areas for improvement, and sets a concrete goal — covering all the essential elements of productive reflection.",
+      },
+      {
+        question: "What makes a good riding goal?",
+        options: [
+          "It should be as ambitious as possible",
+          "It should be vague so the rider does not feel pressured",
+          "It should be specific, measurable, and realistic",
+          "It should only focus on competition results",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Specific, measurable, and realistic goals give the rider a clear target to work towards and make it possible to evaluate whether progress has been made.",
+      },
+      {
+        question: "Why is a riding journal valuable?",
+        options: [
+          "It is required by riding schools",
+          "It creates a detailed record of progress, patterns, and instructor feedback over time",
+          "It replaces the need for an instructor",
+          "It is only useful for advanced riders",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A riding journal provides a written record that reveals patterns, tracks improvements, and preserves instructor feedback. Over time, it becomes an invaluable tool for understanding the rider's development.",
+      },
+      {
+        question: "How can video help with reflection?",
+        options: [
+          "It allows the rider to see their position objectively from the outside",
+          "It is only useful for social media",
+          "It replaces the need for an instructor",
+          "It is not helpful for reflection",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Video provides objective evidence of the rider's position and the horse's way of going. It often reveals things the rider cannot feel, such as crookedness, a lifting seat, or uneven contact.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you help me create a template for a riding journal entry?",
+      "How do I set effective goals for my riding improvement?",
+      "What should I look for when reviewing a video of my riding?",
+    ],
+  }
+];
