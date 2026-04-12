@@ -9,7 +9,7 @@ import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM, isAIConfigured } from "./_core/llm";
 import { getRuntimeConfig } from "./dynamicConfig";
-import { eq, and, desc, gte, lte, sql, inArray } from "drizzle-orm";
+import { eq, and, desc, gte, lte, sql, inArray, or } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   virtualHorses,
@@ -1303,16 +1303,16 @@ export const studentRouter = router({
     const groupIds = memberships.map(m => m.groupId);
 
     // Get assignments for this student directly or via group
-    const conditions = [
-      eq(teacherLessonAssignments.isActive, true),
-    ];
     const studentCondition = groupIds.length > 0
-      ? sql`(${teacherLessonAssignments.studentUserId} = ${ctx.user.id} OR ${teacherLessonAssignments.groupId} IN (${sql.join(groupIds.map(id => sql`${id}`), sql`, `)}))`
-      : sql`${teacherLessonAssignments.studentUserId} = ${ctx.user.id}`;
+      ? or(
+          eq(teacherLessonAssignments.studentUserId, ctx.user.id),
+          inArray(teacherLessonAssignments.groupId, groupIds),
+        )!
+      : eq(teacherLessonAssignments.studentUserId, ctx.user.id);
 
     const assignments = await dbConn.select()
       .from(teacherLessonAssignments)
-      .where(and(...conditions, studentCondition))
+      .where(and(eq(teacherLessonAssignments.isActive, true), studentCondition))
       .orderBy(teacherLessonAssignments.dueDate);
 
     // Get completion data to mark which are done
@@ -1408,7 +1408,7 @@ export const studentRouter = router({
     const competencyPercent = Math.round((achievedCompetencies / REQUIRED_COMPETENCIES) * 100);
 
     // Weak areas — skill areas with lowest XP
-    const sortedSkills = [...skillProgress].sort((a, b) => a.xp - b.xp);
+    const sortedSkills = skillProgress.slice().sort((a, b) => a.xp - b.xp);
     const weakAreas = sortedSkills.slice(0, 3).map(s => s.skillArea.replace(/_/g, " "));
 
     // Category-based weak areas from competencies needing support

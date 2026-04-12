@@ -732,9 +732,12 @@ export const teacherRouter = router({
           acc[lc.pathwaySlug] = (acc[lc.pathwaySlug] ?? 0) + 1;
           return acc;
         }, {} as Record<string, number>),
-        averageLessonScore: lessonCompletions.filter(lc => lc.score !== null).length > 0
-          ? Math.round(lessonCompletions.filter(lc => lc.score !== null).reduce((s, lc) => s + (lc.score ?? 0), 0) / lessonCompletions.filter(lc => lc.score !== null).length)
-          : null,
+        averageLessonScore: (() => {
+          const scoredCompletions = lessonCompletions.filter(lc => lc.score !== null);
+          return scoredCompletions.length > 0
+            ? Math.round(scoredCompletions.reduce((s, lc) => s + (lc.score ?? 0), 0) / scoredCompletions.length)
+            : null;
+        })(),
         competencies: {
           total: competencyRows.length,
           achieved: competencyRows.filter(c => c.status === "achieved").length,
