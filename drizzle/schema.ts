@@ -1657,3 +1657,66 @@ export const learningPathwayProgress = mysqlTable("learningPathwayProgress", {
 
 export type LearningPathwayProgress = typeof learningPathwayProgress.$inferSelect;
 export type InsertLearningPathwayProgress = typeof learningPathwayProgress.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lesson Engine — structured learning pathways with full educational content
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Lesson pathways — high-level learning tracks (e.g. "Horse Care Foundations").
+ */
+export const lessonPathways = mysqlTable("lessonPathways", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 100 }).notNull().unique(),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  iconName: varchar("iconName", { length: 50 }),
+  isPublished: boolean("isPublished").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type LessonPathway = typeof lessonPathways.$inferSelect;
+export type InsertLessonPathway = typeof lessonPathways.$inferInsert;
+
+/**
+ * Lesson units — individual lessons with full educational content, objectives,
+ * knowledge checks, safety notes, and AI tutor prompts.
+ */
+export const lessonUnits = mysqlTable("lessonUnits", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 150 }).notNull().unique(),
+  pathwaySlug: varchar("pathwaySlug", { length: 100 }).notNull(),
+  title: varchar("title", { length: 250 }).notNull(),
+  level: varchar("level", { length: 30 }).notNull(),
+  category: varchar("category", { length: 60 }).notNull(),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  objectives: text("objectives").notNull(),
+  content: text("content").notNull(),
+  keyPoints: text("keyPoints").notNull(),
+  safetyNote: text("safetyNote").notNull(),
+  practicalApplication: text("practicalApplication").notNull(),
+  commonMistakes: text("commonMistakes").notNull(),
+  knowledgeCheck: text("knowledgeCheck").notNull(),
+  aiTutorPrompts: text("aiTutorPrompts").notNull(),
+  isPublished: boolean("isPublished").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+});
+
+export type LessonUnit = typeof lessonUnits.$inferSelect;
+export type InsertLessonUnit = typeof lessonUnits.$inferInsert;
+
+/**
+ * Lesson completion — records each lesson a student finishes, with optional
+ * quiz score.
+ */
+export const lessonCompletion = mysqlTable("lessonCompletion", {
+  id: int("id").autoincrement().primaryKey(),
+  studentUserId: int("studentUserId").notNull(),
+  lessonSlug: varchar("lessonSlug", { length: 150 }).notNull(),
+  pathwaySlug: varchar("pathwaySlug", { length: 100 }).notNull(),
+  level: varchar("level", { length: 30 }).notNull(),
+  score: int("score"),
+  completedAt: timestamp("completedAt").defaultNow().notNull(),
+});
