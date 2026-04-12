@@ -669,3 +669,59 @@ export async function sendStableInviteEmail(
 
   await sendEmail(recipientEmail, subject, html);
 }
+
+/**
+ * Send a complimentary access / goodwill email when admin grants free access.
+ * Dynamic freeDays supports 30, 60, or 90 (and any other admin-chosen value).
+ */
+export async function sendCompensationEmail(
+  recipientEmail: string,
+  userName: string,
+  freeDays: number,
+): Promise<void> {
+  const baseUrl = process.env.BASE_URL || "https://equiprofile.online";
+  const dashboardUrl = `${baseUrl}/dashboard`;
+
+  const subject = `Your complimentary ${freeDays}-day access — EquiProfile`;
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Thank you for your patience</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      Hi ${userName || "there"},
+    </p>
+    <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.6;">
+      We have recently completed a significant round of platform upgrades to EquiProfile. During this period, some features may not have worked perfectly, and we sincerely appreciate your patience.
+    </p>
+    <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
+      As a thank-you, we have added <strong>${freeDays} days of complimentary full access</strong> to your account — no action required on your part.
+    </p>
+    <div style="background:#f0f4ff;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #dde3f8;">
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#374151;">
+            ✓&nbsp;&nbsp;<strong>${freeDays} days</strong> of complimentary access added to your account
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#374151;">
+            ✓&nbsp;&nbsp;All your horse data, health records, and documents remain intact
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#374151;">
+            ✓&nbsp;&nbsp;No payment required — this access is already applied
+          </td>
+        </tr>
+      </table>
+    </div>
+    ${ctaBtn("Go to My Dashboard →", dashboardUrl)}
+    <p style="font-size:14px;color:#374151;line-height:1.6;margin:24px 0 8px;">
+      The upgraded platform is now running smoothly, and we are confident you will enjoy the improvements. If you have any questions at all, please do not hesitate to reach out.
+    </p>
+    <p style="font-size:14px;color:#374151;margin:0 0 24px;">
+      Thank you for being part of EquiProfile.
+    </p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">This is a service notification. No action is required.</p>
+  `);
+
+  await sendEmail(recipientEmail, subject, html);
+}
