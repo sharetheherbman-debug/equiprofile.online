@@ -22,6 +22,7 @@ import {
   X,
   Settings,
   DollarSign,
+  Library,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -37,6 +38,7 @@ export type StudentView =
   | "virtual-horse"
   | "tasks"
   | "training"
+  | "lessons"
   | "study-hub"
   | "ai-tutor"
   | "progress"
@@ -61,6 +63,7 @@ const studentNavItems: StudentNavItem[] = [
   { icon: Sparkles, label: "My Horse", view: "virtual-horse" },
   { icon: ClipboardList, label: "Daily Care", view: "tasks" },
   { icon: Dumbbell, label: "Training Log", view: "training" },
+  { icon: Library, label: "Lessons", view: "lessons" },
   { icon: BookOpen, label: "Study Hub", view: "study-hub" },
   { icon: Brain, label: "AI Tutor", view: "ai-tutor" },
   { icon: TrendingUp, label: "Progress", view: "progress" },
@@ -205,6 +208,7 @@ export default function StudentDashboardLayout({
     "virtual-horse": "My Horse",
     tasks: "Daily Care",
     training: "Training Log",
+    lessons: "Lessons",
     "study-hub": "Study Hub",
     "ai-tutor": "AI Tutor",
     progress: "Progress",

@@ -32,6 +32,10 @@ import {
   MessageSquare,
   AlertCircle,
   Route,
+  Library,
+  ChevronLeft,
+  ArrowRight,
+  Eye,
 } from "lucide-react";
 
 /**
@@ -1477,6 +1481,404 @@ function ScenarioTrainingView() {
   );
 }
 
+// ─── Lessons View ─────────────────────────────────────────────
+const PATHWAY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Heart, Eye, Shield, BookOpen, Target, TrendingUp,
+};
+
+function LessonsView() {
+  const { data: pathways, isLoading: loadingPathways } = trpc.student.listLessonPathways.useQuery();
+  const [selectedPathway, setSelectedPathway] = useState<string | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
+  const [levelFilter, setLevelFilter] = useState<string>("all");
+  const [quizMode, setQuizMode] = useState(false);
+  const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
+
+  const { data: lessons, isLoading: loadingLessons } = trpc.student.listLessons.useQuery(
+    selectedPathway ? { pathwaySlug: selectedPathway, ...(levelFilter !== "all" ? { level: levelFilter as any } : {}) } : { ...(levelFilter !== "all" ? { level: levelFilter as any } : {}) },
+    { enabled: true },
+  );
+
+  const { data: lessonDetail, isLoading: loadingDetail } = trpc.student.getLesson.useQuery(
+    { slug: selectedLesson! },
+    { enabled: !!selectedLesson },
+  );
+
+  const { data: progress } = trpc.student.getLessonProgress.useQuery();
+  const completeMutation = trpc.student.completeLesson.useMutation();
+  const utils = trpc.useUtils();
+
+  const completedSlugs = new Set((progress ?? []).map((p) => p.lessonSlug));
+
+  const handleComplete = async () => {
+    if (!lessonDetail) return;
+    let score: number | undefined;
+    if (quizMode && quizSubmitted && lessonDetail.knowledgeCheck) {
+      const checks = lessonDetail.knowledgeCheck as Array<{ correctIndex: number }>;
+      const correct = checks.filter((q, i) => quizAnswers[i] === q.correctIndex).length;
+      score = Math.round((correct / checks.length) * 100);
+    }
+    await completeMutation.mutateAsync({
+      lessonSlug: lessonDetail.slug,
+      pathwaySlug: lessonDetail.pathwaySlug,
+      level: lessonDetail.level as any,
+      score,
+    });
+    utils.student.getLessonProgress.invalidate();
+  };
+
+  const levelColors: Record<string, string> = {
+    beginner: "bg-emerald-500/20 text-emerald-400",
+    developing: "bg-blue-500/20 text-blue-400",
+    intermediate: "bg-amber-500/20 text-amber-400",
+    advanced: "bg-rose-500/20 text-rose-400",
+  };
+
+  // ── Lesson detail view ──
+  if (selectedLesson && lessonDetail) {
+    const checks = (lessonDetail.knowledgeCheck ?? []) as Array<{
+      question: string; options: string[]; correctIndex: number; explanation: string;
+    }>;
+    const objectives = (lessonDetail.objectives ?? []) as string[];
+    const keyPoints = (lessonDetail.keyPoints ?? []) as string[];
+    const commonMistakes = (lessonDetail.commonMistakes ?? []) as string[];
+    const aiPrompts = (lessonDetail.aiTutorPrompts ?? []) as string[];
+    const isCompleted = completedSlugs.has(lessonDetail.slug);
+
+    return (
+      <div className="space-y-6">
+        {/* Back button */}
+        <button onClick={() => { setSelectedLesson(null); setQuizMode(false); setQuizAnswers({}); setQuizSubmitted(false); }}
+          className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+          <ChevronLeft className="w-4 h-4" /> Back to lessons
+        </button>
+
+        {/* Lesson header */}
+        <div className="rounded-xl p-6" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <div className="flex items-start justify-between flex-wrap gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${levelColors[lessonDetail.level] ?? ""}`}>
+                  {lessonDetail.level}
+                </span>
+                <span className="text-xs text-gray-500">{lessonDetail.category}</span>
+                {isCompleted && <span className="text-xs text-emerald-400 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Completed</span>}
+              </div>
+              <h2 className="text-xl font-bold text-white">{lessonDetail.title}</h2>
+            </div>
+            {!isCompleted && (
+              <button onClick={handleComplete} disabled={completeMutation.isPending}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 transition-colors disabled:opacity-50">
+                {completeMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Mark Complete"}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Objectives */}
+        {objectives.length > 0 && (
+          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+            <h3 className="text-sm font-semibold text-indigo-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Target className="w-4 h-4" /> Learning Objectives
+            </h3>
+            <ul className="space-y-2">
+              {objectives.map((obj, i) => (
+                <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                  <ChevronRight className="w-3 h-3 text-indigo-400 mt-1 shrink-0" /> {obj}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Main content */}
+        <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <div className="prose prose-invert prose-sm max-w-none text-gray-300 whitespace-pre-line leading-relaxed">
+            {lessonDetail.content}
+          </div>
+        </div>
+
+        {/* Key points */}
+        {keyPoints.length > 0 && (
+          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+            <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Star className="w-4 h-4" /> Key Points
+            </h3>
+            <ul className="space-y-2">
+              {keyPoints.map((kp, i) => (
+                <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400 mt-1 shrink-0" /> {kp}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Safety note */}
+        {lessonDetail.safetyNote && (
+          <div className="rounded-xl p-5 bg-amber-500/10 border border-amber-500/20">
+            <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <Shield className="w-4 h-4" /> Safety Note
+            </h3>
+            <p className="text-sm text-amber-200/80">{lessonDetail.safetyNote}</p>
+          </div>
+        )}
+
+        {/* Practical application */}
+        {lessonDetail.practicalApplication && (
+          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+            <h3 className="text-sm font-semibold text-cyan-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <Lightbulb className="w-4 h-4" /> Practical Application
+            </h3>
+            <p className="text-sm text-gray-300">{lessonDetail.practicalApplication}</p>
+          </div>
+        )}
+
+        {/* Common mistakes */}
+        {commonMistakes.length > 0 && (
+          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+            <h3 className="text-sm font-semibold text-rose-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" /> Common Mistakes
+            </h3>
+            <ul className="space-y-2">
+              {commonMistakes.map((m, i) => (
+                <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                  <XCircle className="w-3 h-3 text-rose-400 mt-1 shrink-0" /> {m}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Knowledge check */}
+        {checks.length > 0 && (
+          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
+                <Brain className="w-4 h-4" /> Knowledge Check
+              </h3>
+              {!quizMode && (
+                <button onClick={() => setQuizMode(true)} className="text-xs px-3 py-1 rounded-lg bg-indigo-600/30 text-indigo-300 hover:bg-indigo-600/50 transition-colors">
+                  Take Quiz
+                </button>
+              )}
+            </div>
+            {quizMode ? (
+              <div className="space-y-5">
+                {checks.map((q, qi) => (
+                  <div key={qi} className="space-y-2">
+                    <p className="text-sm text-white font-medium">{qi + 1}. {q.question}</p>
+                    <div className="grid gap-2">
+                      {q.options.map((opt, oi) => {
+                        const selected = quizAnswers[qi] === oi;
+                        const isCorrect = quizSubmitted && oi === q.correctIndex;
+                        const isWrong = quizSubmitted && selected && oi !== q.correctIndex;
+                        return (
+                          <button key={oi} disabled={quizSubmitted}
+                            onClick={() => setQuizAnswers((prev) => ({ ...prev, [qi]: oi }))}
+                            className={`text-left text-sm px-3 py-2 rounded-lg border transition-colors ${
+                              isCorrect ? "border-emerald-500 bg-emerald-500/20 text-emerald-300" :
+                              isWrong ? "border-rose-500 bg-rose-500/20 text-rose-300" :
+                              selected ? "border-indigo-500 bg-indigo-500/20 text-indigo-300" :
+                              "border-gray-700 bg-gray-800/50 text-gray-400 hover:border-gray-600"
+                            }`}>
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {quizSubmitted && (
+                      <p className="text-xs text-gray-400 mt-1 pl-2">{q.explanation}</p>
+                    )}
+                  </div>
+                ))}
+                {!quizSubmitted ? (
+                  <button onClick={() => setQuizSubmitted(true)} disabled={Object.keys(quizAnswers).length < checks.length}
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 transition-colors disabled:opacity-50">
+                    Submit Answers
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <p className="text-sm text-gray-300">
+                      Score: {checks.filter((q, i) => quizAnswers[i] === q.correctIndex).length}/{checks.length}
+                    </p>
+                    {!isCompleted && (
+                      <button onClick={handleComplete} disabled={completeMutation.isPending}
+                        className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-500 transition-colors disabled:opacity-50">
+                        {completeMutation.isPending ? "Saving..." : "Complete with Score"}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">{checks.length} questions available. Take the quiz to test your knowledge.</p>
+            )}
+          </div>
+        )}
+
+        {/* AI Tutor integration — lesson-aware prompts */}
+        {aiPrompts.length > 0 && (
+          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+            <h3 className="text-sm font-semibold text-violet-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" /> Ask the AI Tutor
+            </h3>
+            <div className="grid gap-2">
+              {aiPrompts.map((prompt, i) => (
+                <p key={i} className="text-sm text-gray-400 italic flex items-start gap-2">
+                  <Brain className="w-3 h-3 text-violet-400 mt-1 shrink-0" /> &ldquo;{prompt}&rdquo;
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── Loading states ──
+  if (selectedLesson && loadingDetail) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+      </div>
+    );
+  }
+
+  // ── Pathway list / lesson list ──
+  const filteredLessons = lessons ?? [];
+  const pathwayObj = pathways?.find((p) => p.slug === selectedPathway);
+  const totalLessons = filteredLessons.length;
+  const completedCount = filteredLessons.filter((l) => completedSlugs.has(l.slug)).length;
+
+  return (
+    <div className="space-y-6">
+      {/* Pathway header / breadcrumb */}
+      {selectedPathway && pathwayObj ? (
+        <div className="space-y-3">
+          <button onClick={() => setSelectedPathway(null)}
+            className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+            <ChevronLeft className="w-4 h-4" /> All Pathways
+          </button>
+          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+            <h2 className="text-lg font-bold text-white">{pathwayObj.title}</h2>
+            <p className="text-sm text-gray-400 mt-1">{pathwayObj.description}</p>
+            <div className="flex items-center gap-4 mt-3">
+              <span className="text-xs text-gray-500">{totalLessons} lessons</span>
+              <span className="text-xs text-emerald-400">{completedCount} completed</span>
+              {totalLessons > 0 && (
+                <div className="flex-1 max-w-[200px] h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${(completedCount / totalLessons) * 100}%` }} />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <Library className="w-5 h-5 text-indigo-400" /> Learning Pathways
+          </h2>
+          <p className="text-sm text-gray-400 mt-1">Structured courses covering all areas of horse care, riding, and equestrian theory.</p>
+        </div>
+      )}
+
+      {/* Level filter */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {["all", "beginner", "developing", "intermediate", "advanced"].map((lvl) => (
+          <button key={lvl} onClick={() => setLevelFilter(lvl)}
+            className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+              levelFilter === lvl
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+            }`}>
+            {lvl === "all" ? "All Levels" : lvl.charAt(0).toUpperCase() + lvl.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {/* Pathway cards (when no pathway selected) */}
+      {!selectedPathway && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {loadingPathways ? (
+            <div className="col-span-full flex justify-center py-12">
+              <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+            </div>
+          ) : (
+            pathways?.map((pw) => {
+              const pwLessons = (lessons ?? []).filter((l) => l.pathwaySlug === pw.slug);
+              const pwCompleted = pwLessons.filter((l) => completedSlugs.has(l.slug)).length;
+              return (
+                <button key={pw.slug} onClick={() => setSelectedPathway(pw.slug)}
+                  className="text-left rounded-xl p-5 transition-all hover:scale-[1.01] hover:border-indigo-500/40"
+                  style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                      <Library className="w-4 h-4 text-indigo-400" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-white">{pw.title}</h3>
+                  </div>
+                  <p className="text-xs text-gray-400 line-clamp-2 mb-3">{pw.description}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">{pwLessons.length} lessons</span>
+                    {pwLessons.length > 0 && (
+                      <>
+                        <span className="text-xs text-emerald-400">{pwCompleted} done</span>
+                        <div className="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
+                          <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(pwCompleted / pwLessons.length) * 100}%` }} />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </button>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {/* Lesson list (when pathway selected) */}
+      {selectedPathway && (
+        <div className="space-y-3">
+          {loadingLessons ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+            </div>
+          ) : filteredLessons.length === 0 ? (
+            <div className="text-center py-12 text-gray-500 text-sm">No lessons found for this filter.</div>
+          ) : (
+            filteredLessons.map((lesson, idx) => {
+              const isComplete = completedSlugs.has(lesson.slug);
+              return (
+                <button key={lesson.slug} onClick={() => setSelectedLesson(lesson.slug)}
+                  className="w-full text-left rounded-xl p-4 flex items-center gap-4 transition-all hover:border-indigo-500/40"
+                  style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    isComplete ? "bg-emerald-500/20" : "bg-gray-800"
+                  }`}>
+                    {isComplete ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <span className="text-xs text-gray-500 font-mono">{idx + 1}</span>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-medium text-white truncate">{lesson.title}</h4>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${levelColors[lesson.level] ?? ""}`}>
+                        {lesson.level}
+                      </span>
+                      <span className="text-[10px] text-gray-500">{lesson.category}</span>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-gray-600 shrink-0" />
+                </button>
+              );
+            })
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -1489,6 +1891,7 @@ export default function StudentDashboard() {
     "virtual-horse": "My Virtual Horse",
     "tasks": "Tasks & Care",
     "training": "Training Log",
+    "lessons": "Lessons",
     "study-hub": "Study Hub",
     "ai-tutor": "AI Tutor",
     "progress": "Progress",
@@ -1528,6 +1931,7 @@ export default function StudentDashboard() {
           {activeView === "virtual-horse" && <VirtualHorseView />}
           {activeView === "tasks" && <TasksView />}
           {activeView === "training" && <TrainingView />}
+          {activeView === "lessons" && <LessonsView />}
           {activeView === "study-hub" && <StudyHubView />}
           {activeView === "ai-tutor" && <AITutorView />}
           {activeView === "progress" && <ProgressView />}

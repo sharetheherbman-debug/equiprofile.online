@@ -26,7 +26,11 @@ import {
   learningPathwayProgress,
   studentGroups,
   studentGroupMembers,
+  lessonPathways,
+  lessonUnits,
+  lessonCompletion,
 } from "../drizzle/schema";
+import { LESSON_PATHWAYS, LESSON_UNITS } from "./lessonContent";
 
 /** Safely parse user preferences JSON. */
 function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
@@ -1113,5 +1117,169 @@ export const studentRouter = router({
       }
 
       return { success: true };
+    }),
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Lesson Engine — structured learning pathways
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /** List all lesson pathways (seeds DB on first call). */
+  listLessonPathways: studentProcedure
+    .query(async () => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      // Seed pathways if table is empty
+      const existing = await dbConn.select({ id: lessonPathways.id }).from(lessonPathways).limit(1);
+      if (existing.length === 0) {
+        await dbConn.insert(lessonPathways).values(
+          LESSON_PATHWAYS.map((p) => ({
+            slug: p.slug,
+            title: p.title,
+            description: p.description,
+            sortOrder: p.sortOrder,
+            iconName: p.iconName,
+            isPublished: true,
+          })),
+        );
+      }
+
+      const rows = await dbConn.select().from(lessonPathways).orderBy(lessonPathways.sortOrder);
+      return rows;
+    }),
+
+  /** List lessons, optionally filtered by pathway and/or level. Seeds DB on first call. */
+  listLessons: studentProcedure
+    .input(z.object({
+      pathwaySlug: z.string().optional(),
+      level: z.enum(["beginner", "developing", "intermediate", "advanced"]).optional(),
+    }).optional())
+    .query(async ({ input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      // Seed lessons if table is empty
+      const existing = await dbConn.select({ id: lessonUnits.id }).from(lessonUnits).limit(1);
+      if (existing.length === 0) {
+        await dbConn.insert(lessonUnits).values(
+          LESSON_UNITS.map((l) => ({
+            slug: l.slug,
+            pathwaySlug: l.pathwaySlug,
+            title: l.title,
+            level: l.level,
+            category: l.category,
+            sortOrder: l.sortOrder,
+            objectives: JSON.stringify(l.objectives),
+            content: l.content,
+            keyPoints: JSON.stringify(l.keyPoints),
+            safetyNote: l.safetyNote,
+            practicalApplication: l.practicalApplication,
+            commonMistakes: JSON.stringify(l.commonMistakes),
+            knowledgeCheck: JSON.stringify(l.knowledgeCheck),
+            aiTutorPrompts: JSON.stringify(l.aiTutorPrompts),
+            isPublished: true,
+          })),
+        );
+      }
+
+      const conditions = [];
+      if (input?.pathwaySlug) conditions.push(eq(lessonUnits.pathwaySlug, input.pathwaySlug));
+      if (input?.level) conditions.push(eq(lessonUnits.level, input.level));
+
+      const rows = conditions.length > 0
+        ? await dbConn.select().from(lessonUnits).where(and(...conditions)).orderBy(lessonUnits.sortOrder)
+        : await dbConn.select().from(lessonUnits).orderBy(lessonUnits.sortOrder);
+
+      // Return summary without full content
+      return rows.map((r) => ({
+        id: r.id,
+        slug: r.slug,
+        pathwaySlug: r.pathwaySlug,
+        title: r.title,
+        level: r.level,
+        category: r.category,
+        sortOrder: r.sortOrder,
+      }));
+    }),
+
+  /** Get full lesson content by slug. */
+  getLesson: studentProcedure
+    .input(z.object({ slug: z.string().min(1).max(150) }))
+    .query(async ({ input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      const [row] = await dbConn.select().from(lessonUnits).where(eq(lessonUnits.slug, input.slug)).limit(1);
+      if (!row) throw new TRPCError({ code: "NOT_FOUND", message: "Lesson not found" });
+
+      // Parse JSON fields
+      const parseJSON = (val: string | null) => {
+        if (!val) return [];
+        try { return JSON.parse(val); } catch { return []; }
+      };
+
+      return {
+        ...row,
+        objectives: parseJSON(row.objectives),
+        keyPoints: parseJSON(row.keyPoints),
+        commonMistakes: parseJSON(row.commonMistakes),
+        knowledgeCheck: parseJSON(row.knowledgeCheck),
+        aiTutorPrompts: parseJSON(row.aiTutorPrompts),
+      };
+    }),
+
+  /** Mark a lesson as complete, with optional quiz score. */
+  completeLesson: studentProcedure
+    .input(z.object({
+      lessonSlug: z.string().min(1).max(150),
+      pathwaySlug: z.string().min(1).max(100),
+      level: z.enum(["beginner", "developing", "intermediate", "advanced"]),
+      score: z.number().min(0).max(100).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      // Check if already completed
+      const [existing] = await dbConn.select({ id: lessonCompletion.id })
+        .from(lessonCompletion)
+        .where(and(
+          eq(lessonCompletion.studentUserId, ctx.user.id),
+          eq(lessonCompletion.lessonSlug, input.lessonSlug),
+        )).limit(1);
+
+      if (existing) {
+        // Update score if provided
+        if (input.score !== undefined) {
+          await dbConn.update(lessonCompletion)
+            .set({ score: input.score })
+            .where(eq(lessonCompletion.id, existing.id));
+        }
+        return { success: true, alreadyCompleted: true };
+      }
+
+      await dbConn.insert(lessonCompletion).values({
+        studentUserId: ctx.user.id,
+        lessonSlug: input.lessonSlug,
+        pathwaySlug: input.pathwaySlug,
+        level: input.level,
+        score: input.score ?? null,
+      });
+
+      return { success: true, alreadyCompleted: false };
+    }),
+
+  /** Get lesson completion progress for the current student. */
+  getLessonProgress: studentProcedure
+    .query(async ({ ctx }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      const completions = await dbConn.select()
+        .from(lessonCompletion)
+        .where(eq(lessonCompletion.studentUserId, ctx.user.id))
+        .orderBy(desc(lessonCompletion.completedAt));
+
+      return completions;
     }),
 });
