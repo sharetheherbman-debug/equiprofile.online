@@ -164,8 +164,10 @@ const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   // If admin has granted free access with an expiry and it has passed, deny.
   const prefs = parseUserPrefs(user.preferences);
   if (prefs.freeAccess && prefs.freeAccessUntil) {
-    if (new Date(prefs.freeAccessUntil) < new Date()) {
-      // Free access period has ended — revoke silently and block
+    const now = new Date();
+    const expiryDate = new Date(prefs.freeAccessUntil);
+    if (expiryDate < now) {
+      // Free access period has ended — block access
       throw new TRPCError({
         code: "FORBIDDEN",
         message: "Your complimentary access period has ended. Please subscribe to continue.",

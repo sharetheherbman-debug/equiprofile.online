@@ -661,7 +661,8 @@ function AdminContent() {
                                   try {
                                     const prefs = user.preferences ? JSON.parse(user.preferences) : {};
                                     const until = prefs.freeAccessUntil ? new Date(prefs.freeAccessUntil) : null;
-                                    const isExpired = until ? until < new Date() : false;
+                                    const now = new Date();
+                                    const isExpired = until ? until < now : false;
                                     return (
                                       <Badge variant="secondary" className={isExpired ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}>
                                         {isExpired ? "Free Access (expired)" : until ? `Free until ${until.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : "Free Access"}
