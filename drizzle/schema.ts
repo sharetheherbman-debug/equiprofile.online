@@ -1564,3 +1564,96 @@ export const aiTutorSessions = mysqlTable("aiTutorSessions", {
 
 export type AiTutorSession = typeof aiTutorSessions.$inferSelect;
 export type InsertAiTutorSession = typeof aiTutorSessions.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 3 — School / Teacher system
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Student groups / classes managed by a teacher.
+ */
+export const studentGroups = mysqlTable("studentGroups", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId").notNull(),
+  name: varchar("name", { length: 200 }).notNull(),
+  description: text("description"),
+  level: varchar("level", { length: 30 }).default("beginner").notNull(), // beginner, developing, intermediate, advanced
+  academicYear: varchar("academicYear", { length: 20 }),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StudentGroup = typeof studentGroups.$inferSelect;
+export type InsertStudentGroup = typeof studentGroups.$inferInsert;
+
+/**
+ * Students assigned to groups.
+ */
+export const studentGroupMembers = mysqlTable("studentGroupMembers", {
+  id: int("id").autoincrement().primaryKey(),
+  groupId: int("groupId").notNull(),
+  studentUserId: int("studentUserId").notNull(),
+  joinedAt: timestamp("joinedAt").defaultNow().notNull(),
+});
+
+export type StudentGroupMember = typeof studentGroupMembers.$inferSelect;
+export type InsertStudentGroupMember = typeof studentGroupMembers.$inferInsert;
+
+/**
+ * Tasks assigned by a teacher to a student or group.
+ */
+export const teacherAssignedTasks = mysqlTable("teacherAssignedTasks", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId").notNull(),
+  studentUserId: int("studentUserId"), // null = group assignment
+  groupId: int("groupId"),             // null = individual assignment
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  category: varchar("category", { length: 50 }).default("care").notNull(),
+  dueDate: date("dueDate"),
+  frequency: varchar("frequency", { length: 20 }).default("once").notNull(),
+  isCompleted: boolean("isCompleted").default(false).notNull(),
+  completedAt: timestamp("completedAt"),
+  completedByStudentId: int("completedByStudentId"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TeacherAssignedTask = typeof teacherAssignedTasks.$inferSelect;
+export type InsertTeacherAssignedTask = typeof teacherAssignedTasks.$inferInsert;
+
+/**
+ * Teacher feedback on student training entries, tasks, or general progress.
+ */
+export const teacherFeedback = mysqlTable("teacherFeedback", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId").notNull(),
+  studentUserId: int("studentUserId").notNull(),
+  entryType: varchar("entryType", { length: 50 }).notNull(), // training_entry, task, general, progress
+  entryId: int("entryId"),       // nullable — for general feedback
+  comment: text("comment").notNull(),
+  feedbackType: varchar("feedbackType", { length: 30 }).default("general").notNull(), // good, needs_improvement, urgent, general
+  isRead: boolean("isRead").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TeacherFeedbackEntry = typeof teacherFeedback.$inferSelect;
+export type InsertTeacherFeedbackEntry = typeof teacherFeedback.$inferInsert;
+
+/**
+ * Learning pathway progress — tracks which study topics and scenarios a student
+ * has completed per level.
+ */
+export const learningPathwayProgress = mysqlTable("learningPathwayProgress", {
+  id: int("id").autoincrement().primaryKey(),
+  studentUserId: int("studentUserId").notNull(),
+  pathwayLevel: varchar("pathwayLevel", { length: 30 }).notNull(), // beginner, developing, intermediate, advanced
+  itemType: varchar("itemType", { length: 30 }).notNull(),         // study_topic, scenario
+  itemSlug: varchar("itemSlug", { length: 100 }).notNull(),
+  completedAt: timestamp("completedAt").defaultNow().notNull(),
+});
+
+export type LearningPathwayProgress = typeof learningPathwayProgress.$inferSelect;
+export type InsertLearningPathwayProgress = typeof learningPathwayProgress.$inferInsert;

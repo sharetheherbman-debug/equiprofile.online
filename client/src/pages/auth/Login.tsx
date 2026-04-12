@@ -69,8 +69,16 @@ export default function Login() {
           goToStudent = prefs?.planTier === "student";
         }
       } catch { /* ignore */ }
+      let goToTeacher = false;
+      try {
+        if (user?.preferences) {
+          const prefs = JSON.parse(user.preferences);
+          goToTeacher = prefs?.planTier === "teacher" || prefs?.selectedExperience === "teacher";
+        }
+      } catch { /* ignore */ }
       if (goToStable) setLocation("/stable-dashboard");
       else if (goToStudent) setLocation("/student-dashboard");
+      else if (goToTeacher) setLocation("/teacher-dashboard");
       else setLocation("/dashboard");
     }
     return null;
@@ -139,7 +147,8 @@ export default function Login() {
       } else {
         const goToStable = data.planTier === "stable" || data.bothDashboardsUnlocked === true;
         const goToStudent = data.planTier === "student";
-        window.location.href = goToStable ? "/stable-dashboard" : goToStudent ? "/student-dashboard" : "/dashboard";
+        const goToTeacher = data.planTier === "teacher";
+        window.location.href = goToTeacher ? "/teacher-dashboard" : goToStable ? "/stable-dashboard" : goToStudent ? "/student-dashboard" : "/dashboard";
       }
     } catch (err) {
       setError("An error occurred. Please try again.");

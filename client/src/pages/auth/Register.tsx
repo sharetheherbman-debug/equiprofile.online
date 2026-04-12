@@ -53,7 +53,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState("");
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [, setLocation] = useLocation();
 
   const [verificationSent, setVerificationSent] = useState(false);
@@ -89,7 +89,21 @@ export default function Register() {
         .catch(() => setLocation("/dashboard"));
       // Fall through and show a brief loading UI below
     } else {
-      setLocation("/dashboard");
+      // Route to the correct dashboard based on planTier
+      let destination = "/dashboard";
+      try {
+        if (user?.preferences) {
+          const prefs = JSON.parse(user.preferences);
+          if (prefs.planTier === "stable" || prefs.bothDashboardsUnlocked) {
+            destination = "/stable-dashboard";
+          } else if (prefs.planTier === "student") {
+            destination = "/student-dashboard";
+          } else if (prefs.planTier === "teacher" || prefs.selectedExperience === "teacher") {
+            destination = "/teacher-dashboard";
+          }
+        }
+      } catch { /* ignore */ }
+      setLocation(destination);
       return null;
     }
   }

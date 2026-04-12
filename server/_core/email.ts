@@ -548,47 +548,24 @@ export async function sendReminderEmail(
     minute: "2-digit",
   });
 
+  const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
   const subject = `Reminder: ${eventTitle}`;
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h2 style="color: #1e40af; border-bottom: 2px solid #1e40af; padding-bottom: 10px;">
-        Event Reminder
-      </h2>
-      
-      <p style="font-size: 16px; color: #374151;">
-        Hi ${userName},
-      </p>
-      
-      <p style="font-size: 16px; color: #374151;">
-        This is a friendly reminder about your upcoming event:
-      </p>
-      
-      <div style="background: #f3f4f6; padding: 20px; margin: 20px 0; border-left: 4px solid #3b82f6; border-radius: 4px;">
-        <h3 style="margin-top: 0; color: #1e40af;">${eventTitle}</h3>
-        ${horseName ? `<p style="margin: 5px 0;"><strong>Horse:</strong> ${horseName}</p>` : ""}
-        <p style="margin: 5px 0;"><strong>Date:</strong> ${formattedDate}</p>
-        <p style="margin: 5px 0;"><strong>Time:</strong> ${formattedTime}</p>
-        ${eventDescription ? `<p style="margin: 10px 0 0 0;">${eventDescription}</p>` : ""}
-      </div>
-      
-      <p style="font-size: 16px; color: #374151;">
-        <a href="${process.env.BASE_URL || "https://equiprofile.online"}/calendar" 
-           style="display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">
-          View in Calendar
-        </a>
-      </p>
-      
-      <p style="color: #6b7280; margin-top: 30px; font-size: 14px;">
-        Best regards,<br/>
-        The EquiProfile Team
-      </p>
-      
-      <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">
-        You received this email because you have an event scheduled in EquiProfile.
-      </p>
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Upcoming Event Reminder</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      Hi ${userName}, here's a reminder about your upcoming event:
+    </p>
+    <div style="background:#f0f4ff;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #dde3f8;">
+      <p style="margin:0 0 8px;font-size:17px;font-weight:700;color:#1a2340;">${eventTitle}</p>
+      ${horseName ? `<p style="margin:0 0 6px;font-size:14px;color:#374151;"><strong>Horse:</strong> ${horseName}</p>` : ""}
+      <p style="margin:0 0 6px;font-size:14px;color:#374151;"><strong>Date:</strong> ${formattedDate}</p>
+      <p style="margin:0 0 6px;font-size:14px;color:#374151;"><strong>Time:</strong> ${formattedTime}</p>
+      ${eventDescription ? `<p style="margin:10px 0 0;font-size:14px;color:#374151;">${eventDescription}</p>` : ""}
     </div>
-  `;
+    ${ctaBtn("View in Calendar →", `${BASE_URL}/calendar`)}
+    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:8px 0 0;">You received this reminder because you have an event scheduled in EquiProfile.</p>
+  `);
 
   await sendEmail(to, subject, html);
 }
@@ -670,49 +647,81 @@ export async function sendStableInviteEmail(
   const roleName = role.charAt(0).toUpperCase() + role.slice(1);
 
   const subject = `You've been invited to join ${stableName} on EquiProfile`;
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <div style="text-align: center; padding: 30px 0 20px;">
-        <h1 style="color: #1e40af; margin: 0;">You're Invited! 🐴</h1>
-      </div>
-
-      <p>Hi there,</p>
-
-      <p><strong>${inviterName}</strong> has invited you to join <strong>${stableName}</strong> on EquiProfile as a <strong>${roleName}</strong>.</p>
-
-      <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="margin-top: 0; color: #1e40af;">What is EquiProfile?</h3>
-        <p style="margin-bottom: 0;">EquiProfile is a comprehensive horse management platform where teams can collaborate on horse care, training, health records, and stable operations.</p>
-      </div>
-
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${inviteUrl}"
-           style="background: #1e40af; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold; font-size: 16px;">
-          Accept Invitation
-        </a>
-      </div>
-
-      <p style="color: #6b7280; font-size: 14px;">
-        If the button doesn't work, copy and paste this link into your browser:
-      </p>
-      <p style="word-break: break-all; color: #1e40af; font-size: 13px;">${inviteUrl}</p>
-
-      <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin: 24px 0; border-left: 4px solid #1e40af;">
-        <p style="margin: 0; color: #374151; font-size: 14px;">
-          <strong>This invitation expires in 7 days.</strong> If you don't have an account yet, you'll be able to create one when you accept.
-        </p>
-      </div>
-
-      <p style="color: #6b7280; font-size: 13px; margin-top: 30px;">
-        If you weren't expecting this invitation, you can safely ignore this email.
-      </p>
-
-      <p style="color: #6b7280;">
-        Best regards,<br/>
-        The EquiProfile Team
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">You're Invited! 🐴</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      <strong>${inviterName}</strong> has invited you to join <strong>${stableName}</strong> on EquiProfile as a <strong>${roleName}</strong>.
+    </p>
+    <div style="background:#f0f4ff;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #dde3f8;">
+      <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#1a2340;">About EquiProfile</p>
+      <p style="margin:0;font-size:14px;color:#374151;line-height:1.6;">EquiProfile is the professional horse management platform for yards, trainers, and horse owners — built for collaboration on horse care, training, health records, and stable operations.</p>
+    </div>
+    ${ctaBtn("Accept Invitation →", inviteUrl)}
+    <div style="background:#f8fafc;border-radius:8px;padding:16px 20px;margin:24px 0;border-left:4px solid #4f5fd6;">
+      <p style="margin:0;font-size:14px;color:#374151;">
+        <strong>This invitation expires in 7 days.</strong> If you don't have an account yet, you'll be prompted to create one when you accept.
       </p>
     </div>
-  `;
+    <p style="font-size:13px;color:#94a3b8;margin:0 0 8px;">Button not working? Copy and paste this link:</p>
+    <p style="font-size:12px;color:#4f5fd6;word-break:break-all;margin:0 0 16px;">${inviteUrl}</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">Didn't expect this invitation? You can safely ignore this email.</p>
+  `);
+
+  await sendEmail(recipientEmail, subject, html);
+}
+
+/**
+ * Send a complimentary access / goodwill email when admin grants free access.
+ * Dynamic freeDays supports 30, 60, or 90 (and any other admin-chosen value).
+ */
+export async function sendCompensationEmail(
+  recipientEmail: string,
+  userName: string,
+  freeDays: number,
+): Promise<void> {
+  const baseUrl = process.env.BASE_URL || "https://equiprofile.online";
+  const dashboardUrl = `${baseUrl}/dashboard`;
+
+  const subject = `Your complimentary ${freeDays}-day access — EquiProfile`;
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Thank you for your patience</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      Hi ${userName || "there"},
+    </p>
+    <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.6;">
+      We have recently completed a significant round of platform upgrades to EquiProfile. During this period, some features may not have worked perfectly, and we sincerely appreciate your patience.
+    </p>
+    <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
+      As a thank-you, we have added <strong>${freeDays} days of complimentary full access</strong> to your account — no action required on your part.
+    </p>
+    <div style="background:#f0f4ff;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #dde3f8;">
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#374151;">
+            ✓&nbsp;&nbsp;<strong>${freeDays} days</strong> of complimentary access added to your account
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#374151;">
+            ✓&nbsp;&nbsp;All your horse data, health records, and documents remain intact
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-size:14px;color:#374151;">
+            ✓&nbsp;&nbsp;No payment required — this access is already applied
+          </td>
+        </tr>
+      </table>
+    </div>
+    ${ctaBtn("Go to My Dashboard →", dashboardUrl)}
+    <p style="font-size:14px;color:#374151;line-height:1.6;margin:24px 0 8px;">
+      The upgraded platform is now running smoothly, and we are confident you will enjoy the improvements. If you have any questions at all, please do not hesitate to reach out.
+    </p>
+    <p style="font-size:14px;color:#374151;margin:0 0 24px;">
+      Thank you for being part of EquiProfile.
+    </p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">This is a service notification. No action is required.</p>
+  `);
 
   await sendEmail(recipientEmail, subject, html);
 }

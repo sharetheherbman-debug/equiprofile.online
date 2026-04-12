@@ -8,9 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Users, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
+// Wouter v3 useLocation() returns only the pathname — no query string.
+// Use window.location.search to reliably read the token query param.
 function useInviteToken() {
-  const [location] = useLocation();
-  const params = new URLSearchParams(location.split("?")[1] ?? "");
+  const params = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : "",
+  );
   return params.get("token") ?? "";
 }
 

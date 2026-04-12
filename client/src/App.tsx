@@ -13,7 +13,7 @@ import {
 import { useScrollToTop } from "./hooks/useScrollToTop";
 import { UpgradeModal } from "./components/UpgradeModal";
 import { useUpgradeModal } from "./hooks/useUpgradeModal";
-import { ProtectedRoute, StableRoute, StudentRoute } from "./components/ProtectedRoute";
+import { ProtectedRoute, StableRoute, StudentRoute, TeacherRoute } from "./components/ProtectedRoute";
 import { SalesChatWidget } from "./components/SalesChatWidget";
 import { CookieConsent } from "./components/CookieConsent";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
@@ -87,6 +87,7 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Competitions = lazy(() => import("./pages/Competitions"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
+const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
 
 // V2 Frontend Pages — lazy-loaded for code splitting
 const HomeV2 = lazy(() => import("./v2/pages/HomeV2"));
@@ -156,6 +157,13 @@ function Router() {
               <StudentRoute>
                 <StudentDashboard />
               </StudentRoute>
+            </Route>
+
+            {/* Teacher Dashboard — teacher plan users and admin */}
+            <Route path="/teacher-dashboard">
+              <TeacherRoute>
+                <TeacherDashboard />
+              </TeacherRoute>
             </Route>
 
             {/* App Pages (Protected - require auth) — version-aware */}

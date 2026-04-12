@@ -85,9 +85,10 @@ import {
   buildSequenceStepHtml,
   applyMergeFields,
 } from "./_core/emailTemplates";
-import { sendEmail, sendStableInviteEmail } from "./_core/email";
+import { sendEmail, sendStableInviteEmail, sendCompensationEmail } from "./_core/email";
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
 import { studentRouter } from "./studentRouter";
+import { teacherRouter } from "./teacherRouter";
 import {
   normalizeCountry,
   normalizeContactType,
@@ -157,6 +158,21 @@ const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
       code: "FORBIDDEN",
       message: "Your free trial has expired. Please subscribe to continue.",
     });
+  }
+
+  // Check per-user timed free access expiry.
+  // If admin has granted free access with an expiry and it has passed, deny.
+  const prefs = parseUserPrefs(user.preferences);
+  if (prefs.freeAccess && prefs.freeAccessUntil) {
+    const now = new Date();
+    const expiryDate = new Date(prefs.freeAccessUntil);
+    if (expiryDate < now) {
+      // Free access period has ended — block access
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Your complimentary access period has ended. Please subscribe to continue.",
+      });
+    }
   }
 
   // Check subscription status
@@ -281,6 +297,7 @@ function mapTemplateSessionType(type: string): "flatwork" | "jumping" | "hacking
 export const appRouter = router({
   system: systemRouter,
   student: studentRouter,
+  teacher: teacherRouter,
 
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
@@ -3024,6 +3041,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           // "standard" = Standard dashboard only (pro tier, no stable)
           // "stable"   = Stable dashboard only (stable tier, no standard)
           tier: z.enum(["standard", "stable"]),
+          // Duration in days: 30, 60, or 90 (admin-selected per user)
+          freeDays: z.number().int().min(1).max(365).default(30),
+          // Whether to send a branded compensation email to the user
+          sendEmail: z.boolean().default(true),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -3033,6 +3054,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
         const prefs = parseUserPrefs(targetUser.preferences);
         prefs.freeAccess = true;
+
+        // Store expiry as ISO string — checked by subscribedProcedure middleware
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + input.freeDays);
+        prefs.freeAccessUntil = expiryDate.toISOString();
+        prefs.freeAccessDays = input.freeDays;
+
         // Only the explicitly chosen dashboard is unlocked — never both by default
         if (input.tier === "stable") {
           prefs.planTier = "stable";
@@ -3050,9 +3078,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           action: "free_access_granted",
           entityType: "user",
           entityId: input.userId,
-          details: JSON.stringify({ targetEmail: targetUser.email, tier: input.tier }),
+          details: JSON.stringify({ targetEmail: targetUser.email, tier: input.tier, freeDays: input.freeDays }),
         });
-        return { success: true };
+        // Send compensation email asynchronously (non-blocking)
+        if (input.sendEmail && targetUser.email) {
+          sendCompensationEmail(
+            targetUser.email,
+            targetUser.name || "",
+            input.freeDays,
+          ).catch((err) =>
+            console.error("[Email] Failed to send compensation email:", err),
+          );
+        }
+        return { success: true, freeAccessUntil: expiryDate.toISOString() };
       }),
 
     // Revoke free access

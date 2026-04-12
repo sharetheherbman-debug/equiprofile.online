@@ -119,6 +119,8 @@ function AdminContent() {
   );
   const [resetPasswordValue, setResetPasswordValue] = useState("");
   const [freeAccessTier, setFreeAccessTier] = useState<"standard" | "stable">("standard");
+  const [freeAccessDays, setFreeAccessDays] = useState<30 | 60 | 90>(30);
+  const [freeAccessSendEmail, setFreeAccessSendEmail] = useState(true);
   const [whatsappForm, setWhatsappForm] = useState({
     enabled: false,
     accountSid: "",
@@ -266,8 +268,11 @@ function AdminContent() {
   });
 
   const grantFreeAccessMutation = trpc.admin.grantFreeAccess.useMutation({
-    onSuccess: () => {
-      toast.success("Free access granted successfully");
+    onSuccess: (data) => {
+      const until = data.freeAccessUntil
+        ? ` (until ${new Date(data.freeAccessUntil).toLocaleDateString()})`
+        : "";
+      toast.success(`Free access granted${until}`);
       refetchUsers();
     },
     onError: (error) => toast.error(error.message),
@@ -652,11 +657,19 @@ function AdminContent() {
                             <div className="flex flex-col gap-1">
                               <div className="flex items-center gap-1">
                                 {getSubscriptionBadge(user.subscriptionStatus)}
-                                {hasUserFreeAccess(user) && (
-                                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
-                                    Free Access
-                                  </Badge>
-                                )}
+                                {hasUserFreeAccess(user) && (() => {
+                                  try {
+                                    const prefs = user.preferences ? JSON.parse(user.preferences) : {};
+                                    const until = prefs.freeAccessUntil ? new Date(prefs.freeAccessUntil) : null;
+                                    const now = new Date();
+                                    const isExpired = until ? until < now : false;
+                                    return (
+                                      <Badge variant="secondary" className={isExpired ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}>
+                                        {isExpired ? "Free Access (expired)" : until ? `Free until ${until.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : "Free Access"}
+                                      </Badge>
+                                    );
+                                  } catch { return null; }
+                                })()}
                               </div>
                               {(() => {
                                 const tier = getUserPlanTier(user);
@@ -944,37 +957,70 @@ function AdminContent() {
                                     <DialogHeader>
                                       <DialogTitle>Grant Free Access</DialogTitle>
                                       <DialogDescription>
-                                        Choose which dashboard to grant free access to for {user.name || user.email}. Only one dashboard type will be unlocked.
+                                        Grant complimentary timed access to {user.name || user.email}. Only one dashboard type will be unlocked.
                                       </DialogDescription>
                                     </DialogHeader>
-                                    <div className="space-y-3 py-2">
-                                      <Label>Dashboard Access</Label>
-                                      <Select
-                                        value={freeAccessTier}
-                                        onValueChange={(v) => setFreeAccessTier(v as "standard" | "stable")}
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="standard">Standard (individual horse management)</SelectItem>
-                                          <SelectItem value="stable">Stable (yard/stable management)</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <p className="text-xs text-muted-foreground">
-                                        Standard and Stable access are separate entitlements. Only grant both if explicitly required.
-                                      </p>
+                                    <div className="space-y-4 py-2">
+                                      <div className="space-y-2">
+                                        <Label>Dashboard Access</Label>
+                                        <Select
+                                          value={freeAccessTier}
+                                          onValueChange={(v) => setFreeAccessTier(v as "standard" | "stable")}
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="standard">Standard (individual horse management)</SelectItem>
+                                            <SelectItem value="stable">Stable (yard/stable management)</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                        <p className="text-xs text-muted-foreground">
+                                          Standard and Stable access are separate entitlements.
+                                        </p>
+                                      </div>
+                                      <div className="space-y-2">
+                                        <Label>Duration</Label>
+                                        <Select
+                                          value={String(freeAccessDays)}
+                                          onValueChange={(v) => setFreeAccessDays(Number(v) as 30 | 60 | 90)}
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="30">30 days</SelectItem>
+                                            <SelectItem value="60">60 days</SelectItem>
+                                            <SelectItem value="90">90 days</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                        <p className="text-xs text-muted-foreground">
+                                          Access will expire automatically after this period.
+                                        </p>
+                                      </div>
+                                      <div className="flex items-center gap-2 pt-1">
+                                        <input
+                                          type="checkbox"
+                                          id="sendCompEmail"
+                                          checked={freeAccessSendEmail}
+                                          onChange={(e) => setFreeAccessSendEmail(e.target.checked)}
+                                          className="w-4 h-4 rounded border-gray-300"
+                                        />
+                                        <Label htmlFor="sendCompEmail" className="text-sm font-normal cursor-pointer">
+                                          Send complimentary access email to user
+                                        </Label>
+                                      </div>
                                     </div>
                                     <DialogFooter>
                                       <Button
                                         className="bg-emerald-600 text-white hover:bg-emerald-700"
-                                        onClick={() => grantFreeAccessMutation.mutate({ userId: user.id, tier: freeAccessTier })}
+                                        onClick={() => grantFreeAccessMutation.mutate({ userId: user.id, tier: freeAccessTier, freeDays: freeAccessDays, sendEmail: freeAccessSendEmail })}
                                         disabled={grantFreeAccessMutation.isPending}
                                       >
                                         {grantFreeAccessMutation.isPending ? (
                                           <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Granting...</>
                                         ) : (
-                                          "Grant Free Access"
+                                          `Grant ${freeAccessDays}-Day Access`
                                         )}
                                       </Button>
                                     </DialogFooter>

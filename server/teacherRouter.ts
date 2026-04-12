@@ -1,0 +1,765 @@
+// Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
+// Teacher / Instructor system router — Phase 3 backend
+import { protectedProcedure, router } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import * as db from "./db";
+import { eq, and, desc, gte, lte, inArray, sql } from "drizzle-orm";
+import { getDb } from "./db";
+import {
+  studentGroups,
+  studentGroupMembers,
+  teacherAssignedTasks,
+  teacherFeedback,
+  learningPathwayProgress,
+  studentTasks,
+  studentTrainingEntries,
+  studentProgress,
+  aiTutorSessions,
+  users,
+} from "../drizzle/schema";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Teacher procedure — extends protectedProcedure to check that the user has
+ * the teacher plan/experience OR is an admin.
+ */
+const teacherProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const user = await db.getUserById(ctx.user.id);
+  if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+  const prefs = parseUserPrefs(user.preferences);
+  const isAdmin = user.role === "admin";
+  const isTeacher =
+    prefs.selectedExperience === "teacher" ||
+    prefs.planTier === "teacher";
+  if (!isAdmin && !isTeacher) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "This feature requires the Teacher plan.",
+    });
+  }
+  return next({ ctx });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Learning Pathway Definitions
+// These mirror the study topic slugs seeded in studentRouter.ts
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const LEARNING_PATHWAYS: Record<string, { label: string; topics: string[]; scenarios: string[] }> = {
+  beginner: {
+    label: "Beginner Pathway",
+    topics: [
+      "riding-position", "aids-and-control", "grooming-basics", "feeding-basics",
+      "tack-and-equipment", "horse-behaviour", "stable-safety", "horse-health-awareness",
+      "lesson-preparation", "care-routine", "horse-welfare", "leading-and-handling",
+    ],
+    scenarios: ["s001", "s002", "s003", "s004"],
+  },
+  developing: {
+    label: "Developing Pathway",
+    topics: [
+      "transitions", "trot-work", "nutrition-in-depth", "hoof-care",
+      "rugging", "horse-behaviour-advanced", "first-aid-basics", "warming-up",
+    ],
+    scenarios: ["s005", "s006", "s007", "s008"],
+  },
+  intermediate: {
+    label: "Intermediate Pathway",
+    topics: [
+      "canter-work", "lateral-work-intro", "health-monitoring",
+      "lameness-awareness", "competition-basics", "arena-figures",
+    ],
+    scenarios: ["s009", "s010", "s011"],
+  },
+  advanced: {
+    label: "Advanced Pathway",
+    topics: [
+      "collection-and-engagement", "horse-biomechanics",
+      "nutrition-advanced", "accident-management",
+    ],
+    scenarios: ["s012", "s013", "s014", "s015"],
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Router
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const teacherRouter = router({
+  // ── Identity ──────────────────────────────────────────────────────────────
+
+  /** Verify that the current user is a teacher/admin. */
+  verifyTeacher: teacherProcedure.query(async ({ ctx }) => {
+    const user = await db.getUserById(ctx.user.id);
+    return {
+      isTeacher: true,
+      teacherId: ctx.user.id,
+      name: user?.name ?? "",
+      email: user?.email ?? "",
+    };
+  }),
+
+  // ── Groups ────────────────────────────────────────────────────────────────
+
+  listGroups: teacherProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    const groups = await dbConn.select().from(studentGroups)
+      .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)))
+      .orderBy(desc(studentGroups.createdAt));
+
+    // For each group, fetch member count
+    const groupsWithCount = await Promise.all(groups.map(async (g) => {
+      const members = await dbConn.select({ id: studentGroupMembers.id })
+        .from(studentGroupMembers)
+        .where(eq(studentGroupMembers.groupId, g.id));
+      return { ...g, memberCount: members.length };
+    }));
+
+    return groupsWithCount;
+  }),
+
+  createGroup: teacherProcedure
+    .input(z.object({
+      name: z.string().min(1).max(200),
+      description: z.string().optional(),
+      level: z.enum(["beginner", "developing", "intermediate", "advanced"]).default("beginner"),
+      academicYear: z.string().max(20).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      const [result] = await dbConn.insert(studentGroups).values({
+        teacherId: ctx.user.id,
+        name: input.name,
+        description: input.description ?? null,
+        level: input.level,
+        academicYear: input.academicYear ?? null,
+      });
+      return { id: result.insertId, success: true };
+    }),
+
+  updateGroup: teacherProcedure
+    .input(z.object({
+      id: z.number(),
+      name: z.string().min(1).max(200).optional(),
+      description: z.string().optional(),
+      level: z.enum(["beginner", "developing", "intermediate", "advanced"]).optional(),
+      academicYear: z.string().max(20).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      const { id, ...rest } = input;
+      await dbConn.update(studentGroups)
+        .set(rest)
+        .where(and(eq(studentGroups.id, id), eq(studentGroups.teacherId, ctx.user.id)));
+      return { success: true };
+    }),
+
+  deleteGroup: teacherProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      // Soft delete
+      await dbConn.update(studentGroups)
+        .set({ isActive: false })
+        .where(and(eq(studentGroups.id, input.id), eq(studentGroups.teacherId, ctx.user.id)));
+      return { success: true };
+    }),
+
+  // ── Group Members ─────────────────────────────────────────────────────────
+
+  listGroupMembers: teacherProcedure
+    .input(z.object({ groupId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify teacher owns this group
+      const [group] = await dbConn.select({ id: studentGroups.id })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.id, input.groupId), eq(studentGroups.teacherId, ctx.user.id)))
+        .limit(1);
+      if (!group) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const members = await dbConn.select({
+        memberId: studentGroupMembers.id,
+        studentUserId: studentGroupMembers.studentUserId,
+        joinedAt: studentGroupMembers.joinedAt,
+      }).from(studentGroupMembers)
+        .where(eq(studentGroupMembers.groupId, input.groupId));
+
+      if (!members.length) return [];
+
+      // Fetch user names/emails
+      const studentIds = members.map(m => m.studentUserId);
+      const studentUsers = await dbConn.select({
+        id: users.id, name: users.name, email: users.email,
+      }).from(users).where(inArray(users.id, studentIds));
+
+      const userMap = new Map(studentUsers.map(u => [u.id, u]));
+
+      return members.map(m => ({
+        memberId: m.memberId,
+        studentUserId: m.studentUserId,
+        joinedAt: m.joinedAt,
+        name: userMap.get(m.studentUserId)?.name ?? "Unknown",
+        email: userMap.get(m.studentUserId)?.email ?? "",
+      }));
+    }),
+
+  addGroupMember: teacherProcedure
+    .input(z.object({
+      groupId: z.number(),
+      studentEmail: z.string().email(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify teacher owns this group
+      const [group] = await dbConn.select({ id: studentGroups.id })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.id, input.groupId), eq(studentGroups.teacherId, ctx.user.id)))
+        .limit(1);
+      if (!group) throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+
+      // Find the student by email
+      const [student] = await dbConn.select({ id: users.id, name: users.name, preferences: users.preferences })
+        .from(users)
+        .where(eq(users.email, input.studentEmail.toLowerCase()))
+        .limit(1);
+
+      if (!student) throw new TRPCError({ code: "NOT_FOUND", message: "No user found with that email address." });
+
+      // Check student plan
+      const prefs = parseUserPrefs(student.preferences);
+      if (prefs.planTier !== "student" && prefs.selectedExperience !== "student") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "That user does not have a student account." });
+      }
+
+      // Prevent duplicate
+      const [existing] = await dbConn.select({ id: studentGroupMembers.id })
+        .from(studentGroupMembers)
+        .where(and(
+          eq(studentGroupMembers.groupId, input.groupId),
+          eq(studentGroupMembers.studentUserId, student.id),
+        )).limit(1);
+      if (existing) throw new TRPCError({ code: "CONFLICT", message: "Student is already in this group." });
+
+      await dbConn.insert(studentGroupMembers).values({
+        groupId: input.groupId,
+        studentUserId: student.id,
+      });
+
+      return { success: true, studentName: student.name };
+    }),
+
+  removeGroupMember: teacherProcedure
+    .input(z.object({ memberId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify teacher owns the group this member belongs to
+      const [member] = await dbConn.select({ groupId: studentGroupMembers.groupId })
+        .from(studentGroupMembers)
+        .where(eq(studentGroupMembers.id, input.memberId))
+        .limit(1);
+      if (!member) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const [group] = await dbConn.select({ id: studentGroups.id })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.id, member.groupId), eq(studentGroups.teacherId, ctx.user.id)))
+        .limit(1);
+      if (!group) throw new TRPCError({ code: "FORBIDDEN" });
+
+      await dbConn.delete(studentGroupMembers)
+        .where(eq(studentGroupMembers.id, input.memberId));
+      return { success: true };
+    }),
+
+  // ── Students ──────────────────────────────────────────────────────────────
+
+  /** List all students in any of the teacher's groups (deduplicated). */
+  listMyStudents: teacherProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    const groups = await dbConn.select({ id: studentGroups.id, name: studentGroups.name, level: studentGroups.level })
+      .from(studentGroups)
+      .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)));
+
+    if (!groups.length) return [];
+
+    const groupIds = groups.map(g => g.id);
+    const members = await dbConn.select({
+      studentUserId: studentGroupMembers.studentUserId,
+      groupId: studentGroupMembers.groupId,
+    }).from(studentGroupMembers)
+      .where(inArray(studentGroupMembers.groupId, groupIds));
+
+    if (!members.length) return [];
+
+    const uniqueStudentIds = [...new Set(members.map(m => m.studentUserId))];
+    const studentUsers = await dbConn.select({
+      id: users.id, name: users.name, email: users.email, preferences: users.preferences,
+    }).from(users).where(inArray(users.id, uniqueStudentIds));
+
+    const groupMap = new Map(groups.map(g => [g.id, g]));
+
+    return studentUsers.map((u) => {
+      const studentGroups_ = members
+        .filter(m => m.studentUserId === u.id)
+        .map(m => groupMap.get(m.groupId))
+        .filter(Boolean) as typeof groups;
+      const prefs = parseUserPrefs(u.preferences);
+      return {
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        learnerLevel: (prefs.studentLevel as string) ?? "beginner",
+        groups: studentGroups_.map(g => ({ id: g.id, name: g.name, level: g.level })),
+      };
+    });
+  }),
+
+  /** Get a summary of one student's activity for the teacher view. */
+  getStudentSummary: teacherProcedure
+    .input(z.object({ studentUserId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify this student is in one of the teacher's groups
+      const groups = await dbConn.select({ id: studentGroups.id })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)));
+
+      if (!groups.length) throw new TRPCError({ code: "FORBIDDEN" });
+
+      const groupIds = groups.map(g => g.id);
+      const [membership] = await dbConn.select({ id: studentGroupMembers.id })
+        .from(studentGroupMembers)
+        .where(and(
+          inArray(studentGroupMembers.groupId, groupIds),
+          eq(studentGroupMembers.studentUserId, input.studentUserId),
+        )).limit(1);
+      if (!membership) throw new TRPCError({ code: "FORBIDDEN", message: "Student is not in your groups." });
+
+      // Fetch data in parallel
+      const [studentUser, tasks, training, progress, feedback] = await Promise.all([
+        dbConn.select({ id: users.id, name: users.name, email: users.email, preferences: users.preferences })
+          .from(users).where(eq(users.id, input.studentUserId)).limit(1),
+        dbConn.select({ id: studentTasks.id, isCompleted: studentTasks.isCompleted, category: studentTasks.category })
+          .from(studentTasks).where(eq(studentTasks.userId, input.studentUserId)).limit(50),
+        dbConn.select({ id: studentTrainingEntries.id, sessionDate: studentTrainingEntries.sessionDate, sessionType: studentTrainingEntries.sessionType, title: studentTrainingEntries.title })
+          .from(studentTrainingEntries).where(eq(studentTrainingEntries.userId, input.studentUserId))
+          .orderBy(desc(studentTrainingEntries.sessionDate)).limit(5),
+        dbConn.select().from(studentProgress).where(eq(studentProgress.userId, input.studentUserId)),
+        dbConn.select({ id: teacherFeedback.id, comment: teacherFeedback.comment, feedbackType: teacherFeedback.feedbackType, createdAt: teacherFeedback.createdAt })
+          .from(teacherFeedback).where(eq(teacherFeedback.studentUserId, input.studentUserId)).orderBy(desc(teacherFeedback.createdAt)).limit(5),
+      ]);
+
+      const u = studentUser[0];
+      if (!u) throw new TRPCError({ code: "NOT_FOUND" });
+      const prefs = parseUserPrefs(u.preferences);
+
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter(t => t.isCompleted).length;
+      const careCompletion = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+      const totalXp = progress.reduce((acc, p) => acc + p.xp, 0);
+      const avgLevel = progress.length > 0
+        ? Math.round(progress.reduce((acc, p) => acc + p.level, 0) / progress.length)
+        : 1;
+
+      return {
+        student: { id: u.id, name: u.name, email: u.email, learnerLevel: (prefs.studentLevel as string) ?? "beginner" },
+        stats: {
+          totalTasks,
+          completedTasks,
+          careCompletion,
+          totalXp,
+          avgSkillLevel: avgLevel,
+          trainingCount: training.length,
+        },
+        recentTraining: training,
+        skillProgress: progress,
+        recentFeedback: feedback,
+      };
+    }),
+
+  // ── Assigned Tasks ────────────────────────────────────────────────────────
+
+  assignTask: teacherProcedure
+    .input(z.object({
+      studentUserId: z.number().optional(),
+      groupId: z.number().optional(),
+      title: z.string().min(1).max(200),
+      description: z.string().optional(),
+      category: z.enum(["care", "grooming", "feeding", "study", "exercise", "safety", "other"]).default("care"),
+      dueDate: z.string().optional(),
+      frequency: z.enum(["once", "daily", "weekly"]).default("once"),
+    }).refine(d => d.studentUserId !== undefined || d.groupId !== undefined, {
+      message: "Either studentUserId or groupId must be provided",
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // If assigning to a group, verify teacher owns it
+      if (input.groupId) {
+        const [group] = await dbConn.select({ id: studentGroups.id })
+          .from(studentGroups)
+          .where(and(eq(studentGroups.id, input.groupId), eq(studentGroups.teacherId, ctx.user.id)))
+          .limit(1);
+        if (!group) throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+      }
+
+      const [result] = await dbConn.insert(teacherAssignedTasks).values({
+        teacherId: ctx.user.id,
+        studentUserId: input.studentUserId ?? null,
+        groupId: input.groupId ?? null,
+        title: input.title,
+        description: input.description ?? null,
+        category: input.category,
+        dueDate: input.dueDate ? new Date(input.dueDate) : null,
+        frequency: input.frequency,
+      });
+      return { id: result.insertId, success: true };
+    }),
+
+  listAssignedTasksByTeacher: teacherProcedure
+    .input(z.object({
+      studentUserId: z.number().optional(),
+      groupId: z.number().optional(),
+    }).optional())
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const conditions = [eq(teacherAssignedTasks.teacherId, ctx.user.id)];
+      if (input?.studentUserId) conditions.push(eq(teacherAssignedTasks.studentUserId, input.studentUserId));
+      if (input?.groupId) conditions.push(eq(teacherAssignedTasks.groupId, input.groupId));
+
+      return dbConn.select().from(teacherAssignedTasks)
+        .where(and(...conditions))
+        .orderBy(desc(teacherAssignedTasks.createdAt));
+    }),
+
+  deleteAssignedTask: teacherProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      await dbConn.delete(teacherAssignedTasks)
+        .where(and(eq(teacherAssignedTasks.id, input.id), eq(teacherAssignedTasks.teacherId, ctx.user.id)));
+      return { success: true };
+    }),
+
+  markAssignedTaskComplete: teacherProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      await dbConn.update(teacherAssignedTasks)
+        .set({ isCompleted: true, completedAt: new Date() })
+        .where(and(eq(teacherAssignedTasks.id, input.id), eq(teacherAssignedTasks.teacherId, ctx.user.id)));
+      return { success: true };
+    }),
+
+  // ── Feedback ──────────────────────────────────────────────────────────────
+
+  addFeedback: teacherProcedure
+    .input(z.object({
+      studentUserId: z.number(),
+      entryType: z.enum(["training_entry", "task", "general", "progress"]),
+      entryId: z.number().optional(),
+      comment: z.string().min(1).max(2000),
+      feedbackType: z.enum(["good", "needs_improvement", "urgent", "general"]).default("general"),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify student is in teacher's groups
+      const groups = await dbConn.select({ id: studentGroups.id })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)));
+
+      if (!groups.length) throw new TRPCError({ code: "FORBIDDEN" });
+
+      const groupIds = groups.map(g => g.id);
+      const [membership] = await dbConn.select({ id: studentGroupMembers.id })
+        .from(studentGroupMembers)
+        .where(and(
+          inArray(studentGroupMembers.groupId, groupIds),
+          eq(studentGroupMembers.studentUserId, input.studentUserId),
+        )).limit(1);
+      if (!membership) throw new TRPCError({ code: "FORBIDDEN", message: "Student is not in your groups." });
+
+      const [result] = await dbConn.insert(teacherFeedback).values({
+        teacherId: ctx.user.id,
+        studentUserId: input.studentUserId,
+        entryType: input.entryType,
+        entryId: input.entryId ?? null,
+        comment: input.comment,
+        feedbackType: input.feedbackType,
+      });
+      return { id: result.insertId, success: true };
+    }),
+
+  listFeedbackByTeacher: teacherProcedure
+    .input(z.object({
+      studentUserId: z.number().optional(),
+    }).optional())
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const conditions = [eq(teacherFeedback.teacherId, ctx.user.id)];
+      if (input?.studentUserId) conditions.push(eq(teacherFeedback.studentUserId, input.studentUserId));
+
+      return dbConn.select().from(teacherFeedback)
+        .where(and(...conditions))
+        .orderBy(desc(teacherFeedback.createdAt));
+    }),
+
+  deleteFeedback: teacherProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      await dbConn.delete(teacherFeedback)
+        .where(and(eq(teacherFeedback.id, input.id), eq(teacherFeedback.teacherId, ctx.user.id)));
+      return { success: true };
+    }),
+
+  // ── Reports ───────────────────────────────────────────────────────────────
+
+  generateReport: teacherProcedure
+    .input(z.object({
+      studentUserId: z.number(),
+      reportType: z.enum(["weekly", "monthly", "term"]),
+    }))
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify student is in teacher's groups
+      const groups = await dbConn.select({ id: studentGroups.id, name: studentGroups.name })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)));
+
+      if (!groups.length) throw new TRPCError({ code: "FORBIDDEN" });
+
+      const groupIds = groups.map(g => g.id);
+      const [membership] = await dbConn.select({ groupId: studentGroupMembers.groupId })
+        .from(studentGroupMembers)
+        .where(and(
+          inArray(studentGroupMembers.groupId, groupIds),
+          eq(studentGroupMembers.studentUserId, input.studentUserId),
+        )).limit(1);
+      if (!membership) throw new TRPCError({ code: "FORBIDDEN", message: "Student is not in your groups." });
+
+      // Calculate date range
+      const now = new Date();
+      let fromDate: Date;
+      let periodLabel: string;
+
+      if (input.reportType === "weekly") {
+        fromDate = new Date(now);
+        fromDate.setDate(fromDate.getDate() - 7);
+        periodLabel = "Last 7 Days";
+      } else if (input.reportType === "monthly") {
+        fromDate = new Date(now);
+        fromDate.setDate(fromDate.getDate() - 30);
+        periodLabel = "Last 30 Days";
+      } else {
+        fromDate = new Date(now);
+        fromDate.setDate(fromDate.getDate() - 90);
+        periodLabel = "Last 90 Days (Term)";
+      }
+
+      const [studentUser, tasks, training, progress, pathwayRows, feedbackRows, aiSessions] = await Promise.all([
+        dbConn.select({ id: users.id, name: users.name, email: users.email, preferences: users.preferences })
+          .from(users).where(eq(users.id, input.studentUserId)).limit(1),
+        dbConn.select().from(studentTasks)
+          .where(and(eq(studentTasks.userId, input.studentUserId), gte(studentTasks.createdAt, fromDate))),
+        dbConn.select().from(studentTrainingEntries)
+          .where(and(eq(studentTrainingEntries.userId, input.studentUserId), gte(studentTrainingEntries.createdAt, fromDate)))
+          .orderBy(desc(studentTrainingEntries.sessionDate)),
+        dbConn.select().from(studentProgress)
+          .where(eq(studentProgress.userId, input.studentUserId)),
+        dbConn.select().from(learningPathwayProgress)
+          .where(and(eq(learningPathwayProgress.studentUserId, input.studentUserId), gte(learningPathwayProgress.completedAt, fromDate))),
+        dbConn.select().from(teacherFeedback)
+          .where(and(eq(teacherFeedback.studentUserId, input.studentUserId), gte(teacherFeedback.createdAt, fromDate))).orderBy(desc(teacherFeedback.createdAt)),
+        dbConn.select({ id: aiTutorSessions.id }).from(aiTutorSessions)
+          .where(and(eq(aiTutorSessions.userId, input.studentUserId), gte(aiTutorSessions.createdAt, fromDate))),
+      ]);
+
+      const u = studentUser[0];
+      if (!u) throw new TRPCError({ code: "NOT_FOUND" });
+      const prefs = parseUserPrefs(u.preferences);
+
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter(t => t.isCompleted).length;
+      const careConsistency = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+      const totalXp = progress.reduce((acc, p) => acc + p.xp, 0);
+      const avgSkillLevel = progress.length > 0
+        ? parseFloat((progress.reduce((acc, p) => acc + p.level, 0) / progress.length).toFixed(1))
+        : 1.0;
+
+      // Category breakdown for tasks
+      const tasksByCategory = tasks.reduce((acc, t) => {
+        acc[t.category] = (acc[t.category] ?? 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      // Training breakdown by type
+      const trainingByType = training.reduce((acc, t) => {
+        acc[t.sessionType] = (acc[t.sessionType] ?? 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      // Skill areas sorted by XP
+      const sortedSkills = [...progress].sort((a, b) => b.xp - a.xp);
+      const strengths = sortedSkills.slice(0, 3).map(s => s.skillArea.replace(/_/g, " "));
+      const weakAreas = sortedSkills.slice(-3).map(s => s.skillArea.replace(/_/g, " "));
+
+      // Pathway completions this period
+      const pathwayCompletions = pathwayRows.length;
+
+      // AI tutor engagement
+      const aiEngagement = aiSessions.length;
+
+      // Readiness assessment
+      const level = (prefs.studentLevel as string) ?? "beginner";
+      const LEVEL_THRESHOLDS: Record<string, { xp: number; careMin: number; trainingMin: number }> = {
+        beginner: { xp: 200, careMin: 60, trainingMin: 3 },
+        developing: { xp: 500, careMin: 70, trainingMin: 5 },
+        intermediate: { xp: 1000, careMin: 80, trainingMin: 8 },
+        advanced: { xp: 2000, careMin: 85, trainingMin: 10 },
+      };
+      const threshold = LEVEL_THRESHOLDS[level] ?? LEVEL_THRESHOLDS.beginner;
+      const readinessScore = Math.round(
+        (Math.min(totalXp / threshold.xp, 1) * 40) +
+        (Math.min(careConsistency / threshold.careMin, 1) * 30) +
+        (Math.min(training.length / threshold.trainingMin, 1) * 30),
+      );
+      const readinessLabel = readinessScore >= 80 ? "Ready for Next Level"
+        : readinessScore >= 60 ? "Good Progress"
+        : readinessScore >= 40 ? "Developing"
+        : "Needs Support";
+
+      return {
+        generatedAt: now.toISOString(),
+        reportType: input.reportType,
+        periodLabel,
+        fromDate: fromDate.toISOString(),
+        toDate: now.toISOString(),
+        student: {
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          learnerLevel: level,
+        },
+        stats: {
+          totalTasks,
+          completedTasks,
+          careConsistency,
+          trainingSessionCount: training.length,
+          pathwayCompletions,
+          aiTutorSessions: aiEngagement,
+          totalXp,
+          avgSkillLevel,
+        },
+        tasksByCategory,
+        trainingByType,
+        strengths,
+        weakAreas: weakAreas.filter(w => !strengths.includes(w)),
+        recentTraining: training.slice(0, 5).map(t => ({
+          title: t.title,
+          date: String(t.sessionDate).slice(0, 10),
+          type: t.sessionType,
+          wentWell: t.wentWell,
+          needsImprovement: t.needsImprovement,
+        })),
+        teacherFeedback: feedbackRows.map(f => ({
+          id: f.id,
+          comment: f.comment,
+          feedbackType: f.feedbackType,
+          entryType: f.entryType,
+          date: f.createdAt.toISOString().slice(0, 10),
+        })),
+        readiness: { score: readinessScore, label: readinessLabel },
+        groupName: groups.find(g => g.id === membership.groupId)?.name ?? "Unknown Group",
+      };
+    }),
+
+  // ── Teacher Dashboard Overview ────────────────────────────────────────────
+
+  getTeacherOverview: teacherProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    const groups = await dbConn.select({ id: studentGroups.id, name: studentGroups.name, level: studentGroups.level })
+      .from(studentGroups)
+      .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)));
+
+    const totalGroups = groups.length;
+
+    let totalStudents = 0;
+    if (groups.length) {
+      const groupIds = groups.map(g => g.id);
+      const memberRows = await dbConn.select({ id: studentGroupMembers.id, studentUserId: studentGroupMembers.studentUserId })
+        .from(studentGroupMembers)
+        .where(inArray(studentGroupMembers.groupId, groupIds));
+      totalStudents = new Set(memberRows.map(m => m.studentUserId)).size;
+    }
+
+    // Assigned tasks not yet completed
+    const pendingAssignedTasks = await dbConn.select({ id: teacherAssignedTasks.id })
+      .from(teacherAssignedTasks)
+      .where(and(eq(teacherAssignedTasks.teacherId, ctx.user.id), eq(teacherAssignedTasks.isCompleted, false)));
+
+    // Recent feedback sent
+    const recentFeedback = await dbConn.select({
+      id: teacherFeedback.id,
+      studentUserId: teacherFeedback.studentUserId,
+      feedbackType: teacherFeedback.feedbackType,
+      comment: teacherFeedback.comment,
+      createdAt: teacherFeedback.createdAt,
+    }).from(teacherFeedback)
+      .where(eq(teacherFeedback.teacherId, ctx.user.id))
+      .orderBy(desc(teacherFeedback.createdAt))
+      .limit(5);
+
+    return {
+      totalGroups,
+      totalStudents,
+      pendingAssignedTasks: pendingAssignedTasks.length,
+      recentFeedback,
+      groups: groups.slice(0, 5),
+    };
+  }),
+});

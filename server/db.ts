@@ -839,6 +839,266 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       \`createdAt\` timestamp NOT NULL DEFAULT (now()),
       CONSTRAINT \`siteAnalytics_id\` PRIMARY KEY(\`id\`)
     )`,
+    // Marketing contacts — external leads (migration 0014 + 0016)
+    `CREATE TABLE IF NOT EXISTS \`marketingContacts\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`email\` varchar(320) NOT NULL,
+      \`name\` varchar(200),
+      \`businessName\` varchar(300),
+      \`organizationName\` varchar(300),
+      \`contactType\` varchar(50) DEFAULT 'individual',
+      \`source\` varchar(100) DEFAULT 'manual',
+      \`tags\` text,
+      \`region\` varchar(100),
+      \`country\` varchar(100),
+      \`leadFocus\` varchar(200),
+      \`status\` varchar(30) NOT NULL DEFAULT 'active',
+      \`unsubscribeToken\` varchar(64) NOT NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      \`lastContactedAt\` timestamp NULL,
+      CONSTRAINT \`marketingContacts_id\` PRIMARY KEY(\`id\`),
+      UNIQUE KEY \`idx_mc_email\` (\`email\`),
+      KEY \`idx_mc_status\` (\`status\`),
+      KEY \`idx_mc_unsub_token\` (\`unsubscribeToken\`)
+    )`,
+    // Email unsubscribes — global suppression list (migration 0014)
+    `CREATE TABLE IF NOT EXISTS \`emailUnsubscribes\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`email\` varchar(320) NOT NULL,
+      \`token\` varchar(64) NOT NULL,
+      \`reason\` varchar(200),
+      \`source\` varchar(50) DEFAULT 'link',
+      \`unsubscribedAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`emailUnsubscribes_id\` PRIMARY KEY(\`id\`),
+      UNIQUE KEY \`idx_unsub_email\` (\`email\`),
+      KEY \`idx_unsub_token\` (\`token\`)
+    )`,
+    // Campaign sequences — drip steps (migration 0014 + 0016)
+    `CREATE TABLE IF NOT EXISTS \`campaignSequences\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`campaignId\` int NOT NULL,
+      \`stepNumber\` int NOT NULL,
+      \`delayDays\` int NOT NULL,
+      \`scheduledDate\` varchar(10),
+      \`subject\` varchar(500) NOT NULL,
+      \`htmlBody\` text NOT NULL,
+      \`templateId\` varchar(50),
+      \`status\` varchar(30) NOT NULL DEFAULT 'pending',
+      \`sentAt\` timestamp NULL,
+      \`sentCount\` int NOT NULL DEFAULT 0,
+      \`failedCount\` int NOT NULL DEFAULT 0,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`campaignSequences_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_seq_campaign\` (\`campaignId\`)
+    )`,
+    // Campaign sequence recipients — per-step delivery tracking (migration 0014)
+    `CREATE TABLE IF NOT EXISTS \`campaignSequenceRecipients\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`sequenceId\` int NOT NULL,
+      \`campaignId\` int NOT NULL,
+      \`email\` varchar(320) NOT NULL,
+      \`status\` varchar(30) NOT NULL DEFAULT 'pending',
+      \`sentAt\` timestamp NULL,
+      \`error\` text,
+      CONSTRAINT \`campaignSequenceRecipients_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_seqr_sequence\` (\`sequenceId\`),
+      KEY \`idx_seqr_campaign\` (\`campaignId\`),
+      KEY \`idx_seqr_email\` (\`email\`)
+    )`,
+    // Campaign send log — daily send count for rate limiting (migration 0016)
+    `CREATE TABLE IF NOT EXISTS \`campaignSendLog\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`campaignId\` int NOT NULL,
+      \`sendDate\` varchar(10) NOT NULL,
+      \`sendCount\` int NOT NULL DEFAULT 0,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`campaignSendLog_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_csl_campaign_date\` (\`campaignId\`, \`sendDate\`)
+    )`,
+    // ── Student system tables (migration 0015) ──────────────────────────────
+    // Virtual horses for student learning
+    `CREATE TABLE IF NOT EXISTS \`virtualHorses\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`userId\` int NOT NULL,
+      \`name\` varchar(100) NOT NULL,
+      \`breed\` varchar(100),
+      \`color\` varchar(50),
+      \`age\` int,
+      \`personality\` varchar(100),
+      \`feedingScore\` int NOT NULL DEFAULT 80,
+      \`groomingScore\` int NOT NULL DEFAULT 80,
+      \`exerciseScore\` int NOT NULL DEFAULT 80,
+      \`healthScore\` int NOT NULL DEFAULT 80,
+      \`overallScore\` int NOT NULL DEFAULT 80,
+      \`photoUrl\` text,
+      \`isActive\` boolean NOT NULL DEFAULT true,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`virtualHorses_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_virtualHorses_userId\` (\`userId\`)
+    )`,
+    // Student horse assignments (links student to a real horse)
+    `CREATE TABLE IF NOT EXISTS \`studentHorseAssignments\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`studentUserId\` int NOT NULL,
+      \`horseId\` int NOT NULL,
+      \`assignedBy\` int,
+      \`stableId\` int,
+      \`notes\` text,
+      \`isActive\` boolean NOT NULL DEFAULT true,
+      \`assignedAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`studentHorseAssignments_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_sha_studentUserId\` (\`studentUserId\`),
+      KEY \`idx_sha_horseId\` (\`horseId\`)
+    )`,
+    // Student tasks (daily/weekly care and learning tasks)
+    `CREATE TABLE IF NOT EXISTS \`studentTasks\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`userId\` int NOT NULL,
+      \`title\` varchar(200) NOT NULL,
+      \`description\` text,
+      \`category\` varchar(50) NOT NULL DEFAULT 'care',
+      \`frequency\` varchar(20) NOT NULL DEFAULT 'daily',
+      \`targetDate\` date,
+      \`isCompleted\` boolean NOT NULL DEFAULT false,
+      \`completedAt\` timestamp NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`studentTasks_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_studentTasks_userId\` (\`userId\`)
+    )`,
+    // Student training entries (simplified training log)
+    `CREATE TABLE IF NOT EXISTS \`studentTrainingEntries\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`userId\` int NOT NULL,
+      \`title\` varchar(200) NOT NULL,
+      \`sessionDate\` date NOT NULL,
+      \`duration\` int,
+      \`sessionType\` varchar(50) NOT NULL DEFAULT 'lesson',
+      \`notes\` text,
+      \`wentWell\` text,
+      \`needsImprovement\` text,
+      \`instructor\` varchar(100),
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`studentTrainingEntries_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_ste_userId\` (\`userId\`)
+    )`,
+    // Student progress (skill tracking)
+    `CREATE TABLE IF NOT EXISTS \`studentProgress\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`userId\` int NOT NULL,
+      \`skillArea\` varchar(100) NOT NULL,
+      \`level\` int NOT NULL DEFAULT 1,
+      \`xp\` int NOT NULL DEFAULT 0,
+      \`lastActivityAt\` timestamp NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`studentProgress_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_sp_userId\` (\`userId\`)
+    )`,
+    // Study topics (structured learning content)
+    `CREATE TABLE IF NOT EXISTS \`studyTopics\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`slug\` varchar(80) NOT NULL,
+      \`title\` varchar(200) NOT NULL,
+      \`description\` text,
+      \`category\` varchar(80) NOT NULL,
+      \`difficulty\` varchar(20) NOT NULL DEFAULT 'beginner',
+      \`contentMd\` text,
+      \`sortOrder\` int NOT NULL DEFAULT 0,
+      \`isPublished\` boolean NOT NULL DEFAULT true,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`studyTopics_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_studyTopics_category\` (\`category\`)
+    )`,
+    // AI tutor sessions (usage logging and cost tracking)
+    `CREATE TABLE IF NOT EXISTS \`aiTutorSessions\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`userId\` int NOT NULL,
+      \`question\` text NOT NULL,
+      \`answer\` text,
+      \`modelUsed\` varchar(100),
+      \`tier\` varchar(20) NOT NULL DEFAULT 'standard',
+      \`promptTokens\` int NOT NULL DEFAULT 0,
+      \`completionTokens\` int NOT NULL DEFAULT 0,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`aiTutorSessions_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_ats_userId\` (\`userId\`)
+    )`,
+    // Phase 3 — Student groups
+    `CREATE TABLE IF NOT EXISTS \`studentGroups\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`teacherId\` int NOT NULL,
+      \`name\` varchar(200) NOT NULL,
+      \`description\` text,
+      \`level\` varchar(30) NOT NULL DEFAULT 'beginner',
+      \`academicYear\` varchar(20),
+      \`isActive\` boolean NOT NULL DEFAULT true,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`studentGroups_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_sg_teacherId\` (\`teacherId\`)
+    )`,
+    // Phase 3 — Student group members
+    `CREATE TABLE IF NOT EXISTS \`studentGroupMembers\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`groupId\` int NOT NULL,
+      \`studentUserId\` int NOT NULL,
+      \`joinedAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`studentGroupMembers_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_sgm_groupId\` (\`groupId\`),
+      KEY \`idx_sgm_studentUserId\` (\`studentUserId\`)
+    )`,
+    // Phase 3 — Teacher assigned tasks
+    `CREATE TABLE IF NOT EXISTS \`teacherAssignedTasks\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`teacherId\` int NOT NULL,
+      \`studentUserId\` int,
+      \`groupId\` int,
+      \`title\` varchar(200) NOT NULL,
+      \`description\` text,
+      \`category\` varchar(50) NOT NULL DEFAULT 'care',
+      \`dueDate\` date,
+      \`frequency\` varchar(20) NOT NULL DEFAULT 'once',
+      \`isCompleted\` boolean NOT NULL DEFAULT false,
+      \`completedAt\` timestamp NULL,
+      \`completedByStudentId\` int,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`teacherAssignedTasks_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_tat_teacherId\` (\`teacherId\`),
+      KEY \`idx_tat_studentUserId\` (\`studentUserId\`)
+    )`,
+    // Phase 3 — Teacher feedback
+    `CREATE TABLE IF NOT EXISTS \`teacherFeedback\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`teacherId\` int NOT NULL,
+      \`studentUserId\` int NOT NULL,
+      \`entryType\` varchar(50) NOT NULL,
+      \`entryId\` int,
+      \`comment\` text NOT NULL,
+      \`feedbackType\` varchar(30) NOT NULL DEFAULT 'general',
+      \`isRead\` boolean NOT NULL DEFAULT false,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`teacherFeedback_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_tf_studentUserId\` (\`studentUserId\`),
+      KEY \`idx_tf_teacherId\` (\`teacherId\`)
+    )`,
+    // Phase 3 — Learning pathway progress
+    `CREATE TABLE IF NOT EXISTS \`learningPathwayProgress\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`studentUserId\` int NOT NULL,
+      \`pathwayLevel\` varchar(30) NOT NULL,
+      \`itemType\` varchar(30) NOT NULL,
+      \`itemSlug\` varchar(100) NOT NULL,
+      \`completedAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`learningPathwayProgress_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_lpp_studentUserId\` (\`studentUserId\`)
+    )`,
   ];
 
   try {
@@ -869,6 +1129,20 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`passportNumber\` varchar(100) DEFAULT NULL`,
       `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`feiId\` varchar(100) DEFAULT NULL`,
       `ALTER TABLE \`horses\` ADD COLUMN IF NOT EXISTS \`ueln\` varchar(100) DEFAULT NULL`,
+      // Campaign enhancements (migration 0016) — add country targeting + daily limit to emailCampaigns
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`targetCountry\` varchar(100) DEFAULT NULL`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`targetType\` varchar(100) DEFAULT NULL`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`dailyLimit\` int NOT NULL DEFAULT 50`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`sentToday\` int NOT NULL DEFAULT 0`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`lastSendDate\` varchar(10) DEFAULT NULL`,
+      `ALTER TABLE \`emailCampaigns\` ADD COLUMN IF NOT EXISTS \`pausedAt\` timestamp NULL DEFAULT NULL`,
+      // Campaign enhancements (migration 0016) — add country/lead fields to marketingContacts
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`country\` varchar(100) DEFAULT NULL`,
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`leadFocus\` varchar(200) DEFAULT NULL`,
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`organizationName\` varchar(300) DEFAULT NULL`,
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`lastContactedAt\` timestamp NULL DEFAULT NULL`,
+      // Campaign enhancements (migration 0016) — add scheduledDate to campaignSequences
+      `ALTER TABLE \`campaignSequences\` ADD COLUMN IF NOT EXISTS \`scheduledDate\` varchar(10) DEFAULT NULL`,
     ];
     for (const stmt of columnMigrations) {
       try {
@@ -891,6 +1165,9 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       // Campaign recipients indexes (migration 0012)
       `CREATE INDEX IF NOT EXISTS \`ecr_campaign_idx\` ON \`emailCampaignRecipients\` (\`campaignId\`)`,
       `CREATE INDEX IF NOT EXISTS \`ecr_email_idx\` ON \`emailCampaignRecipients\` (\`email\`)`,
+      // Campaign enhancements indexes (migration 0016)
+      `CREATE INDEX IF NOT EXISTS \`idx_mc_country\` ON \`marketingContacts\` (\`country\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mc_contact_type\` ON \`marketingContacts\` (\`contactType\`)`,
     ];
     for (const stmt of indexMigrations) {
       try {

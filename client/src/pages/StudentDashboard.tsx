@@ -1,6 +1,6 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import { useAuth } from "@/_core/hooks/useAuth";
-import { DashboardLayout } from "@/components/DashboardLayout";
+import StudentDashboardLayout from "@/components/StudentDashboardLayout";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import {
@@ -21,7 +21,17 @@ import {
   Send,
   Loader2,
   X,
-  ArrowLeft,
+  Zap,
+  Star,
+  Edit2,
+  Save,
+  XCircle,
+  Lightbulb,
+  Shield,
+  Leaf,
+  MessageSquare,
+  AlertCircle,
+  Route,
 } from "lucide-react";
 
 /**
@@ -40,17 +50,16 @@ const STUDENT_BG = "#0c1222";
 const STUDENT_CARD = "#131a2e";
 const STUDENT_BORDER = "rgba(99, 102, 241, 0.15)";
 
-// ─── Types for active view ────────────────────────────────────
-type ActiveView =
-  | "overview"
-  | "virtual-horse"
-  | "tasks"
-  | "training"
-  | "study-hub"
-  | "ai-tutor"
-  | "progress";
+// ─── Re-export the ActiveView type from layout for internal use ──────────
+import type { StudentView as ActiveView } from "@/components/StudentDashboardLayout";
 
 // ─── Sub-components ───────────────────────────────────────────
+
+/** Format a date value to YYYY-MM-DD string safely. */
+function formatDate(d: Date | string | null | undefined): string {
+  if (!d) return "";
+  return String(d).slice(0, 10);
+}
 
 function SkeletonBar({ className = "" }: { className?: string }) {
   return (
@@ -79,6 +88,177 @@ function SectionHeading({ icon: Icon, title }: { icon: React.ComponentType<{ cla
       <Icon className="w-5 h-5 text-indigo-300" />
       <h2 className="text-lg font-semibold text-white">{title}</h2>
     </div>
+  );
+}
+
+// ─── Overview View ────────────────────────────────────────────
+// ─── Teacher Integration Panels ───────────────────────────────
+
+const FEEDBACK_STYLES: Record<string, { label: string; color: string; bg: string }> = {
+  good: { label: "Good Work", color: "#10b981", bg: "rgba(16,185,129,0.08)" },
+  needs_improvement: { label: "Needs Improvement", color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
+  urgent: { label: "Urgent", color: "#ef4444", bg: "rgba(239,68,68,0.08)" },
+  general: { label: "Comment", color: "#6366f1", bg: "rgba(99,102,241,0.08)" },
+};
+
+function TeacherFeedbackPanel() {
+  const utils = trpc.useUtils();
+  const { data: feedback, isLoading } = trpc.student.listMyFeedback.useQuery();
+  const markReadMut = trpc.student.markFeedbackRead.useMutation({
+    onSuccess: () => utils.student.listMyFeedback.invalidate(),
+  });
+
+  if (isLoading || !feedback?.length) return null;
+
+  const unread = feedback.filter(f => !f.isRead);
+  const shown = feedback.slice(0, 4);
+
+  return (
+    <section>
+      <SectionHeading icon={MessageSquare} title={`Instructor Feedback${unread.length > 0 ? ` (${unread.length} new)` : ""}`} />
+      <div className="space-y-3">
+        {shown.map(f => {
+          const style = FEEDBACK_STYLES[f.feedbackType] ?? FEEDBACK_STYLES.general;
+          return (
+            <SCard key={f.id} className={`!p-4 ${!f.isRead ? "ring-1 ring-indigo-500/30" : ""}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: style.bg, color: style.color }}>
+                      {style.label}
+                    </span>
+                    <span className="text-[10px] text-gray-500 capitalize">{f.entryType?.replace(/_/g, " ")}</span>
+                    {f.teacherName && <span className="text-[10px] text-gray-600">from {f.teacherName}</span>}
+                    {!f.isRead && <span className="text-[10px] text-indigo-400 font-semibold">● New</span>}
+                  </div>
+                  <p className="text-sm text-gray-300">{f.comment}</p>
+                  <p className="text-[10px] text-gray-600 mt-1">{String(f.createdAt).slice(0, 10)}</p>
+                </div>
+                {!f.isRead && (
+                  <button
+                    onClick={() => markReadMut.mutate({ id: f.id })}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 shrink-0 mt-0.5"
+                    title="Mark as read"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </SCard>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function AssignedTasksPanel({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
+  const utils = trpc.useUtils();
+  const { data: assignedTasks, isLoading } = trpc.student.listAssignedTasksForMe.useQuery();
+  const completeMut = trpc.student.completeAssignedTask.useMutation({
+    onSuccess: () => utils.student.listAssignedTasksForMe.invalidate(),
+  });
+
+  if (isLoading || !assignedTasks?.length) return null;
+
+  const pending = assignedTasks.filter(t => !t.isCompleted).slice(0, 5);
+  if (!pending.length) return null;
+
+  return (
+    <section>
+      <SectionHeading icon={AlertCircle} title={`Assigned Tasks (${pending.length} pending)`} />
+      <SCard>
+        <div className="space-y-3">
+          {pending.map(t => (
+            <div key={t.id} className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/15">
+              <div className="w-6 h-6 rounded-full border-2 border-amber-500/50 flex items-center justify-center shrink-0">
+                <ClipboardList className="w-3 h-3 text-amber-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white font-medium truncate">{t.title}</p>
+                <p className="text-[10px] text-amber-400/70">
+                  {t.category} · {t.frequency}
+                  {t.dueDate ? ` · Due ${String(t.dueDate).slice(0, 10)}` : ""}
+                  {t.groupId ? " · Class task" : " · Personal task"}
+                </p>
+              </div>
+              <button
+                onClick={() => completeMut.mutate({ id: t.id })}
+                disabled={completeMut.isPending}
+                className="text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors shrink-0"
+              >
+                Done
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={() => onNavigate("tasks")}
+            className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1 pt-1"
+          >
+            View all tasks <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </SCard>
+    </section>
+  );
+}
+
+const LEVEL_PATHWAY_ITEMS: Record<string, string[]> = {
+  beginner: ["riding-position", "aids-and-control", "grooming-basics", "feeding-basics", "tack-and-equipment", "horse-behaviour", "stable-safety", "horse-health-awareness"],
+  developing: ["transitions", "trot-work", "nutrition-in-depth", "hoof-care", "rugging", "horse-behaviour-advanced", "first-aid-basics", "warming-up"],
+  intermediate: ["canter-work", "lateral-work-intro", "health-monitoring", "lameness-awareness", "competition-basics", "arena-figures"],
+  advanced: ["collection-and-engagement", "horse-biomechanics", "nutrition-advanced", "accident-management"],
+};
+
+const LEVEL_LABELS: Record<string, string> = {
+  beginner: "Beginner", developing: "Developing", intermediate: "Intermediate", advanced: "Advanced",
+};
+
+function PathwayProgressPanel({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
+  const { data: pathwayData, isLoading } = trpc.student.getPathwayProgress.useQuery();
+
+  if (isLoading || !pathwayData) return null;
+
+  const { completed, currentLevel } = pathwayData;
+  const allItemsForLevel = LEVEL_PATHWAY_ITEMS[currentLevel] ?? LEVEL_PATHWAY_ITEMS.beginner;
+  const completedSlugs = new Set(completed.filter(c => c.pathwayLevel === currentLevel).map(c => c.itemSlug));
+  const completedCount = completedSlugs.size;
+  const totalCount = allItemsForLevel.length;
+  const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const nextItem = allItemsForLevel.find(slug => !completedSlugs.has(slug));
+
+  return (
+    <section>
+      <SectionHeading icon={Route} title="Learning Pathway" />
+      <SCard>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-white">{LEVEL_LABELS[currentLevel] ?? "Beginner"} Pathway</p>
+              <p className="text-xs text-gray-500">{completedCount} of {totalCount} topics completed</p>
+            </div>
+            <span className="text-lg font-bold text-indigo-400">{pct}%</span>
+          </div>
+          <div className="h-2.5 bg-white/[0.06] rounded-full overflow-hidden">
+            <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: "linear-gradient(90deg, #6366f1, #818cf8)" }} />
+          </div>
+          {nextItem && (
+            <div className="flex items-center gap-2 pt-1">
+              <Lightbulb className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+              <p className="text-xs text-gray-400">
+                Next: <span className="text-indigo-300 capitalize">{nextItem.replace(/-/g, " ")}</span>
+              </p>
+            </div>
+          )}
+          <button
+            onClick={() => onNavigate("study-hub")}
+            className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+          >
+            Open Study Hub <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </SCard>
+    </section>
   );
 }
 
@@ -263,6 +443,15 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
           })}
         </div>
       </section>
+
+      {/* ─── Teacher Feedback ─────────────────────────── */}
+      <TeacherFeedbackPanel />
+
+      {/* ─── Assigned Tasks ───────────────────────────── */}
+      <AssignedTasksPanel onNavigate={onNavigate} />
+
+      {/* ─── Pathway Progress ─────────────────────────── */}
+      <PathwayProgressPanel onNavigate={onNavigate} />
     </div>
   );
 }
@@ -529,76 +718,129 @@ function TrainingView() {
   const createMut = trpc.student.createTraining.useMutation({
     onSuccess: () => utils.student.listTraining.invalidate(),
   });
+  const updateMut = trpc.student.updateTraining.useMutation({
+    onSuccess: () => utils.student.listTraining.invalidate(),
+  });
   const deleteMut = trpc.student.deleteTraining.useMutation({
     onSuccess: () => utils.student.listTraining.invalidate(),
   });
 
-  const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({
+  const blankForm = () => ({
     title: "", sessionDate: new Date().toISOString().split("T")[0],
     sessionType: "lesson" as const, notes: "", wentWell: "", needsImprovement: "", instructor: "",
   });
 
+  const [showAdd, setShowAdd] = useState(false);
+  const [form, setForm] = useState(blankForm());
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState(blankForm());
+
   if (isLoading) return <SCard><SkeletonBar className="w-full h-32" /></SCard>;
+
+  const startEdit = (entry: NonNullable<typeof entries>[0]) => {
+    setEditingId(entry.id);
+    setEditForm({
+      title: entry.title,
+    sessionDate: formatDate(entry.sessionDate),
+      sessionType: entry.sessionType as typeof form.sessionType,
+      notes: entry.notes ?? "",
+      wentWell: entry.wentWell ?? "",
+      needsImprovement: entry.needsImprovement ?? "",
+      instructor: entry.instructor ?? "",
+    });
+  };
+
+  const cancelEdit = () => { setEditingId(null); setEditForm(blankForm()); };
+
+  const saveEdit = () => {
+    if (!editingId) return;
+    updateMut.mutate({
+      id: editingId,
+      title: editForm.title.trim() || undefined,
+      sessionDate: editForm.sessionDate || undefined,
+      sessionType: editForm.sessionType || undefined,
+      notes: editForm.notes.trim() || undefined,
+      wentWell: editForm.wentWell.trim() || undefined,
+      needsImprovement: editForm.needsImprovement.trim() || undefined,
+      instructor: editForm.instructor.trim() || undefined,
+    });
+    setEditingId(null);
+  };
+
+  const TrainingForm = ({ f, setF, onSubmit, onCancel, submitLabel }: {
+    f: typeof form;
+    setF: (v: typeof form) => void;
+    onSubmit: () => void;
+    onCancel: () => void;
+    submitLabel: string;
+  }) => (
+    <SCard>
+      <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input placeholder="Session title *" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })}
+            className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none" />
+          <input type="date" value={f.sessionDate} onChange={(e) => setF({ ...f, sessionDate: e.target.value })}
+            className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white text-sm focus:border-indigo-500 focus:outline-none" />
+          <select value={f.sessionType} onChange={(e) => setF({ ...f, sessionType: e.target.value as typeof f.sessionType })}
+            className="px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white text-sm focus:border-indigo-500 focus:outline-none">
+            <option value="lesson">Lesson</option>
+            <option value="practice">Practice</option>
+            <option value="groundwork">Groundwork</option>
+            <option value="theory">Theory</option>
+            <option value="other">Other</option>
+          </select>
+          <input placeholder="Instructor (optional)" value={f.instructor} onChange={(e) => setF({ ...f, instructor: e.target.value })}
+            className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none" />
+        </div>
+        <textarea placeholder="What went well?" value={f.wentWell} onChange={(e) => setF({ ...f, wentWell: e.target.value })} rows={2}
+          className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none resize-none" />
+        <textarea placeholder="What needs improvement?" value={f.needsImprovement} onChange={(e) => setF({ ...f, needsImprovement: e.target.value })} rows={2}
+          className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none resize-none" />
+        <textarea placeholder="Notes (optional)" value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} rows={2}
+          className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none resize-none" />
+        <div className="flex justify-end gap-3">
+          <button onClick={onCancel} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+          <button
+            disabled={!f.title.trim() || createMut.isPending || updateMut.isPending}
+            onClick={onSubmit}
+            className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium disabled:opacity-50"
+          >
+            {(createMut.isPending || updateMut.isPending) ? <Loader2 className="w-4 h-4 animate-spin" /> : submitLabel}
+          </button>
+        </div>
+      </div>
+    </SCard>
+  );
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <SectionHeading icon={TrendingUp} title="Training Log" />
-        <button onClick={() => setShowAdd(!showAdd)} className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+        <button onClick={() => { setShowAdd(!showAdd); cancelEdit(); }} className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
           <Plus className="w-4 h-4" /> Log Session
         </button>
       </div>
 
       {showAdd && (
-        <SCard>
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input placeholder="Session title *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none" />
-              <input type="date" value={form.sessionDate} onChange={(e) => setForm({ ...form, sessionDate: e.target.value })}
-                className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white text-sm focus:border-indigo-500 focus:outline-none" />
-              <select value={form.sessionType} onChange={(e) => setForm({ ...form, sessionType: e.target.value as typeof form.sessionType })}
-                className="px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white text-sm focus:border-indigo-500 focus:outline-none">
-                <option value="lesson">Lesson</option>
-                <option value="practice">Practice</option>
-                <option value="groundwork">Groundwork</option>
-                <option value="theory">Theory</option>
-                <option value="other">Other</option>
-              </select>
-              <input placeholder="Instructor (optional)" value={form.instructor} onChange={(e) => setForm({ ...form, instructor: e.target.value })}
-                className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none" />
-            </div>
-            <textarea placeholder="What went well?" value={form.wentWell} onChange={(e) => setForm({ ...form, wentWell: e.target.value })} rows={2}
-              className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none resize-none" />
-            <textarea placeholder="What needs improvement?" value={form.needsImprovement} onChange={(e) => setForm({ ...form, needsImprovement: e.target.value })} rows={2}
-              className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none resize-none" />
-            <textarea placeholder="Notes (optional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2}
-              className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none resize-none" />
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
-              <button
-                disabled={!form.title.trim() || createMut.isPending}
-                onClick={() => {
-                  createMut.mutate({
-                    title: form.title.trim(),
-                    sessionDate: form.sessionDate,
-                    sessionType: form.sessionType,
-                    notes: form.notes.trim() || undefined,
-                    wentWell: form.wentWell.trim() || undefined,
-                    needsImprovement: form.needsImprovement.trim() || undefined,
-                    instructor: form.instructor.trim() || undefined,
-                  });
-                  setForm({ title: "", sessionDate: new Date().toISOString().split("T")[0], sessionType: "lesson", notes: "", wentWell: "", needsImprovement: "", instructor: "" });
-                  setShowAdd(false);
-                }}
-                className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium disabled:opacity-50"
-              >
-                {createMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Entry"}
-              </button>
-            </div>
-          </div>
-        </SCard>
+        <TrainingForm
+          f={form}
+          setF={setForm}
+          onSubmit={() => {
+            createMut.mutate({
+              title: form.title.trim(),
+              sessionDate: form.sessionDate,
+              sessionType: form.sessionType,
+              notes: form.notes.trim() || undefined,
+              wentWell: form.wentWell.trim() || undefined,
+              needsImprovement: form.needsImprovement.trim() || undefined,
+              instructor: form.instructor.trim() || undefined,
+            });
+            setForm(blankForm());
+            setShowAdd(false);
+          }}
+          onCancel={() => setShowAdd(false)}
+          submitLabel="Save Entry"
+        />
       )}
 
       {(entries ?? []).length === 0 ? (
@@ -611,20 +853,36 @@ function TrainingView() {
       ) : (
         <div className="space-y-3">
           {(entries ?? []).map((entry) => (
-            <SCard key={entry.id}>
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h4 className="text-sm font-semibold text-white">{entry.title}</h4>
-                  <p className="text-xs text-gray-500 mt-0.5">{String(entry.sessionDate)} · {entry.sessionType}{entry.instructor ? ` · ${entry.instructor}` : ""}</p>
+            editingId === entry.id ? (
+              <TrainingForm
+                key={entry.id}
+                f={editForm}
+                setF={setEditForm}
+                onSubmit={saveEdit}
+                onCancel={cancelEdit}
+                submitLabel="Save Changes"
+              />
+            ) : (
+              <SCard key={entry.id}>
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h4 className="text-sm font-semibold text-white">{entry.title}</h4>
+                    <p className="text-xs text-gray-500 mt-0.5">{formatDate(entry.sessionDate)} · {entry.sessionType}{entry.instructor ? ` · ${entry.instructor}` : ""}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => startEdit(entry)} className="text-gray-600 hover:text-indigo-400 transition-colors">
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => deleteMut.mutate({ id: entry.id })} className="text-gray-600 hover:text-red-400 transition-colors">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-                <button onClick={() => deleteMut.mutate({ id: entry.id })} className="text-gray-600 hover:text-red-400 transition-colors">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              {entry.wentWell && <p className="text-xs text-emerald-400 mb-1">✓ {entry.wentWell}</p>}
-              {entry.needsImprovement && <p className="text-xs text-amber-400 mb-1">△ {entry.needsImprovement}</p>}
-              {entry.notes && <p className="text-xs text-gray-500 mt-1">{entry.notes}</p>}
-            </SCard>
+                {entry.wentWell && <p className="text-xs text-emerald-400 mb-1">✓ {entry.wentWell}</p>}
+                {entry.needsImprovement && <p className="text-xs text-amber-400 mb-1">△ {entry.needsImprovement}</p>}
+                {entry.notes && <p className="text-xs text-gray-500 mt-1">{entry.notes}</p>}
+              </SCard>
+            )
           ))}
         </div>
       )}
@@ -633,52 +891,136 @@ function TrainingView() {
 }
 
 // ─── Study Hub View ───────────────────────────────────────────
+const LEVEL_COLORS: Record<string, string> = {
+  beginner: "#10b981",
+  developing: "#6366f1",
+  intermediate: "#f59e0b",
+  advanced: "#ef4444",
+};
+
+const CAT_COLORS: Record<string, string> = {
+  riding: "#6366f1",
+  care: "#10b981",
+  theory: "#f59e0b",
+  safety: "#ef4444",
+};
+
+const CAT_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  riding: GraduationCap,
+  care: Heart,
+  theory: Brain,
+  safety: Shield,
+};
+
 function StudyHubView() {
   const { data: topics, isLoading } = trpc.student.listStudyTopics.useQuery({});
+  const [levelFilter, setLevelFilter] = useState<string>("all");
+  const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
 
   if (isLoading) return <SCard><SkeletonBar className="w-full h-32" /></SCard>;
 
-  const categories = Array.from(new Set((topics ?? []).map(t => t.category)));
-  const catColors: Record<string, string> = {
-    riding: "#6366f1", care: "#10b981", theory: "#f59e0b", safety: "#ef4444",
-  };
+  const levels = ["all", "beginner", "developing", "intermediate", "advanced"] as const;
+  const filtered = levelFilter === "all"
+    ? (topics ?? [])
+    : (topics ?? []).filter((t) => t.difficulty === levelFilter);
+
+  const categories = Array.from(new Set(filtered.map(t => t.category)));
 
   return (
     <div className="space-y-4">
       <SectionHeading icon={BookOpen} title="Study Hub" />
 
-      {categories.length === 0 ? (
+      {/* Level filter tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {levels.map((l) => (
+          <button
+            key={l}
+            onClick={() => setLevelFilter(l)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+              levelFilter === l
+                ? "text-white border-transparent"
+                : "border-white/10 text-gray-500 hover:text-gray-300 hover:border-white/20"
+            }`}
+            style={levelFilter === l ? { backgroundColor: LEVEL_COLORS[l] ?? STUDENT_ACCENT } : {}}
+          >
+            {l === "all" ? "All Topics" : l.charAt(0).toUpperCase() + l.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
         <SCard>
           <div className="text-center py-8">
             <BookOpen className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">Study topics are being prepared. Check back soon.</p>
+            <p className="text-sm text-gray-500">No topics at this level yet.</p>
           </div>
         </SCard>
       ) : (
-        categories.map((cat) => (
-          <div key={cat}>
-            <p className="text-xs font-semibold uppercase tracking-wider mb-3 px-1" style={{ color: catColors[cat] || STUDENT_ACCENT }}>
-              {cat}
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {(topics ?? []).filter(t => t.category === cat).map((topic) => (
-                <SCard key={topic.id} className="hover:border-indigo-500/30 transition-colors cursor-default">
-                  <h4 className="text-sm font-semibold text-white mb-1">{topic.title}</h4>
-                  <p className="text-xs text-gray-500">{topic.description}</p>
-                  <span className="mt-2 inline-block text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 font-medium">
-                    {topic.difficulty}
-                  </span>
-                </SCard>
-              ))}
+        categories.map((cat) => {
+          const CatIcon = CAT_ICONS[cat] ?? BookOpen;
+          const catTopics = filtered.filter(t => t.category === cat);
+          return (
+            <div key={cat}>
+              <div className="flex items-center gap-2 mb-3 px-1">
+                <CatIcon className="w-4 h-4" style={{ color: CAT_COLORS[cat] || STUDENT_ACCENT }} />
+                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: CAT_COLORS[cat] || STUDENT_ACCENT }}>
+                  {cat}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {catTopics.map((topic) => (
+                  <div key={topic.id}>
+                    <button
+                      onClick={() => setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
+                      className="w-full text-left rounded-xl border p-4 transition-all hover:border-indigo-500/30"
+                      style={{ backgroundColor: STUDENT_CARD, borderColor: STUDENT_BORDER }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h4 className="text-sm font-semibold text-white mb-1">{topic.title}</h4>
+                          <p className="text-xs text-gray-500 line-clamp-2">{topic.description}</p>
+                        </div>
+                        <span
+                          className="shrink-0 text-xs px-2 py-0.5 rounded-full font-medium mt-0.5"
+                          style={{ backgroundColor: `${LEVEL_COLORS[topic.difficulty] ?? STUDENT_ACCENT}18`, color: LEVEL_COLORS[topic.difficulty] ?? STUDENT_ACCENT }}
+                        >
+                          {topic.difficulty}
+                        </span>
+                      </div>
+                    </button>
+                    {expandedTopic === topic.id && topic.description && (
+                      <div
+                        className="mt-1 rounded-xl border p-4 text-sm text-gray-300"
+                        style={{ backgroundColor: "#1a2240", borderColor: STUDENT_BORDER }}
+                      >
+                        <p className="text-sm text-gray-300 leading-relaxed">{topic.description}</p>
+                        <div className="mt-3 pt-3 border-t border-white/[0.05]">
+                          <p className="text-xs text-indigo-400 font-medium">Suggested next step</p>
+                          <p className="text-xs text-gray-500 mt-1">Use the AI Tutor to explore this topic further or ask for a quiz.</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );
 }
 
 // ─── AI Tutor View ────────────────────────────────────────────
+const GUIDED_PROMPTS = [
+  { label: "Explain a topic", icon: BookOpen, text: "Can you explain the basics of riding position and balance?" },
+  { label: "Test my knowledge", icon: Trophy, text: "Test me on horse grooming — ask me 3 questions." },
+  { label: "Care tips", icon: Heart, text: "What are the most important daily care checks for a horse?" },
+  { label: "Give me hints", icon: Lightbulb, text: "Give me some helpful hints for improving my sitting trot." },
+  { label: "Safety advice", icon: Shield, text: "What are the key safety rules I should follow in a stable yard?" },
+  { label: "Improve my score", icon: TrendingUp, text: "How can I improve my horse's overall care score?" },
+];
+
 function AITutorView() {
   const { data: usage } = trpc.student.getTutorUsage.useQuery();
   const askMut = trpc.student.askTutor.useMutation();
@@ -686,13 +1028,13 @@ function AITutorView() {
   const [question, setQuestion] = useState("");
   const [history, setHistory] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
 
-  const handleAsk = () => {
-    if (!question.trim() || askMut.isPending) return;
-    const q = question.trim();
-    setHistory((prev) => [...prev, { role: "user", content: q }]);
+  const handleAsk = (q?: string) => {
+    const text = (q ?? question).trim();
+    if (!text || askMut.isPending) return;
+    setHistory((prev) => [...prev, { role: "user", content: text }]);
     setQuestion("");
     askMut.mutate(
-      { question: q, conversationHistory: history.slice(-6) },
+      { question: text, conversationHistory: history.slice(-6) },
       {
         onSuccess: (res) => {
           setHistory((prev) => [...prev, { role: "assistant", content: res.answer }]);
@@ -707,19 +1049,40 @@ function AITutorView() {
         <SectionHeading icon={Brain} title="AI Tutor" />
         {usage && (
           <span className="text-xs text-gray-500">
-            {usage.remaining}/{usage.dailyLimit} questions remaining today
+            {usage.remaining}/{usage.dailyLimit} questions left today
           </span>
         )}
       </div>
 
+      {/* Guided action prompts */}
+      {history.length === 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {GUIDED_PROMPTS.map((p) => {
+            const PIcon = p.icon;
+            return (
+              <button
+                key={p.label}
+                onClick={() => handleAsk(p.text)}
+                disabled={askMut.isPending}
+                className="flex items-center gap-2 p-3 rounded-xl border text-left transition-all hover:border-indigo-500/40 hover:bg-indigo-500/5 disabled:opacity-50"
+                style={{ borderColor: STUDENT_BORDER, backgroundColor: STUDENT_CARD }}
+              >
+                <PIcon className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span className="text-xs text-gray-300 font-medium">{p.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <SCard>
         {/* Chat history */}
-        <div className="space-y-3 mb-4 max-h-[400px] overflow-y-auto">
+        <div className="space-y-3 mb-4 max-h-[420px] overflow-y-auto">
           {history.length === 0 && (
             <div className="text-center py-8">
               <Brain className="w-10 h-10 text-violet-400 mx-auto mb-3" />
               <p className="text-sm text-gray-400 mb-1">Ask me anything about horse care, riding, or equestrian studies.</p>
-              <p className="text-xs text-gray-600">I'm here to help you learn — try questions like "How do I groom a horse?" or "What are the aids for trotting?"</p>
+              <p className="text-xs text-gray-600">Try a guided prompt above or type your own question.</p>
             </div>
           )}
           {history.map((msg, i) => (
@@ -742,6 +1105,15 @@ function AITutorView() {
           )}
         </div>
 
+        {history.length > 0 && (
+          <button
+            onClick={() => setHistory([])}
+            className="text-xs text-gray-600 hover:text-gray-400 mb-3 transition-colors"
+          >
+            Clear conversation
+          </button>
+        )}
+
         {/* Input */}
         <div className="flex gap-2">
           <input
@@ -753,7 +1125,7 @@ function AITutorView() {
             disabled={askMut.isPending}
           />
           <button
-            onClick={handleAsk}
+            onClick={() => handleAsk()}
             disabled={!question.trim() || askMut.isPending}
             className="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 transition-colors shrink-0"
           >
@@ -766,10 +1138,21 @@ function AITutorView() {
 }
 
 // ─── Progress View ────────────────────────────────────────────
-function ProgressView() {
-  const { data: progress, isLoading } = trpc.student.getProgress.useQuery();
+const LEARNER_LEVELS = [
+  { id: "beginner", label: "Beginner", description: "Learning the basics of horse care and riding", color: "#10b981" },
+  { id: "developing", label: "Developing", description: "Building confidence and consistency", color: "#6366f1" },
+  { id: "intermediate", label: "Intermediate", description: "Expanding skills and independent work", color: "#f59e0b" },
+  { id: "advanced", label: "Advanced", description: "Refining technique and deeper knowledge", color: "#ef4444" },
+] as const;
 
-  if (isLoading) return <SCard><SkeletonBar className="w-full h-32" /></SCard>;
+function ProgressView() {
+  const utils = trpc.useUtils();
+  const { data: progress, isLoading: progressLoading } = trpc.student.getProgress.useQuery();
+  const { data: levelData, isLoading: levelLoading } = trpc.student.getLearnerLevel.useQuery();
+  const setLevelMut = trpc.student.setLearnerLevel.useMutation({
+    onSuccess: () => utils.student.getLearnerLevel.invalidate(),
+  });
+  const [showLevelPicker, setShowLevelPicker] = useState(false);
 
   const skillColors: Record<string, string> = {
     riding_position: "#6366f1", aids_control: "#8b5cf6",
@@ -780,42 +1163,315 @@ function ProgressView() {
   const formatSkillName = (s: string) =>
     s.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 
+  const currentLevel = LEARNER_LEVELS.find(l => l.id === levelData?.level) ?? LEARNER_LEVELS[0];
+
+  if (progressLoading || levelLoading) return <SCard><SkeletonBar className="w-full h-32" /></SCard>;
+
   return (
     <div className="space-y-4">
       <SectionHeading icon={Target} title="Progress & Skills" />
 
+      {/* Learner level card */}
+      <SCard>
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Your Learner Level</p>
+          <button
+            onClick={() => setShowLevelPicker(!showLevelPicker)}
+            className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+          >
+            <Edit2 className="w-3 h-3" /> Change
+          </button>
+        </div>
+        <div className="flex items-center gap-3 mt-2">
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm"
+            style={{ backgroundColor: `${currentLevel.color}22`, border: `2px solid ${currentLevel.color}40` }}
+          >
+            <Star className="w-5 h-5" style={{ color: currentLevel.color }} />
+          </div>
+          <div>
+            <p className="text-base font-bold text-white">{currentLevel.label}</p>
+            <p className="text-xs text-gray-500">{currentLevel.description}</p>
+          </div>
+        </div>
+        {showLevelPicker && (
+          <div className="mt-4 pt-4 border-t border-white/[0.05] grid grid-cols-2 gap-2">
+            {LEARNER_LEVELS.map((l) => (
+              <button
+                key={l.id}
+                onClick={() => {
+                  setLevelMut.mutate({ level: l.id });
+                  setShowLevelPicker(false);
+                }}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  l.id === levelData?.level ? "border-transparent" : "border-white/[0.06] hover:border-white/20"
+                }`}
+                style={l.id === levelData?.level ? { backgroundColor: `${l.color}18`, borderColor: `${l.color}40` } : {}}
+              >
+                <p className="text-xs font-semibold text-white">{l.label}</p>
+                <p className="text-[10px] text-gray-500 mt-0.5">{l.description}</p>
+              </button>
+            ))}
+          </div>
+        )}
+      </SCard>
+
+      {/* Skill progress */}
       {(progress ?? []).length === 0 ? (
         <SCard>
           <div className="text-center py-8">
-            <Target className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">
-              Complete tasks and training sessions to start tracking your progress.
+            <Leaf className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+            <p className="text-sm text-gray-400 font-medium mb-1">Your learning journey starts here</p>
+            <p className="text-xs text-gray-500 max-w-xs mx-auto">
+              Complete daily care tasks, log training sessions, and work through study topics
+              to build your skill scores here.
             </p>
           </div>
         </SCard>
       ) : (
         <SCard>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-4">Skill Areas</p>
           <div className="space-y-4">
             {(progress ?? []).map((skill) => (
               <div key={skill.id}>
-                <div className="flex justify-between items-center mb-1">
+                <div className="flex justify-between items-center mb-1.5">
                   <span className="text-sm text-white font-medium">{formatSkillName(skill.skillArea)}</span>
                   <span className="text-xs text-gray-500">Level {skill.level} · {skill.xp} XP</span>
                 </div>
                 {/* XP bar: 100 XP per level; modulo shows progress toward next level */}
                 <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full transition-all"
+                    className="h-full rounded-full transition-all duration-500"
                     style={{
                       width: `${Math.min(100, (skill.xp % 100))}%`,
                       backgroundColor: skillColors[skill.skillArea] || STUDENT_ACCENT,
                     }}
                   />
                 </div>
+                <p className="text-[10px] text-gray-600 mt-1">{skill.xp % 100 === 0 ? "Level up!" : `${100 - (skill.xp % 100)} XP to next level`}</p>
               </div>
             ))}
           </div>
         </SCard>
+      )}
+    </div>
+  );
+}
+
+// ─── Scenario Training View ───────────────────────────────────
+const LEVEL_DISPLAY: Record<string, { label: string; color: string }> = {
+  beginner: { label: "Beginner", color: "#10b981" },
+  developing: { label: "Developing", color: "#6366f1" },
+  intermediate: { label: "Intermediate", color: "#f59e0b" },
+  advanced: { label: "Advanced", color: "#ef4444" },
+};
+
+type AnswerResult = {
+  isCorrect: boolean;
+  selectedChoice: { id: string; text: string; isCorrect: boolean; explanation: string };
+  allChoices: { id: string; text: string; isCorrect: boolean; explanation: string }[];
+  learningTakeaway: string;
+};
+
+function ScenarioCard({
+  scenario,
+  onAnswer,
+}: {
+  scenario: { id: string; title: string; level: string; category: string; prompt: string; choices: { id: string; text: string }[] };
+  onAnswer: (scenarioId: string, choiceId: string) => void;
+}) {
+  const checkMut = trpc.student.checkScenarioAnswer.useMutation();
+  const [selected, setSelected] = useState<string | null>(null);
+  const [result, setResult] = useState<AnswerResult | null>(null);
+
+  const levelInfo = LEVEL_DISPLAY[scenario.level] ?? { label: scenario.level, color: STUDENT_ACCENT };
+
+  const handleAnswer = (choiceId: string) => {
+    if (result) return; // already answered
+    setSelected(choiceId);
+    checkMut.mutate(
+      { scenarioId: scenario.id, choiceId },
+      {
+        onSuccess: (res) => {
+          setResult(res as AnswerResult);
+          onAnswer(scenario.id, choiceId);
+        },
+      },
+    );
+  };
+
+  const resetScenario = () => { setSelected(null); setResult(null); };
+
+  return (
+    <SCard className="space-y-4">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span
+              className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full"
+              style={{ backgroundColor: `${levelInfo.color}18`, color: levelInfo.color }}
+            >
+              {levelInfo.label}
+            </span>
+            <span className="text-[10px] text-gray-600 font-medium">{scenario.category}</span>
+          </div>
+          <h3 className="text-base font-semibold text-white">{scenario.title}</h3>
+        </div>
+        {result && (
+          <button onClick={resetScenario} className="text-xs text-gray-500 hover:text-gray-300 shrink-0 transition-colors">
+            Try again
+          </button>
+        )}
+      </div>
+
+      {/* Prompt */}
+      <div className="rounded-lg bg-white/[0.03] border border-white/[0.05] p-4">
+        <p className="text-sm text-gray-300 leading-relaxed">{scenario.prompt}</p>
+      </div>
+
+      {/* Choices */}
+      <div className="space-y-2">
+        {scenario.choices.map((choice) => {
+          const isSelected = selected === choice.id;
+          const isRevealed = !!result;
+          const resultChoice = result?.allChoices.find(c => c.id === choice.id);
+          const isCorrectAnswer = resultChoice?.isCorrect ?? false;
+
+          let borderColor = STUDENT_BORDER;
+          let bgColor = "transparent";
+          let textColor = "text-gray-300";
+
+          if (isRevealed) {
+            if (isCorrectAnswer) {
+              borderColor = "#10b981";
+              bgColor = "rgba(16,185,129,0.08)";
+              textColor = "text-emerald-300";
+            } else if (isSelected && !isCorrectAnswer) {
+              borderColor = "#ef4444";
+              bgColor = "rgba(239,68,68,0.06)";
+              textColor = "text-red-300";
+            } else {
+              textColor = "text-gray-500";
+            }
+          }
+
+          return (
+            <button
+              key={choice.id}
+              onClick={() => handleAnswer(choice.id)}
+              disabled={!!result || checkMut.isPending}
+              className={`w-full text-left rounded-lg border px-4 py-3 text-sm transition-all ${textColor} ${
+                !result ? "hover:border-indigo-500/40 hover:bg-indigo-500/5" : ""
+              } disabled:cursor-not-allowed`}
+              style={{ borderColor, backgroundColor: bgColor }}
+            >
+              <div className="flex items-start gap-3">
+                <span className="shrink-0 w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold mt-0.5"
+                  style={{ borderColor, color: isRevealed ? (isCorrectAnswer ? "#10b981" : isSelected ? "#ef4444" : "transparent") : "inherit" }}>
+                  {choice.id.toUpperCase()}
+                </span>
+                <span>{choice.text}</span>
+                {isRevealed && isCorrectAnswer && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 ml-auto mt-0.5" />}
+                {isRevealed && isSelected && !isCorrectAnswer && <XCircle className="w-4 h-4 text-red-400 shrink-0 ml-auto mt-0.5" />}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Result reveal */}
+      {result && (
+        <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/[0.05] p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            {result.isCorrect
+              ? <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+              : <XCircle className="w-5 h-5 text-red-400 shrink-0" />
+            }
+            <p className={`text-sm font-semibold ${result.isCorrect ? "text-emerald-300" : "text-red-300"}`}>
+              {result.isCorrect ? "Correct!" : "Not quite right."}
+            </p>
+          </div>
+          <p className="text-xs text-gray-400 leading-relaxed">{result.selectedChoice.explanation}</p>
+          <div className="pt-2 border-t border-white/[0.05]">
+            <div className="flex items-start gap-2">
+              <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-amber-200/80 leading-relaxed">{result.learningTakeaway}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </SCard>
+  );
+}
+
+function ScenarioTrainingView() {
+  const { data: levelData } = trpc.student.getLearnerLevel.useQuery();
+  const currentLevel = levelData?.level ?? "beginner";
+
+  const [levelFilter, setLevelFilter] = useState<string>(currentLevel);
+  const { data: scenarios, isLoading } = trpc.student.listScenarios.useQuery(
+    { level: levelFilter as "beginner" | "developing" | "intermediate" | "advanced" },
+  );
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+
+  const handleAnswered = (id: string) => {
+    setCompletedIds((prev) => new Set([...prev, id]));
+  };
+
+  if (isLoading) return <SCard><SkeletonBar className="w-full h-32" /></SCard>;
+
+  const levels = ["beginner", "developing", "intermediate", "advanced"] as const;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <SectionHeading icon={Zap} title="Scenario Training" />
+        {completedIds.size > 0 && (
+          <span className="text-xs text-emerald-400">{completedIds.size} answered this session</span>
+        )}
+      </div>
+
+      <p className="text-sm text-gray-500 -mt-2">
+        Real-world decision scenarios to develop your equestrian judgement. Work through situations you'll face in the yard, stable, and arena.
+      </p>
+
+      {/* Level filter */}
+      <div className="flex gap-2 flex-wrap">
+        {levels.map((l) => {
+          const info = LEVEL_DISPLAY[l];
+          return (
+            <button
+              key={l}
+              onClick={() => setLevelFilter(l)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                levelFilter === l ? "text-white border-transparent" : "border-white/10 text-gray-500 hover:text-gray-300 hover:border-white/20"
+              }`}
+              style={levelFilter === l ? { backgroundColor: info.color } : {}}
+            >
+              {info.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {(scenarios ?? []).length === 0 ? (
+        <SCard>
+          <div className="text-center py-8">
+            <Zap className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+            <p className="text-sm text-gray-500">No scenarios available at this level.</p>
+          </div>
+        </SCard>
+      ) : (
+        <div className="space-y-4">
+          {(scenarios ?? []).map((scenario) => (
+            <ScenarioCard
+              key={scenario.id}
+              scenario={scenario}
+              onAnswer={handleAnswered}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
@@ -836,10 +1492,11 @@ export default function StudentDashboard() {
     "study-hub": "Study Hub",
     "ai-tutor": "AI Tutor",
     "progress": "Progress",
+    "scenarios": "Scenario Training",
   };
 
   return (
-    <DashboardLayout>
+    <StudentDashboardLayout activeView={activeView} onNavigate={setActiveView}>
       <div className="min-h-screen relative" style={{ backgroundColor: STUDENT_BG }}>
         {/* Subtle background depth — student identity */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
@@ -852,14 +1509,6 @@ export default function StudentDashboard() {
           {/* ─── Header ───────────────────────────────────── */}
           <section>
             <div className="flex items-center gap-3">
-              {activeView !== "overview" && (
-                <button
-                  onClick={() => setActiveView("overview")}
-                  className="w-9 h-9 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] flex items-center justify-center transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4 text-gray-400" />
-                </button>
-              )}
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center">
                 <GraduationCap className="w-5 h-5 text-white" />
               </div>
@@ -882,8 +1531,9 @@ export default function StudentDashboard() {
           {activeView === "study-hub" && <StudyHubView />}
           {activeView === "ai-tutor" && <AITutorView />}
           {activeView === "progress" && <ProgressView />}
+          {activeView === "scenarios" && <ScenarioTrainingView />}
         </div>
       </div>
-    </DashboardLayout>
+    </StudentDashboardLayout>
   );
 }

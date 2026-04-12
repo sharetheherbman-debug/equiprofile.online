@@ -10,6 +10,7 @@ interface ProtectedRouteProps {
   requireAdmin?: boolean;
   stableOnly?: boolean;
   studentOnly?: boolean;
+  teacherOnly?: boolean;
 }
 
 /**
@@ -24,6 +25,7 @@ export function ProtectedRoute({
   requireAdmin = false,
   stableOnly = false,
   studentOnly = false,
+  teacherOnly = false,
 }: ProtectedRouteProps) {
   const { user, loading, isAuthenticated, error } = useAuth();
   const [, setLocation] = useLocation();
@@ -43,6 +45,16 @@ export function ProtectedRoute({
     try {
       const prefs = JSON.parse(user.preferences);
       return prefs.planTier === "student" || prefs.selectedExperience === "student";
+    } catch {
+      return false;
+    }
+  })();
+
+  const isTeacherPlan = (() => {
+    if (!user?.preferences) return false;
+    try {
+      const prefs = JSON.parse(user.preferences);
+      return prefs.planTier === "teacher" || prefs.selectedExperience === "teacher";
     } catch {
       return false;
     }
@@ -95,6 +107,11 @@ export function ProtectedRoute({
       toast.error("This feature requires the Student plan.");
       setLocation("/dashboard");
     }
+
+    if (teacherOnly && !isTeacherPlan && !isAdmin) {
+      toast.error("This feature requires the Teacher plan.");
+      setLocation("/dashboard");
+    }
   }, [
     loading,
     isAuthenticated,
@@ -102,8 +119,10 @@ export function ProtectedRoute({
     requireAdmin,
     stableOnly,
     studentOnly,
+    teacherOnly,
     isStablePlan,
     isStudentPlan,
+    isTeacherPlan,
     isAdmin,
     user,
     setLocation,
@@ -141,6 +160,11 @@ export function ProtectedRoute({
     return null;
   }
 
+  // Don't render if teacher plan required but user is not on teacher plan (admin bypasses)
+  if (teacherOnly && !isTeacherPlan && !isAdmin) {
+    return null;
+  }
+
   return <>{children}</>;
 }
 
@@ -158,6 +182,14 @@ export function StableRoute({ children }: { children: ReactNode }) {
  */
 export function StudentRoute({ children }: { children: ReactNode }) {
   return <ProtectedRoute studentOnly>{children}</ProtectedRoute>;
+}
+
+/**
+ * Teacher plan route - requires Teacher subscription tier.
+ * Admin can always access.
+ */
+export function TeacherRoute({ children }: { children: ReactNode }) {
+  return <ProtectedRoute teacherOnly>{children}</ProtectedRoute>;
 }
 
 export default ProtectedRoute;
