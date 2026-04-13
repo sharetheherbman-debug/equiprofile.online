@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -27,10 +26,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { trpc } from "@/lib/trpc";
 import {
-  Plus,
-  Phone,
   Mail,
   Trash2,
   UserCog,
@@ -38,258 +45,310 @@ import {
   ChevronRight,
   Users,
   Loader2,
+  UserPlus,
+  Clock,
+  CheckCircle,
+  Crown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "wouter";
 import { PageHeader } from "@/components/PageHeader";
+import { useAuth } from "@/_core/hooks/useAuth";
 
-// Staff roles use the existing contact type enum values that represent yard staff
-const STAFF_ROLES = [
-  { value: "trainer", label: "Trainer", color: "bg-blue-500/20 text-blue-300" },
-  {
-    value: "instructor",
-    label: "Instructor",
-    color: "bg-purple-500/20 text-purple-300",
-  },
-  { value: "stable", label: "Stable Manager", color: "bg-amber-500/20 text-amber-300" },
-  { value: "farrier", label: "Farrier", color: "bg-orange-500/20 text-orange-300" },
-  { value: "vet", label: "Vet / Veterinary", color: "bg-green-500/20 text-green-300" },
-  { value: "other", label: "Groom / Yard Hand", color: "bg-slate-500/20 text-slate-300" },
-];
+const INVITE_ROLES = [
+  { value: "admin", label: "Admin" },
+  { value: "trainer", label: "Trainer" },
+  { value: "member", label: "Member" },
+  { value: "viewer", label: "Viewer" },
+] as const;
 
-const STAFF_TYPE_VALUES = STAFF_ROLES.map((r) => r.value);
+type InviteRole = (typeof INVITE_ROLES)[number]["value"];
 
-type Contact = {
-  id: number;
-  name: string;
-  contactType: string;
-  company?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  mobile?: string | null;
-  notes?: string | null;
+const ROLE_COLORS: Record<string, string> = {
+  owner: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+  admin: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+  trainer: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+  member: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+  viewer: "bg-slate-500/20 text-slate-300 border-slate-500/30",
 };
 
-function getRoleMeta(type: string) {
-  return (
-    STAFF_ROLES.find((r) => r.value === type) ?? {
-      label: type,
-      color: "bg-slate-500/20 text-slate-300",
-    }
-  );
+const ROLE_ICONS: Record<string, React.ReactNode> = {
+  owner: <Crown className="w-3 h-3" />,
+  admin: <Shield className="w-3 h-3" />,
+};
+
+function getRoleColor(role: string) {
+  return ROLE_COLORS[role] ?? "bg-slate-500/20 text-slate-300 border-slate-500/30";
 }
 
 function StableStaffContent() {
-  const { data: allContacts = [], isLoading } = trpc.contacts.list.useQuery();
-  const createContact = trpc.contacts.create.useMutation();
-  const deleteContact = trpc.contacts.delete.useMutation();
+  const { user } = useAuth();
   const utils = trpc.useUtils();
 
-  const staffContacts = (allContacts as Contact[]).filter((c) =>
-    STAFF_TYPE_VALUES.includes(c.contactType),
-  );
+  // Get the user's first stable
+  const { data: stablesList = [] } = trpc.stables.list.useQuery();
+  const stableId = stablesList[0]?.id;
+  const stableName = stablesList[0]?.name;
 
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    contactType: "trainer",
-    email: "",
-    phone: "",
-    mobile: "",
-    notes: "",
+  // Determine if the current user is admin/owner of this stable
+  const { data: members = [], isLoading: membersLoading } =
+    trpc.stables.getMembers.useQuery(
+      { stableId: stableId! },
+      { enabled: !!stableId },
+    );
+
+  const currentMember = members.find((m) => m.userId === user?.id);
+  const isAdminOrOwner = currentMember
+    ? ["owner", "admin"].includes(currentMember.role)
+    : false;
+
+  const { data: pendingInvites = [], isLoading: invitesLoading } =
+    trpc.stables.getInvites.useQuery(
+      { stableId: stableId! },
+      { enabled: !!stableId && isAdminOrOwner },
+    );
+
+  const inviteMutation = trpc.stables.inviteMember.useMutation({
+    onSuccess: () => {
+      toast.success("Invite sent! They'll receive an email with the invite link.");
+      setIsInviteOpen(false);
+      setInviteEmail("");
+      setInviteRole("member");
+      utils.stables.getInvites.invalidate({ stableId: stableId! });
+    },
+    onError: (err) => toast.error(err.message ?? "Failed to send invite"),
   });
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      contactType: "trainer",
-      email: "",
-      phone: "",
-      mobile: "",
-      notes: "",
+  const cancelInviteMutation = trpc.stables.cancelInvite.useMutation({
+    onSuccess: () => {
+      toast.success("Invite cancelled");
+      utils.stables.getInvites.invalidate({ stableId: stableId! });
+    },
+    onError: (err) => toast.error(err.message ?? "Failed to cancel invite"),
+  });
+
+  const removeMemberMutation = trpc.stables.removeMember.useMutation({
+    onSuccess: () => {
+      toast.success("Member removed from stable");
+      utils.stables.getMembers.invalidate({ stableId: stableId! });
+      setRemoveTarget(null);
+    },
+    onError: (err) => toast.error(err.message ?? "Failed to remove member"),
+  });
+
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<InviteRole>("member");
+  const [removeTarget, setRemoveTarget] = useState<{
+    id: number;
+    name: string | null;
+  } | null>(null);
+
+  const handleInvite = () => {
+    if (!inviteEmail.trim() || !stableId) return;
+    inviteMutation.mutate({
+      stableId,
+      email: inviteEmail.trim().toLowerCase(),
+      role: inviteRole,
     });
   };
 
-  const handleAdd = async () => {
-    if (!formData.name.trim()) {
-      toast.error("Name is required");
-      return;
-    }
-    try {
-      await createContact.mutateAsync({
-        name: formData.name.trim(),
-        contactType: formData.contactType as
-          | "vet"
-          | "farrier"
-          | "trainer"
-          | "instructor"
-          | "stable"
-          | "breeder"
-          | "supplier"
-          | "emergency"
-          | "other",
-        email: formData.email || undefined,
-        phone: formData.phone || undefined,
-        mobile: formData.mobile || undefined,
-        notes: formData.notes || undefined,
-      });
-      await utils.contacts.list.invalidate();
-      toast.success("Staff member added");
-      setIsAddOpen(false);
-      resetForm();
-    } catch {
-      toast.error("Failed to add staff member");
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteContact.mutateAsync({ id });
-      await utils.contacts.list.invalidate();
-      toast.success("Staff member removed");
-    } catch {
-      toast.error("Failed to remove staff member");
-    }
-  };
+  const isLoading = membersLoading || invitesLoading;
 
   return (
     <div className="space-y-6 pb-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <PageHeader
-            title="Staff Management"
-            subtitle="Manage your stable's team members, roles, and contact details."
-          />
-        </div>
-        <Button
-          onClick={() => setIsAddOpen(true)}
-          className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0 gap-2"
-        >
-          <Plus className="w-4 h-4" /> Add Staff Member
-        </Button>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <PageHeader
+          title="Staff &amp; Team"
+          subtitle={
+            stableName
+              ? `Manage your team for ${stableName}`
+              : "Manage your stable's team members and invitations."
+          }
+        />
+        {isAdminOrOwner && (
+          <Button
+            onClick={() => setIsInviteOpen(true)}
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0 gap-2"
+          >
+            <UserPlus className="w-4 h-4" /> Invite Member
+          </Button>
+        )}
       </div>
 
-      {/* Role summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {STAFF_ROLES.map((role) => {
-          const count = staffContacts.filter(
-            (c) => c.contactType === role.value,
-          ).length;
-          return (
-            <Card
-              key={role.value}
-              className="border-white/5 bg-card/80 backdrop-blur-sm"
-            >
-              <CardContent className="p-3 text-center">
-                <p className="text-2xl font-bold">{count}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {role.label}
-                </p>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : (
+        <>
+          {/* Current members */}
+          <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="font-serif text-base flex items-center gap-2">
+                <Users className="w-4 h-4 text-blue-400" />
+                Team Members
+              </CardTitle>
+              <CardDescription className="text-xs">
+                {members.length} active member{members.length !== 1 ? "s" : ""}{" "}
+                in your stable
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {members.length === 0 ? (
+                <div className="text-center py-10 text-muted-foreground">
+                  <UserCog className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm font-medium mb-1">No team members yet</p>
+                  <p className="text-xs">
+                    Invite someone to get started.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {members.map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex items-center gap-3 p-3 rounded-lg border border-muted/40 bg-muted/20 hover:bg-muted/30 transition-colors"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shrink-0">
+                        {member.avatarUrl ? (
+                          <img
+                            src={member.avatarUrl}
+                            alt=""
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-sm text-white font-bold">
+                            {(member.name ?? member.email ?? "?")
+                              .charAt(0)
+                              .toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm font-medium">
+                            {member.name ?? member.email ?? "Unknown"}
+                          </p>
+                          <Badge
+                            className={`text-[10px] px-1.5 py-0 border flex items-center gap-1 ${getRoleColor(member.role)}`}
+                          >
+                            {ROLE_ICONS[member.role]}
+                            {member.role.charAt(0).toUpperCase() +
+                              member.role.slice(1)}
+                          </Badge>
+                          {member.userId === user?.id && (
+                            <span className="text-[10px] text-muted-foreground">(you)</span>
+                          )}
+                        </div>
+                        {member.email && (
+                          <span className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <Mail className="w-3 h-3" /> {member.email}
+                          </span>
+                        )}
+                      </div>
+                      {isAdminOrOwner &&
+                        member.userId !== user?.id &&
+                        member.role !== "owner" && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0"
+                            onClick={() =>
+                              setRemoveTarget({
+                                id: member.id,
+                                name: member.name ?? member.email,
+                              })
+                            }
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Pending invites */}
+          {isAdminOrOwner && (
+            <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="font-serif text-base flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-400" />
+                  Pending Invitations
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {pendingInvites.length} pending invite
+                  {pendingInvites.length !== 1 ? "s" : ""}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {pendingInvites.length === 0 ? (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <CheckCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                    <p className="text-xs">No pending invites</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {pendingInvites.map((invite) => (
+                      <div
+                        key={invite.id}
+                        className="flex items-center gap-3 p-3 rounded-lg border border-amber-500/20 bg-amber-500/5"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                          <Mail className="w-4 h-4 text-amber-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {invite.email}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <Badge
+                              className={`text-[10px] px-1.5 py-0 border ${getRoleColor(invite.role)}`}
+                            >
+                              {invite.role.charAt(0).toUpperCase() +
+                                invite.role.slice(1)}
+                            </Badge>
+                            <span className="text-[10px] text-muted-foreground">
+                              Expires{" "}
+                              {new Date(invite.expiresAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0"
+                          onClick={() =>
+                            cancelInviteMutation.mutate({
+                              stableId: stableId!,
+                              inviteId: invite.id,
+                            })
+                          }
+                          disabled={cancelInviteMutation.isPending}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
-          );
-        })}
-      </div>
-
-      {/* Staff list */}
-      <Card className="border-white/5 bg-card/80 backdrop-blur-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="font-serif text-base flex items-center gap-2">
-            <Users className="w-4 h-4 text-blue-400" />
-            Team Members
-          </CardTitle>
-          <CardDescription className="text-xs">
-            {staffContacts.length} staff member
-            {staffContacts.length !== 1 ? "s" : ""} in your stable
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-            </div>
-          ) : staffContacts.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <UserCog className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm font-medium mb-1">No staff members yet</p>
-              <p className="text-xs">
-                Add your first team member to get started.
-              </p>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-3"
-                onClick={() => setIsAddOpen(true)}
-              >
-                <Plus className="w-3.5 h-3.5 mr-1" /> Add Staff Member
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {staffContacts.map((staff) => {
-                const role = getRoleMeta(staff.contactType);
-                return (
-                  <div
-                    key={staff.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-muted/40 bg-muted/20 hover:bg-muted/30 transition-colors"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shrink-0">
-                      <span className="text-sm text-white font-bold">
-                        {staff.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-medium">{staff.name}</p>
-                        <Badge
-                          className={`text-[10px] px-1.5 py-0 ${role.color} border-0`}
-                        >
-                          {role.label}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                        {staff.email && (
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Mail className="w-3 h-3" /> {staff.email}
-                          </span>
-                        )}
-                        {staff.phone && (
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Phone className="w-3 h-3" /> {staff.phone}
-                          </span>
-                        )}
-                        {staff.mobile && !staff.phone && (
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Phone className="w-3 h-3" /> {staff.mobile}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                        onClick={() => handleDelete(staff.id)}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           )}
-        </CardContent>
-      </Card>
+        </>
+      )}
 
       {/* Link to full contacts for non-staff contacts */}
       <div className="flex items-center justify-between rounded-xl border border-white/5 bg-card/60 p-4">
         <div>
           <p className="text-sm font-medium">Owners &amp; Clients</p>
           <p className="text-xs text-muted-foreground">
-            Manage horse owners, livery clients, breeders, and other external contacts
+            Manage horse owners, livery clients, breeders, and other external
+            contacts
           </p>
         </div>
         <Link href="/contacts">
@@ -299,114 +358,122 @@ function StableStaffContent() {
         </Link>
       </div>
 
-      {/* Add Staff Dialog */}
+      {/* Invite Dialog */}
       <Dialog
-        open={isAddOpen}
+        open={isInviteOpen}
         onOpenChange={(v) => {
-          setIsAddOpen(v);
-          if (!v) resetForm();
+          setIsInviteOpen(v);
+          if (!v) {
+            setInviteEmail("");
+            setInviteRole("member");
+          }
         }}
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-blue-400" />
-              Add Staff Member
+              <UserPlus className="w-5 h-5 text-blue-400" />
+              Invite Team Member
             </DialogTitle>
             <DialogDescription>
-              Add a team member to your stable. Staff members are separate from
-              general contacts.
+              Enter their email address. They'll receive an invite link to join
+              your stable on EquiProfile.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label>Full Name *</Label>
+              <Label>Email address *</Label>
               <Input
-                placeholder="e.g. Sarah Johnson"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, name: e.target.value }))
-                }
+                type="email"
+                placeholder="name@example.com"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleInvite();
+                }}
               />
             </div>
             <div className="space-y-1.5">
               <Label>Role</Label>
               <Select
-                value={formData.contactType}
-                onValueChange={(v) =>
-                  setFormData((p) => ({ ...p, contactType: v }))
-                }
+                value={inviteRole}
+                onValueChange={(v) => setInviteRole(v as InviteRole)}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {STAFF_ROLES.map((role) => (
+                  {INVITE_ROLES.map((role) => (
                     <SelectItem key={role.value} value={role.value}>
                       {role.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  placeholder="name@example.com"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData((p) => ({ ...p, email: e.target.value }))
-                  }
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Phone</Label>
-                <Input
-                  placeholder="+44 7700 000000"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData((p) => ({ ...p, phone: e.target.value }))
-                  }
-                />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Notes</Label>
-              <Textarea
-                placeholder="Any notes about this staff member..."
-                rows={2}
-                value={formData.notes}
-                onChange={(e) =>
-                  setFormData((p) => ({ ...p, notes: e.target.value }))
-                }
-              />
+              <p className="text-[11px] text-muted-foreground">
+                Admins can manage staff and invites. Trainers and Members can
+                access stable tools. Viewers have read-only access.
+              </p>
             </div>
           </div>
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => {
-                setIsAddOpen(false);
-                resetForm();
-              }}
+              onClick={() => setIsInviteOpen(false)}
             >
               Cancel
             </Button>
             <Button
-              onClick={handleAdd}
-              disabled={createContact.isPending}
+              onClick={handleInvite}
+              disabled={!inviteEmail.trim() || inviteMutation.isPending}
               className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-0"
             >
-              {createContact.isPending ? (
+              {inviteMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : null}
-              Add Staff Member
+              ) : (
+                <Mail className="w-4 h-4 mr-2" />
+              )}
+              Send Invite
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Confirm remove member dialog */}
+      <AlertDialog
+        open={!!removeTarget}
+        onOpenChange={(v) => {
+          if (!v) setRemoveTarget(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove team member?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {removeTarget?.name
+                ? `This will remove ${removeTarget.name} from your stable.`
+                : "This will remove this member from your stable."}{" "}
+              They will lose access immediately. You can re-invite them later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (removeTarget) {
+                  removeMemberMutation.mutate({
+                    stableId: stableId!,
+                    memberId: removeTarget.id,
+                  });
+                }
+              }}
+            >
+              Remove member
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -435,10 +502,12 @@ export default function StableStaff() {
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-4">
             <Shield className="w-8 h-8 text-white" />
           </div>
-          <h2 className="font-serif text-2xl font-bold mb-2">Stable Plan Required</h2>
+          <h2 className="font-serif text-2xl font-bold mb-2">
+            Stable Plan Required
+          </h2>
           <p className="text-muted-foreground mb-6 max-w-sm text-sm">
-            Staff Management is exclusively for Stable plan subscribers. Upgrade to
-            manage yard staff, trainers, and team members.
+            Staff &amp; Team Management is exclusively for Stable plan
+            subscribers. Upgrade to invite and manage your stable's team.
           </p>
           <Link href="/billing">
             <Button
@@ -460,3 +529,4 @@ export default function StableStaff() {
     </DashboardLayout>
   );
 }
+

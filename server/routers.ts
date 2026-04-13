@@ -5089,14 +5089,164 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         return db
-          .select()
+          .select({
+            id: stableMembers.id,
+            stableId: stableMembers.stableId,
+            userId: stableMembers.userId,
+            role: stableMembers.role,
+            isActive: stableMembers.isActive,
+            joinedAt: stableMembers.joinedAt,
+            name: users.name,
+            email: users.email,
+            avatarUrl: users.profileImageUrl,
+          })
           .from(stableMembers)
+          .leftJoin(users, eq(stableMembers.userId, users.id))
           .where(
             and(
               eq(stableMembers.stableId, input.stableId),
               eq(stableMembers.isActive, true),
             ),
           );
+      }),
+
+    getInvites: protectedProcedure
+      .input(z.object({ stableId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return [];
+
+        // Verify user is admin/owner of this stable
+        const member = await db
+          .select()
+          .from(stableMembers)
+          .where(
+            and(
+              eq(stableMembers.stableId, input.stableId),
+              eq(stableMembers.userId, ctx.user.id),
+            ),
+          )
+          .limit(1);
+
+        if (
+          member.length === 0 ||
+          !["owner", "admin"].includes(member[0].role)
+        ) {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+
+        return db
+          .select({
+            id: stableInvites.id,
+            email: stableInvites.email,
+            role: stableInvites.role,
+            status: stableInvites.status,
+            expiresAt: stableInvites.expiresAt,
+            createdAt: stableInvites.createdAt,
+          })
+          .from(stableInvites)
+          .where(
+            and(
+              eq(stableInvites.stableId, input.stableId),
+              eq(stableInvites.status, "pending"),
+            ),
+          )
+          .orderBy(desc(stableInvites.createdAt));
+      }),
+
+    cancelInvite: protectedProcedure
+      .input(z.object({ stableId: z.number(), inviteId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        // Verify user is admin/owner of this stable
+        const member = await db
+          .select()
+          .from(stableMembers)
+          .where(
+            and(
+              eq(stableMembers.stableId, input.stableId),
+              eq(stableMembers.userId, ctx.user.id),
+            ),
+          )
+          .limit(1);
+
+        if (
+          member.length === 0 ||
+          !["owner", "admin"].includes(member[0].role)
+        ) {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+
+        await db
+          .update(stableInvites)
+          .set({ status: "expired" })
+          .where(
+            and(
+              eq(stableInvites.id, input.inviteId),
+              eq(stableInvites.stableId, input.stableId),
+              eq(stableInvites.status, "pending"),
+            ),
+          );
+
+        return { success: true };
+      }),
+
+    removeMember: protectedProcedure
+      .input(z.object({ stableId: z.number(), memberId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        // Verify the caller is admin/owner of this stable
+        const caller = await db
+          .select()
+          .from(stableMembers)
+          .where(
+            and(
+              eq(stableMembers.stableId, input.stableId),
+              eq(stableMembers.userId, ctx.user.id),
+            ),
+          )
+          .limit(1);
+
+        if (
+          caller.length === 0 ||
+          !["owner", "admin"].includes(caller[0].role)
+        ) {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+
+        // Cannot remove yourself if you're the owner
+        const target = await db
+          .select()
+          .from(stableMembers)
+          .where(eq(stableMembers.id, input.memberId))
+          .limit(1);
+
+        if (target.length === 0) {
+          throw new TRPCError({ code: "NOT_FOUND" });
+        }
+
+        if (target[0].role === "owner") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Cannot remove the stable owner",
+          });
+        }
+
+        await db
+          .update(stableMembers)
+          .set({ isActive: false })
+          .where(
+            and(
+              eq(stableMembers.id, input.memberId),
+              eq(stableMembers.stableId, input.stableId),
+            ),
+          );
+
+        return { success: true };
       }),
 
     getInviteByToken: publicProcedure
@@ -5275,7 +5425,43 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             : null,
         });
 
-        return { id: result[0].insertId };
+        const messageId = result[0].insertId;
+
+        // Notify all active members of the stable so they get live updates
+        try {
+          const { publishModuleEvent } = await import("./_core/realtime");
+          const threadRows = await db
+            .select({ stableId: messageThreads.stableId })
+            .from(messageThreads)
+            .where(eq(messageThreads.id, input.threadId))
+            .limit(1);
+
+          if (threadRows[0]) {
+            const memberRows = await db
+              .select({ userId: stableMembers.userId })
+              .from(stableMembers)
+              .where(
+                and(
+                  eq(stableMembers.stableId, threadRows[0].stableId),
+                  eq(stableMembers.isActive, true),
+                ),
+              );
+
+            const payload = {
+              messageId,
+              threadId: input.threadId,
+              senderId: ctx.user.id,
+            };
+
+            for (const m of memberRows) {
+              publishModuleEvent("messages", "created", payload, m.userId);
+            }
+          }
+        } catch (err) {
+          console.error("[Messages] Failed to publish realtime event:", err);
+        }
+
+        return { id: messageId };
       }),
 
     createThread: protectedProcedure

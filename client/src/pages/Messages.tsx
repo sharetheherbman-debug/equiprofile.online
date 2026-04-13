@@ -13,6 +13,7 @@ import { Input } from "../components/ui/input";
 import { ScrollArea } from "../components/ui/scroll-area";
 import { Badge } from "../components/ui/badge";
 import { trpc } from "@/lib/trpc";
+import { useRealtimeModule } from "@/hooks/useRealtime";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -95,6 +96,16 @@ export default function MessagesPage() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [threadMessages]);
+
+  // Real-time: refresh messages and thread list when any stable member sends a message
+  useRealtimeModule(
+    "messages",
+    (_action) => {
+      refetchMessages();
+      refetchThreads();
+    },
+    isStablePlan && !!selectedStableId,
+  );
 
   const handleSendMessage = () => {
     if (!message.trim() || !selectedThreadId) return;
