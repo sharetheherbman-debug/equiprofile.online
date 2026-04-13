@@ -265,7 +265,7 @@ function HorsesContent() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {displayedHorses.map((horse) => (
             <Card key={horse.id} className="card-hover overflow-hidden flex flex-col">
-              <div className="p-3 sm:p-3 pb-0">
+              <div className="p-3 pb-0">
                 <div className="aspect-[4/3] bg-muted rounded-xl overflow-hidden relative">
                   {horse.photoUrl ? (
                     <img
@@ -307,7 +307,7 @@ function HorsesContent() {
                 </div>
                 <div className="mt-auto">
                   <div className="border-t pt-3 mt-3">
-                    <div className="flex items-center gap-2 sm:gap-2">
+                    <div className="flex items-center gap-2">
                       <Link href={`/horses/${horse.id}`} className="flex-1">
                         <Button variant="outline" className="w-full h-10">
                           View Profile

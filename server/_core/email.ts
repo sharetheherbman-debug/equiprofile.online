@@ -720,7 +720,7 @@ export async function sendCompensationEmail(
   const dashboardUrl = `${baseUrl}/dashboard`;
 
   const reasonLabel = reason
-    ? sanitizeHtml(FREE_ACCESS_REASON_LABELS[reason] ?? reason)
+    ? sanitizeHtml(FREE_ACCESS_REASON_LABELS[reason] ?? "Administrative action")
     : "Complimentary access";
 
   const subject = `Your complimentary ${freeDays}-day access — EquiProfile`;
