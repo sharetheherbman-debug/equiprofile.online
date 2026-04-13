@@ -541,6 +541,10 @@ function AdminContent() {
               <BarChart3 className="w-3.5 h-3.5" />
               <span>Analytics</span>
             </TabsTrigger>
+            <TabsTrigger value="portals" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
+              <Eye className="w-3.5 h-3.5" />
+              <span>Portals</span>
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -2084,6 +2088,92 @@ function AdminContent() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* ── Portal Access ── */}
+        <TabsContent value="portals">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Eye className="w-4 h-4 text-indigo-500" /> Portal Access
+              </CardTitle>
+              <CardDescription>
+                As an admin you can access any portal directly. Use the shortcuts below to switch dashboards without needing a separate account.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  {
+                    label: "Pro Dashboard",
+                    description: "Standard equine management dashboard for Pro users.",
+                    icon: "🐴",
+                    path: "/dashboard",
+                    color: "from-blue-500/15 to-indigo-500/15",
+                    border: "border-blue-500/20",
+                    btnColor: "bg-blue-600 hover:bg-blue-500",
+                  },
+                  {
+                    label: "Stable Dashboard",
+                    description: "Team management, stable operations, and staff coordination.",
+                    icon: "🏠",
+                    path: "/stable-dashboard",
+                    color: "from-emerald-500/15 to-teal-500/15",
+                    border: "border-emerald-500/20",
+                    btnColor: "bg-emerald-600 hover:bg-emerald-500",
+                  },
+                  {
+                    label: "Student Portal",
+                    description: "Student learning dashboard — lessons, tasks, progress.",
+                    icon: "🎓",
+                    path: "/student-dashboard",
+                    color: "from-violet-500/15 to-purple-500/15",
+                    border: "border-violet-500/20",
+                    btnColor: "bg-violet-600 hover:bg-violet-500",
+                  },
+                  {
+                    label: "Teacher Portal",
+                    description: "Instructor workspace — students, assignments, feedback.",
+                    icon: "📋",
+                    path: "/teacher-dashboard",
+                    color: "from-amber-500/15 to-orange-500/15",
+                    border: "border-amber-500/20",
+                    btnColor: "bg-amber-600 hover:bg-amber-500",
+                  },
+                  {
+                    label: "Admin Panel",
+                    description: "You are here. Full system administration.",
+                    icon: "🛡️",
+                    path: "/admin",
+                    color: "from-rose-500/15 to-red-500/15",
+                    border: "border-rose-500/20",
+                    btnColor: "bg-rose-600 hover:bg-rose-500",
+                  },
+                ].map((portal) => (
+                  <div
+                    key={portal.label}
+                    className={`rounded-xl border p-5 bg-gradient-to-br ${portal.color} ${portal.border}`}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-2xl">{portal.icon}</span>
+                      <h3 className="text-sm font-semibold text-foreground">{portal.label}</h3>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-4 min-h-[32px]">{portal.description}</p>
+                    <Button
+                      size="sm"
+                      className={`w-full text-white text-xs ${portal.btnColor}`}
+                      onClick={() => navigate(portal.path)}
+                    >
+                      Open Portal
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-4 text-center">
+                Admin account bypasses all plan restrictions — you can access every portal directly.
+              </p>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

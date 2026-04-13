@@ -1493,4 +1493,130 @@ export const studentRouter = router({
       assignedLessonsCount: assignments.length,
     };
   }),
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Virtual Horse Daily Task Engine
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /** Get whether the daily task engine is enabled for this user. */
+  getTaskEngineStatus: studentProcedure.query(async ({ ctx }) => {
+    const user = await db.getUserById(ctx.user.id);
+    const prefs = parseUserPrefs(user?.preferences);
+    return {
+      enabled: prefs.virtualHorseTaskEngine === true,
+    };
+  }),
+
+  /** Toggle the virtual horse daily task engine on/off. */
+  toggleTaskEngine: studentProcedure.mutation(async ({ ctx }) => {
+    const user = await db.getUserById(ctx.user.id);
+    const prefs = parseUserPrefs(user?.preferences);
+    prefs.virtualHorseTaskEngine = !prefs.virtualHorseTaskEngine;
+    await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+    return { enabled: prefs.virtualHorseTaskEngine as boolean };
+  }),
+
+  /** Generate today's virtual-horse daily tasks if they haven't been generated yet.
+   *  Only runs when the engine is enabled and the student has a virtual horse.
+   *  Returns the generated tasks (or empty array if already generated today or disabled).
+   */
+  generateDailyTasks: studentProcedure.mutation(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    // Check engine is enabled
+    const user = await db.getUserById(ctx.user.id);
+    const prefs = parseUserPrefs(user?.preferences);
+    if (!prefs.virtualHorseTaskEngine) return { generated: 0, tasks: [] };
+
+    // Check student has a virtual horse
+    const [vHorse] = await dbConn.select().from(virtualHorses)
+      .where(and(eq(virtualHorses.userId, ctx.user.id), eq(virtualHorses.isActive, true)))
+      .limit(1);
+    if (!vHorse) return { generated: 0, tasks: [] };
+
+    const today = new Date().toISOString().split("T")[0];
+
+    // Check if already generated today — look for auto-generated marker in description
+    const allTodayTasks = await dbConn.select()
+      .from(studentTasks)
+      .where(and(
+        eq(studentTasks.userId, ctx.user.id),
+        eq(studentTasks.targetDate, today as unknown as Date),
+      ));
+
+    const alreadyGenerated = allTodayTasks.some(t =>
+      t.description?.startsWith("__vhorse__")
+    );
+    if (alreadyGenerated) return { generated: 0, tasks: [] };
+
+    // Determine learner level from preferences
+    const levelPrefs = parseUserPrefs(user?.preferences);
+    const level: string = levelPrefs.learnerLevel ?? "beginner";
+
+    // Task pools keyed by level
+    const TASK_POOLS: Record<string, Array<{ title: string; category: string; description: string }>> = {
+      beginner: [
+        { title: "Morning feed check", category: "feeding", description: "__vhorse__ Check feed bucket and water supply for your virtual horse." },
+        { title: "Grooming session", category: "grooming", description: "__vhorse__ Brush coat, mane and tail. Check for any mud or tangles." },
+        { title: "Stable check", category: "care", description: "__vhorse__ Check stable for hazards, clean bedding, and safe environment." },
+        { title: "Health observation", category: "care", description: "__vhorse__ Observe posture, eyes, and general demeanour for signs of health." },
+        { title: "Water bucket refill", category: "feeding", description: "__vhorse__ Ensure fresh clean water is always available — refill if needed." },
+        { title: "Hoof pick check", category: "care", description: "__vhorse__ Pick out all four hooves and check for stones or thrush." },
+        { title: "Evening check-in", category: "care", description: "__vhorse__ Evening welfare check — rugging, feed, water, and stable security." },
+      ],
+      developing: [
+        { title: "Tack cleaning", category: "grooming", description: "__vhorse__ Clean saddle, bridle, and stirrups after today's ride." },
+        { title: "Pre-ride tack check", category: "care", description: "__vhorse__ Check girth, stirrups, and bridle fit before riding." },
+        { title: "Post-ride care routine", category: "care", description: "__vhorse__ Cool down, wash off sweat marks, and check for rubs from tack." },
+        { title: "Feed ration review", category: "feeding", description: "__vhorse__ Review today's feed ration — check quantity and fibre balance." },
+        { title: "Turnout rug check", category: "care", description: "__vhorse__ Inspect rug for damage, correct fit, and cleanliness." },
+        { title: "Revision: leg care", category: "study", description: "__vhorse__ Revise bandaging and leg checking techniques." },
+        { title: "Groundwork exercise", category: "exercise", description: "__vhorse__ Practice leading, stopping and basic groundwork in a safe space." },
+      ],
+      intermediate: [
+        { title: "Conditioning session", category: "exercise", description: "__vhorse__ Plan and carry out a structured conditioning ride or lunge." },
+        { title: "Nutrition check", category: "feeding", description: "__vhorse__ Review forage and hard feed balance relative to workload." },
+        { title: "Preventive health check", category: "care", description: "__vhorse__ Check legs for heat/swelling, teeth condition, and coat health." },
+        { title: "Training log entry", category: "study", description: "__vhorse__ Record today's schooling session — goal, exercises, outcome." },
+        { title: "Tack fit assessment", category: "care", description: "__vhorse__ Assess saddle and bridle fit — identify any rub points." },
+        { title: "Stable enrichment", category: "care", description: "__vhorse__ Provide enrichment (forage net, mirror, safe toy) to reduce boredom." },
+        { title: "Cool-down and stretch", category: "exercise", description: "__vhorse__ 15-minute walk cool-down after exercise — check respiration returns to normal." },
+      ],
+      advanced: [
+        { title: "Performance analysis", category: "study", description: "__vhorse__ Analyse recent training session — identify 2 areas for improvement." },
+        { title: "Competition preparation", category: "care", description: "__vhorse__ Prepare tack, plaiting plan, and travel kit for upcoming show." },
+        { title: "Biomechanics check", category: "exercise", description: "__vhorse__ Assess straightness and suppleness in training — adjust as needed." },
+        { title: "Feed programme review", category: "feeding", description: "__vhorse__ Review feed programme against current training load and body condition score." },
+        { title: "Welfare audit", category: "care", description: "__vhorse__ Full welfare assessment — Five Domains model applied to your horse." },
+        { title: "First aid kit check", category: "care", description: "__vhorse__ Check first aid kit contents and expiry dates are current." },
+        { title: "Mentoring reflection", category: "study", description: "__vhorse__ Reflect on one piece of instructor/peer feedback and apply one change." },
+      ],
+    };
+
+    const pool = TASK_POOLS[level] ?? TASK_POOLS.beginner;
+    // Pick 3 varied tasks from the pool deterministically by weekday
+    const dayOfWeek = new Date().getDay(); // 0-6
+    const selected = [
+      pool[dayOfWeek % pool.length],
+      pool[(dayOfWeek + 2) % pool.length],
+      pool[(dayOfWeek + 4) % pool.length],
+    ].filter((t, i, arr) => arr.findIndex(x => x.title === t.title) === i); // deduplicate
+
+    const inserted: typeof selected = [];
+    for (const task of selected) {
+      await dbConn.insert(studentTasks).values({
+        userId: ctx.user.id,
+        title: task.title,
+        description: task.description,
+        category: task.category as "care" | "grooming" | "feeding" | "study" | "exercise" | "other",
+        frequency: "daily",
+        targetDate: today as unknown as Date,
+        isCompleted: false,
+      });
+      inserted.push(task);
+    }
+
+    return { generated: inserted.length, tasks: inserted };
+  }),
 });

@@ -363,27 +363,27 @@ function HorseDetailContent() {
           <TabsList className="flex w-max min-w-full gap-0 rounded-md h-auto p-1">
           <TabsTrigger value="timeline" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
             <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="sr-only sm:not-sr-only">Timeline</span>
+            <span className="hidden sm:inline">Timeline</span>
           </TabsTrigger>
           <TabsTrigger value="health" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
             <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="sr-only sm:not-sr-only">Health</span>
+            <span className="hidden sm:inline">Health</span>
           </TabsTrigger>
           <TabsTrigger value="training" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
             <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="sr-only sm:not-sr-only">Training</span>
+            <span className="hidden sm:inline">Training</span>
           </TabsTrigger>
           <TabsTrigger value="feeding" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
             <Utensils className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="sr-only sm:not-sr-only">Feeding</span>
+            <span className="hidden sm:inline">Feeding</span>
           </TabsTrigger>
           <TabsTrigger value="competitions" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
             <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="sr-only sm:not-sr-only">Competitions</span>
+            <span className="hidden sm:inline">Competitions</span>
           </TabsTrigger>
           <TabsTrigger value="passport" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
             <FileHeart className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="sr-only sm:not-sr-only">Passport</span>
+            <span className="hidden sm:inline">Passport</span>
           </TabsTrigger>
         </TabsList>
         </div>

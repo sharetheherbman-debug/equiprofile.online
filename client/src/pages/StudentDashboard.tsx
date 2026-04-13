@@ -2,7 +2,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import StudentDashboardLayout from "@/components/StudentDashboardLayout";
 import { trpc } from "@/lib/trpc";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   GraduationCap,
   Heart,
@@ -271,6 +271,9 @@ function PathwayProgressPanel({ onNavigate }: { onNavigate: (v: ActiveView) => v
 // ─── Overview View ────────────────────────────────────────────
 function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
   const { data: overview, isLoading } = trpc.student.getOverview.useQuery();
+  const { data: assignedLessons } = trpc.student.getAssignedLessons.useQuery();
+  const { data: lessonProgress } = trpc.student.getLessonProgress.useQuery();
+  const { data: pathways } = trpc.student.listLessonPathways.useQuery();
 
   if (isLoading) {
     return (
@@ -296,8 +299,67 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
     ? Math.round(skills.reduce((s, p) => s + p.level, 0) / skills.length)
     : 0;
 
+  // Detect student mode: school-led if has assigned lessons, else independent
+  const isSchoolLed = (assignedLessons ?? []).length > 0;
+
+  // Find in-progress lesson: completed at least one lesson in a pathway, and that pathway has more
+  const completedSlugsSet = new Set((lessonProgress ?? []).map(p => p.lessonSlug));
+  const inProgressPathway = (pathways ?? []).find(pw => {
+    // We don't have pathway lesson lists here; use progress data as a proxy
+    const completedInPw = (lessonProgress ?? []).filter(p => p.pathwaySlug === pw.slug).length;
+    return completedInPw > 0;
+  });
+
+  // Incomplete assigned lesson to surface
+  const nextAssigned = (assignedLessons ?? []).find(a => !a.isCompleted && a.assignmentType === "lesson");
+
   return (
     <div className="space-y-6">
+      {/* Student mode banner */}
+      <div className="rounded-xl p-4 flex items-center gap-3"
+        style={{ background: isSchoolLed ? "rgba(99,102,241,0.08)" : "rgba(16,185,129,0.06)", border: isSchoolLed ? "1px solid rgba(99,102,241,0.2)" : "1px solid rgba(16,185,129,0.15)" }}>
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+          style={{ background: isSchoolLed ? "rgba(99,102,241,0.18)" : "rgba(16,185,129,0.18)" }}>
+          {isSchoolLed
+            ? <GraduationCap className="w-4 h-4 text-indigo-400" />
+            : <Route className="w-4 h-4 text-emerald-400" />}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-semibold" style={{ color: isSchoolLed ? "#818cf8" : "#34d399" }}>
+            {isSchoolLed ? "School-Led Learning" : "Independent Learning"}
+          </p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {isSchoolLed
+              ? "Your teacher has assigned lessons and tasks for you."
+              : "Explore pathways at your own pace — no teacher required."}
+          </p>
+        </div>
+        {nextAssigned && (
+          <button
+            onClick={() => onNavigate("lessons")}
+            className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-500 transition-colors"
+          >
+            Open Assignment
+          </button>
+        )}
+        {!isSchoolLed && inProgressPathway && (
+          <button
+            onClick={() => onNavigate("lessons")}
+            className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-emerald-700 hover:bg-emerald-600 transition-colors"
+          >
+            Continue
+          </button>
+        )}
+        {!isSchoolLed && !inProgressPathway && (
+          <button
+            onClick={() => onNavigate("lessons")}
+            className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-emerald-700 hover:bg-emerald-600 transition-colors"
+          >
+            Start Learning
+          </button>
+        )}
+      </div>
+
       {/* Quick Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
@@ -466,6 +528,21 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
 function VirtualHorseView() {
   const utils = trpc.useUtils();
   const { data: vHorse, isLoading } = trpc.student.getVirtualHorse.useQuery();
+  const { data: taskEngineStatus } = trpc.student.getTaskEngineStatus.useQuery();
+  const toggleEngineMut = trpc.student.toggleTaskEngine.useMutation({
+    onSuccess: (res) => {
+      utils.student.getTaskEngineStatus.invalidate();
+      // Auto-generate if just enabled
+      if (res.enabled) {
+        generateTasksMut.mutate();
+      }
+    },
+  });
+  const generateTasksMut = trpc.student.generateDailyTasks.useMutation({
+    onSuccess: (res) => {
+      if (res.generated > 0) utils.student.listTasks.invalidate();
+    },
+  });
   const createMut = trpc.student.createVirtualHorse.useMutation({
     onSuccess: () => utils.student.getVirtualHorse.invalidate(),
   });
@@ -567,6 +644,41 @@ function VirtualHorseView() {
             </div>
           ))}
         </div>
+
+        {/* Daily Task Engine toggle */}
+        <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-white flex items-center gap-2">
+              <Flame className="w-4 h-4 text-amber-400" /> Daily Care Tasks
+              {taskEngineStatus?.enabled && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-semibold">ON</span>
+              )}
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {taskEngineStatus?.enabled
+                ? "Auto-generates 3 daily care tasks each morning based on your level."
+                : "Turn on to automatically receive daily virtual horse care tasks."}
+            </p>
+          </div>
+          <button
+            onClick={() => toggleEngineMut.mutate()}
+            disabled={toggleEngineMut.isPending}
+            className={`relative shrink-0 w-11 h-6 rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
+              taskEngineStatus?.enabled ? "bg-emerald-500" : "bg-gray-700"
+            }`}
+            aria-label="Toggle daily task engine"
+          >
+            <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+              taskEngineStatus?.enabled ? "translate-x-5" : "translate-x-0"
+            }`} />
+          </button>
+        </div>
+        {taskEngineStatus?.enabled && generateTasksMut.data?.generated === 0 && (
+          <p className="text-xs text-gray-600 mt-2 text-center">Today's tasks already generated. Check your Tasks view.</p>
+        )}
+        {taskEngineStatus?.enabled && (generateTasksMut.data?.generated ?? 0) > 0 && (
+          <p className="text-xs text-emerald-500 mt-2 text-center">✓ {generateTasksMut.data?.generated} daily tasks added to your task list.</p>
+        )}
       </SCard>
     </div>
   );
@@ -576,6 +688,12 @@ function VirtualHorseView() {
 function TasksView() {
   const utils = trpc.useUtils();
   const { data: tasks, isLoading } = trpc.student.listTasks.useQuery({});
+  const { data: taskEngineStatus } = trpc.student.getTaskEngineStatus.useQuery();
+  const generateTasksMut = trpc.student.generateDailyTasks.useMutation({
+    onSuccess: (res) => {
+      if (res.generated > 0) utils.student.listTasks.invalidate();
+    },
+  });
   const createMut = trpc.student.createTask.useMutation({
     onSuccess: () => utils.student.listTasks.invalidate(),
   });
@@ -592,10 +710,21 @@ function TasksView() {
   const [showAdd, setShowAdd] = useState(false);
   const [newTask, setNewTask] = useState({ title: "", category: "care" as const, frequency: "daily" as const });
 
+  // Auto-generate daily tasks once when engine is enabled
+  useEffect(() => {
+    if (taskEngineStatus?.enabled) {
+      generateTasksMut.mutate();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskEngineStatus?.enabled]);
+
   if (isLoading) return <SCard><SkeletonBar className="w-full h-32" /></SCard>;
 
   const pending = (tasks ?? []).filter(t => !t.isCompleted);
   const completed = (tasks ?? []).filter(t => t.isCompleted);
+
+  const isAutoTask = (t: { description?: string | null }) =>
+    !!t.description?.startsWith("__vhorse__");
 
   return (
     <div className="space-y-4">
@@ -672,6 +801,11 @@ function TasksView() {
                   className="w-6 h-6 rounded-full border-2 border-gray-600 hover:border-emerald-500 flex items-center justify-center shrink-0 transition-colors"
                 />
                 <span className="text-sm text-gray-300 flex-1">{task.title}</span>
+                {isAutoTask(task) && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 font-medium border border-amber-500/20 flex items-center gap-1 shrink-0">
+                    <Sparkles className="w-2.5 h-2.5" /> Daily
+                  </span>
+                )}
                 <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 font-medium">{task.category}</span>
                 <button
                   onClick={() => deleteMut.mutate({ id: task.id })}
@@ -1697,6 +1831,19 @@ function LessonsView() {
     const linkedCompetencies = (lessonDetail.linkedCompetencies ?? []) as string[];
     const isCompleted = completedSlugs.has(lessonDetail.slug);
 
+    // Prev / next lesson within the current pathway list
+    const allLessons = lessons ?? [];
+    const currentIdx = allLessons.findIndex(l => l.slug === selectedLesson);
+    const prevLesson = currentIdx > 0 ? allLessons[currentIdx - 1] : null;
+    const nextLesson = currentIdx >= 0 && currentIdx < allLessons.length - 1 ? allLessons[currentIdx + 1] : null;
+
+    const goToLesson = (slug: string) => {
+      setSelectedLesson(slug);
+      setQuizMode(false);
+      setQuizAnswers({});
+      setQuizSubmitted(false);
+    };
+
     return (
       <div className="space-y-6">
         {/* Back button */}
@@ -1898,6 +2045,43 @@ function LessonsView() {
                 </p>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Previous / Next lesson navigation */}
+        {(prevLesson || nextLesson) && (
+          <div className="flex items-center justify-between gap-4 pt-2">
+            {prevLesson ? (
+              <button
+                onClick={() => goToLesson(prevLesson.slug)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:text-white transition-all group"
+                style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}
+              >
+                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                <div className="text-left min-w-0">
+                  <p className="text-[10px] text-gray-600 uppercase tracking-wider">Previous</p>
+                  <p className="text-xs truncate max-w-[140px]">{prevLesson.title}</p>
+                </div>
+              </button>
+            ) : <div />}
+            {nextLesson ? (
+              <button
+                onClick={() => goToLesson(nextLesson.slug)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all group ml-auto"
+                style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.3)", color: "#a5b4fc" }}
+              >
+                <div className="text-right min-w-0">
+                  <p className="text-[10px] text-indigo-500 uppercase tracking-wider">Next Lesson</p>
+                  <p className="text-xs truncate max-w-[140px]">{nextLesson.title}</p>
+                </div>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform shrink-0" />
+              </button>
+            ) : isCompleted ? (
+              <div className="ml-auto px-4 py-2.5 rounded-xl text-xs text-emerald-400 font-medium flex items-center gap-2"
+                style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)" }}>
+                <CheckCircle2 className="w-4 h-4" /> Pathway Complete
+              </div>
+            ) : null}
           </div>
         )}
       </div>
