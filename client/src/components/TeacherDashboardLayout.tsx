@@ -4,6 +4,9 @@
  *
  * Entirely separate from DashboardLayout / Pro nav. Teacher-specific sidebar
  * with teacher nav, topbar with dark/light toggle and logout. Mobile responsive.
+ *
+ * When an admin user enters this layout (via Admin → Portals), an
+ * "Admin Viewing" banner is shown at the top with a back-to-admin button.
  */
 import { ReactNode, useState } from "react";
 import {
@@ -21,6 +24,8 @@ import {
   Settings,
   DollarSign,
   Library,
+  ShieldAlert,
+  ArrowLeft,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -167,6 +172,29 @@ function SidebarNav({
   );
 }
 
+// ── Admin view banner ──────────────────────────────────────────────────────
+
+function AdminViewBanner({ dashboardName }: { dashboardName: string }) {
+  const [, setLocation] = useLocation();
+  return (
+    <div className="flex items-center justify-between gap-3 px-4 py-2 bg-amber-500/10 border-b border-amber-500/30 shrink-0">
+      <div className="flex items-center gap-2 min-w-0">
+        <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+        <span className="text-xs font-medium text-amber-300 truncate">
+          Admin view — {dashboardName}
+        </span>
+      </div>
+      <button
+        onClick={() => setLocation("/admin")}
+        className="flex items-center gap-1.5 text-xs font-medium text-amber-300 hover:text-amber-100 whitespace-nowrap transition-colors shrink-0"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Back to Admin
+      </button>
+    </div>
+  );
+}
+
 // ── Main Layout ────────────────────────────────────────────────────────────
 
 export default function TeacherDashboardLayout({
@@ -175,6 +203,8 @@ export default function TeacherDashboardLayout({
   onNavigate,
 }: TeacherDashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
 
   const viewLabels: Record<TeacherView, string> = {
     overview: "Instructor Dashboard",
@@ -210,6 +240,9 @@ export default function TeacherDashboardLayout({
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Admin view banner — shown when admin is reviewing this portal */}
+        {isAdmin && <AdminViewBanner dashboardName="Teacher Portal" />}
+
         {/* Topbar */}
         <header className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] bg-[#0e1520] shrink-0">
           <div className="flex items-center gap-3">

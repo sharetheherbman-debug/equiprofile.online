@@ -359,34 +359,32 @@ function HorseDetailContent() {
 
       {/* Tabs for Timeline, Health, Training, Feeding, Medical Passport */}
       <Tabs defaultValue="timeline" className="space-y-4">
-        <div className="overflow-x-auto no-scrollbar -mx-1 px-1">
-          <TabsList className="flex w-max min-w-full gap-0.5 rounded-md h-auto p-1">
-          <TabsTrigger value="timeline" className="flex-shrink-0 flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 text-[10px] sm:text-sm px-2.5 sm:px-3 py-2 sm:py-1.5 min-w-[52px] sm:min-w-0">
-            <Clock className="w-4 h-4 sm:w-4 sm:h-4 shrink-0" />
-            <span className="leading-none">Timeline</span>
+        <TabsList className="grid grid-cols-6 w-full h-auto gap-0.5 rounded-md p-1">
+          <TabsTrigger value="timeline" className="flex flex-col items-center gap-1 py-2 px-1 text-[10px] sm:text-xs font-medium leading-none min-h-[52px] data-[state=active]:shadow-sm">
+            <Clock className="w-4 h-4 shrink-0" />
+            <span>Timeline</span>
           </TabsTrigger>
-          <TabsTrigger value="health" className="flex-shrink-0 flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 text-[10px] sm:text-sm px-2.5 sm:px-3 py-2 sm:py-1.5 min-w-[52px] sm:min-w-0">
-            <Heart className="w-4 h-4 sm:w-4 sm:h-4 shrink-0" />
-            <span className="leading-none">Health</span>
+          <TabsTrigger value="health" className="flex flex-col items-center gap-1 py-2 px-1 text-[10px] sm:text-xs font-medium leading-none min-h-[52px] data-[state=active]:shadow-sm">
+            <Heart className="w-4 h-4 shrink-0" />
+            <span>Health</span>
           </TabsTrigger>
-          <TabsTrigger value="training" className="flex-shrink-0 flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 text-[10px] sm:text-sm px-2.5 sm:px-3 py-2 sm:py-1.5 min-w-[52px] sm:min-w-0">
-            <Activity className="w-4 h-4 sm:w-4 sm:h-4 shrink-0" />
-            <span className="leading-none">Training</span>
+          <TabsTrigger value="training" className="flex flex-col items-center gap-1 py-2 px-1 text-[10px] sm:text-xs font-medium leading-none min-h-[52px] data-[state=active]:shadow-sm">
+            <Activity className="w-4 h-4 shrink-0" />
+            <span>Training</span>
           </TabsTrigger>
-          <TabsTrigger value="feeding" className="flex-shrink-0 flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 text-[10px] sm:text-sm px-2.5 sm:px-3 py-2 sm:py-1.5 min-w-[52px] sm:min-w-0">
-            <Utensils className="w-4 h-4 sm:w-4 sm:h-4 shrink-0" />
-            <span className="leading-none">Feeding</span>
+          <TabsTrigger value="feeding" className="flex flex-col items-center gap-1 py-2 px-1 text-[10px] sm:text-xs font-medium leading-none min-h-[52px] data-[state=active]:shadow-sm">
+            <Utensils className="w-4 h-4 shrink-0" />
+            <span>Feeding</span>
           </TabsTrigger>
-          <TabsTrigger value="competitions" className="flex-shrink-0 flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 text-[10px] sm:text-sm px-2.5 sm:px-3 py-2 sm:py-1.5 min-w-[52px] sm:min-w-0">
-            <Trophy className="w-4 h-4 sm:w-4 sm:h-4 shrink-0" />
-            <span className="leading-none">Competitions</span>
+          <TabsTrigger value="competitions" className="flex flex-col items-center gap-1 py-2 px-1 text-[10px] sm:text-xs font-medium leading-none min-h-[52px] data-[state=active]:shadow-sm">
+            <Trophy className="w-4 h-4 shrink-0" />
+            <span>Comps</span>
           </TabsTrigger>
-          <TabsTrigger value="passport" className="flex-shrink-0 flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 text-[10px] sm:text-sm px-2.5 sm:px-3 py-2 sm:py-1.5 min-w-[52px] sm:min-w-0">
-            <FileHeart className="w-4 h-4 sm:w-4 sm:h-4 shrink-0" />
-            <span className="leading-none">Passport</span>
+          <TabsTrigger value="passport" className="flex flex-col items-center gap-1 py-2 px-1 text-[10px] sm:text-xs font-medium leading-none min-h-[52px] data-[state=active]:shadow-sm">
+            <FileHeart className="w-4 h-4 shrink-0" />
+            <span>Passport</span>
           </TabsTrigger>
         </TabsList>
-        </div>
 
         {/* Timeline Tab — unified chronological view */}
         <TabsContent value="timeline">
