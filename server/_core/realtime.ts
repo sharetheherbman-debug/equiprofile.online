@@ -130,10 +130,11 @@ class RealtimeEventManager {
       history.shift();
     }
 
-    // Send to all subscribed clients
+    // Send to clients subscribed to this specific channel only
+    // NOTE: "global" channel is NOT used as a catch-all — events are user-scoped
     let sentCount = 0;
     this.clients.forEach((client) => {
-      if (client.channels.has(channel) || client.channels.has("global")) {
+      if (client.channels.has(channel)) {
         this.sendToClient(client, realtimeEvent);
         sentCount++;
       }

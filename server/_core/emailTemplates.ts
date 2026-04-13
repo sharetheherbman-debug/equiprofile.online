@@ -40,8 +40,15 @@ ${body}
 <p style="margin:0;">EquiProfile — Professional Horse Management</p>
 <p style="margin:4px 0 0 0;"><a href="${SITE_URL}" style="color:#6366f1;text-decoration:none;">equiprofile.online</a></p>
 <p style="margin:8px 0 0 0;">{{currentDate}}</p>
-<p style="margin:8px 0 0 0;font-size:11px;color:#b0b8c4;">You received this because you were contacted by EquiProfile.<br/>
-<a href="{{unsubscribeLink}}" style="color:#6366f1;text-decoration:underline;">Unsubscribe</a> from future marketing emails.</p>
+<p style="margin:8px 0 0 0;font-size:11px;color:#b0b8c4;">
+You received this email because you subscribed to EquiProfile marketing communications or were contacted as a business.<br/>
+<a href="{{unsubscribeLink}}" style="color:#6366f1;text-decoration:underline;">Unsubscribe instantly</a> from future marketing emails.<br/>
+<a href="${SITE_URL}/privacy" style="color:#6366f1;text-decoration:underline;">Privacy Policy</a>
+</p>
+<p style="margin:8px 0 0 0;font-size:10px;color:#c5cdd8;">
+EquiProfile, Amarktai Network Ltd. All rights reserved.<br/>
+This is a marketing email. If you no longer wish to receive these, click unsubscribe above.
+</p>
 </td></tr>
 </table>
 </td></tr>
@@ -643,10 +650,155 @@ If you'd like a quick walkthrough, just reply — we're happy to help.`,
   ],
 };
 
+// ── Campaign 4: Students / Learners ──────────────────────────────────────────
+
+const campaign4_students: CampaignSequenceTemplate = {
+  id: "students",
+  name: "Riding Students & Learners",
+  description: "4-step sequence for riding students. Focus: progress tracking, lesson organisation, skill development.",
+  targetAudience: "student",
+  steps: [
+    {
+      stepNumber: 1,
+      delayDays: 0,
+      subject: "Track your riding progress in one place",
+      tone: "motivating, personal",
+      body: `Hi {{firstName}},
+
+Learning to ride is an exciting journey — but it can be hard to see how far you've come without a clear record of your progress.
+
+EquiProfile helps you track every lesson, milestone, and skill as you develop. Log your sessions, note what you're working on, and watch your progress grow over time.
+
+Start your free 7-day trial today.`,
+    },
+    {
+      stepNumber: 2,
+      delayDays: 3,
+      subject: "See exactly where you're improving",
+      tone: "progress-focused",
+      body: `Hi {{firstName}},
+
+When you're in the saddle every week, it's easy to forget how much you've improved.
+
+EquiProfile's learning tools help you:
+• Log lessons and training sessions
+• Track skills and competencies
+• Review feedback from your instructor
+• Set goals and celebrate milestones
+
+Your riding journey, documented and organised.`,
+    },
+    {
+      stepNumber: 3,
+      delayDays: 6,
+      subject: "Your personal riding record",
+      tone: "value-focused",
+      body: `Hi {{firstName}},
+
+Imagine having a complete record of your riding journey — every lesson, every skill, every breakthrough moment.
+
+EquiProfile gives you:
+• A personal riding log
+• Competency tracking
+• Lesson notes and instructor feedback
+• Progress reports you can share
+• AI-powered tips for your riding level
+
+Build the riding career you've always wanted.`,
+    },
+    {
+      stepNumber: 4,
+      delayDays: 10,
+      subject: "Your free trial is still available, {{firstName}}",
+      tone: "gentle follow-up",
+      body: `Hi {{firstName}},
+
+Just a quick reminder — your 7-day free trial of EquiProfile is waiting for you.
+
+Whether you're a beginner or an experienced rider, having a clear record of your progress makes a real difference. And it's completely free to try.
+
+No credit card needed. No commitment. Just a smarter way to grow as a rider.`,
+    },
+  ],
+};
+
+// ── Campaign 5: Teachers / Instructors ───────────────────────────────────────
+
+const campaign5_teachers: CampaignSequenceTemplate = {
+  id: "teachers",
+  name: "Riding Instructors & Coaches",
+  description: "4-step sequence for riding instructors. Focus: student management, lesson planning, professional development tracking.",
+  targetAudience: "teacher",
+  steps: [
+    {
+      stepNumber: 1,
+      delayDays: 0,
+      subject: "The smarter way to manage your students",
+      tone: "professional, time-saving",
+      body: `Hi {{firstName}},
+
+Managing multiple students — tracking their progress, planning lessons, and keeping records — takes serious time and organisation.
+
+EquiProfile gives instructors a dedicated platform to manage students, plan lessons, track competencies, and monitor progress — all in one place.
+
+Try it free for 7 days, no credit card needed.`,
+    },
+    {
+      stepNumber: 2,
+      delayDays: 3,
+      subject: "Know exactly where each student stands",
+      tone: "insight-focused",
+      body: `Hi {{firstName}},
+
+Do you ever wish you had a clearer picture of each student's progress at a glance?
+
+EquiProfile's instructor tools help you:
+• Track competencies for every student
+• Plan and log individual lesson objectives
+• Record feedback and notes after each session
+• See progress trends over time
+
+Better insights. Better coaching.`,
+    },
+    {
+      stepNumber: 3,
+      delayDays: 6,
+      subject: "Professional records for a professional instructor",
+      tone: "credibility, professionalism",
+      body: `Hi {{firstName}},
+
+The best instructors don't just teach — they document. Keeping clear records of student progress, lesson plans, and competency development is the mark of a professional.
+
+EquiProfile helps you deliver:
+• Detailed progress reports for students and parents
+• Structured lesson planning
+• Competency-based development tracking
+• A professional, organised teaching practice
+
+Elevate your coaching with the tools it deserves.`,
+    },
+    {
+      stepNumber: 4,
+      delayDays: 10,
+      subject: "Ready to take your teaching further?",
+      tone: "follow-up, encouraging",
+      body: `Hi {{firstName}},
+
+We know your time is valuable — that's exactly why we built EquiProfile to make student and lesson management as effortless as possible.
+
+Your free 7-day trial is still available. No credit card, no commitment.
+
+If you'd like to see how it works for instructors, just reply and we'll walk you through it.`,
+    },
+  ],
+};
+
 export const CAMPAIGN_SEQUENCE_TEMPLATES: CampaignSequenceTemplate[] = [
   campaign1_individualOwners,
   campaign2_ridingSchools,
   campaign3_stables,
+  campaign4_students,
+  campaign5_teachers,
 ];
 
 /**

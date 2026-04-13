@@ -9,7 +9,7 @@ import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM, isAIConfigured } from "./_core/llm";
 import { getRuntimeConfig } from "./dynamicConfig";
-import { eq, and, desc, gte, lte, sql, inArray } from "drizzle-orm";
+import { eq, and, desc, gte, lte, sql, inArray, or } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   virtualHorses,
@@ -26,7 +26,14 @@ import {
   learningPathwayProgress,
   studentGroups,
   studentGroupMembers,
+  lessonPathways,
+  lessonUnits,
+  lessonCompletion,
+  studentCompetencies,
+  teacherLessonAssignments,
+  lessonReviews,
 } from "../drizzle/schema";
+import { LESSON_PATHWAYS, LESSON_UNITS } from "./lessonContent";
 
 /** Safely parse user preferences JSON. */
 function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
@@ -1048,7 +1055,7 @@ export const studentRouter = router({
     if (!feedback.length) return [];
 
     // Fetch teacher names
-    const teacherIds = [...new Set(feedback.map(f => f.teacherId))];
+    const teacherIds = Array.from(new Set(feedback.map(f => f.teacherId)));
     const teacherUsers = await dbConn.select({ id: users.id, name: users.name })
       .from(users).where(inArray(users.id, teacherIds));
     const teacherMap = new Map(teacherUsers.map(u => [u.id, u.name]));
@@ -1114,4 +1121,362 @@ export const studentRouter = router({
 
       return { success: true };
     }),
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Lesson Engine — structured learning pathways
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /** List all lesson pathways (seeds DB on first call). */
+  listLessonPathways: studentProcedure
+    .query(async () => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      // Seed pathways if table is empty
+      const existing = await dbConn.select({ id: lessonPathways.id }).from(lessonPathways).limit(1);
+      if (existing.length === 0) {
+        await dbConn.insert(lessonPathways).values(
+          LESSON_PATHWAYS.map((p) => ({
+            slug: p.slug,
+            title: p.title,
+            description: p.description,
+            sortOrder: p.sortOrder,
+            iconName: p.iconName,
+            isPublished: true,
+          })),
+        );
+      }
+
+      const rows = await dbConn.select().from(lessonPathways).orderBy(lessonPathways.sortOrder);
+      return rows;
+    }),
+
+  /** List lessons, optionally filtered by pathway and/or level. Seeds DB on first call. */
+  listLessons: studentProcedure
+    .input(z.object({
+      pathwaySlug: z.string().optional(),
+      level: z.enum(["beginner", "developing", "intermediate", "advanced"]).optional(),
+    }).optional())
+    .query(async ({ input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      // Seed lessons if table is empty
+      const existing = await dbConn.select({ id: lessonUnits.id }).from(lessonUnits).limit(1);
+      if (existing.length === 0) {
+        await dbConn.insert(lessonUnits).values(
+          LESSON_UNITS.map((l) => ({
+            slug: l.slug,
+            pathwaySlug: l.pathwaySlug,
+            title: l.title,
+            level: l.level,
+            category: l.category,
+            sortOrder: l.sortOrder,
+            objectives: JSON.stringify(l.objectives),
+            content: l.content,
+            keyPoints: JSON.stringify(l.keyPoints),
+            safetyNote: l.safetyNote,
+            practicalApplication: l.practicalApplication,
+            commonMistakes: JSON.stringify(l.commonMistakes),
+            knowledgeCheck: JSON.stringify(l.knowledgeCheck),
+            aiTutorPrompts: JSON.stringify(l.aiTutorPrompts),
+            isPublished: true,
+          })),
+        );
+      }
+
+      const conditions = [];
+      if (input?.pathwaySlug) conditions.push(eq(lessonUnits.pathwaySlug, input.pathwaySlug));
+      if (input?.level) conditions.push(eq(lessonUnits.level, input.level));
+
+      const rows = conditions.length > 0
+        ? await dbConn.select().from(lessonUnits).where(and(...conditions)).orderBy(lessonUnits.sortOrder)
+        : await dbConn.select().from(lessonUnits).orderBy(lessonUnits.sortOrder);
+
+      // Return summary without full content
+      return rows.map((r) => ({
+        id: r.id,
+        slug: r.slug,
+        pathwaySlug: r.pathwaySlug,
+        title: r.title,
+        level: r.level,
+        category: r.category,
+        sortOrder: r.sortOrder,
+      }));
+    }),
+
+  /** Get full lesson content by slug. */
+  getLesson: studentProcedure
+    .input(z.object({ slug: z.string().min(1).max(150) }))
+    .query(async ({ input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      const [row] = await dbConn.select().from(lessonUnits).where(eq(lessonUnits.slug, input.slug)).limit(1);
+      if (!row) throw new TRPCError({ code: "NOT_FOUND", message: "Lesson not found" });
+
+      // Parse JSON fields
+      const parseJSON = (val: string | null) => {
+        if (val === null || val === undefined) return [];
+        try { return JSON.parse(val); } catch { return []; }
+      };
+
+      // Lookup static competency mapping from lesson content definitions
+      const staticUnit = LESSON_UNITS.find(u => u.slug === input.slug);
+
+      return {
+        ...row,
+        objectives: parseJSON(row.objectives),
+        keyPoints: parseJSON(row.keyPoints),
+        commonMistakes: parseJSON(row.commonMistakes),
+        knowledgeCheck: parseJSON(row.knowledgeCheck),
+        aiTutorPrompts: parseJSON(row.aiTutorPrompts),
+        linkedCompetencies: staticUnit?.linkedCompetencies ?? [],
+      };
+    }),
+
+  /** Mark a lesson as complete, with optional quiz score. */
+  completeLesson: studentProcedure
+    .input(z.object({
+      lessonSlug: z.string().min(1).max(150),
+      pathwaySlug: z.string().min(1).max(100),
+      level: z.enum(["beginner", "developing", "intermediate", "advanced"]),
+      score: z.number().min(0).max(100).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      // Check if already completed
+      const [existing] = await dbConn.select({ id: lessonCompletion.id })
+        .from(lessonCompletion)
+        .where(and(
+          eq(lessonCompletion.studentUserId, ctx.user.id),
+          eq(lessonCompletion.lessonSlug, input.lessonSlug),
+        )).limit(1);
+
+      if (existing) {
+        // Update score if provided
+        if (input.score !== undefined) {
+          await dbConn.update(lessonCompletion)
+            .set({ score: input.score })
+            .where(eq(lessonCompletion.id, existing.id));
+        }
+        return { success: true, alreadyCompleted: true };
+      }
+
+      await dbConn.insert(lessonCompletion).values({
+        studentUserId: ctx.user.id,
+        lessonSlug: input.lessonSlug,
+        pathwaySlug: input.pathwaySlug,
+        level: input.level,
+        score: input.score ?? null,
+      });
+
+      return { success: true, alreadyCompleted: false };
+    }),
+
+  /** Get lesson completion progress for the current student. */
+  getLessonProgress: studentProcedure
+    .query(async ({ ctx }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
+
+      const completions = await dbConn.select()
+        .from(lessonCompletion)
+        .where(eq(lessonCompletion.studentUserId, ctx.user.id))
+        .orderBy(desc(lessonCompletion.completedAt));
+
+      return completions;
+    }),
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Phase 2 — Assigned Lessons, Competencies, Progress Intelligence
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /** Get lessons assigned to this student by their teacher(s). */
+  getAssignedLessons: studentProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    // Find groups this student belongs to
+    const memberships = await dbConn.select({ groupId: studentGroupMembers.groupId })
+      .from(studentGroupMembers)
+      .where(eq(studentGroupMembers.studentUserId, ctx.user.id));
+
+    const groupIds = memberships.map(m => m.groupId);
+
+    // Get assignments for this student directly or via group
+    const directCondition = eq(teacherLessonAssignments.studentUserId, ctx.user.id);
+    const studentCondition = groupIds.length > 0
+      ? (or(directCondition, inArray(teacherLessonAssignments.groupId, groupIds)) ?? directCondition)
+      : directCondition;
+
+    const assignments = await dbConn.select()
+      .from(teacherLessonAssignments)
+      .where(and(eq(teacherLessonAssignments.isActive, true), studentCondition))
+      .orderBy(teacherLessonAssignments.dueDate);
+
+    // Get completion data to mark which are done
+    const completions = await dbConn.select({ lessonSlug: lessonCompletion.lessonSlug })
+      .from(lessonCompletion)
+      .where(eq(lessonCompletion.studentUserId, ctx.user.id));
+
+    const completedSlugs = new Set(completions.map(c => c.lessonSlug));
+    const now = new Date();
+
+    return assignments.map(a => ({
+      ...a,
+      isCompleted: a.assignmentType === "lesson" && a.lessonSlug ? completedSlugs.has(a.lessonSlug) : false,
+      isOverdue: a.dueDate ? new Date(a.dueDate) < now : false,
+    }));
+  }),
+
+  /** Get this student's competency records. */
+  getMyCompetencies: studentProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    return dbConn.select().from(studentCompetencies)
+      .where(eq(studentCompetencies.userId, ctx.user.id))
+      .orderBy(studentCompetencies.category, studentCompetencies.competencyKey);
+  }),
+
+  /** Get lesson reviews (teacher feedback) for this student. */
+  getMyLessonReviews: studentProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    return dbConn.select().from(lessonReviews)
+      .where(eq(lessonReviews.studentUserId, ctx.user.id))
+      .orderBy(desc(lessonReviews.createdAt));
+  }),
+
+  /** Mark a lesson review as read. */
+  markReviewRead: studentProcedure
+    .input(z.object({ reviewId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      await dbConn.update(lessonReviews)
+        .set({ isRead: true })
+        .where(and(eq(lessonReviews.id, input.reviewId), eq(lessonReviews.studentUserId, ctx.user.id)));
+      return { success: true };
+    }),
+
+  /** Calculate intelligent progress across pathways, competencies, and skill areas. */
+  getProgressIntelligence: studentProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    const TOTAL_LESSONS_PER_PATHWAY: Record<string, number> = {
+      "horse-care-foundations": 7,
+      "rider-foundations": 7,
+      "stable-yard-safety": 6,
+      "horse-behaviour-welfare": 7,
+      "tack-equipment": 6,
+      "developing-rider-skills": 8,
+    };
+    const TOTAL_LESSONS = Object.values(TOTAL_LESSONS_PER_PATHWAY).reduce((a, b) => a + b, 0);
+
+    const [completions, competencies, skillProgress, reviews, assignments] = await Promise.all([
+      dbConn.select().from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id)),
+      dbConn.select().from(studentCompetencies).where(eq(studentCompetencies.userId, ctx.user.id)),
+      dbConn.select().from(studentProgress).where(eq(studentProgress.userId, ctx.user.id)),
+      dbConn.select().from(lessonReviews).where(eq(lessonReviews.studentUserId, ctx.user.id)),
+      dbConn.select().from(teacherLessonAssignments)
+        .where(and(eq(teacherLessonAssignments.studentUserId, ctx.user.id), eq(teacherLessonAssignments.isActive, true))),
+    ]);
+
+    // Pathway completion %
+    const completedByPathway = completions.reduce((acc, lc) => {
+      acc[lc.pathwaySlug] = (acc[lc.pathwaySlug] ?? 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const pathwayProgress = Object.entries(TOTAL_LESSONS_PER_PATHWAY).map(([slug, total]) => ({
+      slug,
+      completed: completedByPathway[slug] ?? 0,
+      total,
+      percent: Math.round(((completedByPathway[slug] ?? 0) / total) * 100),
+    }));
+
+    const overallLessonPercent = Math.round((completions.length / TOTAL_LESSONS) * 100);
+
+    // Competency summary
+    const achievedCompetencies = competencies.filter(c => c.status === "achieved").length;
+    const needsSupportCompetencies = competencies.filter(c => c.status === "needs_support").length;
+    const REQUIRED_COMPETENCIES = 17; // defined competency count
+    const competencyPercent = Math.round((achievedCompetencies / REQUIRED_COMPETENCIES) * 100);
+
+    // Weak areas — skill areas with lowest XP
+    const sortedSkills = skillProgress.slice().sort((a, b) => a.xp - b.xp);
+    const weakAreas = sortedSkills.slice(0, 3).map(s => s.skillArea.replace(/_/g, " "));
+
+    // Category-based weak areas from competencies needing support
+    const categoryWeakness: Record<string, number> = {};
+    for (const c of competencies) {
+      if (c.status === "needs_support") {
+        categoryWeakness[c.category] = (categoryWeakness[c.category] ?? 0) + 1;
+      }
+    }
+    const weakCategories = Object.entries(categoryWeakness)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([cat]) => cat);
+
+    // Reviews with needs_improvement
+    const needsImprovementLessons = reviews
+      .filter(r => r.reviewStatus === "needs_improvement")
+      .map(r => r.lessonSlug);
+
+    // Recommended next lesson — first uncompleted lesson in order
+    const completedSlugs = new Set(completions.map(c => c.lessonSlug));
+    const orderedPathways = [
+      "horse-care-foundations", "rider-foundations", "stable-yard-safety",
+      "horse-behaviour-welfare", "tack-equipment", "developing-rider-skills",
+    ];
+    let recommendedNextPathway: string | null = null;
+    for (const pw of orderedPathways) {
+      if ((completedByPathway[pw] ?? 0) < (TOTAL_LESSONS_PER_PATHWAY[pw] ?? 0)) {
+        recommendedNextPathway = pw;
+        break;
+      }
+    }
+
+    // Readiness status
+    let readinessStatus: "ready_for_next_level" | "needs_support" | "focus_on_safety" | "focus_on_riding" | "focus_on_care";
+    if (needsSupportCompetencies > 2 || needsImprovementLessons.length > 3) {
+      readinessStatus = "needs_support";
+    } else if (weakCategories.some(c => c.toLowerCase().includes("safety"))) {
+      readinessStatus = "focus_on_safety";
+    } else if (weakCategories.some(c => c.toLowerCase().includes("riding") || c.toLowerCase().includes("rider"))) {
+      readinessStatus = "focus_on_riding";
+    } else if (weakCategories.some(c => c.toLowerCase().includes("care") || c.toLowerCase().includes("handling"))) {
+      readinessStatus = "focus_on_care";
+    } else {
+      readinessStatus = overallLessonPercent >= 70 && competencyPercent >= 50 ? "ready_for_next_level" : "needs_support";
+    }
+
+    // Unread reviews
+    const unreadReviews = reviews.filter(r => !r.isRead);
+
+    return {
+      overallLessonPercent,
+      pathwayProgress,
+      competencies: {
+        achieved: achievedCompetencies,
+        total: REQUIRED_COMPETENCIES,
+        percent: competencyPercent,
+        needsSupport: needsSupportCompetencies,
+      },
+      weakAreas,
+      weakCategories,
+      needsImprovementLessons,
+      recommendedNextPathway,
+      readinessStatus,
+      unreadReviewCount: unreadReviews.length,
+      assignedLessonsCount: assignments.length,
+    };
+  }),
 });

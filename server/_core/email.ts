@@ -61,6 +61,7 @@ export async function sendEmail(
   subject: string,
   html: string,
   text?: string,
+  extraHeaders?: Record<string, string>,
 ): Promise<void> {
   const transporter = await getTransporter();
   if (!transporter) {
@@ -76,12 +77,31 @@ export async function sendEmail(
       subject,
       html,
       text: text || stripHtml(html),
+      ...(extraHeaders ? { headers: extraHeaders } : {}),
     });
     console.log(`[Email] Sent "${subject}" to ${to}`);
   } catch (error) {
     console.error(`[Email] Failed to send "${subject}" to ${to}:`, error);
     // Don't throw - email failures should not break app flow
   }
+}
+
+/**
+ * Send a marketing/campaign email with CAN-SPAM/PECR compliant headers.
+ * Includes List-Unsubscribe header for one-click unsubscribe in Gmail/Outlook.
+ */
+export async function sendCampaignEmail(
+  to: string,
+  subject: string,
+  html: string,
+  unsubscribeUrl: string,
+  text?: string,
+): Promise<void> {
+  await sendEmail(to, subject, html, text, {
+    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    "Precedence": "bulk",
+  });
 }
 
 /**

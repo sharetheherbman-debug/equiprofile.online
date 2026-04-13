@@ -1657,3 +1657,137 @@ export const learningPathwayProgress = mysqlTable("learningPathwayProgress", {
 
 export type LearningPathwayProgress = typeof learningPathwayProgress.$inferSelect;
 export type InsertLearningPathwayProgress = typeof learningPathwayProgress.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lesson Engine — structured learning pathways with full educational content
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Lesson pathways — high-level learning tracks (e.g. "Horse Care Foundations").
+ */
+export const lessonPathways = mysqlTable("lessonPathways", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 100 }).notNull().unique(),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  iconName: varchar("iconName", { length: 50 }),
+  isPublished: boolean("isPublished").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type LessonPathway = typeof lessonPathways.$inferSelect;
+export type InsertLessonPathway = typeof lessonPathways.$inferInsert;
+
+/**
+ * Lesson units — individual lessons with full educational content, objectives,
+ * knowledge checks, safety notes, and AI tutor prompts.
+ */
+export const lessonUnits = mysqlTable("lessonUnits", {
+  id: int("id").autoincrement().primaryKey(),
+  slug: varchar("slug", { length: 150 }).notNull().unique(),
+  pathwaySlug: varchar("pathwaySlug", { length: 100 }).notNull(),
+  title: varchar("title", { length: 250 }).notNull(),
+  level: varchar("level", { length: 30 }).notNull(),
+  category: varchar("category", { length: 60 }).notNull(),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  objectives: text("objectives").notNull(),
+  content: text("content").notNull(),
+  keyPoints: text("keyPoints").notNull(),
+  safetyNote: text("safetyNote").notNull(),
+  practicalApplication: text("practicalApplication").notNull(),
+  commonMistakes: text("commonMistakes").notNull(),
+  knowledgeCheck: text("knowledgeCheck").notNull(),
+  aiTutorPrompts: text("aiTutorPrompts").notNull(),
+  isPublished: boolean("isPublished").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+});
+
+export type LessonUnit = typeof lessonUnits.$inferSelect;
+export type InsertLessonUnit = typeof lessonUnits.$inferInsert;
+
+/**
+ * Lesson completion — records each lesson a student finishes, with optional
+ * quiz score.
+ */
+export const lessonCompletion = mysqlTable("lessonCompletion", {
+  id: int("id").autoincrement().primaryKey(),
+  studentUserId: int("studentUserId").notNull(),
+  lessonSlug: varchar("lessonSlug", { length: 150 }).notNull(),
+  pathwaySlug: varchar("pathwaySlug", { length: 100 }).notNull(),
+  level: varchar("level", { length: 30 }).notNull(),
+  score: int("score"),
+  completedAt: timestamp("completedAt").defaultNow().notNull(),
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 2 — Competency System + Teacher Lesson Assignment + Lesson Reviews
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Student competencies — teacher-signed records of student capability in
+ * specific skill areas (BHS / Pony Club standard competency framework).
+ */
+export const studentCompetencies = mysqlTable("studentCompetencies", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  competencyKey: varchar("competencyKey", { length: 100 }).notNull(),
+  category: varchar("category", { length: 100 }).notNull(),
+  level: varchar("level", { length: 30 }).default("beginner").notNull(),
+  status: mysqlEnum("status", ["not_assessed", "in_progress", "achieved", "needs_support"])
+    .default("not_assessed").notNull(),
+  teacherComment: text("teacherComment"),
+  signedOffBy: int("signedOffBy"),
+  signedOffAt: timestamp("signedOffAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StudentCompetency = typeof studentCompetencies.$inferSelect;
+export type InsertStudentCompetency = typeof studentCompetencies.$inferInsert;
+
+/**
+ * Teacher lesson assignments — teachers can assign a lesson or full pathway
+ * to an individual student or a group, with a due date and optional notes.
+ */
+export const teacherLessonAssignments = mysqlTable("teacherLessonAssignments", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId").notNull(),
+  studentUserId: int("studentUserId"),
+  groupId: int("groupId"),
+  assignmentType: mysqlEnum("assignmentType", ["lesson", "pathway"]).default("lesson").notNull(),
+  lessonSlug: varchar("lessonSlug", { length: 150 }),
+  pathwaySlug: varchar("pathwaySlug", { length: 100 }),
+  dueDate: date("dueDate"),
+  instructions: text("instructions"),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TeacherLessonAssignment = typeof teacherLessonAssignments.$inferSelect;
+export type InsertTeacherLessonAssignment = typeof teacherLessonAssignments.$inferInsert;
+
+/**
+ * Lesson reviews — teacher review of a student's lesson completion, with
+ * outcome, feedback, recommended next lesson, and optional competency link.
+ */
+export const lessonReviews = mysqlTable("lessonReviews", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId").notNull(),
+  studentUserId: int("studentUserId").notNull(),
+  lessonSlug: varchar("lessonSlug", { length: 150 }).notNull(),
+  lessonCompletionId: int("lessonCompletionId"),
+  reviewStatus: mysqlEnum("reviewStatus", ["satisfactory", "needs_improvement"])
+    .default("satisfactory").notNull(),
+  feedback: text("feedback"),
+  recommendedNextLesson: varchar("recommendedNextLesson", { length: 150 }),
+  competencyKey: varchar("competencyKey", { length: 100 }),
+  isRead: boolean("isRead").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type LessonReview = typeof lessonReviews.$inferSelect;
+export type InsertLessonReview = typeof lessonReviews.$inferInsert;

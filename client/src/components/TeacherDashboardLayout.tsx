@@ -20,6 +20,7 @@ import {
   X,
   Settings,
   DollarSign,
+  Library,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,7 +36,8 @@ export type TeacherView =
   | "groups"
   | "tasks"
   | "feedback"
-  | "reports";
+  | "reports"
+  | "lessons";
 
 interface TeacherNavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -54,6 +56,7 @@ const teacherNavItems: TeacherNavItem[] = [
   { icon: Users, label: "Students", view: "students" },
   { icon: UsersRound, label: "Groups", view: "groups" },
   { icon: ClipboardList, label: "Assign Tasks", view: "tasks" },
+  { icon: Library, label: "Lessons", view: "lessons" },
   { icon: MessageSquare, label: "Feedback", view: "feedback" },
   { icon: FileText, label: "Reports", view: "reports" },
 ];
@@ -149,7 +152,7 @@ function SidebarNav({
       <div className="px-4 py-4 border-t border-white/[0.06]">
         <div className="flex items-center gap-3">
           <Avatar className="w-8 h-8">
-            {user?.avatar && <AvatarImage src={user.avatar} />}
+            {user?.profileImageUrl && <AvatarImage src={user.profileImageUrl} />}
             <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: `${TEACHER_ACCENT}30`, color: TEACHER_ACCENT }}>
               {initials}
             </AvatarFallback>
@@ -178,6 +181,7 @@ export default function TeacherDashboardLayout({
     students: "My Students",
     groups: "Groups & Classes",
     tasks: "Assign Tasks",
+    lessons: "Lessons",
     feedback: "Student Feedback",
     reports: "Reports",
   };

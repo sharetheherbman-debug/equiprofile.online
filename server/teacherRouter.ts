@@ -17,6 +17,11 @@ import {
   studentProgress,
   aiTutorSessions,
   users,
+  studentCompetencies,
+  teacherLessonAssignments,
+  lessonReviews,
+  lessonCompletion,
+  lessonUnits,
 } from "../drizzle/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -317,7 +322,7 @@ export const teacherRouter = router({
 
     if (!members.length) return [];
 
-    const uniqueStudentIds = [...new Set(members.map(m => m.studentUserId))];
+    const uniqueStudentIds = Array.from(new Set(members.map(m => m.studentUserId)));
     const studentUsers = await dbConn.select({
       id: users.id, name: users.name, email: users.email, preferences: users.preferences,
     }).from(users).where(inArray(users.id, uniqueStudentIds));
@@ -598,7 +603,7 @@ export const teacherRouter = router({
         periodLabel = "Last 90 Days (Term)";
       }
 
-      const [studentUser, tasks, training, progress, pathwayRows, feedbackRows, aiSessions] = await Promise.all([
+      const [studentUser, tasks, training, progress, pathwayRows, feedbackRows, aiSessions, lessonCompletions, competencyRows, lessonReviewRows] = await Promise.all([
         dbConn.select({ id: users.id, name: users.name, email: users.email, preferences: users.preferences })
           .from(users).where(eq(users.id, input.studentUserId)).limit(1),
         dbConn.select().from(studentTasks)
@@ -614,6 +619,14 @@ export const teacherRouter = router({
           .where(and(eq(teacherFeedback.studentUserId, input.studentUserId), gte(teacherFeedback.createdAt, fromDate))).orderBy(desc(teacherFeedback.createdAt)),
         dbConn.select({ id: aiTutorSessions.id }).from(aiTutorSessions)
           .where(and(eq(aiTutorSessions.userId, input.studentUserId), gte(aiTutorSessions.createdAt, fromDate))),
+        dbConn.select().from(lessonCompletion)
+          .where(eq(lessonCompletion.studentUserId, input.studentUserId))
+          .orderBy(desc(lessonCompletion.completedAt)),
+        dbConn.select().from(studentCompetencies)
+          .where(eq(studentCompetencies.userId, input.studentUserId)),
+        dbConn.select().from(lessonReviews)
+          .where(and(eq(lessonReviews.studentUserId, input.studentUserId), gte(lessonReviews.createdAt, fromDate)))
+          .orderBy(desc(lessonReviews.createdAt)),
       ]);
 
       const u = studentUser[0];
@@ -713,6 +726,32 @@ export const teacherRouter = router({
         })),
         readiness: { score: readinessScore, label: readinessLabel },
         groupName: groups.find(g => g.id === membership.groupId)?.name ?? "Unknown Group",
+        // Phase 2 additions
+        lessonsCompleted: lessonCompletions.length,
+        lessonsByPathway: lessonCompletions.reduce((acc, lc) => {
+          acc[lc.pathwaySlug] = (acc[lc.pathwaySlug] ?? 0) + 1;
+          return acc;
+        }, {} as Record<string, number>),
+        averageLessonScore: (() => {
+          const scoredCompletions = lessonCompletions.filter(lc => lc.score !== null);
+          return scoredCompletions.length > 0
+            ? Math.round(scoredCompletions.reduce((s, lc) => s + (lc.score ?? 0), 0) / scoredCompletions.length)
+            : null;
+        })(),
+        competencies: {
+          total: competencyRows.length,
+          achieved: competencyRows.filter(c => c.status === "achieved").length,
+          inProgress: competencyRows.filter(c => c.status === "in_progress").length,
+          needsSupport: competencyRows.filter(c => c.status === "needs_support").length,
+        },
+        lessonReviews: lessonReviewRows.map(r => ({
+          id: r.id,
+          lessonSlug: r.lessonSlug,
+          reviewStatus: r.reviewStatus,
+          feedback: r.feedback,
+          recommendedNextLesson: r.recommendedNextLesson,
+          date: r.createdAt.toISOString().slice(0, 10),
+        })),
       };
     }),
 
@@ -762,4 +801,252 @@ export const teacherRouter = router({
       groups: groups.slice(0, 5),
     };
   }),
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Phase 2 — Lesson Assignment, Review, and Competency Procedures
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /** Assign a lesson or pathway to a student or group. */
+  assignLesson: teacherProcedure
+    .input(z.object({
+      studentUserId: z.number().optional(),
+      groupId: z.number().optional(),
+      assignmentType: z.enum(["lesson", "pathway"]),
+      lessonSlug: z.string().max(150).optional(),
+      pathwaySlug: z.string().max(100).optional(),
+      dueDate: z.string().optional(),
+      instructions: z.string().max(1000).optional(),
+    }).refine(d => d.studentUserId !== undefined || d.groupId !== undefined, {
+      message: "Either studentUserId or groupId must be provided",
+    }).refine(d => (d.assignmentType === "lesson" ? !!d.lessonSlug : !!d.pathwaySlug), {
+      message: "lessonSlug required for lesson type; pathwaySlug required for pathway type",
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      if (input.groupId) {
+        const [group] = await dbConn.select({ id: studentGroups.id })
+          .from(studentGroups)
+          .where(and(eq(studentGroups.id, input.groupId), eq(studentGroups.teacherId, ctx.user.id)))
+          .limit(1);
+        if (!group) throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+      }
+
+      const [result] = await dbConn.insert(teacherLessonAssignments).values({
+        teacherId: ctx.user.id,
+        studentUserId: input.studentUserId ?? null,
+        groupId: input.groupId ?? null,
+        assignmentType: input.assignmentType,
+        lessonSlug: input.lessonSlug ?? null,
+        pathwaySlug: input.pathwaySlug ?? null,
+        dueDate: input.dueDate ? new Date(input.dueDate) : null,
+        instructions: input.instructions ?? null,
+      });
+      return { id: result.insertId, success: true };
+    }),
+
+  /** List lesson assignments made by this teacher, optionally filtered. */
+  listLessonAssignments: teacherProcedure
+    .input(z.object({
+      studentUserId: z.number().optional(),
+      groupId: z.number().optional(),
+    }).optional())
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const conditions = [eq(teacherLessonAssignments.teacherId, ctx.user.id), eq(teacherLessonAssignments.isActive, true)];
+      if (input?.studentUserId) conditions.push(eq(teacherLessonAssignments.studentUserId, input.studentUserId));
+      if (input?.groupId) conditions.push(eq(teacherLessonAssignments.groupId, input.groupId));
+
+      return dbConn.select().from(teacherLessonAssignments)
+        .where(and(...conditions))
+        .orderBy(desc(teacherLessonAssignments.createdAt));
+    }),
+
+  /** Delete / cancel a lesson assignment. */
+  deleteLessonAssignment: teacherProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      await dbConn.update(teacherLessonAssignments)
+        .set({ isActive: false })
+        .where(and(eq(teacherLessonAssignments.id, input.id), eq(teacherLessonAssignments.teacherId, ctx.user.id)));
+      return { success: true };
+    }),
+
+  /** Get the list of completed lessons for a specific student. */
+  getStudentLessonSummary: teacherProcedure
+    .input(z.object({ studentUserId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify teacher has access to this student
+      const groups = await dbConn.select({ id: studentGroups.id })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)));
+      if (!groups.length) throw new TRPCError({ code: "FORBIDDEN" });
+
+      const groupIds = groups.map(g => g.id);
+      const [membership] = await dbConn.select({ id: studentGroupMembers.id })
+        .from(studentGroupMembers)
+        .where(and(inArray(studentGroupMembers.groupId, groupIds), eq(studentGroupMembers.studentUserId, input.studentUserId)))
+        .limit(1);
+      if (!membership) throw new TRPCError({ code: "FORBIDDEN", message: "Student is not in your groups." });
+
+      const [completions, reviews] = await Promise.all([
+        dbConn.select().from(lessonCompletion)
+          .where(eq(lessonCompletion.studentUserId, input.studentUserId))
+          .orderBy(desc(lessonCompletion.completedAt)),
+        dbConn.select().from(lessonReviews)
+          .where(eq(lessonReviews.studentUserId, input.studentUserId))
+          .orderBy(desc(lessonReviews.createdAt)),
+      ]);
+
+      return {
+        completions,
+        reviews,
+        completedCount: completions.length,
+        byPathway: completions.reduce((acc, lc) => {
+          acc[lc.pathwaySlug] = (acc[lc.pathwaySlug] ?? 0) + 1;
+          return acc;
+        }, {} as Record<string, number>),
+      };
+    }),
+
+  /** Teacher writes a review of a student's lesson completion. */
+  reviewLesson: teacherProcedure
+    .input(z.object({
+      studentUserId: z.number(),
+      lessonSlug: z.string().max(150),
+      lessonCompletionId: z.number().optional(),
+      reviewStatus: z.enum(["satisfactory", "needs_improvement"]),
+      feedback: z.string().max(2000).optional(),
+      recommendedNextLesson: z.string().max(150).optional(),
+      competencyKey: z.string().max(100).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify teacher has access
+      const groups = await dbConn.select({ id: studentGroups.id })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)));
+      if (!groups.length) throw new TRPCError({ code: "FORBIDDEN" });
+      const groupIds = groups.map(g => g.id);
+      const [membership] = await dbConn.select({ id: studentGroupMembers.id })
+        .from(studentGroupMembers)
+        .where(and(inArray(studentGroupMembers.groupId, groupIds), eq(studentGroupMembers.studentUserId, input.studentUserId)))
+        .limit(1);
+      if (!membership) throw new TRPCError({ code: "FORBIDDEN" });
+
+      const [result] = await dbConn.insert(lessonReviews).values({
+        teacherId: ctx.user.id,
+        studentUserId: input.studentUserId,
+        lessonSlug: input.lessonSlug,
+        lessonCompletionId: input.lessonCompletionId ?? null,
+        reviewStatus: input.reviewStatus,
+        feedback: input.feedback ?? null,
+        recommendedNextLesson: input.recommendedNextLesson ?? null,
+        competencyKey: input.competencyKey ?? null,
+      });
+      return { id: result.insertId, success: true };
+    }),
+
+  /** List lesson reviews submitted by this teacher, optionally for one student. */
+  listLessonReviews: teacherProcedure
+    .input(z.object({ studentUserId: z.number().optional() }).optional())
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      const conditions = [eq(lessonReviews.teacherId, ctx.user.id)];
+      if (input?.studentUserId) conditions.push(eq(lessonReviews.studentUserId, input.studentUserId));
+      return dbConn.select().from(lessonReviews)
+        .where(and(...conditions))
+        .orderBy(desc(lessonReviews.createdAt));
+    }),
+
+  /** Sign off (or update) a student competency. */
+  signOffCompetency: teacherProcedure
+    .input(z.object({
+      studentUserId: z.number(),
+      competencyKey: z.string().max(100),
+      category: z.string().max(100),
+      level: z.string().max(30).default("beginner"),
+      status: z.enum(["not_assessed", "in_progress", "achieved", "needs_support"]),
+      teacherComment: z.string().max(1000).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify teacher has access
+      const groups = await dbConn.select({ id: studentGroups.id })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)));
+      if (!groups.length) throw new TRPCError({ code: "FORBIDDEN" });
+      const groupIds = groups.map(g => g.id);
+      const [membership] = await dbConn.select({ id: studentGroupMembers.id })
+        .from(studentGroupMembers)
+        .where(and(inArray(studentGroupMembers.groupId, groupIds), eq(studentGroupMembers.studentUserId, input.studentUserId)))
+        .limit(1);
+      if (!membership) throw new TRPCError({ code: "FORBIDDEN" });
+
+      // Upsert: update if exists, insert if new
+      const [existing] = await dbConn.select({ id: studentCompetencies.id })
+        .from(studentCompetencies)
+        .where(and(eq(studentCompetencies.userId, input.studentUserId), eq(studentCompetencies.competencyKey, input.competencyKey)))
+        .limit(1);
+
+      if (existing) {
+        await dbConn.update(studentCompetencies).set({
+          status: input.status,
+          teacherComment: input.teacherComment ?? null,
+          signedOffBy: input.status === "achieved" ? ctx.user.id : null,
+          signedOffAt: input.status === "achieved" ? new Date() : null,
+          level: input.level,
+        }).where(eq(studentCompetencies.id, existing.id));
+        return { id: existing.id, success: true };
+      }
+
+      const [result] = await dbConn.insert(studentCompetencies).values({
+        userId: input.studentUserId,
+        competencyKey: input.competencyKey,
+        category: input.category,
+        level: input.level,
+        status: input.status,
+        teacherComment: input.teacherComment ?? null,
+        signedOffBy: input.status === "achieved" ? ctx.user.id : null,
+        signedOffAt: input.status === "achieved" ? new Date() : null,
+      });
+      return { id: result.insertId, success: true };
+    }),
+
+  /** Get all competencies for a specific student. */
+  listStudentCompetencies: teacherProcedure
+    .input(z.object({ studentUserId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify access
+      const groups = await dbConn.select({ id: studentGroups.id })
+        .from(studentGroups)
+        .where(and(eq(studentGroups.teacherId, ctx.user.id), eq(studentGroups.isActive, true)));
+      if (!groups.length) throw new TRPCError({ code: "FORBIDDEN" });
+      const groupIds = groups.map(g => g.id);
+      const [membership] = await dbConn.select({ id: studentGroupMembers.id })
+        .from(studentGroupMembers)
+        .where(and(inArray(studentGroupMembers.groupId, groupIds), eq(studentGroupMembers.studentUserId, input.studentUserId)))
+        .limit(1);
+      if (!membership) throw new TRPCError({ code: "FORBIDDEN" });
+
+      return dbConn.select().from(studentCompetencies)
+        .where(eq(studentCompetencies.userId, input.studentUserId))
+        .orderBy(studentCompetencies.category, studentCompetencies.competencyKey);
+    }),
 });

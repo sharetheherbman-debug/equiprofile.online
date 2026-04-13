@@ -85,7 +85,7 @@ import {
   buildSequenceStepHtml,
   applyMergeFields,
 } from "./_core/emailTemplates";
-import { sendEmail, sendStableInviteEmail, sendCompensationEmail } from "./_core/email";
+import { sendEmail, sendCampaignEmail, sendStableInviteEmail, sendCompensationEmail } from "./_core/email";
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
 import { studentRouter } from "./studentRouter";
 import { teacherRouter } from "./teacherRouter";
@@ -101,6 +101,8 @@ import {
   DEFAULT_FOLLOWUP_SCHEDULE,
   getScheduledDate,
   PRIORITY_COUNTRIES,
+  validateContactCompliance,
+  isDisposableEmail,
 } from "./_core/campaignService";
 
 // Allowed MIME types for document and avatar uploads
@@ -4067,7 +4069,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               unsubscribeLink: unsubLink,
             });
 
-            await sendEmail(recipient.email, campaign.subject, html);
+            await sendCampaignEmail(recipient.email, campaign.subject, html, unsubLink);
 
             await dbConn.insert(emailCampaignRecipients).values({
               campaignId: input.campaignId,
@@ -4425,10 +4427,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         let imported = 0;
         let skipped = 0;
         let invalid = 0;
+        let rejected = 0;
+        const rejections: Array<{ email: string; reason: string }> = [];
+
         for (const c of input.contacts) {
-          if (!isValidEmail(c.email)) { invalid++; continue; }
-          const email = c.email.toLowerCase();
+          const email = c.email.trim().toLowerCase();
+
+          // 1. Basic email format validation
+          if (!isValidEmail(email)) { invalid++; continue; }
+
+          // 2. Skip suppressed / existing
           if (suppressedSet.has(email) || existingSet.has(email)) { skipped++; continue; }
+
+          // 3. Compliance validation: rejects disposable, B2B free-mail, etc.
+          const compliance = validateContactCompliance(email, c.contactType || "individual");
+          if (!compliance.valid) {
+            rejected++;
+            rejections.push({ email, reason: compliance.reason || "compliance_rejected" });
+            continue;
+          }
+
           await dbConn.insert(marketingContacts).values({
             email,
             name: c.name || null,
@@ -4445,7 +4463,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           existingSet.add(email); // prevent duplicates within batch
           imported++;
         }
-        return { imported, skipped, invalid, total: input.contacts.length };
+        return { imported, skipped, invalid, rejected, rejections: rejections.slice(0, 100), total: input.contacts.length };
       }),
 
     deleteMarketingContact: adminUnlockedProcedure
@@ -4557,7 +4575,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               currentDate,
               unsubscribeLink: unsubLink,
             });
-            await sendEmail(recipient.email, step.subject, html);
+            await sendCampaignEmail(recipient.email, step.subject, html, unsubLink);
             await dbConn.insert(campaignSequenceRecipients).values({
               sequenceId: input.sequenceId,
               campaignId: step.campaignId,
@@ -8730,7 +8748,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        const email = input.email.toLowerCase();
+        const email = input.email.trim().toLowerCase();
+
+        // Reject invalid or disposable emails
+        if (!isValidEmail(email) || isDisposableEmail(email)) {
+          return { success: true }; // silently reject, don't disclose validation rules
+        }
 
         // Check suppression
         const [suppressed] = await dbConn.select().from(emailUnsubscribes)

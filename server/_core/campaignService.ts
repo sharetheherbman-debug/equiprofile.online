@@ -96,6 +96,21 @@ const TYPE_ALIASES: Record<string, string> = {
   breeder: "breeding",
   individual: "individual",
   personal: "individual",
+  // ── Student / Education segment ──────────────────────────────
+  student: "student",
+  pupil: "student",
+  learner: "student",
+  "riding student": "student",
+  // ── Teacher / Instructor segment ─────────────────────────────
+  teacher: "teacher",
+  instructor: "teacher",
+  coach: "teacher",
+  "riding instructor": "teacher",
+  "riding teacher": "teacher",
+  "riding coach": "teacher",
+  trainer: "teacher",
+  "equestrian coach": "teacher",
+  "equestrian instructor": "teacher",
 };
 
 export function normalizeContactType(raw: string | null | undefined): string {
@@ -105,11 +120,70 @@ export function normalizeContactType(raw: string | null | undefined): string {
 }
 
 // ─── Email validation ────────────────────────────────────────
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 
 export function isValidEmail(email: string): boolean {
   if (!email || email.length > 320) return false;
   return EMAIL_REGEX.test(email.trim().toLowerCase());
+}
+
+// ─── Free-mail domain filtering (for B2B compliance) ─────────
+const FREE_MAIL_DOMAINS = new Set([
+  "gmail.com", "yahoo.com", "yahoo.co.uk", "outlook.com", "hotmail.com",
+  "hotmail.co.uk", "aol.com", "gmx.com", "icloud.com", "mail.com",
+  "live.com", "live.co.uk", "msn.com", "me.com", "protonmail.com",
+  "proton.me", "ymail.com", "rocketmail.com", "zoho.com",
+]);
+
+const DISPOSABLE_MAIL_DOMAINS = new Set([
+  "mailinator.com", "tempmail.com", "guerrillamail.com", "throwaway.email",
+  "10minutemail.com", "trashmail.com", "fakeinbox.com", "sharklasers.com",
+  "guerrillamailblock.com", "grr.la", "dispostable.com", "yopmail.com",
+]);
+
+export function isFreeMailDomain(email: string): boolean {
+  const domain = email.split("@")[1]?.toLowerCase();
+  return FREE_MAIL_DOMAINS.has(domain || "");
+}
+
+export function isDisposableEmail(email: string): boolean {
+  const domain = email.split("@")[1]?.toLowerCase();
+  return DISPOSABLE_MAIL_DOMAINS.has(domain || "");
+}
+
+// B2B contact types that should NOT use free-mail addresses
+const B2B_CONTACT_TYPES = new Set([
+  "riding_school", "stable", "school", "college", "academy",
+  "venue", "federation", "governance", "health_vet", "racing", "breeding",
+]);
+
+export interface ComplianceResult {
+  valid: boolean;
+  reason?: string;
+}
+
+/**
+ * Validate a marketing contact for legal compliance.
+ * Rejects contacts that do not meet campaign lawful-basis rules.
+ */
+export function validateContactCompliance(
+  email: string,
+  contactType: string,
+): ComplianceResult {
+  // 1. Invalid email format
+  if (!isValidEmail(email)) {
+    return { valid: false, reason: "invalid_email_format" };
+  }
+  // 2. Disposable email
+  if (isDisposableEmail(email)) {
+    return { valid: false, reason: "disposable_email_domain" };
+  }
+  // 3. B2B contacts must NOT use free-mail addresses (PECR / GDPR B2B legitimate interest)
+  const normalizedType = normalizeContactType(contactType);
+  if (B2B_CONTACT_TYPES.has(normalizedType) && isFreeMailDomain(email)) {
+    return { valid: false, reason: "b2b_freemail_rejected" };
+  }
+  return { valid: true };
 }
 
 // ─── CSV parsing ─────────────────────────────────────────────
@@ -186,6 +260,12 @@ const COLUMN_MAP: Record<string, string> = {
   type: "contactType",
   "contact type": "contactType",
   category: "contactType",
+  role: "contactType",
+  "role type": "contactType",
+  roletype: "contactType",
+  role_type: "contactType",
+  segment: "contactType",
+  audience: "contactType",
   country: "country",
   region: "region",
   area: "region",
