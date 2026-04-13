@@ -731,7 +731,7 @@ export async function sendCompensationEmail(
       </div>`
     : "";
   const html = brandedEmail(`
-    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">You have been granted complimentary access</h1>
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">We have granted you complimentary access</h1>
     <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
       Hi ${userName || "there"},
     </p>
