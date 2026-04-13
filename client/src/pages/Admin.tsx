@@ -119,7 +119,9 @@ function AdminContent() {
   );
   const [resetPasswordValue, setResetPasswordValue] = useState("");
   const [freeAccessTier, setFreeAccessTier] = useState<"standard" | "stable">("standard");
-  const [freeAccessDays, setFreeAccessDays] = useState<30 | 60 | 90>(30);
+  const [freeAccessDays, setFreeAccessDays] = useState<7 | 14 | 30>(7);
+  const [freeAccessReason, setFreeAccessReason] = useState("");
+  const [freeAccessCustomNote, setFreeAccessCustomNote] = useState("");
   const [freeAccessSendEmail, setFreeAccessSendEmail] = useState(true);
   const [whatsappForm, setWhatsappForm] = useState({
     enabled: false,
@@ -959,12 +961,44 @@ function AdminContent() {
                                   </DialogTrigger>
                                   <DialogContent>
                                     <DialogHeader>
-                                      <DialogTitle>Grant Free Access</DialogTitle>
+                                      <DialogTitle>Grant Free Access ({freeAccessDays} Days)</DialogTitle>
                                       <DialogDescription>
-                                        Grant complimentary timed access to {user.name || user.email}. Only one dashboard type will be unlocked.
+                                        Grant complimentary timed access to {user.name || user.email}. A reason is required before granting.
                                       </DialogDescription>
                                     </DialogHeader>
                                     <div className="space-y-4 py-2">
+                                      <div className="space-y-2">
+                                        <Label>Reason <span className="text-destructive">*</span></Label>
+                                        <Select
+                                          value={freeAccessReason}
+                                          onValueChange={setFreeAccessReason}
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue placeholder="Select a reason…" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="system_maintenance">System update / maintenance goodwill</SelectItem>
+                                            <SelectItem value="service_disruption">Service disruption apology</SelectItem>
+                                            <SelectItem value="bug_compensation">Bug impact compensation</SelectItem>
+                                            <SelectItem value="support_resolution">Manual support resolution</SelectItem>
+                                            <SelectItem value="beta_evaluation">Beta testing / temporary evaluation</SelectItem>
+                                            <SelectItem value="special_approval">Special approval / custom case</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                        <p className="text-xs text-muted-foreground">
+                                          Recorded in the audit trail and shown in the user's notification email.
+                                        </p>
+                                      </div>
+                                      <div className="space-y-2">
+                                        <Label>Custom Note <span className="text-muted-foreground text-xs font-normal">(optional)</span></Label>
+                                        <textarea
+                                          className="w-full min-h-[60px] rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                          placeholder="Add a short note for the audit trail or email…"
+                                          maxLength={500}
+                                          value={freeAccessCustomNote}
+                                          onChange={(e) => setFreeAccessCustomNote(e.target.value)}
+                                        />
+                                      </div>
                                       <div className="space-y-2">
                                         <Label>Dashboard Access</Label>
                                         <Select
@@ -987,15 +1021,15 @@ function AdminContent() {
                                         <Label>Duration</Label>
                                         <Select
                                           value={String(freeAccessDays)}
-                                          onValueChange={(v) => setFreeAccessDays(Number(v) as 30 | 60 | 90)}
+                                          onValueChange={(v) => setFreeAccessDays(Number(v) as 7 | 14 | 30)}
                                         >
                                           <SelectTrigger>
                                             <SelectValue />
                                           </SelectTrigger>
                                           <SelectContent>
+                                            <SelectItem value="7">7 days (default)</SelectItem>
+                                            <SelectItem value="14">14 days</SelectItem>
                                             <SelectItem value="30">30 days</SelectItem>
-                                            <SelectItem value="60">60 days</SelectItem>
-                                            <SelectItem value="90">90 days</SelectItem>
                                           </SelectContent>
                                         </Select>
                                         <p className="text-xs text-muted-foreground">
@@ -1018,8 +1052,8 @@ function AdminContent() {
                                     <DialogFooter>
                                       <Button
                                         className="bg-emerald-600 text-white hover:bg-emerald-700"
-                                        onClick={() => grantFreeAccessMutation.mutate({ userId: user.id, tier: freeAccessTier, freeDays: freeAccessDays, sendEmail: freeAccessSendEmail })}
-                                        disabled={grantFreeAccessMutation.isPending}
+                                        onClick={() => grantFreeAccessMutation.mutate({ userId: user.id, tier: freeAccessTier, freeDays: freeAccessDays, reason: freeAccessReason, customNote: freeAccessCustomNote || undefined, sendEmail: freeAccessSendEmail })}
+                                        disabled={grantFreeAccessMutation.isPending || !freeAccessReason}
                                       >
                                         {grantFreeAccessMutation.isPending ? (
                                           <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Granting...</>

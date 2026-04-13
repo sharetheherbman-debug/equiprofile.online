@@ -316,7 +316,9 @@ function DashboardLayoutContent({
     { staleTime: 5 * 60 * 1000 },
   );
   const isStablePlan = subscriptionStatus?.planTier === "stable";
-  const bothDashboardsUnlocked = !!subscriptionStatus?.bothDashboardsUnlocked;
+  // Admin users get both dashboards unlocked in the nav — same as paid bothDashboardsUnlocked
+  const isAdmin = user?.role === "admin";
+  const bothDashboardsUnlocked = !!subscriptionStatus?.bothDashboardsUnlocked || isAdmin;
 
   // Determine which dashboard view is active for users with both dashboards
   const isOnStablePages = location.startsWith("/stable");
@@ -656,7 +658,7 @@ function DashboardLayoutContent({
                       if (items.length === 0) return null;
                       return (
                         <div key={group.label}>
-                          <p className="text-xs font-semibold uppercase tracking-wider mb-3 px-1" style={{ color: "#4f5fd6" }}>
+                          <p className="text-xs font-semibold uppercase tracking-wider mb-3 px-1 text-center" style={{ color: "#4f5fd6" }}>
                             {group.label}
                           </p>
                           <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
