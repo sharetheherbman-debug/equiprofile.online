@@ -14,7 +14,8 @@ import { useAuth } from "@/_core/hooks/useAuth";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-export type AdminViewMode = "admin" | "pro" | "stable" | "student" | "teacher";
+export const ADMIN_VIEW_MODES = ["admin", "pro", "stable", "student", "teacher"] as const;
+export type AdminViewMode = (typeof ADMIN_VIEW_MODES)[number];
 
 interface AdminViewContextValue {
   /** Current view mode — null for non-admin users */
@@ -48,7 +49,7 @@ export function AdminViewProvider({ children }: { children: ReactNode }) {
   const [viewMode, setViewModeState] = useState<AdminViewMode>(() => {
     if (!isAdmin) return "admin";
     const saved = sessionStorage.getItem(STORAGE_KEY);
-    if (saved && ["admin", "pro", "stable", "student", "teacher"].includes(saved)) {
+    if (saved && (ADMIN_VIEW_MODES as readonly string[]).includes(saved)) {
       return saved as AdminViewMode;
     }
     return "admin";
