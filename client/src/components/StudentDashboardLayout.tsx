@@ -13,9 +13,7 @@ import { ReactNode, useState } from "react";
 import {
   GraduationCap,
   LayoutDashboard,
-  Sparkles,
   ClipboardList,
-  Dumbbell,
   BookOpen,
   Brain,
   TrendingUp,
@@ -34,20 +32,17 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { TrialBanner } from "@/components/TrialBanner";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { useAdminViewMode, ADMIN_VIEW_MODE_LIST } from "@/contexts/AdminViewContext";
+import { useAdminViewMode } from "@/contexts/AdminViewContext";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export type StudentView =
   | "overview"
-  | "virtual-horse"
-  | "tasks"
-  | "training"
-  | "lessons"
-  | "study-hub"
+  | "learning-path"
+  | "practice"
+  | "assignments"
   | "ai-tutor"
   | "progress"
-  | "scenarios"
   | "settings";
 
 interface StudentNavItem {
@@ -65,15 +60,12 @@ interface StudentDashboardLayoutProps {
 // ── Nav items — student sections only ─────────────────────────────────────
 
 const studentNavItems: StudentNavItem[] = [
-  { icon: LayoutDashboard, label: "Overview", view: "overview" },
-  { icon: Sparkles, label: "My Horse", view: "virtual-horse" },
-  { icon: ClipboardList, label: "Daily Care", view: "tasks" },
-  { icon: Dumbbell, label: "Training Log", view: "training" },
-  { icon: Library, label: "Lessons", view: "lessons" },
-  { icon: BookOpen, label: "Study Hub", view: "study-hub" },
-  { icon: Brain, label: "AI Tutor", view: "ai-tutor" },
+  { icon: LayoutDashboard, label: "Home", view: "overview" },
+  { icon: Library, label: "Learning Path", view: "learning-path" },
+  { icon: Zap, label: "Practice", view: "practice" },
+  { icon: ClipboardList, label: "Assignments", view: "assignments" },
   { icon: TrendingUp, label: "Progress", view: "progress" },
-  { icon: Zap, label: "Scenarios", view: "scenarios" },
+  { icon: Brain, label: "AI Tutor", view: "ai-tutor" },
 ];
 
 // ── Sidebar nav ────────────────────────────────────────────────────────────
@@ -196,43 +188,26 @@ function SidebarNav({
   );
 }
 
-// ── Admin view indicator (context-based) ──────────────────────────────────
+// ── Admin view indicator (read-only banner — switching is in Admin portal) ─
 
 function AdminViewIndicator() {
   const [, setLocation] = useLocation();
-  const { viewMode, setViewMode, exitViewMode } = useAdminViewMode();
+  const { exitViewMode } = useAdminViewMode();
 
   return (
-    <div className="flex flex-wrap items-center gap-2 px-4 py-2 bg-indigo-500/10 border-b border-indigo-500/20 shrink-0">
+    <div className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border-b border-indigo-500/20 shrink-0">
       <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
-      <span className="text-xs font-semibold text-indigo-300 shrink-0 mr-1">View as:</span>
-      <div className="flex flex-wrap gap-1 flex-1">
-        {ADMIN_VIEW_MODE_LIST.map((p) => {
-          const isCurrent = viewMode === p.mode;
-          return (
-            <button
-              key={p.mode}
-              onClick={() => {
-                if (p.mode === "admin") {
-                  exitViewMode();
-                } else {
-                  setViewMode(p.mode);
-                }
-                setLocation(p.path);
-              }}
-              disabled={isCurrent}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium transition-colors whitespace-nowrap ${
-                isCurrent
-                  ? "bg-indigo-500/20 text-indigo-300 cursor-default"
-                  : "text-indigo-400/70 hover:text-indigo-300 hover:bg-indigo-500/15"
-              }`}
-            >
-              <span>{p.icon}</span>
-              <span>{p.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      <span className="text-xs font-semibold text-indigo-300">
+        Admin Preview — Student Portal
+      </span>
+      <div className="flex-1" />
+      <button
+        onClick={() => { exitViewMode(); setLocation("/admin"); }}
+        className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-indigo-500/15 text-indigo-300 hover:bg-indigo-500/25 transition-colors"
+      >
+        <ShieldCheck className="w-3.5 h-3.5" />
+        Back to Admin
+      </button>
     </div>
   );
 }
@@ -254,14 +229,11 @@ export default function StudentDashboardLayout({
 
   const viewLabels: Record<StudentView, string> = {
     overview: "Student Dashboard",
-    "virtual-horse": "My Horse",
-    tasks: "Daily Care",
-    training: "Training Log",
-    lessons: "Lessons",
-    "study-hub": "Study Hub",
+    "learning-path": "Learning Path",
+    practice: "Practice",
+    assignments: "Assignments",
     "ai-tutor": "AI Tutor",
     progress: "Progress",
-    scenarios: "Scenario Training",
     settings: "Settings",
   };
 

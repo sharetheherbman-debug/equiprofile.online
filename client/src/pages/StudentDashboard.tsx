@@ -198,7 +198,7 @@ function AssignedTasksPanel({ onNavigate }: { onNavigate: (v: ActiveView) => voi
             </div>
           ))}
           <button
-            onClick={() => onNavigate("tasks")}
+            onClick={() => onNavigate("practice")}
             className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1 pt-1"
           >
             View all tasks <ChevronRight className="w-4 h-4" />
@@ -257,7 +257,7 @@ function PathwayProgressPanel({ onNavigate }: { onNavigate: (v: ActiveView) => v
             </div>
           )}
           <button
-            onClick={() => onNavigate("lessons")}
+            onClick={() => onNavigate("learning-path")}
             className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
           >
             Open Lessons <ChevronRight className="w-4 h-4" />
@@ -338,7 +338,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
         </div>
         {nextAssigned && (
           <button
-            onClick={() => onNavigate("lessons")}
+            onClick={() => onNavigate("learning-path")}
             className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-indigo-600 hover:bg-indigo-500 transition-colors"
           >
             Open Assignment
@@ -346,7 +346,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
         )}
         {!isSchoolLed && inProgressPathway && (
           <button
-            onClick={() => onNavigate("lessons")}
+            onClick={() => onNavigate("learning-path")}
             className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-emerald-700 hover:bg-emerald-600 transition-colors"
           >
             Continue
@@ -354,7 +354,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
         )}
         {!isSchoolLed && !inProgressPathway && (
           <button
-            onClick={() => onNavigate("lessons")}
+            onClick={() => onNavigate("learning-path")}
             className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-emerald-700 hover:bg-emerald-600 transition-colors"
           >
             Start Learning
@@ -390,7 +390,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
         <SectionHeading icon={Heart} title="My Horse" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Virtual Horse Card */}
-          <button onClick={() => onNavigate("virtual-horse")} className="text-left w-full">
+          <button onClick={() => onNavigate("practice")} className="text-left w-full">
             <div className="rounded-xl border p-6 transition-colors duration-300 bg-gradient-to-br from-violet-500/15 to-purple-500/15 border-violet-500/20 hover:border-violet-500/40">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-violet-500/20">
@@ -447,7 +447,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
               <ClipboardList className="w-8 h-8 text-gray-600 mx-auto mb-2" />
               <p className="text-sm text-gray-500">No tasks for today.</p>
               <button
-                onClick={() => onNavigate("tasks")}
+                onClick={() => onNavigate("practice")}
                 className="mt-3 text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1 mx-auto"
               >
                 <Plus className="w-4 h-4" /> Add a task
@@ -473,7 +473,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
                 </div>
               ))}
               {tasks.length > 6 && (
-                <button onClick={() => onNavigate("tasks")} className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                <button onClick={() => onNavigate("practice")} className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
                   View all tasks <ChevronRight className="w-4 h-4" />
                 </button>
               )}
@@ -487,8 +487,8 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
         <SectionHeading icon={Target} title="Quick Actions" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
-            { icon: Library, label: "Lessons", desc: "Continue your structured learning pathways", color: "#6366f1", view: "lessons" as ActiveView },
-            { icon: TrendingUp, label: "Log Training", desc: "Record a riding or groundwork session", color: "#10b981", view: "training" as ActiveView },
+            { icon: Library, label: "Learning Path", desc: "Continue your structured learning pathways", color: "#6366f1", view: "learning-path" as ActiveView },
+            { icon: Zap, label: "Practice", desc: "Scenarios, training log, and daily care", color: "#10b981", view: "practice" as ActiveView },
             { icon: Brain, label: "Ask AI Tutor", desc: "Get help with equine topics", color: "#a78bfa", view: "ai-tutor" as ActiveView },
             { icon: Target, label: "View Progress", desc: "Track your skill development", color: "#06b6d4", view: "progress" as ActiveView },
           ].map((action) => {
@@ -2285,6 +2285,267 @@ function LessonsView() {
   );
 }
 
+// ─── Practice View (Tabbed: Scenarios, Virtual Horse, Daily Care, Training Log) ──
+type PracticeTab = "scenarios" | "virtual-horse" | "daily-care" | "training-log";
+
+function PracticeView() {
+  const [tab, setTab] = useState<PracticeTab>("scenarios");
+
+  const tabs: { id: PracticeTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+    { id: "scenarios", label: "Scenarios", icon: Zap },
+    { id: "virtual-horse", label: "My Horse", icon: Sparkles },
+    { id: "daily-care", label: "Daily Care", icon: ClipboardList },
+    { id: "training-log", label: "Training Log", icon: Target },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <SectionHeading icon={Zap} title="Practice" />
+      {/* Tab bar */}
+      <div className="flex gap-1 flex-wrap rounded-xl p-1" style={{ backgroundColor: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+        {tabs.map((t) => {
+          const Icon = t.icon;
+          const isActive = tab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                isActive
+                  ? "bg-indigo-500/20 text-indigo-300"
+                  : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.04]"
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Tab content */}
+      {tab === "scenarios" && <ScenarioTrainingView />}
+      {tab === "virtual-horse" && <VirtualHorseView />}
+      {tab === "daily-care" && <TasksView />}
+      {tab === "training-log" && <TrainingView />}
+    </div>
+  );
+}
+
+// ─── Assignments View ─────────────────────────────────────────
+function AssignmentsView() {
+  const utils = trpc.useUtils();
+  const { data: assignedTasks, isLoading: loadingTasks } = trpc.student.listAssignedTasksForMe.useQuery();
+  const { data: assignedLessons, isLoading: loadingLessons } = trpc.student.getAssignedLessons.useQuery();
+  const { data: reviews } = trpc.student.getMyLessonReviews.useQuery();
+  const { data: feedback } = trpc.student.listMyFeedback.useQuery();
+  const completeMut = trpc.student.completeAssignedTask.useMutation({
+    onSuccess: () => utils.student.listAssignedTasksForMe.invalidate(),
+  });
+  const markFeedbackReadMut = trpc.student.markFeedbackRead.useMutation({
+    onSuccess: () => utils.student.listMyFeedback.invalidate(),
+  });
+
+  const isLoading = loadingTasks || loadingLessons;
+
+  if (isLoading) return <SCard><SkeletonBar className="w-full h-32" /></SCard>;
+
+  const pendingTasks = (assignedTasks ?? []).filter(t => !t.isCompleted);
+  const completedTasks = (assignedTasks ?? []).filter(t => t.isCompleted);
+  const pendingLessons = (assignedLessons ?? []).filter(l => !l.isCompleted);
+  const completedLessons = (assignedLessons ?? []).filter(l => l.isCompleted);
+  const unreadReviews = (reviews ?? []).filter(r => !r.isRead);
+  const unreadFeedback = (feedback ?? []).filter(f => !f.isRead);
+
+  const hasNothing = !pendingTasks.length && !pendingLessons.length && !completedTasks.length && !completedLessons.length && !unreadReviews.length && !unreadFeedback.length;
+
+  return (
+    <div className="space-y-6">
+      <SectionHeading icon={ClipboardList} title="Assignments" />
+
+      {hasNothing ? (
+        <SCard>
+          <div className="text-center py-10">
+            <ClipboardList className="w-10 h-10 text-gray-600 mx-auto mb-3" />
+            <p className="text-sm font-medium text-gray-400 mb-1">No assignments yet</p>
+            <p className="text-xs text-gray-600">When your teacher assigns lessons or tasks, they will appear here.</p>
+          </div>
+        </SCard>
+      ) : (
+        <>
+          {/* Teacher Reviews */}
+          {unreadReviews.length > 0 && (
+            <section>
+              <h3 className="text-sm font-semibold text-amber-400 flex items-center gap-2 mb-3">
+                <MessageSquare className="w-4 h-4" />
+                New Lesson Reviews ({unreadReviews.length})
+              </h3>
+              <div className="space-y-2">
+                {unreadReviews.map(r => {
+                  const statusColors: Record<string, string> = {
+                    approved: "#10b981",
+                    needs_improvement: "#f59e0b",
+                    needs_support: "#ef4444",
+                  };
+                  return (
+                    <SCard key={r.id} className="!p-4 ring-1 ring-amber-500/20">
+                      <div className="flex items-start gap-3">
+                        <Award className="w-4 h-4 shrink-0 mt-0.5" style={{ color: statusColors[r.reviewStatus] ?? "#6366f1" }} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white">{r.lessonSlug?.replace(/-/g, " ")}</p>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{
+                            backgroundColor: `${statusColors[r.reviewStatus] ?? "#6366f1"}18`,
+                            color: statusColors[r.reviewStatus] ?? "#6366f1"
+                          }}>
+                            {r.reviewStatus?.replace(/_/g, " ")}
+                          </span>
+                          {r.feedback && <p className="text-xs text-gray-400 mt-1.5">{r.feedback}</p>}
+                          {r.recommendedNextLesson && (
+                            <p className="text-xs text-indigo-400 mt-1">
+                              Recommended next: <span className="font-medium">{r.recommendedNextLesson.replace(/-/g, " ")}</span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </SCard>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* Teacher Feedback */}
+          {unreadFeedback.length > 0 && (
+            <section>
+              <h3 className="text-sm font-semibold text-indigo-400 flex items-center gap-2 mb-3">
+                <MessageSquare className="w-4 h-4" />
+                Instructor Feedback ({unreadFeedback.length} new)
+              </h3>
+              <div className="space-y-2">
+                {unreadFeedback.slice(0, 5).map(f => {
+                  const style = FEEDBACK_STYLES[f.feedbackType] ?? FEEDBACK_STYLES.general;
+                  return (
+                    <SCard key={f.id} className="!p-4 ring-1 ring-indigo-500/20">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: style.bg, color: style.color }}>
+                            {style.label}
+                          </span>
+                          <p className="text-sm text-gray-300 mt-1.5">{f.comment}</p>
+                        </div>
+                        <button
+                          onClick={() => markFeedbackReadMut.mutate({ id: f.id })}
+                          className="text-xs text-indigo-400 hover:text-indigo-300 shrink-0"
+                          title="Mark as read"
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </SCard>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* Assigned Lessons */}
+          {pendingLessons.length > 0 && (
+            <section>
+              <h3 className="text-sm font-semibold text-indigo-400 flex items-center gap-2 mb-3">
+                <Library className="w-4 h-4" />
+                Assigned Lessons ({pendingLessons.length} pending)
+              </h3>
+              <div className="space-y-2">
+                {pendingLessons.map(l => (
+                  <SCard key={l.id} className="!p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-500/15 flex items-center justify-center shrink-0">
+                        <Library className="w-4 h-4 text-indigo-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white">{l.lessonTitle || l.lessonSlug?.replace(/-/g, " ")}</p>
+                        <p className="text-[10px] text-gray-500">
+                          {l.pathwaySlug?.replace(/-/g, " ")}
+                          {l.dueDate ? ` · Due ${String(l.dueDate).slice(0, 10)}` : ""}
+                          {l.instructions ? ` · ${l.instructions}` : ""}
+                        </p>
+                      </div>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 shrink-0">Pending</span>
+                    </div>
+                  </SCard>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Assigned Tasks */}
+          {pendingTasks.length > 0 && (
+            <section>
+              <h3 className="text-sm font-semibold text-amber-400 flex items-center gap-2 mb-3">
+                <AlertCircle className="w-4 h-4" />
+                Assigned Tasks ({pendingTasks.length} pending)
+              </h3>
+              <div className="space-y-2">
+                {pendingTasks.map(t => (
+                  <SCard key={t.id} className="!p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full border-2 border-amber-500/50 flex items-center justify-center shrink-0">
+                        <ClipboardList className="w-3 h-3 text-amber-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-white font-medium">{t.title}</p>
+                        <p className="text-[10px] text-amber-400/70">
+                          {t.category} · {t.frequency}
+                          {t.dueDate ? ` · Due ${String(t.dueDate).slice(0, 10)}` : ""}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => completeMut.mutate({ id: t.id })}
+                        disabled={completeMut.isPending}
+                        className="text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors shrink-0"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </SCard>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Completed section */}
+          {(completedTasks.length > 0 || completedLessons.length > 0) && (
+            <section>
+              <h3 className="text-sm font-semibold text-emerald-400 flex items-center gap-2 mb-3">
+                <CheckCircle2 className="w-4 h-4" />
+                Completed ({completedTasks.length + completedLessons.length})
+              </h3>
+              <SCard>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {completedLessons.slice(0, 5).map(l => (
+                    <div key={l.id} className="flex items-center gap-3 p-2 rounded-lg">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span className="text-xs text-gray-400 line-through">{l.lessonTitle || l.lessonSlug?.replace(/-/g, " ")}</span>
+                      <span className="text-[10px] text-emerald-500/70 ml-auto shrink-0">Lesson</span>
+                    </div>
+                  ))}
+                  {completedTasks.slice(0, 5).map(t => (
+                    <div key={t.id} className="flex items-center gap-3 p-2 rounded-lg">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span className="text-xs text-gray-400 line-through">{t.title}</span>
+                      <span className="text-[10px] text-emerald-500/70 ml-auto shrink-0">Task</span>
+                    </div>
+                  ))}
+                </div>
+              </SCard>
+            </section>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── Student Settings View ────────────────────────────────────
 function StudentSettingsView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
   const { user, logout } = useAuth();
@@ -2384,14 +2645,11 @@ export default function StudentDashboard() {
 
   const viewTitle: Record<ActiveView, string> = {
     "overview": "Student Dashboard",
-    "virtual-horse": "My Virtual Horse",
-    "tasks": "Tasks & Care",
-    "training": "Training Log",
-    "lessons": "Lessons",
-    "study-hub": "Study Hub",
+    "learning-path": "Learning Path",
+    "practice": "Practice",
+    "assignments": "Assignments",
     "ai-tutor": "AI Tutor",
     "progress": "Progress",
-    "scenarios": "Scenario Training",
     "settings": "Settings",
   };
 
@@ -2425,14 +2683,11 @@ export default function StudentDashboard() {
 
           {/* ─── Active View ──────────────────────────────── */}
           {activeView === "overview" && <OverviewView onNavigate={setActiveView} />}
-          {activeView === "virtual-horse" && <VirtualHorseView />}
-          {activeView === "tasks" && <TasksView />}
-          {activeView === "training" && <TrainingView />}
-          {activeView === "lessons" && <LessonsView />}
-          {activeView === "study-hub" && <StudyHubView />}
+          {activeView === "learning-path" && <LessonsView />}
+          {activeView === "practice" && <PracticeView />}
+          {activeView === "assignments" && <AssignmentsView />}
           {activeView === "ai-tutor" && <AITutorView />}
           {activeView === "progress" && <ProgressView />}
-          {activeView === "scenarios" && <ScenarioTrainingView />}
           {activeView === "settings" && <StudentSettingsView onNavigate={setActiveView} />}
         </div>
       </div>

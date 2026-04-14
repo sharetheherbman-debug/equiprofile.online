@@ -31,7 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { useAdminViewMode, ADMIN_VIEW_MODE_LIST } from "@/contexts/AdminViewContext";
+import { useAdminViewMode } from "@/contexts/AdminViewContext";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -172,43 +172,26 @@ function SidebarNav({
   );
 }
 
-// ── Admin view indicator (context-based) ──────────────────────────────────
+// ── Admin view indicator (read-only banner — switching is in Admin portal) ─
 
 function AdminViewIndicator() {
   const [, setLocation] = useLocation();
-  const { viewMode, setViewMode, exitViewMode } = useAdminViewMode();
+  const { exitViewMode } = useAdminViewMode();
 
   return (
-    <div className="flex flex-wrap items-center gap-2 px-4 py-2 bg-emerald-500/10 border-b border-emerald-500/20 shrink-0">
+    <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border-b border-emerald-500/20 shrink-0">
       <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-      <span className="text-xs font-semibold text-emerald-300 shrink-0 mr-1">View as:</span>
-      <div className="flex flex-wrap gap-1 flex-1">
-        {ADMIN_VIEW_MODE_LIST.map((p) => {
-          const isCurrent = viewMode === p.mode;
-          return (
-            <button
-              key={p.mode}
-              onClick={() => {
-                if (p.mode === "admin") {
-                  exitViewMode();
-                } else {
-                  setViewMode(p.mode);
-                }
-                setLocation(p.path);
-              }}
-              disabled={isCurrent}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium transition-colors whitespace-nowrap ${
-                isCurrent
-                  ? "bg-emerald-500/20 text-emerald-300 cursor-default"
-                  : "text-emerald-400/70 hover:text-emerald-300 hover:bg-emerald-500/15"
-              }`}
-            >
-              <span>{p.icon}</span>
-              <span>{p.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      <span className="text-xs font-semibold text-emerald-300">
+        Admin Preview — Teacher Portal
+      </span>
+      <div className="flex-1" />
+      <button
+        onClick={() => { exitViewMode(); setLocation("/admin"); }}
+        className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 transition-colors"
+      >
+        <ShieldCheck className="w-3.5 h-3.5" />
+        Back to Admin
+      </button>
     </div>
   );
 }
