@@ -42,7 +42,8 @@ export type TeacherView =
   | "tasks"
   | "feedback"
   | "reports"
-  | "lessons";
+  | "lessons"
+  | "progress";
 
 interface TeacherNavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -57,12 +58,13 @@ interface TeacherDashboardLayoutProps {
 }
 
 const teacherNavItems: TeacherNavItem[] = [
-  { icon: LayoutDashboard, label: "Overview", view: "overview" },
+  { icon: LayoutDashboard, label: "Home", view: "overview" },
   { icon: Users, label: "Students", view: "students" },
   { icon: UsersRound, label: "Groups", view: "groups" },
-  { icon: ClipboardList, label: "Assign Tasks", view: "tasks" },
+  { icon: ClipboardList, label: "Assign Work", view: "tasks" },
   { icon: Library, label: "Lessons", view: "lessons" },
-  { icon: MessageSquare, label: "Feedback", view: "feedback" },
+  { icon: MessageSquare, label: "Reviews", view: "feedback" },
+  { icon: BarChart2, label: "Progress", view: "progress" },
   { icon: FileText, label: "Reports", view: "reports" },
 ];
 
@@ -211,9 +213,10 @@ export default function TeacherDashboardLayout({
     overview: "Instructor Dashboard",
     students: "My Students",
     groups: "Groups & Classes",
-    tasks: "Assign Tasks",
+    tasks: "Assign Work",
     lessons: "Lessons",
-    feedback: "Student Feedback",
+    feedback: "Reviews & Feedback",
+    progress: "Student Progress",
     reports: "Reports",
   };
 

@@ -90,6 +90,54 @@ export const LESSON_PATHWAYS: LessonPathwayData[] = [
     sortOrder: 6,
     iconName: "TrendingUp",
   },
+  {
+    slug: "polework-jump-foundations",
+    title: "Polework & Jump Foundations",
+    description:
+      "Build confidence over ground poles and progress to jumping. Learn distances, grids, the jumping position and course awareness.",
+    sortOrder: 7,
+    iconName: "Zap",
+  },
+  {
+    slug: "horse-health-first-response",
+    title: "Horse Health & First Response",
+    description:
+      "Recognise signs of good and poor health, understand common ailments, and learn first-aid skills to respond quickly and effectively.",
+    sortOrder: 8,
+    iconName: "Thermometer",
+  },
+  {
+    slug: "stable-management",
+    title: "Stable Management",
+    description:
+      "Master the daily routines of stable and yard management including mucking out, pasture care, record keeping and facility organisation.",
+    sortOrder: 9,
+    iconName: "Home",
+  },
+  {
+    slug: "competitions-preparation",
+    title: "Competitions & Preparation",
+    description:
+      "Understand competition types, prepare horse and rider for shows, learn dressage tests and show-jumping courses, and develop a winning mindset.",
+    sortOrder: 10,
+    iconName: "Award",
+  },
+  {
+    slug: "rider-fitness-mindset",
+    title: "Rider Fitness & Mindset",
+    description:
+      "Improve your riding through targeted fitness, core stability, flexibility work and mental skills including confidence building and performance psychology.",
+    sortOrder: 11,
+    iconName: "Activity",
+  },
+  {
+    slug: "coaching-teaching-skills",
+    title: "Coaching & Teaching Skills",
+    description:
+      "Develop the knowledge and communication skills needed to coach and teach riders of all ages and abilities safely and effectively.",
+    sortOrder: 12,
+    iconName: "BookOpen",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
