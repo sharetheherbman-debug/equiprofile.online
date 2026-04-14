@@ -1373,6 +1373,65 @@ export const studentRouter = router({
       };
     }),
 
+  /** Daily Practice — deterministic 3 scenarios per user per day */
+  getDailyScenarios: studentProcedure
+    .query(async ({ ctx }) => {
+      const userId = ctx.user.id;
+      const user = await db.getUserById(userId);
+      const prefs = parseUserPrefs(user?.preferences);
+      const currentLevel = (prefs.studentLevel as string) ?? "beginner";
+
+      // Deterministic daily seed based on userId + date
+      const today = new Date();
+      const dayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      const seedStr = `${userId}-${dayKey}`;
+      let seed = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        seed = ((seed << 5) - seed + seedStr.charCodeAt(i)) | 0;
+      }
+
+      // Seeded random number generator (mulberry32)
+      function mulberry32(s: number) {
+        return function () {
+          s |= 0; s = (s + 0x6D2B79F5) | 0;
+          let t = Math.imul(s ^ (s >>> 15), 1 | s);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const rng = mulberry32(seed);
+
+      // Prefer scenarios at current level, then one level below/above
+      const levelOrder = ["beginner", "developing", "intermediate", "advanced"];
+      const currentIdx = levelOrder.indexOf(currentLevel);
+      const preferredLevels = [currentLevel];
+      if (currentIdx > 0) preferredLevels.push(levelOrder[currentIdx - 1]);
+      if (currentIdx < levelOrder.length - 1) preferredLevels.push(levelOrder[currentIdx + 1]);
+
+      // Filter scenarios to preferred levels
+      let pool = SCENARIO_DATA.filter((s) => preferredLevels.includes(s.level));
+      if (pool.length < 3) pool = [...SCENARIO_DATA]; // fallback to all
+
+      // Shuffle with seeded RNG
+      const shuffled = [...pool];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      // Pick exactly 3
+      const daily = shuffled.slice(0, 3);
+
+      // Strip correct answer info
+      return {
+        date: dayKey,
+        scenarios: daily.map(({ choices, ...rest }) => ({
+          ...rest,
+          choices: choices.map(({ id, text }) => ({ id, text })),
+        })),
+      };
+    }),
+
   // ── Training Log — Update ────────────────────────────────────────────────
   updateTraining: studentProcedure
     .input(z.object({
@@ -1426,6 +1485,79 @@ export const studentRouter = router({
         .where(eq(users.id, ctx.user.id));
       return { success: true };
     }),
+
+  /** Get the highest unlocked level based on lesson completion progress.
+   *  Rules:
+   *  - Beginner is always unlocked
+   *  - Developing unlocks when ≥60% of beginner lessons are completed
+   *  - Intermediate unlocks when ≥60% of developing lessons are completed
+   *  - Advanced unlocks when ≥60% of intermediate lessons are completed
+   *  Returns: unlockedLevel, completedByLevel counts, totalByLevel counts
+   */
+  getUnlockedLevel: studentProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    // Count total lessons per level from static content
+    const totalByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
+    for (const u of LESSON_UNITS) {
+      if (totalByLevel[u.level] !== undefined) totalByLevel[u.level]++;
+    }
+
+    // Count completed lessons per level for this user
+    const completions = await dbConn.select({
+      level: lessonCompletion.level,
+    }).from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id));
+
+    const completedByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
+    for (const c of completions) {
+      if (completedByLevel[c.level] !== undefined) completedByLevel[c.level]++;
+    }
+
+    // Determine highest unlocked level (60% threshold to unlock next)
+    const UNLOCK_THRESHOLD = 0.6;
+    const levels = ["beginner", "developing", "intermediate", "advanced"] as const;
+    let unlockedLevel: string = "beginner";
+
+    for (let i = 0; i < levels.length - 1; i++) {
+      const lev = levels[i];
+      const total = totalByLevel[lev] || 1;
+      const done = completedByLevel[lev] || 0;
+      if (done / total >= UNLOCK_THRESHOLD) {
+        unlockedLevel = levels[i + 1];
+      } else {
+        break;
+      }
+    }
+
+    // Find recommended next lesson (first incomplete lesson at current working level)
+    const allCompletions = await dbConn.select({ lessonSlug: lessonCompletion.lessonSlug })
+      .from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id));
+    const completedSlugs = new Set(allCompletions.map(c => c.lessonSlug));
+
+    // Working level = highest unlocked level where there are still incomplete lessons
+    let workingLevel = unlockedLevel;
+    for (const lev of levels) {
+      const idx = levels.indexOf(lev);
+      if (idx > levels.indexOf(unlockedLevel as any)) break;
+      const levLessons = LESSON_UNITS.filter(u => u.level === lev);
+      const hasIncomplete = levLessons.some(u => !completedSlugs.has(u.slug));
+      if (hasIncomplete) { workingLevel = lev; break; }
+    }
+
+    const nextLesson = LESSON_UNITS
+      .filter(u => u.level === workingLevel)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .find(u => !completedSlugs.has(u.slug));
+
+    return {
+      unlockedLevel,
+      workingLevel,
+      totalByLevel,
+      completedByLevel,
+      recommendedNextLesson: nextLesson ? { slug: nextLesson.slug, title: nextLesson.title, pathwaySlug: nextLesson.pathwaySlug, level: nextLesson.level } : null,
+    };
+  }),
 
   // ── Teacher-assigned tasks (student view) ─────────────────────────────────
 
@@ -1616,7 +1748,7 @@ export const studentRouter = router({
       pathwaySlug: z.string().optional(),
       level: z.enum(["beginner", "developing", "intermediate", "advanced"]).optional(),
     }).optional())
-    .query(async ({ input }) => {
+    .query(async ({ ctx, input }) => {
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
 
@@ -1653,6 +1785,31 @@ export const studentRouter = router({
         }
       }
 
+      // ── Progression gating: determine unlocked level for this student ──
+      const LEVEL_ORDER = ["beginner", "developing", "intermediate", "advanced"];
+      const UNLOCK_THRESHOLD = 0.6;
+      const totalByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
+      for (const u of LESSON_UNITS) {
+        if (totalByLevel[u.level] !== undefined) totalByLevel[u.level]++;
+      }
+      const completions = await dbConn.select({ level: lessonCompletion.level })
+        .from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id));
+      const completedByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
+      for (const c of completions) {
+        if (completedByLevel[c.level] !== undefined) completedByLevel[c.level]++;
+      }
+      let unlockedIdx = 0; // beginner is always unlocked
+      for (let i = 0; i < LEVEL_ORDER.length - 1; i++) {
+        const lev = LEVEL_ORDER[i];
+        const total = totalByLevel[lev] || 1;
+        const done = completedByLevel[lev] || 0;
+        if (done / total >= UNLOCK_THRESHOLD) {
+          unlockedIdx = i + 1;
+        } else {
+          break;
+        }
+      }
+
       const conditions = [];
       if (input?.pathwaySlug) conditions.push(eq(lessonUnits.pathwaySlug, input.pathwaySlug));
       if (input?.level) conditions.push(eq(lessonUnits.level, input.level));
@@ -1661,7 +1818,7 @@ export const studentRouter = router({
         ? await dbConn.select().from(lessonUnits).where(and(...conditions)).orderBy(lessonUnits.sortOrder)
         : await dbConn.select().from(lessonUnits).orderBy(lessonUnits.sortOrder);
 
-      // Return summary without full content
+      // Return summary with locked state
       return rows.map((r) => ({
         id: r.id,
         slug: r.slug,
@@ -1670,6 +1827,7 @@ export const studentRouter = router({
         level: r.level,
         category: r.category,
         sortOrder: r.sortOrder,
+        locked: LEVEL_ORDER.indexOf(r.level) > unlockedIdx,
       }));
     }),
 
