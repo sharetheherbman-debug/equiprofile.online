@@ -71,7 +71,7 @@ export const LEARNING_PATHWAYS: Record<string, { label: string; topics: string[]
       "tack-and-equipment", "horse-behaviour", "stable-safety", "horse-health-awareness",
       "lesson-preparation", "care-routine", "horse-welfare", "leading-and-handling",
     ],
-    scenarios: ["s001", "s002", "s003", "s004"],
+    scenarios: ["s001", "s002", "s003", "s004", "s016", "s017", "s018", "s019", "s020"],
   },
   developing: {
     label: "Developing Pathway",
@@ -79,7 +79,7 @@ export const LEARNING_PATHWAYS: Record<string, { label: string; topics: string[]
       "transitions", "trot-work", "nutrition-in-depth", "hoof-care",
       "rugging", "horse-behaviour-advanced", "first-aid-basics", "warming-up",
     ],
-    scenarios: ["s005", "s006", "s007", "s008"],
+    scenarios: ["s005", "s006", "s007", "s008", "s021", "s022", "s023", "s024", "s025"],
   },
   intermediate: {
     label: "Intermediate Pathway",
@@ -87,7 +87,7 @@ export const LEARNING_PATHWAYS: Record<string, { label: string; topics: string[]
       "canter-work", "lateral-work-intro", "health-monitoring",
       "lameness-awareness", "competition-basics", "arena-figures",
     ],
-    scenarios: ["s009", "s010", "s011"],
+    scenarios: ["s009", "s010", "s011", "s026", "s027", "s028", "s029"],
   },
   advanced: {
     label: "Advanced Pathway",
@@ -95,7 +95,7 @@ export const LEARNING_PATHWAYS: Record<string, { label: string; topics: string[]
       "collection-and-engagement", "horse-biomechanics",
       "nutrition-advanced", "accident-management",
     ],
-    scenarios: ["s012", "s013", "s014", "s015"],
+    scenarios: ["s012", "s013", "s014", "s015", "s030"],
   },
 };
 
