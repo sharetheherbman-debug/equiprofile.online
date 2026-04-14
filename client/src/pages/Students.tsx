@@ -136,10 +136,10 @@ export default function Students() {
             </h2>
             <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
               EquiProfile gives every student their own professional-grade
-              dashboard — the same tools used by working yards, adapted for
-              learners. Manage a horse, track your training, study equine
-              theory, and build a portfolio that proves your knowledge is more
-              than classroom deep.
+              dashboard with 95 structured lessons across 15 pathways —
+              from horse care foundations to advanced welfare and nutrition.
+              Manage a horse, earn level unlocks, practice daily scenarios,
+              and build a portfolio that proves real knowledge and competence.
             </p>
           </motion.div>
         </section>
@@ -206,6 +206,32 @@ export default function Students() {
                   </li>
                 ))}
               </ul>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Learning at a Glance */}
+        <section className="container mx-auto px-4 py-12">
+          <motion.div
+            className="max-w-5xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {[
+                { value: "95", label: "Structured Lessons", color: "from-indigo-500 to-violet-500" },
+                { value: "15", label: "Learning Pathways", color: "from-cyan-500 to-blue-500" },
+                { value: "4", label: "Progression Levels", color: "from-emerald-500 to-teal-500" },
+                { value: "3/day", label: "Practice Scenarios", color: "from-amber-500 to-orange-500" },
+              ].map((stat, idx) => (
+                <div key={idx} className="text-center py-5 px-4 rounded-xl bg-white/5 border border-white/10">
+                  <p className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-1`}>
+                    {stat.value}
+                  </p>
+                  <p className="text-xs md:text-sm text-gray-400">{stat.label}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
         </section>

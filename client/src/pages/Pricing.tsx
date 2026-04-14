@@ -401,7 +401,7 @@ export default function Pricing() {
                         <CardDescription className="text-gray-400">{planData.description}</CardDescription>
                         <div className="mt-4">
                           <span className="text-5xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent bg-clip-text">
-                            £{planData.price}
+                            {planData.price}
                           </span>
                           <span className="text-gray-400 text-lg">
                             /{billingPeriod === "monthly" ? "month" : "year"}

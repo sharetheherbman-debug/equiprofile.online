@@ -10,6 +10,8 @@ import {
   Activity,
   Calendar,
   Users,
+  GraduationCap,
+  Brain,
 } from "lucide-react";
 import { marketingAssets } from "@/config/marketingAssets";
 
@@ -158,6 +160,34 @@ export const detailedFeatures = [
     ],
     icon: Users,
     gradient: "from-indigo-500 to-blue-500",
+  },
+  {
+    title: "Equestrian Learning Portal",
+    description: "A complete structured learning platform for students and schools",
+    image: "/images/gallery/19.jpg",
+    imagePosition: "right" as const,
+    features: [
+      "95 lessons across 15 pathways — from horse care to advanced welfare",
+      "4 progression levels: Beginner → Developing → Intermediate → Advanced",
+      "Daily practice scenarios matched to each student's level",
+      "AI tutor for instant answers to equine care questions",
+    ],
+    icon: GraduationCap,
+    gradient: "from-emerald-500 to-teal-500",
+  },
+  {
+    title: "Schools & Teacher Tools",
+    description: "Built for riding schools, colleges, and equestrian training centres",
+    image: "/images/hero/image5.jpg",
+    imagePosition: "left" as const,
+    features: [
+      "Teacher dashboard with student progression and weak area visibility",
+      "Group management, task assignment, and feedback tools",
+      "Seat-based school pricing from £49/month for up to 10 students",
+      "Automated progress reports for parents, inspectors, and accreditation bodies",
+    ],
+    icon: Brain,
+    gradient: "from-violet-500 to-purple-500",
   },
 ];
 
