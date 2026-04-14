@@ -34,6 +34,9 @@ import {
   Folder,
   Brain,
   Smartphone,
+  GraduationCap,
+  BookOpen,
+  Target,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { marketingAssets, heroSlides } from "@/config/marketingAssets";
@@ -95,27 +98,43 @@ export default function Home() {
   const testimonials = [
     {
       name: "Sarah Thompson",
-      role: "Professional Dressage Rider",
+      role: "Dressage Rider & Horse Owner",
       content:
-        "EquiProfile has completely revolutionized how I manage my horses. The health tracking and intelligent reminders have been absolutely invaluable for maintaining peak performance!",
+        "EquiProfile has completely revolutionised how I manage my horses' health records. I used to lose track of vaccination dates and farrier visits — now everything is in one place with smart reminders. My vet was impressed!",
       rating: 5,
       avatar: "ST",
     },
     {
-      name: "Michael Chen",
-      role: "Stable Manager - 25+ Horses",
+      name: "James Whitfield",
+      role: "Riding School Owner — 35 Students",
       content:
-        "Managing a large stable used to be overwhelming. EquiProfile makes it simple, organised, and efficient. The time savings alone have been incredible. Highly recommend!",
+        "We switched from paper-based tracking to EquiProfile for our school and the difference is night and day. Teachers can assign lessons, track student progression, and parents love the progress reports. Worth every penny.",
+      rating: 5,
+      avatar: "JW",
+    },
+    {
+      name: "Emily Hart",
+      role: "BHS Stage 3 Student",
+      content:
+        "The learning pathways are brilliant — I can study equine nutrition and welfare at my own pace, and the daily practice scenarios really test my knowledge. The AI tutor is great for quick questions between lessons.",
+      rating: 5,
+      avatar: "EH",
+    },
+    {
+      name: "Michael Chen",
+      role: "Stable Manager — 25+ Horses",
+      content:
+        "Managing a large stable used to be overwhelming. EquiProfile makes it simple, organised, and efficient. The time savings on health tracking and scheduling alone have been incredible.",
       rating: 5,
       avatar: "MC",
     },
     {
-      name: "Emma Rodriguez",
-      role: "Eventing Trainer & Coach",
+      name: "Lucy Brennan",
+      role: "Equine Studies Teacher",
       content:
-        "The training logs and analytics are phenomenal. I can see progress clearly, identify areas for improvement, and share detailed updates with clients easily. Game-changing!",
+        "Being able to see exactly where each student is in their learning journey is invaluable. I can spot weak areas, set targeted assignments, and track improvement over time. It's transformed my teaching.",
       rating: 5,
-      avatar: "ER",
+      avatar: "LB",
     },
   ];
 
@@ -156,18 +175,18 @@ export default function Home() {
                   className="text-center"
                 >
                   <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-6 text-white drop-shadow-2xl">
-                    Professional Horse
-                    <br />
-                    Management Made{" "}
+                    Horse Management &{" "}
                     <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                      Simple
+                      Equestrian Learning
                     </span>
+                    <br />
+                    in One Platform
                   </h1>
 
                   <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-10 leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
-                    One platform for health records, GPS tracking, training,
-                    and the digital passport that keeps your horse's care
-                    organised and shareable.
+                    Health records, training logs, GPS tracking, and a
+                    complete learning portal with 95 lessons across 15
+                    pathways — for owners, students, teachers, and schools.
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -215,13 +234,13 @@ export default function Home() {
                 className="text-center mb-12"
               >
                 <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4 text-white">
-                  Powerful Features Built for{" "}
+                  Powerful Features for{" "}
                   <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                    Modern Stables
+                    Modern Equestrians
                   </span>
                 </h2>
                 <p className="text-xl text-white/70 max-w-2xl mx-auto">
-                  Discover the tools that make horse management effortless
+                  From health tracking to structured learning — everything you need in one platform
                 </p>
               </motion.div>
 
@@ -301,6 +320,111 @@ export default function Home() {
                   </Link>
                 </div>
               </motion.div>
+            </div>
+          </section>
+
+          {/* Learning Platform Section */}
+          <section className="py-24 bg-gradient-to-b from-[#0a1628] via-[#0d1a35] to-[#0a1628] relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/15 via-transparent to-transparent pointer-events-none" />
+            <div className="container px-4 relative z-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="text-center mb-14"
+              >
+                <Badge className="mb-4 inline-flex items-center gap-2 px-4 py-2 bg-indigo-500/10 backdrop-blur-md border-indigo-500/20 text-indigo-300">
+                  <GraduationCap className="w-4 h-4" />
+                  Equestrian Learning Portal
+                </Badge>
+                <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4 text-white">
+                  More Than Management —{" "}
+                  <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    A Complete Learning Platform
+                  </span>
+                </h2>
+                <p className="text-xl text-white/70 max-w-3xl mx-auto">
+                  95 structured lessons across 15 pathways — from beginner to advanced.
+                  Built for students, teachers, and riding schools.
+                </p>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
+                {[
+                  { icon: BookOpen, title: "15 Learning Pathways", desc: "Horse care, rider skills, safety, nutrition, welfare, and more — structured across 4 levels", color: "from-indigo-500 to-violet-500" },
+                  { icon: Target, title: "Progression Gating", desc: "Students unlock content as they advance — Beginner → Developing → Intermediate → Advanced", color: "from-emerald-500 to-teal-500" },
+                  { icon: Zap, title: "Daily Practice", desc: "3 fresh scenario challenges per day, matched to each student's level and weak areas", color: "from-amber-500 to-orange-500" },
+                  { icon: Brain, title: "AI Tutor", desc: "Instant answers to equine questions — from lameness signs to feed ratios, available 24/7", color: "from-cyan-500 to-blue-500" },
+                ].map((item, idx) => {
+                  const ItemIcon = item.icon;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: idx * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <Card className="h-full bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 hover:scale-105 transition-all duration-300">
+                        <CardHeader className="pb-2">
+                          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} p-3 mb-3 flex items-center justify-center`}>
+                            <ItemIcon className="w-6 h-6 text-white" />
+                          </div>
+                          <CardTitle className="text-lg text-white">{item.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <CardDescription className="text-sm text-white/60">{item.desc}</CardDescription>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                  className="relative rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 p-7 hover:border-indigo-500/40 transition-colors"
+                >
+                  <GraduationCap className="w-10 h-10 text-indigo-400 mb-4" />
+                  <h3 className="text-xl font-bold text-white mb-2">For Students & Riders</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                    Follow professional pathways covering horse care, rider skills, stable management, nutrition, and welfare.
+                    Track your progress, earn achievements, and build a verifiable learning portfolio — all from £8/month.
+                  </p>
+                  <Link href="/students">
+                    <Button className="bg-indigo-600 hover:bg-indigo-500 text-white border-0 group">
+                      Explore Student Programme
+                      <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                  className="relative rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 p-7 hover:border-emerald-500/40 transition-colors"
+                >
+                  <Users className="w-10 h-10 text-emerald-400 mb-4" />
+                  <h3 className="text-xl font-bold text-white mb-2">For Schools & Organisations</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                    Manage cohorts, assign lessons, track student progress, and generate reports.
+                    Seat-based pricing from £49/month — includes teacher accounts, AI tutor, and full lesson access.
+                  </p>
+                  <Link href="/pricing?type=school">
+                    <Button className="bg-emerald-700 hover:bg-emerald-600 text-white border-0 group">
+                      View School Pricing
+                      <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </motion.div>
+              </div>
             </div>
           </section>
 

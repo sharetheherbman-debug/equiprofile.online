@@ -5,16 +5,17 @@ export function Footer() {
     <footer className="py-16 border-t border-white/10 bg-black relative">
       <div className="absolute inset-0 bg-gradient-to-t from-indigo-950/10 to-transparent pointer-events-none" />
       <div className="container relative">
-        <div className="grid md:grid-cols-4 gap-10 mb-12">
-          <div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10 mb-12">
+          <div className="col-span-2 md:col-span-1">
             <div className="text-2xl font-bold font-serif mb-4">
               <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
                 EquiProfile
               </span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Professional horse management for the modern equestrian. Track
-              health, training, nutrition, and more — all in one platform.
+              Professional horse management and equestrian learning platform.
+              Health tracking, training logs, 95 structured lessons, and a
+              complete school management system — all in one place.
             </p>
           </div>
 
@@ -53,6 +54,38 @@ export function Footer() {
                   className="hover:text-white transition-colors"
                 >
                   Start Free Trial
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-4 text-white text-sm uppercase tracking-wider">
+              For Schools
+            </h4>
+            <ul className="space-y-2.5 text-sm text-gray-400">
+              <li>
+                <Link
+                  href="/schools"
+                  className="hover:text-white transition-colors"
+                >
+                  School Pricing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/schools"
+                  className="hover:text-white transition-colors"
+                >
+                  Teacher Tools
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contact?plan=school"
+                  className="hover:text-white transition-colors"
+                >
+                  Book a Demo
                 </Link>
               </li>
             </ul>

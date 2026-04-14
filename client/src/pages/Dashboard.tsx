@@ -225,6 +225,8 @@ function DashboardContent() {
       setLocation("/student-dashboard");
     } else if (subscription?.planTier === "teacher") {
       setLocation("/teacher-dashboard");
+    } else if (subscription?.planTier === "school_owner") {
+      setLocation("/school-dashboard");
     }
   }, [user?.role, subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
 

@@ -1791,3 +1791,165 @@ export const lessonReviews = mysqlTable("lessonReviews", {
 
 export type LessonReview = typeof lessonReviews.$inferSelect;
 export type InsertLessonReview = typeof lessonReviews.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// School / Organisation System
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Organizations — schools, riding academies, colleges, training centres.
+ * Each organization is owned by a school_owner user and maps to a billing
+ * plan with seat limits.
+ */
+export const organizations = mysqlTable("organizations", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(), // FK → users.id (school_owner)
+  name: varchar("name", { length: 200 }).notNull(),
+  description: text("description"),
+  planTier: varchar("planTier", { length: 30 }).notNull().default("school_10"), // school_10, school_20, school_50, school_enterprise
+  maxStudents: int("maxStudents").notNull().default(10),
+  maxTeachers: int("maxTeachers").notNull().default(3),
+  isActive: boolean("isActive").default(true).notNull(),
+  trialEndsAt: timestamp("trialEndsAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Organization = typeof organizations.$inferSelect;
+export type InsertOrganization = typeof organizations.$inferInsert;
+
+/**
+ * Organization members — links users to an organization with a specific role.
+ * Enforces ONE user = ONE account rule (a user can only belong to one org).
+ */
+export const organizationMembers = mysqlTable("organizationMembers", {
+  id: int("id").autoincrement().primaryKey(),
+  organizationId: int("organizationId").notNull(), // FK → organizations.id
+  userId: int("userId").notNull(), // FK → users.id
+  role: varchar("role", { length: 30 }).notNull(), // school_owner, teacher, student
+  joinedAt: timestamp("joinedAt").defaultNow().notNull(),
+});
+
+export type OrganizationMember = typeof organizationMembers.$inferSelect;
+export type InsertOrganizationMember = typeof organizationMembers.$inferInsert;
+
+/**
+ * Organization invites — email-based invite tokens for teachers and students
+ * to join a school.
+ */
+export const organizationInvites = mysqlTable("organizationInvites", {
+  id: int("id").autoincrement().primaryKey(),
+  organizationId: int("organizationId").notNull(),
+  invitedEmail: varchar("invitedEmail", { length: 320 }).notNull(),
+  role: varchar("role", { length: 30 }).notNull(), // teacher, student
+  token: varchar("token", { length: 64 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  acceptedAt: timestamp("acceptedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type OrganizationInvite = typeof organizationInvites.$inferSelect;
+export type InsertOrganizationInvite = typeof organizationInvites.$inferInsert;
+
+/**
+ * Teacher resources — files (PDFs, images, documents) uploaded by teachers
+ * that can be shared with students, groups, or the whole class.
+ */
+export const teacherResources = mysqlTable("teacherResources", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId").notNull(), // FK → users.id
+  title: varchar("title", { length: 250 }).notNull(),
+  description: text("description"),
+  fileUrl: varchar("fileUrl", { length: 1000 }).notNull(),
+  fileType: varchar("fileType", { length: 30 }).notNull(), // pdf, image, document
+  fileSize: int("fileSize"),
+  /** Share scope: 'all' | 'group' | 'individual' */
+  shareScope: varchar("shareScope", { length: 20 }).notNull().default("all"),
+  /** If shareScope is 'group', this is the group ID */
+  groupId: int("groupId"),
+  /** If shareScope is 'individual', this is the student user ID */
+  studentId: int("studentId"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type TeacherResource = typeof teacherResources.$inferSelect;
+export type InsertTeacherResource = typeof teacherResources.$inferInsert;
+
+/**
+ * Student assignments — work assigned by teachers that students submit.
+ */
+export const studentAssignments = mysqlTable("studentAssignments", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId").notNull(),
+  studentId: int("studentId").notNull(),
+  title: varchar("title", { length: 250 }).notNull(),
+  description: text("description"),
+  dueDate: timestamp("dueDate"),
+  status: varchar("status", { length: 30 }).notNull().default("pending"), // pending, submitted, reviewed
+  /** Student's submission file URL (PDF upload) */
+  submissionUrl: varchar("submissionUrl", { length: 1000 }),
+  submittedAt: timestamp("submittedAt"),
+  /** Teacher's mark/grade */
+  grade: varchar("grade", { length: 20 }),
+  /** Teacher's feedback text */
+  feedback: text("feedback"),
+  reviewedAt: timestamp("reviewedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StudentAssignment = typeof studentAssignments.$inferSelect;
+export type InsertStudentAssignment = typeof studentAssignments.$inferInsert;
+
+/**
+ * Teacher report templates — pre-built report structures that teachers can
+ * use to generate student progress reports.
+ */
+export const reportTemplates = mysqlTable("reportTemplates", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId"), // null = system-provided template
+  name: varchar("name", { length: 200 }).notNull(),
+  description: text("description"),
+  /** JSON structure defining report sections and fields */
+  templateData: text("templateData").notNull(),
+  isSystem: boolean("isSystem").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ReportTemplate = typeof reportTemplates.$inferSelect;
+export type InsertReportTemplate = typeof reportTemplates.$inferInsert;
+
+/**
+ * Teacher-generated student reports — instances of reports generated from templates.
+ */
+export const studentReports = mysqlTable("studentReports", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId").notNull(),
+  studentId: int("studentId").notNull(),
+  templateId: int("templateId"),
+  title: varchar("title", { length: 250 }).notNull(),
+  /** JSON report content */
+  reportData: text("reportData").notNull(),
+  sentAt: timestamp("sentAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type StudentReport = typeof studentReports.$inferSelect;
+export type InsertStudentReport = typeof studentReports.$inferInsert;
+
+/**
+ * Teacher ↔ Student messages — direct messaging between teachers and their
+ * assigned students. Each message belongs to a teacher-student pair.
+ */
+export const teacherStudentMessages = mysqlTable("teacherStudentMessages", {
+  id: int("id").autoincrement().primaryKey(),
+  teacherId: int("teacherId").notNull(),
+  studentId: int("studentId").notNull(),
+  senderRole: varchar("senderRole", { length: 10 }).notNull(), // 'teacher' | 'student'
+  content: text("content").notNull(),
+  isRead: boolean("isRead").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type TeacherStudentMessage = typeof teacherStudentMessages.$inferSelect;
+export type InsertTeacherStudentMessage = typeof teacherStudentMessages.$inferInsert;

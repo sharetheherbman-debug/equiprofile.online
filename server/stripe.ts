@@ -51,6 +51,31 @@ export const PRICING_PLANS = {
       "Email support",
     ],
   },
+  student: {
+    name: "Student",
+    horses: 1,
+    monthly: {
+      priceId: process.env.STRIPE_STUDENT_MONTHLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.student.monthly.amount, // £8.00 in pence
+      currency: "gbp",
+      interval: "month" as const,
+    },
+    yearly: {
+      priceId: process.env.STRIPE_STUDENT_YEARLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.student.yearly.amount, // £80.00 in pence
+      currency: "gbp",
+      interval: "year" as const,
+    },
+    features: [
+      "Structured lesson pathways",
+      "AI tutor access",
+      "Assignment submissions",
+      "Progress tracking",
+      "Teacher communication",
+      "Virtual horse management",
+      "Email support",
+    ],
+  },
   pro: {
     name: "Pro",
     horses: 5,
@@ -106,6 +131,55 @@ export const PRICING_PLANS = {
       "WhatsApp support",
     ],
   },
+  // School plans — price IDs set via environment variables
+  school_10: {
+    name: "School (10 Students)",
+    students: 10,
+    monthly: {
+      priceId: process.env.STRIPE_SCHOOL_10_MONTHLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.school.school_10.monthly.amount,
+      currency: "gbp",
+      interval: "month" as const,
+    },
+    yearly: {
+      priceId: process.env.STRIPE_SCHOOL_10_YEARLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.school.school_10.yearly.amount,
+      currency: "gbp",
+      interval: "year" as const,
+    },
+  },
+  school_20: {
+    name: "School (20 Students)",
+    students: 20,
+    monthly: {
+      priceId: process.env.STRIPE_SCHOOL_20_MONTHLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.school.school_20.monthly.amount,
+      currency: "gbp",
+      interval: "month" as const,
+    },
+    yearly: {
+      priceId: process.env.STRIPE_SCHOOL_20_YEARLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.school.school_20.yearly.amount,
+      currency: "gbp",
+      interval: "year" as const,
+    },
+  },
+  school_50: {
+    name: "School (50 Students)",
+    students: 50,
+    monthly: {
+      priceId: process.env.STRIPE_SCHOOL_50_MONTHLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.school.school_50.monthly.amount,
+      currency: "gbp",
+      interval: "month" as const,
+    },
+    yearly: {
+      priceId: process.env.STRIPE_SCHOOL_50_YEARLY_PRICE_ID || "",
+      amount: DEFAULT_PRICING.school.school_50.yearly.amount,
+      currency: "gbp",
+      interval: "year" as const,
+    },
+  },
 } as const;
 
 // Legacy export for backward compatibility
@@ -124,6 +198,14 @@ export function validatePricingConfig(): void {
   }
 
   const requiredPriceIds: Array<{ name: string; value: string }> = [
+    {
+      name: "STRIPE_STUDENT_MONTHLY_PRICE_ID",
+      value: PRICING_PLANS.student.monthly.priceId,
+    },
+    {
+      name: "STRIPE_STUDENT_YEARLY_PRICE_ID",
+      value: PRICING_PLANS.student.yearly.priceId,
+    },
     {
       name: "STRIPE_MONTHLY_PRICE_ID",
       value: PRICING_PLANS.pro.monthly.priceId,

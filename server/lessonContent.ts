@@ -138,6 +138,27 @@ export const LESSON_PATHWAYS: LessonPathwayData[] = [
     sortOrder: 12,
     iconName: "BookOpen",
   },
+  {
+    slug: "handling-groundwork",
+    title: "Handling & Groundwork",
+    description: "Master the essential skills of handling horses safely on the ground, including leading, tying up, turning out, and lungeing techniques.",
+    sortOrder: 13,
+    iconName: "Hand",
+  },
+  {
+    slug: "nutrition-feeding",
+    title: "Nutrition & Feeding",
+    description: "Understand equine nutrition principles, feed types, feeding routines, and how to create balanced diets for different horses and workloads.",
+    sortOrder: 14,
+    iconName: "Apple",
+  },
+  {
+    slug: "equine-welfare-ethics",
+    title: "Equine Welfare & Ethics",
+    description: "Explore the ethical responsibilities of horse ownership and care, including the Five Freedoms, welfare legislation, and responsible horsemanship.",
+    sortOrder: 15,
+    iconName: "Heart",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -7303,6 +7324,2028 @@ A rider is ready for the next level when they can perform current-level skills c
       "How do I handle a group lesson where one rider is much weaker than the others?",
       "What does a typical progression plan look like for a beginner rider over six months?",
       "How do I motivate a rider who seems to have plateaued?",
+    ],
+    linkedCompetencies: ["coaching_skills", "welfare_awareness"],
+  },
+
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // NEW LESSON UNITS — Handling & Groundwork, Nutrition & Feeding,
+  // Equine Welfare & Ethics, plus pathway expansions
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    slug: "safe-approach-and-catching",
+    pathwaySlug: "handling-groundwork",
+    title: "Safe Approach & Catching",
+    level: "beginner",
+    category: "Handling & Groundwork",
+    sortOrder: 1,
+    objectives: [
+      "Approach a horse safely in the stable and field",
+      "Understand the horse's flight zone and how to work with it",
+      "Catch a horse using a headcollar and lead rope correctly",
+      "Recognise signs that a horse is reluctant to be caught",
+    ],
+    content: `Approaching and catching a horse correctly is the very first practical skill every equestrian must master. Horses are prey animals whose survival instincts are triggered by sudden movements or unfamiliar approaches.
+
+## Approaching in the Stable
+
+Always speak to the horse before entering the stable. Approach at the shoulder — never from directly behind. Keep your body language calm and your voice steady. Allow the horse to see and smell you before touching.
+
+## Approaching in the Field
+
+Walk towards the horse at an angle, not head-on. Avoid making prolonged direct eye contact as horses can interpret this as predatory behaviour. If the horse moves away, stop, turn slightly sideways, and wait.
+
+## Using a Headcollar
+
+Hold the headcollar open with the noseband ready. Approach from the left (near) side. Slide the noseband over the muzzle, then bring the headpiece behind the ears and fasten the buckle. You should be able to fit two fingers under the noseband.
+
+## Dealing with a Difficult-to-Catch Horse
+
+Never chase a horse — this confirms their fear response. Use a calm, patient approach. Carry a small treat as a positive association. In extreme cases, bring the horse into a smaller area first.`,
+    keyPoints: [
+      "Always speak to the horse before approaching or entering its space",
+      "Approach at the shoulder, never directly from behind",
+      "Walk at an angle in the field — avoid head-on body language",
+      "Fit the headcollar correctly with the noseband over the muzzle first",
+      "Never chase a horse that is difficult to catch",
+    ],
+    safetyNote: "Never wrap a lead rope around your hand or fingers. If a horse pulls away unexpectedly, you could be dragged.",
+    practicalApplication: "Practise approaching and catching three different horses in the field. Note the differences in their responses.",
+    commonMistakes: [
+      "Approaching from directly behind — this is a blind spot",
+      "Making sudden movements or loud noises when approaching",
+      "Wrapping the lead rope around your hand",
+      "Chasing a horse that moves away",
+      "Putting the headcollar on incorrectly",
+    ],
+    knowledgeCheck: [
+      {
+        question: "From which direction should you approach a horse in the stable?",
+        options: ["Directly from behind", "From the front", "At the shoulder", "From the right side only"],
+        correctIndex: 2,
+        explanation: "Approaching at the shoulder allows the horse to see you clearly and is the safest position.",
+      },
+      {
+        question: "What should you do if a horse moves away from you in the field?",
+        options: ["Run after it", "Shout its name loudly", "Stop, turn slightly sideways, and wait", "Give up"],
+        correctIndex: 2,
+        explanation: "Stopping and turning sideways reduces pressure and shows non-threatening body language.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I catch a horse that always runs away?",
+      "Why does my horse pin its ears when I approach?",
+      "What is the correct way to fit a headcollar?",
+    ],
+    linkedCompetencies: ["safety_awareness", "groundwork_skills"],
+  },
+
+  {
+    slug: "leading-and-turning",
+    pathwaySlug: "handling-groundwork",
+    title: "Leading & Turning Correctly",
+    level: "beginner",
+    category: "Handling & Groundwork",
+    sortOrder: 2,
+    objectives: [
+      "Lead a horse safely in walk on a level surface",
+      "Maintain correct positioning at the horse's shoulder",
+      "Execute safe turns including turning away from the handler",
+      "Understand how to lead past obstacles or through gateways",
+    ],
+    content: `Leading a horse correctly is a fundamental handling skill. The handler should walk level with the horse's shoulder on the left (near) side.
+
+## Correct Position
+
+Walk forward confidently. Look where you are going — not at the horse. Hold the lead rope in the right hand close to the headcollar with excess folded in the left hand — never coiled around the hand.
+
+## Turning
+
+When turning, always turn the horse away from you. If you are on the left side, turn the horse to the right. This keeps you safely on the outside of the turn.
+
+## Leading Through Gateways
+
+Open the gate fully before leading through. Position yourself between the gate and the horse. Never let the horse rush through.
+
+## Stopping
+
+Say "whoa" clearly, slow your own pace, and apply gentle backward pressure on the lead rope. The horse should stop beside you.`,
+    keyPoints: [
+      "Walk at the horse's shoulder on the near (left) side",
+      "Hold the lead rope in the right hand near the headcollar",
+      "Always turn the horse away from you for safety",
+      "Open gates fully and maintain control when leading through",
+      "Use voice commands and body language for transitions",
+    ],
+    safetyNote: "Never wrap the lead rope around your hand. If the horse spooks, you could be dragged or injured.",
+    practicalApplication: "Practise leading a horse in walk, halting, and making three turns. Focus on keeping your position at the shoulder.",
+    commonMistakes: [
+      "Walking too far ahead of the horse",
+      "Looking back at the horse constantly",
+      "Turning the horse towards you",
+      "Allowing the horse to rush through gateways",
+      "Coiling the lead rope around the hand",
+    ],
+    knowledgeCheck: [
+      {
+        question: "When turning a horse while leading, which direction should you turn them?",
+        options: ["Towards you", "Away from you", "It doesn't matter", "Always to the left"],
+        correctIndex: 1,
+        explanation: "Turning the horse away from you keeps you on the outside of the turn.",
+      },
+      {
+        question: "Where should you hold the excess lead rope?",
+        options: ["Wrapped around your right hand", "Dragging on the ground", "Folded in your left hand", "Tied to the headcollar"],
+        correctIndex: 2,
+        explanation: "The excess rope should be neatly folded in the left hand.",
+      },
+    ],
+    aiTutorPrompts: [
+      "My horse always walks too fast when I lead",
+      "What should I do if a horse won't move when I try to lead it?",
+      "How do I lead two horses at once safely?",
+    ],
+    linkedCompetencies: ["safety_awareness", "groundwork_skills"],
+  },
+
+  {
+    slug: "tying-up-safely",
+    pathwaySlug: "handling-groundwork",
+    title: "Tying Up Safely",
+    level: "beginner",
+    category: "Handling & Groundwork",
+    sortOrder: 3,
+    objectives: [
+      "Tie a quick-release knot correctly",
+      "Choose appropriate tying locations and equipment",
+      "Understand why baler twine breakpoints are used",
+      "Handle a horse that pulls back when tied",
+    ],
+    content: `Tying a horse up safely is an essential everyday skill.
+
+## The Quick-Release Knot
+
+The quick-release knot is the only knot you should use. It can be undone instantly by pulling the free end. Loop the rope through the tie ring, create a bight, pass it through the loop, and tighten.
+
+## Tying Height and Length
+
+Tie at approximately the horse's eye level. The rope should be short enough that the horse cannot get a leg over it, but long enough for comfort — roughly 60-80cm.
+
+## Baler Twine Breakpoints
+
+Always tie to a piece of baler twine attached to a solid ring, not directly to a fixed ring. If the horse panics and pulls back, the baler twine breaks before the horse injures itself.
+
+## Dealing with Horses That Pull Back
+
+Never punish a horse for pulling back. Use a longer rope initially and stand nearby. Build confidence with short tying sessions.`,
+    keyPoints: [
+      "Always use a quick-release knot",
+      "Tie at eye level with 60-80cm of rope",
+      "Use baler twine as a breakpoint",
+      "Never leave a tied horse unattended for long periods",
+      "Build confidence gradually with horses that pull back",
+    ],
+    safetyNote: "Never tie a horse using the reins of a bridle. If the horse pulls back, it can injure its mouth.",
+    practicalApplication: "Practise tying a quick-release knot 10 times until you can do it smoothly.",
+    commonMistakes: [
+      "Using a dead knot",
+      "Tying the rope too long",
+      "Tying directly to a solid object without baler twine",
+      "Leaving a tied horse completely unattended",
+      "Tying with the reins",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why should you always use baler twine when tying a horse?",
+        options: ["It looks neater", "It acts as a breakpoint if the horse panics", "It's cheaper than rope", "It's tradition"],
+        correctIndex: 1,
+        explanation: "Baler twine breaks under extreme force, preventing injury.",
+      },
+      {
+        question: "What type of knot should you use?",
+        options: ["A reef knot", "A bowline", "A quick-release knot", "A double knot"],
+        correctIndex: 2,
+        explanation: "A quick-release knot can be undone instantly in emergencies.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How to tie a quick-release knot step by step?",
+      "My horse always pulls back when tied",
+      "Is it safe to cross-tie a horse?",
+    ],
+    linkedCompetencies: ["safety_awareness", "groundwork_skills"],
+  },
+
+  {
+    slug: "lungeing-basics",
+    pathwaySlug: "handling-groundwork",
+    title: "Lungeing Basics",
+    level: "developing",
+    category: "Handling & Groundwork",
+    sortOrder: 4,
+    objectives: [
+      "Understand the purpose and benefits of lungeing",
+      "Set up for lungeing with correct equipment",
+      "Maintain a safe triangle position",
+      "Control pace and direction on the lunge",
+    ],
+    content: `Lungeing is a groundwork technique where the horse works on a circle around the handler at the end of a lunge line.
+
+## Equipment
+
+You need a lunge line (8-10 metres), a lunge whip, a lunge cavesson or headcollar, and protective boots.
+
+## The Triangle
+
+The handler, horse, and lunge whip should form a triangle. The handler stands at the centre. The lunge line goes to the horse's head, and the whip points towards the hindquarters.
+
+## Voice and Body Language
+
+Use clear commands: "walk on", "trot", "whoa". Stepping ahead of the horse's shoulder slows them; stepping behind encourages forward movement.
+
+## Starting and Stopping
+
+Begin in walk. Ask for trot with voice and a gentle lift of the whip. To stop, lower the whip, say "whoa", and gently take up the lunge line.`,
+    keyPoints: [
+      "Lungeing is for exercise, training, warm-up, and movement assessment",
+      "Equipment: lunge line, lunge whip, cavesson, protective boots",
+      "Maintain the triangle: handler, horse, whip",
+      "Use consistent voice commands",
+      "Never wrap the lunge line around your hand",
+    ],
+    safetyNote: "Never wrap the lunge line around your hand or wrist. Hold the line in controlled folds.",
+    practicalApplication: "Practise lungeing a calm horse in walk and trot on both reins for 10 minutes each side.",
+    commonMistakes: [
+      "Wrapping the lunge line around the hand",
+      "Standing too close to the horse",
+      "Using the whip aggressively",
+      "Inconsistent voice commands",
+      "Letting the circle become too small",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What shape should handler, horse, and whip form?",
+        options: ["A straight line", "A triangle", "A square", "A circle"],
+        correctIndex: 1,
+        explanation: "The triangle formation gives the best control.",
+      },
+      {
+        question: "How should you hold the lunge line?",
+        options: ["Wrapped around your hand", "In controlled folds", "Dragging on the ground", "Tied to your belt"],
+        correctIndex: 1,
+        explanation: "Controlled folds keep the line managed safely.",
+      },
+    ],
+    aiTutorPrompts: [
+      "My horse keeps cutting in on the circle",
+      "When should I introduce side reins?",
+      "How long should a lungeing session last?",
+    ],
+    linkedCompetencies: ["groundwork_skills", "horse_care"],
+  },
+
+  {
+    slug: "long-reining-introduction",
+    pathwaySlug: "handling-groundwork",
+    title: "Long-Reining Introduction",
+    level: "intermediate",
+    category: "Handling & Groundwork",
+    sortOrder: 5,
+    objectives: [
+      "Understand the purpose of long-reining",
+      "Set up equipment for basic long-reining",
+      "Walk behind a horse safely while maintaining rein contact",
+      "Guide a horse through simple turns and transitions",
+    ],
+    content: `Long-reining is an advanced groundwork technique where the handler works behind or to the side of the horse using two long reins.
+
+## Purpose
+
+Long-reining develops the horse's response to rein aids, straightness, and obedience without a rider's weight.
+
+## Equipment Setup
+
+Two long reins (7-8 metres each) attached to the bit rings or cavesson. The reins pass through the stirrups or surcingle rings back to the handler.
+
+## Handler Position
+
+Walk behind the horse at a safe distance. Maintain light, elastic contact similar to riding contact.
+
+## Basic Exercises
+
+Start in an enclosed arena. Walk on straight lines first. Gradually introduce gentle turns. Progress to halts and walk-to-halt transitions.`,
+    keyPoints: [
+      "Long-reining develops rein response and straightness from the ground",
+      "Use two long reins through stirrups or surcingle",
+      "Maintain light elastic contact",
+      "Start with straight lines then simple turns",
+      "Always work in an enclosed area",
+    ],
+    safetyNote: "Long-reining requires experience. Work under supervision. A horse unaccustomed to reins around its hindquarters may kick.",
+    practicalApplication: "Under supervision, practise walking a trained horse in straight lines using long reins.",
+    commonMistakes: [
+      "Working a horse unfamiliar with reins around hindquarters",
+      "Pulling on the reins instead of guiding",
+      "Standing too close behind the horse",
+      "Not working in an enclosed area",
+      "Using equipment that is too long or short",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the primary purpose of long-reining?",
+        options: ["To tire the horse", "To develop rein response and straightness from the ground", "To replace riding entirely", "To teach jumping"],
+        correctIndex: 1,
+        explanation: "Long-reining develops rein aids understanding and straightness without rider weight.",
+      },
+      {
+        question: "Where should the long reins pass through?",
+        options: ["Through the horse's legs", "Through the stirrup irons or surcingle rings", "Over the horse's back loosely", "Through the noseband"],
+        correctIndex: 1,
+        explanation: "The reins pass through stirrups or surcingle rings for correct contact angle.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I introduce long-reining to a young horse?",
+      "What exercises improve straightness with long reins?",
+      "Is long-reining suitable for all horses?",
+    ],
+    linkedCompetencies: ["groundwork_skills", "riding_position"],
+  },
+
+  {
+    slug: "advanced-groundwork-exercises",
+    pathwaySlug: "handling-groundwork",
+    title: "Advanced Groundwork Exercises",
+    level: "advanced",
+    category: "Handling & Groundwork",
+    sortOrder: 6,
+    objectives: [
+      "Use in-hand work to develop collection and engagement",
+      "Understand lateral work from the ground",
+      "Develop the horse's response to subtle body language cues",
+      "Apply groundwork principles to rehabilitation",
+    ],
+    content: `Advanced groundwork goes beyond basic handling into training and rehabilitation.
+
+## In-Hand Work for Collection
+
+Using a bridle and short whip as an extension of the hand, the handler walks beside the horse asking for increased engagement of the hindquarters. This develops balance and self-carriage.
+
+## Lateral Work from the Ground
+
+Shoulder-in and travers can be introduced from the ground before the rider attempts them in the saddle, teaching the horse the movement pattern.
+
+## Body Language Refinement
+
+At advanced levels, the handler's body position, energy, and intention become primary communication tools.
+
+## Rehabilitation Applications
+
+Groundwork is invaluable for horses returning from injury. Controlled in-hand work allows targeted muscle development without the strain of carrying a rider.`,
+    keyPoints: [
+      "Advanced groundwork includes in-hand work for collection and lateral exercises",
+      "Shoulder-in and travers can be taught from the ground first",
+      "Body language becomes primary communication at advanced levels",
+      "Groundwork is essential for rehabilitation",
+      "Classical in-hand work develops self-carriage",
+    ],
+    safetyNote: "Advanced groundwork requires an experienced handler and well-established basic groundwork.",
+    practicalApplication: "Under expert supervision, practise asking a schooled horse for three steps of shoulder-in from the ground.",
+    commonMistakes: [
+      "Attempting advanced exercises before basics are solid",
+      "Over-using the whip",
+      "Working for too long",
+      "Not recognising confusion vs resistance",
+      "Ignoring the horse's physical condition",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why is groundwork valuable for rehabilitation?",
+        options: ["It's easier than riding", "It allows controlled exercise without rider weight", "It doesn't require equipment", "Horses prefer it"],
+        correctIndex: 1,
+        explanation: "Groundwork allows targeted exercise without the strain of carrying a rider.",
+      },
+      {
+        question: "What is the foundation of classical in-hand work?",
+        options: ["Speed", "Jumping", "Developing collection and engagement of the hindquarters", "Lunging"],
+        correctIndex: 2,
+        explanation: "Classical in-hand work focuses on engaging the hindquarters for balance and collection.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I start teaching shoulder-in from the ground?",
+      "What groundwork exercises help tendon recovery?",
+      "How does in-hand work relate to ridden collection?",
+    ],
+    linkedCompetencies: ["groundwork_skills", "horse_care"],
+  },
+
+  {
+    slug: "understanding-equine-digestion",
+    pathwaySlug: "nutrition-feeding",
+    title: "Understanding Equine Digestion",
+    level: "beginner",
+    category: "Nutrition & Feeding",
+    sortOrder: 1,
+    objectives: [
+      "Describe the basic structure of the horse's digestive system",
+      "Understand why horses must eat little and often",
+      "Identify the role of the hindgut in fibre digestion",
+      "Recognise the link between feeding management and colic",
+    ],
+    content: `The horse's digestive system is designed for continuous grazing on fibrous forage.
+
+## Stomach
+
+The horse's stomach is surprisingly small — approximately the size of a rugby ball. It should never be completely empty, as stomach acid is produced continuously. This is why horses must have access to forage for most of the day.
+
+## Small Intestine
+
+The small intestine handles digestion and absorption of proteins, fats, sugars, and some starches.
+
+## Hindgut
+
+The hindgut is where fibre is fermented by billions of beneficial microorganisms. This microbial population is sensitive to sudden dietary changes — all feed changes must be made gradually over 7-14 days.
+
+## Colic Prevention
+
+Colic is the leading cause of equine death. Feed little and often, ensure constant forage access, introduce changes slowly, and always provide clean water.`,
+    keyPoints: [
+      "The horse's stomach is small — designed for little and often",
+      "The hindgut ferments fibre using sensitive microbial populations",
+      "Sudden diet changes can cause colic",
+      "All feed changes over 7-14 days",
+      "Constant forage access is essential",
+    ],
+    safetyNote: "Colic is a veterinary emergency. If a horse shows signs of abdominal pain, call the vet immediately.",
+    practicalApplication: "Observe the feeding routine at your yard for one week. Note forage access and any feed changes.",
+    commonMistakes: [
+      "Feeding large meals infrequently",
+      "Making sudden feed changes",
+      "Leaving horses without forage",
+      "Over-feeding concentrates",
+      "Not providing clean fresh water",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why must horses eat little and often?",
+        options: ["They are greedy", "Their stomach is small and produces acid continuously", "They prefer it", "It's cheaper"],
+        correctIndex: 1,
+        explanation: "The horse's small stomach and continuous acid production require frequent small meals.",
+      },
+      {
+        question: "Over how many days should you introduce a new feed?",
+        options: ["Immediately", "2-3 days", "7-14 days", "30 days"],
+        correctIndex: 2,
+        explanation: "Feed changes should be gradual over 7-14 days for hindgut microbes to adapt.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Why do horses get colic?",
+      "How does the horse's digestive system differ from a human's?",
+      "What happens if a horse doesn't have enough forage?",
+    ],
+    linkedCompetencies: ["nutrition_knowledge", "horse_care"],
+  },
+
+  {
+    slug: "types-of-feed",
+    pathwaySlug: "nutrition-feeding",
+    title: "Types of Feed",
+    level: "beginner",
+    category: "Nutrition & Feeding",
+    sortOrder: 2,
+    objectives: [
+      "Identify common types of horse feed",
+      "Understand the difference between forage and hard feed",
+      "Recognise when supplementary feeding is needed",
+      "Describe the importance of quality control in feed",
+    ],
+    content: `Horse feed falls into two broad categories: forage and concentrates.
+
+## Forage
+
+Hay is dried grass. Good hay should smell sweet, feel dry, and be free of dust and mould. Haylage is semi-dried wrapped grass — more palatable but higher in energy. Grass is the most natural forage.
+
+## Concentrates
+
+Concentrates include cubes, coarse mixes, and straights (oats, barley, sugar beet). These supplement the diet for horses in work or needing extra calories.
+
+## Chaff
+
+Chaff (chopped hay or straw) is added to hard feeds to slow eating and encourage chewing, promoting better digestion.
+
+## Quality Control
+
+Always check feed for mould, dust, or unusual smells. Store in dry, rodent-proof containers. Check use-by dates.`,
+    keyPoints: [
+      "Forage should form the majority of every horse's diet",
+      "Concentrates are supplementary",
+      "Chaff slows eating and improves digestion",
+      "Always check feed quality",
+      "Store feed properly",
+    ],
+    safetyNote: "Dusty or mouldy hay causes serious respiratory conditions. Always inspect before feeding.",
+    practicalApplication: "Identify five different types of feed at your yard and categorise each.",
+    commonMistakes: [
+      "Overfeeding concentrates",
+      "Feeding dusty hay",
+      "Not storing feed properly",
+      "Assuming all horses need hard feed",
+      "Feeding rich haylage to laminitis-prone horses",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What should form the majority of a horse's diet?",
+        options: ["Concentrates", "Forage", "Supplements", "Treats"],
+        correctIndex: 1,
+        explanation: "Forage should always be the bulk of the diet.",
+      },
+      {
+        question: "Why is chaff added to hard feed?",
+        options: ["Better taste", "Cheaper", "To slow eating and improve digestion", "To add colour"],
+        correctIndex: 2,
+        explanation: "Chaff encourages chewing and saliva production for better digestion.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What's the difference between hay and haylage?",
+      "How do I know if my horse needs hard feed?",
+      "What are the signs of poor-quality hay?",
+    ],
+    linkedCompetencies: ["nutrition_knowledge", "horse_care"],
+  },
+
+  {
+    slug: "feeding-routines-and-rules",
+    pathwaySlug: "nutrition-feeding",
+    title: "Feeding Routines & Rules",
+    level: "beginner",
+    category: "Nutrition & Feeding",
+    sortOrder: 3,
+    objectives: [
+      "List the golden rules of feeding",
+      "Establish a consistent feeding routine",
+      "Understand feeding before and after exercise",
+      "Weigh feed correctly using scales",
+    ],
+    content: `Consistent feeding routines are essential for horse health.
+
+## The Golden Rules
+
+1. Feed little and often  2. Feed plenty of forage  3. Feed by weight, not volume  4. Make changes gradually  5. Keep to a routine  6. Ensure constant access to clean water  7. Do not ride for at least one hour after a hard feed  8. Feed according to size, condition, workload, and temperament
+
+## Weighing Feed
+
+A scoop of one feed weighs very differently to another. Always weigh on scales until confident with quantities.
+
+## Exercise and Feeding
+
+Do not give a large feed immediately before or after exercise. Allow at least one hour between feeding and riding.`,
+    keyPoints: [
+      "Feed little and often with plenty of forage",
+      "Always weigh feed",
+      "Make all feed changes gradually over 7-14 days",
+      "Keep to consistent feeding times",
+      "Allow one hour between hard feed and exercise",
+    ],
+    safetyNote: "Riding immediately after a large feed can cause discomfort or colic.",
+    practicalApplication: "Weigh out the feed for one horse using scales. Compare this to a level scoop.",
+    commonMistakes: [
+      "Feeding by scoop volume instead of weight",
+      "Inconsistent feeding times",
+      "Riding immediately after feeding",
+      "Too much hard feed, not enough forage",
+      "No fresh water at feeding time",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why should you weigh feed rather than use scoops?",
+        options: ["It's more traditional", "Different feeds weigh differently per scoop", "It's faster", "Horses prefer it"],
+        correctIndex: 1,
+        explanation: "A scoop of oats weighs differently to a scoop of cubes.",
+      },
+      {
+        question: "How long between feeding hard feed and riding?",
+        options: ["No wait needed", "15 minutes", "At least one hour", "24 hours"],
+        correctIndex: 2,
+        explanation: "The horse needs blood supply to the gut for digestion.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What are the golden rules of feeding?",
+      "How much hay per day?",
+      "How to create a feeding routine?",
+    ],
+    linkedCompetencies: ["nutrition_knowledge", "horse_care"],
+  },
+
+  {
+    slug: "balancing-a-diet",
+    pathwaySlug: "nutrition-feeding",
+    title: "Balancing a Diet",
+    level: "developing",
+    category: "Nutrition & Feeding",
+    sortOrder: 4,
+    objectives: [
+      "Understand basic nutritional needs",
+      "Assess body condition using scoring",
+      "Adjust feed to match workload",
+      "Recognise signs of imbalance",
+    ],
+    content: `A balanced diet provides the correct amount of energy, protein, fibre, vitamins, and minerals.
+
+## Body Condition Scoring
+
+Use the 0-5 system. Score 0 is emaciated; 5 is obese. Ideal for most riding horses is 2.5-3. Check neck crest, ribs, spine, and quarters.
+
+## Energy Requirements
+
+Energy needs increase with workload. Most leisure horses thrive on good forage alone. Over-feeding energy leads to weight gain and behavioural issues.
+
+## Signs of Imbalance
+
+A dull coat, poor hoof quality, weight changes, lethargy, or behavioural changes can indicate dietary imbalance. Consult an equine nutritionist if in doubt.`,
+    keyPoints: [
+      "Assess body condition regularly using the 0-5 system",
+      "Most leisure horses thrive on forage alone",
+      "Energy needs increase with workload",
+      "Signs of poor nutrition include dull coat and weight changes",
+      "Consult an equine nutritionist for complex needs",
+    ],
+    safetyNote: "Overweight horses are at serious risk of laminitis. Monitor body condition closely.",
+    practicalApplication: "Condition score three horses at your yard using the 0-5 system.",
+    commonMistakes: [
+      "Over-feeding treats without accounting for them",
+      "Assuming thin horses always need more hard feed",
+      "Not scoring regularly",
+      "Feeding the same ration year-round",
+      "Relying on visual assessment alone",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Ideal body condition score for riding horses?",
+        options: ["0-1", "2.5-3", "4-5", "It doesn't matter"],
+        correctIndex: 1,
+        explanation: "2.5-3 on the 0-5 scale indicates a healthy weight.",
+      },
+      {
+        question: "What can a dull coat indicate?",
+        options: ["Needs a bath", "Possible dietary imbalance", "The horse is cold", "Nothing"],
+        correctIndex: 1,
+        explanation: "A dull coat is often a first sign of nutritional deficiency.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I body condition score a horse?",
+      "My horse is overweight — what should I change?",
+      "What vitamins and minerals does my horse need?",
+    ],
+    linkedCompetencies: ["nutrition_knowledge", "health_awareness"],
+  },
+
+  {
+    slug: "feeding-for-workload",
+    pathwaySlug: "nutrition-feeding",
+    title: "Feeding for Workload & Condition",
+    level: "intermediate",
+    category: "Nutrition & Feeding",
+    sortOrder: 5,
+    objectives: [
+      "Match feeding to different workloads",
+      "Adjust diets seasonally",
+      "Understand needs of veterans, youngstock, competition horses",
+      "Create a basic weekly feeding plan",
+    ],
+    content: `Understanding how to adapt feeding to workload, season, and individual needs is essential.
+
+## Workload Categories
+
+Light work (1-3 hrs/week): forage usually sufficient. Medium work (3-6 hrs/week): may need extra energy. Hard work (6+ hrs, competing): careful energy management needed.
+
+## Seasonal Adjustments
+
+In winter, increase forage for warmth. In summer, manage grazing time for good-doers.
+
+## Special Categories
+
+Veterans may need softer feeds and higher protein. Youngstock need protein for growth. Competition horses need carefully timed energy.`,
+    keyPoints: [
+      "Light work usually needs forage only",
+      "Increase forage in winter for warmth",
+      "Veterans, youngstock, and competition horses have different needs",
+      "Base every plan on the individual horse",
+      "Electrolytes may be needed for hard work",
+    ],
+    safetyNote: "Over-feeding energy to a horse in light work can cause dangerous behavioural changes.",
+    practicalApplication: "Write a weekly feeding plan for a horse in medium work at your yard.",
+    commonMistakes: [
+      "Feeding competition rations to horses in light work",
+      "Not increasing forage in cold weather",
+      "Ignoring seasonal grass changes",
+      "Feeding veterans the same as hard-working horses",
+      "Not reviewing and adjusting plans",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Best way to increase calorie intake in winter?",
+        options: ["Double hard feed", "Increase forage", "Add sugar to water", "Feed less frequently"],
+        correctIndex: 1,
+        explanation: "Forage provides sustained energy and generates heat through fermentation.",
+      },
+      {
+        question: "Why do veterans often need different feeding?",
+        options: ["They're fussier", "Reduced digestive efficiency and dental issues", "They eat faster", "They don't like hay"],
+        correctIndex: 1,
+        explanation: "Older horses often have dental issues and reduced digestive efficiency.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I create a feeding plan for a competition horse?",
+      "What should I feed a retired horse?",
+      "How do I know if the diet provides enough energy?",
+    ],
+    linkedCompetencies: ["nutrition_knowledge", "horse_care"],
+  },
+
+  {
+    slug: "supplements-and-special-diets",
+    pathwaySlug: "nutrition-feeding",
+    title: "Supplements & Special Diets",
+    level: "advanced",
+    category: "Nutrition & Feeding",
+    sortOrder: 6,
+    objectives: [
+      "Understand when supplements are appropriate",
+      "Manage diets for metabolic conditions",
+      "Apply electrolyte and hydration knowledge",
+      "Critically evaluate feed marketing claims",
+    ],
+    content: `At advanced levels, nutrition management includes supplements, metabolic conditions, and critical evaluation of feeding advice.
+
+## Supplements
+
+Common categories: joint support (glucosamine, MSM), hoof supplements (biotin), calmers, and vitamin/mineral balancers. Always check for nutrient overlap with existing feed.
+
+## Metabolic Conditions
+
+EMS and PPID (Cushing's) require strict low-sugar, low-starch diets. Soak hay to reduce sugar. Manage grazing carefully.
+
+## Electrolytes
+
+Horses lose electrolytes through sweat. Competition horses need supplementation. Dissolve in water or add to damp feed — never give dry.
+
+## Critical Evaluation
+
+Learn to read feed labels, understand guaranteed analysis, and consult independent nutritionists.`,
+    keyPoints: [
+      "Supplements should address genuine gaps",
+      "EMS and PPID need strict low-sugar diets",
+      "Electrolytes are essential for hard work in heat",
+      "Read feed labels critically",
+      "Consult independent equine nutritionists",
+    ],
+    safetyNote: "Feeding inappropriate supplements can cause toxicity or imbalance.",
+    practicalApplication: "Read the labels of three different horse feeds. Compare protein, fibre, and energy content.",
+    commonMistakes: [
+      "Adding multiple supplements without checking overlap",
+      "Feeding high-sugar feeds to metabolic horses",
+      "Giving dry electrolytes",
+      "Believing all marketing claims",
+      "Over-supplementing young healthy horses",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What dietary management for a horse with EMS?",
+        options: ["High-protein diet", "Low-sugar, low-starch diet with managed grazing", "Unlimited rich pasture", "Double the hard feed"],
+        correctIndex: 1,
+        explanation: "EMS horses are insulin resistant and need strict sugar/starch control.",
+      },
+      {
+        question: "When are electrolyte supplements most needed?",
+        options: ["In winter", "During rest days", "During hard work or hot weather", "When the horse won't eat"],
+        correctIndex: 2,
+        explanation: "Electrolytes lost through sweat must be replaced during heavy sweating.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How to manage diet for a horse with Cushing's?",
+      "Are joint supplements actually effective?",
+      "How to read and understand a feed label?",
+    ],
+    linkedCompetencies: ["nutrition_knowledge", "health_awareness"],
+  },
+
+  {
+    slug: "five-freedoms-of-animal-welfare",
+    pathwaySlug: "equine-welfare-ethics",
+    title: "Five Freedoms of Animal Welfare",
+    level: "beginner",
+    category: "Equine Welfare & Ethics",
+    sortOrder: 1,
+    objectives: [
+      "List and explain the Five Freedoms",
+      "Apply them to everyday horse management",
+      "Identify situations where freedoms are compromised",
+      "Understand the moral responsibility of ownership",
+    ],
+    content: `The Five Freedoms form the foundation of animal welfare assessment worldwide.
+
+## The Five Freedoms
+
+1. Freedom from Hunger and Thirst  2. Freedom from Discomfort  3. Freedom from Pain, Injury, or Disease  4. Freedom to Express Normal Behaviour  5. Freedom from Fear and Distress
+
+## Applying to Horse Care
+
+Every decision should consider these freedoms. Is the horse warm enough? Does it have friends? Is it in pain? Does it have enough to eat and drink?
+
+## Recognising Compromise
+
+Welfare compromise can be subtle. A horse standing alone without shelter may appear fine but is actually denied comfort and social behaviour.`,
+    keyPoints: [
+      "The Five Freedoms are the foundation of welfare assessment",
+      "Every management decision should be evaluated against them",
+      "Welfare compromise can be subtle",
+      "Horses need social contact, space, shelter, and appropriate diet",
+      "Ownership carries moral obligation",
+    ],
+    safetyNote: "If you see a horse in clear distress, contact the RSPCA or World Horse Welfare.",
+    practicalApplication: "Assess a horse at your yard against all Five Freedoms. Identify improvement areas.",
+    commonMistakes: [
+      "Assuming welfare only concerns food and water",
+      "Keeping horses isolated",
+      "Ignoring low-grade pain",
+      "Not providing adequate shelter",
+      "Focusing only on physical needs",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Which is NOT one of the Five Freedoms?",
+        options: ["Freedom from hunger", "Freedom to express normal behaviour", "Freedom to compete in shows", "Freedom from pain"],
+        correctIndex: 2,
+        explanation: "Competition is not a welfare right.",
+      },
+      {
+        question: "A horse is kept alone. Which freedom is compromised?",
+        options: ["Freedom from hunger", "Freedom from fear", "Freedom to express normal behaviour", "Freedom from disease"],
+        correctIndex: 2,
+        explanation: "Horses are herd animals. Isolation prevents normal social behaviour.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do the Five Freedoms apply to stabled horses?",
+      "What does good welfare look like?",
+      "What should I do if I see a neglected horse?",
+    ],
+    linkedCompetencies: ["welfare_awareness", "horse_care"],
+  },
+
+  {
+    slug: "responsible-horse-ownership",
+    pathwaySlug: "equine-welfare-ethics",
+    title: "Responsible Horse Ownership",
+    level: "beginner",
+    category: "Equine Welfare & Ethics",
+    sortOrder: 2,
+    objectives: [
+      "Understand the commitments of horse ownership",
+      "Recognise the lifetime responsibility",
+      "Identify key welfare obligations",
+      "Consider ethical alternatives to ownership",
+    ],
+    content: `Owning a horse is a significant long-term commitment. Horses can live 25-30 years or more.
+
+## Financial Commitment
+
+Costs include livery, feed, farrier (every 6-8 weeks), vet care, dental care, insurance, tack, and transport. Unexpected costs can be substantial.
+
+## Time Commitment
+
+Horses need daily care regardless of weather, holidays, or personal circumstances.
+
+## Lifetime Responsibility
+
+When you take on a horse, you commit to its entire life — including old age and end-of-life care.
+
+## Alternatives to Ownership
+
+Sharing or loaning allows enjoyment without full financial commitment. Always use written agreements.`,
+    keyPoints: [
+      "Horse ownership is a 25-30 year commitment",
+      "Costs include farrier, vet, feed, livery, insurance, and emergencies",
+      "Daily care needed regardless of circumstances",
+      "Sharing or loaning are ethical alternatives",
+      "Welfare must come before convenience",
+    ],
+    safetyNote: "Never take on a horse if you cannot provide for its needs.",
+    practicalApplication: "Calculate the estimated monthly and annual cost of keeping a horse at your yard.",
+    commonMistakes: [
+      "Under-estimating costs",
+      "Not considering long-term commitment",
+      "No emergency fund",
+      "Buying on impulse",
+      "No plan for holidays or illness",
+    ],
+    knowledgeCheck: [
+      {
+        question: "How long can a horse typically live?",
+        options: ["10-15 years", "15-20 years", "25-30 years or more", "5-10 years"],
+        correctIndex: 2,
+        explanation: "Horses commonly live 25-30 years.",
+      },
+      {
+        question: "What is a responsible alternative to ownership?",
+        options: ["Abandoning when costs get high", "Sharing or loaning with a written agreement", "Selling every year", "Keeping without vet care to save money"],
+        correctIndex: 1,
+        explanation: "Sharing or loaning allows responsible enjoyment without full commitment.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How much does it cost to own a horse per year in the UK?",
+      "What should I include in a loan agreement?",
+      "What do I do when my horse gets old?",
+    ],
+    linkedCompetencies: ["welfare_awareness", "horse_care"],
+  },
+
+  {
+    slug: "recognising-neglect-and-abuse",
+    pathwaySlug: "equine-welfare-ethics",
+    title: "Recognising Neglect & Abuse",
+    level: "developing",
+    category: "Equine Welfare & Ethics",
+    sortOrder: 3,
+    objectives: [
+      "Identify signs of neglect",
+      "Distinguish between abuse and poor management",
+      "Know who to contact for welfare concerns",
+      "Understand legal and moral obligations",
+    ],
+    content: `Recognising neglect or abuse is a critical welfare skill.
+
+## Signs of Neglect
+
+Poor body condition, overgrown hooves, matted or lice-infested coat, no access to clean water, no shelter, or untreated injuries.
+
+## Signs of Abuse
+
+Deliberate physical harm, excessive force during training, riding a clearly lame horse, or using equipment that causes pain.
+
+## Reporting Concerns
+
+Contact the RSPCA, World Horse Welfare, or the Blue Cross. Provide specific details: location, description, what you observed.
+
+## Your Responsibility
+
+Under the Animal Welfare Act 2006, every owner has a legal duty of care. Reporting concerns is responsible, not interfering.`,
+    keyPoints: [
+      "Signs include poor body condition, overgrown hooves, untreated illness",
+      "Abuse includes deliberate harm and misuse of equipment",
+      "Contact RSPCA or World Horse Welfare to report",
+      "Provide specific factual details",
+      "Under the Animal Welfare Act 2006, owners have a legal duty of care",
+    ],
+    safetyNote: "Do not confront a suspected abuser directly. Report to welfare organisations.",
+    practicalApplication: "Learn the contact details for your local equine welfare organisation.",
+    commonMistakes: [
+      "Assuming someone else will report",
+      "Not recognising subtle neglect",
+      "Confusing breed type with neglect",
+      "Confronting owners directly",
+      "Not documenting what you see",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What should you do if you suspect neglect?",
+        options: ["Ignore it", "Confront the owner aggressively", "Report to a welfare organisation with specific details", "Post on social media"],
+        correctIndex: 2,
+        explanation: "Reporting to a welfare organisation allows professional investigation.",
+      },
+      {
+        question: "Which UK law requires a duty of care for horses?",
+        options: ["The Horse Act 1998", "The Animal Welfare Act 2006", "The Countryside Act 2000", "There is no such law"],
+        correctIndex: 1,
+        explanation: "The Animal Welfare Act 2006 places a legal duty of care on animal owners.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What are early warning signs of neglect?",
+      "How to report a welfare concern in the UK?",
+      "What is the Animal Welfare Act?",
+    ],
+    linkedCompetencies: ["welfare_awareness", "health_awareness"],
+  },
+
+  {
+    slug: "welfare-legislation-uk",
+    pathwaySlug: "equine-welfare-ethics",
+    title: "Welfare Legislation (UK)",
+    level: "developing",
+    category: "Equine Welfare & Ethics",
+    sortOrder: 4,
+    objectives: [
+      "Understand the Animal Welfare Act 2006",
+      "Know legal requirements for horse identification",
+      "Understand duty of care and offences",
+      "Recognise the role of welfare organisations",
+    ],
+    content: `The primary UK legislation is the Animal Welfare Act 2006.
+
+## Animal Welfare Act 2006
+
+It makes it an offence to cause unnecessary suffering, and places a positive duty of care on owners. Five needs must be met: environment, diet, normal behaviour, appropriate housing, and protection from pain and disease.
+
+## Horse Passports
+
+All UK horses must have a passport with identification details, microchip number, and vaccination records.
+
+## Enforcement
+
+Local authorities and the RSPCA enforce the Act. Offences can result in fines, disqualification, or imprisonment.`,
+    keyPoints: [
+      "The Animal Welfare Act 2006 is the key UK legislation",
+      "Owners must meet five welfare needs",
+      "All UK horses must have a passport and microchip",
+      "Offences can lead to fines, bans, or imprisonment",
+      "Duty of care applies to anyone with a horse in their charge",
+    ],
+    safetyNote: "Buying or selling a horse without a valid passport is illegal.",
+    practicalApplication: "Check the passport of a horse at your yard for microchip number and vaccination records.",
+    commonMistakes: [
+      "Assuming legislation only applies to owners",
+      "Not keeping passports updated",
+      "Ignoring duty of care for others' horses",
+      "Not understanding that causing suffering can be an offence even without intent",
+      "Failing to microchip horses",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What does the Animal Welfare Act 2006 require?",
+        options: ["Ride the horse regularly", "Meet five specific welfare needs", "Keep the horse in a stable", "Compete the horse"],
+        correctIndex: 1,
+        explanation: "The Act requires five welfare needs to be met.",
+      },
+      {
+        question: "Who has a duty of care under the Act?",
+        options: ["Only the registered owner", "Only vets", "Anyone responsible for an animal", "Only professional breeders"],
+        correctIndex: 2,
+        explanation: "The duty applies to any person responsible for an animal.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What happens if I break the Animal Welfare Act?",
+      "Do I need a passport for my horse?",
+      "What are the five welfare needs under UK law?",
+    ],
+    linkedCompetencies: ["welfare_awareness"],
+  },
+
+  {
+    slug: "ethical-training-methods",
+    pathwaySlug: "equine-welfare-ethics",
+    title: "Ethical Training Methods",
+    level: "intermediate",
+    category: "Equine Welfare & Ethics",
+    sortOrder: 5,
+    objectives: [
+      "Distinguish ethical and unethical training",
+      "Understand learning theory for horses",
+      "Recognise signs of mental distress during training",
+      "Apply welfare-first principles",
+    ],
+    content: `Training methods directly impact a horse's welfare. We must use ethical, evidence-based methods.
+
+## Learning Theory
+
+Positive reinforcement: adding something pleasant. Negative reinforcement: removing pressure when the horse responds correctly. Positive punishment: adding something unpleasant (generally unethical). Negative punishment: removing something pleasant.
+
+## Ethical Practice
+
+Relies on negative reinforcement (correct pressure-release timing) and positive reinforcement. Avoids excessive force and fear.
+
+## Signs of Mental Distress
+
+Teeth grinding, excessive sweating, tail swishing, white around the eyes, tension, or complete shutdown (learned helplessness).
+
+## Welfare-First Principle
+
+If a method causes fear, pain, or distress, it is not acceptable.`,
+    keyPoints: [
+      "Ethical training uses reinforcement, not punishment",
+      "Excessive force and fear-based methods are unethical",
+      "Signs of distress include teeth grinding and learned helplessness",
+      "Good timing of pressure-release is foundational",
+      "If a method causes fear, pain, or distress, it is not acceptable",
+    ],
+    safetyNote: "A horse trained with fear-based methods can become unpredictable and dangerous.",
+    practicalApplication: "Watch a training session and identify which learning quadrants are being used.",
+    commonMistakes: [
+      "Using punishment because it appears to work quickly",
+      "Poor timing of pressure-release",
+      "Not recognising learned helplessness",
+      "Escalating force when the horse is confused",
+      "Ignoring emotional state during training",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is negative reinforcement?",
+        options: ["Punishing the horse", "Removing pressure when the horse responds correctly", "Ignoring the horse", "Using treats"],
+        correctIndex: 1,
+        explanation: "Removing an aversive stimulus when the horse responds correctly.",
+      },
+      {
+        question: "What might learned helplessness look like?",
+        options: ["Energetic responsive behaviour", "A shut-down horse that has stopped trying", "Excited bucking", "Curiosity"],
+        correctIndex: 1,
+        explanation: "Learned helplessness occurs when a horse gives up because nothing it does makes discomfort stop.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What does ethical horse training look like?",
+      "How can I tell if my horse is stressed during training?",
+      "What is learned helplessness?",
+    ],
+    linkedCompetencies: ["welfare_awareness", "coaching_skills"],
+  },
+
+  {
+    slug: "end-of-life-decisions",
+    pathwaySlug: "equine-welfare-ethics",
+    title: "End of Life Decisions & Retirement",
+    level: "advanced",
+    category: "Equine Welfare & Ethics",
+    sortOrder: 6,
+    objectives: [
+      "Understand ethical end-of-life considerations",
+      "Know options: retirement, rehoming, euthanasia",
+      "Recognise when quality of life is unacceptable",
+      "Handle end-of-life with dignity",
+    ],
+    content: `End-of-life decisions are among the most difficult an equestrian faces.
+
+## Quality of Life Assessment
+
+Is the horse in chronic pain? Can it move comfortably? Does it enjoy eating and socialising? Is its condition deteriorating despite treatment?
+
+## Retirement
+
+Retired horses still need farrier, dental, vet care, social contact, and appropriate diet.
+
+## Rehoming
+
+Responsible rehoming through reputable organisations protects the horse.
+
+## Euthanasia
+
+When quality of life cannot be maintained, euthanasia is the kindest option. It should be performed by a vet and can be done at home.`,
+    keyPoints: [
+      "Quality of life is the primary consideration",
+      "Retirement still requires full ongoing care",
+      "Responsible rehoming through reputable organisations",
+      "Euthanasia is compassionate when quality of life fails",
+      "These decisions should involve veterinary advice",
+    ],
+    safetyNote: "Never delay euthanasia when a horse is clearly suffering. The horse's welfare comes before human emotion.",
+    practicalApplication: "Discuss with your vet what a quality-of-life assessment involves.",
+    commonMistakes: [
+      "Delaying because of emotional attachment",
+      "Rehoming without proper vetting",
+      "Assuming retirement needs no care",
+      "Not discussing with a vet until emergency",
+      "Passing elderly horses from owner to owner",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What should be the primary consideration in end-of-life decisions?",
+        options: ["Owner's emotions", "Financial value", "The horse's quality of life", "What others think"],
+        correctIndex: 2,
+        explanation: "Quality of life must always be the primary consideration.",
+      },
+      {
+        question: "What does responsible rehoming require?",
+        options: ["Selling to anyone", "Finding a home through a reputable organisation", "Abandoning in a field", "Giving away online"],
+        correctIndex: 1,
+        explanation: "Reputable organisations vet new homes and monitor welfare.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I know when it's time for end-of-life?",
+      "What is a quality-of-life assessment?",
+      "What options after a horse has been put to sleep?",
+    ],
+    linkedCompetencies: ["welfare_awareness", "horse_care"],
+  },
+
+  {
+    slug: "grid-work-and-related-distances",
+    pathwaySlug: "polework-jump-foundations",
+    title: "Grid Work & Related Distances",
+    level: "intermediate",
+    category: "Polework & Jump Foundations",
+    sortOrder: 5,
+    objectives: [
+      "Understand the purpose of grid work",
+      "Set up a basic bounce and one-stride grid",
+      "Know standard distances for grid components",
+      "Recognise how grids develop horse and rider",
+    ],
+    content: `Grid work (gymnastics) is a series of fences at related distances, developing rhythm, balance, and confidence.
+
+## Purpose
+
+Grids teach the horse to adjust stride and maintain balance. For riders, they develop secure position and quick reactions.
+
+## Components
+
+Bounce: two fences with no stride between (3-3.6m). One stride: two fences with one canter stride (7.3-7.9m). Placing pole: ground pole before the first fence at trot distance (2.4-2.7m).
+
+## Setting Up
+
+Build grids gradually from ground poles. Raise the last element first. Add height progressively. Accurate distances are critical.
+
+## Safety
+
+Grid work should be supervised. Horses must be warmed up. Use appropriate jump fillers and falling cups.`,
+    keyPoints: [
+      "Grid work develops rhythm, balance, and confidence",
+      "Bounce: 3-3.6m; one stride: 7.3-7.9m",
+      "Always build grids progressively",
+      "Accurate distances are critical for safety",
+      "Supervision by a qualified instructor is essential",
+    ],
+    safetyNote: "Incorrect distances can cause crashes or loss of confidence. Always measure carefully.",
+    practicalApplication: "Set up a simple placing pole to crossrail to bounce grid under instruction.",
+    commonMistakes: [
+      "Distances too tight or wide",
+      "Making the grid too high too quickly",
+      "Approaching too fast",
+      "Leaning forward through the grid",
+      "Not warming up adequately",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Approximate distance for a bounce?",
+        options: ["1-2 metres", "3-3.6 metres", "7-8 metres", "10 metres"],
+        correctIndex: 1,
+        explanation: "3-3.6 metres allows landing and immediate takeoff.",
+      },
+      {
+        question: "Why build grids progressively?",
+        options: ["To save time", "To build confidence gradually", "It doesn't matter", "To confuse the horse"],
+        correctIndex: 1,
+        explanation: "Progressive building allows confidence and balance to develop.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Difference between bounce and one-stride?",
+      "How to set up my first grid?",
+      "My horse rushes through grids — how to fix?",
+    ],
+    linkedCompetencies: ["riding_position", "safety_awareness"],
+  },
+
+  {
+    slug: "course-awareness-and-planning",
+    pathwaySlug: "polework-jump-foundations",
+    title: "Course Awareness & Planning",
+    level: "advanced",
+    category: "Polework & Jump Foundations",
+    sortOrder: 6,
+    objectives: [
+      "Walk a show jumping course effectively",
+      "Plan lines, turns, and approaches",
+      "Count strides between related fences",
+      "Apply course awareness to improve performance",
+    ],
+    content: `At competition level, walking a course and riding an accurate plan is essential.
+
+## Walking the Course
+
+Walk every fence in order. Stand at each and look from the horse's perspective. Check footing, fillers, and spooky elements.
+
+## Planning Lines
+
+Count strides between related fences on the actual track. Plan whether each section needs forward or steady canter. Identify recovery points.
+
+## Turns
+
+Well-planned turns give straight, balanced approaches. Cutting corners leads to run-outs and knockdowns.
+
+## Riding the Plan
+
+Commit to your plan once in the ring. Hesitation and last-minute changes are the most common causes of errors.`,
+    keyPoints: [
+      "Walk every fence in order from the horse's perspective",
+      "Count strides between related fences",
+      "Well-planned turns create better approaches",
+      "Commit to your plan in the ring",
+      "Course walking improves with practice",
+    ],
+    safetyNote: "Never jump a course at height without proper warm-up and equipment check.",
+    practicalApplication: "Walk a course, plan your route, count strides, then ride it and compare plan vs reality.",
+    commonMistakes: [
+      "Not walking the course",
+      "Walking a shortcut instead of the actual track",
+      "Failing to plan first and last fences",
+      "Changing plan mid-course",
+      "Not accounting for ground conditions",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why walk the exact track your horse will take?",
+        options: ["For exercise", "To count accurate strides and plan turns", "Because the judge watches", "It doesn't matter"],
+        correctIndex: 1,
+        explanation: "The exact track gives accurate stride counts and turn planning.",
+      },
+      {
+        question: "Most common cause of show jumping errors?",
+        options: ["Horse too tired", "Last-minute plan changes and hesitation", "Course too high", "Bad luck"],
+        correctIndex: 1,
+        explanation: "Hesitation disrupts rhythm and balance.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How to walk a show jumping course?",
+      "How to count strides between fences?",
+      "What to focus on when planning turns?",
+    ],
+    linkedCompetencies: ["riding_position", "competition_preparation"],
+  },
+
+  {
+    slug: "when-to-call-the-vet",
+    pathwaySlug: "horse-health-first-response",
+    title: "When to Call the Vet",
+    level: "developing",
+    category: "Horse Health & First Response",
+    sortOrder: 5,
+    objectives: [
+      "Identify situations requiring immediate vet attention",
+      "Know what info to have ready",
+      "Distinguish emergencies from non-urgent conditions",
+      "Take and record vital signs accurately",
+    ],
+    content: `Knowing when to call the vet is critical. Delay in emergencies costs lives.
+
+## Always Call Immediately For
+
+Colic (rolling, pawing, sweating, not eating), severe lameness, wounds near joints or tendons, difficulty breathing, eye injuries, choke.
+
+## Information to Have Ready
+
+Your name, location, horse age and breed, observations, vital signs, and any first aid given.
+
+## Vital Signs
+
+Normal ranges: Temperature 37.0-38.5 C, Pulse 28-44 bpm, Respiration 8-16 breaths/min.
+
+## The Golden Rule
+
+If in doubt, call. A vet would rather have a false alarm than be called too late.`,
+    keyPoints: [
+      "Colic, severe lameness, joint wounds, eye injuries are always emergencies",
+      "Have details and vital signs ready when calling",
+      "Normal vitals: Temp 37-38.5, Pulse 28-44, Resp 8-16",
+      "When in doubt, always call the vet",
+      "Delay in emergencies can be fatal",
+    ],
+    safetyNote: "Keep your vet's emergency number saved in your phone and posted at the yard.",
+    practicalApplication: "Practise taking a horse's temperature, pulse, and respiration. Record results.",
+    commonMistakes: [
+      "Waiting to see if the horse improves",
+      "Not knowing the emergency number",
+      "Failing to take vital signs before calling",
+      "Treating joint wounds without vet assessment",
+      "Assuming colic will pass on its own",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Normal resting heart rate for a horse?",
+        options: ["10-20 bpm", "28-44 bpm", "60-80 bpm", "100-120 bpm"],
+        correctIndex: 1,
+        explanation: "28-44 bpm is normal. Elevated rate suggests pain or illness.",
+      },
+      {
+        question: "Which is always an emergency?",
+        options: ["Small scratch", "Mild dandruff", "A wound near a joint or tendon", "A loose shoe"],
+        correctIndex: 2,
+        explanation: "Wounds near joints can allow infection into critical structures.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How to take a horse's temperature?",
+      "What does colic look like?",
+      "How to know if a wound is serious?",
+    ],
+    linkedCompetencies: ["health_awareness", "safety_awareness"],
+  },
+
+  {
+    slug: "emergency-first-aid-procedures",
+    pathwaySlug: "horse-health-first-response",
+    title: "Emergency First Aid Procedures",
+    level: "advanced",
+    category: "Horse Health & First Response",
+    sortOrder: 6,
+    objectives: [
+      "Apply emergency first aid for common injuries",
+      "Control bleeding effectively",
+      "Manage colic while awaiting the vet",
+      "Assemble an equine first aid kit",
+    ],
+    content: `Emergency first aid can save a horse's life while waiting for the vet.
+
+## Bleeding Control
+
+Apply firm pressure with a clean pad. If blood soaks through, add another pad on top — do not remove the first one.
+
+## Colic First Aid
+
+Remove all food. Walk gently if rolling violently. Note vital signs and onset time. Do not give medication without vet guidance.
+
+## Eye Injuries
+
+Cover the eye with a damp clean pad. Keep the horse calm and in a dark stable.
+
+## First Aid Kit
+
+Wound cleanser, non-stick dressings, cotton wool, cohesive bandages, scissors, thermometer, clean towels, torch, vet's number, notepad.`,
+    keyPoints: [
+      "Apply firm pressure to bleeding — don't remove soaked dressings",
+      "For colic: remove food, walk gently, note vitals, call vet",
+      "Cover eye injuries with a damp pad",
+      "Maintain a fully stocked first aid kit",
+      "First aid supports — not replaces — vet treatment",
+    ],
+    safetyNote: "Your own safety comes first. Never put yourself at risk treating a panicking horse.",
+    practicalApplication: "Check the first aid kit at your yard. Ensure all items are present and in-date.",
+    commonMistakes: [
+      "Removing blood-soaked dressings",
+      "Giving pain medication during colic without vet advice",
+      "Not having a first aid kit",
+      "Panicking and not recording observations",
+      "Attempting complex wound treatment",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What if a bandage becomes soaked with blood?",
+        options: ["Remove it", "Add another pad on top", "Pour water on it", "Leave uncovered"],
+        correctIndex: 1,
+        explanation: "Adding another pad maintains pressure without disrupting clot formation.",
+      },
+      {
+        question: "First action for colic symptoms?",
+        options: ["Give painkillers", "Feed the horse", "Remove all food and call the vet", "Leave alone"],
+        correctIndex: 2,
+        explanation: "Removing food prevents further gut complications.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What should be in a first aid kit?",
+      "How to apply a pressure bandage?",
+      "What to do while waiting for the vet during colic?",
+    ],
+    linkedCompetencies: ["health_awareness", "safety_awareness"],
+  },
+
+  {
+    slug: "daily-stable-routines",
+    pathwaySlug: "stable-management",
+    title: "Daily Stable Routines",
+    level: "developing",
+    category: "Stable Management",
+    sortOrder: 5,
+    objectives: [
+      "Plan a structured daily routine",
+      "Understand the importance of consistency",
+      "Prioritise tasks effectively",
+      "Record-keep daily observations",
+    ],
+    content: `A well-managed yard runs on routine. Horses thrive on consistency.
+
+## Morning
+
+Check all horses first: standing, eating, behaving normally. Provide fresh water, hay, feeds. Muck out stables.
+
+## Midday
+
+Check water, adjust rugs, bring in or turn out as appropriate.
+
+## Evening
+
+Feed, provide overnight hay, fill water buckets, adjust rugs, final visual check.
+
+## Record Keeping
+
+Maintain a daily diary noting observations, vet visits, farrier dates, worming dates, and concerns.`,
+    keyPoints: [
+      "Check all horses first thing every morning",
+      "Consistent times reduce stress",
+      "Record daily observations",
+      "Prioritise water, feed, and health checks",
+      "A structured routine ensures nothing is missed",
+    ],
+    safetyNote: "Morning health checks must happen before anything else.",
+    practicalApplication: "Write out a complete daily routine for your yard.",
+    commonMistakes: [
+      "Skipping morning health checks",
+      "Inconsistent feeding times",
+      "Not recording observations",
+      "Leaving water checks until end of day",
+      "Not adjusting for seasonal changes",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Very first morning task?",
+        options: ["Mucking out", "Feeding", "Checking all horses are healthy and safe", "Tacking up"],
+        correctIndex: 2,
+        explanation: "A health check of every horse must come first.",
+      },
+      {
+        question: "Why is a daily yard diary important?",
+        options: ["To impress visitors", "To track changes and maintain records", "It's not important", "To plan social events"],
+        correctIndex: 1,
+        explanation: "A diary tracks health changes and provides records for the vet.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What does a good daily routine look like?",
+      "How to manage when short-staffed?",
+      "What should I include in a yard diary?",
+    ],
+    linkedCompetencies: ["stable_management", "horse_care"],
+  },
+
+  {
+    slug: "health-safety-in-the-yard",
+    pathwaySlug: "stable-management",
+    title: "Health & Safety in the Yard",
+    level: "intermediate",
+    category: "Stable Management",
+    sortOrder: 6,
+    objectives: [
+      "Identify common yard hazards",
+      "Understand fire safety procedures",
+      "Know legal safety requirements",
+      "Create a basic risk assessment",
+    ],
+    content: `Health and safety protects both humans and horses. Many accidents are preventable.
+
+## Common Hazards
+
+Slippery surfaces, loose dogs, unattended machinery, poorly stored chemicals, protruding nails, broken fencing, unsecured gates.
+
+## Fire Safety
+
+Fire extinguishers accessible and serviced, no smoking, hay stored away from stables, electrical wiring inspected, evacuation plan with headcollars on every door.
+
+## Risk Assessment
+
+Identifies hazards, who might be harmed, existing controls, and additional measures needed.
+
+## Legal Requirements
+
+Under the Health and Safety at Work Act, yard owners have a duty of care to visitors and livery clients.`,
+    keyPoints: [
+      "Identify and mitigate hazards: slippery floors, broken fencing",
+      "Fire safety is paramount — headcollars on doors, extinguishers accessible",
+      "Conduct and review risk assessments regularly",
+      "Yard owners have legal safety responsibilities",
+      "An evacuation plan must exist and be practised",
+    ],
+    safetyNote: "Keep a headcollar and lead rope on every stable door at all times for fire evacuation.",
+    practicalApplication: "Walk around your yard and identify five potential hazards with control measures.",
+    commonMistakes: [
+      "Storing hay adjacent to stables",
+      "Not having fire extinguishers",
+      "Ignoring broken fencing",
+      "No evacuation plan",
+      "Assuming legislation doesn't apply to small yards",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What should be on every stable door?",
+        options: ["A nameplate", "A headcollar and lead rope", "A mirror", "A bucket"],
+        correctIndex: 1,
+        explanation: "Headcollars allow fast evacuation in fire emergencies.",
+      },
+      {
+        question: "Where should hay be stored?",
+        options: ["Inside the stables", "Away from stables and ignition sources", "In the tack room", "Outside uncovered"],
+        correctIndex: 1,
+        explanation: "Hay is highly flammable — store away from stables.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What fire safety measures should every yard have?",
+      "How to do a risk assessment?",
+      "Legal requirements for equestrian premises?",
+    ],
+    linkedCompetencies: ["safety_awareness", "stable_management"],
+  },
+
+  {
+    slug: "cross-country-fundamentals",
+    pathwaySlug: "competitions-preparation",
+    title: "Cross-Country Fundamentals",
+    level: "intermediate",
+    category: "Competitions & Preparation",
+    sortOrder: 5,
+    objectives: [
+      "Understand cross-country principles",
+      "Know key safety equipment",
+      "Identify common fence types",
+      "Plan safe cross-country approach",
+    ],
+    content: `Cross-country combines jumping over solid fences in open terrain.
+
+## Key Principles
+
+Fences are solid — they don't fall down. Accurate riding is essential. The horse must be fit, forward-thinking, and obedient.
+
+## Safety Equipment
+
+Body protector (BETA standards), certified helmet, air-jacket vests at some competitions, medical armbands.
+
+## Common Fence Types
+
+Log, ditch, trakehner (log over ditch), steps/banks, water combinations.
+
+## Approach
+
+Maintain strong rhythmic canter. Sit up and look ahead. Ride positively — hesitation causes stops.`,
+    keyPoints: [
+      "Fences are solid — accuracy essential",
+      "Body protector and certified helmet compulsory",
+      "Common fences: logs, ditches, trakehners, steps, water",
+      "Maintain forward rhythm — hesitation causes refusals",
+      "Horse fitness and rider confidence both critical",
+    ],
+    safetyNote: "Never attempt cross-country without a properly fitted body protector.",
+    practicalApplication: "Walk a cross-country course and identify each fence type with approach plan.",
+    commonMistakes: [
+      "Approaching too slowly",
+      "Looking down at fences",
+      "Not wearing a body protector",
+      "Horse not fit enough",
+      "Not walking the course",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Key difference between cross-country and show jumping?",
+        options: ["Cross-country fences are smaller", "Cross-country fences are solid and fixed", "No difference", "Show jumping is harder"],
+        correctIndex: 1,
+        explanation: "Solid, fixed fences leave no margin for error.",
+      },
+      {
+        question: "Compulsory cross-country safety equipment?",
+        options: ["Gloves only", "Body protector and certified helmet", "Knee pads", "Nothing specific"],
+        correctIndex: 1,
+        explanation: "Body protector and certified helmet are compulsory at all levels.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How to prepare for cross-country?",
+      "What is a trakehner?",
+      "How to ride into water on cross-country?",
+    ],
+    linkedCompetencies: ["competition_preparation", "safety_awareness"],
+  },
+
+  {
+    slug: "competition-day-management",
+    pathwaySlug: "competitions-preparation",
+    title: "Competition Day Management",
+    level: "advanced",
+    category: "Competitions & Preparation",
+    sortOrder: 6,
+    objectives: [
+      "Plan a successful competition day",
+      "Manage nerves and time pressure",
+      "Handle unexpected situations",
+      "Conduct post-competition review",
+    ],
+    content: `A successful competition day requires planning and calm execution.
+
+## Preparation
+
+Plan backwards from your competition time. Allow for travel, unloading, registration, warm-up, course walking. Pack the night before.
+
+## On the Day
+
+Arrive early. Check in. Walk courses. Warm up calmly. Manage nerves with breathing and positive visualisation.
+
+## Handling the Unexpected
+
+Horses may behave differently at competitions. Be prepared for tension or excitement. Ride proactively.
+
+## Post-Competition Review
+
+Assess what went well and what needs improvement. Note specific exercises for home practice.`,
+    keyPoints: [
+      "Plan backwards from competition time",
+      "Arrive early for registration, walking, warm-up",
+      "Manage nerves with breathing and positive focus",
+      "Be prepared for different horse behaviour",
+      "Review every competition honestly",
+    ],
+    safetyNote: "Always check your horse's soundness before loading for a competition.",
+    practicalApplication: "Create a complete competition day checklist.",
+    commonMistakes: [
+      "Arriving late and rushing",
+      "Not walking the course",
+      "Over-jumping in warm-up",
+      "Forgetting documents",
+      "Not reviewing afterwards",
+    ],
+    knowledgeCheck: [
+      {
+        question: "How to plan competition day timeline?",
+        options: ["Wing it", "Plan backwards from start time", "Arrive just before class", "Copy someone else"],
+        correctIndex: 1,
+        explanation: "Planning backwards ensures enough time for every stage.",
+      },
+      {
+        question: "What to do after a competition?",
+        options: ["Forget about it", "Review what went well and what to improve", "Only focus on what went wrong", "Immediately enter another"],
+        correctIndex: 1,
+        explanation: "Balanced review helps learn from every experience.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What to pack for competition day?",
+      "How to manage competition nerves?",
+      "Good warm-up routine before a class?",
+    ],
+    linkedCompetencies: ["competition_preparation"],
+  },
+
+  {
+    slug: "stretching-for-riders",
+    pathwaySlug: "rider-fitness-mindset",
+    title: "Stretching for Riders",
+    level: "developing",
+    category: "Rider Fitness & Mindset",
+    sortOrder: 5,
+    objectives: [
+      "Understand why flexibility matters for riding",
+      "Perform key stretches for hips, hamstrings, shoulders, back",
+      "Incorporate stretching into pre/post-ride routine",
+      "Distinguish stretching from warming up",
+    ],
+    content: `Flexibility directly impacts your riding. Tight hips restrict your seat; stiff shoulders block arm aids.
+
+## Key Stretches
+
+Hip flexors: kneeling lunge (30 seconds each side). Hamstrings: forward fold (30 seconds). Shoulders: cross-body arm stretch (20 seconds each). Lower back: cat-cow stretch (10 reps). Inner thighs: butterfly stretch (30 seconds).
+
+## Pre-Ride vs Post-Ride
+
+Pre-ride: dynamic stretches (leg swings, arm circles). Post-ride: static stretches (held positions).
+
+## Consistency
+
+Stretch daily for best results. Even 10 minutes a day makes a significant difference.`,
+    keyPoints: [
+      "Tight muscles restrict your ability to follow the horse",
+      "Focus on hips, hamstrings, shoulders, lower back",
+      "Dynamic stretches before riding, static after",
+      "Consistency is key — 10 minutes daily",
+      "Flexibility improves comfort and prevents injury",
+    ],
+    safetyNote: "Never stretch cold muscles aggressively. Warm up first.",
+    practicalApplication: "Create a 10-minute daily stretching routine for one week and note riding changes.",
+    commonMistakes: [
+      "Static stretching before riding without warmup",
+      "Bouncing in stretches",
+      "Only stretching occasionally",
+      "Ignoring hip flexibility",
+      "Pushing through pain",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What type of stretching before riding?",
+        options: ["Static held 60 seconds", "Dynamic like leg swings", "None", "Stretching while mounted"],
+        correctIndex: 1,
+        explanation: "Dynamic stretches warm muscles with movement.",
+      },
+      {
+        question: "Most important flexibility area for riders?",
+        options: ["Wrists", "Hips", "Ankles", "Neck"],
+        correctIndex: 1,
+        explanation: "Hip flexibility directly affects seat, balance, and following the horse.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What stretches before and after riding?",
+      "I have tight hips — how to improve?",
+      "How does yoga help riding?",
+    ],
+    linkedCompetencies: ["rider_fitness"],
+  },
+
+  {
+    slug: "overcoming-fear-and-anxiety",
+    pathwaySlug: "rider-fitness-mindset",
+    title: "Overcoming Fear & Anxiety in Riding",
+    level: "intermediate",
+    category: "Rider Fitness & Mindset",
+    sortOrder: 6,
+    objectives: [
+      "Understand why fear is normal",
+      "Identify personal triggers",
+      "Apply practical strategies to manage fear",
+      "Build a confidence-rebuilding plan",
+    ],
+    content: `Fear and anxiety in riding are common and normal. Horses are large and the risk of falling is real.
+
+## Understanding
+
+Fear can stem from a fall, gradual loss of confidence, returning after a break, or a new horse.
+
+## Practical Strategies
+
+Breathing: in for 4, hold for 4, out for 4. Progressive exposure: start easy, build gradually. Positive self-talk. Anchor activities that feel safe.
+
+## Building a Plan
+
+Start with activities 90 percent comfortable. Add challenge gradually. Never jump to the hardest thing.
+
+## When to Seek Help
+
+If anxiety severely impacts enjoyment, consider a sports psychologist or confidence coach.`,
+    keyPoints: [
+      "Fear is completely normal — acknowledge without shame",
+      "Controlled breathing reduces the stress response",
+      "Progressive exposure is the most effective approach",
+      "Replace negative self-talk with positive statements",
+      "Seek professional help if severely impacted",
+    ],
+    safetyNote: "Never force yourself or allow others to force you into situations that feel dangerous.",
+    practicalApplication: "Write down your top three anxiety triggers with a small first step for each.",
+    commonMistakes: [
+      "Pushing through extreme fear",
+      "Comparing to fearless riders",
+      "Avoiding riding altogether",
+      "Not telling your instructor",
+      "Expecting overnight recovery",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Most effective approach to riding anxiety?",
+        options: ["Force the scariest thing first", "Gradual progressive exposure", "Ignore the fear", "Give up riding"],
+        correctIndex: 1,
+        explanation: "Progressive exposure starting with safe activities builds lasting confidence.",
+      },
+      {
+        question: "Breathing technique for anxiety?",
+        options: ["Hold breath", "Breathe as fast as possible", "In for 4, hold for 4, out for 4", "Panting"],
+        correctIndex: 2,
+        explanation: "Box breathing activates the parasympathetic nervous system.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How to rebuild confidence after a fall?",
+      "I feel sick before every ride — what to do?",
+      "How to talk to my instructor about fear?",
+    ],
+    linkedCompetencies: ["rider_fitness", "welfare_awareness"],
+  },
+
+  {
+    slug: "safeguarding-and-duty-of-care",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Safeguarding & Duty of Care",
+    level: "intermediate",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 5,
+    objectives: [
+      "Understand the coach's duty of care",
+      "Recognise safeguarding responsibilities",
+      "Know reporting procedures",
+      "Apply appropriate boundaries",
+    ],
+    content: `Every coach has a legal and moral duty of care. This is critical with children and vulnerable adults.
+
+## Duty of Care
+
+Taking reasonable steps to ensure safety and wellbeing — physical and emotional.
+
+## Safeguarding Children
+
+Never be alone with a child without parental consent and visibility. Recognise signs of abuse. Know your safeguarding officer and reporting procedures.
+
+## Reporting
+
+Report concerns to your designated safeguarding officer. If a child is in immediate danger, contact police. Record exactly what you saw using the child's own words.
+
+## Professional Boundaries
+
+Use professional communication channels. Do not share personal social media with young riders. Keep session records.`,
+    keyPoints: [
+      "Duty of care covers physical and emotional wellbeing",
+      "Never be alone with a child without consent and visibility",
+      "Report concerns to the designated officer — don't investigate yourself",
+      "Record concerns factually",
+      "Maintain professional boundaries",
+    ],
+    safetyNote: "If a child tells you something concerning, listen calmly, reassure them, and report immediately. Never promise secrecy.",
+    practicalApplication: "Find out who the safeguarding officer is at your yard.",
+    commonMistakes: [
+      "Ignoring concerns because they seem minor",
+      "Investigating yourself instead of reporting",
+      "Promising confidentiality to a child at risk",
+      "Not having DBS checks",
+      "Blurring professional boundaries",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What to do if a child discloses something concerning?",
+        options: ["Promise secrecy", "Investigate yourself", "Listen, reassure, and report to safeguarding officer", "Ignore it"],
+        correctIndex: 2,
+        explanation: "Listen, reassure, report. Never promise secrecy.",
+      },
+      {
+        question: "What does duty of care mean?",
+        options: ["Being friends with all riders", "Taking reasonable steps to ensure safety and wellbeing", "Winning competitions", "Providing free lessons"],
+        correctIndex: 1,
+        explanation: "Taking all reasonable steps to protect physical and emotional wellbeing.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What safeguarding training do I need?",
+      "How to handle difficult parent conversations?",
+      "What records should I keep as a coach?",
+    ],
+    linkedCompetencies: ["coaching_skills", "safety_awareness"],
+  },
+
+  {
+    slug: "inclusive-coaching-adaptive-riding",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Inclusive Coaching & Adaptive Riding",
+    level: "advanced",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 6,
+    objectives: [
+      "Understand inclusive coaching principles",
+      "Adapt teaching methods for different needs",
+      "Know basics of para-equestrian sport",
+      "Create an inclusive environment",
+    ],
+    content: `Inclusive coaching ensures every rider has access to high-quality education regardless of ability or background.
+
+## Principles
+
+Adapt teaching to the individual. This includes communication style, exercise complexity, equipment, and pace.
+
+## Adapting for Different Needs
+
+Physical disabilities: adapted mounting blocks, specialised saddles, side walkers. Learning differences: small steps, visual aids, extra processing time. Sensory needs: reduce noise, clear verbal cues. Anxiety: calm, patient approach with praise.
+
+## Para-Equestrian
+
+Competitive riding for athletes with physical disabilities. Grades I-V accommodate different impairment levels.
+
+## Inclusive Environment
+
+Physically accessible, culturally welcoming, free from discrimination.`,
+    keyPoints: [
+      "Inclusion means adapting to the individual",
+      "Physical, learning, sensory, emotional needs all require different adaptations",
+      "The RDA provides standards for working with disabled riders",
+      "Para-equestrian offers competitive pathways",
+      "An inclusive environment is welcoming and free from discrimination",
+    ],
+    safetyNote: "When working with riders with specific needs, conduct thorough risk assessment. Additional helpers may be required.",
+    practicalApplication: "Plan a lesson for a fictional rider with a specific need.",
+    commonMistakes: [
+      "Assuming all people with a condition have the same needs",
+      "Over-helping instead of allowing independence",
+      "Not asking the rider what they need",
+      "Ignoring accessibility when planning events",
+      "Lacking patience with adaptive teaching",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Core principle of inclusive coaching?",
+        options: ["Treating everyone exactly the same", "Adapting teaching to meet individual needs", "Only teaching riders without disabilities", "Lowering standards for everyone"],
+        correctIndex: 1,
+        explanation: "Adapting methods ensures every rider can learn effectively.",
+      },
+      {
+        question: "UK organisation for working with disabled riders?",
+        options: ["The Jockey Club", "The BHA", "The Riding for the Disabled Association (RDA)", "The Kennel Club"],
+        correctIndex: 2,
+        explanation: "The RDA provides training and standards for equestrian centres.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How to adapt a lesson for limited mobility?",
+      "What training to teach riders with disabilities?",
+      "How to make my yard more inclusive?",
     ],
     linkedCompetencies: ["coaching_skills", "welfare_awareness"],
   },

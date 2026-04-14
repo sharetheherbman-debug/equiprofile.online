@@ -27,6 +27,7 @@ import Contact from "./pages/Contact";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import Students from "./pages/Students";
+import Schools from "./pages/Schools";
 import { getUIVersion } from "./config/uiVersion";
 
 // Auth Pages — kept eager so login/register loads instantly
@@ -89,6 +90,7 @@ const Competitions = lazy(() => import("./pages/Competitions"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
 const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
+const SchoolDashboard = lazy(() => import("./pages/SchoolDashboard"));
 
 // V2 Frontend Pages — lazy-loaded for code splitting
 const HomeV2 = lazy(() => import("./v2/pages/HomeV2"));
@@ -148,6 +150,7 @@ function Router() {
             <Route path="/about" component={About} />
             <Route path="/contact" component={Contact} />
             <Route path="/students" component={Students} />
+            <Route path="/schools" component={Schools} />
             <Route path="/terms" component={TermsPage} />
             <Route path="/privacy" component={PrivacyPage} />
 
@@ -178,6 +181,13 @@ function Router() {
               <TeacherRoute>
                 <TeacherDashboard />
               </TeacherRoute>
+            </Route>
+
+            {/* School Dashboard — school_owner plan users */}
+            <Route path="/school-dashboard">
+              <ProtectedRoute>
+                <SchoolDashboard />
+              </ProtectedRoute>
             </Route>
 
             {/* App Pages (Protected - require auth) — version-aware */}

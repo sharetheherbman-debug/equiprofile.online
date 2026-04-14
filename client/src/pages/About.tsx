@@ -110,22 +110,25 @@ export default function About() {
                     <p>
                       EquiProfile was born from a simple frustration: managing
                       horse information shouldn't be complicated. As horse
-                      owners ourselves, we experienced firsthand the challenge
-                      of juggling paper records, spreadsheets, and multiple
-                      apps.
+                      owners and riders ourselves, we experienced firsthand the
+                      challenge of juggling paper records, spreadsheets, and
+                      multiple apps.
                     </p>
                     <p>
                       We knew there had to be a better way—a single platform
                       that could handle everything from health records to
                       training logs, from feeding schedules to competition
-                      results. So we built it.
+                      results. Then we saw the same gap in equestrian education:
+                      students deserved structured, progressive learning tools
+                      that matched real yard experience. So we built both.
                     </p>
                     <p>
-                      Today, EquiProfile serves thousands of horse owners,
-                      trainers, and stable managers worldwide. We're proud to be
-                      part of the equestrian community and committed to
-                      continuously improving our platform based on your
-                      feedback.
+                      Today, EquiProfile serves horse owners, students,
+                      teachers, and riding schools — combining professional
+                      horse management with 95 structured lessons across 15
+                      learning pathways, daily practice scenarios, and AI
+                      tutor support. We're committed to continuously improving
+                      based on your feedback.
                     </p>
                   </div>
                 </div>
@@ -147,16 +150,18 @@ export default function About() {
                         Our Mission
                       </h2>
                       <p className="text-lg text-gray-300 mb-6">
-                        To provide horse owners and equestrian professionals
-                        with a comprehensive, easy-to-use platform that
-                        centralizes horse management, improves care quality, and
-                        enhances the bond between horses and their caretakers.
+                        To provide horse owners, equestrian students, and
+                        riding schools with a comprehensive platform that
+                        centralises horse management, delivers structured
+                        learning, and improves care quality across the industry.
                       </p>
                       <p className="text-lg text-gray-300">
-                        We believe that better data leads to better decisions,
-                        and better decisions lead to happier, healthier horses.
-                        That's why we've built EquiProfile—to give you the tools
-                        and insights you need to provide exceptional care.
+                        We believe that better knowledge leads to better care,
+                        and better care leads to happier, healthier horses.
+                        That's why EquiProfile combines professional management
+                        tools with 95 structured lessons, daily practice, and
+                        AI tutor support — giving everyone the tools and insights
+                        to provide exceptional care.
                       </p>
                     </div>
                     <div className="relative aspect-square rounded-2xl overflow-hidden backdrop-blur-md bg-white/5 border border-white/10 p-4 hover:border-white/20 transition-all duration-300">

@@ -106,7 +106,7 @@ export default function Features() {
         </div>
 
         {/* CTA Section */}
-        <section className="py-24 bg-gradient-to-b from-black to-gray-900">
+        <section className="py-24 bg-gradient-to-b from-[#0a1628] to-[#0f2040]">
           <div className="container mx-auto px-4">
             <motion.div
               initial="hidden"
@@ -120,12 +120,12 @@ export default function Features() {
                 Ready to Transform Your
                 <br />
                 <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                  Horse Management?
+                  Horse Management & Learning?
                 </span>
               </h2>
               <p className="text-xl text-gray-300 mb-10">
-                Join thousands of equestrians who trust EquiProfile. Start your
-                free 7-day trial today—no credit card required.
+                Horse owners, students, teachers, and schools trust EquiProfile. Start your
+                free 7-day trial today — no credit card required.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/register">

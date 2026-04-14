@@ -89,6 +89,7 @@ import { sendEmail, sendCampaignEmail, sendStableInviteEmail, sendCompensationEm
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
 import { studentRouter } from "./studentRouter";
 import { teacherRouter } from "./teacherRouter";
+import { schoolRouter } from "./schoolRouter";
 import {
   normalizeCountry,
   normalizeContactType,
@@ -211,8 +212,8 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
   }
 }
 
-type PlanTier = "free" | "student" | "teacher" | "pro" | "stable";
-const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "teacher", "pro", "stable"];
+type PlanTier = "free" | "student" | "teacher" | "pro" | "stable" | "school_owner";
+const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "teacher", "pro", "stable", "school_owner"];
 
 /**
  * Extract and validate planTier from parsed preferences.
@@ -300,6 +301,7 @@ export const appRouter = router({
   system: systemRouter,
   student: studentRouter,
   teacher: teacherRouter,
+  school: schoolRouter,
 
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
@@ -574,7 +576,7 @@ export const appRouter = router({
     createCheckout: protectedProcedure
       .input(
         z.object({
-          plan: z.enum(["pro", "stable"]).default("pro"),
+          plan: z.enum(["student", "pro", "stable", "school_10", "school_20", "school_50"]).default("pro"),
           interval: z.enum(["monthly", "yearly"]).default("monthly"),
         }),
       )
@@ -592,17 +594,25 @@ export const appRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
         }
 
-        const planConfig =
-          input.plan === "stable" ? PRICING_PLANS.stable : PRICING_PLANS.pro;
+        const planConfig = PRICING_PLANS[input.plan as keyof typeof PRICING_PLANS];
+        if (!planConfig || !("monthly" in planConfig)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid plan selected",
+          });
+        }
+
+        // The "monthly" in planConfig check above guarantees planConfig has monthly/yearly
+        const billingConfig = planConfig as { monthly: { priceId: string }; yearly: { priceId: string } };
         const priceId =
           input.interval === "yearly"
-            ? planConfig.yearly.priceId
-            : planConfig.monthly.priceId;
+            ? billingConfig.yearly.priceId
+            : billingConfig.monthly.priceId;
 
         if (!priceId) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Stripe price ID not configured",
+            message: "Stripe price ID not configured for this plan",
           });
         }
 

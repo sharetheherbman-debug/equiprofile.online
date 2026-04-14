@@ -40,6 +40,7 @@ const publicNavLinks = [
   { label: "About", path: "/about" },
   { label: "Features", path: "/features" },
   { label: "Students", path: "/students" },
+  { label: "Schools", path: "/schools" },
   { label: "Pricing", path: "/pricing" },
   { label: "Contact", path: "/contact" },
 ];

@@ -1,7 +1,7 @@
 {
-  "name": "EquiProfile — Equine Management",
+  "name": "EquiProfile — Horse Management & Learning",
   "short_name": "EquiProfile",
-  "description": "Professional equine management for the modern equestrian — manage horses, health, training, and your stable from one place.",
+  "description": "Professional equine management and equestrian learning platform. Manage horses, track health, study equine care through 95+ structured lessons, and run your stable — all from one place.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#0a1628",
@@ -69,7 +69,7 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["business", "lifestyle", "productivity"],
+  "categories": ["business", "education", "lifestyle", "productivity"],
   "shortcuts": [
     {
       "name": "My Horses",
@@ -79,11 +79,27 @@
       "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
     },
     {
+      "name": "Learning Path",
+      "short_name": "Learn",
+      "description": "Continue your equestrian learning journey",
+      "url": "/student-dashboard",
+      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
+    },
+    {
       "name": "Calendar",
       "short_name": "Calendar",
       "description": "View upcoming events and appointments",
       "url": "/calendar",
       "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Go to your main dashboard",
+      "url": "/dashboard",
+      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
     }
-  ]
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
 }

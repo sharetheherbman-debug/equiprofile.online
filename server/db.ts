@@ -1202,6 +1202,126 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       KEY \`idx_lessonReviews_studentUserId\` (\`studentUserId\`),
       KEY \`idx_lessonReviews_lessonSlug\` (\`lessonSlug\`)
     )`,
+
+    // ── Organization / School System tables ─────────────────────────────
+    `CREATE TABLE IF NOT EXISTS \`organizations\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`ownerId\` int NOT NULL,
+      \`name\` varchar(200) NOT NULL,
+      \`description\` text,
+      \`planTier\` varchar(30) NOT NULL DEFAULT 'school_10',
+      \`maxStudents\` int NOT NULL DEFAULT 10,
+      \`maxTeachers\` int NOT NULL DEFAULT 3,
+      \`isActive\` boolean NOT NULL DEFAULT true,
+      \`trialEndsAt\` timestamp NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`organizations_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_organizations_ownerId\` (\`ownerId\`)
+    )`,
+
+    `CREATE TABLE IF NOT EXISTS \`organizationMembers\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`organizationId\` int NOT NULL,
+      \`userId\` int NOT NULL,
+      \`role\` varchar(30) NOT NULL,
+      \`joinedAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`organizationMembers_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_orgMembers_orgId\` (\`organizationId\`),
+      KEY \`idx_orgMembers_userId\` (\`userId\`)
+    )`,
+
+    `CREATE TABLE IF NOT EXISTS \`organizationInvites\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`organizationId\` int NOT NULL,
+      \`invitedEmail\` varchar(320) NOT NULL,
+      \`role\` varchar(30) NOT NULL,
+      \`token\` varchar(64) NOT NULL,
+      \`expiresAt\` timestamp NOT NULL,
+      \`acceptedAt\` timestamp NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`organizationInvites_id\` PRIMARY KEY(\`id\`),
+      UNIQUE KEY \`organizationInvites_token\` (\`token\`)
+    )`,
+
+    // ── Teacher Resources table ─────────────────────────────────────────
+    `CREATE TABLE IF NOT EXISTS \`teacherResources\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`teacherId\` int NOT NULL,
+      \`title\` varchar(250) NOT NULL,
+      \`description\` text,
+      \`fileUrl\` varchar(1000) NOT NULL,
+      \`fileType\` varchar(30) NOT NULL,
+      \`fileSize\` int,
+      \`shareScope\` varchar(20) NOT NULL DEFAULT 'all',
+      \`groupId\` int,
+      \`studentId\` int,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`teacherResources_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_teacherResources_teacherId\` (\`teacherId\`)
+    )`,
+
+    // ── Student Assignments table ────────────────────────────────────────
+    `CREATE TABLE IF NOT EXISTS \`studentAssignments\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`teacherId\` int NOT NULL,
+      \`studentId\` int NOT NULL,
+      \`title\` varchar(250) NOT NULL,
+      \`description\` text,
+      \`dueDate\` timestamp NULL,
+      \`status\` varchar(30) NOT NULL DEFAULT 'pending',
+      \`submissionUrl\` varchar(1000),
+      \`submittedAt\` timestamp NULL,
+      \`grade\` varchar(20),
+      \`feedback\` text,
+      \`reviewedAt\` timestamp NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`studentAssignments_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_studentAssignments_teacherId\` (\`teacherId\`),
+      KEY \`idx_studentAssignments_studentId\` (\`studentId\`)
+    )`,
+
+    // ── Report Templates table ───────────────────────────────────────────
+    `CREATE TABLE IF NOT EXISTS \`reportTemplates\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`teacherId\` int,
+      \`name\` varchar(200) NOT NULL,
+      \`description\` text,
+      \`templateData\` text NOT NULL,
+      \`isSystem\` boolean NOT NULL DEFAULT false,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`reportTemplates_id\` PRIMARY KEY(\`id\`)
+    )`,
+
+    // ── Student Reports table ────────────────────────────────────────────
+    `CREATE TABLE IF NOT EXISTS \`studentReports\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`teacherId\` int NOT NULL,
+      \`studentId\` int NOT NULL,
+      \`templateId\` int,
+      \`title\` varchar(250) NOT NULL,
+      \`reportData\` text NOT NULL,
+      \`sentAt\` timestamp NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`studentReports_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_studentReports_teacherId\` (\`teacherId\`),
+      KEY \`idx_studentReports_studentId\` (\`studentId\`)
+    )`,
+
+    // ── Teacher-Student Messages table ───────────────────────────────────
+    `CREATE TABLE IF NOT EXISTS \`teacherStudentMessages\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`teacherId\` int NOT NULL,
+      \`studentId\` int NOT NULL,
+      \`senderRole\` varchar(10) NOT NULL,
+      \`content\` text NOT NULL,
+      \`isRead\` boolean NOT NULL DEFAULT false,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`teacherStudentMessages_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_tsm_teacherId\` (\`teacherId\`),
+      KEY \`idx_tsm_studentId\` (\`studentId\`)
+    )`,
   ];
 
   try {

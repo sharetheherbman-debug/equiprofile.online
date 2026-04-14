@@ -22,6 +22,11 @@ import {
   lessonReviews,
   lessonCompletion,
   lessonUnits,
+  teacherStudentMessages,
+  teacherResources,
+  studentAssignments,
+  reportTemplates,
+  studentReports,
 } from "../drizzle/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1067,4 +1072,351 @@ export const teacherRouter = router({
         .where(eq(studentCompetencies.userId, input.studentUserId))
         .orderBy(studentCompetencies.category, studentCompetencies.competencyKey);
     }),
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MESSAGING — Teacher ↔ Student direct messages (persisted)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Send a message to a student. */
+  sendMessage: teacherProcedure
+    .input(z.object({
+      studentId: z.number(),
+      content: z.string().min(1).max(5000),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const [result] = await dbConn.insert(teacherStudentMessages).values({
+        teacherId: ctx.user.id,
+        studentId: input.studentId,
+        senderRole: "teacher",
+        content: input.content,
+      });
+      return { id: result.insertId };
+    }),
+
+  /** Get all messages between this teacher and a specific student. */
+  getThreadMessages: teacherProcedure
+    .input(z.object({ studentId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const msgs = await dbConn.select()
+        .from(teacherStudentMessages)
+        .where(and(
+          eq(teacherStudentMessages.teacherId, ctx.user.id),
+          eq(teacherStudentMessages.studentId, input.studentId),
+        ))
+        .orderBy(teacherStudentMessages.createdAt);
+
+      // Mark unread messages from student as read
+      await dbConn.update(teacherStudentMessages)
+        .set({ isRead: true })
+        .where(and(
+          eq(teacherStudentMessages.teacherId, ctx.user.id),
+          eq(teacherStudentMessages.studentId, input.studentId),
+          eq(teacherStudentMessages.senderRole, "student"),
+          eq(teacherStudentMessages.isRead, false),
+        ));
+
+      return msgs.map((m) => ({
+        id: m.id,
+        from: m.senderRole as "teacher" | "student",
+        text: m.content,
+        time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "",
+        createdAt: m.createdAt,
+      }));
+    }),
+
+  /** Get unread message counts per student. */
+  getUnreadCounts: teacherProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    const rows = await dbConn.select({
+      studentId: teacherStudentMessages.studentId,
+      count: sql<number>`count(*)`,
+    })
+      .from(teacherStudentMessages)
+      .where(and(
+        eq(teacherStudentMessages.teacherId, ctx.user.id),
+        eq(teacherStudentMessages.senderRole, "student"),
+        eq(teacherStudentMessages.isRead, false),
+      ))
+      .groupBy(teacherStudentMessages.studentId);
+
+    const result: Record<number, number> = {};
+    for (const row of rows) {
+      result[row.studentId] = row.count;
+    }
+    return result;
+  }),
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RESOURCES — Teaching resources (persisted)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Create a new teaching resource. */
+  createResource: teacherProcedure
+    .input(z.object({
+      title: z.string().min(1).max(250),
+      description: z.string().max(1000).optional(),
+      fileUrl: z.string().min(1).max(1000),
+      fileType: z.enum(["pdf", "image", "document"]),
+      fileSize: z.number().optional(),
+      shareScope: z.enum(["all", "group", "individual"]).default("all"),
+      groupId: z.number().optional(),
+      studentId: z.number().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const [result] = await dbConn.insert(teacherResources).values({
+        teacherId: ctx.user.id,
+        title: input.title,
+        description: input.description ?? null,
+        fileUrl: input.fileUrl,
+        fileType: input.fileType,
+        fileSize: input.fileSize ?? null,
+        shareScope: input.shareScope,
+        groupId: input.groupId ?? null,
+        studentId: input.studentId ?? null,
+      });
+      return { id: result.insertId };
+    }),
+
+  /** List teacher's resources. */
+  listResources: teacherProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    return dbConn.select()
+      .from(teacherResources)
+      .where(eq(teacherResources.teacherId, ctx.user.id))
+      .orderBy(desc(teacherResources.createdAt));
+  }),
+
+  /** Delete a resource. */
+  deleteResource: teacherProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      await dbConn.delete(teacherResources)
+        .where(and(
+          eq(teacherResources.id, input.id),
+          eq(teacherResources.teacherId, ctx.user.id),
+        ));
+      return { success: true };
+    }),
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ASSIGNMENTS — Teacher creates, student submits, teacher reviews
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Create an assignment for a student. */
+  createAssignment: teacherProcedure
+    .input(z.object({
+      studentId: z.number(),
+      title: z.string().min(1).max(250),
+      description: z.string().max(5000).optional(),
+      dueDate: z.string().optional(), // ISO string
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const [result] = await dbConn.insert(studentAssignments).values({
+        teacherId: ctx.user.id,
+        studentId: input.studentId,
+        title: input.title,
+        description: input.description ?? null,
+        dueDate: input.dueDate ? new Date(input.dueDate) : null,
+        status: "pending",
+      });
+      return { id: result.insertId };
+    }),
+
+  /** List all assignments created by this teacher. */
+  listTeacherAssignments: teacherProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    const rows = await dbConn.select({
+      id: studentAssignments.id,
+      studentId: studentAssignments.studentId,
+      title: studentAssignments.title,
+      description: studentAssignments.description,
+      dueDate: studentAssignments.dueDate,
+      status: studentAssignments.status,
+      submissionUrl: studentAssignments.submissionUrl,
+      submittedAt: studentAssignments.submittedAt,
+      grade: studentAssignments.grade,
+      feedback: studentAssignments.feedback,
+      reviewedAt: studentAssignments.reviewedAt,
+      createdAt: studentAssignments.createdAt,
+      studentName: users.name,
+    })
+      .from(studentAssignments)
+      .leftJoin(users, eq(studentAssignments.studentId, users.id))
+      .where(eq(studentAssignments.teacherId, ctx.user.id))
+      .orderBy(desc(studentAssignments.createdAt));
+
+    return rows;
+  }),
+
+  /** Review/mark a student assignment. */
+  reviewAssignment: teacherProcedure
+    .input(z.object({
+      assignmentId: z.number(),
+      grade: z.string().max(20).optional(),
+      feedback: z.string().max(5000).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      await dbConn.update(studentAssignments)
+        .set({
+          grade: input.grade ?? null,
+          feedback: input.feedback ?? null,
+          status: "reviewed",
+          reviewedAt: new Date(),
+        })
+        .where(and(
+          eq(studentAssignments.id, input.assignmentId),
+          eq(studentAssignments.teacherId, ctx.user.id),
+        ));
+      return { success: true };
+    }),
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // REPORTS — Template-based student progress reports
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** List available report templates (system + teacher-owned). */
+  listReportTemplates: teacherProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    // Seed system templates if none exist
+    const existing = await dbConn.select({ id: reportTemplates.id })
+      .from(reportTemplates)
+      .where(eq(reportTemplates.isSystem, true))
+      .limit(1);
+
+    if (existing.length === 0) {
+      const SYSTEM_TEMPLATES = [
+        {
+          name: "Term Progress Report",
+          description: "End-of-term summary covering attendance, performance, and competency development.",
+          templateData: JSON.stringify({
+            sections: [
+              { title: "Attendance & Engagement", type: "text" },
+              { title: "Lesson Progress", type: "text" },
+              { title: "Competency Development", type: "text" },
+              { title: "Strengths", type: "text" },
+              { title: "Areas for Improvement", type: "text" },
+              { title: "Teacher Recommendations", type: "text" },
+            ],
+          }),
+          isSystem: true,
+        },
+        {
+          name: "Skills Assessment",
+          description: "Assessment of practical and theoretical equine skills.",
+          templateData: JSON.stringify({
+            sections: [
+              { title: "Riding Skills", type: "rating" },
+              { title: "Horse Care Knowledge", type: "rating" },
+              { title: "Stable Management", type: "rating" },
+              { title: "Health & Safety Awareness", type: "rating" },
+              { title: "Overall Comments", type: "text" },
+            ],
+          }),
+          isSystem: true,
+        },
+        {
+          name: "Quick Progress Note",
+          description: "Short-form progress note for regular updates.",
+          templateData: JSON.stringify({
+            sections: [
+              { title: "Current Focus", type: "text" },
+              { title: "Progress This Period", type: "text" },
+              { title: "Next Steps", type: "text" },
+            ],
+          }),
+          isSystem: true,
+        },
+      ];
+
+      for (const tpl of SYSTEM_TEMPLATES) {
+        try {
+          await dbConn.insert(reportTemplates).values({
+            teacherId: null,
+            name: tpl.name,
+            description: tpl.description,
+            templateData: tpl.templateData,
+            isSystem: true,
+          });
+        } catch (e: any) {
+          // Log non-duplicate errors for debugging; duplicates are expected during concurrent seeding
+          if (e?.code !== "ER_DUP_ENTRY") {
+            console.warn(`[ReportTemplates] Failed to seed "${tpl.name}":`, e?.message ?? e);
+          }
+        }
+      }
+    }
+
+    return dbConn.select()
+      .from(reportTemplates)
+      .where(sql`${reportTemplates.isSystem} = true OR ${reportTemplates.teacherId} = ${ctx.user.id}`)
+      .orderBy(reportTemplates.isSystem, reportTemplates.name);
+  }),
+
+  /** Create a student report from a template. */
+  createStudentReport: teacherProcedure
+    .input(z.object({
+      studentId: z.number(),
+      templateId: z.number().optional(),
+      title: z.string().min(1).max(250),
+      reportData: z.string(), // JSON
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const [result] = await dbConn.insert(studentReports).values({
+        teacherId: ctx.user.id,
+        studentId: input.studentId,
+        templateId: input.templateId ?? null,
+        title: input.title,
+        reportData: input.reportData,
+        sentAt: new Date(),
+      });
+      return { id: result.insertId };
+    }),
+
+  /** List reports created by this teacher. */
+  listStudentReports: teacherProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    return dbConn.select({
+      id: studentReports.id,
+      studentId: studentReports.studentId,
+      title: studentReports.title,
+      sentAt: studentReports.sentAt,
+      createdAt: studentReports.createdAt,
+      studentName: users.name,
+    })
+      .from(studentReports)
+      .leftJoin(users, eq(studentReports.studentId, users.id))
+      .where(eq(studentReports.teacherId, ctx.user.id))
+      .orderBy(desc(studentReports.createdAt));
+  }),
 });

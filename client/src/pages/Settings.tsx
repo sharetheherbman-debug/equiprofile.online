@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PageTransition } from "@/components/PageTransition";
-import DashboardLayout from "@/components/DashboardLayout";
+import PlanAwareLayout from "@/components/PlanAwareLayout";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
@@ -225,7 +225,7 @@ export default function Settings() {
   const isProfileLoading = updateProfile.isPending;
 
   return (
-    <DashboardLayout>
+    <PlanAwareLayout>
       {showOnboarding && (
         <OnboardingWizard
           userName={user?.name || ""}
@@ -831,6 +831,6 @@ export default function Settings() {
           </Tabs>
         </div>
       </PageTransition>
-    </DashboardLayout>
+    </PlanAwareLayout>
   );
 }

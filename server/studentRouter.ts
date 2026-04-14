@@ -32,6 +32,10 @@ import {
   studentCompetencies,
   teacherLessonAssignments,
   lessonReviews,
+  teacherStudentMessages,
+  studentAssignments,
+  teacherResources,
+  studentReports,
 } from "../drizzle/schema";
 import { LESSON_PATHWAYS, LESSON_UNITS } from "./lessonContent";
 
@@ -1369,6 +1373,65 @@ export const studentRouter = router({
       };
     }),
 
+  /** Daily Practice — deterministic 3 scenarios per user per day */
+  getDailyScenarios: studentProcedure
+    .query(async ({ ctx }) => {
+      const userId = ctx.user.id;
+      const user = await db.getUserById(userId);
+      const prefs = parseUserPrefs(user?.preferences);
+      const currentLevel = (prefs.studentLevel as string) ?? "beginner";
+
+      // Deterministic daily seed based on userId + date
+      const today = new Date();
+      const dayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      const seedStr = `${userId}-${dayKey}`;
+      let seed = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        seed = ((seed << 5) - seed + seedStr.charCodeAt(i)) | 0;
+      }
+
+      // Seeded random number generator (mulberry32)
+      function mulberry32(s: number) {
+        return function () {
+          s |= 0; s = (s + 0x6D2B79F5) | 0;
+          let t = Math.imul(s ^ (s >>> 15), 1 | s);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const rng = mulberry32(seed);
+
+      // Prefer scenarios at current level, then one level below/above
+      const levelOrder = ["beginner", "developing", "intermediate", "advanced"];
+      const currentIdx = levelOrder.indexOf(currentLevel);
+      const preferredLevels = [currentLevel];
+      if (currentIdx > 0) preferredLevels.push(levelOrder[currentIdx - 1]);
+      if (currentIdx < levelOrder.length - 1) preferredLevels.push(levelOrder[currentIdx + 1]);
+
+      // Filter scenarios to preferred levels
+      let pool = SCENARIO_DATA.filter((s) => preferredLevels.includes(s.level));
+      if (pool.length < 3) pool = [...SCENARIO_DATA]; // fallback to all
+
+      // Shuffle with seeded RNG
+      const shuffled = [...pool];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      // Pick exactly 3
+      const daily = shuffled.slice(0, 3);
+
+      // Strip correct answer info
+      return {
+        date: dayKey,
+        scenarios: daily.map(({ choices, ...rest }) => ({
+          ...rest,
+          choices: choices.map(({ id, text }) => ({ id, text })),
+        })),
+      };
+    }),
+
   // ── Training Log — Update ────────────────────────────────────────────────
   updateTraining: studentProcedure
     .input(z.object({
@@ -1422,6 +1485,79 @@ export const studentRouter = router({
         .where(eq(users.id, ctx.user.id));
       return { success: true };
     }),
+
+  /** Get the highest unlocked level based on lesson completion progress.
+   *  Rules:
+   *  - Beginner is always unlocked
+   *  - Developing unlocks when ≥60% of beginner lessons are completed
+   *  - Intermediate unlocks when ≥60% of developing lessons are completed
+   *  - Advanced unlocks when ≥60% of intermediate lessons are completed
+   *  Returns: unlockedLevel, completedByLevel counts, totalByLevel counts
+   */
+  getUnlockedLevel: studentProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    // Count total lessons per level from static content
+    const totalByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
+    for (const u of LESSON_UNITS) {
+      if (totalByLevel[u.level] !== undefined) totalByLevel[u.level]++;
+    }
+
+    // Count completed lessons per level for this user
+    const completions = await dbConn.select({
+      level: lessonCompletion.level,
+    }).from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id));
+
+    const completedByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
+    for (const c of completions) {
+      if (completedByLevel[c.level] !== undefined) completedByLevel[c.level]++;
+    }
+
+    // Determine highest unlocked level (60% threshold to unlock next)
+    const UNLOCK_THRESHOLD = 0.6;
+    const levels = ["beginner", "developing", "intermediate", "advanced"] as const;
+    let unlockedLevel: string = "beginner";
+
+    for (let i = 0; i < levels.length - 1; i++) {
+      const lev = levels[i];
+      const total = totalByLevel[lev] || 1;
+      const done = completedByLevel[lev] || 0;
+      if (done / total >= UNLOCK_THRESHOLD) {
+        unlockedLevel = levels[i + 1];
+      } else {
+        break;
+      }
+    }
+
+    // Find recommended next lesson (first incomplete lesson at current working level)
+    const allCompletions = await dbConn.select({ lessonSlug: lessonCompletion.lessonSlug })
+      .from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id));
+    const completedSlugs = new Set(allCompletions.map(c => c.lessonSlug));
+
+    // Working level = highest unlocked level where there are still incomplete lessons
+    let workingLevel = unlockedLevel;
+    for (const lev of levels) {
+      const idx = levels.indexOf(lev);
+      if (idx > levels.indexOf(unlockedLevel as any)) break;
+      const levLessons = LESSON_UNITS.filter(u => u.level === lev);
+      const hasIncomplete = levLessons.some(u => !completedSlugs.has(u.slug));
+      if (hasIncomplete) { workingLevel = lev; break; }
+    }
+
+    const nextLesson = LESSON_UNITS
+      .filter(u => u.level === workingLevel)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .find(u => !completedSlugs.has(u.slug));
+
+    return {
+      unlockedLevel,
+      workingLevel,
+      totalByLevel,
+      completedByLevel,
+      recommendedNextLesson: nextLesson ? { slug: nextLesson.slug, title: nextLesson.title, pathwaySlug: nextLesson.pathwaySlug, level: nextLesson.level } : null,
+    };
+  }),
 
   // ── Teacher-assigned tasks (student view) ─────────────────────────────────
 
@@ -1586,16 +1722,20 @@ export const studentRouter = router({
       // Seed pathways if table is empty
       const existing = await dbConn.select({ id: lessonPathways.id }).from(lessonPathways).limit(1);
       if (existing.length === 0) {
-        await dbConn.insert(lessonPathways).values(
-          LESSON_PATHWAYS.map((p) => ({
-            slug: p.slug,
-            title: p.title,
-            description: p.description,
-            sortOrder: p.sortOrder,
-            iconName: p.iconName,
-            isPublished: true,
-          })),
-        );
+        try {
+          await dbConn.insert(lessonPathways).values(
+            LESSON_PATHWAYS.map((p) => ({
+              slug: p.slug,
+              title: p.title,
+              description: p.description,
+              sortOrder: p.sortOrder,
+              iconName: p.iconName,
+              isPublished: true,
+            })),
+          );
+        } catch (seedErr) {
+          console.error("[lesson-seed] Failed to seed pathways:", seedErr);
+        }
       }
 
       const rows = await dbConn.select().from(lessonPathways).orderBy(lessonPathways.sortOrder);
@@ -1608,32 +1748,66 @@ export const studentRouter = router({
       pathwaySlug: z.string().optional(),
       level: z.enum(["beginner", "developing", "intermediate", "advanced"]).optional(),
     }).optional())
-    .query(async ({ input }) => {
+    .query(async ({ ctx, input }) => {
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
 
-      // Seed lessons if table is empty
+      // Seed lessons if table is empty — use batched insert to avoid max_packet issues
       const existing = await dbConn.select({ id: lessonUnits.id }).from(lessonUnits).limit(1);
       if (existing.length === 0) {
-        await dbConn.insert(lessonUnits).values(
-          LESSON_UNITS.map((l) => ({
-            slug: l.slug,
-            pathwaySlug: l.pathwaySlug,
-            title: l.title,
-            level: l.level,
-            category: l.category,
-            sortOrder: l.sortOrder,
-            objectives: JSON.stringify(l.objectives),
-            content: l.content,
-            keyPoints: JSON.stringify(l.keyPoints),
-            safetyNote: l.safetyNote,
-            practicalApplication: l.practicalApplication,
-            commonMistakes: JSON.stringify(l.commonMistakes),
-            knowledgeCheck: JSON.stringify(l.knowledgeCheck),
-            aiTutorPrompts: JSON.stringify(l.aiTutorPrompts),
-            isPublished: true,
-          })),
-        );
+        const allValues = LESSON_UNITS.map((l) => ({
+          slug: l.slug,
+          pathwaySlug: l.pathwaySlug,
+          title: l.title,
+          level: l.level,
+          category: l.category,
+          sortOrder: l.sortOrder,
+          objectives: JSON.stringify(l.objectives),
+          content: l.content,
+          keyPoints: JSON.stringify(l.keyPoints),
+          safetyNote: l.safetyNote,
+          practicalApplication: l.practicalApplication,
+          commonMistakes: JSON.stringify(l.commonMistakes),
+          knowledgeCheck: JSON.stringify(l.knowledgeCheck),
+          aiTutorPrompts: JSON.stringify(l.aiTutorPrompts),
+          isPublished: true,
+        }));
+
+        // Insert in batches of 10 to avoid MySQL max_allowed_packet issues
+        const BATCH_SIZE = 10;
+        for (let i = 0; i < allValues.length; i += BATCH_SIZE) {
+          const batch = allValues.slice(i, i + BATCH_SIZE);
+          try {
+            await dbConn.insert(lessonUnits).values(batch);
+          } catch (seedErr) {
+            console.error(`[lesson-seed] Failed to seed lessons batch ${i}-${i + batch.length}:`, seedErr);
+          }
+        }
+      }
+
+      // ── Progression gating: determine unlocked level for this student ──
+      const LEVEL_ORDER = ["beginner", "developing", "intermediate", "advanced"];
+      const UNLOCK_THRESHOLD = 0.6;
+      const totalByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
+      for (const u of LESSON_UNITS) {
+        if (totalByLevel[u.level] !== undefined) totalByLevel[u.level]++;
+      }
+      const completions = await dbConn.select({ level: lessonCompletion.level })
+        .from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id));
+      const completedByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
+      for (const c of completions) {
+        if (completedByLevel[c.level] !== undefined) completedByLevel[c.level]++;
+      }
+      let unlockedIdx = 0; // beginner is always unlocked
+      for (let i = 0; i < LEVEL_ORDER.length - 1; i++) {
+        const lev = LEVEL_ORDER[i];
+        const total = totalByLevel[lev] || 1;
+        const done = completedByLevel[lev] || 0;
+        if (done / total >= UNLOCK_THRESHOLD) {
+          unlockedIdx = i + 1;
+        } else {
+          break;
+        }
       }
 
       const conditions = [];
@@ -1644,7 +1818,7 @@ export const studentRouter = router({
         ? await dbConn.select().from(lessonUnits).where(and(...conditions)).orderBy(lessonUnits.sortOrder)
         : await dbConn.select().from(lessonUnits).orderBy(lessonUnits.sortOrder);
 
-      // Return summary without full content
+      // Return summary with locked state
       return rows.map((r) => ({
         id: r.id,
         slug: r.slug,
@@ -1653,6 +1827,7 @@ export const studentRouter = router({
         level: r.level,
         category: r.category,
         sortOrder: r.sortOrder,
+        locked: LEVEL_ORDER.indexOf(r.level) > unlockedIdx,
       }));
     }),
 
@@ -2069,5 +2244,180 @@ export const studentRouter = router({
     }
 
     return { generated: inserted.length, tasks: inserted };
+  }),
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STUDENT MESSAGING — Student side of teacher ↔ student messages
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Send a message to a teacher. */
+  sendMessageToTeacher: studentProcedure
+    .input(z.object({
+      teacherId: z.number(),
+      content: z.string().min(1).max(5000),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const [result] = await dbConn.insert(teacherStudentMessages).values({
+        teacherId: input.teacherId,
+        studentId: ctx.user.id,
+        senderRole: "student",
+        content: input.content,
+      });
+      return { id: result.insertId };
+    }),
+
+  /** Get messages between this student and a specific teacher. */
+  getTeacherMessages: studentProcedure
+    .input(z.object({ teacherId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      const msgs = await dbConn.select()
+        .from(teacherStudentMessages)
+        .where(and(
+          eq(teacherStudentMessages.teacherId, input.teacherId),
+          eq(teacherStudentMessages.studentId, ctx.user.id),
+        ))
+        .orderBy(teacherStudentMessages.createdAt);
+
+      // Mark unread messages from teacher as read
+      await dbConn.update(teacherStudentMessages)
+        .set({ isRead: true })
+        .where(and(
+          eq(teacherStudentMessages.teacherId, input.teacherId),
+          eq(teacherStudentMessages.studentId, ctx.user.id),
+          eq(teacherStudentMessages.senderRole, "teacher"),
+          eq(teacherStudentMessages.isRead, false),
+        ));
+
+      return msgs.map((m) => ({
+        id: m.id,
+        from: m.senderRole as "teacher" | "student",
+        text: m.content,
+        time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "",
+        createdAt: m.createdAt,
+      }));
+    }),
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STUDENT ASSIGNMENTS — View & submit assignments
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** List assignments assigned to this student. */
+  listMyAssignments: studentProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    return dbConn.select({
+      id: studentAssignments.id,
+      teacherId: studentAssignments.teacherId,
+      title: studentAssignments.title,
+      description: studentAssignments.description,
+      dueDate: studentAssignments.dueDate,
+      status: studentAssignments.status,
+      submissionUrl: studentAssignments.submissionUrl,
+      submittedAt: studentAssignments.submittedAt,
+      grade: studentAssignments.grade,
+      feedback: studentAssignments.feedback,
+      reviewedAt: studentAssignments.reviewedAt,
+      createdAt: studentAssignments.createdAt,
+      teacherName: users.name,
+    })
+      .from(studentAssignments)
+      .leftJoin(users, eq(studentAssignments.teacherId, users.id))
+      .where(eq(studentAssignments.studentId, ctx.user.id))
+      .orderBy(desc(studentAssignments.createdAt));
+  }),
+
+  /** Submit work for an assignment. */
+  submitAssignment: studentProcedure
+    .input(z.object({
+      assignmentId: z.number(),
+      submissionUrl: z.string().min(1).max(1000),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+      // Verify this assignment belongs to the student
+      const [assignment] = await dbConn.select()
+        .from(studentAssignments)
+        .where(and(
+          eq(studentAssignments.id, input.assignmentId),
+          eq(studentAssignments.studentId, ctx.user.id),
+        ))
+        .limit(1);
+
+      if (!assignment) throw new TRPCError({ code: "NOT_FOUND", message: "Assignment not found" });
+      if (assignment.status === "reviewed") throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Already reviewed" });
+
+      await dbConn.update(studentAssignments)
+        .set({
+          submissionUrl: input.submissionUrl,
+          submittedAt: new Date(),
+          status: "submitted",
+        })
+        .where(eq(studentAssignments.id, input.assignmentId));
+
+      return { success: true };
+    }),
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STUDENT RESOURCES — View shared resources from teachers
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** List resources shared with this student. */
+  listSharedResources: studentProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    // Find groups this student is in
+    const memberships = await dbConn.select({ groupId: studentGroupMembers.groupId })
+      .from(studentGroupMembers)
+      .where(eq(studentGroupMembers.studentUserId, ctx.user.id));
+    const groupIds = memberships.map((m) => m.groupId);
+
+    // Get resources shared with: all, this student specifically, or groups they're in
+    const conditions = [
+      eq(teacherResources.shareScope, "all"),
+      and(eq(teacherResources.shareScope, "individual"), eq(teacherResources.studentId, ctx.user.id)),
+    ];
+    if (groupIds.length > 0) {
+      conditions.push(
+        and(eq(teacherResources.shareScope, "group"), inArray(teacherResources.groupId, groupIds)),
+      );
+    }
+
+    return dbConn.select()
+      .from(teacherResources)
+      .where(or(...conditions))
+      .orderBy(desc(teacherResources.createdAt));
+  }),
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STUDENT REPORTS — View reports sent by teachers
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** List reports sent to this student. */
+  listMyReports: studentProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+
+    return dbConn.select({
+      id: studentReports.id,
+      title: studentReports.title,
+      reportData: studentReports.reportData,
+      sentAt: studentReports.sentAt,
+      createdAt: studentReports.createdAt,
+      teacherName: users.name,
+    })
+      .from(studentReports)
+      .leftJoin(users, eq(studentReports.teacherId, users.id))
+      .where(eq(studentReports.studentId, ctx.user.id))
+      .orderBy(desc(studentReports.createdAt));
   }),
 });

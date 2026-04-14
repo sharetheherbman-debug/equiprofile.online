@@ -18,6 +18,13 @@ const CACHEABLE_API_PATHS = [
   "/api/trpc/nutritionLogs.list",
   "/api/trpc/calendar.list",
   "/api/trpc/settings.get",
+  // Lesson content — cached for offline reading
+  "/api/trpc/student.listLessonPathways",
+  "/api/trpc/student.listLessons",
+  "/api/trpc/student.getLesson",
+  "/api/trpc/student.getLessonProgress",
+  "/api/trpc/student.getDailyScenarios",
+  "/api/trpc/student.getAssignedLessons",
 ];
 
 // Assets that should be cached (hashed assets only)
@@ -146,7 +153,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // index.html and service-worker.js: always network-first, never cache
+  // index.html and service-worker.js: always network-first, cache HTML for offline SPA navigation
   if (
     url.pathname === "/" ||
     url.pathname === "/index.html" ||
@@ -155,11 +162,35 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          // Don't cache these files
+          // Cache the HTML shell for offline SPA navigation
+          if (response && response.status === 200 && !url.pathname.includes("service-worker")) {
+            const cloned = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put("/index.html", cloned));
+          }
           return response;
         })
         .catch(() => {
           // If offline and we have a cached version, use it
+          return caches.match("/index.html");
+        }),
+    );
+    return;
+  }
+
+  // SPA navigation routes — serve cached index.html for offline access
+  // This allows client-side routing to work offline for any visited pages
+  if (
+    request.mode === "navigate" &&
+    !url.pathname.startsWith("/api/") &&
+    !url.pathname.startsWith("/assets/") &&
+    !url.pathname.includes(".")
+  ) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          return response;
+        })
+        .catch(() => {
           return caches.match("/index.html");
         }),
     );

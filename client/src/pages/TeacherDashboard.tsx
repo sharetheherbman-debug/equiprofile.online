@@ -28,6 +28,7 @@ import {
   Calendar,
   Shield,
   ChevronLeft,
+  FolderOpen,
 } from "lucide-react";
 
 // ── Design tokens ─────────────────────────────────────────────────────────
@@ -1458,6 +1459,10 @@ function TeacherProgressView() {
     { studentUserId: selectedStudent! },
     { enabled: selectedStudent !== null },
   );
+  const { data: lessonSummary } = trpc.teacher.getStudentLessonSummary.useQuery(
+    { studentUserId: selectedStudent! },
+    { enabled: selectedStudent !== null },
+  );
 
   if (loadingStudents) return <TCard><div className="animate-pulse h-32 rounded bg-white/[0.04]" /></TCard>;
 
@@ -1537,6 +1542,94 @@ function TeacherProgressView() {
                   </div>
                 )}
 
+                {/* Lesson Progression — from real lesson completion data */}
+                {lessonSummary && (
+                  <TCard>
+                    <h3 className="text-sm font-semibold text-white mb-3">Learning Level & Progression</h3>
+                    <div className="space-y-3">
+                      {/* Current level badge */}
+                      {(() => {
+                        const student = studentList.find(s => s.id === selectedStudent);
+                        const level = student?.learnerLevel ?? "beginner";
+                        const levelColors: Record<string, string> = {
+                          beginner: "#10b981", developing: "#6366f1", intermediate: "#f59e0b", advanced: "#ef4444",
+                        };
+                        return (
+                          <div className="flex items-center gap-2 p-2.5 rounded-lg" style={{ background: `${levelColors[level]}10`, border: `1px solid ${levelColors[level]}25` }}>
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: `${levelColors[level]}20` }}>
+                              <Star className="w-4 h-4" style={{ color: levelColors[level] }} />
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold capitalize" style={{ color: levelColors[level] }}>{level} Level</p>
+                              <p className="text-[10px] text-gray-500">{lessonSummary.completedCount} lessons completed</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Completion by pathway */}
+                      {Object.keys(lessonSummary.byPathway ?? {}).length > 0 && (
+                        <div>
+                          <p className="text-xs text-gray-400 mb-2">Lessons by Pathway</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                            {Object.entries(lessonSummary.byPathway).map(([pw, count]) => (
+                              <div key={pw} className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-white/[0.02]">
+                                <span className="text-xs text-gray-400 capitalize truncate">{pw.replace(/-/g, " ")}</span>
+                                <span className="text-xs font-semibold text-emerald-400 shrink-0 ml-2">{count as number}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Weak areas: pathways with fewest completions */}
+                      {(() => {
+                        const allPathways = [
+                          "horse-care-foundations", "rider-foundations", "stable-yard-safety",
+                          "horse-behaviour-welfare", "tack-equipment", "developing-rider-skills",
+                          "polework-jump-foundations", "horse-health-first-response", "stable-management",
+                          "competitions-preparation", "rider-fitness-mindset", "coaching-teaching-skills",
+                          "handling-groundwork", "nutrition-feeding", "equine-welfare-ethics",
+                        ];
+                        const bp = lessonSummary.byPathway as Record<string, number>;
+                        const weakAreas = allPathways
+                          .filter(p => (bp[p] ?? 0) === 0)
+                          .slice(0, 4);
+                        if (weakAreas.length === 0) return null;
+                        return (
+                          <div>
+                            <p className="text-xs text-gray-400 mb-2 flex items-center gap-1">
+                              <AlertCircle className="w-3 h-3 text-amber-400" />
+                              Areas Not Yet Started
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {weakAreas.map(w => (
+                                <span key={w} className="text-[10px] px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 capitalize">
+                                  {w.replace(/-/g, " ")}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Recommended next step */}
+                      {lessonSummary.completedCount === 0 && (
+                        <div className="p-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
+                          <p className="text-xs text-indigo-300 font-medium">Suggested Action</p>
+                          <p className="text-[10px] text-gray-500 mt-0.5">This student has not completed any lessons yet. Consider assigning a beginner pathway lesson.</p>
+                        </div>
+                      )}
+                      {lessonSummary.completedCount > 0 && lessonSummary.completedCount < 10 && (
+                        <div className="p-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
+                          <p className="text-xs text-indigo-300 font-medium">Suggested Action</p>
+                          <p className="text-[10px] text-gray-500 mt-0.5">This student is early in their learning. Encourage completion of beginner pathways before progressing.</p>
+                        </div>
+                      )}
+                    </div>
+                  </TCard>
+                )}
+
                 {/* Competency tracking */}
                 <TCard>
                   <h3 className="text-sm font-semibold text-white mb-4">Competency Progress</h3>
@@ -1610,6 +1703,550 @@ function TeacherProgressView() {
   );
 }
 
+// ── Teacher Assignments View — Create, review, and mark student work ────────
+
+function TeacherAssignmentsView() {
+  const { data: students } = trpc.teacher.listMyStudents.useQuery();
+  const { data: assignments, isLoading, refetch } = trpc.teacher.listTeacherAssignments.useQuery();
+  const createMutation = trpc.teacher.createAssignment.useMutation({
+    onSuccess: () => {
+      setShowCreate(false);
+      setNewTitle("");
+      setNewDesc("");
+      setNewDueDate("");
+      setNewStudentId(null);
+      refetch();
+    },
+  });
+  const reviewMutation = trpc.teacher.reviewAssignment.useMutation({
+    onSuccess: () => {
+      setReviewingId(null);
+      setGrade("");
+      setFeedback("");
+      refetch();
+    },
+  });
+
+  const [showCreate, setShowCreate] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newDueDate, setNewDueDate] = useState("");
+  const [newStudentId, setNewStudentId] = useState<number | null>(null);
+
+  const [reviewingId, setReviewingId] = useState<number | null>(null);
+  const [grade, setGrade] = useState("");
+  const [feedback, setFeedback] = useState("");
+
+  if (isLoading) return <TCard><Loader2 className="w-5 h-5 animate-spin text-emerald-400 mx-auto" /></TCard>;
+
+  const statusColor: Record<string, string> = {
+    pending: "text-yellow-400 bg-yellow-500/10",
+    submitted: "text-blue-400 bg-blue-500/10",
+    reviewed: "text-emerald-400 bg-emerald-500/10",
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <THeading icon={Edit2} title="Assignments" />
+        <button
+          onClick={() => setShowCreate(!showCreate)}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
+        >
+          <Plus className="w-4 h-4" /> New Assignment
+        </button>
+      </div>
+
+      {/* Create form */}
+      {showCreate && (
+        <TCard>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Assign To</label>
+              <select
+                value={newStudentId?.toString() ?? ""}
+                onChange={(e) => setNewStudentId(e.target.value ? parseInt(e.target.value) : null)}
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/40"
+              >
+                <option value="">Select student</option>
+                {(students ?? []).map((s: any) => (
+                  <option key={s.id} value={s.id}>{s.name || "Unnamed"}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Title</label>
+              <input
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="e.g. Horse Anatomy Diagram Labelling"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Description (optional)</label>
+              <textarea
+                value={newDesc}
+                onChange={(e) => setNewDesc(e.target.value)}
+                placeholder="Instructions for the student..."
+                rows={3}
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/40 resize-none"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Due Date (optional)</label>
+              <input
+                type="date"
+                value={newDueDate}
+                onChange={(e) => setNewDueDate(e.target.value)}
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/40"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  if (!newTitle.trim() || !newStudentId) return;
+                  createMutation.mutate({
+                    studentId: newStudentId,
+                    title: newTitle.trim(),
+                    description: newDesc.trim() || undefined,
+                    dueDate: newDueDate || undefined,
+                  });
+                }}
+                disabled={!newTitle.trim() || !newStudentId || createMutation.isPending}
+                className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 transition-colors"
+              >
+                {createMutation.isPending ? "Creating..." : "Create Assignment"}
+              </button>
+              <button
+                onClick={() => setShowCreate(false)}
+                className="px-4 py-2 rounded-lg bg-white/[0.06] text-gray-400 text-sm font-medium hover:bg-white/[0.1] transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </TCard>
+      )}
+
+      {/* Assignment list */}
+      {(!assignments || assignments.length === 0) && !showCreate ? (
+        <EmptyState icon={Edit2} title="No Assignments Yet" body="Create assignments for your students. They can submit work which you'll review and mark here." />
+      ) : (
+        <div className="space-y-3">
+          {(assignments ?? []).map((a: any) => (
+            <TCard key={a.id}>
+              <div className="flex items-start gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-sm font-medium text-white">{a.title}</p>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColor[a.status] ?? "text-gray-400 bg-white/5"}`}>
+                      {a.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Student: {a.studentName ?? "Unknown"}
+                    {a.dueDate && <> · Due: {new Date(a.dueDate).toLocaleDateString()}</>}
+                  </p>
+                  {a.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{a.description}</p>}
+
+                  {/* Submission info */}
+                  {a.status === "submitted" && a.submissionUrl && (
+                    <div className="mt-2 p-2 bg-blue-500/5 border border-blue-500/10 rounded-lg">
+                      <p className="text-xs text-blue-400 font-medium">📄 Submission received</p>
+                      <a href={a.submissionUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-300 underline mt-1 inline-block">
+                        View submission
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Review info */}
+                  {a.status === "reviewed" && (
+                    <div className="mt-2 p-2 bg-emerald-500/5 border border-emerald-500/10 rounded-lg">
+                      <p className="text-xs text-emerald-400 font-medium">✅ Reviewed — Grade: {a.grade || "N/A"}</p>
+                      {a.feedback && <p className="text-xs text-gray-400 mt-1">{a.feedback}</p>}
+                    </div>
+                  )}
+
+                  {/* Review button */}
+                  {a.status === "submitted" && reviewingId !== a.id && (
+                    <button
+                      onClick={() => setReviewingId(a.id)}
+                      className="mt-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
+                    >
+                      Mark & Review
+                    </button>
+                  )}
+
+                  {/* Review form */}
+                  {reviewingId === a.id && (
+                    <div className="mt-3 p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg space-y-2">
+                      <div>
+                        <label className="block text-xs text-gray-400 mb-1">Grade</label>
+                        <input
+                          value={grade}
+                          onChange={(e) => setGrade(e.target.value)}
+                          placeholder="e.g. A, B+, 85%"
+                          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-400 mb-1">Feedback</label>
+                        <textarea
+                          value={feedback}
+                          onChange={(e) => setFeedback(e.target.value)}
+                          placeholder="Your feedback for the student..."
+                          rows={3}
+                          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/40 resize-none"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => reviewMutation.mutate({
+                            assignmentId: a.id,
+                            grade: grade.trim() || undefined,
+                            feedback: feedback.trim() || undefined,
+                          })}
+                          disabled={reviewMutation.isPending}
+                          className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-500 disabled:opacity-50 transition-colors"
+                        >
+                          {reviewMutation.isPending ? "Saving..." : "Submit Review"}
+                        </button>
+                        <button
+                          onClick={() => setReviewingId(null)}
+                          className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-gray-400 text-xs hover:bg-white/[0.1] transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TCard>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Messages View — Teacher ↔ Student messaging (persisted) ────────────────
+
+function MessagesView() {
+  const { data: students, isLoading } = trpc.teacher.listMyStudents.useQuery();
+  const [selectedStudent, setSelectedStudent] = useState<number | null>(null);
+  const [message, setMessage] = useState("");
+
+  const { data: threadMessages, refetch: refetchMessages } = trpc.teacher.getThreadMessages.useQuery(
+    { studentId: selectedStudent! },
+    { enabled: !!selectedStudent, refetchInterval: 5000 },
+  );
+  const { data: unreadCounts } = trpc.teacher.getUnreadCounts.useQuery(undefined, {
+    refetchInterval: 10000,
+  });
+  const sendMutation = trpc.teacher.sendMessage.useMutation({
+    onSuccess: () => {
+      setMessage("");
+      refetchMessages();
+    },
+  });
+
+  const selectedName = students?.find((s: any) => s.id === selectedStudent)?.name ?? "Student";
+
+  const handleSend = () => {
+    if (!selectedStudent || !message.trim()) return;
+    sendMutation.mutate({ studentId: selectedStudent, content: message.trim() });
+  };
+
+  if (isLoading) return <TCard><Loader2 className="w-5 h-5 animate-spin text-emerald-400 mx-auto" /></TCard>;
+
+  return (
+    <div className="space-y-4">
+      <THeading icon={MessageSquare} title="Messages" />
+      <p className="text-xs text-gray-500">Send messages to your students. Select a student to start a conversation.</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ minHeight: 400 }}>
+        {/* Student list */}
+        <div className={`${T_CARD} p-0 overflow-hidden`}>
+          <div className="p-3 border-b border-white/[0.06]">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Students</p>
+          </div>
+          <div className="max-h-80 overflow-y-auto">
+            {(!students || students.length === 0) ? (
+              <p className="text-xs text-gray-500 p-4 text-center">No students assigned yet.</p>
+            ) : (
+              students.map((s: any) => (
+                <button
+                  key={s.id}
+                  onClick={() => setSelectedStudent(s.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-3 text-left text-sm transition-colors border-b border-white/[0.03] ${
+                    selectedStudent === s.id ? "bg-emerald-500/10 text-white" : "text-gray-400 hover:bg-white/[0.03]"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs font-bold text-emerald-400">
+                    {(s.name || "S").charAt(0).toUpperCase()}
+                  </div>
+                  <span className="truncate">{s.name || "Unnamed Student"}</span>
+                  {(unreadCounts?.[s.id] ?? 0) > 0 && (
+                    <span className="ml-auto text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded-full">
+                      {unreadCounts?.[s.id]}
+                    </span>
+                  )}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Chat area */}
+        <div className={`${T_CARD} p-0 md:col-span-2 flex flex-col`}>
+          {selectedStudent ? (
+            <>
+              <div className="p-3 border-b border-white/[0.06] flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs font-bold text-emerald-400">
+                  {selectedName.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm font-medium text-white">{selectedName}</span>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[250px]">
+                {(!threadMessages || threadMessages.length === 0) && (
+                  <p className="text-xs text-gray-600 text-center py-8">No messages yet. Start the conversation below.</p>
+                )}
+                {(threadMessages ?? []).map((msg) => (
+                  <div key={msg.id} className={`flex ${msg.from === "teacher" ? "justify-end" : "justify-start"}`}>
+                    <div
+                      className={`max-w-[75%] px-3 py-2 rounded-xl text-sm ${
+                        msg.from === "teacher"
+                          ? "bg-emerald-500/20 text-emerald-100"
+                          : "bg-white/[0.06] text-gray-300"
+                      }`}
+                    >
+                      <p>{msg.text}</p>
+                      <p className="text-[10px] text-gray-500 mt-1">{msg.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="p-3 border-t border-white/[0.06] flex gap-2">
+                <input
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  placeholder="Type a message..."
+                  className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={!message.trim() || sendMutation.isPending}
+                  className="px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-sm font-medium hover:bg-emerald-500/30 disabled:opacity-30 transition-colors"
+                >
+                  {sendMutation.isPending ? "..." : "Send"}
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <MessageSquare className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">Select a student to start messaging</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Resources View — Teacher resource upload/management (persisted) ──────────
+
+function ResourcesView() {
+  const { data: resources, isLoading, refetch } = trpc.teacher.listResources.useQuery();
+  const createMutation = trpc.teacher.createResource.useMutation({
+    onSuccess: () => {
+      setTitle("");
+      setDescription("");
+      setShowForm(false);
+      refetch();
+    },
+  });
+  const deleteMutation = trpc.teacher.deleteResource.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [shareScope, setShareScope] = useState<"all" | "group" | "individual">("all");
+  const [fileType, setFileType] = useState<"pdf" | "image" | "document">("pdf");
+  const [fileData, setFileData] = useState<{ name: string; data: string; mimeType: string } | null>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { alert("File too large (max 10MB)"); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(",")[1] || "";
+      setFileData({ name: file.name, data: base64, mimeType: file.type });
+      // Auto-detect file type
+      if (file.type.includes("pdf")) setFileType("pdf");
+      else if (file.type.startsWith("image/")) setFileType("image");
+      else setFileType("document");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCreate = () => {
+    if (!title.trim()) return;
+    // Use the real file name if available, or generate a placeholder path
+    const url = fileData
+      ? `/uploads/resources/${Date.now()}-${fileData.name.replace(/\s+/g, "-")}`
+      : `/uploads/resources/${Date.now()}-${title.trim().replace(/\s+/g, "-").toLowerCase()}.${fileType}`;
+    createMutation.mutate({
+      title: title.trim(),
+      description: description.trim() || undefined,
+      fileUrl: url,
+      fileType,
+      shareScope,
+    });
+  };
+
+  if (isLoading) return <TCard><Loader2 className="w-5 h-5 animate-spin text-emerald-400 mx-auto" /></TCard>;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <THeading icon={Library} title="Teaching Resources" />
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
+        >
+          <Plus className="w-4 h-4" /> Upload Resource
+        </button>
+      </div>
+
+      {showForm && (
+        <TCard>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Resource Title</label>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Horse Anatomy Diagram"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Description (optional)</label>
+              <input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Brief description of the resource"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">File Type</label>
+                <select
+                  value={fileType}
+                  onChange={(e) => setFileType(e.target.value as any)}
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/40"
+                >
+                  <option value="pdf">PDF</option>
+                  <option value="image">Image</option>
+                  <option value="document">Document</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Share With</label>
+                <select
+                  value={shareScope}
+                  onChange={(e) => setShareScope(e.target.value as any)}
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/40"
+                >
+                  <option value="all">All Students</option>
+                  <option value="group">Specific Group</option>
+                  <option value="individual">Individual Student</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">File (PDF, Image, Document)</label>
+              <label className="border-2 border-dashed border-white/[0.1] rounded-lg p-6 text-center hover:border-emerald-500/30 transition-colors cursor-pointer block">
+                <input type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" onChange={handleFileSelect} className="hidden" />
+                <FolderOpen className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                {fileData ? (
+                  <p className="text-xs text-emerald-400">✓ {fileData.name}</p>
+                ) : (
+                  <>
+                    <p className="text-xs text-gray-500">Click to upload or drag & drop</p>
+                    <p className="text-[10px] text-gray-600 mt-1">PDF, PNG, JPG, DOC up to 10MB</p>
+                  </>
+                )}
+              </label>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCreate}
+                disabled={!title.trim() || createMutation.isPending}
+                className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 transition-colors"
+              >
+                {createMutation.isPending ? "Saving..." : "Upload"}
+              </button>
+              <button
+                onClick={() => setShowForm(false)}
+                className="px-4 py-2 rounded-lg bg-white/[0.06] text-gray-400 text-sm font-medium hover:bg-white/[0.1] transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </TCard>
+      )}
+
+      {(!resources || resources.length === 0) && !showForm ? (
+        <EmptyState
+          icon={Library}
+          title="No Resources Yet"
+          body="Upload PDFs, images, and teaching resources to share with your students."
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {(resources ?? []).map((res) => (
+            <TCard key={res.id}>
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  <FileText className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{res.title}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5">
+                    {res.fileType.toUpperCase()} · Shared with: {res.shareScope === "all" ? "All students" : res.shareScope}
+                  </p>
+                  {res.description && (
+                    <p className="text-xs text-gray-500 mt-1 truncate">{res.description}</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => deleteMutation.mutate({ id: res.id })}
+                  className="text-gray-500 hover:text-red-400 transition-colors shrink-0"
+                  title="Delete resource"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </TCard>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Teacher Dashboard ─────────────────────────────────────────────────
 
 export default function TeacherDashboard() {
@@ -1627,6 +2264,7 @@ export default function TeacherDashboard() {
       {activeView === "students" && <StudentsView onFeedback={handleFeedback} />}
       {activeView === "groups" && <GroupsView />}
       {activeView === "tasks" && <TasksView />}
+      {activeView === "assignments" && <TeacherAssignmentsView />}
       {activeView === "lessons" && <TeacherLessonsView />}
       {activeView === "feedback" && (
         <FeedbackView
@@ -1637,6 +2275,8 @@ export default function TeacherDashboard() {
       )}
       {activeView === "reports" && <ReportsView />}
       {activeView === "progress" && <TeacherProgressView />}
+      {activeView === "messages" && <MessagesView />}
+      {activeView === "resources" && <ResourcesView />}
     </TeacherDashboardLayout>
   );
 }

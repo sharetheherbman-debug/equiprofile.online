@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import DashboardLayout from "@/components/DashboardLayout";
+import PlanAwareLayout from "@/components/PlanAwareLayout";
 import { PageTransition } from "@/components/PageTransition";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
@@ -211,7 +211,7 @@ export default function BillingPage() {
   ];
 
   return (
-    <DashboardLayout>
+    <PlanAwareLayout>
       <PageTransition>
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="mb-8">
@@ -661,6 +661,6 @@ export default function BillingPage() {
           )}
         </div>
       </PageTransition>
-    </DashboardLayout>
+    </PlanAwareLayout>
   );
 }
