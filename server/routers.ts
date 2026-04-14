@@ -212,8 +212,8 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
   }
 }
 
-type PlanTier = "free" | "student" | "teacher" | "pro" | "stable";
-const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "teacher", "pro", "stable"];
+type PlanTier = "free" | "student" | "teacher" | "pro" | "stable" | "school_owner";
+const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "teacher", "pro", "stable", "school_owner"];
 
 /**
  * Extract and validate planTier from parsed preferences.

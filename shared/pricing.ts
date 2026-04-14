@@ -42,6 +42,21 @@ export const DEFAULT_PRICING = {
       display: "£300",
     },
   },
+  /** School plans — seat-based pricing */
+  school: {
+    school_10: {
+      monthly: { amount: 4900, display: "£49" },
+      yearly: { amount: 49000, display: "£490" },
+    },
+    school_20: {
+      monthly: { amount: 8900, display: "£89" },
+      yearly: { amount: 89000, display: "£890" },
+    },
+    school_50: {
+      monthly: { amount: 19900, display: "£199" },
+      yearly: { amount: 199000, display: "£1,990" },
+    },
+  },
 } as const;
 
 /** School / Organisation pricing tiers (seat-based) */

@@ -89,6 +89,7 @@ const Competitions = lazy(() => import("./pages/Competitions"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
 const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
+const SchoolDashboard = lazy(() => import("./pages/SchoolDashboard"));
 
 // V2 Frontend Pages — lazy-loaded for code splitting
 const HomeV2 = lazy(() => import("./v2/pages/HomeV2"));
@@ -178,6 +179,13 @@ function Router() {
               <TeacherRoute>
                 <TeacherDashboard />
               </TeacherRoute>
+            </Route>
+
+            {/* School Dashboard — school_owner plan users */}
+            <Route path="/school-dashboard">
+              <ProtectedRoute>
+                <SchoolDashboard />
+              </ProtectedRoute>
             </Route>
 
             {/* App Pages (Protected - require auth) — version-aware */}
