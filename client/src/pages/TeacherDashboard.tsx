@@ -28,6 +28,7 @@ import {
   Calendar,
   Shield,
   ChevronLeft,
+  FolderOpen,
 } from "lucide-react";
 
 // ── Design tokens ─────────────────────────────────────────────────────────
@@ -1610,6 +1611,239 @@ function TeacherProgressView() {
   );
 }
 
+// ── Messages View — Simple teacher ↔ student messaging ─────────────────────
+
+function MessagesView() {
+  const { data: students, isLoading } = trpc.teacher.listMyStudents.useQuery();
+  const [selectedStudent, setSelectedStudent] = useState<number | null>(null);
+  const [message, setMessage] = useState("");
+  const [threads, setThreads] = useState<Record<number, Array<{ from: "teacher" | "student"; text: string; time: string }>>>({});
+
+  const selectedName = students?.find((s: any) => s.id === selectedStudent)?.name ?? "Student";
+
+  const handleSend = () => {
+    if (!selectedStudent || !message.trim()) return;
+    setThreads((prev) => ({
+      ...prev,
+      [selectedStudent]: [
+        ...(prev[selectedStudent] ?? []),
+        { from: "teacher" as const, text: message.trim(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
+      ],
+    }));
+    setMessage("");
+  };
+
+  if (isLoading) return <TCard><Loader2 className="w-5 h-5 animate-spin text-emerald-400 mx-auto" /></TCard>;
+
+  return (
+    <div className="space-y-4">
+      <THeading icon={MessageSquare} title="Messages" />
+      <p className="text-xs text-gray-500">Send messages to your students. Select a student to start a conversation.</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ minHeight: 400 }}>
+        {/* Student list */}
+        <div className={`${T_CARD} p-0 overflow-hidden`}>
+          <div className="p-3 border-b border-white/[0.06]">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Students</p>
+          </div>
+          <div className="max-h-80 overflow-y-auto">
+            {(!students || students.length === 0) ? (
+              <p className="text-xs text-gray-500 p-4 text-center">No students assigned yet.</p>
+            ) : (
+              students.map((s: any) => (
+                <button
+                  key={s.id}
+                  onClick={() => setSelectedStudent(s.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-3 text-left text-sm transition-colors border-b border-white/[0.03] ${
+                    selectedStudent === s.id ? "bg-emerald-500/10 text-white" : "text-gray-400 hover:bg-white/[0.03]"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs font-bold text-emerald-400">
+                    {(s.name || "S").charAt(0).toUpperCase()}
+                  </div>
+                  <span className="truncate">{s.name || "Unnamed Student"}</span>
+                  {(threads[s.id]?.length ?? 0) > 0 && (
+                    <span className="ml-auto text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-full">
+                      {threads[s.id]?.length}
+                    </span>
+                  )}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Chat area */}
+        <div className={`${T_CARD} p-0 md:col-span-2 flex flex-col`}>
+          {selectedStudent ? (
+            <>
+              <div className="p-3 border-b border-white/[0.06] flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs font-bold text-emerald-400">
+                  {selectedName.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm font-medium text-white">{selectedName}</span>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[250px]">
+                {(threads[selectedStudent] ?? []).length === 0 && (
+                  <p className="text-xs text-gray-600 text-center py-8">No messages yet. Start the conversation below.</p>
+                )}
+                {(threads[selectedStudent] ?? []).map((msg, i) => (
+                  <div key={i} className={`flex ${msg.from === "teacher" ? "justify-end" : "justify-start"}`}>
+                    <div
+                      className={`max-w-[75%] px-3 py-2 rounded-xl text-sm ${
+                        msg.from === "teacher"
+                          ? "bg-emerald-500/20 text-emerald-100"
+                          : "bg-white/[0.06] text-gray-300"
+                      }`}
+                    >
+                      <p>{msg.text}</p>
+                      <p className="text-[10px] text-gray-500 mt-1">{msg.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="p-3 border-t border-white/[0.06] flex gap-2">
+                <input
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  placeholder="Type a message..."
+                  className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={!message.trim()}
+                  className="px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-sm font-medium hover:bg-emerald-500/30 disabled:opacity-30 transition-colors"
+                >
+                  Send
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <MessageSquare className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">Select a student to start messaging</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Resources View — Teacher resource upload/management ─────────────────────
+
+function ResourcesView() {
+  const [resources, setResources] = useState<Array<{ id: number; title: string; fileType: string; shareScope: string; createdAt: string }>>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState("");
+  const [shareScope, setShareScope] = useState<"all" | "group" | "individual">("all");
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <THeading icon={Library} title="Teaching Resources" />
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
+        >
+          <Plus className="w-4 h-4" /> Upload Resource
+        </button>
+      </div>
+
+      {showForm && (
+        <TCard>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Resource Title</label>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Horse Anatomy Diagram"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Share With</label>
+              <select
+                value={shareScope}
+                onChange={(e) => setShareScope(e.target.value as any)}
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/40"
+              >
+                <option value="all">All Students</option>
+                <option value="group">Specific Group</option>
+                <option value="individual">Individual Student</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">File (PDF, Image, Document)</label>
+              <div className="border-2 border-dashed border-white/[0.1] rounded-lg p-6 text-center hover:border-emerald-500/30 transition-colors cursor-pointer">
+                <FolderOpen className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                <p className="text-xs text-gray-500">Click to upload or drag & drop</p>
+                <p className="text-[10px] text-gray-600 mt-1">PDF, PNG, JPG, DOC up to 10MB</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  if (title.trim()) {
+                    setResources((prev) => [...prev, {
+                      id: Date.now(),
+                      title: title.trim(),
+                      fileType: "pdf",
+                      shareScope,
+                      createdAt: new Date().toISOString(),
+                    }]);
+                    setTitle("");
+                    setShowForm(false);
+                  }
+                }}
+                className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors"
+              >
+                Upload
+              </button>
+              <button
+                onClick={() => setShowForm(false)}
+                className="px-4 py-2 rounded-lg bg-white/[0.06] text-gray-400 text-sm font-medium hover:bg-white/[0.1] transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </TCard>
+      )}
+
+      {resources.length === 0 && !showForm ? (
+        <EmptyState
+          icon={Library}
+          title="No Resources Yet"
+          body="Upload PDFs, images, and teaching resources to share with your students."
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {resources.map((res) => (
+            <TCard key={res.id}>
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  <FileText className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{res.title}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5">
+                    {res.fileType.toUpperCase()} · Shared with: {res.shareScope === "all" ? "All students" : res.shareScope}
+                  </p>
+                </div>
+              </div>
+            </TCard>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Teacher Dashboard ─────────────────────────────────────────────────
 
 export default function TeacherDashboard() {
@@ -1637,6 +1871,8 @@ export default function TeacherDashboard() {
       )}
       {activeView === "reports" && <ReportsView />}
       {activeView === "progress" && <TeacherProgressView />}
+      {activeView === "messages" && <MessagesView />}
+      {activeView === "resources" && <ResourcesView />}
     </TeacherDashboardLayout>
   );
 }

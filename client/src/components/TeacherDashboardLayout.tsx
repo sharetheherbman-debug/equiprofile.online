@@ -25,6 +25,8 @@ import {
   DollarSign,
   Library,
   ShieldCheck,
+  Send,
+  FolderOpen,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -43,7 +45,9 @@ export type TeacherView =
   | "feedback"
   | "reports"
   | "lessons"
-  | "progress";
+  | "progress"
+  | "messages"
+  | "resources";
 
 interface TeacherNavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -63,6 +67,8 @@ const teacherNavItems: TeacherNavItem[] = [
   { icon: UsersRound, label: "Groups", view: "groups" },
   { icon: ClipboardList, label: "Assign Work", view: "tasks" },
   { icon: Library, label: "Lessons", view: "lessons" },
+  { icon: FolderOpen, label: "Resources", view: "resources" },
+  { icon: Send, label: "Messages", view: "messages" },
   { icon: MessageSquare, label: "Reviews", view: "feedback" },
   { icon: BarChart2, label: "Progress", view: "progress" },
   { icon: FileText, label: "Reports", view: "reports" },
@@ -215,6 +221,8 @@ export default function TeacherDashboardLayout({
     groups: "Groups & Classes",
     tasks: "Assign Work",
     lessons: "Lessons",
+    resources: "Teaching Resources",
+    messages: "Messages",
     feedback: "Reviews & Feedback",
     progress: "Student Progress",
     reports: "Reports",

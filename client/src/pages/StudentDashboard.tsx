@@ -2715,8 +2715,6 @@ function StudentSettingsView({ onNavigate }: { onNavigate: (v: ActiveView) => vo
         <p className="text-xs text-gray-500">Need to change your password? Use the account security settings.</p>
         <a
           href="/settings#security"
-          target="_blank"
-          rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300"
         >
           Open security settings <ChevronRight className="w-3.5 h-3.5" />
@@ -2729,8 +2727,6 @@ function StudentSettingsView({ onNavigate }: { onNavigate: (v: ActiveView) => vo
         <p className="text-xs text-gray-500">Manage your student plan subscription.</p>
         <a
           href="/billing"
-          target="_blank"
-          rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300"
         >
           Manage billing <ChevronRight className="w-3.5 h-3.5" />
