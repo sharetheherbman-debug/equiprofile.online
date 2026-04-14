@@ -98,12 +98,14 @@ function hasUserFreeAccess(user: { preferences?: string | null }): boolean {
   }
 }
 
-function getUserPlanTier(user: { preferences?: string | null }): "standard" | "stable" | null {
+function getUserPlanTier(user: { preferences?: string | null }): "standard" | "stable" | "student" | "teacher" | null {
   if (!user.preferences) return null;
   try {
     const prefs = JSON.parse(user.preferences);
     if (prefs.planTier === "stable" || prefs.bothDashboardsUnlocked) return "stable";
-    if (prefs.planTier === "standard") return "standard";
+    if (prefs.planTier === "teacher" || prefs.selectedExperience === "teacher") return "teacher";
+    if (prefs.planTier === "student" || prefs.selectedExperience === "student") return "student";
+    if (prefs.planTier === "standard" || prefs.planTier === "pro") return "standard";
     return null;
   } catch {
     return null;
@@ -147,7 +149,7 @@ function AdminContent() {
     null,
   );
   const [resetPasswordValue, setResetPasswordValue] = useState("");
-  const [freeAccessTier, setFreeAccessTier] = useState<"standard" | "stable">("standard");
+  const [freeAccessTier, setFreeAccessTier] = useState<"standard" | "stable" | "student" | "teacher">("standard");
   const [freeAccessDays, setFreeAccessDays] = useState<7 | 14 | 30>(7);
   const [freeAccessReason, setFreeAccessReason] = useState("");
   const [freeAccessCustomNote, setFreeAccessCustomNote] = useState("");
@@ -728,15 +730,15 @@ function AdminContent() {
                               {(() => {
                                 const tier = getUserPlanTier(user);
                                 if (!tier) return null;
+                                const tierConfig = {
+                                  stable: { label: "Stable", className: "text-xs border-violet-400/50 text-violet-700 bg-violet-50 dark:bg-violet-950/30 dark:text-violet-300" },
+                                  student: { label: "Student", className: "text-xs border-amber-400/50 text-amber-700 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-300" },
+                                  teacher: { label: "Teacher", className: "text-xs border-emerald-400/50 text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-300" },
+                                  standard: { label: "Standard", className: "text-xs border-blue-400/50 text-blue-700 bg-blue-50 dark:bg-blue-950/30 dark:text-blue-300" },
+                                }[tier];
                                 return (
-                                  <Badge
-                                    variant="outline"
-                                    className={tier === "stable"
-                                      ? "text-xs border-violet-400/50 text-violet-700 bg-violet-50 dark:bg-violet-950/30 dark:text-violet-300"
-                                      : "text-xs border-blue-400/50 text-blue-700 bg-blue-50 dark:bg-blue-950/30 dark:text-blue-300"
-                                    }
-                                  >
-                                    {tier === "stable" ? "Stable" : "Standard"}
+                                  <Badge variant="outline" className={tierConfig.className}>
+                                    {tierConfig.label}
                                   </Badge>
                                 );
                               })()}
@@ -1051,7 +1053,7 @@ function AdminContent() {
                                         <Label>Dashboard Access</Label>
                                         <Select
                                           value={freeAccessTier}
-                                          onValueChange={(v) => setFreeAccessTier(v as "standard" | "stable")}
+                                          onValueChange={(v) => setFreeAccessTier(v as "standard" | "stable" | "student" | "teacher")}
                                         >
                                           <SelectTrigger>
                                             <SelectValue />
@@ -1059,10 +1061,12 @@ function AdminContent() {
                                           <SelectContent>
                                             <SelectItem value="standard">Standard (individual horse management)</SelectItem>
                                             <SelectItem value="stable">Stable (yard/stable management)</SelectItem>
+                                            <SelectItem value="student">Student (student learning portal)</SelectItem>
+                                            <SelectItem value="teacher">Teacher (instructor portal)</SelectItem>
                                           </SelectContent>
                                         </Select>
                                         <p className="text-xs text-muted-foreground">
-                                          Standard and Stable access are separate entitlements.
+                                          Standard, Stable, Student, and Teacher access are separate entitlements.
                                         </p>
                                       </div>
                                       <div className="space-y-2">

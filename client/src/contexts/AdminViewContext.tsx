@@ -89,3 +89,13 @@ export function AdminViewProvider({ children }: { children: ReactNode }) {
 export function useAdminViewMode() {
   return useContext(AdminViewContext);
 }
+
+// ── Shared mode config — used by layout components' AdminViewIndicators ────
+
+export const ADMIN_VIEW_MODE_LIST = [
+  { mode: "admin" as AdminViewMode, label: "Admin", icon: "🛡️", path: "/admin" },
+  { mode: "pro" as AdminViewMode, label: "Pro", icon: "🐴", path: "/dashboard" },
+  { mode: "stable" as AdminViewMode, label: "Stable", icon: "🏠", path: "/dashboard" },
+  { mode: "student" as AdminViewMode, label: "Student", icon: "🎓", path: "/dashboard" },
+  { mode: "teacher" as AdminViewMode, label: "Teacher", icon: "📋", path: "/dashboard" },
+] as const;
