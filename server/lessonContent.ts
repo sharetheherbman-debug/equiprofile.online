@@ -138,6 +138,27 @@ export const LESSON_PATHWAYS: LessonPathwayData[] = [
     sortOrder: 12,
     iconName: "BookOpen",
   },
+  {
+    slug: "handling-groundwork",
+    title: "Handling & Groundwork",
+    description: "Master the essential skills of handling horses safely on the ground, including leading, tying up, turning out, and lungeing techniques.",
+    sortOrder: 13,
+    iconName: "Hand",
+  },
+  {
+    slug: "nutrition-feeding",
+    title: "Nutrition & Feeding",
+    description: "Understand equine nutrition principles, feed types, feeding routines, and how to create balanced diets for different horses and workloads.",
+    sortOrder: 14,
+    iconName: "Apple",
+  },
+  {
+    slug: "equine-welfare-ethics",
+    title: "Equine Welfare & Ethics",
+    description: "Explore the ethical responsibilities of horse ownership and care, including the Five Freedoms, welfare legislation, and responsible horsemanship.",
+    sortOrder: 15,
+    iconName: "Heart",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
