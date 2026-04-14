@@ -399,6 +399,434 @@ const SCENARIO_DATA: Scenario[] = [
     ],
     learningTakeaway: "Stable vices are often management or health-related. Investigate the underlying cause — gastric issues, forage, social contact, exercise — before relying on physical restraint.",
   },
+  // ── BEGINNER (additional) ─────────────────────────────────────────────────
+  {
+    id: "s016",
+    title: "Approaching a Horse in the Field",
+    level: "beginner",
+    category: "Handling & Safety",
+    prompt: "You need to catch your horse from a large field. He is grazing near the middle. What is the safest and most effective approach?",
+    choices: [
+      { id: "a", text: "Run straight towards him to catch him before he moves away.", isCorrect: false, explanation: "Running towards a horse is threatening and will likely cause him to flee. Always approach calmly." },
+      { id: "b", text: "Approach from the front-left, speaking quietly, with the headcollar behind your back or in a bucket. Walk at a calm, unhurried pace.", isCorrect: true, explanation: "Correct. Horses feel safest when approached from the near-side (left) at a calm pace. Hiding the headcollar reduces wariness. Speaking softly helps them recognise you before you are close." },
+      { id: "c", text: "Approach from directly behind so he cannot see you coming.", isCorrect: false, explanation: "Approaching from directly behind is dangerous — horses can kick when startled. Always approach from the side." },
+      { id: "d", text: "Shout his name loudly from the gate so he comes to you.", isCorrect: false, explanation: "Loud shouting can startle horses and trigger flight responses. If he is trained to come to his name, a gentle call is fine, but always go to the horse rather than expecting the horse to always come to you." },
+    ],
+    learningTakeaway: "Always approach horses from the near-side (left), calmly and quietly. Avoid sudden movements and never approach from directly behind.",
+  },
+  {
+    id: "s017",
+    title: "Loose Horse in the Yard",
+    level: "beginner",
+    category: "Handling & Safety",
+    prompt: "A horse has slipped its headcollar and is loose in the yard. There are open gates and a road nearby. What is your immediate priority?",
+    choices: [
+      { id: "a", text: "Chase the horse back into the stable immediately.", isCorrect: false, explanation: "Chasing a loose horse escalates the situation and can cause the horse to panic and bolt towards danger." },
+      { id: "b", text: "Shout for help, close open gates and hazardous exits first, then calmly attempt to approach the horse with a headcollar and a handful of feed.", isCorrect: true, explanation: "Correct. The immediate priority is preventing escape to dangerous areas. Alert others, contain the space, then approach calmly. Using feed or another horse can help attract the loose horse without chasing." },
+      { id: "c", text: "Ignore it — horses usually find their own way back to their stable.", isCorrect: false, explanation: "A loose horse near a road or open boundary is a serious safety risk to the horse and public. Immediate safe action is required." },
+      { id: "d", text: "Tackle the horse physically to stop it moving.", isCorrect: false, explanation: "Physical tackles are dangerous for both handler and horse. Calm, methodical containment and safe approach are always preferred." },
+    ],
+    learningTakeaway: "A loose horse near hazards requires calm, methodical action: contain exits first, then approach quietly. Chasing a horse increases panic and risk.",
+  },
+  {
+    id: "s018",
+    title: "Mucking Out Safely",
+    level: "beginner",
+    category: "Stable Management",
+    prompt: "You are mucking out a stable with the horse still inside. The horse starts to become restless and moves towards you while you are using a fork. What should you do?",
+    choices: [
+      { id: "a", text: "Continue working quickly to finish — the horse will settle.", isCorrect: false, explanation: "Continuing to work around a restless horse with a sharp tool risks injury. The horse's behaviour should always take priority." },
+      { id: "b", text: "Tie the horse up or remove the horse from the stable before continuing.", isCorrect: true, explanation: "Correct. The safest practice is to tie the horse up short or remove it from the stable entirely when mucking out. This protects both horse and handler from accidents with tools." },
+      { id: "c", text: "Push the horse away firmly with the fork to create space.", isCorrect: false, explanation: "Using a fork to push a horse is dangerous and abusive. If the horse moves into your space, stop work and reposition the horse safely." },
+      { id: "d", text: "Leave the stable and return later when the horse is calmer.", isCorrect: false, explanation: "While temporarily leaving is safer than risking injury, the correct approach is to tie the horse or remove it so the work can be completed safely." },
+    ],
+    learningTakeaway: "Always tie up or remove horses before mucking out with tools. Never use tools to push a horse — stop work and safely reposition the horse first.",
+  },
+  {
+    id: "s019",
+    title: "Incorrect Girth Tightening",
+    level: "beginner",
+    category: "Tack & Equipment",
+    prompt: "You are tacking up for a lesson. You tighten the girth and the horse nips at you and pins its ears. What is the most likely explanation and correct response?",
+    choices: [
+      { id: "a", text: "The horse is being naughty and should be disciplined.", isCorrect: false, explanation: "Girth sensitivity and associated discomfort are common and can indicate saddle fit issues, girth galls, or gastric problems. Discipline would not address the cause." },
+      { id: "b", text: "The horse may be girth-sensitive. Tighten gradually, check for saddle and girth fit issues, and monitor for underlying health problems such as gastric ulcers.", isCorrect: true, explanation: "Correct. Girth-nipping often indicates discomfort. Tighten incrementally (not all at once), check for girth galls, and be aware that gastric ulcers are a common underlying cause. Report persistent girth sensitivity to an instructor or vet." },
+      { id: "c", text: "Tighten quickly and efficiently — the horse will tolerate it once you start riding.", isCorrect: false, explanation: "Tightening quickly ignores the horse's communication. Rushing the process can make girth sensitivity worse over time." },
+      { id: "d", text: "The saddle is always the problem — book a saddle fitter immediately.", isCorrect: false, explanation: "Saddle fit may be a factor but is not automatically the sole cause. A systematic approach includes girth, saddle, and health assessment." },
+    ],
+    learningTakeaway: "Girth-nipping is a pain communication, not a behaviour problem. Tighten gradually, check equipment fit, and investigate underlying health causes such as ulcers.",
+  },
+  {
+    id: "s020",
+    title: "Horse Refuses to Load",
+    level: "beginner",
+    category: "Handling & Behaviour",
+    prompt: "You need to load your horse into a trailer for a vet appointment. He has loaded before but today plants his feet at the ramp and refuses to move. What is the best approach?",
+    choices: [
+      { id: "a", text: "Force him on using a lunge whip and maximum pressure from behind.", isCorrect: false, explanation: "Forcing a horse onto a trailer through fear or pressure without understanding the cause is likely to make the problem worse and increases injury risk." },
+      { id: "b", text: "Remain calm, investigate whether the trailer environment is causing concern (lighting, floor, ramp angle), and use patient, low-pressure loading methods, giving the horse time to investigate the trailer.", isCorrect: true, explanation: "Correct. Loading refusal often has a cause — dark interior, slippery floor, steep ramp, or previous bad experience. Patient, low-pressure approaches using positive reinforcement or a trained assistant are the most effective long-term solutions." },
+      { id: "c", text: "Give up and reschedule the vet appointment.", isCorrect: false, explanation: "While safety is priority and rescheduling may sometimes be necessary, it does not address the loading issue. A structured loading training approach should be implemented." },
+      { id: "d", text: "Blindfold the horse and rush him onto the trailer before he can react.", isCorrect: false, explanation: "Blindfolding and rushing increases panic and is not a safe or ethical loading method." },
+    ],
+    learningTakeaway: "Loading refusal has causes — investigate the trailer environment and use patient, low-pressure methods. Forcing horses increases fear and future loading problems.",
+  },
+  // ── DEVELOPING (additional) ───────────────────────────────────────────────
+  {
+    id: "s021",
+    title: "Laminitis Risk Assessment",
+    level: "developing",
+    category: "Health & Welfare",
+    prompt: "It is spring and your native pony has been living on lush, rapidly growing grass for two weeks. He is showing slight stiffness and a 'rocking horse' stance at morning turnout. What should you do?",
+    choices: [
+      { id: "a", text: "Increase exercise to help him warm up through the stiffness.", isCorrect: false, explanation: "If laminitis is suspected, exercise is contraindicated — it can worsen the condition significantly by increasing blood flow to already inflamed laminae." },
+      { id: "b", text: "Bring the pony in immediately, restrict turnout to a dry lot or starvation paddock, call the vet, and provide deep supportive bedding.", isCorrect: true, explanation: "Correct. The signs described are classic early laminitis indicators. Immediate box rest on deep bedding, restricted access to grass, and veterinary assessment are critical. Early intervention significantly improves outcomes." },
+      { id: "c", text: "Give him anti-inflammatory medication from the first aid kit and monitor for 24 hours.", isCorrect: false, explanation: "Administering medication without veterinary advice is inappropriate. Laminitis requires professional diagnosis. NSAIDs may help but must be prescribed by a vet." },
+      { id: "d", text: "Move him to another field with shorter grass.", isCorrect: false, explanation: "Moving to shorter grass reduces fructan intake but does not address the acute episode. If laminitis has developed, the immediate priority is removal from all grass and veterinary contact." },
+    ],
+    learningTakeaway: "Laminitis signs include stiffness, rocking stance, and heat in feet. Immediate response: restrict grass, deep bedding, box rest, and call the vet. Early treatment is critical.",
+  },
+  {
+    id: "s022",
+    title: "Recognising Dehydration",
+    level: "developing",
+    category: "Health & Welfare",
+    prompt: "After a long competitive event on a warm day, your horse has not drunk water for over an hour. You perform a skin pinch test on his neck and the skin takes four seconds to return to normal. What does this indicate?",
+    choices: [
+      { id: "a", text: "The horse is fine — slow skin return is normal after exercise.", isCorrect: false, explanation: "Skin tenting (slow return after pinching) lasting more than 2 seconds is an indicator of dehydration. Four seconds is a meaningful concern." },
+      { id: "b", text: "Mild to moderate dehydration is indicated. Offer water, isotonic electrolytes if available, and monitor vital signs. If no improvement, contact a vet.", isCorrect: true, explanation: "Correct. A skin pinch return of >2 seconds suggests dehydration. Offer water immediately. Electrolytes help replace minerals lost in sweat. Persistent refusal to drink or worsening signs should prompt veterinary contact." },
+      { id: "c", text: "The horse is severely dehydrated — administer IV fluids immediately.", isCorrect: false, explanation: "IV fluids are a veterinary procedure and are not appropriate for a handler to administer. Offering water is the correct first step before escalating to veterinary care." },
+      { id: "d", text: "The skin test is unreliable — only check if the horse refuses to drink.", isCorrect: false, explanation: "The skin pinch test is a recognised field indicator of hydration status. It is not perfect but is a useful assessment tool alongside others such as gum moistness." },
+    ],
+    learningTakeaway: "Skin pinch (turgor test) return >2 seconds indicates dehydration. Offer water, monitor vital signs, and seek veterinary advice if signs persist or worsen.",
+  },
+  {
+    id: "s023",
+    title: "Managing a Horse That Bolts",
+    level: "developing",
+    category: "Riding & Behaviour",
+    prompt: "Your horse suddenly bolts during a ride in the arena. Which is the correct immediate action?",
+    choices: [
+      { id: "a", text: "Pull both reins back as hard as possible to stop immediately.", isCorrect: false, explanation: "A direct, hard pull on both reins often increases panic and can cause a horse to rear or flip backwards. A sawing, one-rein technique is safer." },
+      { id: "b", text: "Stay balanced and calm, use a one-rein pulley stop by taking one rein to the hip and bending the horse in a circle to safely reduce speed.", isCorrect: true, explanation: "Correct. The one-rein stop (pulley stop) is the established emergency technique for a bolting horse. Maintaining rider balance reduces the risk of falling. Circling reduces forward momentum safely." },
+      { id: "c", text: "Jump off the horse immediately.", isCorrect: false, explanation: "Jumping from a bolting horse at speed significantly increases injury risk for both horse and rider. The one-rein stop is a safer and more effective first response." },
+      { id: "d", text: "Let the horse run — he will tire and stop on his own.", isCorrect: false, explanation: "While a horse may eventually stop, allowing an uncontrolled bolt in an arena or open space creates significant hazards. Actively managing the situation is correct." },
+    ],
+    learningTakeaway: "For a bolting horse, use the one-rein pulley stop: one rein to the hip, bend into a circle. Stay balanced. Direct pull-back with both reins can cause rearing.",
+  },
+  {
+    id: "s024",
+    title: "Rug Fitting Concerns",
+    level: "developing",
+    category: "Stable Management",
+    prompt: "You notice a fresh rub mark and hair loss on the right shoulder of your horse after removing his turnout rug. What is the most appropriate response?",
+    choices: [
+      { id: "a", text: "Apply a thick layer of petroleum jelly to the rub and put the rug back on.", isCorrect: false, explanation: "Petroleum jelly treats the symptom, not the cause. The rug fit must be addressed to prevent further rubbing, which can lead to sores and skin breakdown." },
+      { id: "b", text: "Remove the rug, assess the severity of the rub, treat the skin as needed, investigate the cause of the rubbing (fit, attachment, liner), and do not use the rug again until the issue is resolved.", isCorrect: true, explanation: "Correct. Rug rubs indicate an ill-fitting rug, incorrect positioning, or insufficient undergarment. The rug should not be reused until the fit is corrected. Sores should be treated and monitored for infection." },
+      { id: "c", text: "Continue using the rug — rubs are a normal part of rugging.", isCorrect: false, explanation: "Rubs are a sign of rug problems, not normal. Left unaddressed, they can develop into open sores, infections, and chronic hair loss." },
+      { id: "d", text: "Change to a lighter rug with more fill to reduce pressure.", isCorrect: false, explanation: "Rug weight does not directly address fit. The rug's shoulder design, neck cut, and strap configuration need assessment." },
+    ],
+    learningTakeaway: "Rug rubs indicate poor fit. Remove the rug, treat the skin, and correct the fit or use a rug liner before resuming use. Never ignore recurring rubs.",
+  },
+  {
+    id: "s025",
+    title: "Worm Egg Count Management",
+    level: "developing",
+    category: "Health & Welfare",
+    prompt: "Your horse's spring worm egg count (WEC) comes back at 350 eggs per gram (epg). The vet's threshold for treatment is 200 epg. What is the most appropriate action?",
+    choices: [
+      { id: "a", text: "Worm immediately with ivermectin regardless of the count being borderline.", isCorrect: false, explanation: "300–500 epg is a moderate-to-high count requiring treatment, but the choice of wormer should be guided by current resistance data and vet advice, not automatic ivermectin use." },
+      { id: "b", text: "As the count exceeds the treatment threshold, treat with an appropriate wormer as advised by your vet, then retest in 6–8 weeks to check efficacy (reduction expected >95%).", isCorrect: true, explanation: "Correct. A count of 350 epg exceeds the common treatment threshold of 200 epg. Targeted treatment guided by WEC reduces resistance development. Post-treatment efficacy testing is best practice." },
+      { id: "c", text: "The count is acceptable — WEC results can vary and may be a false positive.", isCorrect: false, explanation: "At 350 epg, the count is above the recognised treatment threshold. Dismissing the result without action is not appropriate horse care." },
+      { id: "d", text: "Worm monthly as a precaution regardless of test results.", isCorrect: false, explanation: "Calendar-based worming regardless of test results contributes to anthelmintic resistance. Targeted strategic worming based on WEC is the current recommended approach." },
+    ],
+    learningTakeaway: "Targeted worming based on WEC reduces resistance. Counts above the threshold (typically 200 epg) require treatment. Follow-up testing confirms wormer efficacy.",
+  },
+  // ── INTERMEDIATE (additional) ─────────────────────────────────────────────
+  {
+    id: "s026",
+    title: "Impaction Colic Assessment",
+    level: "intermediate",
+    category: "Health & Welfare",
+    prompt: "Your horse is showing mild colic signs — repeatedly looking at his flanks, occasional pawing, but no rolling yet. Gut sounds are reduced on the right side. Temperature and pulse are normal. What is the best course of action?",
+    choices: [
+      { id: "a", text: "Wait 24 hours and monitor before calling the vet — mild colic usually resolves.", isCorrect: false, explanation: "While mild colic can resolve, reduced gut sounds alongside colic signs warrant early veterinary assessment. Waiting 24 hours without professional evaluation risks escalation." },
+      { id: "b", text: "Walk the horse to keep gut motility going, offer small amounts of water, and call the vet to report signs and receive guidance on whether examination is needed.", isCorrect: true, explanation: "Correct. Gentle walking can help encourage gut motility. Veterinary contact allows professional guidance on urgency. Reduced gut sounds with colic signs should always be reported, even if signs are mild." },
+      { id: "c", text: "Administer a full dose of bute immediately to relieve pain.", isCorrect: false, explanation: "Administering high-dose NSAIDs without veterinary guidance can mask symptoms and delay appropriate treatment. Partial pain relief may be appropriate but only under veterinary instruction." },
+      { id: "d", text: "Allow the horse to roll — it will help move the blockage.", isCorrect: false, explanation: "Uncontrolled rolling in a colic horse risks gut torsion (twist), which is a surgical emergency. Mild controlled movement (walking) is preferred to uncontrolled rolling." },
+    ],
+    learningTakeaway: "Mild colic with reduced gut sounds warrants veterinary contact. Walk the horse gently, restrict feed, offer water, and monitor vital signs while awaiting guidance.",
+  },
+  {
+    id: "s027",
+    title: "Trot-Canter Transition Issues",
+    level: "intermediate",
+    category: "Riding & Training",
+    prompt: "Your horse consistently strikes off on the wrong canter lead on the left rein. You have checked straightness and maintained an inside flexion, but the problem persists. What should you investigate next?",
+    choices: [
+      { id: "a", text: "Use a stronger spur to demand the correct lead.", isCorrect: false, explanation: "Using stronger aids to override a physical problem can cause pain, resistance, and reduced trust. Physical causes should be ruled out before increasing pressure." },
+      { id: "b", text: "Consider whether there is a physical cause: one-sided stiffness, asymmetry, back pain, or saddle fit. Discuss with a vet, physio, or trainer before concluding it is solely a training issue.", isCorrect: true, explanation: "Correct. Persistent wrong-lead striking-off on one rein often has a physical component: one-sided stiffness, sacroiliac pain, back discomfort, or asymmetric saddle position. Rule out physical causes with appropriate professionals before increasing training pressure." },
+      { id: "c", text: "Only canter on the correct lead rein until the horse improves.", isCorrect: false, explanation: "Avoiding the problem lead does not address its cause and increases asymmetry over time. Both reins must be developed, with root cause investigation." },
+      { id: "d", text: "The horse is being lazy — increase pace at trot before asking for canter.", isCorrect: false, explanation: "A faster trot does not address consistent one-sided wrong-lead striking-off. Physical and training factors are more likely explanations than laziness." },
+    ],
+    learningTakeaway: "Persistent one-sided wrong-lead striking-off often indicates physical asymmetry. Rule out pain, stiffness, and saddle fit before assuming training-only causes.",
+  },
+  {
+    id: "s028",
+    title: "Overtraining Warning Signs",
+    level: "intermediate",
+    category: "Training & Management",
+    prompt: "Over the last two weeks your horse has become progressively slower to warm up, shows reduced impulsion mid-session, sweats more than usual for the same workload, and has started refusing fences he previously jumped confidently. What is the most likely issue?",
+    choices: [
+      { id: "a", text: "The horse needs stricter schooling — he is testing boundaries.", isCorrect: false, explanation: "The described signs — progressive decline, increased sweating, refusals at familiar fences — are more consistent with physical overload or pain than with behavioural boundary-testing." },
+      { id: "b", text: "These signs suggest overtraining, physical fatigue, or an underlying health issue. Reduce workload, schedule rest days, and arrange veterinary assessment to rule out musculoskeletal pain, gastric ulcers, or other conditions.", isCorrect: true, explanation: "Correct. The pattern described — reduced performance across multiple parameters over two weeks — is a classic overtraining or chronic pain presentation. Progressive decline in previously mastered skills strongly suggests a physical cause. Rest and veterinary investigation are appropriate first steps." },
+      { id: "c", text: "Switch to a different training programme immediately to keep the horse engaged.", isCorrect: false, explanation: "Changing the programme without addressing the underlying cause may worsen the physical problem. Rest and investigation should come first." },
+      { id: "d", text: "Increase calorie intake — the horse may simply need more energy.", isCorrect: false, explanation: "While nutrition is important, the described multi-parameter decline over time is unlikely to be resolved by increased calories alone and may reflect a health or training load issue." },
+    ],
+    learningTakeaway: "Progressive multi-symptom decline over weeks suggests overtraining or underlying health issues. Rest, workload review, and veterinary assessment are always the correct first response.",
+  },
+  {
+    id: "s029",
+    title: "Electrolyte Management in Competition",
+    level: "intermediate",
+    category: "Nutrition & Health",
+    prompt: "Your horse has completed a cross-country course on a hot, humid day. He is sweating heavily. A fellow competitor suggests giving him a large electrolyte paste immediately. What is the best practice?",
+    choices: [
+      { id: "a", text: "Give the full dose of electrolyte paste right away regardless of water intake.", isCorrect: false, explanation: "Electrolyte pastes without adequate water can increase blood salt concentration and may cause further dehydration if the horse will not drink. Water must be available first." },
+      { id: "b", text: "Cool the horse first (scraping, cool water on large muscle masses), offer fresh water, and only administer electrolytes once the horse is drinking willingly and is no longer at acute temperature risk.", isCorrect: true, explanation: "Correct. Priority post-cross-country is cooling and hydration. Once the horse is drinking willingly, electrolytes support recovery. Electrolytes given to a dehydrated, non-drinking horse can worsen the situation. Always ensure water access is established first." },
+      { id: "c", text: "Withhold water for 30 minutes first to avoid post-exercise colic risk.", isCorrect: false, explanation: "The old advice to withhold water post-exercise has been largely discredited. Horses should be offered water freely post-exercise, especially in hot conditions." },
+      { id: "d", text: "Wait until the horse returns home before giving electrolytes.", isCorrect: false, explanation: "Recovery begins at the venue. Delay in addressing hydration and electrolyte deficit in hot conditions risks tying-up (azoturia) and prolonged recovery." },
+    ],
+    learningTakeaway: "Post-exercise in heat: cool first, then offer water freely. Electrolytes support recovery once the horse is drinking — not before. Never withhold water post-exercise.",
+  },
+  // ── ADVANCED (additional) ─────────────────────────────────────────────────
+  {
+    id: "s030",
+    title: "Azoturia (Tying-Up) Response",
+    level: "advanced",
+    category: "Health & Emergency",
+    prompt: "Midway through a ride your horse suddenly shows extreme muscle stiffness in his hindquarters, reluctance to move, sweating, and clear distress. You suspect tying-up (exertional rhabdomyolysis). What is your immediate action?",
+    choices: [
+      { id: "a", text: "Continue walking him slowly back to the yard to keep blood moving.", isCorrect: false, explanation: "In acute tying-up, continuing to move the horse causes further muscle damage. Stop exercise immediately." },
+      { id: "b", text: "Stop immediately, keep the horse still and warm, call a vet urgently, and do not attempt to move the horse until veterinary guidance is received.", isCorrect: true, explanation: "Correct. Continued movement during tying-up causes further muscle fibre destruction and myoglobin release, which can lead to acute kidney injury. Keep the horse still, maintain warmth to reduce muscle spasm, and seek veterinary attention urgently." },
+      { id: "c", text: "Administer a muscle relaxant from the first aid kit and ride back at walk.", isCorrect: false, explanation: "Muscle relaxants without veterinary prescription and diagnosis are inappropriate. Do not continue riding regardless." },
+      { id: "d", text: "Give electrolytes and walk the horse to the nearest water source.", isCorrect: false, explanation: "Movement worsens the acute episode. Electrolytes do not address acute tying-up. The horse must stop and await veterinary assistance." },
+    ],
+    learningTakeaway: "Tying-up (ER): stop immediately, do not move, keep warm, call vet urgently. Further movement causes serious muscle and kidney damage.",
+  },
+  // ── EXPANDED POOL — BEGINNER ──────────────────────────────────────────────
+  {
+    id: "s031",
+    title: "Horse Refusing to Be Caught",
+    level: "beginner",
+    category: "Handling & Behaviour",
+    prompt: "You need to bring your horse in from the field, but he walks away every time you approach. Other horses are nearby. What do you do?",
+    choices: [
+      { id: "a", text: "Chase the horse around the field until he is tired.", isCorrect: false, explanation: "Chasing makes the horse more flight-motivated and can endanger you and other horses." },
+      { id: "b", text: "Approach calmly at an angle, avoid direct eye contact, speak softly, and use a treat or bucket of feed if appropriate.", isCorrect: true, explanation: "Correct. A calm, non-threatening approach is most effective. Approaching at an angle and avoiding direct eye contact reduces the horse's flight response." },
+      { id: "c", text: "Ask someone to help corner the horse.", isCorrect: false, explanation: "Cornering can panic the horse and cause dangerous behaviour. Calm individual approach is safer." },
+      { id: "d", text: "Leave the horse and try again tomorrow.", isCorrect: false, explanation: "This avoids addressing the issue and may not be practical if the horse needs attention." },
+    ],
+    learningTakeaway: "Approach horses calmly, at an angle, without direct eye contact. Patience and low-pressure handling are more effective than chasing.",
+  },
+  {
+    id: "s032",
+    title: "Loose Horse on the Yard",
+    level: "beginner",
+    category: "Yard Safety",
+    prompt: "A horse has escaped from its stable and is loose on the yard. What is your first priority?",
+    choices: [
+      { id: "a", text: "Run after it immediately to catch it.", isCorrect: false, explanation: "Running at a loose horse will likely cause it to bolt, increasing danger." },
+      { id: "b", text: "Alert others, secure exits, speak calmly, and position yourself to guide the horse toward its stable or a safe enclosed area.", isCorrect: true, explanation: "Correct. Secure escape routes first, stay calm, and guide rather than chase." },
+      { id: "c", text: "Ignore it — it will go back on its own.", isCorrect: false, explanation: "A loose horse near roads, machinery, or other hazards is a safety emergency." },
+      { id: "d", text: "Wave your arms to block it.", isCorrect: false, explanation: "Sudden gestures can panic the horse further. Calm, deliberate positioning is safer." },
+    ],
+    learningTakeaway: "With a loose horse: stay calm, secure exits, alert others, and guide quietly. Never chase or make sudden movements.",
+  },
+  {
+    id: "s033",
+    title: "Slippery Yard After Rain",
+    level: "beginner",
+    category: "Yard Safety",
+    prompt: "It rained heavily overnight and the concrete yard is very slippery. You need to lead a horse across it. What precautions should you take?",
+    choices: [
+      { id: "a", text: "Lead the horse quickly to get across as fast as possible.", isCorrect: false, explanation: "Speed increases the risk of slipping. Slow and controlled is safer." },
+      { id: "b", text: "Walk the horse slowly and steadily, keeping it straight, wearing appropriate footwear, and avoiding turning sharply.", isCorrect: true, explanation: "Correct. Slow, straight movement on slippery surfaces minimises the risk of the horse losing its footing." },
+      { id: "c", text: "Let the horse find its own way without a lead rope.", isCorrect: false, explanation: "An uncontrolled horse on slippery ground is dangerous to itself and everyone nearby." },
+      { id: "d", text: "Wait until the yard dries completely.", isCorrect: false, explanation: "This may not be practical and does not help you manage when conditions are imperfect." },
+    ],
+    learningTakeaway: "On slippery surfaces: walk slowly, keep straight, avoid sharp turns, and wear proper footwear. Be patient.",
+  },
+  // ── EXPANDED POOL — DEVELOPING ────────────────────────────────────────────
+  {
+    id: "s034",
+    title: "Horse Reluctant to Load",
+    level: "developing",
+    category: "Handling & Behaviour",
+    prompt: "You are loading your horse onto a trailer for a trip, but he stops at the bottom of the ramp and refuses to go in. He is not panicking but is clearly reluctant. What approach do you take?",
+    choices: [
+      { id: "a", text: "Push him from behind — he needs to learn.", isCorrect: false, explanation: "Pushing from behind a reluctant horse is dangerous and often causes the horse to rush backwards." },
+      { id: "b", text: "Give him time to look, use a calm approach with a lead rope and gentle encouragement, allow him to investigate, and reward each forward step.", isCorrect: true, explanation: "Correct. Patient, progressive loading with positive reinforcement builds confidence and avoids dangerous reactions." },
+      { id: "c", text: "Use a lunge whip behind him to drive him in.", isCorrect: false, explanation: "While experienced handlers sometimes use gentle pressure, a whip can frighten a reluctant loader and create a worse problem." },
+      { id: "d", text: "Cancel the trip — if he won't load, he shouldn't travel.", isCorrect: false, explanation: "Avoiding loading practice means the problem persists. Patient training is the solution." },
+    ],
+    learningTakeaway: "Loading requires patience and positive reinforcement. Allow the horse to investigate, reward progress, and never rush or force from behind.",
+  },
+  {
+    id: "s035",
+    title: "Recognising Rain Scald",
+    level: "developing",
+    category: "Health & First Aid",
+    prompt: "Your horse has been living out and you notice raised, crusty lumps along his back and hindquarters. The hair comes away in tufts leaving raw patches. What is most likely and what do you do?",
+    choices: [
+      { id: "a", text: "It is just a skin reaction to new grass — leave it.", isCorrect: false, explanation: "The symptoms described are consistent with rain scald (dermatophilosis), not a dietary reaction." },
+      { id: "b", text: "This looks like rain scald — bring the horse in to dry, gently remove crusts, apply antibacterial wash, ensure a waterproof rug is available, and monitor. Call the vet if it worsens.", isCorrect: true, explanation: "Correct. Rain scald is caused by the organism Dermatophilus congolensis in prolonged wet conditions. Treatment involves drying, gentle cleaning, and preventing reinfection." },
+      { id: "c", text: "Apply fly spray — it is insect bites.", isCorrect: false, explanation: "The pattern of crusty lesions along the topline in wet weather is characteristic of rain scald, not insect bites." },
+      { id: "d", text: "Clip the horse immediately to help the skin breathe.", isCorrect: false, explanation: "Clipping over raw, infected skin is painful and can spread infection. Treat the condition first." },
+    ],
+    learningTakeaway: "Rain scald presents as crusty lesions on the back in wet weather. Dry the horse, clean gently, apply antibacterial treatment, and prevent reinfection.",
+  },
+  {
+    id: "s036",
+    title: "Horse Spooking at Object",
+    level: "developing",
+    category: "Riding & Safety",
+    prompt: "While riding in the arena, your horse suddenly spooks at a new banner on the fence. He jumps sideways and tenses up. What is the safest response?",
+    choices: [
+      { id: "a", text: "Punish the horse immediately — he should not be afraid of a banner.", isCorrect: false, explanation: "Punishment increases fear and does not address the cause. It can also make the spooking worse." },
+      { id: "b", text: "Sit deep, keep a steady contact, use your legs to keep the horse forward and straight, ride past the object at a distance, then gradually reduce the distance as he relaxes.", isCorrect: true, explanation: "Correct. Staying calm, maintaining forward movement, and gradually desensitising the horse teaches confidence without confrontation." },
+      { id: "c", text: "Immediately dismount and remove the banner.", isCorrect: false, explanation: "Removing the object teaches the horse that spooking gets obstacles removed. It is better to help the horse learn to cope." },
+      { id: "d", text: "Force the horse directly at the banner head-on.", isCorrect: false, explanation: "Forcing confrontation with a feared object can cause panic, rearing, or other dangerous reactions." },
+    ],
+    learningTakeaway: "When a horse spooks: stay calm, sit deep, keep forward, and desensitise gradually at a distance. Never punish fear.",
+  },
+  {
+    id: "s037",
+    title: "Bit Fitting Assessment",
+    level: "developing",
+    category: "Tack & Equipment",
+    prompt: "You notice the horse you are about to ride has the bit sitting very low in its mouth with excessive wrinkling at the lip corners. What should you do?",
+    choices: [
+      { id: "a", text: "Ride as normal — the groom set it up.", isCorrect: false, explanation: "The rider should always check tack fit before mounting. Incorrect bit fitting causes discomfort and communication problems." },
+      { id: "b", text: "Adjust the cheekpieces so the bit sits with one to two wrinkles at the corners of the mouth, then check it is symmetrical on both sides.", isCorrect: true, explanation: "Correct. One to two wrinkles is the standard fit. Too many wrinkles means the bit is too high; too few or none means it is too low." },
+      { id: "c", text: "Change to a different bit entirely.", isCorrect: false, explanation: "The bit may be correct — it just needs to be fitted properly first." },
+      { id: "d", text: "Ask someone else to fix it — it is not your responsibility.", isCorrect: false, explanation: "Every rider should know how to check and adjust bit fitting. It is a core horsemanship skill." },
+    ],
+    learningTakeaway: "Check bit fit before every ride. The bit should sit with one to two wrinkles at the lip corners, symmetrically on both sides.",
+  },
+  // ── EXPANDED POOL — INTERMEDIATE ──────────────────────────────────────────
+  {
+    id: "s038",
+    title: "Horse Goes Above the Bit Consistently",
+    level: "intermediate",
+    category: "Riding & Schooling",
+    prompt: "Your horse consistently rides above the bit during trot work — head high, back hollow, nose pointing forward. Transitions make it worse. What is the most productive approach?",
+    choices: [
+      { id: "a", text: "Pull the reins down firmly to force the head lower.", isCorrect: false, explanation: "Forcing the head down creates a false outline, increases resistance, and does not engage the hindquarters." },
+      { id: "b", text: "Use half-halts, circles, and transitions within the pace to encourage the horse to soften through the back and accept the contact from behind, focusing on impulsion from the hindquarters.", isCorrect: true, explanation: "Correct. The horse goes above the bit because it is not working through its back from the hindquarters into the contact. Improving engagement is the root solution." },
+      { id: "c", text: "Switch to a stronger bit.", isCorrect: false, explanation: "A stronger bit masks the problem and often creates more tension and evasion." },
+      { id: "d", text: "Just accept it — some horses carry their heads high.", isCorrect: false, explanation: "While conformation influences head carriage, consistently going above the bit indicates a training gap that should be addressed for the horse's long-term soundness." },
+    ],
+    learningTakeaway: "A horse going above the bit needs hindquarter engagement, not hand pressure. Use half-halts, circles, and transitions to develop throughness.",
+  },
+  {
+    id: "s039",
+    title: "Girth Gall Discovered After Riding",
+    level: "intermediate",
+    category: "Tack & Equipment",
+    prompt: "After untacking, you discover a raw, rubbed area behind the elbow where the girth sits. The skin is red and broken. What action should you take?",
+    choices: [
+      { id: "a", text: "Ignore it — girths always rub a bit.", isCorrect: false, explanation: "Girth galls are painful and will worsen if the cause is not addressed." },
+      { id: "b", text: "Clean the area gently, apply wound spray, do not ride until healed, and assess the girth fit, cleanliness, and material — change to a softer or shaped girth if needed.", isCorrect: true, explanation: "Correct. Treat the wound, rest the area, and prevent recurrence by addressing the cause — dirty, stiff, or poorly fitting girths are the usual culprits." },
+      { id: "c", text: "Apply petroleum jelly and ride again tomorrow.", isCorrect: false, explanation: "Riding on a girth gall before it has healed will cause further damage and pain." },
+      { id: "d", text: "Tighten the girth more next time so it doesn't move.", isCorrect: false, explanation: "Over-tightening the girth increases pressure and can cause worse rubbing." },
+    ],
+    learningTakeaway: "Girth galls require treatment, rest, and cause investigation. Clean, dry, shaped, and correctly fitted girths prevent recurrence.",
+  },
+  {
+    id: "s040",
+    title: "Horse Reluctant on One Rein",
+    level: "intermediate",
+    category: "Riding & Schooling",
+    prompt: "Your horse works well on the left rein but consistently falls in, resists the bend, and feels stiff on the right rein. What is the most likely cause and best approach?",
+    choices: [
+      { id: "a", text: "The horse is just being lazy on one side — use a stronger whip.", isCorrect: false, explanation: "One-sidedness is usually physical (natural crookedness, muscle asymmetry) rather than laziness." },
+      { id: "b", text: "Natural one-sidedness — address with suppling exercises on the stiffer rein such as circles, leg-yielding, and frequent rein changes. Have the saddle fit and teeth checked.", isCorrect: true, explanation: "Correct. Most horses are naturally stiffer on one side. Systematic suppling work on the stiff rein, combined with ruling out pain causes, is the correct approach." },
+      { id: "c", text: "Only work on the good rein to keep things positive.", isCorrect: false, explanation: "Avoiding the stiff rein allows the asymmetry to worsen over time." },
+      { id: "d", text: "The arena surface must be uneven on that side.", isCorrect: false, explanation: "While surface can be a factor, consistent one-sidedness is usually the horse's natural crookedness." },
+    ],
+    learningTakeaway: "Most horses are naturally one-sided. Address stiffness with suppling exercises, frequent rein changes, and rule out saddle fit or dental issues.",
+  },
+  // ── EXPANDED POOL — ADVANCED ──────────────────────────────────────────────
+  {
+    id: "s041",
+    title: "Suspecting Gastric Ulcers",
+    level: "advanced",
+    category: "Health & Veterinary",
+    prompt: "A competition horse in your care has become increasingly girthy, has intermittent loose droppings, is reluctant to work forward, and seems uncomfortable when the girth is tightened. The behaviour has developed over several weeks. What do you suspect and what is the correct course of action?",
+    choices: [
+      { id: "a", text: "The horse is becoming sour — increase turnout.", isCorrect: false, explanation: "While turnout can help, the combination of symptoms described is consistent with equine gastric ulcer syndrome, which requires veterinary investigation." },
+      { id: "b", text: "These signs are consistent with equine gastric ulcer syndrome (EGUS). Discuss with the vet, consider gastroscopy for diagnosis, review management including feeding frequency, forage access, turnout, and workload.", isCorrect: true, explanation: "Correct. Girthiness, attitude changes, loose droppings, and reluctance to work are classic indicators of EGUS. Gastroscopy is the gold standard for diagnosis. Management changes — ad-lib forage, reduced starch, more turnout — support treatment." },
+      { id: "c", text: "Add an antacid supplement and see if it improves.", isCorrect: false, explanation: "While supplements may help, they do not replace veterinary diagnosis. Treating without diagnosis may mask a serious condition." },
+      { id: "d", text: "Change the girth to solve the girthiness issue.", isCorrect: false, explanation: "The girthiness is a symptom of discomfort, not a tack problem. The underlying cause must be investigated." },
+    ],
+    learningTakeaway: "Girthiness, attitude changes, and reluctance to work may indicate gastric ulcers. Veterinary investigation (gastroscopy) and management review are essential.",
+  },
+  {
+    id: "s042",
+    title: "Managing a Horse with PPID (Cushing's)",
+    level: "advanced",
+    category: "Health & Veterinary",
+    prompt: "An older horse on the yard has developed a long, curly coat that does not shed properly, increased drinking and urination, recurrent laminitis episodes, and loss of topline. These signs have progressed over months. What condition do you suspect?",
+    choices: [
+      { id: "a", text: "Normal ageing — older horses always look like this.", isCorrect: false, explanation: "While ageing causes changes, the combination of hirsutism, PU/PD, laminitis, and muscle wastage strongly indicates a specific endocrine condition." },
+      { id: "b", text: "Pituitary Pars Intermedia Dysfunction (PPID / Cushing's disease). Arrange veterinary blood testing (ACTH levels), begin management including clipping, careful laminitis prevention, dental care, and discuss medication (pergolide) with the vet.", isCorrect: true, explanation: "Correct. The constellation of hirsutism, polydipsia/polyuria, recurrent laminitis, and muscle wastage is classic PPID. Blood testing confirms the diagnosis. Pergolide is the standard treatment, alongside careful management." },
+      { id: "c", text: "Severe parasite burden — worm the horse immediately.", isCorrect: false, explanation: "While weight loss can indicate parasites, the combination of symptoms described is characteristic of PPID, not worms." },
+      { id: "d", text: "Change the diet to higher protein to rebuild muscle.", isCorrect: false, explanation: "Diet alone will not address the hormonal imbalance causing these symptoms. Veterinary diagnosis and treatment are needed." },
+    ],
+    learningTakeaway: "PPID (Cushing's) presents with a non-shedding coat, increased thirst, recurrent laminitis, and muscle wastage. Veterinary diagnosis and pergolide treatment are standard.",
+  },
+  {
+    id: "s043",
+    title: "Dealing with a Cast Horse",
+    level: "intermediate",
+    category: "Stable Management",
+    prompt: "You find a horse lying flat against the stable wall, unable to get up despite several attempts. The horse is sweating and distressed. It appears to be 'cast'. What should you do?",
+    choices: [
+      { id: "a", text: "Pull the horse by its legs away from the wall.", isCorrect: false, explanation: "Pulling legs puts you at extreme risk of being kicked, and is rarely effective without specialist equipment." },
+      { id: "b", text: "Stay calm, speak quietly to the horse, use lunge lines or flat ropes under the horse to roll it away from the wall if safe to do so, or call for experienced help immediately. Do not stand directly behind the horse.", isCorrect: true, explanation: "Correct. Using ropes to roll the horse away from the wall is the safest method. Stay calm, avoid the danger zones (behind and between horse and wall), and get help if unsure." },
+      { id: "c", text: "Leave the horse and hope it gets up on its own.", isCorrect: false, explanation: "A cast horse can injure itself severely and may develop circulation problems if left too long. It needs help." },
+      { id: "d", text: "Push the horse firmly on the back to roll it over.", isCorrect: false, explanation: "A thrashing horse can kick or roll onto you. Using ropes provides safer distance." },
+    ],
+    learningTakeaway: "A cast horse needs calm, immediate assistance. Use ropes to roll the horse away from the wall. Stay in safe zones and call for experienced help if needed.",
+  },
+  {
+    id: "s044",
+    title: "Feeding a Laminitis-Prone Pony",
+    level: "developing",
+    category: "Nutrition & Care",
+    prompt: "You have been asked to manage the feeding for a laminitis-prone native pony. It is spring and the grass is growing fast. What is the most important dietary management step?",
+    choices: [
+      { id: "a", text: "Restrict all food — the pony should be on a complete fast.", isCorrect: false, explanation: "Complete food restriction can cause hyperlipaemia, especially in native ponies. The pony needs controlled forage, not starvation." },
+      { id: "b", text: "Restrict grass access using strip grazing or a muzzle, provide soaked hay to reduce sugar, avoid cereal-based feeds, and monitor weight and body condition regularly.", isCorrect: true, explanation: "Correct. Managing grass access while maintaining adequate forage intake is key. Soaked hay reduces water-soluble carbohydrates. Avoiding cereal feeds reduces starch and sugar intake." },
+      { id: "c", text: "Let the pony have full turnout — exercise will burn off the calories.", isCorrect: false, explanation: "Unrestricted access to spring grass is a major laminitis trigger for susceptible ponies, regardless of exercise level." },
+      { id: "d", text: "Switch to a high-protein feed for more energy.", isCorrect: false, explanation: "More energy is the opposite of what a laminitis-prone, overweight pony needs. Dietary restriction and low-sugar forage are appropriate." },
+    ],
+    learningTakeaway: "For laminitis-prone ponies: restrict grass (strip graze or muzzle), soak hay, avoid cereal feeds, and monitor weight. Never starve — maintain controlled forage.",
+  },
+  {
+    id: "s045",
+    title: "Emergency Dismount Situation",
+    level: "intermediate",
+    category: "Riding Safety",
+    prompt: "You are riding and your horse becomes uncontrollable — bolting with head down. You have tried pulling up, one-rein stop, and circling, but the horse is not responding and heading toward a main road. What is your final option?",
+    choices: [
+      { id: "a", text: "Jump off immediately regardless of the terrain.", isCorrect: false, explanation: "While an emergency dismount may be necessary, doing so at full speed without preparation is extremely dangerous." },
+      { id: "b", text: "Try to steer toward the softest ground available, kick your feet out of the stirrups, and perform an emergency dismount by pushing away from the horse and landing in a roll. This is a last resort.", isCorrect: true, explanation: "Correct. An emergency dismount is an absolute last resort. Steering toward soft ground, freeing your feet from the stirrups, and rolling on landing reduce injury risk. No option is without risk in this scenario." },
+      { id: "c", text: "Lean forward and grab the horse's mane — it will slow eventually.", isCorrect: false, explanation: "If the horse is heading toward a road, waiting is not an option. Sometimes an emergency dismount is the only safe choice." },
+      { id: "d", text: "Shout for help from bystanders.", isCorrect: false, explanation: "Shouting may alert others to help, but it does not solve the immediate safety problem of a bolting horse heading toward danger." },
+    ],
+    learningTakeaway: "An emergency dismount is the absolute last resort. Free your feet from the stirrups, aim for soft ground, push away from the horse, and roll on landing.",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -879,6 +1307,10 @@ export const studentRouter = router({
     .input(z.object({
       level: z.enum(["beginner", "developing", "intermediate", "advanced"]).optional(),
       category: z.string().optional(),
+      /** Optional list of already-seen scenario IDs for rotation/repetition control */
+      excludeIds: z.array(z.string()).optional(),
+      /** Max scenarios to return per request — defaults to 8 for manageable batches */
+      limit: z.number().int().min(1).max(50).optional(),
     }).optional())
     .query(({ input }) => {
       let results = SCENARIO_DATA as Scenario[];
@@ -888,8 +1320,27 @@ export const studentRouter = router({
       if (input?.category) {
         results = results.filter((s) => s.category === input.category);
       }
+
+      // ── Rotation / Randomization Logic ────────────────────────────────
+      // 1. Filter out already-seen scenarios if the client sends exclusion list
+      const excludeSet = new Set(input?.excludeIds ?? []);
+      let unseen = results.filter((s) => !excludeSet.has(s.id));
+      // If all scenarios at this level/category have been seen, reset and show all (full rotation)
+      if (unseen.length === 0) {
+        unseen = results;
+      }
+      // 2. Shuffle using Fisher-Yates for true randomization
+      const shuffled = [...unseen];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      // 3. Return limited batch (default 8)
+      const limit = input?.limit ?? 8;
+      const batch = shuffled.slice(0, limit);
+
       // Strip correct answer info before sending — frontend gets it after answering
-      return results.map(({ choices, ...rest }) => ({
+      return batch.map(({ choices, ...rest }) => ({
         ...rest,
         choices: choices.map(({ id, text }) => ({ id, text })),
       }));

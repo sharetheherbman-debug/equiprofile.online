@@ -1445,6 +1445,171 @@ function TeacherLessonsView() {
   );
 }
 
+// ── Teacher Progress View ──────────────────────────────────────────────────
+
+function TeacherProgressView() {
+  const { data: students, isLoading: loadingStudents } = trpc.teacher.listMyStudents.useQuery();
+  const [selectedStudent, setSelectedStudent] = useState<number | null>(null);
+  const { data: studentSummary } = trpc.teacher.getStudentSummary.useQuery(
+    { studentUserId: selectedStudent! },
+    { enabled: selectedStudent !== null },
+  );
+  const { data: competencies } = trpc.teacher.listStudentCompetencies.useQuery(
+    { studentUserId: selectedStudent! },
+    { enabled: selectedStudent !== null },
+  );
+
+  if (loadingStudents) return <TCard><div className="animate-pulse h-32 rounded bg-white/[0.04]" /></TCard>;
+
+  const studentList = students ?? [];
+
+  const COMP_STATUS_STYLES: Record<string, { label: string; color: string }> = {
+    achieved: { label: "Achieved", color: "#10b981" },
+    in_progress: { label: "In Progress", color: "#6366f1" },
+    not_started: { label: "Not Started", color: "#6b7280" },
+    needs_support: { label: "Needs Support", color: "#ef4444" },
+  };
+
+  // Group competencies by category
+  const competencyGroups: Record<string, typeof competencies extends (infer U)[] | undefined ? U[] : never[]> = {};
+  (competencies ?? []).forEach(c => {
+    const cat = (c as any).category ?? "General";
+    if (!competencyGroups[cat]) competencyGroups[cat] = [];
+    competencyGroups[cat].push(c as any);
+  });
+
+  return (
+    <div className="space-y-6">
+      <THeading icon={TrendingUp} title="Student Progress" />
+
+      {studentList.length === 0 ? (
+        <EmptyState icon={Users} title="No students yet" body="Add students to your groups to track their progress." />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Student list */}
+          <div className="lg:col-span-1">
+            <TCard>
+              <h3 className="text-sm font-semibold text-gray-300 mb-3">Students</h3>
+              <div className="space-y-1 max-h-[500px] overflow-y-auto">
+                {studentList.map(s => {
+                  const isActive = selectedStudent === s.id;
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => setSelectedStudent(s.id)}
+                      className={`w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+                        isActive
+                          ? "bg-emerald-500/15 text-emerald-300"
+                          : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
+                      }`}
+                    >
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${
+                        isActive ? "bg-emerald-500/20 text-emerald-300" : "bg-white/[0.06] text-gray-500"
+                      }`}>
+                        {(s.name ?? s.email ?? "?").charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm">{s.name || s.email}</p>
+                        <p className="text-[10px] text-gray-600">
+                          Level: {s.learnerLevel ?? "beginner"}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </TCard>
+          </div>
+
+          {/* Progress detail */}
+          <div className="lg:col-span-2 space-y-4">
+            {!selectedStudent ? (
+              <EmptyState icon={TrendingUp} title="Select a student" body="Choose a student from the list to view their detailed progress and competencies." />
+            ) : (
+              <>
+                {/* Summary stats */}
+                {studentSummary && (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <StatCard label="Lessons Completed" value={studentSummary.stats?.completedTasks ?? 0} color="#6366f1" />
+                    <StatCard label="Tasks Completed" value={studentSummary.stats?.totalTasks ?? 0} color="#10b981" />
+                    <StatCard label="Training Sessions" value={studentSummary.stats?.trainingCount ?? 0} color="#f59e0b" />
+                    <StatCard label="Competencies" value={(competencies ?? []).filter((c: any) => c.status === "achieved").length} color="#06b6d4" />
+                  </div>
+                )}
+
+                {/* Competency tracking */}
+                <TCard>
+                  <h3 className="text-sm font-semibold text-white mb-4">Competency Progress</h3>
+                  {Object.keys(competencyGroups).length === 0 ? (
+                    <p className="text-xs text-gray-500">No competency data yet. Complete lessons or sign off competencies in the Lessons tab.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {Object.entries(competencyGroups).map(([cat, comps]) => {
+                        const achieved = (comps as any[]).filter(c => c.status === "achieved").length;
+                        const total = (comps as any[]).length;
+                        const pct = total > 0 ? Math.round((achieved / total) * 100) : 0;
+                        return (
+                          <div key={cat}>
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="text-xs font-medium text-gray-300">{cat}</p>
+                              <span className="text-xs text-gray-500">{achieved}/{total}</span>
+                            </div>
+                            <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden mb-2">
+                              <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${pct}%` }} />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                              {(comps as any[]).map(comp => {
+                                const st = COMP_STATUS_STYLES[(comp as any).status] ?? COMP_STATUS_STYLES.not_started;
+                                return (
+                                  <div key={(comp as any).key ?? (comp as any).competencyKey} className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/[0.02]">
+                                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: st.color }} />
+                                    <span className="text-xs text-gray-400 flex-1 truncate">
+                                      {((comp as any).key ?? (comp as any).competencyKey ?? "").replace(/-/g, " ")}
+                                    </span>
+                                    <span className="text-[10px] font-medium shrink-0" style={{ color: st.color }}>
+                                      {st.label}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </TCard>
+
+                {/* Weakness identification */}
+                {studentSummary && (
+                  <TCard>
+                    <h3 className="text-sm font-semibold text-white mb-3">Areas to Watch</h3>
+                    {(competencies ?? []).filter((c: any) => c.status === "needs_support").length > 0 ? (
+                      <div className="space-y-2">
+                        {(competencies ?? []).filter((c: any) => c.status === "needs_support").map((c: any) => (
+                          <div key={c.key ?? c.competencyKey} className="flex items-center gap-2 p-2 rounded-lg bg-red-500/5 border border-red-500/10">
+                            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                            <span className="text-xs text-gray-300">
+                              {(c.key ?? c.competencyKey ?? "").replace(/-/g, " ")}
+                            </span>
+                            <span className="text-[10px] text-red-400 ml-auto shrink-0">Needs Support</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500">No flagged areas. All competencies are on track or not yet assessed.</p>
+                    )}
+                  </TCard>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Teacher Dashboard ─────────────────────────────────────────────────
 
 export default function TeacherDashboard() {
@@ -1471,6 +1636,7 @@ export default function TeacherDashboard() {
         />
       )}
       {activeView === "reports" && <ReportsView />}
+      {activeView === "progress" && <TeacherProgressView />}
     </TeacherDashboardLayout>
   );
 }

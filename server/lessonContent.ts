@@ -90,6 +90,54 @@ export const LESSON_PATHWAYS: LessonPathwayData[] = [
     sortOrder: 6,
     iconName: "TrendingUp",
   },
+  {
+    slug: "polework-jump-foundations",
+    title: "Polework & Jump Foundations",
+    description:
+      "Build confidence over ground poles and progress to jumping. Learn distances, grids, the jumping position and course awareness.",
+    sortOrder: 7,
+    iconName: "Zap",
+  },
+  {
+    slug: "horse-health-first-response",
+    title: "Horse Health & First Response",
+    description:
+      "Recognise signs of good and poor health, understand common ailments, and learn first-aid skills to respond quickly and effectively.",
+    sortOrder: 8,
+    iconName: "Thermometer",
+  },
+  {
+    slug: "stable-management",
+    title: "Stable Management",
+    description:
+      "Master the daily routines of stable and yard management including mucking out, pasture care, record keeping and facility organisation.",
+    sortOrder: 9,
+    iconName: "Home",
+  },
+  {
+    slug: "competitions-preparation",
+    title: "Competitions & Preparation",
+    description:
+      "Understand competition types, prepare horse and rider for shows, learn dressage tests and show-jumping courses, and develop a winning mindset.",
+    sortOrder: 10,
+    iconName: "Award",
+  },
+  {
+    slug: "rider-fitness-mindset",
+    title: "Rider Fitness & Mindset",
+    description:
+      "Improve your riding through targeted fitness, core stability, flexibility work and mental skills including confidence building and performance psychology.",
+    sortOrder: 11,
+    iconName: "Activity",
+  },
+  {
+    slug: "coaching-teaching-skills",
+    title: "Coaching & Teaching Skills",
+    description:
+      "Develop the knowledge and communication skills needed to coach and teach riders of all ages and abilities safely and effectively.",
+    sortOrder: 12,
+    iconName: "BookOpen",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -5444,5 +5492,1818 @@ Finally, reflection should be balanced. It is easy to focus only on what went wr
       "What should I look for when reviewing a video of my riding?",
     ],
     linkedCompetencies: ["rider_position", "welfare_awareness"],
-  }
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PATHWAY 7 — Polework & Jump Foundations
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    slug: "introduction-to-polework",
+    pathwaySlug: "polework-jump-foundations",
+    title: "Introduction to Polework",
+    level: "beginner",
+    category: "Polework & Jump Foundations",
+    sortOrder: 1,
+    objectives: [
+      "Understand the purpose and benefits of polework for horse and rider",
+      "Know how to set up single poles and basic pole layouts safely",
+      "Walk and trot over single ground poles with correct rhythm and balance",
+      "Recognise common rider faults over poles such as looking down and tipping forward",
+    ],
+    content: `Polework is one of the most versatile and valuable training tools available to riders of all levels. Working over poles on the ground improves the horse's balance, rhythm, coordination, and proprioception — the awareness of where its limbs are in space. For the rider, polework develops timing, eye coordination, balance, and the ability to maintain a consistent rhythm while navigating obstacles.
+
+## Why Polework Matters
+
+Poles encourage the horse to lift its feet higher, engage its hindquarters, and use its back more effectively. This strengthens the muscles needed for correct, balanced movement. For riders, poles provide a clear visual and physical challenge that develops focus and forward planning. Even a single pole on the ground transforms a schooling session from repetitive flatwork into an exercise with purpose and variety.
+
+## Setting Up Poles Safely
+
+Ground poles should be sturdy, heavy enough not to roll easily, and placed on flat, even ground. When setting up poles, ensure there is enough space around the working area for the horse to approach and move away comfortably. Poles should be clearly visible — bright colours help horses judge distances. Never leave poles in walkways or gateways where horses could trip over them.
+
+## Walking Over a Single Pole
+
+Start at walk. Approach the pole in a straight line, looking ahead — not down at the pole. Maintain a steady rhythm and allow the horse to lower its head slightly to assess the obstacle. Keep your leg gently on to maintain forward momentum. As the horse steps over the pole, follow its movement through your hips without tipping forward or leaning back.
+
+## Progressing to Trot
+
+Once confident at walk, progress to trot. The key is to maintain the same rhythm before, over, and after the pole. Count the rhythm in your head: one-two, one-two. The horse should step over the pole without rushing, breaking stride, or hollowing its back. If the horse speeds up on approach, circle away and re-approach at a steadier tempo.
+
+## Common Faults to Avoid
+
+The most common rider fault is looking down at the pole. Looking down shifts your weight forward and can unbalance the horse. Instead, glance at the pole as you approach, then lift your eyes to a point beyond it. Other common issues include gripping with the knees (which lifts the seat), collapsing the upper body forward on landing, and pulling on the reins instead of maintaining a steady contact.
+
+## Building Confidence
+
+Polework should be introduced gradually. Start with one pole, then add more as confidence grows. Keep sessions short and positive. If the horse or rider becomes tense, return to comfortable work and try again another day. The goal is rhythm, calmness, and enjoyment — not perfection on day one.`,
+    keyPoints: [
+      "Polework improves horse balance, rhythm, coordination, and rider timing",
+      "Always set up poles on flat ground with clear visibility and safe approaches",
+      "Look ahead over poles, not down — looking down shifts your weight and unbalances the horse",
+      "Maintain consistent rhythm before, over, and after the pole",
+      "Start at walk with a single pole before progressing to trot and multiple poles",
+    ],
+    safetyNote:
+      "Ensure poles are placed securely and cannot roll. Check the footing around poles is not slippery. Always have someone nearby when working over poles for the first time. Wear a correctly fitted hat and appropriate footwear.",
+    practicalApplication:
+      "Set up a single ground pole in the arena. Walk over it five times on each rein, focusing on rhythm and looking ahead. Then trot over it five times on each rein. Note whether your horse changes speed on the approach and work on maintaining a steady tempo.",
+    commonMistakes: [
+      "Looking down at the pole instead of ahead",
+      "Tipping the upper body forward as the horse steps over",
+      "Gripping with the knees and lifting out of the saddle",
+      "Allowing the horse to rush or break rhythm on the approach",
+      "Setting poles too close to the arena fence, restricting the approach",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the most important thing to look at when riding over a ground pole?",
+        options: ["The pole itself", "Your horse's ears", "A point ahead beyond the pole", "The ground on the other side"],
+        correctIndex: 2,
+        explanation: "Looking ahead beyond the pole keeps your weight centred and allows you to plan your line. Looking down at the pole causes you to tip forward and unbalances the horse.",
+      },
+      {
+        question: "What should happen to the rhythm when trotting over a single pole?",
+        options: ["The horse should speed up to jump it", "The rhythm should stay the same before, over, and after", "The horse should slow to walk", "You should post higher"],
+        correctIndex: 1,
+        explanation: "The rhythm should remain consistent. The pole is simply part of the track — the horse should maintain its tempo without rushing or hesitating.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What are the benefits of polework for a young or green horse?",
+      "How do I stop my horse rushing at ground poles?",
+      "What distances should I use between trot poles?",
+    ],
+    linkedCompetencies: ["riding_position", "balance_and_rhythm"],
+  },
+  {
+    slug: "trot-pole-distances-and-grids",
+    pathwaySlug: "polework-jump-foundations",
+    title: "Trot Pole Distances & Simple Grids",
+    level: "developing",
+    category: "Polework & Jump Foundations",
+    sortOrder: 2,
+    objectives: [
+      "Understand correct trot pole distances for horses and ponies",
+      "Set up a row of three to five trot poles with accurate spacing",
+      "Ride through a trot pole grid maintaining rhythm, balance, and straightness",
+      "Adjust distances for different horse sizes and stride lengths",
+    ],
+    content: `Once you are confident walking and trotting over single poles, the next step is to work through a row of poles — commonly called a grid. Grids develop the horse's ability to judge distances, improve its coordination, and build the strength needed for jumping. For the rider, grids demand consistent rhythm, accurate steering, and core stability.
+
+## Correct Trot Pole Distances
+
+The standard distance between trot poles for an average 16hh horse is approximately 1.2 to 1.4 metres (4 to 4.5 feet). For ponies under 14.2hh, reduce the distance to approximately 0.9 to 1.1 metres (3 to 3.5 feet). These distances allow the horse to place one trot stride between each pole without stretching or shortening unnaturally.
+
+## Setting Up a Trot Grid
+
+Lay three to five poles in a straight line at the correct distance. Ensure the poles are perpendicular to the line of travel and parallel to each other. Place the grid on a straight section of the arena — not on a turn. There should be at least three horse-lengths of straight approach before the first pole and space to ride straight away after the last pole.
+
+## Riding Through the Grid
+
+Approach in a steady working trot, looking ahead beyond the last pole. Maintain even rein contact and keep your leg gently on to sustain the rhythm. As you enter the grid, allow the horse to work — do not pull or push. Your job is to stay in balance, keep the rhythm, and steer straight. The horse should step neatly between each pole, lifting its feet cleanly.
+
+## Adjusting Distances
+
+If the horse consistently clips poles or takes choppy steps, the distance may need adjusting. Watch from the ground first: if the horse is stretching too much, bring the poles slightly closer. If the horse is cramping its stride, move them apart. Every horse is different, and conditions such as footing and energy level affect stride length.
+
+## Progressing the Exercise
+
+Once the basic grid is comfortable, you can raise alternate poles onto small blocks to create a bouncing effect that encourages greater engagement. You can also add a small cross-pole after the grid as an introduction to jumping from trot.`,
+    keyPoints: [
+      "Standard trot pole distance is 1.2–1.4m for horses, 0.9–1.1m for ponies",
+      "Set grids on straight lines with adequate approach and exit space",
+      "Maintain consistent rhythm — the horse should step neatly between each pole",
+      "Adjust distances to suit the individual horse's stride length",
+      "Progress by raising alternate poles or adding a small fence after the grid",
+    ],
+    safetyNote:
+      "Always measure pole distances carefully. Incorrect spacing forces the horse into awkward strides that can cause trips or knock confidence. Check poles have not rolled between uses.",
+    practicalApplication:
+      "Set up four trot poles at 1.3m spacing. Ride through in trot on both reins five times each. Observe whether your horse steps centrally between each pole. If it clips any pole, adjust the spacing and repeat.",
+    commonMistakes: [
+      "Not measuring distances accurately — guessing leads to incorrect spacing",
+      "Allowing the horse to drift sideways through the grid instead of staying straight",
+      "Looking down at the poles instead of beyond them",
+      "Pulling on the reins through the grid instead of maintaining steady contact",
+      "Setting poles on a curve where the distances are inconsistent",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the standard trot pole distance for an average 16hh horse?",
+        options: ["0.5 metres", "1.2 to 1.4 metres", "2.0 metres", "3.0 metres"],
+        correctIndex: 1,
+        explanation: "The standard distance is 1.2–1.4 metres, which allows one trot stride between each pole for a horse of average size.",
+      },
+      {
+        question: "What should you do if your horse consistently clips the trot poles?",
+        options: ["Ride faster", "Shout at the horse", "Adjust the pole distances", "Remove the poles"],
+        correctIndex: 2,
+        explanation: "Clipping poles usually means the distances are wrong for that horse's stride. Adjust the spacing and observe whether the problem resolves.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I measure trot pole distances accurately without a tape measure?",
+      "My horse rushes through trot poles — how can I slow it down?",
+      "When should I start raising poles onto blocks?",
+    ],
+    linkedCompetencies: ["balance_and_rhythm", "jumping_foundations"],
+  },
+  {
+    slug: "introduction-to-jumping-position",
+    pathwaySlug: "polework-jump-foundations",
+    title: "The Jumping Position",
+    level: "developing",
+    category: "Polework & Jump Foundations",
+    sortOrder: 3,
+    objectives: [
+      "Understand the key elements of a correct jumping position (light seat / two-point)",
+      "Practise the jumping position at halt, walk, and trot without poles",
+      "Know how the jumping position differs from the flatwork seat",
+      "Identify common faults in the jumping position",
+    ],
+    content: `The jumping position — also called the light seat, forward seat, or two-point position — is essential for any rider who wants to ride over poles and fences. It allows the rider to stay in balance with the horse's movement over obstacles, keeping weight off the horse's back and allowing freedom through the shoulders.
+
+## Key Elements of the Jumping Position
+
+The jumping position involves shortening the stirrups one or two holes shorter than flatwork length, folding forward from the hip (not the waist), keeping the heels sunk down, the lower leg slightly behind the girth, and the hands following forward along the horse's neck through the crest. The rider's seat lifts slightly out of the saddle, and the weight drops into the heels and stirrup irons.
+
+## The Upper Body
+
+Fold forward from the hip joint, keeping the back flat — not rounded. Think of closing the angle between your thigh and your torso. Your chest should be open, shoulders back, and eyes looking ahead. Many riders curl their shoulders forward, which collapses the chest and rounds the back. This is one of the most common faults.
+
+## The Lower Leg
+
+The lower leg is the anchor of the jumping position. It should stay in contact with the horse's side, with the ball of the foot on the stirrup iron and the heel sunk deep. If the lower leg swings forward, the rider will fall behind the movement. If it swings back, the rider will tip onto the horse's neck.
+
+## The Hands and Arms
+
+In the jumping position, the hands should follow forward. As the horse takes off over a fence, its head and neck extend forward and down. The rider must allow this movement by pushing the hands forward along the crest — this is called a "crest release." Do not pull back on the reins over a jump, as this catches the horse in the mouth and discourages it from jumping freely.
+
+## Practising Without Poles
+
+The jumping position can and should be practised without poles first. At halt, stand in your stirrups with your weight in your heels and fold forward from the hip. Hold the position for 10 seconds, then sit gently. Repeat at walk and trot. This builds the strength and balance needed before adding poles or fences.`,
+    keyPoints: [
+      "The jumping position involves folding from the hip, sinking the heels, and staying in balance over the horse's centre",
+      "Shorten stirrups one to two holes for jumping work",
+      "The lower leg must remain stable — it is the anchor of the position",
+      "Hands follow forward to allow the horse freedom through its head and neck",
+      "Practise the position at halt, walk, and trot before attempting poles or fences",
+    ],
+    safetyNote:
+      "Never attempt jumping without a correctly fitted, current-standard hat with secured chin strap. A body protector is recommended for all jumping work. Ensure stirrup irons are the correct size — large enough for the foot to release in a fall.",
+    practicalApplication:
+      "In your next schooling session, shorten your stirrups one hole and practise the jumping position at walk and trot for five minutes. Focus on keeping your heels down and your lower leg stable. Have someone observe or film you.",
+    commonMistakes: [
+      "Rounding the back instead of folding from the hip",
+      "Looking down, which shifts the rider's weight forward",
+      "Gripping with the knees and letting the lower leg swing back",
+      "Standing too tall in the stirrups instead of folding at the hip",
+      "Pulling on the reins for balance instead of using the mane or neckstrap",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Where should the rider fold when adopting the jumping position?",
+        options: ["From the waist", "From the hip", "From the knee", "From the shoulders"],
+        correctIndex: 1,
+        explanation: "The rider folds from the hip joint, closing the angle between thigh and torso. Folding from the waist rounds the back, which is incorrect.",
+      },
+      {
+        question: "What is a 'crest release'?",
+        options: ["Dropping the reins completely", "Pushing hands forward along the horse's neck crest over a fence", "Gripping the mane", "Letting the horse slow down"],
+        correctIndex: 1,
+        explanation: "A crest release involves pushing the hands forward along the crest of the horse's neck to allow the head and neck to stretch over the fence without catching the mouth.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How can I improve my lower leg stability in the jumping position?",
+      "What exercises can I do off the horse to strengthen my jumping position?",
+      "How do I know if my stirrups are the right length for jumping?",
+    ],
+    linkedCompetencies: ["jumping_foundations", "rider_position"],
+  },
+  {
+    slug: "first-crossrail-fences",
+    pathwaySlug: "polework-jump-foundations",
+    title: "Riding Your First Cross-Rail Fences",
+    level: "intermediate",
+    category: "Polework & Jump Foundations",
+    sortOrder: 4,
+    objectives: [
+      "Understand what a cross-rail fence is and why it is used for early jumping",
+      "Approach and jump a small cross-rail from trot with correct position and rhythm",
+      "Know how to ride a simple course of two to three small fences",
+      "Identify and correct common faults when jumping small fences",
+    ],
+    content: `A cross-rail (or cross-pole) is the ideal first fence for a novice jumper. The poles cross in the centre, creating a low point in the middle that naturally guides the horse to jump in the centre. Cross-rails are inviting, forgiving, and build confidence for both horse and rider.
+
+## Setting Up a Cross-Rail
+
+A cross-rail is made by resting two poles in an X shape — one end of each pole is on the ground, and the other end is raised on a cup or block. The centre of the X should be approximately 30–45cm high. Place a ground pole approximately 2.5 metres in front of the cross-rail to help the horse judge its take-off point.
+
+## Approaching the Fence
+
+Approach in a steady, balanced trot. Look beyond the fence, not at it. Maintain your rhythm and keep your leg on to sustain the forward energy. About three strides out, adopt a slightly forward position with your weight sinking into your heels. Trust the horse — do not interfere with the reins.
+
+## Over the Fence
+
+As the horse takes off, fold forward from the hip and push your hands forward along the crest (crest release). Let the horse's movement carry you. Do not try to lift the horse with your body or pull yourself forward. After landing, sit up gently, re-establish your rhythm, and ride forward in a straight line.
+
+## Building a Short Course
+
+Once you are comfortable over a single cross-rail, you can begin linking two or three fences together with turns between them. Plan your track before you start: know which fences you will jump, in what order, and how you will turn between them. Ride each fence as if it were the only one — maintain rhythm, straightness, and balance throughout.
+
+## What Makes a Good Jump?
+
+A good jump is not about height — it is about quality. A good jump has a rhythmic approach, a correct take-off distance, a balanced flight, and a controlled landing. The rider stays in balance throughout, allows the horse freedom through its head and neck, and re-establishes rhythm quickly after landing.`,
+    keyPoints: [
+      "Cross-rails guide the horse to jump centrally and are ideal first fences",
+      "Approach in balanced trot, looking beyond the fence, maintaining rhythm",
+      "Fold from the hip on take-off and push hands forward (crest release)",
+      "After landing, sit up gently and re-establish rhythm immediately",
+      "Quality of the jump matters more than height — focus on rhythm, balance, and straightness",
+    ],
+    safetyNote:
+      "Always wear a body protector for jumping. Never jump alone — always have someone on the ground who can rebuild fences and assist in an emergency. Start with fences well within your comfort zone and build up gradually.",
+    practicalApplication:
+      "Set up a single cross-rail approximately 35cm at the centre with a placing pole 2.5m in front. Trot over it five times on each rein. Have someone observe your position, rhythm, and straightness.",
+    commonMistakes: [
+      "Looking down at the fence instead of beyond it",
+      "Getting in front of the movement — leaning too far forward before take-off",
+      "Catching the horse in the mouth by not releasing the hands forward",
+      "Losing rhythm after landing and not riding forward",
+      "Approaching on a crooked line rather than straight to the centre of the fence",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why are cross-rails ideal first fences for novice riders?",
+        options: ["They are very high", "The X shape guides the horse to jump centrally", "They are the hardest type", "They don't need a ground pole"],
+        correctIndex: 1,
+        explanation: "The crossed poles create a low central point that naturally guides the horse to take off and land in the centre, building confidence and encouraging straightness.",
+      },
+      {
+        question: "What should the rider do with their hands as the horse takes off?",
+        options: ["Pull back firmly", "Drop the reins", "Push forward along the crest", "Hold the pommel"],
+        correctIndex: 2,
+        explanation: "Pushing the hands forward along the crest (crest release) allows the horse to stretch its head and neck over the fence without being caught in the mouth.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How far should a placing pole be from a cross-rail?",
+      "My horse runs out at fences — what should I do?",
+      "How do I know when I'm ready to raise the fences?",
+    ],
+    linkedCompetencies: ["jumping_foundations", "rider_position", "balance_and_rhythm"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PATHWAY 8 — Horse Health & First Response
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    slug: "signs-of-good-health",
+    pathwaySlug: "horse-health-first-response",
+    title: "Recognising Signs of Good Health",
+    level: "beginner",
+    category: "Horse Health & First Response",
+    sortOrder: 1,
+    objectives: [
+      "Identify the key indicators of a healthy horse",
+      "Know the normal vital signs: temperature, pulse, and respiration (TPR)",
+      "Carry out a basic daily health check",
+      "Understand why daily observation is essential for early detection of problems",
+    ],
+    content: `Knowing what a healthy horse looks like — and being able to spot when something is wrong — is one of the most fundamental skills in horse care. Problems caught early are almost always easier and cheaper to treat, and early intervention can be life-saving in serious conditions like colic or laminitis.
+
+## The Healthy Horse
+
+A healthy horse is bright, alert, and interested in its surroundings. Its eyes are clear and fully open, its ears are mobile, and its expression is relaxed. The coat should be smooth and glossy (though this varies with season — a thick winter coat is normal). The horse should be standing evenly on all four feet, shifting weight occasionally but not persistently resting one leg (hind leg resting is normal; foreleg resting is not).
+
+## Normal Vital Signs
+
+Every horse owner and carer should know the normal vital signs — collectively known as TPR:
+
+- **Temperature**: 37.5–38.5°C (99.5–101.3°F), taken rectally with a digital thermometer
+- **Pulse**: 28–44 beats per minute at rest, taken at the facial artery under the jaw
+- **Respiration**: 8–16 breaths per minute at rest, counted by watching the flank rise and fall
+
+These figures represent resting values. Exercise, stress, pain, and hot weather all increase them. Know what is normal for your horse so you can recognise deviations.
+
+## The Daily Health Check
+
+A basic daily health check takes five minutes and should be done every time you see the horse. Look at the horse from a distance first: is it standing normally? Is it eating? Is it interacting with other horses? Then approach and check:
+
+- **Eyes**: bright, clear, no discharge
+- **Nostrils**: clean, no unusual discharge
+- **Legs**: cool, tight (no heat or swelling), no cuts or scratches
+- **Feet**: pick out and check for stones, thrush, or shoe condition
+- **Body**: no new lumps, cuts, or swellings
+- **Droppings**: formed, regular colour, not too hard or too soft
+- **Water**: check intake — the bucket or trough should show evidence of drinking
+- **Appetite**: the horse should eat its feed within a reasonable time
+
+## When Something Is Wrong
+
+Signs that something may be wrong include: dullness, loss of appetite, abnormal droppings, nasal discharge, coughing, lameness, heat or swelling in the legs, excessive sweating, rolling repeatedly (colic warning), and reluctance to move. Any significant change from normal should be reported immediately.`,
+    keyPoints: [
+      "A healthy horse is bright, alert, and interested with clear eyes and a smooth coat",
+      "Normal TPR: temperature 37.5–38.5°C, pulse 28–44 bpm, respiration 8–16 breaths/min",
+      "Daily health checks should cover eyes, nostrils, legs, feet, body, droppings, water, and appetite",
+      "Know what is normal for your individual horse so you can spot deviations quickly",
+      "Report any significant change from normal to the yard manager or vet immediately",
+    ],
+    safetyNote:
+      "When taking a horse's temperature rectally, stand to the side of the hindquarters, not directly behind. Have someone hold the horse's head. Use a digital thermometer with a string attached so it cannot be lost inside the horse.",
+    practicalApplication:
+      "Carry out a full daily health check on your horse or a yard horse. Record the TPR values. Repeat this for five consecutive days and note the horse's normal resting ranges. This gives you a personal baseline for that horse.",
+    commonMistakes: [
+      "Only checking the horse when something seems obviously wrong, rather than daily",
+      "Not knowing normal TPR values and therefore not recognising abnormal readings",
+      "Checking legs only visually — always run your hands down them to feel for heat or swelling",
+      "Dismissing subtle signs like a slightly dull coat or reduced appetite",
+      "Forgetting to check water intake as part of the daily assessment",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the normal resting pulse rate for a horse?",
+        options: ["10–15 bpm", "28–44 bpm", "60–80 bpm", "100+ bpm"],
+        correctIndex: 1,
+        explanation: "The normal resting pulse for a horse is 28–44 beats per minute. Rates above this at rest may indicate pain, stress, or illness.",
+      },
+      {
+        question: "Which is NOT a normal sign in a healthy horse at rest?",
+        options: ["Bright, alert expression", "Resting a hind leg occasionally", "Persistently resting a foreleg", "Clear, open eyes"],
+        correctIndex: 2,
+        explanation: "Horses commonly rest hind legs, but persistently resting a foreleg can indicate pain in that limb and should be investigated.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I take a horse's pulse correctly?",
+      "What are the early signs of colic I should watch for?",
+      "How does a horse's TPR change after exercise?",
+    ],
+    linkedCompetencies: ["daily_health_check", "welfare_awareness"],
+  },
+  {
+    slug: "common-equine-ailments",
+    pathwaySlug: "horse-health-first-response",
+    title: "Common Equine Ailments",
+    level: "developing",
+    category: "Horse Health & First Response",
+    sortOrder: 2,
+    objectives: [
+      "Recognise the signs of common ailments including colic, laminitis, thrush, and mud fever",
+      "Understand when a condition is a vet emergency versus manageable first aid",
+      "Know basic first-response actions for each common ailment",
+      "Understand the importance of not delaying veterinary attention when needed",
+    ],
+    content: `Horses are surprisingly prone to a range of common ailments. Understanding what these look like and how to respond is essential for every horse carer. Recognising the difference between a minor issue and a veterinary emergency can save a horse's life.
+
+## Colic
+
+Colic is abdominal pain and is the single biggest emergency in horse care. Signs include: looking at the flanks, pawing the ground, lying down and getting up repeatedly, rolling, sweating, and loss of appetite. Colic ranges from mild (gas build-up) to life-threatening (twisted gut). Any sign of colic should be treated seriously. Remove food, keep the horse walking gently if it wants to roll violently, and call the vet immediately. Do not wait to see if it passes.
+
+## Laminitis
+
+Laminitis is inflammation of the sensitive laminae inside the hoof — it is extremely painful and can be career-ending or fatal if not treated. Signs include: reluctance to move, shifting weight, the classic "rocking horse" stance (leaning back to take weight off the front feet), heat in the hooves, and a bounding digital pulse. Laminitis is triggered by overfeeding (especially rich grass or grain), obesity, stress, or toxins. At first signs, remove the horse from grass, do not force it to walk, and call the vet urgently.
+
+## Thrush
+
+Thrush is a bacterial infection of the frog of the hoof, recognised by a foul-smelling black discharge. It is caused by standing in wet, dirty conditions. Treatment involves cleaning the frog thoroughly, applying antibacterial spray or solution, and improving the horse's living conditions. Prevention is better than cure — regular hoof picking and clean bedding are key.
+
+## Mud Fever
+
+Mud fever (pastern dermatitis) affects the lower legs, causing scabs, swelling, and soreness. It is caused by prolonged exposure to wet, muddy conditions. Treatment involves gently washing and drying the legs, removing scabs carefully, and applying antibacterial cream. Severe cases may need veterinary treatment including antibiotics.
+
+## When to Call the Vet
+
+Call the vet immediately for: any sign of colic, suspected laminitis, deep or joint-near wounds, eye injuries, severe lameness, difficulty breathing, profuse bleeding, or any condition that is worsening despite first aid.`,
+    keyPoints: [
+      "Colic is an emergency — any sign of abdominal pain requires immediate veterinary attention",
+      "Laminitis signs include reluctance to move, heat in the hooves, and the rocking horse stance",
+      "Thrush is recognised by foul-smelling black discharge from the frog and is caused by poor conditions",
+      "Mud fever affects the lower legs and requires cleaning, drying, and antibacterial treatment",
+      "When in doubt, always call the vet — delayed treatment can turn a minor problem into a major one",
+    ],
+    safetyNote:
+      "A colicky horse can be dangerous — it may throw itself to the ground without warning. Stay alert, keep a safe distance, and do not attempt to restrain a horse that is thrashing. Wait for the vet.",
+    practicalApplication:
+      "Create a quick-reference card listing the signs and first-response actions for colic, laminitis, thrush, and mud fever. Keep it in the tack room or feed room where it can be accessed quickly in an emergency.",
+    commonMistakes: [
+      "Waiting to see if colic improves on its own before calling the vet",
+      "Continuing to exercise a horse showing early signs of laminitis",
+      "Neglecting regular hoof picking, allowing thrush to develop",
+      "Ripping off mud fever scabs without softening them first, causing pain and infection risk",
+      "Assuming a horse is fine because it is still eating — some horses eat through significant pain",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the most important first action if you suspect colic?",
+        options: ["Give the horse a feed to see if appetite returns", "Walk the horse briskly for an hour", "Remove food, keep the horse calm, and call the vet immediately", "Apply a poultice to the stomach area"],
+        correctIndex: 2,
+        explanation: "Colic is a potential emergency. Remove food to prevent further gut problems, keep the horse calm, and contact the vet immediately. Do not wait.",
+      },
+      {
+        question: "What is the classic stance of a horse with laminitis?",
+        options: ["Standing on three legs", "Leaning forward", "Rocking horse stance — leaning back to reduce weight on the front feet", "Lying flat on its side"],
+        correctIndex: 2,
+        explanation: "The rocking horse stance — with hind legs pushed under the body and front legs stretched forward — is the classic sign of laminitic pain in the front feet.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What are the different types of colic and how do they differ?",
+      "How can I prevent laminitis in a good doer on rich pasture?",
+      "What should be in a basic equine first-aid kit?",
+    ],
+    linkedCompetencies: ["daily_health_check", "first_aid_basics", "welfare_awareness"],
+  },
+  {
+    slug: "equine-first-aid-basics",
+    pathwaySlug: "horse-health-first-response",
+    title: "Equine First Aid Basics",
+    level: "intermediate",
+    category: "Horse Health & First Response",
+    sortOrder: 3,
+    objectives: [
+      "Assemble a basic equine first-aid kit",
+      "Know how to clean and dress a minor wound safely",
+      "Understand when cold hosing is appropriate and how to do it correctly",
+      "Know the correct procedures for managing a horse while waiting for the vet",
+    ],
+    content: `Every horse carer should be able to provide basic first aid. While serious injuries and illnesses need veterinary attention, knowing how to manage a situation before the vet arrives can prevent complications and reduce suffering.
+
+## The First-Aid Kit
+
+A well-stocked equine first-aid kit should contain: a digital thermometer, clean wound dressings (non-stick), conforming bandage, self-adhesive bandage (Vetwrap), cotton wool, antiseptic wound wash or spray, clean scissors, disposable gloves, a clean bucket, poultice material (Animalintex), and the vet's emergency phone number.
+
+## Wound Management
+
+For minor wounds: put on gloves, gently clean the wound with clean water or saline solution (not hot, not cold — lukewarm), remove any visible debris, apply antiseptic spray, and cover with a non-stick dressing and light bandage if the wound is in a bandageable area. For wounds on the body that cannot be bandaged, clean and spray with antiseptic and monitor for signs of infection (heat, swelling, discharge, increasing pain).
+
+## Cold Hosing
+
+Cold hosing is one of the most effective first-aid treatments for swelling, bruising, sprains, and post-exercise leg care. Run cold water gently over the affected area for 15–20 minutes, two to three times daily. The water should flow continuously — standing in a bucket of cold water is not the same. Cold hosing reduces inflammation, numbs pain, and promotes healing.
+
+## Waiting for the Vet
+
+When waiting for the vet, keep the horse calm and contained. Do not feed a colicky horse. Do not force a lame horse to walk. Keep a bleeding wound under gentle pressure with a clean dressing. Record what happened, when it happened, and what you have observed — the vet will want this information. If you have taken the horse's TPR, share this with the vet on arrival.`,
+    keyPoints: [
+      "Always have a stocked first-aid kit accessible in the yard",
+      "Clean wounds with lukewarm water or saline — never use strong chemicals directly on open wounds",
+      "Cold hosing for 15–20 minutes reduces swelling and inflammation effectively",
+      "When waiting for the vet, keep the horse calm, record observations, and do not feed if colic is suspected",
+      "Know the limits of first aid — always call the vet for deep wounds, joint-near injuries, or worsening conditions",
+    ],
+    safetyNote:
+      "When treating a wound on a horse's leg, kneel to one side rather than directly in front of or behind the leg. The horse may kick or stamp if in pain. Have someone hold the horse's head during treatment.",
+    practicalApplication:
+      "Check the first-aid kit in your yard. Make a list of anything missing or expired and replace it. Practise bandaging a leg using conforming bandage and Vetwrap on a calm horse under supervision.",
+    commonMistakes: [
+      "Using cotton wool directly on an open wound — fibres can stick and cause infection",
+      "Bandaging too tightly, which can cause pressure injuries",
+      "Not cleaning a wound thoroughly before applying dressings",
+      "Cold hosing for too short a time to be effective — fifteen minutes minimum is needed",
+      "Failing to call the vet because the wound looks small — depth and location matter more than surface size",
+    ],
+    knowledgeCheck: [
+      {
+        question: "How long should you cold hose an area of swelling?",
+        options: ["2 minutes", "5 minutes", "15–20 minutes", "1 hour continuously"],
+        correctIndex: 2,
+        explanation: "Cold hosing is effective at 15–20 minutes per session. Shorter durations do not provide sufficient cooling to reduce inflammation.",
+      },
+      {
+        question: "What should you NOT use directly on an open wound?",
+        options: ["Saline solution", "Clean water", "Cotton wool fibres", "Non-stick dressing"],
+        correctIndex: 2,
+        explanation: "Cotton wool sheds fibres that can stick in a wound, causing infection and delayed healing. Use non-stick dressings or clean gauze instead.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you walk me through how to bandage a horse's lower leg correctly?",
+      "What should I do if a wound won't stop bleeding?",
+      "How do I know if a wound needs stitching?",
+    ],
+    linkedCompetencies: ["first_aid_basics", "welfare_awareness"],
+  },
+  {
+    slug: "vaccination-and-worming-schedules",
+    pathwaySlug: "horse-health-first-response",
+    title: "Vaccination & Worming Programmes",
+    level: "intermediate",
+    category: "Horse Health & First Response",
+    sortOrder: 4,
+    objectives: [
+      "Understand why vaccination and worming are essential for horse health",
+      "Know the standard vaccination schedule for influenza and tetanus",
+      "Understand targeted worming programmes based on faecal egg counts",
+      "Keep accurate health records including vaccination and worming dates",
+    ],
+    content: `Vaccinations and worming are two cornerstones of preventive health care for horses. Correct programmes protect not only the individual horse but also every horse it comes into contact with. Many yards and all competitions require up-to-date vaccination records.
+
+## Equine Vaccinations
+
+The two core vaccinations for horses in the UK and Ireland are **equine influenza** and **tetanus**.
+
+**Equine influenza** is a highly contagious respiratory disease. The vaccination protocol is: first vaccination, followed by a second vaccination 21–92 days later, then a third booster 150–215 days after the second. Annual boosters are required thereafter. Competition horses under FEI rules need a booster within 6 months plus 21 days of competing. Failure to keep vaccinations current means starting the primary course again.
+
+**Tetanus** is caused by bacteria found in soil and is almost always fatal in horses. The initial course is two injections 4–6 weeks apart, followed by a booster at 12 months, then every 2 years thereafter. Many vets administer a combined flu/tetanus vaccine to simplify the schedule.
+
+## Modern Worming Approaches
+
+Traditional worming — giving a chemical wormer every 6–8 weeks regardless — has led to widespread resistance. Modern best practice uses a **targeted worming programme** based on faecal egg counts (FEC). A small dung sample is tested in a laboratory, and wormer is only given if the egg count exceeds a threshold (typically 200 eggs per gram).
+
+Strategic treatments at specific times of year are still recommended:
+- **Spring/summer**: treat based on FEC for redworm (cyathostomins)
+- **Late autumn**: treat for encysted small redworm (moxidectin)
+- **Winter**: consider tapeworm treatment (praziquantel or pyrantel double dose)
+
+## Record Keeping
+
+Every horse should have a health record that includes: vaccination dates and batch numbers, worming dates and products used, FEC results, dental visits, farrier visits, and any illness or injury. This information is invaluable for the vet and is required for competition passports.`,
+    keyPoints: [
+      "Equine influenza and tetanus are the core vaccinations — tetanus is almost always fatal without vaccination",
+      "Flu vaccinations must follow strict timing intervals; competition rules require 6-monthly boosters",
+      "Modern worming uses faecal egg counts (FEC) rather than routine chemical worming to reduce resistance",
+      "Strategic seasonal treatments for encysted redworm and tapeworm remain important",
+      "Accurate health records including dates, products, and results are essential for every horse",
+    ],
+    safetyNote:
+      "Only administer wormers that are appropriate for your horse's weight — overdosing and underdosing both cause problems. If in doubt, weigh the horse with a weigh tape and consult your vet. Never give medication to a horse you are not authorised to treat.",
+    practicalApplication:
+      "Review your horse's vaccination record and check whether boosters are due. If your yard uses a targeted worming programme, find out when the next faecal egg count is scheduled and ensure your horse is included.",
+    commonMistakes: [
+      "Letting vaccination intervals lapse, requiring the primary course to be restarted",
+      "Worming on a rigid calendar without faecal egg count testing, which promotes resistance",
+      "Not recording worming products and dates, making it impossible to track what has been given",
+      "Assuming a horse in a field alone does not need worming — larvae persist in pasture for months",
+      "Forgetting tapeworm treatment, which is not always detected by standard FEC",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why are faecal egg counts (FEC) now preferred over routine worming schedules?",
+        options: ["They are cheaper", "They reduce chemical resistance by only treating horses that need it", "They are more convenient", "They eliminate the need for any worming"],
+        correctIndex: 1,
+        explanation: "Targeted worming based on FEC reduces unnecessary chemical use, slowing the development of wormer resistance — a serious problem in equine parasitology.",
+      },
+      {
+        question: "How often should a horse receive an equine influenza booster after the primary course?",
+        options: ["Every month", "Every 6 months for competition, annually otherwise", "Every 5 years", "Only once in its lifetime"],
+        correctIndex: 1,
+        explanation: "Annual boosters are the standard requirement, with 6-monthly boosters for horses competing under FEI or many national rules.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you explain the equine influenza vaccination schedule step by step?",
+      "What is encysted small redworm and why is it dangerous?",
+      "How do I set up a targeted worming programme for my yard?",
+    ],
+    linkedCompetencies: ["daily_health_check", "welfare_awareness", "record_keeping"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PATHWAY 9 — Stable Management
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    slug: "mucking-out-and-bedding",
+    pathwaySlug: "stable-management",
+    title: "Mucking Out & Bedding Management",
+    level: "beginner",
+    category: "Stable Management",
+    sortOrder: 1,
+    objectives: [
+      "Understand the importance of a clean stable for horse health and welfare",
+      "Know the correct tools and technique for mucking out a stable",
+      "Compare different bedding types and their advantages and disadvantages",
+      "Manage a muck heap efficiently and safely",
+    ],
+    content: `A clean, well-bedded stable is essential for horse health. Horses standing on wet, dirty bedding develop foot problems like thrush, respiratory issues from ammonia, and skin conditions. Mucking out is one of the most basic and important daily stable management tasks.
+
+## Tools Required
+
+The basic mucking-out kit includes: a four-pronged fork (for straw) or shavings fork, a shovel, a wheelbarrow, a broom, and a skip (a rubber or plastic tub for picking up droppings during the day). Having the right tools makes the job quicker and less physically demanding.
+
+## Mucking-Out Technique
+
+The standard process is: remove the horse from the stable or tie it safely to one side. Remove droppings and the wettest bedding first, placing them in the wheelbarrow. Bank the clean, dry bedding against the walls to expose the floor. Sweep the floor and allow it to air-dry if possible. Then pull the banked bedding back down, add fresh bedding as needed, and create a level, comfortable bed. The bedding should be deep enough to cushion the horse when lying down and should be banked slightly up the walls to prevent the horse getting cast (stuck against the wall when rolling).
+
+## Bedding Types
+
+Common bedding types include:
+- **Straw**: traditional, widely available, good drainage, but can be eaten and is dusty
+- **Wood shavings**: absorbent, less dusty than straw, does not encourage eating
+- **Wood pellets**: very absorbent, compact to store, expand when wet
+- **Paper/cardboard**: dust-free, good for horses with allergies, but can be difficult to manage
+- **Rubber matting with a thin layer of shavings**: reduces bedding cost, easy to clean, but initial outlay is higher
+
+## The Muck Heap
+
+A well-managed muck heap should be square-sided and compact, built up in layers. It should be sited away from the stables and water sources. Loose, scattered muck heaps attract flies, look untidy, and take longer to decompose. Compost management is increasingly important for environmental responsibility.`,
+    keyPoints: [
+      "A clean stable prevents thrush, respiratory issues, and skin conditions",
+      "Muck out daily: remove droppings and wet bedding, bank clean bedding, air the floor, then re-bed",
+      "Choose bedding to suit the horse's needs — shavings or paper for horses with respiratory issues",
+      "Banks of bedding against the walls help prevent the horse getting cast",
+      "Manage the muck heap as a square, compact structure away from stables and water sources",
+    ],
+    safetyNote:
+      "Always wear sturdy footwear when mucking out — never sandals or soft shoes. Be aware of the horse's position at all times if it remains in the stable. Use correct lifting technique for heavy wheelbarrows to avoid back injury.",
+    practicalApplication:
+      "Muck out a stable following the full technique described above. Time yourself — with practice, a standard stable should take 15–20 minutes. Compare the bedding level and bank quality with an experienced groom's standard.",
+    commonMistakes: [
+      "Not removing all wet bedding, leaving damp patches that cause hoof problems",
+      "Insufficient bedding depth — the horse should be cushioned when lying down",
+      "Leaving the stable floor wet without allowing it to dry before re-bedding",
+      "Forgetting to bank bedding up the walls, increasing the risk of the horse getting cast",
+      "Overloading the wheelbarrow, making it heavy and dangerous to push",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why should bedding be banked up against the stable walls?",
+        options: ["To save bedding", "To make the stable look tidy", "To help prevent the horse getting cast", "To keep the walls clean"],
+        correctIndex: 2,
+        explanation: "Banking bedding against the walls creates a cushion that helps prevent the horse from getting stuck (cast) against the wall when it lies down or rolls.",
+      },
+      {
+        question: "Which bedding type is best for a horse with a respiratory condition?",
+        options: ["Straw", "Dust-extracted shavings or paper", "Hay", "Sand"],
+        correctIndex: 1,
+        explanation: "Dust-extracted shavings or paper bedding produce minimal dust, reducing airborne irritants for horses with respiratory conditions like COPD/RAO.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How often should I fully strip a stable and start fresh?",
+      "What are the signs that bedding is too dusty for my horse?",
+      "How do I manage a deep-litter system properly?",
+    ],
+    linkedCompetencies: ["stable_management", "welfare_awareness"],
+  },
+  {
+    slug: "pasture-management-basics",
+    pathwaySlug: "stable-management",
+    title: "Pasture Management Basics",
+    level: "developing",
+    category: "Stable Management",
+    sortOrder: 2,
+    objectives: [
+      "Understand the principles of good pasture management for horses",
+      "Know how to carry out regular field checks for safety and maintenance",
+      "Understand rotational grazing and its benefits",
+      "Identify common poisonous plants found in horse pastures",
+    ],
+    content: `Good pasture management is essential for horse health, safety, and welfare. Well-managed grazing provides nutrition, exercise, and social opportunities. Poorly managed fields become bare, weed-infested, and potentially dangerous.
+
+## Daily Field Checks
+
+Every field containing horses should be checked daily. Walk the boundary and check: fencing is secure with no broken rails or loose wire, gates open and close properly, the water supply is clean and functioning, there are no foreign objects (litter, fallen branches, broken equipment), and the ground condition is not dangerously wet or rutted.
+
+## Pasture Quality
+
+Horse pasture should contain a mix of grasses suitable for horses — not the high-sugar ryegrass mixes used for cattle. Weeds should be controlled, and droppings should be picked up regularly (at least twice a week) to break the parasite lifecycle. Harrowing in warm, dry weather can help break up any remaining droppings and spread nutrients.
+
+## Rotational Grazing
+
+Dividing fields into sections and rotating horses between them allows grass to recover, reduces parasite burden, and maintains pasture quality. Rest each section for four to six weeks before re-grazing. Cross-grazing with cattle or sheep can also help control parasites, as equine parasites do not survive in other livestock species.
+
+## Poisonous Plants
+
+Common poisonous plants include ragwort (highly toxic to the liver), yew (rapidly fatal), privet, deadly nightshade, foxglove, and bracken. Ragwort is the most common threat and must be pulled by the roots and removed from the field — it becomes more palatable when wilted or dead. Regular field checks and prompt removal of poisonous plants are essential.
+
+## Seasonal Considerations
+
+In spring and summer, monitor grass growth to prevent overeating — particularly for good doers and laminitis-prone horses. Strip grazing or muzzles may be needed. In winter, provide hay if grass quality is poor and ensure the field does not become a mud bath — rotating shelter areas and using hard-standing around gateways helps.`,
+    keyPoints: [
+      "Check fields daily for fencing, water, hazards, and poisonous plants",
+      "Pick up droppings at least twice a week to control parasites",
+      "Rotational grazing allows grass recovery and reduces worm burden",
+      "Ragwort is the most common poisonous plant threat — pull it by the root and remove it completely",
+      "Manage grass intake carefully for laminitis-prone horses, especially in spring and summer",
+    ],
+    safetyNote:
+      "Always wear gloves when handling ragwort — the toxins can be absorbed through the skin. Never leave pulled ragwort in the field, even in bags, as horses may investigate and eat it.",
+    practicalApplication:
+      "Walk a field used for horses and conduct a full safety and maintenance check. Note any fencing issues, poisonous plants, water supply problems, or areas of poaching. Create an action list and address the most urgent items first.",
+    commonMistakes: [
+      "Not checking fields daily — hazards can appear overnight",
+      "Leaving droppings in the field, which allows parasite eggs to reinfect the pasture",
+      "Overgrazing without rotation, leading to bare, muddy fields",
+      "Spraying ragwort instead of pulling it — dead ragwort is still toxic and more palatable",
+      "Underestimating how quickly spring grass can trigger laminitis in susceptible horses",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why is ragwort still dangerous after it has been cut or wilted?",
+        options: ["It grows back faster", "It becomes more palatable and horses are more likely to eat it", "It attracts more insects", "It does not — it is safe once cut"],
+        correctIndex: 1,
+        explanation: "Ragwort becomes sweeter and more palatable when wilted or dead, making horses more likely to eat it. The toxin remains active, so dead ragwort must be removed from the field.",
+      },
+      {
+        question: "How often should droppings ideally be removed from horse pasture?",
+        options: ["Once a month", "At least twice a week", "Once a year", "Only before a competition"],
+        correctIndex: 1,
+        explanation: "Removing droppings at least twice a week breaks the parasite lifecycle by removing eggs before they hatch and become infective larvae on the grass.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I set up a rotational grazing system on a small yard?",
+      "What grasses are best for horse pasture?",
+      "How do I manage a field for a laminitis-prone pony in spring?",
+    ],
+    linkedCompetencies: ["stable_management", "welfare_awareness"],
+  },
+  {
+    slug: "stable-routines-and-record-keeping",
+    pathwaySlug: "stable-management",
+    title: "Stable Routines & Record Keeping",
+    level: "intermediate",
+    category: "Stable Management",
+    sortOrder: 3,
+    objectives: [
+      "Design an efficient daily stable routine covering all essential tasks",
+      "Understand why written records and checklists improve horse care",
+      "Know what records should be kept for each horse",
+      "Organise a feed room, tack room, and storage area for safety and efficiency",
+    ],
+    content: `An efficient daily routine is the backbone of any well-run yard. Routines ensure nothing is forgotten, tasks are completed safely, and every horse receives consistent care. Written records and checklists transform good intentions into reliable practice.
+
+## The Morning Routine
+
+A typical morning routine: check all horses (health check — see signs of good health), provide water, feed breakfast, muck out stables, sweep the yard, turn out or prepare for exercise. The order may vary between yards, but the principles are consistent: horses' welfare needs come first, followed by environmental maintenance.
+
+## The Evening Routine
+
+Typical evening tasks: bring horses in from turnout, provide hay and water, feed evening meal, check all horses are settled, skip out stables (remove droppings), check field gates and fencing, secure the yard. A final check last thing at night — even a quick walk through the yard — is good practice.
+
+## Record Keeping
+
+For each horse, records should include: daily feed amounts and any changes, health observations, medications and supplements, farrier and dentist visits, vaccination and worming records, exercise and training notes, any incidents or injuries, and weight and body condition scores. These records help the vet, farrier, and any other professional who works with the horse.
+
+## Checklists
+
+Daily, weekly, and monthly checklists prevent tasks from being overlooked. A daily checklist might include: health check, feed, water, muck out, exercise, skip out. A weekly checklist might add: deep-clean water buckets, check first-aid kit, order feed and bedding. Monthly: check fire extinguishers, review feeding plans, schedule farrier and dentist.
+
+## Feed Room and Tack Room Organisation
+
+A well-organised feed room has clearly labelled bins for each type of feed, a written feed chart showing what each horse gets, and supplements stored in a dry area. The tack room should have each horse's tack on its own saddle rack and bridle hook, with cleaning supplies accessible. A tidy tack room protects expensive equipment and prevents mistakes.`,
+    keyPoints: [
+      "A consistent daily routine ensures no horse is overlooked and every task is completed",
+      "Morning and evening routines should prioritise horse welfare before environmental tasks",
+      "Keep written records for every horse covering feed, health, farrier, vet, and worming",
+      "Use daily, weekly, and monthly checklists to prevent tasks being forgotten",
+      "Organise feed rooms and tack rooms clearly with labels, charts, and assigned storage",
+    ],
+    safetyNote:
+      "Feed rooms must be secured so horses cannot access them. Overeating grain can cause colic or laminitis. Store chemicals, medications, and cleaning products separately from feed and bedding. Ensure fire extinguishers are accessible and staff know how to use them.",
+    practicalApplication:
+      "Create a daily, weekly, and monthly checklist for your yard. Include all essential tasks. Trial the checklist for one week and note any tasks you need to add or adjust. Share it with other carers on the yard for consistency.",
+    commonMistakes: [
+      "Relying on memory instead of written routines — tasks get forgotten, especially by relief staff",
+      "Not keeping health records, making it impossible to spot trends or brief the vet accurately",
+      "Disorganised feed rooms leading to the wrong horse getting the wrong feed",
+      "Skipping the final evening check — problems can develop overnight if not caught",
+      "Neglecting to update records when routines or feeds change",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why is a written feed chart important in the feed room?",
+        options: ["It looks professional", "It ensures every horse gets the correct feed, especially when different people are feeding", "It is a legal requirement", "It helps sell the horse"],
+        correctIndex: 1,
+        explanation: "A written feed chart prevents feeding mistakes, especially when multiple carers are involved. The wrong feed can cause colic, weight gain, or nutritional imbalance.",
+      },
+      {
+        question: "What should the last task of the day be on a yard?",
+        options: ["Sweep the yard", "A final check that all horses are settled, safe, and have water", "Lock the tack room", "Close the office"],
+        correctIndex: 1,
+        explanation: "A final check ensures all horses are comfortable, have water, and are not showing signs of distress. Issues caught at night can be addressed before they worsen overnight.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you help me design a daily routine for a small livery yard?",
+      "What digital tools are available for equine record keeping?",
+      "How do I organise a feed room for 10 horses with different diets?",
+    ],
+    linkedCompetencies: ["stable_management", "record_keeping"],
+  },
+  {
+    slug: "yard-maintenance-and-facilities",
+    pathwaySlug: "stable-management",
+    title: "Yard Maintenance & Facility Care",
+    level: "advanced",
+    category: "Stable Management",
+    sortOrder: 4,
+    objectives: [
+      "Understand the ongoing maintenance needs of a working equestrian yard",
+      "Know how to maintain arenas, fencing, water systems, and drainage",
+      "Plan seasonal maintenance schedules for facilities and equipment",
+      "Identify potential hazards through regular facility audits",
+    ],
+    content: `Running a yard involves more than caring for horses — the facilities themselves need regular maintenance to stay safe, functional, and fit for purpose. Neglected facilities create hazards, reduce the working life of equipment, and project an unprofessional image.
+
+## Arena Maintenance
+
+Arenas require regular harrowing to prevent the surface becoming compacted, rutted, or uneven. Rubber or sand-and-fibre surfaces should be levelled weekly and watered in dry conditions to control dust. Check the kickboards and fence line for damage after jumping sessions. Remove any foreign objects that may have blown in.
+
+## Fencing
+
+Post-and-rail fencing should be inspected weekly for loose posts, broken rails, and protruding nails. Electric fencing requires regular testing of the energiser and checking for vegetation touching the wire, which earths the charge and makes it ineffective. Replace any fencing that is not safe — temporary repairs should be truly temporary.
+
+## Water Systems
+
+Automatic waterers should be checked daily for function and cleanliness. Troughs should be scrubbed regularly to prevent algae build-up. In winter, check for ice and have a plan for defrosting or providing alternative water. Pipes should be lagged to prevent freezing.
+
+## Drainage
+
+Poor drainage creates dangerous muddy areas, contributes to conditions like mud fever, and makes the yard unpleasant to work in. Maintain existing drainage systems, clear gutters and downpipes regularly, and consider installing hard-standing at gateways and high-traffic areas to reduce poaching.
+
+## Seasonal Planning
+
+Create a seasonal maintenance calendar: spring — arena servicing, fencing check, grass management; summer — dust control, watering, fly management; autumn — gutter clearing, winter preparation, drainage checks; winter — ice management, lighting checks, indoor arena priority. Forward planning prevents emergencies and spreads costs throughout the year.`,
+    keyPoints: [
+      "Regular arena maintenance prevents surface compaction and creates safer riding conditions",
+      "Inspect fencing weekly — broken or unsafe fencing is a serious hazard",
+      "Clean water systems regularly and prepare for winter freezing",
+      "Good drainage prevents mud, health problems, and hazardous working conditions",
+      "A seasonal maintenance calendar prevents facility emergencies and spreads costs",
+    ],
+    safetyNote:
+      "When working on maintenance tasks, use appropriate safety equipment: steel-toed boots, gloves, and eye protection when using power tools. Never carry out electrical work unless qualified. Report structural concerns to a professional.",
+    practicalApplication:
+      "Conduct a full facility audit of your yard. Walk every area and note any maintenance needs. Categorise them as urgent (safety risk), important (needs attention this month), or routine (schedule for next quarter). Create an action plan with priorities and estimated costs.",
+    commonMistakes: [
+      "Ignoring gradual deterioration until a facility becomes unsafe",
+      "Temporary fence repairs that become permanent — creating weak points in the perimeter",
+      "Not maintaining arena surfaces, leading to uneven, hard, or waterlogged footing",
+      "Failing to prepare water systems for winter, resulting in frozen pipes and no water supply",
+      "No written maintenance schedule, relying on ad-hoc repairs instead of planned upkeep",
+    ],
+    knowledgeCheck: [
+      {
+        question: "How often should an arena surface typically be harrowed?",
+        options: ["Once a year", "At least weekly depending on usage", "Only when it rains", "Never — let it compact naturally"],
+        correctIndex: 1,
+        explanation: "Regular harrowing — typically weekly or more for busy arenas — prevents compaction, maintains an even surface, and ensures consistent footing for safe riding.",
+      },
+      {
+        question: "Why is drainage important on an equestrian yard?",
+        options: ["It makes the yard look nicer", "It prevents mud, health conditions like mud fever, and hazardous working conditions", "It is only important for competition yards", "Drainage is not important for horse yards"],
+        correctIndex: 1,
+        explanation: "Poor drainage creates mud that causes health problems (mud fever, thrush), makes areas dangerous to work in, and deteriorates the ground surface over time.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What type of arena surface is best for all-weather use?",
+      "How do I create a seasonal maintenance plan for a 12-stable yard?",
+      "What are the regulations around muck heap management and disposal?",
+    ],
+    linkedCompetencies: ["stable_management", "yard_safety_awareness"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PATHWAY 10 — Competitions & Preparation
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    slug: "understanding-competition-types",
+    pathwaySlug: "competitions-preparation",
+    title: "Understanding Competition Types",
+    level: "beginner",
+    category: "Competitions & Preparation",
+    sortOrder: 1,
+    objectives: [
+      "Know the main types of equestrian competition: dressage, show jumping, cross-country, showing, and combined training",
+      "Understand what happens at each type of competition",
+      "Know the basic rules and etiquette expected at competitions",
+      "Identify which type of competition suits your current level",
+    ],
+    content: `Competitions are a wonderful way to test your skills, measure progress, and enjoy the social side of equestrianism. Understanding the different types of competition helps you choose the right starting point and set realistic goals.
+
+## Dressage
+
+Dressage tests are performed in a marked arena (20m × 40m for introductory levels). The rider performs a set sequence of movements (the test) from memory, judged on accuracy, rhythm, balance, and the horse's way of going. Introductory and preliminary tests involve walk and trot only, making them perfect for novice competitors. Each movement is marked out of 10.
+
+## Show Jumping
+
+Show jumping involves riding a course of coloured fences within a set time. Faults are given for knocking down a pole (4 faults) or refusing a fence (4 faults, with elimination after two refusals in most rules). Clear rounds mean no faults. Many shows offer "clear round" classes for novice riders where the focus is on completing the course rather than speed.
+
+## Cross-Country
+
+Cross-country involves riding over fixed natural-looking fences across open countryside within an optimum time. This is the most exciting but also the most demanding discipline. It requires courage, fitness, and good training. Beginners should build considerable experience in arena jumping before attempting cross-country.
+
+## Showing
+
+Showing classes judge the horse's conformation, way of going, and overall quality. The horse is presented in hand (led) or ridden in a group. Turnout — how well the horse is presented — matters greatly. Showing teaches excellent stable management and horse presentation skills.
+
+## Combined Training
+
+Combined training (or hunter trials, one-day events) combines two or three disciplines. An unaffiliated one-day event might include a dressage test and a show-jumping round. Eventing at higher levels combines dressage, cross-country, and show jumping. Starting with combined training at intro level is an excellent way to gain all-round experience.`,
+    keyPoints: [
+      "Dressage tests riding accuracy and the horse's way of going — introductory tests are walk and trot only",
+      "Show jumping tests the ability to clear fences within a time — clear round classes are ideal for beginners",
+      "Cross-country is exciting but demanding — build arena experience first",
+      "Showing judges turnout and the horse's quality — it develops excellent presentation skills",
+      "Combined training is a great way to experience multiple disciplines at a low level",
+    ],
+    safetyNote:
+      "Always check competition rules for required safety equipment. Most competitions require a current-standard hat, and many require body protectors for jumping phases. Hi-vis is recommended when hacking to and from events.",
+    practicalApplication:
+      "Research three local unaffiliated competitions suitable for your level. Note the classes available, entry requirements, and dates. Attend one as a spectator before entering — watching helps you understand the format and feel less nervous on your first competition day.",
+    commonMistakes: [
+      "Entering competitions beyond your current level, which can be demoralising and unsafe",
+      "Not reading the rules or schedule before attending",
+      "Forgetting to learn a dressage test before the day",
+      "Underestimating the preparation time needed on competition morning",
+      "Focusing only on results rather than the learning experience",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What level of dressage test is most suitable for a complete beginner?",
+        options: ["Grand Prix", "Medium", "Introductory (walk and trot)", "Advanced medium"],
+        correctIndex: 2,
+        explanation: "Introductory tests require only walk and trot, making them ideal for novice riders and young horses gaining experience in a competitive environment.",
+      },
+      {
+        question: "How many faults are given for knocking down a show-jumping pole?",
+        options: ["1 fault", "4 faults", "8 faults", "Elimination"],
+        correctIndex: 1,
+        explanation: "A knocked pole incurs 4 faults in standard show-jumping rules. A clear round (no faults) is the goal.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What should I pack for my first competition day?",
+      "How do I learn a dressage test efficiently?",
+      "What is the difference between affiliated and unaffiliated competitions?",
+    ],
+    linkedCompetencies: ["competition_awareness", "riding_position"],
+  },
+  {
+    slug: "preparing-for-competition-day",
+    pathwaySlug: "competitions-preparation",
+    title: "Preparing for Competition Day",
+    level: "developing",
+    category: "Competitions & Preparation",
+    sortOrder: 2,
+    objectives: [
+      "Plan and execute a thorough preparation routine for competition day",
+      "Know how to present horse and rider to a good standard",
+      "Understand the importance of arriving early and walking the course",
+      "Manage competition-day nerves effectively",
+    ],
+    content: `Thorough preparation is the difference between a stressful competition day and an enjoyable one. Most problems at competitions stem from insufficient preparation rather than lack of skill.
+
+## The Week Before
+
+In the week before a competition: confirm your entry, check your horse's shoes and health, wash and prepare rugs and equipment, learn your dressage test if applicable, plan your travel route and timing, and lay out your competition clothes. Check the schedule for your times and warm-up arrangements.
+
+## Competition Morning
+
+Allow much more time than you think you need. A realistic timeline for a morning competition: rise 2–3 hours before your first class, complete morning stable routine, groom the horse thoroughly, plait if required (dressage and showing), load the horse safely, travel with time to spare, arrive at least 1 hour before your first class.
+
+## Turnout
+
+Presentation matters at every level. The horse should be clean, with mane and tail neatly presented. Tack should be clean and well-fitted. The rider should wear correct, clean attire for the discipline. First impressions count — good turnout shows respect for the sport and the judges.
+
+## Walking the Course
+
+For show jumping and cross-country, always walk the course before riding it. Study each fence, plan your line of approach, check the ground conditions, and count strides between related fences. Walking the course is not optional — it is an essential part of competition preparation.
+
+## Managing Nerves
+
+Competition nerves are normal and can actually improve performance at moderate levels. Manage excessive nerves through: deep breathing, visualising a successful round, focusing on your preparation rather than the outcome, warming up calmly, and remembering that every competitor — even the professionals — was a beginner once.`,
+    keyPoints: [
+      "Prepare everything in the week before — do not leave anything to competition morning",
+      "Allow much more time than you think, especially for your first few competitions",
+      "Good turnout shows respect for the sport and creates a positive impression",
+      "Always walk the course for jumping — study each fence and plan your line",
+      "Competition nerves are normal — manage them through preparation, breathing, and positive visualisation",
+    ],
+    safetyNote:
+      "Check all equipment the day before — do not discover a broken bridle or missing girth on competition morning. Ensure your hat and body protector meet current standards and tag requirements for the competition level.",
+    practicalApplication:
+      "Create a competition-day checklist covering everything you need to pack for the horse and rider. Include tack, grooming kit, feed, water, first-aid kit, competition paperwork, and clothing. Use this checklist every time you compete.",
+    commonMistakes: [
+      "Leaving preparation until the morning of the competition, leading to rushing and stress",
+      "Not learning the dressage test until the day before — or the day of",
+      "Arriving late and having to rush the warm-up",
+      "Not walking the course before a jumping class",
+      "Letting nerves take over and forgetting the preparation that has gone into the day",
+    ],
+    knowledgeCheck: [
+      {
+        question: "When should you ideally arrive at a competition venue?",
+        options: ["5 minutes before your class", "At least 1 hour before your first class", "The night before", "It doesn't matter as long as you make your start time"],
+        correctIndex: 1,
+        explanation: "Arriving at least an hour early allows time to settle the horse, tack up, walk the course if applicable, warm up properly, and report to the secretary.",
+      },
+      {
+        question: "Why is walking a show-jumping course important?",
+        options: ["To exercise before riding", "To study each fence, plan your line, and count strides", "It is not important", "To warm up the horse"],
+        correctIndex: 1,
+        explanation: "Walking the course allows you to plan your approach to each fence, identify potential difficulties, count strides between related fences, and check the going.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you help me create a timeline for competition morning?",
+      "What techniques can I use to manage competition nerves?",
+      "How do I learn a dressage test quickly and reliably?",
+    ],
+    linkedCompetencies: ["competition_awareness", "tacking_up_correctly"],
+  },
+  {
+    slug: "dressage-test-riding",
+    pathwaySlug: "competitions-preparation",
+    title: "Riding a Dressage Test",
+    level: "intermediate",
+    category: "Competitions & Preparation",
+    sortOrder: 3,
+    objectives: [
+      "Understand dressage test structure and marking system",
+      "Know how to learn and memorise a dressage test effectively",
+      "Ride accurate school figures as required in dressage tests",
+      "Understand what judges are looking for at introductory and preliminary levels",
+    ],
+    content: `Riding a dressage test is one of the best ways to measure your training progress. The test provides a structured assessment of the horse's basic paces, obedience, and the rider's ability to perform movements accurately and fluently.
+
+## Test Structure
+
+A dressage test is a set sequence of movements performed in a marked arena. The arena letters (A, K, E, H, C, M, B, F and additional letters in a long arena) mark specific points where movements begin and end. Introductory tests are performed in a 20m × 40m arena at walk and trot. Preliminary tests introduce canter. Each test is published in advance so you can learn it beforehand.
+
+## Learning the Test
+
+The most effective way to learn a test is: read through it several times, visualise riding it from above (like a bird's-eye view), walk through it on foot in a marked area, then ride through it on horseback. Many riders use test-reading apps or record themselves reading the test aloud to play during warm-up.
+
+## Accuracy
+
+Accuracy is crucial. When the test says "at C, transition to walk," the transition should happen at C — not before and not after. Circles should be the correct size and shape. Straight lines should be truly straight. The judge wants to see that the rider can place the horse precisely where the test demands.
+
+## What Judges Look For
+
+At introductory and preliminary levels, judges look for: correct rhythm (regularity of the pace), relaxation (lack of tension), contact (a steady, elastic connection to the bit), straightness, and impulsion (energy and willingness to go forward). They also mark collective marks for the rider's position and effectiveness, and the horse's overall submission and paces.
+
+## Making the Most of Your Score
+
+After the test, collect your score sheet. Read every comment — judges write helpful feedback on each movement. Use the feedback to identify what to work on in training. A score of 60% or above is considered a solid performance at introductory level.`,
+    keyPoints: [
+      "Dressage tests assess accuracy, rhythm, relaxation, contact, and the rider's effectiveness",
+      "Learn tests by reading, visualising from above, walking on foot, and riding through",
+      "Accuracy matters — transitions and movements should happen at the correct marker",
+      "At introductory level, judges look for basic rhythm, relaxation, and a willing horse",
+      "Score sheets contain valuable training feedback — always read the judge's comments",
+    ],
+    safetyNote:
+      "In a dressage arena, be aware of other competitors warming up nearby. Maintain safe distances and follow warm-up arena etiquette — pass left-to-left when riding in opposite directions.",
+    practicalApplication:
+      "Download an introductory dressage test from your national federation website. Learn it using the method described above. Ride through it at home or in a lesson, then ask someone to mark your accuracy at each letter.",
+    commonMistakes: [
+      "Not learning the test thoroughly — forgetting a movement in the arena causes marks to be lost",
+      "Riding inaccurate circles — too small, too large, or egg-shaped",
+      "Making transitions too early or too late relative to the arena marker",
+      "Tension — a tense horse with a hollow back scores poorly regardless of accuracy",
+      "Ignoring the score sheet feedback instead of using it to improve training",
+    ],
+    knowledgeCheck: [
+      {
+        question: "At introductory level dressage, which paces are required?",
+        options: ["Walk and trot only", "Walk, trot, and canter", "Canter only", "All paces plus lateral work"],
+        correctIndex: 0,
+        explanation: "Introductory tests require walk and trot only, making them accessible for novice riders and horses.",
+      },
+      {
+        question: "What does a score of 60% typically indicate at introductory level?",
+        options: ["A poor performance", "A solid, competent performance", "Near elimination", "A perfect score"],
+        correctIndex: 1,
+        explanation: "60% is considered a solid performance at introductory level. Scores above 65% are strong, and above 70% is excellent.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I ride an accurate 20-metre circle in a dressage arena?",
+      "What do the dressage arena letters mean and where are they positioned?",
+      "How can I improve my horse's transitions for better dressage scores?",
+    ],
+    linkedCompetencies: ["competition_awareness", "riding_position", "balance_and_rhythm"],
+  },
+  {
+    slug: "competition-etiquette-and-sportsmanship",
+    pathwaySlug: "competitions-preparation",
+    title: "Competition Etiquette & Sportsmanship",
+    level: "developing",
+    category: "Competitions & Preparation",
+    sortOrder: 4,
+    objectives: [
+      "Understand the written and unwritten rules of competition etiquette",
+      "Demonstrate good sportsmanship regardless of results",
+      "Know the correct warm-up arena protocol",
+      "Represent yourself and your yard positively at competitions",
+    ],
+    content: `Good sportsmanship and etiquette are essential at every level of competition. How you behave at a competition reflects on you, your instructor, your yard, and the equestrian community as a whole.
+
+## Warm-Up Arena Etiquette
+
+The warm-up arena is shared by all competitors. Key rules: ride on the left rein when possible, pass left-to-left when riding toward another rider, call "fence" clearly when approaching a practice fence, give way to the rider on the fence, keep to a safe distance from other horses, and do not block the entrance.
+
+## In the Competition Arena
+
+Enter the arena calmly and prepared. Salute the judge at the beginning and end of a dressage test. In a jumping class, wait for the bell or starting signal. Thank the fence judges or arena party if appropriate. If something goes wrong, stay calm — how you handle adversity shows your character.
+
+## Sportsmanship
+
+Congratulate other riders on their performance. Accept results gracefully — win or lose. If you disagree with a judge's decision, the correct route is through official channels, not public confrontation. Cheer for others in jump-offs and finals. Share equipment and information with fellow competitors. Help someone in difficulty if it is safe to do so.
+
+## Representing Your Yard
+
+You are an ambassador for your instructor and yard. Tidy, well-turned-out riders who behave respectfully create a positive image. Thank show organisers and volunteers. Leave your lorry park space clean. Be kind to your horse in public — the equestrian community watches how competitors treat their horses.
+
+## After the Competition
+
+Regardless of results, the most important thing is that you and your horse return home safely. Cool down properly, check the horse for any minor injuries from the day, and reflect on what went well and what to work on. Every competition is a learning experience.`,
+    keyPoints: [
+      "Follow warm-up arena rules: pass left-to-left, call 'fence', keep safe distances",
+      "Accept results gracefully and congratulate other riders regardless of your placing",
+      "You represent your instructor, yard, and the equestrian community at every event",
+      "Treat your horse kindly in public — the community watches how competitors handle their horses",
+      "Every competition is a learning experience — reflect on it afterwards and set goals for next time",
+    ],
+    safetyNote:
+      "Warm-up arenas can be crowded and tense. Stay alert, communicate clearly, and remove yourself if the environment becomes unsafe. Your safety and your horse's safety are more important than any warm-up exercise.",
+    practicalApplication:
+      "At your next competition (or as a spectator), observe the warm-up arena and note which riders follow good etiquette and which do not. Consider what impression each creates. Then review your own behaviour at your last competition.",
+    commonMistakes: [
+      "Hogging the practice fence in the warm-up without giving way to others",
+      "Making excuses publicly when results are disappointing",
+      "Taking frustration out on the horse after a poor round",
+      "Leaving the lorry park messy or blocking other vehicles",
+      "Not thanking show organisers, judges, or volunteers for their time",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What should you call when approaching a practice fence in the warm-up arena?",
+        options: ["Nothing", "The horse's name", "'Fence!' clearly and in good time", "'Move!'"],
+        correctIndex: 2,
+        explanation: "Calling 'fence' alerts other riders that you are committed to jumping and need a clear approach. It is essential for safety in a busy warm-up arena.",
+      },
+      {
+        question: "What is the correct response if you disagree with a judge's score?",
+        options: ["Argue with the judge immediately", "Post a complaint on social media", "Use official channels to query the result respectfully", "Refuse to leave the arena"],
+        correctIndex: 2,
+        explanation: "Disagreements with judging should be handled through official channels — typically speaking to the show secretary or submitting a formal query. Public confrontation is unprofessional.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What should I do if my horse misbehaves in the competition arena?",
+      "How do I handle competition disappointment constructively?",
+      "What are the rules about warming up over fences at competitions?",
+    ],
+    linkedCompetencies: ["competition_awareness", "welfare_awareness"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PATHWAY 11 — Rider Fitness & Mindset
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    slug: "why-rider-fitness-matters",
+    pathwaySlug: "rider-fitness-mindset",
+    title: "Why Rider Fitness Matters",
+    level: "beginner",
+    category: "Rider Fitness & Mindset",
+    sortOrder: 1,
+    objectives: [
+      "Understand why physical fitness is important for riding performance and horse welfare",
+      "Know the key fitness components for riders: core strength, balance, flexibility, and cardio",
+      "Identify areas of personal fitness that affect your riding",
+      "Begin a simple fitness routine that supports riding improvement",
+    ],
+    content: `Riding is a physically demanding sport, even though the horse does much of the visible work. A fit rider is safer, more effective, less likely to be injured, and kinder to the horse. An unfit rider is a burden — they tire quickly, lose balance, grip too tightly, and make the horse's job harder.
+
+## The Demands of Riding
+
+Riding requires core stability (to maintain position without gripping), leg strength (to give clear aids and absorb the horse's movement), flexibility (to follow the horse's motion through the hips and lower back), cardiovascular fitness (to sustain effort over a full lesson or competition), and balance (to stay centred over the horse's centre of gravity).
+
+## Core Strength
+
+The core — the muscles of the abdomen, lower back, and pelvis — is the rider's foundation. A strong core allows you to sit deeply, absorb the horse's movement, and give independent aids without losing balance. Without core strength, riders compensate by gripping with the knees, rounding the shoulders, or relying on the reins for balance.
+
+## Balance and Proprioception
+
+Riding balance is different from standing balance. It requires constant micro-adjustments to stay aligned with the horse's movement. Off-horse exercises like standing on one leg, using a balance board, or yoga improve proprioception — the body's awareness of its position in space.
+
+## Flexibility
+
+Tight hips, hamstrings, and lower back restrict the rider's ability to sit correctly and follow the horse. Stretching after riding (when muscles are warm) improves flexibility over time. Hip-opening stretches, hamstring stretches, and gentle lower-back mobilisation are particularly beneficial.
+
+## Cardiovascular Fitness
+
+A 45-minute riding lesson is physically demanding. Riders who get breathless or tired halfway through the lesson lose concentration and effectiveness. Regular cardiovascular exercise — walking, jogging, cycling, swimming — builds the stamina needed to ride well for a full session.
+
+## Starting a Routine
+
+You do not need a gym membership. A simple 15-minute routine three times a week can make a significant difference: 2 minutes of marching on the spot, 3 sets of 10 squats, a 30-second plank (building to 60 seconds), 10 lunges each leg, and a 5-minute stretch focusing on hips and hamstrings. Consistency matters more than intensity.`,
+    keyPoints: [
+      "Rider fitness directly impacts riding performance, safety, and the horse's welfare",
+      "Core strength is the foundation — it enables independent aids and a deep, stable seat",
+      "Balance, flexibility, and cardiovascular fitness are all essential for effective riding",
+      "A simple 15-minute routine three times a week can significantly improve riding fitness",
+      "Consistency is more important than intensity — small regular efforts compound over time",
+    ],
+    safetyNote:
+      "Start any new fitness routine gradually. If you have existing health conditions or injuries, consult a healthcare professional before beginning. Always warm up before exercising and cool down afterwards.",
+    practicalApplication:
+      "Try the 15-minute routine described above three times this week. Note how you feel during your next riding lesson — particularly your core stability and stamina. Adjust the routine based on what your riding needs most.",
+    commonMistakes: [
+      "Assuming riding alone is enough exercise — off-horse fitness training is essential for improvement",
+      "Focusing only on strength and ignoring flexibility, which leads to stiffness in the saddle",
+      "Starting too intensely and giving up after a week — consistency beats intensity",
+      "Neglecting core exercises in favour of general gym work that doesn't transfer to riding",
+      "Stretching cold muscles — always warm up first or stretch after riding",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Which fitness component is considered the rider's foundation?",
+        options: ["Arm strength", "Core strength", "Running speed", "Upper body power"],
+        correctIndex: 1,
+        explanation: "Core strength — the muscles of the abdomen, lower back, and pelvis — is the foundation for a stable, effective riding position and independent aids.",
+      },
+      {
+        question: "When is the best time to stretch for flexibility improvement?",
+        options: ["Before any warm-up", "After riding or exercise when muscles are warm", "Only on non-riding days", "Never — stretching is not important for riders"],
+        correctIndex: 1,
+        explanation: "Stretching warm muscles (after riding or exercise) is safer and more effective than stretching cold. Post-ride stretching improves flexibility over time.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you suggest a rider fitness routine I can do at home?",
+      "What yoga poses are best for improving hip flexibility for riding?",
+      "How can I improve my core strength specifically for riding?",
+    ],
+    linkedCompetencies: ["rider_position", "balance_and_rhythm"],
+  },
+  {
+    slug: "building-riding-confidence",
+    pathwaySlug: "rider-fitness-mindset",
+    title: "Building Riding Confidence",
+    level: "developing",
+    category: "Rider Fitness & Mindset",
+    sortOrder: 2,
+    objectives: [
+      "Understand why confidence issues are common in riding and that they are normal",
+      "Identify personal confidence triggers and patterns",
+      "Learn practical strategies for rebuilding and maintaining confidence",
+      "Know when to seek professional help for anxiety that impacts riding",
+    ],
+    content: `Confidence is one of the most important factors in riding — and one of the most fragile. A fall, a spook, a bad experience, or even watching someone else's accident can dent riding confidence profoundly. Understanding confidence, recognising when it is struggling, and knowing how to rebuild it are vital skills.
+
+## Why Confidence Matters
+
+A confident rider makes clear, decisive aids. The horse responds to confidence — horses are herd animals that look to their leader for reassurance. A nervous rider transmits tension through their body: tightened muscles, restricted breathing, and unclear aids. The horse picks up on this and becomes tense or uncertain itself, creating a negative spiral.
+
+## Common Confidence Challenges
+
+Loss of confidence can stem from: a fall or near-miss, a horse that is too strong or unpredictable, advancing too quickly to new skills, a period away from riding, peer pressure to attempt things you are not ready for, or a gradual accumulation of small anxious moments. All of these are normal and common — you are not alone.
+
+## Rebuilding Confidence
+
+The most effective confidence-building strategy is systematic desensitisation — gradually re-exposing yourself to the thing you find difficult, starting from a level that feels manageable and building up slowly. If canter worries you, go back to work that feels comfortable — walk and trot — and rebuild from there. Set small, achievable goals and celebrate reaching them.
+
+## Practical Strategies
+
+Breathing techniques help enormously: breathe in for 4 counts, hold for 2, out for 6. This activates the body's relaxation response. Positive self-talk matters — replace "I can't do this" with "I am working on this and improving." Visualisation — imagining yourself riding successfully — programmes the brain for success. Riding a reliable schoolmaster horse can rebuild trust.
+
+## When to Seek Help
+
+If anxiety around riding is significantly impacting your enjoyment, sleep, or daily life, consider speaking to a sports psychologist or counsellor who understands equestrian sport. There is no shame in seeking help — many professional riders use sports psychology regularly.`,
+    keyPoints: [
+      "Confidence loss is normal and common — every rider experiences it at some point",
+      "Nervous riding creates tension that the horse picks up, creating a negative spiral",
+      "Rebuild confidence gradually — go back to a comfortable level and build up slowly",
+      "Breathing techniques, positive self-talk, and visualisation are practical confidence tools",
+      "Seek professional help if anxiety is significantly impacting your riding or daily life",
+    ],
+    safetyNote:
+      "Never let anyone pressure you into doing something that feels unsafe. A good instructor will support your confidence journey and respect your boundaries. If your gut says no, listen to it.",
+    practicalApplication:
+      "Identify one area of your riding where confidence is lower than you would like. Set three small, progressive goals to build your confidence in that area over the next month. Discuss these goals with your instructor so they can support you.",
+    commonMistakes: [
+      "Pushing through fear without addressing it — this usually makes confidence worse, not better",
+      "Comparing yourself to other riders instead of measuring your own progress",
+      "Avoiding the thing you find difficult forever — gradual exposure is the path forward",
+      "Believing you should never feel nervous — some nervousness is normal and healthy",
+      "Not telling your instructor about confidence concerns — they need to know to help you",
+    ],
+    knowledgeCheck: [
+      {
+        question: "How does a rider's tension affect the horse?",
+        options: ["It has no effect", "The horse becomes more relaxed", "The horse picks up on the tension and may become tense or uncertain too", "The horse goes faster"],
+        correctIndex: 2,
+        explanation: "Horses are highly attuned to their rider's body language and tension. A tense rider transmits anxiety through muscle tension and unclear aids, causing the horse to become unsettled.",
+      },
+      {
+        question: "What is the most effective strategy for rebuilding riding confidence?",
+        options: ["Force yourself to do the scary thing immediately", "Stop riding altogether", "Gradually re-expose yourself starting from a comfortable level", "Only ride in competitions"],
+        correctIndex: 2,
+        explanation: "Gradual, systematic re-exposure — starting from a level that feels manageable and building up — is the most effective way to rebuild confidence sustainably.",
+      },
+    ],
+    aiTutorPrompts: [
+      "I lost confidence after a fall — how do I start riding again?",
+      "What breathing exercises can I use to calm myself before riding?",
+      "How do I talk to my instructor about my confidence issues?",
+    ],
+    linkedCompetencies: ["rider_position", "welfare_awareness"],
+  },
+  {
+    slug: "core-exercises-for-riders",
+    pathwaySlug: "rider-fitness-mindset",
+    title: "Core Exercises for Riders",
+    level: "intermediate",
+    category: "Rider Fitness & Mindset",
+    sortOrder: 3,
+    objectives: [
+      "Perform a targeted core routine designed specifically for equestrian demands",
+      "Understand how each exercise translates to improved riding performance",
+      "Develop a sustainable weekly exercise habit",
+      "Monitor progress through riding improvement rather than gym metrics",
+    ],
+    content: `Core strength is the single most impactful fitness area for riders. Every aid you give, every transition you ride, and every moment of balance in the saddle depends on your core. This lesson provides a targeted routine designed specifically for the demands of riding.
+
+## The Rider's Core Routine
+
+This routine takes 20 minutes and should be done 3–4 times per week. No equipment is needed.
+
+**1. Plank (30–60 seconds × 3)**: Hold a straight plank on forearms and toes. Keep the back flat and hips level. This builds the deep stabilising muscles that hold your position in the saddle. Rest 30 seconds between sets.
+
+**2. Dead Bug (10 each side × 3)**: Lie on your back with arms extended to the ceiling and knees at 90 degrees. Slowly extend opposite arm and leg toward the floor, keeping your lower back pressed into the ground. This teaches independent limb movement while maintaining core stability — exactly what you need for independent aids.
+
+**3. Glute Bridge (15 reps × 3)**: Lie on your back with knees bent and feet flat. Push hips toward the ceiling, squeezing the glutes at the top. This strengthens the glutes and lower back, supporting the deep seat needed for sitting trot and canter.
+
+**4. Side Plank (20–30 seconds each side × 2)**: This targets the obliques, which prevent the rider collapsing to one side — a common issue in canter and on circles.
+
+**5. Bird Dog (10 each side × 3)**: On hands and knees, extend opposite arm and leg simultaneously while keeping the back flat and hips level. This develops the cross-body coordination and stability riders need.
+
+**6. Hip Flexor Stretch (30 seconds each side)**: Kneel on one knee, push hips forward gently. Tight hip flexors are the enemy of a deep seat — this stretch counteracts hours of sitting at desks.
+
+## Tracking Progress
+
+Do not measure progress by how many planks you can do — measure it by how your riding improves. After four weeks of consistent core training, riders typically notice: a more stable position at sitting trot, less reliance on the reins for balance, clearer leg aids, and less fatigue at the end of a lesson.`,
+    keyPoints: [
+      "A 20-minute core routine 3–4 times per week significantly improves riding performance",
+      "Plank, dead bug, glute bridge, side plank, and bird dog are the key exercises for riders",
+      "Each exercise targets specific riding skills: stability, independent aids, deep seat, straightness",
+      "Track progress through riding improvement, not gym metrics",
+      "Include hip flexor stretches — tight hip flexors prevent a deep, effective seat",
+    ],
+    safetyNote:
+      "Maintain correct form rather than pushing for more repetitions. Poor form in exercises like planks can strain the lower back. If you experience pain (not just muscle fatigue), stop and consult a professional.",
+    practicalApplication:
+      "Perform this routine three times this week. Before your next lesson, note your current level of stability at sitting trot and how tired you feel at the end. After four weeks of consistent training, compare your notes.",
+    commonMistakes: [
+      "Letting the hips sag in plank position, which strains the lower back",
+      "Rushing through exercises instead of performing them slowly and with control",
+      "Doing the routine once and expecting immediate results — consistency over weeks is needed",
+      "Ignoring stretching and only doing strengthening exercises",
+      "Exercising to exhaustion before a riding lesson, reducing performance in the saddle",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Which exercise specifically targets the ability to give independent aids?",
+        options: ["Squats", "Dead bug — extending opposite arm and leg while stabilising the core", "Running", "Bicep curls"],
+        correctIndex: 1,
+        explanation: "The dead bug teaches the body to move limbs independently while maintaining a stable core — exactly what a rider needs to give separate hand and leg aids without losing balance.",
+      },
+      {
+        question: "Why are hip flexor stretches important for riders?",
+        options: ["They make you run faster", "Tight hip flexors prevent a deep, effective seat in the saddle", "They strengthen the arms", "They are not important for riders"],
+        correctIndex: 1,
+        explanation: "Tight hip flexors — common from sitting at desks — prevent the rider from dropping their weight into the saddle and achieving a deep, following seat.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you explain the correct form for a plank?",
+      "What core exercises can I do with a stability ball?",
+      "How do I know if my core is strong enough for my current riding level?",
+    ],
+    linkedCompetencies: ["rider_position", "balance_and_rhythm"],
+  },
+  {
+    slug: "mental-skills-for-performance",
+    pathwaySlug: "rider-fitness-mindset",
+    title: "Mental Skills for Riding Performance",
+    level: "advanced",
+    category: "Rider Fitness & Mindset",
+    sortOrder: 4,
+    objectives: [
+      "Understand the role of sports psychology in equestrian performance",
+      "Apply goal-setting, visualisation, and focus techniques to riding",
+      "Manage pressure and perform under competition conditions",
+      "Develop a growth mindset that supports long-term improvement",
+    ],
+    content: `At every level of riding, the mind is as important as the body. The difference between a rider who performs well in training but poorly in competition, and one who performs consistently, is often mental preparation rather than physical skill.
+
+## Goal Setting for Riders
+
+Effective goal setting uses the SMART framework: Specific, Measurable, Achievable, Relevant, Time-bound. "I want to ride a consistent 20m circle in trot on both reins in my next lesson" is SMART. "I want to be better" is not. Set three types of goals: outcome goals (results you want), performance goals (specific improvements), and process goals (daily actions to take).
+
+## Visualisation
+
+Visualisation is one of the most powerful mental tools available. Before riding, spend 3–5 minutes with eyes closed imagining your session in detail: the approach, the aids, the feel of a good transition, the rhythm of a good canter. Research shows that mental rehearsal activates the same neural pathways as physical practice. Visualise successfully, not anxiously.
+
+## Focus and Concentration
+
+Riding demands sustained concentration. Your focus should be on the present — this stride, this half-halt, this corner. When your mind wanders to the future (what if this goes wrong?) or the past (that was terrible), gently bring it back to the now. Use focus cues: a word or phrase like "soft" or "rhythm" that brings your attention back to the present.
+
+## Managing Pressure
+
+Competition pressure is not something to eliminate — it is something to manage. The Yerkes-Dodson curve shows that moderate arousal (nervousness) actually improves performance. Too little arousal leads to flat, unfocused riding. Too much leads to tension and panic. The goal is to find your optimal arousal zone through preparation, breathing, and confidence in your training.
+
+## Growth Mindset
+
+A growth mindset means believing that ability is developed through effort, practice, and learning. A fixed mindset believes talent is innate and unchangeable. Riders with a growth mindset see mistakes as learning opportunities, seek challenges, and persist through difficulties. This mindset is scientifically linked to greater long-term achievement.`,
+    keyPoints: [
+      "Mental skills are as important as physical skills for riding performance",
+      "Use SMART goal setting with outcome, performance, and process goals",
+      "Visualisation activates the same neural pathways as physical practice — use it before every ride",
+      "Stay present-focused during riding — use focus cues to redirect a wandering mind",
+      "A growth mindset — believing ability is developed through effort — supports long-term improvement",
+    ],
+    safetyNote:
+      "Mental pressure that causes persistent anxiety, sleep disturbance, or avoidance of riding should be addressed with professional support. Sports psychology is a recognised field — using it is a sign of strength, not weakness.",
+    practicalApplication:
+      "Before your next ride, spend 3 minutes visualising the session going well. Set one SMART goal for the ride. During the ride, use a focus cue (a single word) whenever your mind wanders. After the ride, reflect on how mental preparation affected your performance.",
+    commonMistakes: [
+      "Neglecting mental preparation because it seems less 'real' than physical training",
+      "Visualising things going wrong instead of right — this programmes the brain for failure",
+      "Setting only outcome goals (win, get a rosette) without performance or process goals",
+      "Believing that nerves are always bad — moderate arousal improves performance",
+      "Having a fixed mindset about talent — ability is developed through practice and effort",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What does the SMART goal framework stand for?",
+        options: ["Simple, Managed, Active, Reasonable, Tested", "Specific, Measurable, Achievable, Relevant, Time-bound", "Strong, Motivated, Athletic, Ready, Tough", "Set, Maintain, Assess, Review, Track"],
+        correctIndex: 1,
+        explanation: "SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound — this framework ensures goals are clear and actionable.",
+      },
+      {
+        question: "Why is visualisation effective for riders?",
+        options: ["It is not effective", "It replaces the need for physical practice", "It activates the same neural pathways as physical practice", "It only works for professional riders"],
+        correctIndex: 2,
+        explanation: "Research shows that mental rehearsal activates the same brain areas and neural pathways as physical practice, making it a powerful complement to training.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you guide me through a riding visualisation exercise?",
+      "How do I develop a pre-competition mental routine?",
+      "What focus cues work best for riders at intermediate level?",
+    ],
+    linkedCompetencies: ["rider_position", "competition_awareness"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PATHWAY 12 — Coaching & Teaching Skills
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    slug: "foundations-of-equestrian-coaching",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Foundations of Equestrian Coaching",
+    level: "intermediate",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 1,
+    objectives: [
+      "Understand the role and responsibilities of an equestrian coach",
+      "Know the difference between coaching and instructing",
+      "Identify the key qualities of an effective equestrian coach",
+      "Understand the importance of safeguarding, insurance, and qualifications",
+    ],
+    content: `Equestrian coaching is a rewarding but responsible role. A good coach does far more than call out instructions — they shape riders' development, build confidence, ensure safety, and promote a lifelong love of horses. Understanding the foundations of coaching is essential before stepping into the role.
+
+## Coaching vs. Instructing
+
+Instructing is telling someone what to do: "shorten your reins." Coaching is developing someone's understanding and ability: "what do you think would happen if your reins were shorter here?" Good coaching combines both approaches — direct instruction when safety or clarity requires it, and questioning or guided discovery when developing understanding. The best coaches adapt their approach to each individual.
+
+## Key Qualities of a Good Coach
+
+Effective equestrian coaches share several qualities: clear communication (they explain things in ways the learner understands), patience (learning takes time and involves setbacks), observation (they see what is happening and diagnose the cause), safety consciousness (they never compromise on safety), empathy (they remember what it feels like to be a beginner), and adaptability (they adjust the lesson to what the learner needs, not what they planned to teach).
+
+## Responsibilities
+
+Coaches are responsible for: the physical safety of riders and horses during their sessions, appropriate lesson content for the level, honest progress assessment, safeguarding (especially with young riders), maintaining their own qualifications and professional development, having appropriate insurance, and following their governing body's code of conduct.
+
+## Safeguarding and Insurance
+
+Anyone coaching children or vulnerable adults must have appropriate safeguarding training and checks (DBS in the UK). Professional indemnity and public liability insurance are mandatory. Working without insurance is irresponsible and potentially illegal. Coaches should also have a current first-aid qualification — both human and preferably equine.
+
+## Qualifications Pathway
+
+In the UK, the main coaching qualifications are through the British Horse Society (BHS): Level 1 Coach, Level 2 Coach, and upward. These qualifications cover riding ability, coaching skills, horse care knowledge, and safety. Continuing Professional Development (CPD) is required to maintain coaching status.`,
+    keyPoints: [
+      "Coaching develops understanding; instructing tells — effective coaches use both approaches appropriately",
+      "Key coaching qualities: clear communication, patience, observation, safety, empathy, and adaptability",
+      "Coaches are responsible for safety, appropriate content, safeguarding, insurance, and professional development",
+      "Safeguarding training and DBS checks are mandatory for coaching children and vulnerable adults",
+      "BHS coaching qualifications are the standard pathway in the UK — CPD is required to maintain status",
+    ],
+    safetyNote:
+      "Never coach without appropriate insurance and qualifications. If you witness a safeguarding concern, follow your organisation's reporting procedures immediately. The safety of riders — especially children — is the absolute top priority.",
+    practicalApplication:
+      "Research the coaching qualification pathway for your national equestrian federation. Identify the first qualification you would need and what it involves. If you are already coaching, check that your insurance, safeguarding training, and first-aid certificate are all current.",
+    commonMistakes: [
+      "Trying to coach beyond your qualification level or competence",
+      "Coaching without insurance — this puts you, riders, and horses at legal and financial risk",
+      "Teaching every rider the same way instead of adapting to the individual",
+      "Focusing only on what is wrong rather than acknowledging what the rider does well",
+      "Neglecting CPD and relying on outdated knowledge or methods",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the main difference between coaching and instructing?",
+        options: ["There is no difference", "Coaching develops understanding; instructing directs actions", "Instructing is better than coaching", "Coaching is only for advanced riders"],
+        correctIndex: 1,
+        explanation: "Coaching aims to develop the learner's understanding and problem-solving ability, while instructing provides direct guidance. Both are needed at different times.",
+      },
+      {
+        question: "What is mandatory when coaching children in the UK?",
+        options: ["A university degree", "DBS check and safeguarding training", "Olympic experience", "None of the above"],
+        correctIndex: 1,
+        explanation: "DBS (Disclosure and Barring Service) checks and safeguarding training are mandatory for anyone working with children and vulnerable adults in the UK.",
+      },
+    ],
+    aiTutorPrompts: [
+      "What qualifications do I need to start coaching riders?",
+      "How do I adapt my coaching style for nervous riders?",
+      "What should be in a coaching session plan?",
+    ],
+    linkedCompetencies: ["coaching_skills", "welfare_awareness", "yard_safety_awareness"],
+  },
+  {
+    slug: "planning-effective-lessons",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Planning Effective Lessons",
+    level: "intermediate",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 2,
+    objectives: [
+      "Create a structured lesson plan with clear objectives, activities, and progression",
+      "Understand how to adapt a plan during the lesson based on what is happening",
+      "Know how to plan for different ability levels within the same session",
+      "Use warm-up, main activity, and cool-down structure effectively",
+    ],
+    content: `A well-planned lesson is the foundation of effective coaching. While the best coaches adapt in the moment, they always start with a clear plan. Planning ensures the lesson has purpose, progression, and structure — which means better learning outcomes for the rider.
+
+## The Lesson Plan Structure
+
+Every lesson plan should include:
+1. **Objective**: What will the rider be able to do better by the end of the lesson?
+2. **Warm-up** (10–15 minutes): Get horse and rider moving, loosening, and focused
+3. **Main activity** (20–25 minutes): The core learning exercise, taught in progressive steps
+4. **Cool-down** (5–10 minutes): Gentle work, stretching, and a positive finish
+5. **Review**: What went well? What to work on next?
+
+## Writing Clear Objectives
+
+Objectives should be observable and achievable within one lesson. "Improve canter" is too vague. "Ride three smooth walk-to-canter transitions on each rein" is specific and measurable. Good objectives guide the lesson — every exercise should connect to the objective.
+
+## The Warm-Up
+
+Never skip the warm-up. Both horse and rider need time to loosen muscles and joints. Warm-up exercises include: walking on a long rein, large circles and changes of rein, progressive transitions (walk-trot-walk), and gentle stretching exercises in the saddle.
+
+## Teaching in Steps
+
+Break complex skills into steps. If the objective is a 10m circle in trot, the progression might be: revise the 20m circle, practice a 15m circle, attempt the 10m circle with support, then independently. Each step builds on the previous one. Move forward when the rider is ready, not when the clock says so.
+
+## Adapting the Plan
+
+A good lesson plan is a guide, not a script. If the rider is struggling with something fundamental, go back a step. If they are finding the exercise easy, progress further. The ability to read the situation and adapt is what separates good coaches from average ones.
+
+## Mixed-Ability Groups
+
+In group lessons, plan exercises that can be differentiated. A polework exercise, for example, can be walked by a beginner, trotted by an intermediate, and cantered by an advanced rider — all in the same session. Clear, safe organisation is essential when managing different levels simultaneously.`,
+    keyPoints: [
+      "Every lesson needs an objective, warm-up, main activity, cool-down, and review",
+      "Objectives must be specific, observable, and achievable within one lesson",
+      "Break complex skills into progressive steps — each building on the previous one",
+      "Adapt the plan during the lesson based on what the rider needs, not what the clock says",
+      "For group lessons, choose exercises that can be differentiated for different ability levels",
+    ],
+    safetyNote:
+      "Always include a safety check at the start of every lesson: tack, hats, footwear, and arena conditions. Have an emergency plan and ensure riders know what to do if someone falls. Never leave a lesson unsupervised.",
+    practicalApplication:
+      "Write a lesson plan for a 30-minute individual lesson for a developing rider. Include a clear objective, warm-up exercises, a progressive main activity, and a cool-down. Then consider how you would adapt it if the rider was struggling with the main exercise.",
+    commonMistakes: [
+      "Teaching without a plan — random exercises do not create systematic improvement",
+      "Sticking rigidly to the plan when the rider clearly needs something different",
+      "Skipping the warm-up to save time — cold muscles and joints are more prone to injury",
+      "Setting objectives that are too ambitious for the lesson length or rider level",
+      "Not reviewing at the end — the review consolidates learning and sets direction for next time",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What must a good lesson objective be?",
+        options: ["Vague and aspirational", "Specific, observable, and achievable within one lesson", "Only about jumping", "The same for every rider"],
+        correctIndex: 1,
+        explanation: "Good objectives are specific (clear what is being worked on), observable (the coach can see it happening), and achievable within the lesson timeframe for that rider.",
+      },
+      {
+        question: "What should a coach do if a rider is struggling with the main exercise?",
+        options: ["Push through regardless", "End the lesson early", "Go back a step and rebuild", "Move to a completely different exercise"],
+        correctIndex: 2,
+        explanation: "Going back to a step the rider can manage, then rebuilding progressively, is the most effective response. It maintains confidence while still working toward the objective.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you help me write a lesson plan for a beginner's first canter?",
+      "How do I differentiate exercises in a mixed-ability group?",
+      "What warm-up exercises work best for stiff horses?",
+    ],
+    linkedCompetencies: ["coaching_skills"],
+  },
+  {
+    slug: "communication-and-feedback-skills",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Communication & Feedback Skills",
+    level: "advanced",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 3,
+    objectives: [
+      "Communicate instructions clearly and concisely during lessons",
+      "Give effective feedback that builds confidence and supports improvement",
+      "Understand different communication styles for different learner types",
+      "Use questioning techniques to develop riders' understanding",
+    ],
+    content: `Communication is the coach's most important tool. A coach who knows everything but cannot communicate it effectively will not develop riders. Clear, timely, and encouraging communication transforms a coaching session from a series of instructions into a genuine learning experience.
+
+## Clarity and Timing
+
+Instructions should be short, specific, and timed correctly. "Shorten your reins slightly and ask for trot at C" is clear and timely. "Try to sort of get the horse going a bit more" is vague and unhelpful. Give instructions when the rider can act on them — not in the middle of a complex movement, and not too far in advance.
+
+## The Feedback Sandwich
+
+Effective feedback follows a positive-constructive-positive structure:
+1. What the rider did well (genuine, specific praise)
+2. What to improve (one thing at a time, with a clear how-to)
+3. An encouraging statement or look-forward
+
+For example: "That circle was much rounder — well done. On the next one, try to keep your inside leg on a little more through the second half. Let's try it again — I think you'll feel the difference."
+
+## Types of Learner
+
+Riders learn in different ways. Visual learners benefit from demonstrations and watching others. Auditory learners respond well to verbal instructions and explanations. Kinaesthetic learners need to feel it — exercises, body positioning, and practice. Most people use a mix, but recognising a rider's primary learning style helps you communicate more effectively.
+
+## Questioning Techniques
+
+Questions develop thinking and understanding. Closed questions check facts: "Which leg should be on the inside of a canter circle?" Open questions develop thinking: "Why do you think the horse fell out of canter on that corner?" Guided questions lead to discovery: "What did you notice about your balance when the horse turned?" Use questions throughout the lesson, not just at the end.
+
+## Tone and Body Language
+
+Your tone of voice carries as much meaning as your words. Calm, encouraging, and clear tones build trust. Shouting creates anxiety. Your body language matters too — open, relaxed posture invites communication. Crossed arms and frustrated sighing shut it down. Remember: riders are watching you even when you do not think they are.`,
+    keyPoints: [
+      "Instructions must be short, specific, and timed so the rider can act on them",
+      "Use the feedback sandwich: praise, one improvement point, encouragement",
+      "Recognise different learning styles — visual, auditory, kinaesthetic — and adapt accordingly",
+      "Use open and guided questions to develop riders' understanding, not just tell them what to do",
+      "Tone and body language are as important as the words — stay calm, clear, and encouraging",
+    ],
+    safetyNote:
+      "Never shout in anger at a rider — it creates anxiety, erodes trust, and can cause dangerous loss of concentration. If frustration builds, take a breath and reset. Safety-critical instructions should be given firmly and clearly, not in anger.",
+    practicalApplication:
+      "In your next coaching session, consciously practise the feedback sandwich for every piece of feedback you give. After the session, reflect on how many times you used open questions versus closed questions. Aim to increase your use of open questions next time.",
+    commonMistakes: [
+      "Giving too many corrections at once — riders can only process one thing at a time",
+      "Only pointing out faults without acknowledging what is going well",
+      "Using jargon the rider does not understand without explaining it",
+      "Talking too much — sometimes silence allows the rider to feel and process",
+      "Inconsistent tone — alternating between encouraging and frustrated confuses the rider",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the 'feedback sandwich'?",
+        options: ["A snack break during lessons", "Praise, constructive improvement point, encouragement", "Three criticisms in a row", "Only positive feedback with no correction"],
+        correctIndex: 1,
+        explanation: "The feedback sandwich delivers constructive feedback within a supportive framework: genuine praise, one improvement point with a clear how-to, and an encouraging statement.",
+      },
+      {
+        question: "Why are open questions valuable in coaching?",
+        options: ["They test memory", "They develop the rider's thinking and understanding", "They save time", "They are not valuable"],
+        correctIndex: 1,
+        explanation: "Open questions encourage riders to think, reflect, and develop understanding rather than just following instructions. This leads to deeper, more lasting learning.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you give me examples of effective open questions for a riding lesson?",
+      "How do I communicate with a very nervous adult rider?",
+      "What feedback techniques work best for children versus adults?",
+    ],
+    linkedCompetencies: ["coaching_skills"],
+  },
+  {
+    slug: "managing-groups-and-progression",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Managing Groups & Rider Progression",
+    level: "advanced",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 4,
+    objectives: [
+      "Manage group lessons safely and effectively with riders of varying abilities",
+      "Plan a long-term progression pathway for individual riders",
+      "Assess rider readiness for progression to the next level",
+      "Handle common challenges: disruptive riders, anxious riders, and plateaus",
+    ],
+    content: `Managing groups and guiding riders' long-term progression are among the most challenging aspects of equestrian coaching. A well-managed group session develops every rider. A poorly managed one is chaotic, unsafe, and frustrating for everyone.
+
+## Group Management Basics
+
+In group lessons (typically 4–6 riders): establish clear rules from the first session (maintain safe distances, follow instructions immediately, halt when asked). Use arena management techniques: ride in open order where riders manage their own track, or use a ride (following the leader) format for less experienced groups. Always position yourself where you can see all riders.
+
+## Differentiation in Group Lessons
+
+Plan exercises that can be adjusted for different levels. Use cone work, polework, and school figures that offer natural differentiation. For example: "A and B ride a 20m circle at trot, C and D ride a 15m circle, E rides the 20m circle at walk." Everyone is working on circles, but at the appropriate level. Clear, calm organisation prevents confusion.
+
+## Long-Term Progression Planning
+
+Create a progression map for each rider: what they can do now, what they need to learn next, and what the goal is for the term or season. Progression should be systematic — building skills in a logical order. A rider who can maintain trot confidently is ready to learn canter. A rider who cannot steer at trot is not ready for jumping. Resist the temptation to progress riders too quickly under pressure from parents or the riders themselves.
+
+## Assessing Readiness
+
+A rider is ready for the next level when they can perform current-level skills consistently and without excessive effort. If walk-to-trot transitions are still effortful and unbalanced, the rider is not ready for canter. Assessment should be ongoing — not a one-off test — and should consider confidence as well as physical ability.
+
+## Common Challenges
+
+**Disruptive riders**: Set clear expectations privately. If behaviour continues, it must be addressed for the safety of the group. **Anxious riders**: Build trust gradually, never force progression, and celebrate small wins. **Plateaus**: Riders who feel stuck need variety and fresh challenges, not more of the same exercise. Change the approach, try a different exercise targeting the same skill, or set a new mini-goal to reignite motivation.`,
+    keyPoints: [
+      "Establish clear safety rules from the first group session and enforce them consistently",
+      "Plan differentiated exercises so every rider works at their appropriate level",
+      "Create a systematic progression map for each rider based on current ability and next steps",
+      "Assess readiness based on consistent performance at the current level, including confidence",
+      "Address common challenges (disruption, anxiety, plateaus) with specific, appropriate strategies",
+    ],
+    safetyNote:
+      "In group lessons, safety is paramount. Maintain safe distances between horses. Never allow riders to ride too close behind another horse. Have an emergency stop plan and ensure all riders know the halt command.",
+    practicalApplication:
+      "For a rider you currently teach, create a term-long (10 lesson) progression plan. Identify where they are now, three milestone skills to achieve during the term, and the exercises you will use to get there. Review and adjust the plan after every third lesson.",
+    commonMistakes: [
+      "Allowing group dynamics to override safety — if a group is chaotic, stop and reorganise",
+      "Progressing riders too quickly because they or their parents want faster results",
+      "Teaching every group lesson the same way without adapting to the individuals present",
+      "Ignoring quiet riders in the group while focusing on the most vocal or challenging",
+      "Not keeping records of individual progress, making long-term planning impossible",
+    ],
+    knowledgeCheck: [
+      {
+        question: "How should you manage a group of riders with different ability levels?",
+        options: ["Teach to the highest level and let others keep up", "Teach to the lowest level only", "Plan differentiated exercises where each rider works at their appropriate level", "Refuse to teach mixed groups"],
+        correctIndex: 2,
+        explanation: "Differentiation allows every rider to work productively at their level. The same type of exercise (e.g., circles) can be adapted in size, pace, and complexity.",
+      },
+      {
+        question: "How do you know when a rider is ready to progress to the next level?",
+        options: ["When they ask to", "When they can perform current-level skills consistently with confidence", "After a set number of lessons", "When their parents request it"],
+        correctIndex: 1,
+        explanation: "Readiness is based on consistent, confident performance at the current level. Rushing progression leads to gaps in skills and loss of confidence.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How do I handle a group lesson where one rider is much weaker than the others?",
+      "What does a typical progression plan look like for a beginner rider over six months?",
+      "How do I motivate a rider who seems to have plateaued?",
+    ],
+    linkedCompetencies: ["coaching_skills", "welfare_awareness"],
+  },
 ];
