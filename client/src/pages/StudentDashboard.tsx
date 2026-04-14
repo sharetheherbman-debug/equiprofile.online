@@ -316,23 +316,25 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
   return (
     <div className="space-y-6">
       {/* Student mode banner */}
-      <div className="rounded-xl p-4 flex items-center gap-3"
+      <div className="rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3"
         style={{ background: isSchoolLed ? "rgba(99,102,241,0.08)" : "rgba(16,185,129,0.06)", border: isSchoolLed ? "1px solid rgba(99,102,241,0.2)" : "1px solid rgba(16,185,129,0.15)" }}>
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-          style={{ background: isSchoolLed ? "rgba(99,102,241,0.18)" : "rgba(16,185,129,0.18)" }}>
-          {isSchoolLed
-            ? <GraduationCap className="w-4 h-4 text-indigo-400" />
-            : <Route className="w-4 h-4 text-emerald-400" />}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold" style={{ color: isSchoolLed ? "#818cf8" : "#34d399" }}>
-            {isSchoolLed ? "School-Led Learning" : "Independent Learning"}
-          </p>
-          <p className="text-xs text-gray-500 mt-0.5">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+            style={{ background: isSchoolLed ? "rgba(99,102,241,0.18)" : "rgba(16,185,129,0.18)" }}>
             {isSchoolLed
-              ? "Your teacher has assigned lessons and tasks for you."
-              : "Explore pathways at your own pace — no teacher required."}
-          </p>
+              ? <GraduationCap className="w-4 h-4 text-indigo-400" />
+              : <Route className="w-4 h-4 text-emerald-400" />}
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold" style={{ color: isSchoolLed ? "#818cf8" : "#34d399" }}>
+              {isSchoolLed ? "School-Led Learning" : "Independent Learning"}
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {isSchoolLed
+                ? "Your teacher has assigned lessons and tasks for you."
+                : "Explore pathways at your own pace — no teacher required."}
+            </p>
+          </div>
         </div>
         {nextAssigned && (
           <button
@@ -370,13 +372,13 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
         ].map((stat) => {
           const StatIcon = stat.icon;
           return (
-            <SCard key={stat.label} className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${stat.color}15` }}>
-                <span style={{ color: stat.color }}><StatIcon className="w-5 h-5" /></span>
+            <SCard key={stat.label} className="flex items-center gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${stat.color}15` }}>
+                <span style={{ color: stat.color }}><StatIcon className="w-4 h-4 sm:w-5 sm:h-5" /></span>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs text-gray-500">{stat.label}</p>
-                <p className="text-sm font-semibold text-white mt-0.5">{stat.value}</p>
+                <p className="text-[11px] sm:text-xs text-gray-500">{stat.label}</p>
+                <p className="text-xs sm:text-sm font-semibold text-white mt-0.5">{stat.value}</p>
               </div>
             </SCard>
           );
@@ -495,11 +497,11 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
               <button
                 key={action.label}
                 onClick={() => onNavigate(action.view)}
-                className="flex items-start gap-4 p-5 rounded-xl border transition-all duration-200 text-left group w-full"
+                className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl border transition-all duration-200 text-left group w-full"
                 style={{ backgroundColor: STUDENT_CARD, borderColor: STUDENT_BORDER }}
               >
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform" style={{ backgroundColor: `${action.color}15` }}>
-                  <span style={{ color: action.color }}><ActionIcon className="w-5 h-5" /></span>
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform" style={{ backgroundColor: `${action.color}15` }}>
+                  <span style={{ color: action.color }}><ActionIcon className="w-4 h-4 sm:w-5 sm:h-5" /></span>
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors">{action.label}</p>
@@ -938,12 +940,12 @@ function TrainingView() {
           className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none resize-none" />
         <textarea placeholder="Notes (optional)" value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} rows={2}
           className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-indigo-500 focus:outline-none resize-none" />
-        <div className="flex justify-end gap-3">
-          <button onClick={onCancel} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
+          <button onClick={onCancel} className="px-4 py-2.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/[0.04] transition-colors">Cancel</button>
           <button
             disabled={!f.title.trim() || createMut.isPending || updateMut.isPending}
             onClick={onSubmit}
-            className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium disabled:opacity-50"
+            className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium disabled:opacity-50 w-full sm:w-auto"
           >
             {(createMut.isPending || updateMut.isPending) ? <Loader2 className="w-4 h-4 animate-spin" /> : submitLabel}
           </button>

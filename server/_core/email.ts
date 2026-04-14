@@ -3,6 +3,7 @@ import type { Transporter } from "nodemailer";
 import type { User } from "../../drizzle/schema";
 import { getRuntimeConfig } from "../dynamicConfig";
 import { DEFAULT_PRICING } from "../../shared/pricing";
+import { sanitizeHtml } from "./htmlEscape";
 
 // Initialize transporter lazily, checking DB settings as fallback
 async function getTransporter(): Promise<Transporter | null> {
@@ -691,28 +692,55 @@ export async function sendStableInviteEmail(
 }
 
 /**
+ * Human-readable labels for each free-access reason template key.
+ * Kept here so email copy and audit logs use the same strings.
+ */
+const FREE_ACCESS_REASON_LABELS: Record<string, string> = {
+  system_maintenance: "System update / maintenance goodwill",
+  service_disruption: "Service disruption apology",
+  bug_compensation: "Bug impact compensation",
+  support_resolution: "Manual support resolution",
+  beta_evaluation: "Beta testing / temporary evaluation",
+  special_approval: "Special approval / custom case",
+};
+
+/**
  * Send a complimentary access / goodwill email when admin grants free access.
- * Dynamic freeDays supports 30, 60, or 90 (and any other admin-chosen value).
+ * Dynamic freeDays can be any admin-chosen value (default 7).
+ * reason is a template key (see FREE_ACCESS_REASON_LABELS).
  */
 export async function sendCompensationEmail(
   recipientEmail: string,
   userName: string,
   freeDays: number,
+  reason?: string,
+  customNote?: string,
 ): Promise<void> {
   const baseUrl = process.env.BASE_URL || "https://equiprofile.online";
   const dashboardUrl = `${baseUrl}/dashboard`;
 
+  // Sanitize inputs at entry for defense in depth
+  const safeCustomNote = customNote ? sanitizeHtml(customNote) : "";
+
+  const reasonLabel = reason
+    ? sanitizeHtml(FREE_ACCESS_REASON_LABELS[reason] ?? "Administrative action")
+    : "Complimentary access";
+
   const subject = `Your complimentary ${freeDays}-day access — EquiProfile`;
+  const reasonBlock = reason
+    ? `<div style="background:#fff7ed;border-radius:8px;padding:14px 18px;margin:0 0 20px;border:1px solid #fed7aa;">
+        <p style="margin:0;font-size:13px;color:#92400e;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Reason</p>
+        <p style="margin:6px 0 0;font-size:14px;color:#374151;">${reasonLabel}${safeCustomNote ? `<br/><span style="color:#6b7280;font-style:italic;">${safeCustomNote}</span>` : ""}</p>
+      </div>`
+    : "";
   const html = brandedEmail(`
-    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Thank you for your patience</h1>
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">We have granted you complimentary access</h1>
     <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
       Hi ${userName || "there"},
     </p>
-    <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.6;">
-      We have recently completed a significant round of platform upgrades to EquiProfile. During this period, some features may not have worked perfectly, and we sincerely appreciate your patience.
-    </p>
+    ${reasonBlock}
     <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
-      As a thank-you, we have added <strong>${freeDays} days of complimentary full access</strong> to your account — no action required on your part.
+      We have added <strong>${freeDays} days of complimentary full access</strong> to your account — no action required on your part.
     </p>
     <div style="background:#f0f4ff;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #dde3f8;">
       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
@@ -735,7 +763,7 @@ export async function sendCompensationEmail(
     </div>
     ${ctaBtn("Go to My Dashboard →", dashboardUrl)}
     <p style="font-size:14px;color:#374151;line-height:1.6;margin:24px 0 8px;">
-      The upgraded platform is now running smoothly, and we are confident you will enjoy the improvements. If you have any questions at all, please do not hesitate to reach out.
+      If you have any questions at all, please do not hesitate to reach out.
     </p>
     <p style="font-size:14px;color:#374151;margin:0 0 24px;">
       Thank you for being part of EquiProfile.

@@ -565,13 +565,13 @@ function HorseFormContent() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-end gap-4 mt-6">
-          <Link href="/horses">
-            <Button type="button" variant="outline">
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-6">
+          <Link href="/horses" className="block">
+            <Button type="button" variant="outline" className="w-full sm:w-auto">
               Cancel
             </Button>
           </Link>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />

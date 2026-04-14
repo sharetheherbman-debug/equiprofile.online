@@ -5,6 +5,9 @@
  * Entirely separate from DashboardLayout / Pro nav. No Pro nav items are
  * visible here. Student-specific sidebar with student nav, topbar with
  * dark/light toggle and logout. Mobile responsive.
+ *
+ * When an admin user enters this layout (via Admin → Portals), an
+ * "Admin Viewing" banner is shown at the top with a back-to-admin button.
  */
 import { ReactNode, useState } from "react";
 import {
@@ -23,6 +26,8 @@ import {
   Settings,
   DollarSign,
   Library,
+  Shield,
+  ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,6 +35,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { TrialBanner } from "@/components/TrialBanner";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
+import { useAdminViewMode } from "@/contexts/AdminViewContext";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -122,7 +128,7 @@ function SidebarNav({
                 onNavigate(item.view);
                 onClose?.();
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-0.5 text-sm font-medium transition-all text-left ${
+              className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg mb-0.5 text-sm font-medium transition-all text-left ${
                 isActive
                   ? "bg-indigo-500/20 text-indigo-300"
                   : "text-gray-400 hover:bg-white/[0.06] hover:text-gray-200"
@@ -143,14 +149,14 @@ function SidebarNav({
         <div className="mt-3 pt-3 border-t border-white/[0.06]">
           <button
             onClick={() => { onNavigate("settings"); onClose?.(); }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-0.5 text-sm font-medium text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all text-left"
+            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg mb-0.5 text-sm font-medium text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all text-left"
           >
             <Settings className="w-4 h-4 shrink-0 text-gray-500" />
             <span>Settings</span>
           </button>
           <button
             onClick={() => { setLocation("/billing"); onClose?.(); }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-0.5 text-sm font-medium text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all text-left"
+            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg mb-0.5 text-sm font-medium text-gray-400 hover:bg-white/[0.06] hover:text-gray-200 transition-all text-left"
           >
             <DollarSign className="w-4 h-4 shrink-0 text-gray-500" />
             <span>Billing</span>
@@ -191,6 +197,29 @@ function SidebarNav({
   );
 }
 
+// ── Admin view indicator (context-based) ──────────────────────────────────
+
+function AdminViewIndicator() {
+  const [, setLocation] = useLocation();
+  const { exitViewMode } = useAdminViewMode();
+  return (
+    <div className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border-b border-indigo-500/20 shrink-0">
+      <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
+      <span className="text-xs font-semibold text-indigo-300 shrink-0">
+        Viewing as: Student
+      </span>
+      <div className="flex-1" />
+      <button
+        onClick={() => { exitViewMode(); setLocation("/admin"); }}
+        className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-indigo-500/15 text-indigo-300 hover:bg-indigo-500/25 transition-colors"
+      >
+        <Shield className="w-3.5 h-3.5" />
+        Exit to Admin
+      </button>
+    </div>
+  );
+}
+
 // ── Main layout ────────────────────────────────────────────────────────────
 
 export default function StudentDashboardLayout({
@@ -199,6 +228,8 @@ export default function StudentDashboardLayout({
   onNavigate,
 }: StudentDashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const { data: subscriptionStatus } = trpc.billing.getStatus.useQuery(
     undefined,
     { staleTime: 5 * 60 * 1000 },
@@ -247,8 +278,11 @@ export default function StudentDashboardLayout({
 
       {/* ── Main content area ────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Trial banner — shown if on trial */}
-        {subscriptionStatus && (
+        {/* Admin view indicator — shown when admin is reviewing this portal */}
+        {isAdmin && <AdminViewIndicator />}
+
+        {/* Trial banner — show for non-admin users (admin previewing sees student UI faithfully) */}
+        {subscriptionStatus && !isAdmin && (
           <TrialBanner />
         )}
 

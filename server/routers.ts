@@ -3044,7 +3044,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           // "stable"   = Stable dashboard only (stable tier, no standard)
           tier: z.enum(["standard", "stable"]),
           // Duration in days: 30, 60, or 90 (admin-selected per user)
-          freeDays: z.number().int().min(1).max(365).default(30),
+          freeDays: z.number().int().min(1).max(365).default(7),
+          // Reason template key for the grant (required — admin must pick a reason)
+          reason: z.string().min(1).max(500),
+          // Optional short custom note from admin
+          customNote: z.string().max(500).optional(),
           // Whether to send a branded compensation email to the user
           sendEmail: z.boolean().default(true),
         }),
@@ -3080,7 +3084,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           action: "free_access_granted",
           entityType: "user",
           entityId: input.userId,
-          details: JSON.stringify({ targetEmail: targetUser.email, tier: input.tier, freeDays: input.freeDays }),
+          details: JSON.stringify({ targetEmail: targetUser.email, tier: input.tier, freeDays: input.freeDays, reason: input.reason, customNote: input.customNote ?? null }),
         });
         // Send compensation email asynchronously (non-blocking)
         if (input.sendEmail && targetUser.email) {
@@ -3088,6 +3092,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             targetUser.email,
             targetUser.name || "",
             input.freeDays,
+            input.reason,
+            input.customNote,
           ).catch((err) =>
             console.error("[Email] Failed to send compensation email:", err),
           );

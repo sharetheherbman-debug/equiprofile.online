@@ -304,7 +304,7 @@ function HorseDetailContent() {
                   {/* Add tag dropdown */}
                   {(allTags as any[]).filter((t: any) => !(horseTags as any[]).some((ht: any) => ht.id === t.id)).length > 0 && (
                     <select
-                      className="text-xs border rounded px-1.5 py-0.5 bg-background text-muted-foreground cursor-pointer"
+                      className="text-xs border rounded-md px-2.5 py-1.5 bg-background text-muted-foreground cursor-pointer min-h-[32px]"
                       value=""
                       onChange={(e) => {
                         if (e.target.value) attachTagMutation.mutate({ horseId, tagId: parseInt(e.target.value) });
@@ -358,35 +358,35 @@ function HorseDetailContent() {
       )}
 
       {/* Tabs for Timeline, Health, Training, Feeding, Medical Passport */}
-      <Tabs defaultValue="timeline" className="space-y-4">
-        <div className="overflow-x-auto no-scrollbar">
-          <TabsList className="flex w-max min-w-full gap-0 rounded-md h-auto p-1">
-          <TabsTrigger value="timeline" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
-            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="hidden sm:inline">Timeline</span>
+      <Tabs defaultValue="timeline" className="space-y-4 sm:space-y-6">
+        {/* Desktop: single row of 6 tabs. Mobile: 2-row grid (3 per row) with generous tap targets */}
+        <TabsList className="grid grid-cols-3 sm:grid-cols-6 w-full h-auto gap-1.5 sm:gap-1 rounded-xl p-1.5 sm:p-1">
+          <TabsTrigger value="timeline" className="flex flex-col items-center gap-1.5 py-3 sm:py-2.5 px-2 text-xs font-medium leading-none min-h-[56px] sm:min-h-[52px] rounded-lg data-[state=active]:shadow-sm">
+            <Clock className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+            <span>Timeline</span>
           </TabsTrigger>
-          <TabsTrigger value="health" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
-            <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="hidden sm:inline">Health</span>
+          <TabsTrigger value="health" className="flex flex-col items-center gap-1.5 py-3 sm:py-2.5 px-2 text-xs font-medium leading-none min-h-[56px] sm:min-h-[52px] rounded-lg data-[state=active]:shadow-sm">
+            <Heart className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+            <span>Health</span>
           </TabsTrigger>
-          <TabsTrigger value="training" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
-            <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="hidden sm:inline">Training</span>
+          <TabsTrigger value="training" className="flex flex-col items-center gap-1.5 py-3 sm:py-2.5 px-2 text-xs font-medium leading-none min-h-[56px] sm:min-h-[52px] rounded-lg data-[state=active]:shadow-sm">
+            <Activity className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+            <span>Training</span>
           </TabsTrigger>
-          <TabsTrigger value="feeding" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
-            <Utensils className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="hidden sm:inline">Feeding</span>
+          <TabsTrigger value="feeding" className="flex flex-col items-center gap-1.5 py-3 sm:py-2.5 px-2 text-xs font-medium leading-none min-h-[56px] sm:min-h-[52px] rounded-lg data-[state=active]:shadow-sm">
+            <Utensils className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+            <span>Feeding</span>
           </TabsTrigger>
-          <TabsTrigger value="competitions" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
-            <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+          <TabsTrigger value="competitions" className="flex flex-col items-center gap-1.5 py-3 sm:py-2.5 px-2 text-xs font-medium leading-none min-h-[56px] sm:min-h-[52px] rounded-lg data-[state=active]:shadow-sm" aria-label="Competitions">
+            <Trophy className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="sm:hidden">Comps</span>
             <span className="hidden sm:inline">Competitions</span>
           </TabsTrigger>
-          <TabsTrigger value="passport" className="flex-shrink-0 flex items-center gap-1.5 text-[11px] sm:text-sm px-2.5 sm:px-3 py-1.5">
-            <FileHeart className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="hidden sm:inline">Passport</span>
+          <TabsTrigger value="passport" className="flex flex-col items-center gap-1.5 py-3 sm:py-2.5 px-2 text-xs font-medium leading-none min-h-[56px] sm:min-h-[52px] rounded-lg data-[state=active]:shadow-sm">
+            <FileHeart className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
+            <span>Passport</span>
           </TabsTrigger>
         </TabsList>
-        </div>
 
         {/* Timeline Tab — unified chronological view */}
         <TabsContent value="timeline">

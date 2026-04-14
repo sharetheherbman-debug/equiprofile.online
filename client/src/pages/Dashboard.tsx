@@ -216,13 +216,15 @@ function DashboardContent() {
 
   // Redirect Stable plan users to the Stable Dashboard, Student plan users to the Student Dashboard
   // Skip redirect if user has both dashboards unlocked (admin-granted free access)
+  // Admin users bypass all redirects — they can view any dashboard via the Portals tab
   useEffect(() => {
+    if (user?.role === "admin") return;
     if (subscription?.planTier === "stable" && !subscription?.bothDashboardsUnlocked) {
       setLocation("/stable-dashboard");
     } else if (subscription?.planTier === "student") {
       setLocation("/student-dashboard");
     }
-  }, [subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
+  }, [user?.role, subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
 
   const today = new Date();
   const todayDateString = today.toDateString();

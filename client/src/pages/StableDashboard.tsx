@@ -212,7 +212,8 @@ function StableDashboardContent() {
     { retry: false, staleTime: 5 * 60 * 1000 },
   );
 
-  const isStablePlan = subscriptionStatus?.planTier === "stable";
+  // Admin users bypass plan checks — they can review any dashboard
+  const isStablePlan = subscriptionStatus?.planTier === "stable" || user?.role === "admin";
 
   if (subLoading) {
     return (

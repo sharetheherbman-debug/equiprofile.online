@@ -121,7 +121,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: TeacherView) => void }) 
             <button
               key={a.view}
               onClick={() => onNavigate(a.view)}
-              className="flex items-center gap-3 p-4 rounded-xl border border-white/[0.06] bg-[#111827] text-left hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all"
+              className="flex items-center gap-3 p-4 min-h-[56px] rounded-xl border border-white/[0.06] bg-[#111827] text-left hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all"
             >
               <AIcon className="w-5 h-5 text-emerald-400 shrink-0" />
               <span className="text-sm font-medium text-white">{a.label}</span>
@@ -213,8 +213,8 @@ function GroupsView() {
               <input placeholder="Description (optional)" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
                 className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-emerald-500 focus:outline-none" />
             </div>
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+              <button onClick={() => setShowCreate(false)} className="px-4 py-2.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/[0.04] transition-colors">Cancel</button>
               <button
                 disabled={!form.name.trim() || createMut.isPending}
                 onClick={() => {
@@ -525,12 +525,12 @@ function TasksView() {
                 className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-emerald-500 focus:outline-none" />
             </div>
 
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowForm(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+              <button onClick={() => setShowForm(false)} className="px-4 py-2.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/[0.04] transition-colors">Cancel</button>
               <button
                 disabled={!form.title.trim() || (assignTo === "student" ? !form.studentUserId : !form.groupId) || assignMut.isPending}
                 onClick={handleAssign}
-                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50"
+                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50 w-full sm:w-auto"
               >
                 {assignMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Assign Task"}
               </button>
@@ -676,12 +676,12 @@ function FeedbackView({ prefillStudentId, prefillStudentName, onClearPrefill }: 
               rows={3}
               className="w-full px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:border-emerald-500 focus:outline-none resize-none"
             />
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowForm(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+              <button onClick={() => setShowForm(false)} className="px-4 py-2.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/[0.04] transition-colors">Cancel</button>
               <button
                 disabled={!form.studentUserId || !form.comment.trim() || addMut.isPending}
                 onClick={handleAdd}
-                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50"
+                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50 w-full sm:w-auto"
               >
                 {addMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Feedback"}
               </button>

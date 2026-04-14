@@ -6,6 +6,7 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AdminViewProvider, useAdminViewMode } from "./contexts/AdminViewContext";
 import {
   SkipToContent,
   useKeyboardNavigation,
@@ -108,12 +109,25 @@ function Router() {
   useScrollToTop();
   const upgradeModal = useUpgradeModal();
   const uiVersion = getUIVersion();
+  const { viewMode, isAdmin } = useAdminViewMode();
 
   // Version-aware component selection — VITE_UI_VERSION=v2 (set at deploy time)
   // selects V2 redesigned pages; default is V1 legacy
   const ActiveHome = uiVersion === "v2" ? HomeV2 : Home;
   const ActiveDashboard = uiVersion === "v2" ? DashboardV2 : Dashboard;
   const ActiveStableDashboard = uiVersion === "v2" ? StableDashboardV2 : StableDashboard;
+
+  // Admin view mode resolution — when an admin is in "View As" mode,
+  // /dashboard renders the appropriate simulated dashboard
+  const ResolvedDashboard = (() => {
+    if (!isAdmin || !viewMode || viewMode === "admin" || viewMode === "pro") {
+      return ActiveDashboard;
+    }
+    if (viewMode === "stable") return ActiveStableDashboard;
+    if (viewMode === "student") return StudentDashboard;
+    if (viewMode === "teacher") return TeacherDashboard;
+    return ActiveDashboard;
+  })();
 
   return (
     <>
@@ -169,7 +183,7 @@ function Router() {
             {/* App Pages (Protected - require auth) — version-aware */}
             <Route path="/dashboard">
               <ProtectedRoute>
-                <ActiveDashboard />
+                <ResolvedDashboard />
               </ProtectedRoute>
             </Route>
 
@@ -475,13 +489,15 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-          <SalesChatWidget />
-          <PWAInstallPrompt />
-          <CookieConsent />
-        </TooltipProvider>
+        <AdminViewProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+            <SalesChatWidget />
+            <PWAInstallPrompt />
+            <CookieConsent />
+          </TooltipProvider>
+        </AdminViewProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
