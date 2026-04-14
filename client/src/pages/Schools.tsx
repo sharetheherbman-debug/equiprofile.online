@@ -37,6 +37,7 @@ import { useState } from "react";
 
 // ── ROI Calculator ──────────────────────────────────────────────────────────
 function ROICalculator() {
+  // Default to 15 students — midpoint of the "Medium School" tier (0–20)
   const [students, setStudents] = useState(15);
   const hoursSavedPerStudent = 2; // hours/month admin time saved
   const costPerHour = 15; // average admin cost
