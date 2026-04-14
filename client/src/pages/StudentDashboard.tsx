@@ -37,6 +37,7 @@ import {
   ArrowRight,
   Eye,
   Award,
+  Lock,
   LogOut,
 } from "lucide-react";
 
@@ -210,10 +211,10 @@ function AssignedTasksPanel({ onNavigate }: { onNavigate: (v: ActiveView) => voi
 }
 
 const LEVEL_PATHWAY_ITEMS: Record<string, string[]> = {
-  beginner: ["riding-position", "aids-and-control", "grooming-basics", "feeding-basics", "tack-and-equipment", "horse-behaviour", "stable-safety", "horse-health-awareness"],
-  developing: ["transitions", "trot-work", "nutrition-in-depth", "hoof-care", "rugging", "horse-behaviour-advanced", "first-aid-basics", "warming-up"],
-  intermediate: ["canter-work", "lateral-work-intro", "health-monitoring", "lameness-awareness", "competition-basics", "arena-figures"],
-  advanced: ["collection-and-engagement", "horse-biomechanics", "nutrition-advanced", "accident-management"],
+  beginner: ["parts-of-the-horse", "grooming-basics", "feeding-basics", "stable-checks", "mounting-dismounting", "rider-position-basics", "safe-approach-handling", "leading-safely", "understanding-horse-behaviour", "basic-tack-identification", "understanding-equine-digestion", "five-freedoms-of-animal-welfare"],
+  developing: ["turnout-and-rugs", "hoof-care-awareness", "walk-trot-transitions", "warmup-cooldown", "tack-care-cleaning", "trot-rhythm-and-balance", "lungeing-basics", "balancing-a-diet", "recognising-neglect-and-abuse", "when-to-call-the-vet", "daily-stable-routines", "stretching-for-riders"],
+  intermediate: ["lesson-preparation", "risk-incident-awareness", "lameness-awareness", "bit-selection-basics", "rider-balance-independent-seat", "first-crossrail-fences", "equine-first-aid-basics", "feeding-for-workload", "ethical-training-methods", "grid-work-and-related-distances", "overcoming-fear-and-anxiety", "safeguarding-and-duty-of-care"],
+  advanced: ["advanced-safety-awareness", "welfare-based-decision-making", "advanced-equipment-awareness", "mental-skills-for-performance", "advanced-groundwork-exercises", "supplements-and-special-diets", "end-of-life-decisions", "course-awareness-and-planning", "emergency-first-aid-procedures", "competition-day-management", "inclusive-coaching-adaptive-riding", "managing-groups-and-progression"],
 };
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -274,6 +275,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
   const { data: assignedLessons } = trpc.student.getAssignedLessons.useQuery();
   const { data: lessonProgress } = trpc.student.getLessonProgress.useQuery();
   const { data: pathways } = trpc.student.listLessonPathways.useQuery();
+  const { data: unlockData } = trpc.student.getUnlockedLevel.useQuery();
 
   if (isLoading) {
     return (
@@ -428,6 +430,83 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
           </div>
         );
       })()}
+
+      {/* Continue Learning / Recommended Next — from real progression data */}
+      {unlockData?.recommendedNextLesson && (
+        <div className="rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3"
+          style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.15)" }}>
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-500/20 shrink-0">
+              <Lightbulb className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-emerald-300">Recommended Next Lesson</p>
+              <p className="text-sm text-white mt-0.5 truncate">{unlockData.recommendedNextLesson.title}</p>
+              <p className="text-[10px] text-gray-500 mt-0.5 capitalize">
+                {unlockData.recommendedNextLesson.level} · {unlockData.recommendedNextLesson.pathwaySlug.replace(/-/g, " ")}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => onNavigate("learning-path")}
+            className="shrink-0 text-xs px-4 py-2 rounded-lg font-medium text-white bg-emerald-700 hover:bg-emerald-600 transition-colors"
+          >
+            Continue Learning
+          </button>
+        </div>
+      )}
+
+      {/* Current Level & Progression */}
+      {unlockData && (
+        <div className="rounded-xl p-4 flex items-center gap-3"
+          style={{ background: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.12)" }}>
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-indigo-500/20 shrink-0">
+            <Award className="w-4.5 h-4.5 text-indigo-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-indigo-300 capitalize">{unlockData.unlockedLevel} Level Unlocked</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">
+              {unlockData.completedByLevel.beginner + unlockData.completedByLevel.developing + unlockData.completedByLevel.intermediate + unlockData.completedByLevel.advanced} lessons completed total
+            </p>
+          </div>
+          <button
+            onClick={() => onNavigate("progress")}
+            className="shrink-0 text-[10px] px-3 py-1 rounded-lg font-medium text-indigo-400 border border-indigo-400/30 hover:bg-indigo-500/10 transition-colors"
+          >
+            View Progress
+          </button>
+        </div>
+      )}
+
+      {/* Quick links to Practice & AI Tutor */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button onClick={() => onNavigate("practice")} className="text-left w-full">
+          <SCard className="hover:border-amber-500/30 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-500/15 shrink-0">
+                <Zap className="w-4 h-4 text-amber-400" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white">Daily Practice</p>
+                <p className="text-[10px] text-gray-500">3 fresh scenarios matched to your level</p>
+              </div>
+            </div>
+          </SCard>
+        </button>
+        <button onClick={() => onNavigate("ai-tutor")} className="text-left w-full">
+          <SCard className="hover:border-violet-500/30 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-violet-500/15 shrink-0">
+                <Brain className="w-4 h-4 text-violet-400" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white">AI Tutor</p>
+                <p className="text-[10px] text-gray-500">Get help with any topic or question</p>
+              </div>
+            </div>
+          </SCard>
+        </button>
+      </div>
 
       {/* My Horse */}
       <section>
@@ -1756,88 +1835,57 @@ function ScenarioCard({
 }
 
 function ScenarioTrainingView() {
-  const { data: levelData } = trpc.student.getLearnerLevel.useQuery();
-  const currentLevel = levelData?.level ?? "beginner";
-  const utils = trpc.useUtils();
-
-  const [levelFilter, setLevelFilter] = useState<string>(currentLevel);
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
 
-  // Pass completed IDs as excludeIds for rotation control
-  const { data: scenarios, isLoading } = trpc.student.listScenarios.useQuery(
-    {
-      level: levelFilter as "beginner" | "developing" | "intermediate" | "advanced",
-      excludeIds: Array.from(completedIds),
-      limit: 8,
-    },
-  );
+  // Use daily deterministic scenarios — exactly 3 per day
+  const { data: dailyData, isLoading } = trpc.student.getDailyScenarios.useQuery();
 
   const handleAnswered = (id: string) => {
     setCompletedIds((prev) => new Set(Array.from(prev).concat(id)));
   };
 
-  const handleLoadMore = () => {
-    utils.student.listScenarios.invalidate();
-  };
-
   if (isLoading) return <SCard><SkeletonBar className="w-full h-32" /></SCard>;
 
-  const levels = ["beginner", "developing", "intermediate", "advanced"] as const;
+  const scenarios = dailyData?.scenarios ?? [];
+  const answeredAll = completedIds.size >= scenarios.length && scenarios.length > 0;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <SectionHeading icon={Zap} title="Scenario Training" />
+        <SectionHeading icon={Zap} title="Today's Practice" />
         <div className="flex items-center gap-3">
           {completedIds.size > 0 && (
             <span className="text-xs text-emerald-400 flex items-center gap-1">
-              <Flame className="w-3 h-3" />{completedIds.size} answered this session
+              <Flame className="w-3 h-3" />{completedIds.size} of {scenarios.length} answered
             </span>
-          )}
-          {completedIds.size >= 4 && (
-            <button
-              onClick={handleLoadMore}
-              className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
-            >
-              <ArrowRight className="w-3 h-3" />Load new scenarios
-            </button>
           )}
         </div>
       </div>
 
       <p className="text-sm text-gray-500 -mt-2">
-        Real-world decision scenarios to develop your equestrian judgement. Scenarios are randomised — you'll see fresh ones each session.
+        3 fresh scenarios each day — matched to your level and progress. Come back tomorrow for new ones!
       </p>
 
-      {/* Level filter */}
-      <div className="flex gap-2 flex-wrap">
-        {levels.map((l) => {
-          const info = LEVEL_DISPLAY[l];
-          return (
-            <button
-              key={l}
-              onClick={() => { setLevelFilter(l); setCompletedIds(new Set()); }}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                levelFilter === l ? "text-white border-transparent" : "border-white/10 text-gray-500 hover:text-gray-300 hover:border-white/20"
-              }`}
-              style={levelFilter === l ? { backgroundColor: info.color } : {}}
-            >
-              {info.label}
-            </button>
-          );
-        })}
-      </div>
+      {answeredAll && (
+        <SCard>
+          <div className="text-center py-6">
+            <Trophy className="w-8 h-8 text-amber-400 mx-auto mb-2" />
+            <p className="text-sm font-semibold text-white">All done for today!</p>
+            <p className="text-xs text-gray-500 mt-1">Great work. Your daily practice will refresh tomorrow with new scenarios.</p>
+          </div>
+        </SCard>
+      )}
 
-      {(scenarios ?? []).length === 0 ? (
+      {scenarios.length === 0 ? (
         <SCard>
           <div className="text-center py-8">
             <Zap className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">No scenarios available at this level.</p>
+            <p className="text-sm text-gray-500">No scenarios available right now.</p>
           </div>
         </SCard>
       ) : (
         <div className="space-y-4">
-          {(scenarios ?? []).map((scenario) => (
+          {scenarios.map((scenario) => (
             <ScenarioCard
               key={scenario.id}
               scenario={scenario}
@@ -2370,26 +2418,32 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
           ) : (
             filteredLessons.map((lesson, idx) => {
               const isComplete = completedSlugs.has(lesson.slug);
+              const isLocked = (lesson as any).locked === true;
               return (
-                <button key={lesson.slug} onClick={() => setSelectedLesson(lesson.slug)}
-                  className="w-full text-left rounded-xl p-4 flex items-center gap-4 transition-all hover:border-indigo-500/40"
+                <button key={lesson.slug}
+                  onClick={() => !isLocked && setSelectedLesson(lesson.slug)}
+                  disabled={isLocked}
+                  className={`w-full text-left rounded-xl p-4 flex items-center gap-4 transition-all ${
+                    isLocked ? "opacity-50 cursor-not-allowed" : "hover:border-indigo-500/40"
+                  }`}
                   style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                    isComplete ? "bg-emerald-500/20" : "bg-gray-800"
+                    isLocked ? "bg-gray-800/50" : isComplete ? "bg-emerald-500/20" : "bg-gray-800"
                   }`}>
-                    {isComplete ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <span className="text-xs text-gray-500 font-mono">{idx + 1}</span>}
+                    {isLocked ? <Lock className="w-4 h-4 text-gray-600" /> : isComplete ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <span className="text-xs text-gray-500 font-mono">{idx + 1}</span>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium text-white truncate">{lesson.title}</h4>
+                    <h4 className={`text-sm font-medium truncate ${isLocked ? "text-gray-500" : "text-white"}`}>{lesson.title}</h4>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${levelColors[lesson.level] ?? ""}`}>
                         {lesson.level}
                       </span>
                       <span className="text-[10px] text-gray-500">{lesson.category}</span>
-                      <span className="text-[10px] text-gray-600 flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" />~15 min</span>
+                      {isLocked && <span className="text-[10px] text-gray-600 flex items-center gap-0.5"><Lock className="w-2.5 h-2.5" />Locked</span>}
+                      {!isLocked && <span className="text-[10px] text-gray-600 flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" />~15 min</span>}
                     </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-gray-600 shrink-0" />
+                  <ArrowRight className={`w-4 h-4 shrink-0 ${isLocked ? "text-gray-700" : "text-gray-600"}`} />
                 </button>
               );
             })

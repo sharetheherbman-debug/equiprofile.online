@@ -1459,6 +1459,10 @@ function TeacherProgressView() {
     { studentUserId: selectedStudent! },
     { enabled: selectedStudent !== null },
   );
+  const { data: lessonSummary } = trpc.teacher.getStudentLessonSummary.useQuery(
+    { studentUserId: selectedStudent! },
+    { enabled: selectedStudent !== null },
+  );
 
   if (loadingStudents) return <TCard><div className="animate-pulse h-32 rounded bg-white/[0.04]" /></TCard>;
 
@@ -1536,6 +1540,94 @@ function TeacherProgressView() {
                     <StatCard label="Training Sessions" value={studentSummary.stats?.trainingCount ?? 0} color="#f59e0b" />
                     <StatCard label="Competencies" value={(competencies ?? []).filter((c: any) => c.status === "achieved").length} color="#06b6d4" />
                   </div>
+                )}
+
+                {/* Lesson Progression — from real lesson completion data */}
+                {lessonSummary && (
+                  <TCard>
+                    <h3 className="text-sm font-semibold text-white mb-3">Learning Level & Progression</h3>
+                    <div className="space-y-3">
+                      {/* Current level badge */}
+                      {(() => {
+                        const student = studentList.find(s => s.id === selectedStudent);
+                        const level = student?.learnerLevel ?? "beginner";
+                        const levelColors: Record<string, string> = {
+                          beginner: "#10b981", developing: "#6366f1", intermediate: "#f59e0b", advanced: "#ef4444",
+                        };
+                        return (
+                          <div className="flex items-center gap-2 p-2.5 rounded-lg" style={{ background: `${levelColors[level]}10`, border: `1px solid ${levelColors[level]}25` }}>
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: `${levelColors[level]}20` }}>
+                              <Star className="w-4 h-4" style={{ color: levelColors[level] }} />
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold capitalize" style={{ color: levelColors[level] }}>{level} Level</p>
+                              <p className="text-[10px] text-gray-500">{lessonSummary.completedCount} lessons completed</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Completion by pathway */}
+                      {Object.keys(lessonSummary.byPathway ?? {}).length > 0 && (
+                        <div>
+                          <p className="text-xs text-gray-400 mb-2">Lessons by Pathway</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                            {Object.entries(lessonSummary.byPathway).map(([pw, count]) => (
+                              <div key={pw} className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-white/[0.02]">
+                                <span className="text-xs text-gray-400 capitalize truncate">{pw.replace(/-/g, " ")}</span>
+                                <span className="text-xs font-semibold text-emerald-400 shrink-0 ml-2">{count as number}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Weak areas: pathways with fewest completions */}
+                      {(() => {
+                        const allPathways = [
+                          "horse-care-foundations", "rider-foundations", "stable-yard-safety",
+                          "horse-behaviour-welfare", "tack-equipment", "developing-rider-skills",
+                          "polework-jump-foundations", "horse-health-first-response", "stable-management",
+                          "competitions-preparation", "rider-fitness-mindset", "coaching-teaching-skills",
+                          "handling-groundwork", "nutrition-feeding", "equine-welfare-ethics",
+                        ];
+                        const bp = lessonSummary.byPathway as Record<string, number>;
+                        const weakAreas = allPathways
+                          .filter(p => (bp[p] ?? 0) === 0)
+                          .slice(0, 4);
+                        if (weakAreas.length === 0) return null;
+                        return (
+                          <div>
+                            <p className="text-xs text-gray-400 mb-2 flex items-center gap-1">
+                              <AlertCircle className="w-3 h-3 text-amber-400" />
+                              Areas Not Yet Started
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {weakAreas.map(w => (
+                                <span key={w} className="text-[10px] px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 capitalize">
+                                  {w.replace(/-/g, " ")}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Recommended next step */}
+                      {lessonSummary.completedCount === 0 && (
+                        <div className="p-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
+                          <p className="text-xs text-indigo-300 font-medium">Suggested Action</p>
+                          <p className="text-[10px] text-gray-500 mt-0.5">This student has not completed any lessons yet. Consider assigning a beginner pathway lesson.</p>
+                        </div>
+                      )}
+                      {lessonSummary.completedCount > 0 && lessonSummary.completedCount < 10 && (
+                        <div className="p-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
+                          <p className="text-xs text-indigo-300 font-medium">Suggested Action</p>
+                          <p className="text-[10px] text-gray-500 mt-0.5">This student is early in their learning. Encourage completion of beginner pathways before progressing.</p>
+                        </div>
+                      )}
+                    </div>
+                  </TCard>
                 )}
 
                 {/* Competency tracking */}
