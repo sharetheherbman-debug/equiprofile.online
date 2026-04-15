@@ -43,6 +43,23 @@ import {
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 
+// Consistent discipline badge color mapping
+function getDisciplineBadgeClass(discipline: string): string {
+  switch (discipline.toLowerCase()) {
+    case "dressage":
+      return "bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700";
+    case "jumping":
+      return "bg-emerald-50 text-[#2d6a4f] border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700";
+    case "eventing":
+      return "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-700";
+    case "western":
+      return "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-700";
+    case "general":
+    default:
+      return "bg-blue-50 text-[#2e6da4] border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700";
+  }
+}
+
 // Predesigned training templates with week 1 program data
 // Note: These templates provide week 1 as a starter. Users can extend
 // them by adding additional weeks based on the established pattern.
@@ -1425,12 +1442,12 @@ function TrainingTemplatesContent() {
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0">
+            <Button className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg">
               <Plus className="w-4 h-4 mr-2" />
               Create Template
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#1a2435]">
             <DialogHeader>
               <DialogTitle>Create Training Template</DialogTitle>
               <DialogDescription>
@@ -1549,12 +1566,14 @@ function TrainingTemplatesContent() {
                   setIsCreateOpen(false);
                   resetForm();
                 }}
+                className="bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleCreate}
                 disabled={createMutation.isPending}
+                className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
               >
                 {createMutation.isPending ? "Creating..." : "Create Template"}
               </Button>
@@ -1565,33 +1584,25 @@ function TrainingTemplatesContent() {
 
       {/* Predesigned Templates Section */}
       <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3a93b8]/20 to-[#5b8def]/20 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-indigo-500" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold font-serif">
-              Predesigned Templates
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              Professional training programs ready to use
-            </p>
-          </div>
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-1 h-5 rounded-full bg-gradient-to-b from-[#2e6da4] to-[#2e6da4]/40" />
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Predesigned Templates</h2>
+          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">— Professional training programs ready to use</span>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {PREDESIGNED_TEMPLATES.map((predesigned) => (
             <Card
               key={predesigned.id}
-              className="hover:shadow-lg transition-shadow border-indigo-500/20"
+              className="bg-white dark:bg-[#1a2435] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-indigo-500" />
+                    <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-[#2e6da4]" />
                       {predesigned.name}
                     </CardTitle>
-                    <CardDescription className="mt-1 text-xs">
+                    <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                       {predesigned.description}
                     </CardDescription>
                   </div>
@@ -1601,24 +1612,24 @@ function TrainingTemplatesContent() {
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-1.5">
                     {predesigned.discipline && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className={`text-xs ${getDisciplineBadgeClass(predesigned.discipline)}`}>
                         {predesigned.discipline}
                       </Badge>
                     )}
                     {predesigned.level && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
                         {predesigned.level}
                       </Badge>
                     )}
                     {predesigned.duration && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
                         {predesigned.duration} weeks
                       </Badge>
                     )}
                   </div>
 
                   {predesigned.goals && (
-                    <p className="text-xs text-muted-foreground line-clamp-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
                       {predesigned.goals}
                     </p>
                   )}
@@ -1628,7 +1639,7 @@ function TrainingTemplatesContent() {
                     variant="default"
                     onClick={() => handleAddPredesignedTemplate(predesigned)}
                     disabled={usePredesignedMutation.isPending}
-                    className="w-full bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#1a5276] hover:to-[#4a7dd4]"
+                    className="w-full bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
                   >
                     <Plus className="w-3 h-3 mr-1" />
                     Use This Template
@@ -1642,10 +1653,11 @@ function TrainingTemplatesContent() {
 
       {/* User Templates Section */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold font-serif">Your Templates</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-1 h-5 rounded-full bg-gradient-to-b from-[#2e6da4] to-[#2e6da4]/40" />
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Your Templates</h2>
           {templates && templates.length > 0 && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
               {templates.length}
             </Badge>
           )}
@@ -1653,21 +1665,21 @@ function TrainingTemplatesContent() {
 
         {/* Templates Grid */}
         {!templates || templates.length === 0 ? (
-          <Card className="border-dashed">
+          <Card className="border-dashed bg-white dark:bg-[#1a2435] rounded-xl border-gray-200 dark:border-gray-700">
             <CardContent className="flex flex-col items-center justify-center py-16">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center mb-4">
-                <Play className="w-8 h-8 text-green-500" />
+              <div className="w-16 h-16 rounded-2xl bg-[#2e6da4]/10 flex items-center justify-center mb-4">
+                <Play className="w-8 h-8 text-[#2e6da4]" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">
+              <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">
                 No custom templates yet
               </h3>
-              <p className="text-muted-foreground text-center mb-6 max-w-sm text-sm">
+              <p className="text-gray-500 dark:text-gray-400 text-center mb-6 max-w-sm text-sm">
                 Create your first custom training template or use one of the
                 predesigned templates above.
               </p>
               <Button
                 onClick={() => setIsCreateOpen(true)}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0"
+                className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Template
@@ -1680,25 +1692,25 @@ function TrainingTemplatesContent() {
               {templates.map((template) => (
                 <Card
                   key={template.id}
-                  className="hover:shadow-lg transition-shadow"
+                  className="bg-white dark:bg-[#1a2435] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <CardTitle className="text-lg">
+                        <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100">
                           {template.name}
                         </CardTitle>
-                        <CardDescription className="mt-1">
+                        <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                           {template.description || "No description"}
                         </CardDescription>
                       </div>
                       {template.isPublic ? (
-                        <Badge variant="secondary" className="ml-2">
+                        <Badge variant="secondary" className="ml-2 bg-blue-50 text-[#2e6da4] border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700">
                           <Globe className="w-3 h-3 mr-1" />
                           Public
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="ml-2">
+                        <Badge variant="outline" className="ml-2 bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
                           <Lock className="w-3 h-3 mr-1" />
                           Private
                         </Badge>
@@ -1709,20 +1721,20 @@ function TrainingTemplatesContent() {
                     <div className="space-y-3">
                       <div className="flex flex-wrap gap-2">
                         {template.discipline && (
-                          <Badge variant="outline">{template.discipline}</Badge>
+                          <Badge variant="outline" className={getDisciplineBadgeClass(template.discipline)}>{template.discipline}</Badge>
                         )}
                         {template.level && (
-                          <Badge variant="outline">{template.level}</Badge>
+                          <Badge variant="outline" className="bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">{template.level}</Badge>
                         )}
                         {template.duration && (
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
                             {template.duration} weeks
                           </Badge>
                         )}
                       </div>
 
                       {template.goals && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
                           {template.goals}
                         </p>
                       )}
@@ -1732,7 +1744,7 @@ function TrainingTemplatesContent() {
                           size="sm"
                           variant="default"
                           onClick={() => openApplyDialog(template)}
-                          className="flex-1"
+                          className="flex-1 bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
                         >
                           <Play className="w-3 h-3 mr-1" />
                           Apply
@@ -1741,6 +1753,7 @@ function TrainingTemplatesContent() {
                           size="sm"
                           variant="outline"
                           onClick={() => openEditDialog(template)}
+                          className="bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
                         >
                           <Edit className="w-3 h-3" />
                         </Button>
@@ -1748,6 +1761,7 @@ function TrainingTemplatesContent() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleDuplicate(template.id)}
+                          className="bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
                         >
                           <Copy className="w-3 h-3" />
                         </Button>
@@ -1755,6 +1769,7 @@ function TrainingTemplatesContent() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleDelete(template.id)}
+                          className="bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
@@ -1770,7 +1785,7 @@ function TrainingTemplatesContent() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#1a2435]">
           <DialogHeader>
             <DialogTitle>Edit Training Template</DialogTitle>
             <DialogDescription>
@@ -1887,10 +1902,11 @@ function TrainingTemplatesContent() {
                 setIsEditOpen(false);
                 resetForm();
               }}
+              className="bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
             >
               Cancel
             </Button>
-            <Button onClick={handleEdit} disabled={updateMutation.isPending}>
+            <Button onClick={handleEdit} disabled={updateMutation.isPending} className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg">
               {updateMutation.isPending ? "Updating..." : "Update Template"}
             </Button>
           </DialogFooter>
@@ -1899,7 +1915,7 @@ function TrainingTemplatesContent() {
 
       {/* Apply Template Dialog */}
       <Dialog open={isApplyOpen} onOpenChange={setIsApplyOpen}>
-        <DialogContent>
+        <DialogContent className="bg-white dark:bg-[#1a2435]">
           <DialogHeader>
             <DialogTitle>Apply Template to Horse</DialogTitle>
             <DialogDescription>
@@ -1950,10 +1966,11 @@ function TrainingTemplatesContent() {
                   startDate: new Date().toISOString().split("T")[0],
                 });
               }}
+              className="bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
             >
               Cancel
             </Button>
-            <Button onClick={handleApply} disabled={applyMutation.isPending}>
+            <Button onClick={handleApply} disabled={applyMutation.isPending} className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg">
               {applyMutation.isPending ? "Applying..." : "Apply Template"}
             </Button>
           </DialogFooter>
