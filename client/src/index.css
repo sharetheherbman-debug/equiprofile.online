@@ -91,39 +91,39 @@
 }
 
 .dark {
-  /* Premium dark-blue theme — two shades of deep navy, no black */
-  --primary: #6366f1; /* indigo accent */
+  /* Premium dark theme — warm navy with teal-emerald accents for equestrian warmth */
+  --primary: #5b8def; /* softer royal blue — warmer than raw indigo */
   --primary-foreground: #ffffff;
-  --sidebar-primary: #6366f1;
+  --sidebar-primary: #5b8def;
   --sidebar-primary-foreground: #ffffff;
-  --background: #0a1628; /* deep dark blue — primary surface */
-  --foreground: #e8edf5; /* bright readable text */
-  --card: #0f2040; /* second shade of dark blue — elevated surfaces */
-  --card-foreground: #e8edf5;
-  --popover: #0f2040;
-  --popover-foreground: #e8edf5;
-  --secondary: #0f2040;
-  --secondary-foreground: #e8edf5;
-  --muted: #1a3050; /* mid-blue muted surface */
-  --muted-foreground: #9fb3cc;
-  --accent: #a78bfa; /* violet highlight */
-  --accent-foreground: #0a1628;
-  --destructive: #dc2626;
+  --background: #0b1726; /* warm dark navy — primary surface */
+  --foreground: #e9eef6; /* bright readable text */
+  --card: #101f3a; /* warm elevated surface */
+  --card-foreground: #e9eef6;
+  --popover: #101f3a;
+  --popover-foreground: #e9eef6;
+  --secondary: #101f3a;
+  --secondary-foreground: #e9eef6;
+  --muted: #1a2f4f; /* warm mid-blue muted surface */
+  --muted-foreground: #a4b8d0;
+  --accent: #7dd3c0; /* warm teal highlight — friendlier than violet */
+  --accent-foreground: #0b1726;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #243d68; /* blue-tinted border, slightly brighter */
-  --input: #1a3258; /* lighter blue so inputs stand out from card bg */
-  --ring: #6366f1;
-  --chart-1: #6366f1;
-  --chart-2: #a78bfa;
-  --chart-3: #22d3ee;
+  --border: #253e66; /* warm blue-tinted border */
+  --input: #1c3458; /* lighter blue so inputs stand out from card bg */
+  --ring: #5b8def;
+  --chart-1: #5b8def;
+  --chart-2: #7dd3c0;
+  --chart-3: #f0b95b;
   --chart-4: #34d399;
-  --chart-5: #fbbf24;
-  --sidebar: #071220; /* deepest navy for sidebar depth */
-  --sidebar-foreground: #e8edf5;
-  --sidebar-accent: #0f2040;
-  --sidebar-accent-foreground: #e8edf5;
-  --sidebar-border: #1e3860;
-  --sidebar-ring: #6366f1;
+  --chart-5: #f87171;
+  --sidebar: #081420; /* deepest navy for sidebar depth */
+  --sidebar-foreground: #e9eef6;
+  --sidebar-accent: #101f3a;
+  --sidebar-accent-foreground: #e9eef6;
+  --sidebar-border: #1f3a62;
+  --sidebar-ring: #5b8def;
 }
 
 @layer base {
@@ -221,20 +221,21 @@
     }
   }
 
-  /* Modern decorative elements */
+  /* Modern decorative elements — warm premium gradients */
   .hero-gradient {
     background: linear-gradient(
       135deg,
-      oklch(0.55 0.25 250 / 0.9) 0%,
-      oklch(0.55 0.2 280 / 0.95) 100%
+      #1a5276 0%,
+      #2e86ab 50%,
+      #1a5276 100%
     );
   }
 
   .text-gradient {
     background: linear-gradient(
       135deg,
-      oklch(0.55 0.25 250) 0%,
-      oklch(0.55 0.2 280) 100%
+      #5b8def 0%,
+      #7dd3c0 100%
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -246,7 +247,7 @@
   }
   .card-hover:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px -10px oklch(0.55 0.25 250 / 0.18);
+    box-shadow: 0 12px 32px -10px rgba(91, 141, 239, 0.18);
   }
 
   /* Hides scrollbar visually while keeping scroll functionality */
@@ -322,10 +323,10 @@
   @keyframes pulse-glow {
     0%,
     100% {
-      box-shadow: 0 0 20px oklch(0.55 0.25 250 / 0.3);
+      box-shadow: 0 0 20px rgba(91, 141, 239, 0.3);
     }
     50% {
-      box-shadow: 0 0 40px oklch(0.55 0.25 250 / 0.5);
+      box-shadow: 0 0 40px rgba(91, 141, 239, 0.5);
     }
   }
 
@@ -410,7 +411,7 @@
     border-radius: 50%;
     background: radial-gradient(
       circle,
-      oklch(0.55 0.25 250 / 0.3) 0%,
+      rgba(91, 141, 239, 0.3) 0%,
       transparent 70%
     );
     pointer-events: none;
@@ -433,15 +434,15 @@
   }
 
   .gradient-primary {
-    background: linear-gradient(to right, #1e40af, #2563eb);
+    background: linear-gradient(to right, #1a5276, #2e86ab);
   }
 
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200;
+    @apply px-6 py-3 bg-gradient-to-r from-[#2e86ab] to-[#5b8def] text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded-xl font-semibold border-2 border-blue-600 dark:border-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition-all duration-200;
+    @apply px-6 py-3 bg-white dark:bg-slate-800 text-[#2e86ab] dark:text-[#7dd3c0] rounded-xl font-semibold border-2 border-[#2e86ab] dark:border-[#7dd3c0] hover:bg-blue-50 dark:hover:bg-slate-700 transition-all duration-200;
   }
 
   .glass-dark {
@@ -467,10 +468,10 @@
   .animate-gradient {
     background: linear-gradient(
       45deg,
-      #667eea 0%,
-      #764ba2 25%,
-      #f093fb 50%,
-      #667eea 100%
+      #2e86ab 0%,
+      #5b8def 25%,
+      #7dd3c0 50%,
+      #2e86ab 100%
     );
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
@@ -529,10 +530,10 @@
   @keyframes pulseGlow {
     0%,
     100% {
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 0 20px rgba(91, 141, 239, 0.4);
     }
     50% {
-      box-shadow: 0 0 40px rgba(99, 102, 241, 0.8);
+      box-shadow: 0 0 40px rgba(91, 141, 239, 0.8);
     }
   }
 

@@ -10,7 +10,7 @@
  *   import Navbar from "@/components/Navbar";
  *   <Navbar />
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -75,8 +75,17 @@ interface NavbarProps {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Navbar(_props: NavbarProps = {}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
+
+  // Scroll-aware: become solid after scrolling past threshold
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    handleScroll(); // set initial state
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Check subscription for stable plan items
   const { data: subscriptionStatus } = trpc.user.getSubscriptionStatus.useQuery(
@@ -85,8 +94,8 @@ export function Navbar(_props: NavbarProps = {}) {
   );
   const isStablePlan = subscriptionStatus?.planTier === "stable";
 
-  // Navbar always shows the light (white) background — no scroll-activation.
-  const showLight = true;
+  // Authenticated pages always solid; public pages start transparent, solid on scroll
+  const showLight = isAuthenticated || scrolled;
 
   const navLinks = isAuthenticated ? appNavLinks : publicNavLinks;
 
@@ -95,7 +104,7 @@ export function Navbar(_props: NavbarProps = {}) {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         showLight
           ? "bg-white/95 backdrop-blur-md shadow-md border-b border-gray-200"
-          : "bg-transparent"
+          : "bg-transparent border-b border-transparent"
       }`}
       style={{ paddingTop: 'var(--safe-area-top, 0px)' }}
     >
@@ -111,7 +120,7 @@ export function Navbar(_props: NavbarProps = {}) {
               alt="EquiProfile"
               className="h-14 w-auto object-contain"
             />
-            <span className={`text-2xl font-bold tracking-tight bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-600 bg-clip-text text-transparent`}>
+            <span className={`text-2xl font-bold tracking-tight ${showLight ? "bg-gradient-to-r from-[#2e86ab] to-[#5b8def] bg-clip-text text-transparent" : "text-white"}`}>
               EquiProfile
             </span>
           </Link>
@@ -253,7 +262,7 @@ export function Navbar(_props: NavbarProps = {}) {
                     className={
                       showLight
                         ? ""
-                        : "bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white border-0"
+                        : "bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#256f8e] hover:to-[#4a7de0] text-white border-0"
                     }
                   >
                     Get Started
@@ -291,7 +300,7 @@ export function Navbar(_props: NavbarProps = {}) {
               exit: { opacity: 0, height: 0 },
               transition: { duration: 0.2 },
             } as any)}
-            className="md:hidden border-t border-gray-200 bg-white overflow-hidden shadow-lg"
+            className="md:hidden border-t border-white/10 bg-[#0b1726] overflow-hidden shadow-lg"
           >
             <div className="container mx-auto px-4 py-4 flex flex-col gap-3">
               {navLinks.map((link) => (
@@ -300,8 +309,8 @@ export function Navbar(_props: NavbarProps = {}) {
                   href={link.path}
                   className={`block py-2 text-base font-medium transition-colors ${
                     location === link.path
-                      ? "text-foreground"
-                      : "text-foreground/80 hover:text-foreground"
+                      ? "text-white"
+                      : "text-white/70 hover:text-white"
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -310,15 +319,15 @@ export function Navbar(_props: NavbarProps = {}) {
               ))}
               {isAuthenticated && isStablePlan && (
                 <>
-                  <div className="border-t pt-2">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2 font-semibold">
+                  <div className="border-t border-white/10 pt-2">
+                    <p className="text-xs text-white/50 uppercase tracking-wider mb-2 font-semibold">
                       Stable
                     </p>
                     {stableNavLinks.map((link) => (
                       <Link
                         key={`mobile-stable-${link.label}`}
                         href={link.path}
-                        className="block py-2 text-base font-medium text-foreground/80 hover:text-foreground"
+                        className="block py-2 text-base font-medium text-white/70 hover:text-white"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {link.label}
@@ -327,18 +336,18 @@ export function Navbar(_props: NavbarProps = {}) {
                   </div>
                 </>
               )}
-              <div className="pt-3 border-t flex flex-col gap-2">
+              <div className="pt-3 border-t border-white/10 flex flex-col gap-2">
                 {isAuthenticated ? (
                   <>
                     <div className="flex items-center gap-2 py-1">
                       <Avatar className="h-8 w-8">
-                        <AvatarFallback className="text-xs font-medium">
+                        <AvatarFallback className="text-xs font-medium bg-white/10 text-white">
                           {user?.name?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium">{user?.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm font-medium text-white">{user?.name}</p>
+                        <p className="text-xs text-white/50">
                           {user?.email}
                         </p>
                       </div>
@@ -349,7 +358,7 @@ export function Navbar(_props: NavbarProps = {}) {
                         logout();
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full"
+                      className="w-full border-white/20 text-white hover:bg-white/10 hover:text-white"
                     >
                       Sign out
                     </Button>
@@ -359,7 +368,7 @@ export function Navbar(_props: NavbarProps = {}) {
                     <Link href="/login">
                       <Button
                         variant="ghost"
-                        className="w-full"
+                        className="w-full text-white hover:bg-white/10 hover:text-white"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         Log In
@@ -367,7 +376,7 @@ export function Navbar(_props: NavbarProps = {}) {
                     </Link>
                     <Link href="/register">
                       <Button
-                        className="w-full"
+                        className="w-full bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#256f8e] hover:to-[#4a7de0] text-white border-0"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         Get Started
