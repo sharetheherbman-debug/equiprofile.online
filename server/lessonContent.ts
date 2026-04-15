@@ -1122,6 +1122,304 @@ Shoes protect the hoof from excessive wear on hard surfaces and can be modified 
     linkedCompetencies: ["grooming_safely", "stable_checks"],
   },
 
+  {
+    slug: "seasonal-horse-care",
+    pathwaySlug: "horse-care-foundations",
+    title: "Seasonal Horse Care",
+    level: "intermediate",
+    category: "Horse Care Foundations",
+    sortOrder: 8,
+    objectives: [
+      "Adapt daily care routines to suit summer, winter, and transitional seasons",
+      "Make informed decisions about clipping and rugging for different conditions",
+      "Implement effective fly protection and heat management in summer",
+      "Manage field care and turnout adjustments throughout the year",
+    ],
+    content: `Horses live outdoors in all weathers and their care needs change significantly with the seasons. A good horseperson anticipates these changes and adjusts routines proactively rather than reactively. This lesson covers the practical management decisions you will face across the year, from the heat and flies of summer to the cold, wet days of winter, and the tricky transitional periods in between.
+
+## Summer Care
+
+Summer brings warmth, longer days, and increased fly activity. While many horses thrive in summer, the season presents its own management challenges.
+
+**Heat management** is a priority. Horses regulate their body temperature primarily through sweating, but in extreme heat or humidity, they can overheat. Key measures include:
+- Providing constant access to fresh, clean water. Horses may drink 40–50 litres per day in hot weather — significantly more if working.
+- Offering shade in the field, whether natural (trees and hedgerows) or man-made (field shelters).
+- Avoiding hard work during the hottest part of the day. Ride early in the morning or in the evening.
+- Hosing down the horse after exercise, particularly the large blood vessels on the inside of the hind legs, to aid cooling.
+
+**Fly protection** is essential for horse welfare and comfort. Flies cause irritation, skin reactions, and can transmit diseases such as sweet itch (caused by *Culicoides* midge bites). Protection strategies include:
+- Fly rugs and masks to provide a physical barrier.
+- Fly repellent sprays applied before turnout — reapply as directed.
+- Bringing horses in during peak fly times (dawn and dusk for midges, midday for horse flies).
+- Keeping muck heaps away from stables and fields to reduce fly breeding sites.
+
+**Pasture management** in summer includes monitoring grass quality (avoiding lush, high-sugar grass for laminitis-prone horses), rotating fields where possible, and ensuring water troughs are clean and topped up daily.
+
+## Winter Care
+
+Winter requires the most intensive daily management. Shorter days, cold temperatures, wet conditions, and limited grazing all demand careful planning.
+
+**Rugging decisions** are among the most debated topics in horse management. The key factors are:
+- The horse's natural coat thickness and body condition.
+- Whether the horse is clipped.
+- Whether the horse lives in or out.
+- The weather — temperature, wind chill, and rain are all relevant.
+
+A native breed with a full coat living out may need little more than a waterproof turnout rug in heavy rain. A clipped Thoroughbred stabled at night may need a heavy stable rug plus a neck cover. Over-rugging is a common mistake — it can cause sweating, skin irritation, and overheating. Always check under the rug by sliding your hand beneath it — the horse should feel warm but not sweaty.
+
+**Mud management** is critical in winter. Mud fever (*Dermatophilus congolensis*) is a bacterial skin infection caused by prolonged exposure to wet, muddy conditions. Prevention includes:
+- Avoiding leaving horses standing in deep mud for extended periods.
+- Drying legs thoroughly before applying barrier creams.
+- Rotating gateways and high-traffic areas.
+- Checking legs daily for scabs, heat, or swelling.
+
+**Feeding adjustments** in winter are necessary because grass quality and availability decline. Horses in work and those without access to good grazing will need supplementary hay or haylage, and possibly hard feed adjusted to their workload and condition. Monitor body condition regularly — a thick winter coat can hide weight loss.
+
+## Transitional Seasons — Spring and Autumn
+
+Spring and autumn are often overlooked but require careful management.
+
+**Spring** brings rapidly growing grass with high sugar content, which is a significant laminitis risk, particularly for native breeds, overweight horses, and those with Equine Metabolic Syndrome (EMS) or Cushing's disease (PPID). Manage grazing carefully — strip grazing, limited turnout, and grazing muzzles may all be necessary.
+
+Spring is also the time for:
+- Reviewing vaccination and worming programmes.
+- Beginning to reduce rugs as temperatures rise.
+- Assessing body condition after winter and adjusting feed accordingly.
+
+**Autumn** is the time to prepare for winter:
+- Book the farrier for any shoeing changes (e.g., fitting studs for slippery conditions).
+- Service and repair rugs before they are needed.
+- Stock up on hay, bedding, and feed.
+- Consider whether clipping is needed and, if so, what type of clip suits the horse's workload.
+
+## Clipping
+
+Clipping removes the horse's winter coat to prevent excessive sweating during work, allow faster drying, and make grooming easier. The decision to clip depends on:
+- The horse's workload — a horse in regular work will benefit from clipping; a horse on light hacking may not need it.
+- The horse's coat type — some horses grow very thick coats that make even light work uncomfortable.
+- The management system — a clipped horse will need more rugs and may need to be stabled in cold weather.
+
+**Common clip types:**
+- **Trace clip** — Removes hair from the underside of the neck, belly, and upper legs. Suitable for horses in light to moderate work.
+- **Blanket clip** — Leaves hair on the back and quarters (like a blanket shape) and removes the rest. Good for horses in moderate work.
+- **Hunter clip** — Removes all hair except a saddle patch and the legs. For horses in hard, regular work.
+- **Full clip** — Removes all hair. Typically used for competition horses or those with very heavy coats.
+
+Always clip in a well-lit, dry area using sharp, well-maintained clippers. Clip against the direction of hair growth and take care around sensitive areas such as the head, elbows, and stifle.`,
+    keyPoints: [
+      "Summer care priorities include hydration, shade, fly protection, and avoiding work in extreme heat",
+      "Rugging decisions depend on coat, clip, living conditions, and weather — over-rugging is as harmful as under-rugging",
+      "Spring grass poses a significant laminitis risk, especially for native breeds and metabolically compromised horses",
+      "Mud fever prevention requires dry legs, barrier creams, and avoiding prolonged standing in wet mud",
+      "Clip type should match the horse's workload, coat type, and management system",
+    ],
+    safetyNote:
+      "When clipping, always use a residual current device (RCD) with electric clippers and never clip a wet horse. Keep the horse tied securely and have an experienced handler present, particularly for horses that are nervous about clipping. If a horse is extremely distressed, stop and seek veterinary advice about sedation rather than forcing the process. When hosing a hot horse in summer, start at the feet and work upwards to avoid shocking the system.",
+    practicalApplication:
+      "Create a seasonal care calendar for a horse in your care. For each season, list the key management tasks, any changes to feeding, rugging, and turnout, and any veterinary or farrier appointments to schedule. Review the calendar monthly and adjust based on the actual weather conditions and the horse's individual needs. Share the calendar with other people who help manage the horse to ensure consistency.",
+    commonMistakes: [
+      "Over-rugging horses in winter, causing sweating and skin problems under the rug",
+      "Failing to restrict grazing in spring for laminitis-prone horses, leading to a potentially life-threatening episode",
+      "Neglecting to check legs daily in muddy conditions, allowing mud fever to develop unnoticed",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the primary risk associated with lush spring grass?",
+        options: [
+          "It makes horses run too fast in the field",
+          "It has a high sugar content that can trigger laminitis in susceptible horses",
+          "It turns the horse's coat green",
+          "It causes respiratory problems due to pollen",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Spring grass grows rapidly and contains high levels of fructans (sugars). For horses prone to laminitis — particularly native breeds, overweight horses, and those with EMS or PPID — this poses a serious risk. Grazing management is essential during spring.",
+      },
+      {
+        question: "Which clip type is most suitable for a horse in light to moderate work?",
+        options: [
+          "Full clip",
+          "Hunter clip",
+          "Trace clip",
+          "No clip is ever suitable for working horses",
+        ],
+        correctIndex: 2,
+        explanation:
+          "A trace clip removes hair from the underside of the neck, belly, and upper legs, which are the areas that sweat most. It is ideal for horses in light to moderate work as it prevents excessive sweating while leaving the back and quarters protected.",
+      },
+      {
+        question: "How should you check whether a horse is over-rugged?",
+        options: [
+          "Check if the horse is shivering",
+          "Look at the weather forecast only",
+          "Slide your hand under the rug — the horse should feel warm but not sweaty",
+          "Over-rugging is not a real concern and does not need to be checked",
+        ],
+        correctIndex: 2,
+        explanation:
+          "The most reliable way to check is to slide your hand under the rug, particularly behind the shoulder and along the back. The horse should feel comfortably warm but not damp or sweaty. A sweating horse under a rug needs a lighter rug or no rug at all.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you help me decide what type of clip my horse needs based on its workload and living arrangements?",
+      "What is the best fly protection strategy for a horse that reacts badly to midge bites?",
+      "How do I create a mud fever prevention plan for winter?",
+    ],
+    linkedCompetencies: ["stable_checks", "welfare_awareness"],
+  },
+
+  {
+    slug: "advanced-grooming-and-coat-management",
+    pathwaySlug: "horse-care-foundations",
+    title: "Advanced Grooming & Coat Management",
+    level: "advanced",
+    category: "Horse Care Foundations",
+    sortOrder: 9,
+    objectives: [
+      "Prepare a horse to competition standard through advanced grooming techniques",
+      "Perform trimming, plaiting, and quartering to a professional standard",
+      "Identify and manage common skin conditions affecting coat health",
+      "Understand the role of nutrition and supplements in maintaining coat quality",
+    ],
+    content: `Advanced grooming goes far beyond keeping a horse clean. It encompasses competition preparation, coat health management, and the specialist skills of trimming, plaiting, and quartering that present a horse to the highest standard. Whether you are preparing for a dressage test, a showing class, or a Pony Club inspection, the ability to turn a horse out immaculately demonstrates horsemanship, attention to detail, and pride in your animal.
+
+## Competition Preparation Grooming
+
+Preparing a horse for competition begins days — not hours — before the event. A thorough pre-competition grooming routine ensures the horse looks its best and gives you time to address any issues.
+
+**Three days before:**
+- Give the horse a thorough bath using an equine shampoo. Pay particular attention to white markings, the mane, and the tail. Use a stain remover for stubborn marks on grey or white areas.
+- Check the mane and tail for tangles. Apply a detangling spray and comb through carefully, starting at the ends and working up to avoid breaking hairs.
+- Assess the coat condition. If the coat is dull, a final hot-cloth treatment can bring up a shine.
+
+**The day before:**
+- Trim the horse (see below) — jaw line, ears (if appropriate to the discipline), fetlocks, and bridle path.
+- Pull or plait the mane to the required standard for the discipline.
+- Apply a light coat of baby oil or coat shine to the mane and tail to lay the hairs flat and add sheen.
+- Check shoes and ensure they are secure. A lost shoe the morning of a competition is a disaster.
+
+**On the day:**
+- Quarter the horse (see below) to remove stable stains and bring up the coat.
+- Apply hoof oil for a polished finish.
+- Wipe around the eyes, nostrils, and dock with a damp cloth.
+- Final check: mane lying flat, tail bandage applied for travelling, rugs clean and correctly fitted.
+
+## Trimming
+
+Trimming neatens the horse's appearance and is expected in most competitive disciplines. The key areas are:
+
+**Jaw and throat:** Use a small pair of curved trimming scissors or quiet clippers to remove long hairs from under the jaw and along the throatlatch. Follow the natural line of the jaw.
+
+**Ears:** Trimming practice varies by discipline. In showing, the inside of the ears may be neatly trimmed (never remove all the hair, as it protects against insects and debris). In dressage and general competition, tidying the tufts at the tips of the ears is usually sufficient. Always check the rules of your discipline.
+
+**Fetlocks and heels:** Remove excess feather from the fetlock area using scissors or clippers, following the line of the tendon. For native breeds shown in their natural state, this trimming is not appropriate — feather is part of breed character.
+
+**Bridle path:** A small section of mane behind the ears may be clipped to allow the headpiece of the bridle to sit neatly. Clip approximately 2–5 cm (1–2 inches) depending on the discipline.
+
+**Whiskers:** Note that trimming or removing a horse's whiskers (vibrissae) is banned under FEI rules and many national governing body regulations, as whiskers serve a sensory function. Always check current regulations before trimming.
+
+## Plaiting
+
+Plaiting (braiding) the mane and tail is a skill that improves with practice. It is required for many competitive disciplines and demonstrates turnout standards.
+
+**Mane plaiting:**
+- Dampen the mane and divide it into even sections. The number of plaits depends on the horse's neck length — traditionally an odd number plus the forelock.
+- Plait each section tightly and evenly, securing with a rubber band or thread. Thread produces a neater finish and is preferred at higher levels.
+- Roll or fold each plait under and secure. Plaits should sit on top of the crest, evenly spaced and uniform in size.
+
+**Tail plaiting:**
+- A plaited tail follows a French-plait technique down the centre of the dock, incorporating small sections of hair from each side.
+- The plait should be tight, even, and extend approximately two-thirds of the way down the dock before being secured.
+- This is a skill that requires significant practice. Work on a willing horse and have someone hold the tail still while you learn.
+
+## Quartering
+
+Quartering is a quick, efficient grooming session performed before exercise or competition. It takes 10–15 minutes and focuses on:
+- Sponging the eyes, nostrils, and dock.
+- Picking out the feet.
+- Brushing over the coat with a body brush to remove surface dust and stable stains without removing the natural oils.
+- Laying the mane flat with a damp water brush.
+- A quick check for any injuries, heat, or swelling.
+
+Quartering is not a full groom — it is a rapid tidy-up that ensures the horse is presentable and comfortable before work.
+
+## Managing Skin Conditions and Coat Health
+
+A healthy coat starts from the inside. Nutrition plays a vital role:
+- **Omega-3 and omega-6 fatty acids** (found in linseed, fish oil, and specific supplements) promote a glossy coat and healthy skin.
+- **Biotin** supports hoof and coat quality, though results take 6–9 months to become visible.
+- **Zinc and copper** are essential trace minerals for skin health and pigmentation.
+- A balanced diet with adequate protein provides the building blocks for hair growth.
+
+**Common skin conditions:**
+- **Rain scald** (*Dermatophilus congolensis*) — Caused by prolonged wet conditions. Presents as raised, crusty scabs along the back and quarters. Treatment involves keeping the area clean and dry, gently removing scabs (soak first), and applying antiseptic wash.
+- **Sweet itch** — An allergic reaction to *Culicoides* midge bites. Causes intense itching, hair loss, and thickened skin, particularly along the mane and tail. Management includes fly rugs, insect repellent, and avoiding turnout at dawn and dusk.
+- **Ringworm** — A highly contagious fungal infection presenting as circular patches of hair loss with grey, scaly skin. Requires veterinary treatment and strict biosecurity (isolate the horse, disinfect all equipment).
+- **Mud fever** — Bacterial infection of the lower legs caused by wet, muddy conditions. Prevention and management were covered in the seasonal care lesson.
+
+Always consult a vet if you are unsure about a skin condition. Early treatment prevents spread and long-term damage to the coat.`,
+    keyPoints: [
+      "Competition preparation begins days before the event — bathing, trimming, and plaiting cannot be rushed",
+      "Quartering is a quick pre-exercise groom focusing on eyes, nostrils, dock, feet, and a light brush over",
+      "Whisker trimming is banned under FEI and many national rules — always check current regulations",
+      "Coat health is supported by omega fatty acids, biotin, zinc, copper, and a balanced diet",
+      "Skin conditions such as rain scald, sweet itch, and ringworm require prompt identification and appropriate treatment",
+    ],
+    safetyNote:
+      "When using electric clippers for trimming, always use a residual current device (RCD) and ensure the horse is calm and securely tied. Keep clippers well-maintained and sharp — blunt blades pull the hair and cause distress. When plaiting, do not pull the mane too tightly, as this can cause discomfort and head-shaking. If you discover ringworm, isolate the horse immediately and disinfect all grooming equipment, rugs, and tack that have been in contact with the affected animal.",
+    practicalApplication:
+      "Practise your plaiting technique on a willing horse during a quiet yard session. Time yourself and aim to produce seven even, secure plaits within 30 minutes. Create a competition preparation timeline for an event three days away, listing every grooming task with the day and time it should be completed. Assess your horse's coat condition and research whether a dietary supplement might improve it — discuss with your vet or a qualified equine nutritionist before making changes.",
+    commonMistakes: [
+      "Leaving competition grooming until the morning of the event, resulting in a rushed and untidy turnout",
+      "Trimming whiskers without checking current regulations, risking elimination from competition",
+      "Ignoring early signs of skin conditions such as small scabs or patches of hair loss, allowing them to worsen",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is quartering?",
+        options: [
+          "Dividing the horse into four sections for grooming",
+          "A quick, efficient pre-exercise groom focusing on eyes, nostrils, dock, feet, and a light brush over",
+          "A thorough deep-clean groom taking at least an hour",
+          "A technique for plaiting the tail into four sections",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Quartering is a rapid 10–15 minute grooming session designed to make the horse presentable before exercise or competition. It focuses on sponging the eyes, nostrils, and dock, picking out feet, and a light brush to remove surface dust.",
+      },
+      {
+        question: "Why is trimming a horse's whiskers now restricted or banned in many competitions?",
+        options: [
+          "Whiskers grow back too quickly to be worth trimming",
+          "Whiskers are a vital sensory organ (vibrissae) and their removal affects the horse's welfare",
+          "Trimmed whiskers are considered unfashionable in modern showing",
+          "It is too expensive to trim whiskers professionally",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Whiskers (vibrissae) serve an important sensory function, helping the horse detect objects close to its muzzle. The FEI and many national governing bodies have banned their removal on welfare grounds.",
+      },
+      {
+        question: "Which nutrient is particularly associated with promoting a glossy coat?",
+        options: [
+          "Vitamin C",
+          "Calcium",
+          "Omega-3 and omega-6 fatty acids",
+          "Iron",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Omega-3 and omega-6 fatty acids, found in sources such as linseed and fish oil, are well-documented for promoting a healthy, glossy coat and supporting overall skin health in horses.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you walk me through how to plait a mane for a dressage competition step by step?",
+      "What is the best approach to treating rain scald on a horse that lives out?",
+      "How do I assess whether my horse's diet is supporting good coat and skin health?",
+    ],
+    linkedCompetencies: ["grooming_safely", "welfare_awareness"],
+  },
+
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PATHWAY 2 — Rider Foundations
@@ -2059,6 +2357,260 @@ Before every ride, verify:
       "Help me plan a structured 45-minute schooling session with warm-up, main work and cool-down.",
     ],
     linkedCompetencies: ["yard_safety_awareness", "welfare_awareness"],
+  },
+
+  {
+    slug: "advanced-rider-position-analysis",
+    pathwaySlug: "rider-foundations",
+    title: "Advanced Rider Position Analysis",
+    level: "advanced",
+    category: "Rider Foundations",
+    sortOrder: 8,
+    objectives: [
+      "Understand the biomechanics of the rider's position and how it influences the horse",
+      "Identify and correct common rider asymmetries",
+      "Develop an effective, independent seat at walk, trot, and canter",
+      "Assess and improve riding without stirrups as a diagnostic tool",
+    ],
+    content: `An advanced understanding of rider position goes far beyond "heels down, shoulders back." At this level, you need to understand the biomechanics of how your body interacts with the horse's movement, recognise and correct your own asymmetries, and develop the kind of independent, following seat that allows you to influence the horse with subtlety and precision. This lesson examines position from a biomechanical perspective and provides the tools for ongoing self-analysis.
+
+## Biomechanics of the Rider
+
+The rider's body is a dynamic system that must constantly adapt to the horse's movement. At walk, the horse's back swings in a figure-of-eight pattern. At trot, the movement is vertical and diagonal. At canter, it is a rolling, rocking motion. An effective rider absorbs and follows all of these movements without stiffening, gripping, or falling behind or ahead of the motion.
+
+**The pelvis** is the foundation of the rider's seat. It must be level, centred, and able to move freely with the horse. A tilted pelvis — whether tipping forward (anterior tilt) or backward (posterior tilt) — affects the entire kinetic chain above and below. An anterior tilt hollows the lower back and pushes the seat out of the saddle. A posterior tilt rounds the back and causes the rider to sit heavily on the horse's back.
+
+**The core muscles** — not just the abdominals, but the deep stabilisers including the pelvic floor and multifidus — provide the stability that allows the limbs to move independently. A rider with a strong core can give refined leg and hand aids without losing their balance or disturbing the horse.
+
+**The shoulder girdle** must be relaxed and level. Tension in the shoulders transmits through the arms to the hands, creating a rigid, unforgiving contact. The elbows should hang naturally at the rider's sides, with a soft bend and a straight line from elbow to bit.
+
+**The leg** should drape around the horse with weight dropping through a long, soft thigh into a deep heel. The knee acts as a hinge, not a clamp. Gripping with the knee lifts the seat and pushes the lower leg away, reducing its effectiveness.
+
+## Asymmetry Correction
+
+Every rider has asymmetries. You may collapse one hip, weight one stirrup more heavily, or carry one hand higher than the other. These asymmetries affect the horse — a rider who consistently sits heavier on the left will cause the horse to drift left, and a rider with one stiff hip will block the horse's movement on that rein.
+
+**Identifying asymmetry:**
+- Have someone photograph or video you from behind at halt, walk, trot, and canter. Look for differences between left and right.
+- Notice which rein feels easier. The "better" rein is often the one where your asymmetry helps the horse; the "worse" rein is where it hinders.
+- Use a physiotherapist or sports therapist who understands equestrian biomechanics to assess your body off the horse.
+
+**Correcting asymmetry:**
+- Targeted exercises off the horse — yoga, Pilates, and specific rider fitness programmes — address muscular imbalances.
+- On the horse, exercises such as riding with one hand on the pommel, or placing a hand on the hip that drops, can increase awareness.
+- Regularly change the rein you work on first to avoid always schooling the "easy" rein.
+- Be patient — asymmetry develops over years and takes time to correct.
+
+## The Effective Seat at All Paces
+
+An effective seat is one that follows the horse's movement without disturbing it, while remaining ready to influence the horse at any moment.
+
+**At walk:** The pelvis follows the horse's back in a gentle figure-of-eight. The upper body remains quiet and tall. The legs hang softly, ready to apply aids.
+
+**At sitting trot:** The pelvis absorbs the vertical movement of the trot by allowing a subtle opening and closing of the hip angle. The lower back must be supple — bracing against the movement causes bouncing. Think of your seat bones drawing small circles on the saddle.
+
+**At canter:** The pelvis follows the rolling motion of the canter by allowing the hips to swing forward and back. The shoulders remain still and upright. The common fault of "pumping" with the upper body actually disrupts the horse's canter rather than helping it.
+
+## Riding Without Stirrups — Assessment Tool
+
+Riding without stirrups is one of the most effective diagnostic tools for assessing rider position. Without the support of stirrups, any reliance on the knee or stirrup for balance becomes immediately apparent.
+
+**Benefits:**
+- Deepens the seat and develops a longer, more secure leg.
+- Reveals grip patterns and tension that stirrups mask.
+- Improves core stability and balance.
+
+**How to assess:**
+- Cross your stirrups and ride at walk for five minutes. Notice where you feel tension or insecurity.
+- Progress to sitting trot without stirrups. Can you maintain a soft, following seat, or do you grip and bounce?
+- At canter, without stirrups, the quality of your seat is fully exposed. If you can sit the canter softly without stirrups, your position is fundamentally sound.
+
+Incorporate regular no-stirrup work into your training, but build up gradually. Overdoing it when your muscles are not conditioned can cause soreness and tension, which is counterproductive.`,
+    keyPoints: [
+      "The pelvis is the foundation of the seat — its position affects the entire kinetic chain",
+      "Core stability allows independent use of the aids without disturbing the horse's balance",
+      "Every rider has asymmetries that affect the horse, and targeted exercises can correct them",
+      "An effective seat follows the horse's movement at each pace without stiffening or pumping",
+      "Riding without stirrups is a powerful diagnostic tool that reveals hidden grip patterns and tension",
+    ],
+    safetyNote:
+      "When riding without stirrups, always work in an enclosed arena on a calm, steady horse. Build up gradually — do not attempt extended periods of no-stirrup canter until you are comfortable at walk and trot. If you feel yourself becoming tense or unbalanced, take the stirrups back and regroup. Never cross your stirrups over the withers on a horse that is likely to spook, as the buckles can dig into the horse and provoke a reaction.",
+    practicalApplication:
+      "Ask someone to video you from behind at walk, trot, and canter. Analyse the footage for asymmetries — hip collapse, uneven stirrup pressure, one hand higher than the other. Choose one asymmetry to work on and research two off-horse exercises to address it. Incorporate five minutes of no-stirrup walk and trot at the start of each schooling session for the next four weeks and note any changes in your balance and feel.",
+    commonMistakes: [
+      "Gripping with the knee to compensate for a weak core, which lifts the seat out of the saddle and reduces leg effectiveness",
+      "Bracing the lower back against the sitting trot instead of allowing the hips to absorb the movement",
+      "Ignoring rider asymmetry and blaming the horse for being one-sided when the issue originates from the rider",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the role of the pelvis in the rider's position?",
+        options: [
+          "It is not important — balance comes primarily from the legs",
+          "It is the foundation of the seat, and its position affects the entire kinetic chain",
+          "It should be locked rigidly in place to prevent movement",
+          "It only matters at canter, not at walk or trot",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The pelvis is the foundation of the rider's seat. Its alignment — whether level, tilted forward, or tilted back — affects the rider's back, core, legs, and ultimately how the horse moves.",
+      },
+      {
+        question: "How can a rider identify their own asymmetries?",
+        options: [
+          "Asymmetries cannot be identified without expensive laboratory equipment",
+          "By always riding on the same rein and noting how the horse feels",
+          "Through video analysis from behind, comparing left and right, and consulting a physiotherapist",
+          "By riding faster to see which direction the horse drifts",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Video analysis from behind at all paces is one of the most effective ways to identify rider asymmetry. Consulting a physiotherapist who understands equestrian biomechanics provides professional assessment of muscular imbalances.",
+      },
+      {
+        question: "Why is riding without stirrups a useful assessment tool?",
+        options: [
+          "It makes the session more exciting for the horse",
+          "It reveals grip patterns, tension, and reliance on the stirrup that are hidden during normal riding",
+          "It is only useful for beginners who need to learn balance",
+          "It strengthens the arms and improves rein control",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Without stirrups, any reliance on gripping or the stirrup for balance becomes immediately apparent. This reveals the true quality of the rider's seat, core stability, and ability to follow the horse's movement.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you explain how a rider's pelvic tilt affects the horse's way of going?",
+      "What off-horse exercises can help correct a tendency to collapse the right hip?",
+      "How should I structure a progressive no-stirrup training programme over six weeks?",
+    ],
+    linkedCompetencies: ["rider_position", "schooling_exercises"],
+  },
+
+  {
+    slug: "teaching-the-foundations",
+    pathwaySlug: "rider-foundations",
+    title: "Teaching the Foundations",
+    level: "advanced",
+    category: "Rider Foundations",
+    sortOrder: 9,
+    objectives: [
+      "Break down fundamental riding skills into clear, teachable components",
+      "Identify common beginner rider faults and understand their root causes",
+      "Apply effective correction strategies for foundational position and aid problems",
+      "Structure a progressive beginner lesson plan using sound pedagogical principles",
+    ],
+    content: `Being an accomplished rider is not the same as being able to teach riding. Teaching the foundations requires you to break down skills you perform instinctively into their component parts, understand why beginners make the mistakes they do, and communicate corrections in a way that is clear, encouraging, and effective. This lesson bridges the gap between advanced riding ability and the capacity to pass that knowledge on to others.
+
+## Breaking Down the Basics
+
+When you learned to ride, you went through a process of acquiring skills that have since become automatic. Rising trot, applying a leg aid, and maintaining your position are things you now do without conscious thought. To teach these skills, you must reverse-engineer them.
+
+**The process of skill decomposition:**
+1. **Identify the skill** — For example, "performing a balanced halt from walk."
+2. **List the component actions** — Sit tall, close the fingers on the reins, apply a gentle squeeze with both legs to keep the horse straight, soften the hand the moment the horse halts, praise the horse.
+3. **Sequence the actions** — What comes first? What happens simultaneously?
+4. **Identify the feel** — What should the rider feel when it is done correctly? "You should feel the horse step underneath you and stop squarely. Your weight should be evenly distributed through both seat bones."
+5. **Prepare for common errors** — What will beginners typically get wrong? Too much hand, not enough leg, leaning forward, looking down.
+
+This process applies to every foundational skill: mounting, dismounting, steering, transitions, rising trot, and the basic position itself. Write out decompositions for each and practise explaining them in simple language.
+
+## Common Rider Faults and Their Root Causes
+
+Understanding *why* a fault occurs is far more useful than simply identifying *what* is wrong. Here are the most common beginner faults and their typical root causes:
+
+**Looking down:** Beginners look down because they are anxious and want to see the horse. The root cause is usually a lack of confidence. The correction is to build confidence gradually — once the rider trusts the horse, they naturally look up. In the meantime, give them focal points: "Look at the letter C" or "Look between the horse's ears and out to the fence."
+
+**Gripping with the knees:** This is almost always a balance issue. The rider feels insecure and clamps on with the strongest part of their leg. Paradoxically, this makes them *less* secure by lifting them out of the saddle. The correction is to address balance — exercises without stirrups, holding the pommel, and riding on the lunge all help. Telling the rider to "relax your knee" without addressing the underlying balance problem rarely works.
+
+**Round shoulders and collapsed core:** Beginners often slouch because they are tense, tired, or trying to absorb the movement by rounding their back. The correction involves building core strength and giving imagery: "Imagine a string attached to the crown of your head pulling you towards the sky" or "Pretend you have a headlight on your chest — shine it straight ahead."
+
+**Hands too high, too wide, or too busy:** This usually stems from using the hands for balance rather than communication. The correction is to develop an independent seat so the hands are freed from a balance role. Exercises such as riding with one hand on the thigh or carrying a whip horizontally between both hands can help stabilise the arm position.
+
+**Stiff, non-following elbows:** If the elbows are locked, the contact becomes rigid and the horse cannot move freely. This is often caused by tension in the shoulders. Encourage the rider to let their arms feel heavy and think of their elbows as hinges that open and close with the horse's head movement.
+
+## Correction Strategies
+
+Effective correction requires timing, tact, and variety. Not every rider responds to the same approach, so you need a toolkit of strategies:
+
+- **Imagery and analogy** — "Imagine your legs are made of lead" is more effective for many riders than "Push your heels down." Imagery bypasses conscious overthinking and speaks directly to the body.
+- **Exaggeration exercises** — Ask the rider to exaggerate the correct position. If they tend to lean forward, ask them to lean so far back they feel they might fall off (within safe limits). This recalibrates their sense of "centre."
+- **Progressive exercises** — Build the skill in stages. Do not ask a beginner to rise to the trot on the open track until they can do it on the lunge with a neck strap for security.
+- **Positive framing** — Instead of "Stop gripping with your knees," say "Think about letting your legs hang long and heavy." The brain responds better to positive instructions than negative ones.
+- **Repetition with variation** — Repeat the same skill but in different contexts — on a circle, on a straight line, with poles, on a different rein. This builds the skill without tedious repetition of the identical exercise.
+
+## Structuring a Lesson Plan
+
+A well-structured beginner lesson plan follows a logical progression:
+
+1. **Introduction (2–3 minutes)** — Greet the rider, ask how they are feeling, recap the previous session, and state today's objective.
+2. **Warm-up (8–10 minutes)** — Mounted exercises at halt and walk to loosen up, followed by walk work on both reins.
+3. **Main work (15–20 minutes)** — Two or three exercises that build towards the session objective. Use progressive difficulty.
+4. **Cool-down (5 minutes)** — Walk on a long rein, praise the horse, recap the session with the rider.
+5. **Review (2 minutes)** — What went well? What will we work on next time?
+
+Always have a **Plan B**. If the planned exercise is too difficult, have a simpler version ready. If the rider achieves the objective quickly, have a progression prepared. Flexibility within a clear structure is the hallmark of good teaching.`,
+    keyPoints: [
+      "Decompose automatic riding skills into their component parts before attempting to teach them",
+      "Understand the root cause of each beginner fault — addressing the cause is more effective than correcting the symptom",
+      "Use a variety of correction strategies: imagery, exaggeration, progressive exercises, and positive framing",
+      "Structure every lesson with a clear warm-up, main work, and cool-down, with Plan B alternatives ready",
+      "Effective teaching requires patience, empathy, and the ability to communicate complex movements in simple language",
+    ],
+    safetyNote:
+      "When teaching beginners, always use a calm, reliable horse and work in an enclosed arena. Have a helper on the ground if needed, especially for first-time riders. Never ask a beginner to attempt an exercise without first demonstrating or explaining it clearly. Keep sessions short enough that the rider does not become fatigued, as tiredness leads to poor position and increased risk of falls.",
+    practicalApplication:
+      "Choose one foundational skill — such as rising trot — and write a full decomposition: list every component action, the correct sequence, the desired feel, and the three most common errors with their root causes. Then write a 30-minute lesson plan centred on teaching this skill to a complete beginner, including warm-up, two progressive exercises, and a cool-down. Practise delivering the lesson to a friend or colleague before using it with a real beginner.",
+    commonMistakes: [
+      "Assuming that because you can ride a skill well, you can automatically explain it clearly to someone else",
+      "Correcting the symptom of a fault (e.g., 'Relax your knee') without addressing the root cause (e.g., poor balance)",
+      "Overloading the beginner with too many corrections in one session instead of focusing on one key improvement area",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the first step in teaching a foundational riding skill?",
+        options: [
+          "Tell the rider to copy what you do",
+          "Decompose the skill into its component actions and sequence them logically",
+          "Ask the rider to read a textbook about it",
+          "Let the rider figure it out through trial and error",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Skill decomposition — breaking a complex movement into its individual parts, sequencing them, and identifying the desired feel — is essential before you can teach it clearly to someone else.",
+      },
+      {
+        question: "What is the most common root cause of a beginner rider gripping with their knees?",
+        options: [
+          "They are deliberately trying to grip",
+          "Their stirrups are too long",
+          "They feel unbalanced and are using the knee for security",
+          "They are too relaxed in the saddle",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Knee gripping is almost always a balance issue. The rider instinctively clamps on with the strongest part of their leg because they feel insecure. Addressing the underlying balance problem is more effective than simply telling them to relax their knee.",
+      },
+      {
+        question: "Why is imagery often more effective than direct instruction for correcting rider position?",
+        options: [
+          "Riders prefer creative language to technical terms",
+          "Imagery bypasses conscious overthinking and speaks directly to the body's movement patterns",
+          "Direct instruction is always too complicated for riders to understand",
+          "Imagery is only useful for children, not adult riders",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Imagery and analogy bypass the conscious, analytical mind and create a physical response. 'Imagine your legs are made of lead' often produces a better result than 'Push your weight down into your heels' because it evokes a whole-body sensation rather than a mechanical action.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you help me decompose the skill of a walk-to-trot transition into teachable components?",
+      "What are the best imagery cues for helping a beginner rider develop a deeper seat?",
+      "How should I structure a progressive series of lessons for a complete beginner over six weeks?",
+    ],
+    linkedCompetencies: ["rider_position", "coaching_fundamentals"],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -5515,6 +6067,274 @@ Finally, reflection should be balanced. It is easy to focus only on what went wr
     linkedCompetencies: ["rider_position", "welfare_awareness"],
   },
 
+  {
+    slug: "advanced-flatwork-and-collection",
+    pathwaySlug: "developing-rider-skills",
+    title: "Advanced Flatwork & Collection",
+    level: "advanced",
+    category: "Developing Rider Skills",
+    sortOrder: 9,
+    objectives: [
+      "Understand the concepts of true collection, engagement, and throughness",
+      "Ride medium and extended gaits with control and balance",
+      "Introduce lateral movements including half-pass",
+      "Understand the aids and preparation for flying changes",
+    ],
+    content: `Advanced flatwork represents the pinnacle of communication between horse and rider on the flat. It demands a deep understanding of biomechanics, subtle aids, and the ability to feel and influence the horse's balance, rhythm, and suppleness at every moment. This lesson builds on your existing knowledge of basic school movements and introduces the concepts and skills required to achieve true collection and advanced lateral work.
+
+## True Collection
+
+Collection is one of the most misunderstood concepts in riding. It is **not** simply slowing the horse down or shortening the stride. True collection involves the horse shifting its centre of gravity rearward by engaging the hindquarters more actively, lowering the croup slightly, and lightening the forehand. The result is a horse that feels elevated, powerful, and supremely manoeuvrable.
+
+The key elements of collection are:
+
+- **Engagement** — The hind legs step further under the horse's body, carrying more of the weight. This is generated through effective half-halts and progressive training.
+- **Self-carriage** — The horse maintains its frame and balance without relying on the rider's hand for support. You can test self-carriage by momentarily softening the rein contact — a collected horse will maintain its outline.
+- **Throughness** (*Durchlässigkeit*) — This German training term refers to the horse being permeable to the aids, with energy flowing from the hindquarters through a supple back to a soft, accepting contact. A horse that is truly 'through' responds instantly and lightly to the rider's seat, leg, and hand.
+
+Achieving collection takes months of progressive training. It cannot be forced or faked by pulling the horse's head in with the reins. The BHS and classical training scales emphasise that collection is the final stage, built upon rhythm, suppleness, contact, impulsion, and straightness.
+
+## Medium and Extended Gaits
+
+Medium and extended gaits are the natural counterpart to collection. They demonstrate the horse's ability to lengthen its frame and stride while maintaining rhythm and balance.
+
+**Medium trot and canter** require the horse to cover more ground with each stride without rushing. The tempo (speed of the rhythm) should remain the same — only the stride length increases. Common faults include the horse running onto the forehand, losing rhythm, or hollowing the back.
+
+To ride a medium trot:
+1. Establish a good working or collected trot on a short side.
+2. As you turn onto the diagonal, use both legs to ask for more energy while allowing with the hand so the horse can lengthen its frame.
+3. Maintain the rhythm — count in your head if needed.
+4. Before the next short side, half-halt to rebalance and return to working or collected trot.
+
+**Extended gaits** require even greater engagement and expression. The horse should reach maximum stride length with clear overtrack (the hind foot landing in front of the forefoot print). This is physically demanding and should only be asked for when the horse is well warmed up and established in medium gaits.
+
+## Half-Pass
+
+Half-pass is a lateral movement in which the horse moves simultaneously forward and sideways, bent in the direction of travel. It is ridden in trot or canter and requires a high degree of collection, suppleness, and rider coordination.
+
+**The aids for half-pass (to the left):**
+- Weight slightly into the left seat bone.
+- Left (inside) leg at the girth to maintain bend and forward impulsion.
+- Right (outside) leg behind the girth to push the horse sideways.
+- Left rein to maintain flexion; right rein to control the degree of sideways movement.
+
+**Common faults:**
+- Trailing hindquarters — the shoulders lead too much because the outside leg is not effective.
+- Losing bend — the horse straightens or bends the wrong way.
+- Losing impulsion — the horse slows because the rider focuses on the sideways movement at the expense of forward energy.
+
+Start by practising shoulder-in and travers (haunches-in) to develop the necessary suppleness and responsiveness before combining them into half-pass.
+
+## Flying Changes — An Introduction
+
+A flying change is a change of canter lead during the moment of suspension. It is a natural movement for the horse — you will see horses performing flying changes when playing in the field — but achieving it under saddle with balance and precision requires careful preparation.
+
+**Prerequisites for flying changes:**
+- The horse must be balanced and responsive in counter-canter.
+- Clear, prompt simple changes (through trot or walk) must be established.
+- The horse must be straight and not anticipating the change.
+
+The aid involves a clear switch of the rider's leg position during the moment of suspension, combined with a subtle shift of weight. Timing is critical. Initially, flying changes are best introduced with the help of an experienced trainer, as incorrect technique can lead to the horse becoming tense, crooked, or anticipating changes at every opportunity.
+
+This lesson provides the theoretical foundation — practical work on flying changes should always be supervised by a qualified coach.`,
+    keyPoints: [
+      "True collection involves engagement, self-carriage, and throughness — not simply slowing down",
+      "Medium and extended gaits maintain the same tempo but increase stride length and ground cover",
+      "Half-pass combines forward and sideways movement with bend in the direction of travel",
+      "Flying changes require thorough preparation in counter-canter and simple changes before attempting",
+      "Collection is the final stage of the training scale, built upon rhythm, suppleness, contact, impulsion, and straightness",
+    ],
+    safetyNote:
+      "Advanced flatwork demands a fit, well-schooled horse and a balanced, independent rider. Attempting collected or lateral work on a horse that is not physically prepared risks muscle strain and joint injury. If the horse shows signs of resistance, tension, or discomfort, simplify the exercise and consult a qualified trainer. Flying changes should only be introduced under expert supervision.",
+    practicalApplication:
+      "Begin by assessing your horse's current level of engagement. Can you ride a half-halt and feel the horse lighten the forehand? Practise transitions within the pace — working trot to medium trot and back — focusing on maintaining rhythm while increasing stride length. Work on shoulder-in and travers independently before combining them. Keep a training diary to track incremental progress towards collection.",
+    commonMistakes: [
+      "Pulling the horse's head in with the reins to create a false outline rather than developing true engagement from behind",
+      "Rushing medium gaits so the horse falls onto the forehand instead of lengthening with balance",
+      "Attempting half-pass before the horse is established in shoulder-in and travers, resulting in loss of bend and impulsion",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the key characteristic of true collection?",
+        options: [
+          "The horse moves slowly with its head pulled in by the reins",
+          "The horse shifts its centre of gravity rearward with engaged hindquarters and a lightened forehand",
+          "The horse stops moving forward and only moves sideways",
+          "The rider holds the horse in place with strong rein contact",
+        ],
+        correctIndex: 1,
+        explanation:
+          "True collection involves the horse engaging its hindquarters to carry more weight, lowering the croup, and lightening the forehand. It is generated from behind, not created by the rider's hands.",
+      },
+      {
+        question: "In a medium trot, what should remain the same as in working trot?",
+        options: [
+          "The stride length",
+          "The frame and outline",
+          "The tempo (speed of the rhythm)",
+          "The amount of rein contact",
+        ],
+        correctIndex: 2,
+        explanation:
+          "In medium trot, the stride length and frame increase but the tempo — the speed of the rhythm — should remain the same. Rushing or quickening the tempo indicates a loss of balance.",
+      },
+      {
+        question: "What are the prerequisites for introducing flying changes?",
+        options: [
+          "The horse must be able to gallop fast and stop quickly",
+          "The rider must be able to ride without reins",
+          "The horse must be balanced in counter-canter and established in simple changes",
+          "Flying changes require no preparation and can be attempted at any stage of training",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Flying changes require the horse to be balanced and responsive in counter-canter, with clear and prompt simple changes already established. Without this foundation, the horse may become tense or crooked.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How can I tell the difference between true collection and a horse that is just being held in by the reins?",
+      "What exercises can I use to improve my horse's engagement and preparation for medium trot?",
+      "Can you explain the aids for half-pass step by step?",
+    ],
+    linkedCompetencies: ["rider_position", "schooling_exercises"],
+  },
+
+  {
+    slug: "riding-assessment-and-self-coaching",
+    pathwaySlug: "developing-rider-skills",
+    title: "Riding Assessment & Self-Coaching",
+    level: "advanced",
+    category: "Developing Rider Skills",
+    sortOrder: 10,
+    objectives: [
+      "Use video analysis to objectively assess your own riding",
+      "Develop the skill of honest self-assessment without a coach present",
+      "Set effective training goals based on identified weaknesses",
+      "Create structured improvement plans with measurable milestones",
+    ],
+    content: `As you advance in your riding, the ability to assess your own performance and coach yourself between professional lessons becomes increasingly important. Relying solely on a coach for all feedback limits your development — the best riders are those who can critically and honestly evaluate themselves, identify areas for improvement, and create actionable plans to address them. This lesson teaches you the tools and techniques for effective self-coaching.
+
+## Video Analysis of Riding
+
+Video is the single most powerful tool for self-assessment. What you feel in the saddle does not always match reality. A rider who feels they are sitting upright may be leaning forward; a horse that feels engaged may be on the forehand. Video provides objective evidence.
+
+**Setting up video analysis:**
+- Ask a friend or use a tripod and smartphone to record your sessions. Position the camera at the centre of the long side of the arena, at hip height, for the best angle. Recording from multiple angles (long side and short side) gives a more complete picture.
+- Record entire sessions, not just the best moments. Mistakes are where the most learning occurs.
+- Use slow-motion playback to examine transitions, aids, and the horse's way of going in detail.
+
+**What to look for:**
+- **Rider position** — Is your ear, shoulder, hip, and heel aligned? Are your hands steady? Is your head up and looking ahead? Do you collapse to one side?
+- **Horse's way of going** — Is the horse tracking up? Is the back swinging? Is the outline consistent, or does the horse drop behind the vertical or come above the bit?
+- **Transitions** — Are they smooth and balanced, or abrupt and hollow?
+- **Accuracy** — Are your circles round? Are your changes of rein through X? Do you ride into the corners?
+- **Rhythm and tempo** — Is the horse's rhythm consistent, or does it speed up and slow down?
+
+Compare your video with footage of riders you admire or training videos from BHS-approved coaches. Note the differences without being self-critical — the goal is objective assessment, not self-punishment.
+
+## Objective Self-Assessment
+
+Self-assessment is a skill that must be developed. Most riders are either too harsh on themselves (focusing only on faults) or too lenient (ignoring consistent issues). The key is to be **objective and balanced**.
+
+**A structured self-assessment framework:**
+1. **What went well?** — Identify at least three things you did well in the session. This builds positive reinforcement and helps you recognise your strengths.
+2. **What could be improved?** — Identify one or two specific areas that need work. Be precise: "My left shoulder drops in canter" is more useful than "My position was bad."
+3. **What was the horse's feedback?** — How did the horse respond? Resistance, tension, or evasion from the horse often indicates an issue with the rider's aids or balance.
+4. **What will I focus on next time?** — Turn your assessment into an action point for the next session.
+
+Keep a **riding journal**. After each session, spend five minutes writing down your answers to these four questions. Over weeks and months, patterns will emerge that highlight consistent strengths and weaknesses.
+
+## Setting Training Goals
+
+Effective goals follow the **SMART** framework:
+- **Specific** — "I will improve my canter-to-trot transitions" rather than "I will ride better."
+- **Measurable** — How will you know you have achieved it? "I will perform three balanced canter-to-trot transitions on each rein without the horse falling onto the forehand."
+- **Achievable** — Set goals that stretch you but are realistic given your current level and the horse's training.
+- **Relevant** — The goal should address a genuine weakness or support your broader riding ambitions.
+- **Time-bound** — "I will achieve this within four weeks" gives you a deadline to work towards.
+
+Break larger goals into smaller milestones. For example, if your goal is to ride a balanced medium trot, milestones might include:
+1. Week 1–2: Improve half-halts to prepare for the transition.
+2. Week 3–4: Ride three strides of lengthening on each diagonal.
+3. Week 5–6: Sustain a medium trot for the full diagonal.
+4. Week 7–8: Ride medium trot with a balanced transition back to working trot.
+
+## Creating Improvement Plans
+
+An improvement plan brings goals and self-assessment together into a practical roadmap.
+
+**Structure of an improvement plan:**
+- **Current assessment** — Where are you now? (Use video and journal evidence.)
+- **Target** — Where do you want to be in 8–12 weeks?
+- **Weekly focus areas** — What will you work on each week?
+- **Resources needed** — Do you need a coach session, a different horse, or specific equipment?
+- **Review points** — Schedule regular check-ins (every 2–4 weeks) to review progress and adjust the plan.
+
+Share your improvement plan with your coach or a knowledgeable friend. External perspective helps keep your assessment honest and your goals realistic. Re-film yourself every few weeks and compare the footage to track genuine progress.
+
+Self-coaching is not a replacement for professional coaching — it is a complement. The most effective approach combines regular self-assessment with periodic lessons from a qualified coach who can identify issues you cannot see or feel yourself.`,
+    keyPoints: [
+      "Video analysis provides objective evidence of your riding that feelings alone cannot",
+      "Use a structured self-assessment framework after every session: what went well, what to improve, horse feedback, next focus",
+      "Set SMART goals — specific, measurable, achievable, relevant, and time-bound",
+      "Break larger goals into weekly milestones to make progress manageable and trackable",
+      "Self-coaching complements professional coaching — it does not replace it",
+    ],
+    safetyNote:
+      "When filming your riding, ensure the camera is positioned safely outside the arena and does not obstruct the horse's path. If you are riding alone to practise self-coaching, always tell someone where you are and when you expect to finish. Never attempt challenging exercises without supervision for the first time, regardless of your self-assessment confidence.",
+    practicalApplication:
+      "Set up a phone or camera to record your next schooling session from the long side. Afterwards, watch the footage and complete the four-point self-assessment: what went well, what to improve, horse feedback, and next focus. Set one SMART goal based on your assessment and write an improvement plan for the next four weeks. Re-film yourself at the end of week four and compare the footage.",
+    commonMistakes: [
+      "Only recording the good parts of a session rather than filming the entire ride for honest assessment",
+      "Setting vague goals such as 'ride better' instead of specific, measurable targets",
+      "Relying solely on self-coaching without seeking periodic input from a qualified coach for external perspective",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Why is video analysis valuable for self-assessment?",
+        options: [
+          "It allows you to share your riding on social media",
+          "It provides objective evidence that may differ from what you feel in the saddle",
+          "It replaces the need for a riding coach entirely",
+          "It is only useful for competition riders",
+        ],
+        correctIndex: 1,
+        explanation:
+          "What you feel in the saddle does not always match reality. Video provides an objective record that highlights issues you may not be aware of, such as positional asymmetry or the horse's way of going.",
+      },
+      {
+        question: "What does the 'M' in SMART goals stand for?",
+        options: [
+          "Motivated",
+          "Measurable",
+          "Mounted",
+          "Multiple",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The 'M' stands for Measurable. A measurable goal has clear criteria for success, such as 'Perform three balanced transitions on each rein,' so you know when you have achieved it.",
+      },
+      {
+        question: "What is the recommended approach to self-coaching?",
+        options: [
+          "Replace professional coaching entirely with self-assessment",
+          "Only assess yourself when you feel the session went badly",
+          "Use structured self-assessment after every session, complemented by periodic professional coaching",
+          "Avoid video analysis as it can be discouraging",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Self-coaching works best as a complement to professional coaching. Regular structured self-assessment builds awareness, while periodic lessons with a qualified coach provide external perspective on issues you cannot see yourself.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you help me create a SMART goal for improving my canter transitions?",
+      "What specific things should I look for when analysing a video of my trot work?",
+      "How do I write a four-week improvement plan for my flatwork?",
+    ],
+    linkedCompetencies: ["rider_position", "welfare_awareness"],
+  },
+
   // ═══════════════════════════════════════════════════════════════════════════
   // PATHWAY 7 — Polework & Jump Foundations
   // ═══════════════════════════════════════════════════════════════════════════
@@ -7020,6 +7840,512 @@ A growth mindset means believing that ability is developed through effort, pract
   // ═══════════════════════════════════════════════════════════════════════════
   // PATHWAY 12 — Coaching & Teaching Skills
   // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    slug: "introduction-to-coaching-concepts",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Introduction to Coaching Concepts",
+    level: "beginner",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 1,
+    objectives: [
+      "Understand the difference between coaching and instructing",
+      "Identify the core communication skills needed for coaching",
+      "Describe the key qualities of a good equestrian coach",
+      "Recognise the safety responsibilities that come with coaching riders",
+    ],
+    content: `Coaching riders is one of the most rewarding roles in the equestrian world, but it carries significant responsibility. Before you begin working with riders of any level, it is essential to understand what coaching actually means, how it differs from simply giving instructions, and what qualities you need to develop in yourself to be effective and safe.
+
+## Coaching vs. Instructing
+
+Many people use the words "coaching" and "instructing" interchangeably, but they describe different approaches. **Instructing** is primarily about telling someone what to do: "Sit up straight," "Shorten your reins," "Kick on." It is directive and task-focused. **Coaching**, on the other hand, is a broader, more holistic approach. A coach helps the rider understand *why* they are doing something, encourages them to think independently, and supports their long-term development.
+
+A good coach asks questions as well as giving directions. For example, instead of saying "You're leaning forward," a coach might ask, "Where do you feel your weight is?" This encourages the rider to develop their own body awareness and become a more self-reliant horseperson. Effective coaching blends instruction with guided discovery, praise, and ongoing assessment of the rider's progress.
+
+## Basic Communication Skills
+
+Communication is at the heart of coaching. You must be able to convey information clearly, concisely, and at the right moment. In the arena, riders are managing a living animal, so your voice must carry without startling horses, and your instructions must be timed so the rider can act on them safely.
+
+**Verbal communication** should be simple, positive, and well-timed. Avoid long explanations while the rider is actively riding — save detailed theory for halted moments or post-session discussions. Use the rider's name to get their attention before giving a direction.
+
+**Non-verbal communication** matters too. Your body language, facial expressions, and positioning in the arena all send messages to your riders. Stand where you can see the whole arena, maintain an encouraging posture, and use hand signals where appropriate.
+
+**Active listening** is equally important. When a rider tells you something feels wrong, or asks a question, listen carefully before responding. Understanding the rider's perspective helps you tailor your coaching to their needs.
+
+## Qualities of a Good Coach
+
+The British Horse Society (BHS) and Pony Club both emphasise that a good coach is more than just a knowledgeable rider. Key qualities include:
+
+- **Patience** — Every rider learns at a different pace. Repeating exercises without frustration is vital.
+- **Empathy** — Understanding a nervous rider's feelings helps you support them rather than push them too fast.
+- **Enthusiasm** — Your energy is infectious. If you are positive and engaged, your riders will be too.
+- **Adaptability** — Lessons rarely go exactly to plan. Weather changes, horses have off days, and riders have varying energy levels. A good coach adjusts on the fly.
+- **Knowledge** — You must understand horse behaviour, riding technique, and welfare to keep sessions safe and educational.
+- **Integrity** — Always be honest with your riders about their progress, and never put them in situations beyond their current ability for the sake of impressing others.
+
+## Safety Responsibilities
+
+Safety is the single most important aspect of coaching. As a coach, you are responsible for the wellbeing of both the riders and the horses in your care. This means:
+
+- **Risk assessment** — Before every session, check the arena surface, fencing, weather conditions, and the suitability of the horse for the rider's level.
+- **Appropriate equipment** — Ensure every rider wears a correctly fitted, current-standard hat, appropriate footwear with a heel, and a body protector where required.
+- **Knowing your limits** — Never coach exercises you have not been trained to teach. If a rider needs help beyond your current qualification, refer them to a more experienced coach.
+- **Emergency procedures** — Know the yard's emergency plan, the location of the first-aid kit, and how to contact emergency services. You should hold a current first-aid certificate.
+- **Safeguarding** — If coaching children or vulnerable adults, you must understand and follow safeguarding policies, including appropriate conduct and reporting procedures.
+
+Understanding these fundamentals will give you the strongest possible foundation as you develop your coaching skills further.`,
+    keyPoints: [
+      "Coaching is holistic and encourages rider understanding, whereas instructing is purely directive",
+      "Clear, well-timed verbal and non-verbal communication is essential in the arena",
+      "Patience, empathy, adaptability, and integrity are core qualities of a good coach",
+      "Safety responsibilities include risk assessment, equipment checks, and emergency preparedness",
+      "Always coach within your qualification level and refer riders on when necessary",
+    ],
+    safetyNote:
+      "As a coach, you have a duty of care to every rider and horse in your session. Always carry out a risk assessment before the lesson, ensure all riders wear correctly fitted hats and appropriate footwear, and never allow a rider to attempt an exercise beyond their current ability. Keep a charged mobile phone accessible and know the location of the nearest first-aid kit.",
+    practicalApplication:
+      "Begin by observing experienced coaches at your yard and noting how they communicate, manage safety, and adapt their sessions. Practise explaining simple riding concepts to a friend in clear, concise language. Write a short checklist of safety checks you would carry out before a lesson and use it every time you help with a session.",
+    commonMistakes: [
+      "Talking too much while the rider is actively managing the horse, causing information overload",
+      "Focusing only on what the rider is doing wrong rather than balancing corrections with praise",
+      "Neglecting to carry out a risk assessment before the session begins",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the main difference between coaching and instructing?",
+        options: [
+          "Coaching focuses on holistic development and understanding, while instructing is purely directive",
+          "Instructing is more modern than coaching",
+          "Coaching only applies to advanced riders",
+          "There is no difference; the terms are identical",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Coaching encourages riders to understand the 'why' behind what they do and supports long-term development, whereas instructing is focused on telling riders what to do in the moment.",
+      },
+      {
+        question: "Which of the following is NOT a key quality of a good equestrian coach?",
+        options: [
+          "Patience and empathy",
+          "Willingness to push riders beyond their ability to accelerate progress",
+          "Adaptability and enthusiasm",
+          "Integrity and honesty about rider progress",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A good coach never pushes riders beyond their current ability. Safety and progressive development are always prioritised over rapid advancement.",
+      },
+      {
+        question: "What should a coach always carry out before every lesson?",
+        options: [
+          "A social media post about the lesson",
+          "A risk assessment covering arena, equipment, weather, and horse suitability",
+          "A written exam for each rider",
+          "A veterinary check on every horse",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A risk assessment before every session ensures that the environment, equipment, and horse–rider combinations are safe and appropriate.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you give me examples of coaching questions I could ask a rider instead of just telling them what to do?",
+      "What communication techniques work best for nervous or anxious riders?",
+      "Walk me through a pre-lesson safety checklist for a group session.",
+    ],
+    linkedCompetencies: ["coaching_fundamentals", "yard_safety_awareness"],
+  },
+
+  {
+    slug: "understanding-your-learners",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Understanding Your Learners",
+    level: "beginner",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 2,
+    objectives: [
+      "Recognise how different ages and abilities affect learning in the saddle",
+      "Identify the main learning styles and how to accommodate them",
+      "Understand how to build confidence and rapport with riders",
+      "Appreciate the importance of adapting your approach to individual needs",
+    ],
+    content: `Every rider who comes to you for coaching is unique. They bring different physical abilities, emotional states, previous experiences, and ways of learning. Understanding your learners is fundamental to being an effective coach — it allows you to pitch sessions at the right level, communicate in a way that resonates, and build the trust needed for genuine progress.
+
+## Different Ages and Abilities
+
+The age of your rider significantly affects how you should coach them. **Young children** (under 8) have short attention spans and learn best through games and fun activities. Keep instructions simple, sessions short, and praise frequent. They may not yet have the physical strength or coordination to perform advanced movements, so focus on balance, confidence, and enjoyment.
+
+**Older children and teenagers** can handle more structured sessions and begin to understand theory. However, they may also be self-conscious, especially in group lessons. Be sensitive to peer dynamics and avoid singling out individuals for criticism. Positive reinforcement works well with this age group.
+
+**Adult learners** often bring anxiety or self-consciousness, particularly if they are returning to riding after a long break or starting as complete beginners. They may overthink instructions and tense up physically. Adults appreciate understanding the reasoning behind exercises, so include brief explanations of why you are asking them to do something. Respect their life experience and treat them as partners in the learning process.
+
+**Riders with additional needs** — whether physical disabilities, learning difficulties, or sensory impairments — require you to adapt your communication and exercises. Work with the rider (and their carers if appropriate) to understand their specific requirements. Organisations such as the Riding for the Disabled Association (RDA) offer excellent training in adaptive coaching.
+
+## Learning Styles
+
+People absorb information in different ways. While modern research suggests learning is more complex than simple categories, it is useful as a coach to be aware of three broad approaches:
+
+- **Visual learners** benefit from demonstrations, watching other riders, and using markers or visual aids in the arena. Show them what you want rather than just describing it.
+- **Auditory learners** respond well to clear verbal instructions, analogies, and discussion. They may benefit from talking through what they are going to do before they do it.
+- **Kinaesthetic learners** learn by doing. They need to feel the movement in their body. Exercises that exaggerate a position or movement — such as riding without stirrups to develop feel — are particularly effective for these riders.
+
+In practice, most people use a blend of styles, and a good coach will naturally incorporate visual, auditory, and kinaesthetic elements into every session. If a rider is not responding to one approach, try another.
+
+## Building Confidence and Rapport
+
+Confidence is the foundation of all riding progress. A nervous rider will grip, tense up, and be unable to learn effectively. Building confidence starts from the very first interaction.
+
+**Rapport** is the connection between coach and rider. To build it:
+
+- Learn your rider's name and use it regularly.
+- Ask about their goals, fears, and previous experience before the first lesson.
+- Be consistent in your manner — calm, positive, and professional.
+- Celebrate small achievements genuinely. Progress in riding is often incremental, and acknowledging each step matters.
+- Never dismiss a rider's fear. If someone is anxious about cantering, acknowledge that feeling and work at their pace.
+
+**Trust** is built over time. Follow through on what you say, be reliable, and always prioritise the rider's safety and comfort. If you promise to keep a session at walk and trot, do not suddenly ask for canter without discussion.
+
+## Adapting Your Approach
+
+No single coaching method works for everyone. You must be prepared to change your plan mid-session based on what you observe. If a rider is becoming frustrated, simplify the exercise and rebuild. If they are finding something easy, progress them gently. Reading your rider's body language and energy level is a skill you will develop with experience.
+
+Keep notes on each rider between sessions — what went well, what they struggled with, and what to focus on next time. This shows professionalism and helps you plan effective, personalised lessons.`,
+    keyPoints: [
+      "Children, teenagers, adults, and riders with additional needs all require different coaching approaches",
+      "Visual, auditory, and kinaesthetic learning styles should all be incorporated into sessions",
+      "Building confidence through rapport and trust is essential before riders can progress",
+      "Never dismiss a rider's fear — acknowledge it and work at their pace",
+      "Keep notes on each rider to plan personalised, progressive sessions",
+    ],
+    safetyNote:
+      "When working with nervous riders, always ensure the horse is calm and well-suited to the rider's level. A frightened rider on an excitable horse is a dangerous combination. If a rider becomes genuinely distressed, halt the session calmly, bring the horse to a stop, and allow the rider to dismount if they wish. Never force a rider to continue an exercise they are clearly not ready for.",
+    practicalApplication:
+      "Before your next session, spend five minutes talking to the rider about their experience, goals, and any concerns. During the session, try giving the same instruction three different ways — as a verbal direction, as a demonstration, and as a physical exercise. Afterwards, note which approach seemed to work best. Over time, build a simple profile for each regular rider to guide your lesson planning.",
+    commonMistakes: [
+      "Assuming all riders learn the same way and only using verbal instructions",
+      "Pushing a nervous rider too fast to 'get them past their fear' rather than building confidence progressively",
+      "Failing to adapt the lesson when a rider is clearly struggling or losing engagement",
+    ],
+    knowledgeCheck: [
+      {
+        question: "Which approach is most effective for coaching young children?",
+        options: [
+          "Long theoretical explanations before mounting",
+          "Short, fun sessions with games and frequent praise",
+          "Strict discipline and repetitive drills",
+          "Allowing them to ride unsupervised to build independence",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Young children have short attention spans and respond best to fun, game-based sessions with plenty of positive reinforcement. This builds confidence and a love of riding.",
+      },
+      {
+        question: "What should you do if a rider is not responding to verbal instructions?",
+        options: [
+          "Repeat the same instruction more loudly",
+          "Tell them they are not trying hard enough",
+          "Try a different approach, such as a demonstration or a physical exercise",
+          "Move on to a harder exercise to challenge them",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Different riders learn in different ways. If verbal instructions are not working, switching to a visual demonstration or a kinaesthetic exercise may help the rider understand what is being asked.",
+      },
+      {
+        question: "How can a coach best build rapport with a new rider?",
+        options: [
+          "Immediately start the lesson to make the most of the time",
+          "Learn their name, ask about their goals and experience, and be consistent and positive",
+          "Focus only on correcting their faults so they improve quickly",
+          "Avoid personal conversation and keep the session strictly professional",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Building rapport starts with showing genuine interest in the rider as a person. Learning their name, understanding their goals, and being consistently positive creates a foundation of trust.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How can I adapt a group lesson when riders have very different confidence levels?",
+      "What are some fun mounted games I can use with young children to develop their balance?",
+      "How should I approach coaching an adult beginner who is very nervous about riding?",
+    ],
+    linkedCompetencies: ["coaching_fundamentals", "welfare_awareness"],
+  },
+
+  {
+    slug: "structuring-a-beginner-lesson",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Structuring a Beginner Lesson",
+    level: "developing",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 3,
+    objectives: [
+      "Plan a safe, progressive lesson structure for novice riders",
+      "Understand the purpose of warm-up, main work, and cool-down phases",
+      "Manage lesson time effectively to cover all planned content",
+      "Identify how to set achievable objectives for each beginner lesson",
+    ],
+    content: `A well-structured lesson is the backbone of effective coaching. For beginner riders, clear structure is especially important — it keeps the session safe, progressive, and focused. Without a plan, lessons can drift, become repetitive, or overwhelm the learner. In this lesson, you will learn how to build a beginner lesson from scratch, manage your time, and ensure every session has a clear purpose.
+
+## Why Structure Matters
+
+Beginner riders are often anxious and unsure of what to expect. A structured lesson provides a reassuring framework: the rider knows there is a beginning, a middle, and an end. Structure also helps you, as the coach, to track progress. If every session follows a logical format, you can see what the rider has mastered and what needs more work.
+
+The BHS and Pony Club both advocate a three-phase lesson structure: **warm-up, main work, and cool-down**. Each phase serves a specific purpose and should be planned in advance.
+
+## The Warm-Up Phase (10–15 minutes)
+
+The warm-up prepares both horse and rider for the work ahead. For beginner riders, it also serves as a confidence-building phase.
+
+**For the rider**, the warm-up should include:
+- A brief chat to check how they are feeling and remind them of the previous session's achievements.
+- Gentle mounted exercises at halt and walk, such as arm circles, toe touches, and looking left and right. These loosen the rider's muscles and improve body awareness.
+- Walking on both reins to establish rhythm and relaxation. Encourage the rider to breathe deeply and soften their seat.
+
+**For the horse**, the warm-up allows muscles to loosen and joints to mobilise. Walk work on large circles and changes of rein ensures the horse is moving freely before you ask for more demanding work.
+
+Avoid rushing the warm-up. For beginners, feeling settled and secure at walk is more important than getting quickly into trot.
+
+## The Main Work Phase (20–25 minutes)
+
+This is where the lesson's primary objective is addressed. For a beginner, this might be:
+- Establishing a rising trot on both reins.
+- Practising smooth transitions between walk and trot.
+- Riding accurate shapes — circles, changes of rein through the diagonal or across the centre line.
+- Beginning to understand basic aids for steering and pace control.
+
+**Set one clear objective** for each session. Trying to cover too much confuses the beginner rider. For example, if the objective is "Rider will maintain a steady rising trot on both reins," all exercises in the main work phase should support this goal.
+
+**Progressive difficulty** is important. Start with the easiest version of the exercise and gradually increase the challenge. For example:
+1. Rising trot on a large circle with the coach leading.
+2. Rising trot on a large circle independently.
+3. Rising trot on the outside track with a change of rein.
+
+Use frequent halts to check in with the rider, offer praise, and make adjustments. Beginners tire quickly — both physically and mentally — so intersperse active riding with brief rest periods.
+
+## The Cool-Down Phase (5–10 minutes)
+
+The cool-down is essential but often overlooked. It allows:
+- The horse to stretch and relax after work, usually on a long rein at walk.
+- The rider to reflect on what they have learnt and ask questions.
+- You, as the coach, to summarise the session and set expectations for next time.
+
+Encourage the rider to pat the horse and walk on a loose rein. This promotes a positive end to the session and reinforces the partnership between horse and rider.
+
+## Time Management
+
+A typical beginner lesson lasts 30–45 minutes. Managing your time well ensures all three phases are covered without rushing. A useful rule of thumb:
+- **Warm-up**: 25–30% of the session.
+- **Main work**: 50–55% of the session.
+- **Cool-down**: 15–20% of the session.
+
+Keep a watch or arena clock visible. It is easy to spend too long on the warm-up or overrun on the main work, leaving no time for a proper cool-down.
+
+## Writing a Lesson Plan
+
+Before every session, write a brief lesson plan. Include:
+- The rider's name and current level.
+- The session objective (one clear goal).
+- Warm-up exercises.
+- Main work exercises with progressions.
+- Cool-down plan.
+- Equipment or arena setup needed.
+
+This need not be elaborate — a few bullet points on a notepad are sufficient. The act of planning ensures you arrive prepared and confident. After the session, make a brief note of what went well and what to work on next time.`,
+    keyPoints: [
+      "Every lesson should follow a three-phase structure: warm-up, main work, and cool-down",
+      "The warm-up builds confidence and prepares horse and rider physically and mentally",
+      "Set one clear, achievable objective per beginner lesson to avoid information overload",
+      "Use progressive difficulty within the main work phase to build skills gradually",
+      "Always write a brief lesson plan and review it after the session for continuous improvement",
+    ],
+    safetyNote:
+      "Before every beginner lesson, check that the horse is suitable for the rider's level, the arena surface is safe, and all equipment fits correctly. During the warm-up, assess the rider's confidence and the horse's behaviour — if either seems unsettled, adapt your plan accordingly. Never skip the warm-up phase, as cold muscles in both horse and rider increase the risk of injury.",
+    practicalApplication:
+      "Write a lesson plan for a 30-minute beginner lesson with the objective of 'Rider will perform smooth walk-to-trot transitions on both reins.' Include specific warm-up exercises, two or three main work progressions, and a cool-down plan. Time each section and use the plan in your next session. Afterwards, note what you would change for next time.",
+    commonMistakes: [
+      "Trying to cover too many skills in one session, leaving the rider overwhelmed and confused",
+      "Skipping the warm-up to save time, increasing the risk of injury and rider anxiety",
+      "Failing to plan the lesson in advance, resulting in a disorganised and unfocused session",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the recommended three-phase structure for a riding lesson?",
+        options: [
+          "Theory, practical, exam",
+          "Warm-up, main work, cool-down",
+          "Trot, canter, gallop",
+          "Mounting, riding, dismounting",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The BHS and Pony Club both advocate a warm-up, main work, and cool-down structure. This ensures horse and rider are prepared, the learning objective is addressed, and the session ends calmly.",
+      },
+      {
+        question: "How many main objectives should a beginner lesson typically have?",
+        options: [
+          "As many as possible to maximise learning",
+          "Three or four to cover a range of skills",
+          "One clear, achievable objective",
+          "None — beginner lessons should be unstructured",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Setting one clear objective per session keeps the lesson focused and prevents information overload. All exercises in the main work phase should support this single goal.",
+      },
+      {
+        question: "What percentage of the lesson should the warm-up typically occupy?",
+        options: [
+          "5% — just a quick walk around",
+          "25–30% of the total session time",
+          "50% — half the lesson should be warm-up",
+          "There is no need for a warm-up in beginner lessons",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The warm-up should take approximately 25–30% of the session. For a 30-minute lesson, that is roughly 8–10 minutes — enough to prepare horse and rider physically and mentally.",
+      },
+    ],
+    aiTutorPrompts: [
+      "Can you help me write a lesson plan for a 45-minute beginner group lesson focused on steering?",
+      "What mounted warm-up exercises are best for beginner riders to improve balance?",
+      "How do I manage time effectively when a beginner takes longer than expected to master an exercise?",
+    ],
+    linkedCompetencies: ["coaching_fundamentals", "lesson_planning"],
+  },
+
+  {
+    slug: "effective-demonstrations-and-feedback",
+    pathwaySlug: "coaching-teaching-skills",
+    title: "Effective Demonstrations & Feedback",
+    level: "developing",
+    category: "Coaching & Teaching Skills",
+    sortOrder: 4,
+    objectives: [
+      "Demonstrate riding exercises effectively for learners to observe",
+      "Give constructive, balanced feedback that promotes improvement",
+      "Identify common rider faults and understand their causes",
+      "Use positive reinforcement techniques to motivate riders",
+    ],
+    content: `The ability to demonstrate effectively and give clear, constructive feedback separates a competent coach from a great one. Riders learn by watching, feeling, and hearing — and your demonstrations and feedback address all three. In this lesson, you will develop the skills to show riders what you mean, help them understand what they are doing well, and guide them towards improvement without damaging their confidence.
+
+## How to Demonstrate Effectively
+
+A demonstration shows the rider exactly what the desired outcome looks like. It is particularly powerful for visual learners, but benefits all riders by providing a concrete reference point.
+
+**Principles of a good demonstration:**
+
+1. **Position yourself so the rider can see clearly.** If the rider is mounted, demonstrate from the ground using your own body to show position, or ride the exercise yourself if a spare horse is available. If demonstrating from the ground, face the rider so they can mirror your movements.
+
+2. **Demonstrate the whole skill first, then break it down.** Show the complete exercise so the rider understands the goal, then repeat it step by step with commentary. For example, demonstrate a rising trot transition smoothly, then repeat it in slow motion, explaining each aid as you give it.
+
+3. **Keep demonstrations brief and focused.** A long demonstration loses the rider's attention. Show the key point, explain it in one or two sentences, and then let the rider try.
+
+4. **Use another rider as a model.** In group lessons, if one rider performs an exercise well, ask their permission and then use them as a positive example. This is motivating for the model rider and helpful for the rest of the group.
+
+5. **Use visual aids.** Cones, poles, and markers in the arena can support your demonstration by showing the rider exactly where to ride and what shape to make.
+
+**Common pitfalls** include demonstrating something you cannot perform well yourself (which undermines your credibility), demonstrating too many things at once, and forgetting to explain what the rider should be watching for during the demonstration.
+
+## Giving Constructive Feedback
+
+Feedback is the tool that drives improvement. Without it, riders have no way of knowing whether they are performing correctly. However, poorly delivered feedback can crush confidence and stall progress.
+
+**The feedback sandwich** is a well-known technique:
+1. Start with something positive — what the rider did well.
+2. Offer the correction or area for improvement.
+3. End with encouragement or another positive comment.
+
+For example: "Really good rhythm in that trot, well done. Try to keep your heels a little further down — think about your weight dropping through your leg. You're doing brilliantly; let's try that again."
+
+**Be specific.** "That was good" tells the rider very little. "Your transition to trot was really smooth because you used your leg clearly and sat tall" gives the rider precise, actionable information about what they did right.
+
+**Timing matters.** Give feedback as close to the moment of performance as possible. If you wait until the end of the session, the rider may not remember the specific moment you are referring to. Short, immediate feedback during the exercise is more effective than a long debrief afterwards.
+
+**Avoid overloading.** Give the rider one thing to work on at a time. If you point out three faults simultaneously, the rider will feel overwhelmed and may not correct any of them. Prioritise the most important correction and address the rest in later sessions.
+
+## Identifying Common Rider Faults
+
+Part of giving effective feedback is knowing what to look for. Common beginner faults include:
+
+- **Looking down** — Riders often look at the horse's neck or their own hands instead of ahead. This affects balance and steering. Encourage the rider to look where they are going.
+- **Gripping with the knees** — Tension in the knee pushes the lower leg away from the horse and lifts the rider out of the saddle. Suggest the rider imagine their leg as heavy, draping around the horse.
+- **Collapsing at the waist** — Slouching forward rounds the spine and puts the rider behind the movement. Use imagery such as "imagine a string pulling the top of your head towards the sky."
+- **Hands too high or too wide** — This is often a balance issue. Encourage a straight line from elbow to bit.
+- **Holding the breath** — Nervous riders frequently hold their breath, which causes tension throughout the body. Remind them to breathe and even ask them to count out loud or sing.
+
+Understanding *why* a fault occurs helps you address the root cause rather than just the symptom. For example, a rider gripping with their knees may be doing so because they feel unbalanced — the solution is to improve their balance, not just tell them to stop gripping.
+
+## Positive Reinforcement Techniques
+
+Positive reinforcement means rewarding desired behaviour to encourage its repetition. In coaching, this is primarily achieved through praise, but it can also include tangible rewards for younger riders, such as stickers or rosettes for achievement.
+
+**Genuine, specific praise** is the most powerful motivator. Riders know when praise is hollow. "Well done" is fine occasionally, but "That was your best canter transition yet — you really sat tall and used your leg clearly" has far more impact.
+
+**Celebrate effort, not just outcome.** A rider who tries hard but does not quite manage the exercise deserves recognition for their effort. This encourages a growth mindset — the belief that skills improve through practice and persistence.
+
+**Use praise publicly, correct privately.** In group lessons, praise individuals openly but be discreet with corrections. Taking a rider aside to offer a quiet suggestion is far more respectful than calling out their mistakes in front of others.`,
+    keyPoints: [
+      "Position demonstrations so the rider can see clearly and break the skill down step by step",
+      "Use the feedback sandwich: positive, correction, encouragement",
+      "Be specific and timely with feedback — vague comments do not help riders improve",
+      "Address the root cause of rider faults rather than just the visible symptom",
+      "Praise effort and progress genuinely to build confidence and motivation",
+    ],
+    safetyNote:
+      "When demonstrating from the ground, always maintain a safe distance from the horses. If demonstrating mounted, ensure the horse you ride is calm and predictable. Never attempt to demonstrate an exercise you are not confident performing, as a poor demonstration or fall would damage rider confidence and pose a safety risk.",
+    practicalApplication:
+      "During your next coaching session, consciously use the feedback sandwich for every correction you give. After the session, write down three rider faults you observed and note both the fault and the likely root cause. Practise demonstrating one simple exercise — such as a correct halt — in front of a mirror, talking through each step as you would for a rider.",
+    commonMistakes: [
+      "Giving too many corrections at once, overwhelming the rider and preventing effective learning",
+      "Using vague feedback such as 'That was good' without explaining what specifically was good",
+      "Correcting riders loudly in front of a group, damaging their confidence and trust",
+    ],
+    knowledgeCheck: [
+      {
+        question: "What is the 'feedback sandwich' technique?",
+        options: [
+          "Giving feedback only at the start and end of the lesson",
+          "Starting with praise, offering a correction, then ending with encouragement",
+          "Writing feedback in a sandwich-shaped diagram",
+          "Giving three negative corrections followed by one positive comment",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The feedback sandwich structures feedback as: positive comment, correction or improvement area, then encouragement. This approach maintains confidence while still addressing areas for development.",
+      },
+      {
+        question: "Why should a coach address the root cause of a rider fault rather than just the symptom?",
+        options: [
+          "To impress the rider with technical knowledge",
+          "Because fixing the underlying issue resolves the visible fault more effectively and permanently",
+          "Root causes are easier to explain than symptoms",
+          "It is not necessary — correcting the symptom is sufficient",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Faults often stem from deeper issues such as poor balance or tension. Addressing the root cause — for example, improving balance rather than just telling a rider to stop gripping — leads to lasting improvement.",
+      },
+      {
+        question: "When is the best time to give feedback to a rider?",
+        options: [
+          "Only at the end of the entire lesson",
+          "Before the rider has attempted the exercise",
+          "As close to the moment of performance as possible",
+          "Only in writing after the session",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Immediate feedback is most effective because the rider can still recall what they were doing. Delayed feedback loses context and is harder for the rider to apply.",
+      },
+    ],
+    aiTutorPrompts: [
+      "How can I demonstrate a rising trot effectively from the ground without a horse?",
+      "Give me examples of specific, positive feedback I could use for a beginner rider working on their position.",
+      "What are the best strategies for correcting a rider who consistently looks down while riding?",
+    ],
+    linkedCompetencies: ["coaching_fundamentals", "rider_position"],
+  },
 
   {
     slug: "foundations-of-equestrian-coaching",
