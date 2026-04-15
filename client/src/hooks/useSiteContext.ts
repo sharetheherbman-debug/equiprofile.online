@@ -27,8 +27,8 @@ export function getSiteMode(): SiteMode {
 
   const hostname = window.location.hostname.toLowerCase();
 
-  // Check if hostname starts with "school." or matches a known school pattern
-  if (hostname.startsWith("school.") || SCHOOL_PATTERNS.some((p) => hostname.includes(p))) {
+  // Check if hostname starts with "school." or exactly matches a known school pattern
+  if (hostname.startsWith("school.") || SCHOOL_PATTERNS.some((p) => hostname === p || hostname.startsWith(p + ":"))) {
     return "school";
   }
 

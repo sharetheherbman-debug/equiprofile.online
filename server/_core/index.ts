@@ -795,11 +795,12 @@ async function startServer() {
         contactSource === "school"
           ? "[School Enquiry] "
           : "[Management Enquiry] ";
+      const taggedSubject = subjectPrefix + subject;
 
       await email.sendContactEmail({
         name,
         email: fromEmail,
-        subject: subjectPrefix + subject,
+        subject: taggedSubject,
         message,
       });
 
@@ -813,7 +814,7 @@ async function startServer() {
           .slice(0, 64);
         dbConn
           .insert(contactSubmissions)
-          .values({ name, email: fromEmail, subject: subjectPrefix + subject, message, ipHash })
+          .values({ name, email: fromEmail, subject: taggedSubject, message, ipHash })
           .catch((err: Error) =>
             console.warn("[Contact] DB insert failed:", err.message),
           );
