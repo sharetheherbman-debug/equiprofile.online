@@ -46,7 +46,7 @@ export function PageBanner({
 
       {/* Gradient Overlay */}
       {overlay && (
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0b1726]/80 via-[#0b1726]/50 to-[#0b1726]/80" />
       )}
 
       {/* Content – pt-[72px] ensures text is below the fixed navbar */}

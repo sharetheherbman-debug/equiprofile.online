@@ -32,42 +32,42 @@ export const coreFeatures: Feature[] = [
     title: "Complete Horse Profiles",
     description:
       "Maintain comprehensive profiles for each horse including pedigree, ownership, identification, tags, and complete history in one organised place.",
-    gradient: "from-indigo-500 to-purple-500",
+    gradient: "from-[#5b8def] to-[#3a93b8]",
   },
   {
     icon: marketingAssets.features.iconSpeed,
     title: "Health Record Tracking",
     description:
       "Track vaccinations, dewormings, veterinary visits, treatments, and vital signs. Smart health alerts notify you of overdue or upcoming care.",
-    gradient: "from-cyan-500 to-blue-500",
+    gradient: "from-[#7dd3c0] to-[#2e86ab]",
   },
   {
     icon: marketingAssets.features.iconAutomation,
     title: "Training & Performance Logs",
     description:
       "Log training sessions with templates, track competition results, and analyse performance metrics. Full activity timeline per horse.",
-    gradient: "from-green-500 to-emerald-500",
+    gradient: "from-[#34d399] to-emerald-600",
   },
   {
     icon: marketingAssets.features.iconIntegrations,
     title: "GPS Ride Tracking",
     description:
       "Track rides in real time with GPS. Record your route, distance, and duration — saved automatically to your horse's activity history.",
-    gradient: "from-red-500 to-pink-500",
+    gradient: "from-rose-500 to-pink-500",
   },
   {
     icon: marketingAssets.features.iconSupport,
     title: "Digital Equine Passport",
     description:
       "Generate a shareable Medical Passport for each horse. Share a secure read-only link with vets, officials, or buyers — no login required.",
-    gradient: "from-amber-500 to-orange-500",
+    gradient: "from-[#f0b95b] to-amber-500",
   },
   {
     icon: marketingAssets.features.iconSecurity,
     title: "Document & Photo Storage",
     description:
       "Securely store vet records, registration papers, insurance, and photos. Export detailed reports and share health summaries in one click.",
-    gradient: "from-violet-500 to-purple-500",
+    gradient: "from-[#3a93b8] to-[#5b8def]",
   },
 ];
 
@@ -200,20 +200,20 @@ export const featureHighlights: Feature[] = [
     title: "Advanced Analytics",
     description:
       "Gain deep insights into your horse's performance, health trends, and training progress with powerful analytics and exportable reports.",
-    gradient: "from-cyan-500 to-blue-500",
+    gradient: "from-[#7dd3c0] to-[#2e86ab]",
   },
   {
     icon: marketingAssets.features.iconAutomation,
     title: "GPS & Timeline",
     description:
       "Track every ride with GPS and see a complete chronological timeline of each horse's health, training, and care events.",
-    gradient: "from-green-500 to-emerald-500",
+    gradient: "from-[#34d399] to-emerald-600",
   },
   {
     icon: marketingAssets.features.iconSpeed,
     title: "Passport & Sharing",
     description:
       "Share a secure digital passport for any horse with vets, officials, or buyers — no account required. All records in one shareable link.",
-    gradient: "from-purple-500 to-violet-500",
+    gradient: "from-[#5b8def] to-[#3a93b8]",
   },
 ];
