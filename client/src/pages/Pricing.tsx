@@ -155,7 +155,7 @@ export default function Pricing() {
         `${FREE_TRIAL_DAYS}-day free trial`,
       ],
       icon: GraduationCap,
-      iconColor: "from-emerald-400 to-teal-400",
+      iconColor: "from-[#34d399] to-[#7dd3c0]",
       popular: false,
     },
     {
@@ -174,7 +174,7 @@ export default function Pricing() {
         `${FREE_TRIAL_DAYS}-day free trial`,
       ],
       icon: Crown,
-      iconColor: "from-indigo-400 to-purple-400",
+      iconColor: "from-[#5b8def] to-[#3a93b8]",
       popular: true,
     },
     {
@@ -193,7 +193,7 @@ export default function Pricing() {
         "Priority support",
       ],
       icon: Building2,
-      iconColor: "from-purple-400 to-pink-400",
+      iconColor: "from-[#7dd3c0] to-[#34d399]",
       popular: false,
     },
   ];
@@ -207,9 +207,9 @@ export default function Pricing() {
           imageSrc="/images/price3.jpg"
           imagePosition="center"
         />
-        <div className="min-h-screen bg-[#0a1628] bg-gradient-to-br from-[#0a1628] via-[#0f1f45] to-[#0a1628] flex items-center justify-center">
+        <div className="min-h-screen bg-[#0b1726] bg-gradient-to-br from-[#0b1726] via-[#132847] to-[#0b1726] flex items-center justify-center">
           <div className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-cyan-400 mx-auto mb-4" />
+            <Loader2 className="w-12 h-12 animate-spin text-[#7dd3c0] mx-auto mb-4" />
             <p className="text-gray-400">Loading pricing information...</p>
           </div>
         </div>
@@ -225,36 +225,36 @@ export default function Pricing() {
         imageSrc="/images/price3.jpg"
         imagePosition="center"
       />
-      <div className="min-h-screen bg-[#0a1628] bg-gradient-to-br from-[#0a1628] via-[#0f1f45] to-[#0a1628]">
-        <div className="container mx-auto px-4 py-16">
+      <div className="min-h-screen bg-[#0b1726] bg-gradient-to-br from-[#0b1726] via-[#132847] to-[#0b1726]">
+        <div className="container mx-auto px-4 py-20">
           {/* Top 3 Blocks */}
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-5xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 max-w-5xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
+            <div className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
               <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mb-4">
                   <Check className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">What's Included</h3>
                 <p className="text-gray-400 text-sm">All plans include unlimited updates, support, and access to all core features</p>
               </div>
             </div>
-            <div className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
+            <div className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
               <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mb-4">
                   <Clock className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">{FREE_TRIAL_DAYS}-Day Free Trial</h3>
                 <p className="text-gray-400 text-sm">Try EquiProfile risk-free with full access for {FREE_TRIAL_DAYS} days. No credit card required.</p>
               </div>
             </div>
-            <div className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
+            <div className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
               <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mb-4">
                   <XCircle className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">Cancel Anytime</h3>
@@ -271,12 +271,12 @@ export default function Pricing() {
             transition={{ duration: 0.6, delay: 0.15 }}
           >
             <h2 className="text-2xl font-bold text-white mb-4">Who are you?</h2>
-            <div className="inline-flex items-center gap-2 bg-[#0f2040]/60 backdrop-blur-md rounded-full p-1.5 border border-white/10">
+            <div className="inline-flex items-center gap-2 bg-[#101f3a]/60 backdrop-blur-md rounded-full p-1.5 border border-white/10">
               <button
                 onClick={() => setAudienceType("individual")}
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
                   audienceType === "individual"
-                    ? "bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-lg"
+                    ? "bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white shadow-lg"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
@@ -288,7 +288,7 @@ export default function Pricing() {
                 onClick={() => setAudienceType("school")}
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
                   audienceType === "school"
-                    ? "bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-lg"
+                    ? "bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white shadow-lg"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
@@ -301,23 +301,23 @@ export default function Pricing() {
 
           {/* ── Billing Period Toggle ── */}
           <motion.div
-            className="text-center mb-12"
+            className="text-center mb-14"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">
               Choose Your{" "}
-              <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent bg-clip-text">
+              <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] text-transparent bg-clip-text">
                 Perfect Plan
               </span>
             </h2>
-            <div className="mt-6 inline-flex items-center gap-4 bg-[#0f2040]/60 backdrop-blur-md rounded-full p-2 border border-white/10">
+            <div className="mt-6 inline-flex items-center gap-4 bg-[#101f3a]/60 backdrop-blur-md rounded-full p-2 border border-white/10">
               <button
                 onClick={() => setBillingPeriod("monthly")}
                 className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                   billingPeriod === "monthly"
-                    ? "bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-lg"
+                    ? "bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white shadow-lg"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
@@ -327,12 +327,12 @@ export default function Pricing() {
                 onClick={() => setBillingPeriod("yearly")}
                 className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                   billingPeriod === "yearly"
-                    ? "bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-lg"
+                    ? "bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white shadow-lg"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
                 Yearly
-                <span className="ml-2 text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
+                <span className="ml-2 text-xs bg-[#34d399]/20 text-[#34d399] px-2 py-0.5 rounded-full">
                   Save 17%
                 </span>
               </button>
@@ -342,18 +342,18 @@ export default function Pricing() {
           {/* Current Subscription Alert */}
           {hasActiveSubscription && subscriptionStatus && (
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              <Alert className="mb-8 max-w-3xl mx-auto bg-[#0f2040]/60 backdrop-blur-md border-white/10 text-white">
+              <Alert className="mb-8 max-w-3xl mx-auto bg-[#101f3a]/60 backdrop-blur-md border-white/10 text-white">
                 <AlertDescription className="flex items-center justify-between">
                   <span>
                     Your current plan:{" "}
-                    <strong className="capitalize text-cyan-400">{subscriptionStatus.plan}</strong>
+                    <strong className="capitalize text-[#7dd3c0]">{subscriptionStatus.plan}</strong>
                     {subscriptionStatus.status === "active" && " (Active)"}
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleManageBilling}
-                    className="bg-gradient-to-r from-indigo-500 to-cyan-500 text-white border-0 hover:from-indigo-600 hover:to-cyan-600"
+                    className="bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white border-0 hover:from-[#2e86ab] hover:to-[#5b8def]"
                   >
                     Manage Billing
                   </Button>
@@ -364,7 +364,7 @@ export default function Pricing() {
 
           {/* ══════════ INDIVIDUAL VIEW ══════════ */}
           {audienceType === "individual" && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {individualPlans.map((planData, index) => {
                 const isActive = isCurrentPlan(planData.plan);
                 const loadKey = `${planData.plan}_${billingPeriod}`;
@@ -379,17 +379,17 @@ export default function Pricing() {
                   >
                     {planData.popular && (
                       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                        <span className="bg-gradient-to-r from-indigo-500 to-cyan-500 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
+                        <span className="bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
                           Most Popular
                         </span>
                       </div>
                     )}
                     <Card
-                      className={`flex flex-col w-full bg-[#0f2040]/60 backdrop-blur-md border-white/10 hover:border-white/30 transition-all duration-300 overflow-hidden group ${
-                        planData.popular ? "border-2 border-indigo-500/50 shadow-xl shadow-indigo-500/20" : ""
-                      } ${isActive ? "ring-2 ring-cyan-400/50" : ""}`}
+                      className={`flex flex-col w-full min-h-[520px] bg-[#101f3a]/60 backdrop-blur-md border-white/10 hover:border-white/30 transition-all duration-300 overflow-hidden group ${
+                        planData.popular ? "border-2 border-[#3a93b8]/50 shadow-xl shadow-[#5b8def]/20" : ""
+                      } ${isActive ? "ring-2 ring-[#7dd3c0]/50" : ""}`}
                     >
-                      <div className="h-32 overflow-hidden bg-gradient-to-br from-indigo-900/20 to-cyan-900/20 relative flex items-center justify-center">
+                      <div className="h-32 overflow-hidden bg-gradient-to-br from-[#1a3a6e]/20 to-[#1a5276]/20 relative flex items-center justify-center">
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
                         <div
                           className={`relative z-20 w-20 h-20 rounded-full bg-gradient-to-r ${planData.iconColor} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-2xl`}
@@ -401,7 +401,7 @@ export default function Pricing() {
                         <CardTitle className="text-white text-2xl">{planData.name}</CardTitle>
                         <CardDescription className="text-gray-400">{planData.description}</CardDescription>
                         <div className="mt-4">
-                          <span className="text-5xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent bg-clip-text">
+                          <span className="text-5xl font-bold bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] text-transparent bg-clip-text">
                             {planData.price}
                           </span>
                           <span className="text-gray-400 text-lg">
@@ -409,14 +409,14 @@ export default function Pricing() {
                           </span>
                         </div>
                         {billingPeriod === "yearly" && (
-                          <p className="text-sm text-green-400 font-semibold mt-2">Save 17% with yearly billing</p>
+                          <p className="text-sm text-[#34d399] font-semibold mt-2">Save 17% with yearly billing</p>
                         )}
                       </CardHeader>
-                      <CardContent className="flex-grow">
-                        <ul className="space-y-3">
+                      <CardContent className="flex-grow px-6 pb-4">
+                        <ul className="space-y-3.5">
                           {planData.features.map((feature, i) => (
                             <li key={i} className="flex items-start gap-3">
-                              <Check className="h-5 w-5 text-cyan-400 shrink-0 mt-0.5" />
+                              <Check className="h-5 w-5 text-[#7dd3c0] shrink-0 mt-0.5" />
                               <span className="text-sm text-gray-300">{feature}</span>
                             </li>
                           ))}
@@ -424,19 +424,19 @@ export default function Pricing() {
                       </CardContent>
                       <CardFooter className="flex-col gap-2 mt-auto pt-6">
                         {isActive ? (
-                          <Button className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white border-0" disabled>
+                          <Button className="w-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white border-0" disabled>
                             Current Plan
                           </Button>
                         ) : planData.plan === "student" ? (
                           <Button
-                            className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 hover:from-emerald-600 hover:to-teal-600 shadow-lg transition-all duration-300"
+                            className="w-full bg-gradient-to-r from-[#34d399] to-[#7dd3c0] text-white border-0 hover:from-[#2ab783] hover:to-[#6bc4b0] shadow-lg transition-all duration-300"
                             onClick={() => setLocation(`/register?plan=student&interval=${billingPeriod}`)}
                           >
                             Start Free Trial
                           </Button>
                         ) : (
                           <Button
-                            className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white border-0 hover:from-indigo-600 hover:to-cyan-600 shadow-lg transition-all duration-300"
+                            className="w-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white border-0 hover:from-[#2e86ab] hover:to-[#5b8def] shadow-lg transition-all duration-300"
                             onClick={() => handleSubscribe(planData.plan, billingPeriod)}
                             disabled={loadingPlan === loadKey}
                           >
@@ -470,7 +470,7 @@ export default function Pricing() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {SCHOOL_PRICING.tiers.map((tier, index) => {
                   const isEnterprise = tier.maxStudents === null;
                   const price = isEnterprise
@@ -486,9 +486,9 @@ export default function Pricing() {
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       whileHover={{ scale: 1.03, y: -8 }}
                     >
-                      <Card className="flex flex-col h-full bg-[#0f2040]/60 backdrop-blur-md border-white/10 hover:border-white/30 transition-all duration-300 overflow-hidden">
+                      <Card className="flex flex-col h-full bg-[#101f3a]/60 backdrop-blur-md border-white/10 hover:border-white/30 transition-all duration-300 overflow-hidden">
                         <CardHeader className="text-center">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center justify-center mx-auto mb-3">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mx-auto mb-3">
                             {isEnterprise ? <Building2 className="w-6 h-6 text-white" /> : <Users className="w-6 h-6 text-white" />}
                           </div>
                           <CardTitle className="text-white text-xl">{tier.label}</CardTitle>
@@ -498,7 +498,7 @@ export default function Pricing() {
                           <div className="mt-4">
                             {price ? (
                               <>
-                                <span className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent bg-clip-text">
+                                <span className="text-4xl font-bold bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] text-transparent bg-clip-text">
                                   {price.display}
                                 </span>
                                 <span className="text-gray-400 text-lg">
@@ -510,18 +510,18 @@ export default function Pricing() {
                             )}
                           </div>
                           {billingPeriod === "yearly" && price && (
-                            <p className="text-sm text-green-400 font-semibold mt-1">Save ~17% yearly</p>
+                            <p className="text-sm text-[#34d399] font-semibold mt-1">Save ~17% yearly</p>
                           )}
                         </CardHeader>
                         <CardContent className="flex-grow">
                           <ul className="space-y-2.5 text-sm text-gray-300">
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" /> Teacher & student accounts</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" /> Lesson management</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" /> Progress reporting</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" /> AI tutor for students</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" /> Group & class management</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" /> Assignment & feedback tools</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" /> {FREE_TRIAL_DAYS}-day free trial</li>
+                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Teacher & student accounts</li>
+                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Lesson management</li>
+                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Progress reporting</li>
+                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> AI tutor for students</li>
+                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Group & class management</li>
+                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Assignment & feedback tools</li>
+                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> {FREE_TRIAL_DAYS}-day free trial</li>
                           </ul>
                         </CardContent>
                         <CardFooter className="mt-auto pt-4">
@@ -529,14 +529,14 @@ export default function Pricing() {
                             <Link href="/contact" className="w-full">
                               <Button
                                 variant="outline"
-                                className="w-full border-indigo-500/40 text-indigo-300 hover:bg-indigo-500/10 hover:text-white"
+                                className="w-full border-[#3a93b8]/40 text-[#7da8e0] hover:bg-[#3a93b8]/10 hover:text-white"
                               >
                                 <Mail className="w-4 h-4 mr-2" /> Contact Us
                               </Button>
                             </Link>
                           ) : (
                             <Link href="/contact?plan=school" className="w-full">
-                              <Button className="w-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white border-0 hover:from-indigo-600 hover:to-cyan-600">
+                              <Button className="w-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white border-0 hover:from-[#2e86ab] hover:to-[#5b8def]">
                                 Start School Setup
                               </Button>
                             </Link>
@@ -559,11 +559,11 @@ export default function Pricing() {
           >
             <h2 className="text-3xl font-bold mb-8 text-white">
               Frequently Asked{" "}
-              <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent bg-clip-text">
+              <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] text-transparent bg-clip-text">
                 Questions
               </span>
             </h2>
-            <div className="max-w-3xl mx-auto text-left grid md:grid-cols-2 gap-6">
+            <div className="max-w-3xl mx-auto text-left grid md:grid-cols-2 gap-8">
               {[
                 { question: "Can I cancel anytime?", answer: "Yes! Cancel your subscription at any time. Your access continues until the end of your billing period." },
                 { question: "What happens after the free trial?", answer: "Your account becomes read-only. Upgrade to a paid plan anytime to regain full access." },
@@ -576,7 +576,7 @@ export default function Pricing() {
               ].map((faq, index) => (
                 <motion.div
                   key={index}
-                  className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300"
+                  className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
@@ -596,12 +596,12 @@ export default function Pricing() {
             transition={{ duration: 0.6, delay: 0.8 }}
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 rounded-3xl blur-3xl" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#3a93b8]/20 to-[#5b8def]/20 rounded-3xl blur-3xl" />
               <div className="relative backdrop-blur-md bg-white/5 border-2 border-white/20 rounded-3xl p-8 md:p-12 hover:bg-white/10 hover:border-white/30 transition-all duration-500">
                 <div className="text-center">
                   <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 text-white">
                     Ready to Get{" "}
-                    <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                       Started?
                     </span>
                   </h2>
@@ -612,7 +612,7 @@ export default function Pricing() {
                     <Link href="/register">
                       <Button
                         size="lg"
-                        className="text-lg px-10 py-6 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white border-0 shadow-xl"
+                        className="text-lg px-10 py-6 bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#256d8a] hover:to-[#4a7cd4] text-white border-0 shadow-xl"
                       >
                         Start Free Trial
                       </Button>
