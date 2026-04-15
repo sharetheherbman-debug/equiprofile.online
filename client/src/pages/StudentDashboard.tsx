@@ -60,6 +60,9 @@ const STUDENT_BORDER = "rgba(100, 116, 139, 0.15)"; // Slate border
 const STUDENT_TEXT = "#1e293b";      // Dark text for readability
 const STUDENT_MUTED = "#64748b";     // Muted text
 
+// Dark mode card class — for Tailwind-driven components
+const S_CARD_CLASS = "bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm";
+
 // ─── Re-export the ActiveView type from layout for internal use ──────────
 import type { StudentView as ActiveView } from "@/components/StudentDashboardLayout";
 
@@ -83,8 +86,7 @@ function SkeletonBar({ className = "" }: { className?: string }) {
 function SCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`rounded-xl border p-5 sm:p-6 shadow-sm ${className}`}
-      style={{ backgroundColor: STUDENT_CARD, borderColor: STUDENT_BORDER }}
+      className={`${S_CARD_CLASS} p-5 sm:p-6 ${className}`}
     >
       {children}
     </div>
@@ -96,7 +98,7 @@ function SectionHeading({ icon: Icon, title }: { icon: React.ComponentType<{ cla
   return (
     <div className="flex items-center gap-2 mb-4">
       <Icon className="w-5 h-5 text-[#2e6da4]" />
-      <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+      <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{title}</h2>
     </div>
   );
 }

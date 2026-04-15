@@ -793,17 +793,34 @@ function ReportsView() {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-semibold text-[#2d6a4f] uppercase tracking-wider">{report.periodLabel}</span>
                 </div>
-                <h3 className="text-lg font-bold text-gray-800">{report.student.name}</h3>
-                <p className="text-sm text-gray-500">{report.student.email} · <span style={{ color: LEVEL_COLORS[report.student.learnerLevel] ?? TEACHER_ACCENT }}>{report.student.learnerLevel}</span> · {report.groupName}</p>
+                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">{report.student.name}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{report.student.email} · <span style={{ color: LEVEL_COLORS[report.student.learnerLevel] ?? TEACHER_ACCENT }}>{report.student.learnerLevel}</span> · {report.groupName}</p>
               </div>
-              <div
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                style={{
-                  backgroundColor: `${READINESS_COLORS[report.readiness.label] ?? TEACHER_ACCENT}18`,
-                  color: READINESS_COLORS[report.readiness.label] ?? TEACHER_ACCENT,
-                }}
-              >
-                {report.readiness.label}
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => {
+                    const el = document.getElementById("report-content");
+                    if (!el) return;
+                    const printWindow = window.open("", "_blank");
+                    if (!printWindow) return;
+                    printWindow.document.write(`<!DOCTYPE html><html><head><title>Report — ${report.student.name}</title><style>body{font-family:Inter,system-ui,sans-serif;padding:2rem;color:#1a2e3e}h3{font-size:1.25rem;margin:0 0 0.25rem}p{margin:0.25rem 0}table{width:100%;border-collapse:collapse;margin-top:1rem}td,th{text-align:left;padding:0.5rem;border-bottom:1px solid #e5e7eb}th{font-size:0.75rem;color:#6b7280;text-transform:uppercase}@media print{body{padding:1rem}}</style></head><body>${el.innerHTML}</body></html>`);
+                    printWindow.document.close();
+                    printWindow.print();
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#2d6a4f] text-white hover:bg-[#245a42] transition-colors"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  Download Report
+                </button>
+                <div
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+                  style={{
+                    backgroundColor: `${READINESS_COLORS[report.readiness.label] ?? TEACHER_ACCENT}18`,
+                    color: READINESS_COLORS[report.readiness.label] ?? TEACHER_ACCENT,
+                  }}
+                >
+                  {report.readiness.label}
+                </div>
               </div>
             </div>
           </TCard>
@@ -910,8 +927,8 @@ function ReportsView() {
             <TCard>
               <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Lessons &amp; Pathways</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-                <div className="text-center p-3 rounded-lg bg-indigo-500/[0.08]">
-                  <p className="text-2xl font-bold text-indigo-500">{(report as any).lessonsCompleted}</p>
+                <div className="text-center p-3 rounded-lg bg-[#2e6da4]/[0.08]">
+                  <p className="text-2xl font-bold text-[#2e6da4]">{(report as any).lessonsCompleted}</p>
                   <p className="text-xs text-gray-500 mt-0.5">Lessons Completed</p>
                 </div>
                 {(report as any).averageLessonScore != null && (
@@ -943,8 +960,8 @@ function ReportsView() {
                   <p className="text-xl font-bold text-[#2d6a4f]">{(report as any).competencies.achieved}</p>
                   <p className="text-xs text-gray-500 mt-0.5">Achieved</p>
                 </div>
-                <div className="text-center p-3 rounded-lg bg-indigo-500/[0.08]">
-                  <p className="text-xl font-bold text-indigo-500">{(report as any).competencies.inProgress}</p>
+                <div className="text-center p-3 rounded-lg bg-[#2e6da4]/[0.08]">
+                  <p className="text-xl font-bold text-[#2e6da4]">{(report as any).competencies.inProgress}</p>
                   <p className="text-xs text-gray-500 mt-0.5">In Progress</p>
                 </div>
                 <div className="text-center p-3 rounded-lg bg-amber-500/[0.08]">
@@ -1217,7 +1234,7 @@ function TeacherLessonsView() {
                     <div key={a.id} className="flex items-start justify-between gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${a.assignmentType === "lesson" ? "bg-indigo-500/20 text-indigo-600" : "bg-[#2d6a4f]/20 text-[#2d6a4f]"}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${a.assignmentType === "lesson" ? "bg-[#2e6da4]/20 text-[#2e6da4]" : "bg-[#2d6a4f]/20 text-[#2d6a4f]"}`}>
                             {a.assignmentType === "lesson" ? "Lesson" : "Pathway"}
                           </span>
                           <span className="text-sm text-gray-800 font-medium truncate">{a.lessonSlug ?? a.pathwaySlug}</span>
@@ -1336,7 +1353,7 @@ function TeacherLessonsView() {
                     </div>
                     {r.feedback && <p className="text-xs text-gray-500 mt-1">{r.feedback}</p>}
                     {r.recommendedNextLesson && (
-                      <p className="text-xs text-indigo-500 mt-1 flex items-center gap-1">
+                      <p className="text-xs text-[#2e6da4] mt-1 flex items-center gap-1">
                         <ChevronRight className="w-3 h-3" /> Next: {r.recommendedNextLesson}
                       </p>
                     )}
@@ -1615,14 +1632,14 @@ function TeacherProgressView() {
 
                       {/* Recommended next step */}
                       {lessonSummary.completedCount === 0 && (
-                        <div className="p-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
-                          <p className="text-xs text-indigo-600 font-medium">Suggested Action</p>
+                        <div className="p-2.5 rounded-lg bg-[#2e6da4]/5 border border-[#2e6da4]/15">
+                          <p className="text-xs text-[#2e6da4] font-medium">Suggested Action</p>
                           <p className="text-[10px] text-gray-500 mt-0.5">This student has not completed any lessons yet. Consider assigning a beginner pathway lesson.</p>
                         </div>
                       )}
                       {lessonSummary.completedCount > 0 && lessonSummary.completedCount < 10 && (
-                        <div className="p-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
-                          <p className="text-xs text-indigo-600 font-medium">Suggested Action</p>
+                        <div className="p-2.5 rounded-lg bg-[#2e6da4]/5 border border-[#2e6da4]/15">
+                          <p className="text-xs text-[#2e6da4] font-medium">Suggested Action</p>
                           <p className="text-[10px] text-gray-500 mt-0.5">This student is early in their learning. Encourage completion of beginner pathways before progressing.</p>
                         </div>
                       )}
