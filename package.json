@@ -9,7 +9,7 @@
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
     "build:sw": "node scripts/update-sw-version.js",
-    "build": "NODE_OPTIONS='--max_old_space_size=2048' npm run build:sw && NODE_OPTIONS='--max_old_space_size=2048' vite build && NODE_OPTIONS='--max_old_space_size=2048' esbuild server/_core/index.ts --platform=node --bundle --format=esm --outdir=dist --minify --packages=external && NODE_OPTIONS='--max_old_space_size=2048' esbuild server/cli.ts --platform=node --bundle --format=esm --outdir=dist --minify --packages=external && bash scripts/build-fingerprint.sh",
+    "build": "NODE_OPTIONS='--max_old_space_size=2048' npm run build:sw && npm run build:management && npm run build:school && npm run build:server && bash scripts/build-fingerprint.sh",
     "build:safe": "NODE_OPTIONS='--max_old_space_size=2048' npm run build",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
@@ -20,7 +20,10 @@
     "db:push": "drizzle-kit migrate",
     "db:migrate": "bash scripts/migrate.sh",
     "db:generate": "drizzle-kit generate",
-    "seed:templates": "tsx server/seeds/trainingTemplates.ts"
+    "seed:templates": "tsx server/seeds/trainingTemplates.ts",
+    "build:management": "VITE_SITE=management NODE_OPTIONS='--max_old_space_size=2048' vite build",
+    "build:school": "VITE_SITE=school NODE_OPTIONS='--max_old_space_size=2048' vite build",
+    "build:server": "NODE_OPTIONS='--max_old_space_size=2048' esbuild server/_core/index.ts --platform=node --bundle --format=esm --outdir=dist --minify --packages=external && NODE_OPTIONS='--max_old_space_size=2048' esbuild server/cli.ts --platform=node --bundle --format=esm --outdir=dist --minify --packages=external"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.984.0",

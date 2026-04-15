@@ -5,21 +5,20 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
-import App from "./App";
-import { getLoginUrl } from "./const";
-import "./index.css";
-import { RealtimeProvider } from "./contexts/RealtimeContext";
+import SchoolApp from "./SchoolApp";
+import { getLoginUrl } from "@/const";
+import "@/index.css";
+import { RealtimeProvider } from "@/contexts/RealtimeContext";
 
 // Initialize bootstrap modules (service worker, analytics) - MUST be imported before App
-import { registerServiceWorker } from "./bootstrap";
-import { initializeAnalytics } from "./analytics";
+import { registerServiceWorker } from "@/bootstrap";
+import { initializeAnalytics } from "@/analytics";
 
 // Initialize admin toggle system - sets up console commands
-// This must be imported to register showAdmin() and hideAdmin() functions
 import "@/lib/adminToggle";
 
 // Import upgrade modal state
-import { useUpgradeModal } from "./hooks/useUpgradeModal";
+import { useUpgradeModal } from "@/hooks/useUpgradeModal";
 
 // Initialize service worker and analytics
 registerServiceWorker();
@@ -66,9 +65,6 @@ const queryClient = new QueryClient({
         return failureCount < 1;
       },
       staleTime: 60 * 1000, // 1 minute default stale time
-      // Disable automatic refetch on window focus globally to prevent request
-      // storms when users switch tabs. Sensitive queries (auth.me) opt back in
-      // explicitly with refetchOnWindowFocus: true at the call site.
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
     },
@@ -92,8 +88,6 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 const handleTrialLockError = (error: unknown) => {
   if (!(error instanceof TRPCClientError)) return;
 
-  // Check for trial lock error codes returned by the middleware,
-  // TRPC PAYMENT_REQUIRED code, or message-based fallback detection
   const errorCode = error.data?.code;
   const httpStatus = error.data?.httpStatus;
   const messageText = error.message?.toLowerCase() ?? "";
@@ -109,7 +103,6 @@ const handleTrialLockError = (error: unknown) => {
 
   if (!isTrialLockError) return;
 
-  // Open upgrade modal with the appropriate reason
   const { open } = useUpgradeModal.getState();
 
   if (
@@ -165,7 +158,7 @@ createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
     <QueryClientProvider client={queryClient}>
       <RealtimeProvider>
-        <App />
+        <SchoolApp />
       </RealtimeProvider>
     </QueryClientProvider>
   </trpc.Provider>,

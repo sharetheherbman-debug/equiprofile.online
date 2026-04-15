@@ -1,21 +1,57 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
+/**
+ * Vite Configuration — True 2-Frontend Architecture
+ *
+ * This repo serves TWO separate frontend applications from one codebase:
+ *
+ *   1. Management frontend  → equiprofile.online
+ *      Entry: client/management/index.html
+ *      Output: dist/public/management/
+ *
+ *   2. School frontend      → school.equiprofile.online
+ *      Entry: client/school/index.html
+ *      Output: dist/public/school/
+ *
+ * Both frontends share:
+ *   - client/src/          (shared UI, hooks, contexts, lib, dashboard pages)
+ *   - shared/              (types, pricing, constants)
+ *   - One Express backend  (API, auth, SMTP, admin)
+ *
+ * Build target is selected by VITE_SITE env var:
+ *   VITE_SITE=management  → builds management frontend only
+ *   VITE_SITE=school      → builds school frontend only
+ *   (no VITE_SITE)        → builds management (default, backward compat)
+ *
+ * The `npm run build` script builds BOTH by invoking Vite twice.
+ */
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "path";
 import { defineConfig, Plugin } from "vite";
 
-// Check if PWA is enabled via environment variable
+// ── Site target ────────────────────────────────────────────────────────────
+// Which frontend to build. Set via VITE_SITE env var.
+const SITE_TARGET = (process.env.VITE_SITE || "management") as
+  | "management"
+  | "school";
+
+const SITE_ROOTS: Record<string, string> = {
+  management: path.resolve(import.meta.dirname, "client", "management"),
+  school: path.resolve(import.meta.dirname, "client", "school"),
+};
+
+const siteRoot = SITE_ROOTS[SITE_TARGET];
+
+// ── PWA ────────────────────────────────────────────────────────────────────
 const PWA_ENABLED =
   process.env.VITE_PWA_ENABLED === "true" || process.env.ENABLE_PWA === "true";
 
-// Plugin to inject version into service worker (only if PWA is enabled)
 function injectServiceWorkerVersion(): Plugin {
   return {
     name: "inject-service-worker-version",
     apply: "build",
     generateBundle() {
-      // Only generate service worker if PWA is enabled
       if (!PWA_ENABLED) {
         console.log("⚠️  PWA disabled - service worker will NOT be generated");
         console.log("   To enable: set ENABLE_PWA=true in .env");
@@ -32,13 +68,11 @@ function injectServiceWorkerVersion(): Plugin {
       );
       if (fs.existsSync(swPath)) {
         let swContent = fs.readFileSync(swPath, "utf-8");
-        // Replace CACHE_VERSION value with actual version from package.json
         swContent = swContent.replace(
           /const CACHE_VERSION = ['"]([^'"]+)['"]/,
           `const CACHE_VERSION = '${version}'`,
         );
 
-        // Write to the output directory
         this.emitFile({
           type: "asset",
           fileName: "service-worker.js",
@@ -53,60 +87,59 @@ function injectServiceWorkerVersion(): Plugin {
   };
 }
 
+// ── Shared config ──────────────────────────────────────────────────────────
+const sharedAlias = {
+  "@": path.resolve(import.meta.dirname, "client", "src"),
+  "@shared": path.resolve(import.meta.dirname, "shared"),
+  "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+  mermaid: path.resolve(
+    import.meta.dirname,
+    "node_modules/mermaid/dist/mermaid.core.mjs",
+  ),
+};
+
+const sharedManualChunks = (id: string) => {
+  // PDF/export (rarely used, lazy-loaded)
+  if (
+    id.includes("node_modules/jspdf") ||
+    id.includes("node_modules/html2canvas") ||
+    id.includes("node_modules/qrcode")
+  ) {
+    return "export-utils";
+  }
+  // tsParticles (heavy, optional)
+  if (
+    id.includes("node_modules/@tsparticles") ||
+    id.includes("node_modules/tsparticles")
+  ) {
+    return "tsparticles";
+  }
+};
+
 const plugins = [react(), tailwindcss(), injectServiceWorkerVersion()];
+
+console.log(`\n🏗️  Building ${SITE_TARGET.toUpperCase()} frontend from ${siteRoot}\n`);
 
 export default defineConfig({
   plugins,
   resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
-      mermaid: path.resolve(
-        import.meta.dirname,
-        "node_modules/mermaid/dist/mermaid.core.mjs",
-      ),
-    },
+    alias: sharedAlias,
   },
   envDir: path.resolve(import.meta.dirname),
-  root: path.resolve(import.meta.dirname, "client"),
+  root: siteRoot,
   publicDir: path.resolve(import.meta.dirname, "client", "public"),
   optimizeDeps: {
     include: ["mermaid"],
   },
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    outDir: path.resolve(import.meta.dirname, "dist", "public", SITE_TARGET),
     emptyOutDir: true,
     commonjsOptions: {
       transformMixedEsModules: true,
     },
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // Only split truly heavy, infrequently-used libraries into separate
-          // chunks.  Eagerly-loaded framework packages (React, Radix, framer,
-          // i18n, tRPC, TanStack Query …) are intentionally NOT assigned here.
-          // Splitting them caused Rollup to place shared CJS-interop helpers
-          // in different chunks, creating circular dependencies that made
-          // React undefined at module-init time and crashed the app with:
-          //   "Cannot read properties of undefined (reading 'createContext')"
-          //
-          // PDF/export (rarely used, lazy-loaded)
-          if (
-            id.includes("node_modules/jspdf") ||
-            id.includes("node_modules/html2canvas") ||
-            id.includes("node_modules/qrcode")
-          ) {
-            return "export-utils";
-          }
-          // tsParticles (heavy, optional)
-          if (
-            id.includes("node_modules/@tsparticles") ||
-            id.includes("node_modules/tsparticles")
-          ) {
-            return "tsparticles";
-          }
-        },
+        manualChunks: sharedManualChunks,
       },
     },
   },
@@ -114,7 +147,9 @@ export default defineConfig({
     host: true,
     allowedHosts: [".equiprofile.online", "localhost", "127.0.0.1"],
     fs: {
-      strict: true,
+      // Allow reading from parent directories since site roots reference
+      // shared code in client/src/ via @/ alias
+      strict: false,
       deny: ["**/.*"],
     },
   },

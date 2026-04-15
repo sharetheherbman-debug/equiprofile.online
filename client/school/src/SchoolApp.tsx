@@ -4,98 +4,97 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { AdminViewProvider, useAdminViewMode } from "./contexts/AdminViewContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AdminViewProvider, useAdminViewMode } from "@/contexts/AdminViewContext";
 import {
   SkipToContent,
   useKeyboardNavigation,
-} from "./components/AccessibilityHelpers";
-import { useScrollToTop } from "./hooks/useScrollToTop";
-import { UpgradeModal } from "./components/UpgradeModal";
-import { useUpgradeModal } from "./hooks/useUpgradeModal";
-import { ProtectedRoute, StableRoute, StudentRoute, TeacherRoute } from "./components/ProtectedRoute";
-import { SalesChatWidget } from "./components/SalesChatWidget";
-import { CookieConsent } from "./components/CookieConsent";
-import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
-// Marketing Pages (Public) — kept eager for fast initial paint on public routes
-import Home from "./pages/Home";
-import Features from "./pages/Features";
-import Pricing from "./pages/Pricing";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import TermsPage from "./pages/TermsPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import Students from "./pages/Students";
-import Schools from "./pages/Schools";
-import { getUIVersion } from "./config/uiVersion";
+} from "@/components/AccessibilityHelpers";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
+import { UpgradeModal } from "@/components/UpgradeModal";
+import { useUpgradeModal } from "@/hooks/useUpgradeModal";
+import { ProtectedRoute, StableRoute, StudentRoute, TeacherRoute } from "@/components/ProtectedRoute";
+import { SalesChatWidget } from "@/components/SalesChatWidget";
+import { CookieConsent } from "@/components/CookieConsent";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { getUIVersion } from "@/config/uiVersion";
+
+// School Marketing Pages
+import SchoolHome from "@/pages/school/Home";
+import SchoolFeatures from "@/pages/school/Features";
+import SchoolPricing from "@/pages/school/Pricing";
+import SchoolAbout from "@/pages/school/About";
+import SchoolContact from "@/pages/school/Contact";
+
+// Shared public pages
+import TermsPage from "@/pages/TermsPage";
+import PrivacyPage from "@/pages/PrivacyPage";
 
 // Auth Pages — kept eager so login/register loads instantly
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import ResetPassword from "./pages/auth/ResetPassword";
-import VerifyEmail from "./pages/auth/VerifyEmail";
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
+import ForgotPassword from "@/pages/auth/ForgotPassword";
+import ResetPassword from "@/pages/auth/ResetPassword";
+import VerifyEmail from "@/pages/auth/VerifyEmail";
 
 // App Pages (Protected) — lazy-loaded to reduce initial bundle size
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Horses = lazy(() => import("./pages/Horses"));
-const HorseForm = lazy(() => import("./pages/HorseForm"));
-const HorseDetail = lazy(() => import("./pages/HorseDetail"));
-const Health = lazy(() => import("./pages/Health"));
-const Training = lazy(() => import("./pages/Training"));
-const Feeding = lazy(() => import("./pages/Feeding"));
-const Weather = lazy(() => import("./pages/Weather"));
-const Documents = lazy(() => import("./pages/Documents"));
-const Tasks = lazy(() => import("./pages/Tasks"));
-const Contacts = lazy(() => import("./pages/Contacts"));
-const Admin = lazy(() => import("./pages/Admin"));
-const QAChecklist = lazy(() => import("./pages/QAChecklist"));
-const Stable = lazy(() => import("./pages/Stable"));
-const StableDashboard = lazy(() => import("./pages/StableDashboard"));
-const Messages = lazy(() => import("./pages/Messages"));
-const Analytics = lazy(() => import("./pages/Analytics"));
-const Reports = lazy(() => import("./pages/Reports"));
-const Calendar = lazy(() => import("./pages/Calendar"));
-const AIChat = lazy(() => import("./pages/AIChat"));
-const TrainingTemplates = lazy(() => import("./pages/TrainingTemplates"));
-const BreedingManagement = lazy(() => import("./pages/BreedingManagement"));
-const LessonScheduling = lazy(() => import("./pages/LessonScheduling"));
-const ClientPortal = lazy(() => import("./pages/ClientPortal"));
-const Settings = lazy(() => import("./pages/Settings"));
-const BillingPage = lazy(() => import("./pages/BillingPage"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Horses = lazy(() => import("@/pages/Horses"));
+const HorseForm = lazy(() => import("@/pages/HorseForm"));
+const HorseDetail = lazy(() => import("@/pages/HorseDetail"));
+const Health = lazy(() => import("@/pages/Health"));
+const Training = lazy(() => import("@/pages/Training"));
+const Feeding = lazy(() => import("@/pages/Feeding"));
+const Weather = lazy(() => import("@/pages/Weather"));
+const Documents = lazy(() => import("@/pages/Documents"));
+const Tasks = lazy(() => import("@/pages/Tasks"));
+const Contacts = lazy(() => import("@/pages/Contacts"));
+const Admin = lazy(() => import("@/pages/Admin"));
+const QAChecklist = lazy(() => import("@/pages/QAChecklist"));
+const Stable = lazy(() => import("@/pages/Stable"));
+const StableDashboard = lazy(() => import("@/pages/StableDashboard"));
+const Messages = lazy(() => import("@/pages/Messages"));
+const Analytics = lazy(() => import("@/pages/Analytics"));
+const Reports = lazy(() => import("@/pages/Reports"));
+const Calendar = lazy(() => import("@/pages/Calendar"));
+const AIChat = lazy(() => import("@/pages/AIChat"));
+const TrainingTemplates = lazy(() => import("@/pages/TrainingTemplates"));
+const BreedingManagement = lazy(() => import("@/pages/BreedingManagement"));
+const LessonScheduling = lazy(() => import("@/pages/LessonScheduling"));
+const ClientPortal = lazy(() => import("@/pages/ClientPortal"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const BillingPage = lazy(() => import("@/pages/BillingPage"));
 
 // Additional Health & Management Pages
-const Appointments = lazy(() => import("./pages/Appointments"));
-const NutritionLogs = lazy(() => import("./pages/NutritionLogs"));
-const NutritionPlans = lazy(() => import("./pages/NutritionPlans"));
-const Hoofcare = lazy(() => import("./pages/Hoofcare"));
-const Pedigree = lazy(() => import("./pages/Pedigree"));
-const Xrays = lazy(() => import("./pages/Xrays"));
-const Treatments = lazy(() => import("./pages/Treatments"));
-const Vaccinations = lazy(() => import("./pages/Vaccinations"));
-const DentalCare = lazy(() => import("./pages/DentalCare"));
-const Dewormings = lazy(() => import("./pages/Dewormings"));
-const Tags = lazy(() => import("./pages/Tags"));
-const FeedCostTracking = lazy(() => import("./pages/FeedCostTracking"));
-const RideTracking = lazy(() => import("./pages/RideTracking"));
-const EquinePassport = lazy(() => import("./pages/EquinePassport"));
-const PassportView = lazy(() => import("./pages/PassportView"));
-const StableInviteAccept = lazy(() => import("./pages/StableInviteAccept"));
-const StableStaff = lazy(() => import("./pages/StableStaff"));
-const StableSetup = lazy(() => import("./pages/StableSetup"));
-const StableReports = lazy(() => import("./pages/StableReports"));
-const Onboarding = lazy(() => import("./pages/Onboarding"));
-const Competitions = lazy(() => import("./pages/Competitions"));
-const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
-const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
-const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
-const SchoolDashboard = lazy(() => import("./pages/SchoolDashboard"));
+const Appointments = lazy(() => import("@/pages/Appointments"));
+const NutritionLogs = lazy(() => import("@/pages/NutritionLogs"));
+const NutritionPlans = lazy(() => import("@/pages/NutritionPlans"));
+const Hoofcare = lazy(() => import("@/pages/Hoofcare"));
+const Xrays = lazy(() => import("@/pages/Xrays"));
+const Treatments = lazy(() => import("@/pages/Treatments"));
+const Vaccinations = lazy(() => import("@/pages/Vaccinations"));
+const DentalCare = lazy(() => import("@/pages/DentalCare"));
+const Dewormings = lazy(() => import("@/pages/Dewormings"));
+const Tags = lazy(() => import("@/pages/Tags"));
+const FeedCostTracking = lazy(() => import("@/pages/FeedCostTracking"));
+const RideTracking = lazy(() => import("@/pages/RideTracking"));
+const EquinePassport = lazy(() => import("@/pages/EquinePassport"));
+const PassportView = lazy(() => import("@/pages/PassportView"));
+const StableInviteAccept = lazy(() => import("@/pages/StableInviteAccept"));
+const StableStaff = lazy(() => import("@/pages/StableStaff"));
+const StableSetup = lazy(() => import("@/pages/StableSetup"));
+const StableReports = lazy(() => import("@/pages/StableReports"));
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const Competitions = lazy(() => import("@/pages/Competitions"));
+const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
+const StudentDashboard = lazy(() => import("@/pages/StudentDashboard"));
+const TeacherDashboard = lazy(() => import("@/pages/TeacherDashboard"));
+const SchoolDashboard = lazy(() => import("@/pages/SchoolDashboard"));
 
 // V2 Frontend Pages — lazy-loaded for code splitting
-const HomeV2 = lazy(() => import("./v2/pages/HomeV2"));
-const DashboardV2 = lazy(() => import("./v2/pages/DashboardV2"));
-const StableDashboardV2 = lazy(() => import("./v2/pages/StableDashboardV2"));
+const DashboardV2 = lazy(() => import("@/v2/pages/DashboardV2"));
+const StableDashboardV2 = lazy(() => import("@/v2/pages/StableDashboardV2"));
 
 // Minimal spinner shown while lazy chunks load (doesn't block FCP)
 function PageSpinner() {
@@ -106,21 +105,18 @@ function PageSpinner() {
   );
 }
 
-function Router() {
+function SchoolRouter() {
   useKeyboardNavigation();
   useScrollToTop();
   const upgradeModal = useUpgradeModal();
   const uiVersion = getUIVersion();
   const { viewMode, isAdmin } = useAdminViewMode();
 
-  // Version-aware component selection — VITE_UI_VERSION=v2 (set at deploy time)
-  // selects V2 redesigned pages; default is V1 legacy
-  const ActiveHome = uiVersion === "v2" ? HomeV2 : Home;
+  // Version-aware dashboard selection
   const ActiveDashboard = uiVersion === "v2" ? DashboardV2 : Dashboard;
   const ActiveStableDashboard = uiVersion === "v2" ? StableDashboardV2 : StableDashboard;
 
-  // Admin view mode resolution — when an admin is in "View As" mode,
-  // /dashboard renders the appropriate simulated dashboard
+  // Admin view mode resolution
   const ResolvedDashboard = (() => {
     if (!isAdmin || !viewMode || viewMode === "admin" || viewMode === "pro") {
       return ActiveDashboard;
@@ -143,14 +139,12 @@ function Router() {
       <main id="main-content">
         <Suspense fallback={<PageSpinner />}>
           <Switch>
-            {/* Marketing Pages (Public) — version-aware */}
-            <Route path="/" component={ActiveHome} />
-            <Route path="/features" component={Features} />
-            <Route path="/pricing" component={Pricing} />
-            <Route path="/about" component={About} />
-            <Route path="/contact" component={Contact} />
-            <Route path="/students" component={Students} />
-            <Route path="/schools" component={Schools} />
+            {/* School Marketing Pages (Public) */}
+            <Route path="/" component={SchoolHome} />
+            <Route path="/features" component={SchoolFeatures} />
+            <Route path="/pricing" component={SchoolPricing} />
+            <Route path="/about" component={SchoolAbout} />
+            <Route path="/contact" component={SchoolContact} />
             <Route path="/terms" component={TermsPage} />
             <Route path="/privacy" component={PrivacyPage} />
 
@@ -190,7 +184,7 @@ function Router() {
               </ProtectedRoute>
             </Route>
 
-            {/* App Pages (Protected - require auth) — version-aware */}
+            {/* Dashboard — version-aware with admin view mode */}
             <Route path="/dashboard">
               <ProtectedRoute>
                 <ResolvedDashboard />
@@ -256,13 +250,6 @@ function Router() {
               </ProtectedRoute>
             </Route>
 
-            {/* Pedigree */}
-            <Route path="/pedigree">
-              <ProtectedRoute>
-                <Pedigree />
-              </ProtectedRoute>
-            </Route>
-
             {/* Training */}
             <Route path="/training">
               <ProtectedRoute>
@@ -275,21 +262,7 @@ function Router() {
               </ProtectedRoute>
             </Route>
 
-            {/* Breeding Management */}
-            <Route path="/breeding">
-              <StableRoute>
-                <BreedingManagement />
-              </StableRoute>
-            </Route>
-
-            {/* Lesson Scheduling */}
-            <Route path="/lessons">
-              <StableRoute>
-                <LessonScheduling />
-              </StableRoute>
-            </Route>
-
-            {/* Feeding plans */}
+            {/* Feeding & Nutrition */}
             <Route path="/feeding">
               <ProtectedRoute>
                 <Feeding />
@@ -311,6 +284,92 @@ function Router() {
               <ProtectedRoute>
                 <Weather />
               </ProtectedRoute>
+            </Route>
+
+            {/* Documents */}
+            <Route path="/documents">
+              <ProtectedRoute>
+                <Documents />
+              </ProtectedRoute>
+            </Route>
+
+            {/* Tasks */}
+            <Route path="/tasks">
+              <ProtectedRoute>
+                <Tasks />
+              </ProtectedRoute>
+            </Route>
+
+            {/* Contacts */}
+            <Route path="/contacts">
+              <ProtectedRoute>
+                <Contacts />
+              </ProtectedRoute>
+            </Route>
+
+            {/* Calendar & Appointments */}
+            <Route path="/calendar">
+              <ProtectedRoute>
+                <Calendar />
+              </ProtectedRoute>
+            </Route>
+            <Route path="/appointments">
+              <ProtectedRoute>
+                <Appointments />
+              </ProtectedRoute>
+            </Route>
+
+            {/* Reports & Analytics */}
+            <Route path="/reports">
+              <ProtectedRoute>
+                <Reports />
+              </ProtectedRoute>
+            </Route>
+            <Route path="/analytics">
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            </Route>
+
+            {/* Stable Management */}
+            <Route path="/stable">
+              <StableRoute>
+                <Stable />
+              </StableRoute>
+            </Route>
+            <Route path="/stable-dashboard">
+              <StableRoute>
+                <ActiveStableDashboard />
+              </StableRoute>
+            </Route>
+            <Route path="/staff">
+              <StableRoute>
+                <StableStaff />
+              </StableRoute>
+            </Route>
+            <Route path="/stable-setup">
+              <StableRoute>
+                <StableSetup />
+              </StableRoute>
+            </Route>
+            <Route path="/stable-reports">
+              <StableRoute>
+                <StableReports />
+              </StableRoute>
+            </Route>
+
+            {/* Breeding Management */}
+            <Route path="/breeding">
+              <StableRoute>
+                <BreedingManagement />
+              </StableRoute>
+            </Route>
+
+            {/* Lesson Scheduling */}
+            <Route path="/lessons">
+              <StableRoute>
+                <LessonScheduling />
+              </StableRoute>
             </Route>
 
             {/* Feed Cost Tracking */}
@@ -341,95 +400,6 @@ function Router() {
               </ProtectedRoute>
             </Route>
 
-            {/* Documents */}
-            <Route path="/documents">
-              <ProtectedRoute>
-                <Documents />
-              </ProtectedRoute>
-            </Route>
-
-            {/* Tasks */}
-            <Route path="/tasks">
-              <ProtectedRoute>
-                <Tasks />
-              </ProtectedRoute>
-            </Route>
-
-            {/* Contacts */}
-            <Route path="/contacts">
-              <ProtectedRoute>
-                <Contacts />
-              </ProtectedRoute>
-            </Route>
-
-            {/* Stable Management */}
-            <Route path="/stable">
-              <StableRoute>
-                <Stable />
-              </StableRoute>
-            </Route>
-
-            {/* Stable Dashboard (Stable plan users) — version-aware */}
-            <Route path="/stable-dashboard">
-              <StableRoute>
-                <ActiveStableDashboard />
-              </StableRoute>
-            </Route>
-
-            {/* Stable Staff Management */}
-            <Route path="/staff">
-              <StableRoute>
-                <StableStaff />
-              </StableRoute>
-            </Route>
-
-            {/* Stable Setup */}
-            <Route path="/stable-setup">
-              <StableRoute>
-                <StableSetup />
-              </StableRoute>
-            </Route>
-
-            {/* Stable Reports */}
-            <Route path="/stable-reports">
-              <StableRoute>
-                <StableReports />
-              </StableRoute>
-            </Route>
-
-            {/* Messaging */}
-            <Route path="/messages">
-              <ProtectedRoute>
-                <Messages />
-              </ProtectedRoute>
-            </Route>
-
-            {/* Analytics */}
-            <Route path="/analytics">
-              <ProtectedRoute>
-                <Analytics />
-              </ProtectedRoute>
-            </Route>
-
-            {/* Reports */}
-            <Route path="/reports">
-              <ProtectedRoute>
-                <Reports />
-              </ProtectedRoute>
-            </Route>
-
-            {/* Calendar */}
-            <Route path="/calendar">
-              <ProtectedRoute>
-                <Calendar />
-              </ProtectedRoute>
-            </Route>
-            <Route path="/appointments">
-              <ProtectedRoute>
-                <Appointments />
-              </ProtectedRoute>
-            </Route>
-
             {/* Tags */}
             <Route path="/tags">
               <ProtectedRoute>
@@ -451,6 +421,13 @@ function Router() {
               </ProtectedRoute>
             </Route>
 
+            {/* Messaging */}
+            <Route path="/messages">
+              <ProtectedRoute>
+                <Messages />
+              </ProtectedRoute>
+            </Route>
+
             {/* AI Chat */}
             <Route path="/ai-chat">
               <ProtectedRoute>
@@ -458,7 +435,7 @@ function Router() {
               </ProtectedRoute>
             </Route>
 
-            {/* Client Portal — authenticated read-only overview of your horses */}
+            {/* Client Portal */}
             <Route path="/client-portal">
               <ProtectedRoute>
                 <ClientPortal />
@@ -482,7 +459,7 @@ function Router() {
             {/* Public horse passport — accessible without login (QR scan) */}
             <Route path="/passport/:token" component={PassportView} />
 
-            {/* Stable team invite acceptance — handles /stable-invite?token=... */}
+            {/* Stable team invite acceptance */}
             <Route path="/stable-invite" component={StableInviteAccept} />
 
             {/* 404 */}
@@ -495,14 +472,14 @@ function Router() {
   );
 }
 
-function App() {
+export default function SchoolApp() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <AdminViewProvider>
           <TooltipProvider>
             <Toaster />
-            <Router />
+            <SchoolRouter />
             <SalesChatWidget />
             <PWAInstallPrompt />
             <CookieConsent />
@@ -512,5 +489,3 @@ function App() {
     </ErrorBoundary>
   );
 }
-
-export default App;

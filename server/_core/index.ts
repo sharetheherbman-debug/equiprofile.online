@@ -54,6 +54,7 @@ async function startServer() {
         "http://localhost:5173",
         "https://equiprofile.online",
         "https://www.equiprofile.online",
+        "https://school.equiprofile.online",
       ];
 
   app.use(
@@ -763,7 +764,7 @@ async function startServer() {
   });
   app.post("/api/contact", contactLimiter, async (req, res) => {
     try {
-      const { name, email: fromEmail, subject, message } = req.body;
+      const { name, email: fromEmail, subject, message, source } = req.body;
 
       if (!name || !fromEmail || !subject || !message) {
         return res.status(400).json({
@@ -788,10 +789,18 @@ async function startServer() {
         return res.status(400).json({ error: "Message too long" });
       }
 
+      // Source tagging — differentiate management vs school enquiries
+      const contactSource = source === "school" ? "school" : "management";
+      const subjectPrefix =
+        contactSource === "school"
+          ? "[School Enquiry] "
+          : "[Management Enquiry] ";
+      const taggedSubject = subjectPrefix + subject;
+
       await email.sendContactEmail({
         name,
         email: fromEmail,
-        subject,
+        subject: taggedSubject,
         message,
       });
 
@@ -805,7 +814,7 @@ async function startServer() {
           .slice(0, 64);
         dbConn
           .insert(contactSubmissions)
-          .values({ name, email: fromEmail, subject, message, ipHash })
+          .values({ name, email: fromEmail, subject: taggedSubject, message, ipHash })
           .catch((err: Error) =>
             console.warn("[Contact] DB insert failed:", err.message),
           );

@@ -22,11 +22,9 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { PageTransition } from "@/components/PageTransition";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { AuthLayout } from "@/components/AuthLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 
@@ -252,8 +250,8 @@ export default function Register() {
   if (verificationSent) {
     return (
       <>
-        <Navbar alwaysDark />
-        <PageTransition>
+        <AuthLayout>
+        
           <AuthSplitLayout>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -314,16 +312,16 @@ export default function Register() {
               </Card>
             </motion.div>
           </AuthSplitLayout>
-        </PageTransition>
-        <Footer />
+        
+        </AuthLayout>
       </>
     );
   }
 
   return (
     <>
-      <Navbar alwaysDark />
-      <PageTransition>
+      <AuthLayout>
+      
         <AuthSplitLayout>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -668,8 +666,8 @@ export default function Register() {
             </p>
           </motion.div>
         </AuthSplitLayout>
-      </PageTransition>
-      <Footer />
+      
+      </AuthLayout>
     </>
   );
 }

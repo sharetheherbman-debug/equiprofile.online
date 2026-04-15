@@ -19,11 +19,9 @@ import {
   Lock,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { PageTransition } from "@/components/PageTransition";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { AuthLayout } from "@/components/AuthLayout";
 import { motion, AnimatePresence } from "framer-motion";
 
 /**
@@ -174,8 +172,7 @@ export default function Login() {
 
   return (
     <>
-      <Navbar alwaysDark />
-      <PageTransition>
+      <AuthLayout>
         <AuthSplitLayout>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -429,8 +426,7 @@ export default function Login() {
             </p>
           </motion.div>
         </AuthSplitLayout>
-      </PageTransition>
-      <Footer />
+      </AuthLayout>
     </>
   );
 }

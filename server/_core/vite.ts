@@ -1,3 +1,18 @@
+/**
+ * Frontend Serving — True 2-Frontend Architecture
+ *
+ * Production:
+ *   dist/public/management/  →  served on equiprofile.online
+ *   dist/public/school/      →  served on school.equiprofile.online
+ *
+ * Each is a full SPA with its own index.html, assets, and routes.
+ * Static assets (hashed JS/CSS) are shared via the same /assets/ prefix
+ * since both builds output to sub-dirs of dist/public/.
+ *
+ * Development:
+ *   Uses Vite dev server for the site set by VITE_SITE env var
+ *   (defaults to "management"). Switch with: VITE_SITE=school npm run dev
+ */
 import express, { type Express } from "express";
 import fs from "fs";
 import { type Server } from "http";
@@ -5,6 +20,34 @@ import { nanoid } from "nanoid";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
+
+// ── Hostname detection ─────────────────────────────────────────────────────
+
+/** Patterns that identify the school subdomain */
+const SCHOOL_HOSTNAME_PATTERNS = [
+  "school.equiprofile.online",
+  "school.localhost",
+  "school.127.0.0.1",
+];
+
+/**
+ * Determine which frontend to serve based on the request hostname.
+ * Returns "school" for school.equiprofile.online, "management" for everything else.
+ */
+function getSiteModeFromRequest(hostname: string): "management" | "school" {
+  const lower = hostname.toLowerCase().split(":")[0]; // strip port
+  if (
+    lower.startsWith("school.") ||
+    SCHOOL_HOSTNAME_PATTERNS.some(
+      (p) => lower === p || lower.startsWith(p + ":"),
+    )
+  ) {
+    return "school";
+  }
+  return "management";
+}
+
+// ── Development (Vite dev server) ──────────────────────────────────────────
 
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
@@ -21,9 +64,9 @@ export async function setupVite(app: Express, server: Server) {
   });
 
   app.use(vite.middlewares);
-  // SPA fallback for development - serve index.html for non-static routes
+
+  // SPA fallback for development — serve index.html for non-static routes
   app.use((req, res, next) => {
-    // Skip if it's an API route, tRPC route, or static asset
     if (
       req.originalUrl.startsWith("/api/") ||
       req.originalUrl.startsWith("/trpc") ||
@@ -35,25 +78,25 @@ export async function setupVite(app: Express, server: Server) {
 
     const url = req.originalUrl;
 
+    // In dev, serve the site matching VITE_SITE (defaults to management)
+    const devSite = process.env.VITE_SITE || "management";
+    const clientTemplate = path.resolve(
+      import.meta.dirname,
+      "../..",
+      "client",
+      devSite,
+      "index.html",
+    );
+
     (async () => {
       try {
-        const clientTemplate = path.resolve(
-          import.meta.dirname,
-          "../..",
-          "client",
-          "index.html",
-        );
-
-        // always reload the index.html file from disk incase it changes
         let template = await fs.promises.readFile(clientTemplate, "utf-8");
         template = template.replace(
-          `src="/src/main.tsx"`,
-          `src="/src/main.tsx?v=${nanoid()}"`,
+          `src="./src/main.tsx"`,
+          `src="./src/main.tsx?v=${nanoid()}"`,
         );
 
-        // Transform first so Vite plugins can inject their own inline <script> blocks.
         const rawPage = await vite.transformIndexHtml(url, template);
-
         res.status(200).set({ "Content-Type": "text/html" }).end(rawPage);
       } catch (e) {
         vite.ssrFixStacktrace(e as Error);
@@ -63,18 +106,29 @@ export async function setupVite(app: Express, server: Server) {
   });
 }
 
+// ── Production (static files) ──────────────────────────────────────────────
+
 export function serveStatic(app: Express) {
-  const distPath =
+  const baseDist =
     process.env.NODE_ENV === "development"
       ? path.resolve(import.meta.dirname, "../..", "dist", "public")
       : path.resolve(import.meta.dirname, "public");
-  if (!fs.existsSync(distPath)) {
-    console.error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
-    );
+
+  const mgmtDist = path.resolve(baseDist, "management");
+  const schoolDist = path.resolve(baseDist, "school");
+
+  // Verify both frontend builds exist
+  for (const [name, dir] of [
+    ["management", mgmtDist],
+    ["school", schoolDist],
+  ] as const) {
+    if (!fs.existsSync(dir)) {
+      console.warn(
+        `⚠️  ${name} frontend build not found at ${dir} — run "npm run build:${name}"`,
+      );
+    }
   }
 
-  // File extensions that should NOT fall through to SPA
   const STATIC_FILE_EXTENSIONS = [
     ".js",
     ".css",
@@ -92,11 +146,33 @@ export function serveStatic(app: Express) {
     ".webm",
   ];
 
-  // Serve static files with explicit MIME types and cache headers.
-  // index:false prevents express.static from auto-serving dist/public/index.html
-  // for the "/" route — all HTML delivery goes through the SPA fallback below.
-  //
-  // Redirect direct requests to /index.html so they also go through the SPA fallback.
+  const setStaticHeaders = (res: express.Response, filePath: string) => {
+    if (filePath.endsWith(".js")) {
+      res.setHeader("Content-Type", "application/javascript");
+    } else if (filePath.endsWith(".css")) {
+      res.setHeader("Content-Type", "text/css");
+    } else if (filePath.endsWith(".json")) {
+      res.setHeader("Content-Type", "application/json");
+    } else if (filePath.endsWith(".woff")) {
+      res.setHeader("Content-Type", "font/woff");
+    } else if (filePath.endsWith(".woff2")) {
+      res.setHeader("Content-Type", "font/woff2");
+    } else if (filePath.endsWith(".svg")) {
+      res.setHeader("Content-Type", "image/svg+xml");
+    }
+
+    if (filePath.endsWith("service-worker.js")) {
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
+      res.setHeader("Content-Type", "application/javascript");
+      res.setHeader("Service-Worker-Allowed", "/");
+    } else if (filePath.includes("/assets/")) {
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    }
+  };
+
+  // Redirect /index.html → / so it goes through the SPA fallback
   app.use((req, _res, next) => {
     if (req.path === "/index.html") {
       req.url = "/";
@@ -104,44 +180,17 @@ export function serveStatic(app: Express) {
     next();
   });
 
+  // Serve static assets from BOTH frontend builds.
+  // Since asset filenames are hashed, there is no risk of collision.
+  // We serve management first, then school — the first match wins.
   app.use(
-    express.static(distPath, {
-      index: false,
-      setHeaders: (res, filePath) => {
-        // Ensure correct MIME types for assets
-        if (filePath.endsWith(".js")) {
-          res.setHeader("Content-Type", "application/javascript");
-        } else if (filePath.endsWith(".css")) {
-          res.setHeader("Content-Type", "text/css");
-        } else if (filePath.endsWith(".json")) {
-          res.setHeader("Content-Type", "application/json");
-        } else if (filePath.endsWith(".woff")) {
-          res.setHeader("Content-Type", "font/woff");
-        } else if (filePath.endsWith(".woff2")) {
-          res.setHeader("Content-Type", "font/woff2");
-        } else if (filePath.endsWith(".svg")) {
-          res.setHeader("Content-Type", "image/svg+xml");
-        }
-
-        // Cache control headers
-        // service-worker.js must not be cached (stale SW breaks offline functionality)
-        if (filePath.endsWith("service-worker.js")) {
-          res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-          res.setHeader("Pragma", "no-cache");
-          res.setHeader("Expires", "0");
-          res.setHeader("Content-Type", "application/javascript");
-          res.setHeader("Service-Worker-Allowed", "/");
-        } else if (filePath.includes("/assets/")) {
-          // Hashed assets: aggressive caching (immutable)
-          // Note: filePath is resolved by express.static, so this safely matches /assets/ directory
-          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-        }
-      },
-    }),
+    express.static(mgmtDist, { index: false, setHeaders: setStaticHeaders }),
+  );
+  app.use(
+    express.static(schoolDist, { index: false, setHeaders: setStaticHeaders }),
   );
 
-  // Known scanner/exploit probe paths — return 404 immediately so they are
-  // never served the SPA shell (which would return 200 and mask the attack).
+  // Known scanner / exploit probe paths — 404 immediately
   const PROBE_PATH_PREFIXES = [
     "/.env",
     "/.git",
@@ -163,11 +212,9 @@ export function serveStatic(app: Express) {
     "/xmlrpc.php",
   ];
 
-  // SPA fallback - serve index.html for all navigation requests.
-  // NOTE: express.static above is configured with index:false so directory
-  // requests (e.g. "/") fall through to here.
+  // SPA fallback — hostname-aware: serves the correct index.html per domain
   app.use((req, res, next) => {
-    // Skip if it's an API or tRPC route — must never serve HTML for these
+    // Skip API / tRPC routes
     if (
       req.originalUrl.startsWith("/api/") ||
       req.originalUrl.startsWith("/trpc")
@@ -175,28 +222,37 @@ export function serveStatic(app: Express) {
       return next();
     }
 
-    // Return 404 for known scanner / exploit probe paths so they are never
-    // served the SPA shell (which would respond 200 and mislead security tools).
+    // Block probes
     const lowerPath = req.path.toLowerCase();
     if (PROBE_PATH_PREFIXES.some((p) => lowerPath.startsWith(p))) {
       return res.status(404).send("Not Found");
     }
 
-    // Don't fallback to index.html for asset paths or files with extensions
+    // Don't serve index.html for real asset requests
     const isStaticFile =
       req.originalUrl.startsWith("/assets/") ||
       STATIC_FILE_EXTENSIONS.some((ext) => req.originalUrl.endsWith(ext));
-
     if (isStaticFile) {
       return res.status(404).send("Not Found");
     }
 
-    // index.html must never be cached so users always get the latest version
+    // Determine which frontend to serve based on hostname
+    const siteMode = getSiteModeFromRequest(req.hostname || "");
+    const siteDistPath = siteMode === "school" ? schoolDist : mgmtDist;
+    const indexPath = path.resolve(siteDistPath, "index.html");
+
+    // No-cache for HTML shell (users always get latest)
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
     res.setHeader("Pragma", "no-cache");
     res.setHeader("Expires", "0");
 
-    const indexPath = path.resolve(distPath, "index.html");
+    if (!fs.existsSync(indexPath)) {
+      console.error(
+        `[vite.ts] index.html not found for ${siteMode}: ${indexPath}`,
+      );
+      return res.status(500).send("Frontend build not found");
+    }
+
     res.sendFile(indexPath);
   });
 }
