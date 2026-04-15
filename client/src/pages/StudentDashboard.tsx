@@ -620,8 +620,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
               <button
                 key={action.label}
                 onClick={() => onNavigate(action.view)}
-                className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl border transition-all duration-200 text-left group w-full"
-                style={{ backgroundColor: STUDENT_CARD, borderColor: STUDENT_BORDER }}
+                className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl border transition-all duration-200 text-left group w-full bg-white dark:bg-[#1a2435] border-gray-200 dark:border-gray-700 shadow-sm"
               >
                 <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform" style={{ backgroundColor: `${action.color}15` }}>
                   <span style={{ color: action.color }}><ActionIcon className="w-4 h-4 sm:w-5 sm:h-5" /></span>
@@ -1237,8 +1236,7 @@ function StudyHubView() {
                   <div key={topic.id}>
                     <button
                       onClick={() => setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
-                      className="w-full text-left rounded-xl border p-4 transition-all hover:border-[#2e6da4]/30"
-                      style={{ backgroundColor: STUDENT_CARD, borderColor: STUDENT_BORDER }}
+                      className="w-full text-left rounded-xl border p-4 transition-all hover:border-[#2e6da4]/30 bg-white dark:bg-[#1a2435] border-gray-200 dark:border-gray-700 shadow-sm"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -1255,8 +1253,7 @@ function StudyHubView() {
                     </button>
                     {expandedTopic === topic.id && topic.description && (
                       <div
-                        className="mt-1 rounded-xl border p-4 text-sm text-gray-600"
-                        style={{ backgroundColor: STUDENT_CARD, borderColor: STUDENT_BORDER }}
+                        className="mt-1 rounded-xl border p-4 text-sm text-gray-600 bg-white dark:bg-[#1a2435] border-gray-200 dark:border-gray-700 shadow-sm"
                       >
                         <p className="text-sm text-gray-600 leading-relaxed">{topic.description}</p>
                         <div className="mt-3 pt-3 border-t border-gray-200">
@@ -1350,8 +1347,7 @@ function AITutorView({ initialQuestion, onQuestionConsumed }: { initialQuestion?
                 key={p.label}
                 onClick={() => handleAsk(p.text)}
                 disabled={askMut.isPending}
-                className="flex items-center gap-2 p-3 rounded-xl border text-left transition-all hover:border-[#2e6da4]/40 hover:bg-blue-50 disabled:opacity-50"
-                style={{ borderColor: STUDENT_BORDER, backgroundColor: STUDENT_CARD }}
+                className="flex items-center gap-2 p-3 rounded-xl border text-left transition-all hover:border-[#2e6da4]/40 hover:bg-blue-50 disabled:opacity-50 bg-white dark:bg-[#1a2435] border-gray-200 dark:border-gray-700 shadow-sm"
               >
                 <PIcon className="w-4 h-4 text-[#2e6da4] shrink-0" />
                 <span className="text-xs text-gray-600 font-medium">{p.label}</span>
@@ -2001,7 +1997,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
         </button>
 
         {/* Lesson header */}
-        <div className="rounded-xl p-6" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+        <div className="rounded-xl p-6 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -2025,7 +2021,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
 
         {/* Objectives */}
         {objectives.length > 0 && (
-          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
             <h3 className="text-sm font-semibold text-[#2e6da4] uppercase tracking-wider mb-3 flex items-center gap-2">
               <Target className="w-4 h-4" /> Learning Objectives
             </h3>
@@ -2056,7 +2052,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
         )}
 
         {/* Main content */}
-        <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+        <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
           <div className="prose prose-slate prose-sm max-w-none text-gray-600 whitespace-pre-line leading-relaxed">
             {lessonDetail.content}
           </div>
@@ -2064,7 +2060,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
 
         {/* Key points */}
         {keyPoints.length > 0 && (
-          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
             <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wider mb-3 flex items-center gap-2">
               <Star className="w-4 h-4" /> Key Points
             </h3>
@@ -2090,7 +2086,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
 
         {/* Practical application */}
         {lessonDetail.practicalApplication && (
-          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
             <h3 className="text-sm font-semibold text-cyan-400 uppercase tracking-wider mb-2 flex items-center gap-2">
               <Lightbulb className="w-4 h-4" /> Practical Application
             </h3>
@@ -2100,7 +2096,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
 
         {/* Common mistakes */}
         {commonMistakes.length > 0 && (
-          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
             <h3 className="text-sm font-semibold text-rose-600 uppercase tracking-wider mb-3 flex items-center gap-2">
               <AlertCircle className="w-4 h-4" /> Common Mistakes
             </h3>
@@ -2116,7 +2112,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
 
         {/* Knowledge check */}
         {checks.length > 0 && (
-          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold text-[#2e6da4] uppercase tracking-wider flex items-center gap-2">
                 <Brain className="w-4 h-4" /> Knowledge Check
@@ -2183,7 +2179,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
 
         {/* AI Tutor integration — lesson-aware prompts */}
         {aiPrompts.length > 0 && (
-          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
             <h3 className="text-sm font-semibold text-violet-600 uppercase tracking-wider mb-3 flex items-center gap-2">
               <Brain className="w-4 h-4" /> Ask the AI Tutor
             </h3>
@@ -2210,8 +2206,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
             {prevLesson ? (
               <button
                 onClick={() => goToLesson(prevLesson.slug)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-800 transition-all group"
-                style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-800 transition-all group bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm"
               >
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                 <div className="text-left min-w-0">
@@ -2266,7 +2261,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
             className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 transition-colors">
             <ChevronLeft className="w-4 h-4" /> All Pathways
           </button>
-          <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+          <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
             <h2 className="text-lg font-bold text-gray-800">{pathwayObj.title}</h2>
             <p className="text-sm text-gray-500 mt-1">{pathwayObj.description}</p>
             <div className="flex items-center gap-4 mt-3">
@@ -2281,7 +2276,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
           </div>
         </div>
       ) : (
-        <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+        <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
           <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
             <Library className="w-5 h-5 text-[#2e6da4]" /> Learning Pathways
           </h2>
@@ -2305,7 +2300,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
 
       {/* Assigned lessons panel */}
       {!selectedPathway && !selectedLesson && (assignedLessons ?? []).length > 0 && (
-        <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+        <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wider text-[#2e6da4] mb-3 flex items-center gap-2">
             <BookOpen className="w-3.5 h-3.5" /> Assigned to You
           </p>
@@ -2371,8 +2366,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
               const IconComp = PATHWAY_ICON_MAP[pw.iconName ?? ""] ?? Library;
               return (
                 <button key={pw.slug} onClick={() => setSelectedPathway(pw.slug)}
-                  className="text-left rounded-xl p-5 transition-all hover:scale-[1.01] hover:border-[#2e6da4]/40"
-                  style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+                  className="text-left rounded-xl p-5 transition-all hover:scale-[1.01] hover:border-[#2e6da4]/40 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center">
                       <IconComp className="w-4 h-4 text-[#2e6da4]" />
@@ -2423,8 +2417,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
                   disabled={isLocked}
                   className={`w-full text-left rounded-xl p-4 flex items-center gap-4 transition-all ${
                     isLocked ? "opacity-50 cursor-not-allowed" : "hover:border-[#2e6da4]/40"
-                  }`}
-                  style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+                  } bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm`}>
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                     isLocked ? "bg-gray-100" : isComplete ? "bg-emerald-50" : "bg-white"
                   }`}>
@@ -2469,7 +2462,7 @@ function PracticeView() {
     <div className="space-y-4">
       <SectionHeading icon={Zap} title="Practice" />
       {/* Tab bar */}
-      <div className="flex gap-1 flex-wrap rounded-xl p-1" style={{ backgroundColor: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+      <div className="flex gap-1 flex-wrap rounded-xl p-1 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
         {tabs.map((t) => {
           const Icon = t.icon;
           const isActive = tab === t.id;
@@ -2737,7 +2730,7 @@ function StudentSettingsView({ onNavigate }: { onNavigate: (v: ActiveView) => vo
   return (
     <div className="space-y-6 max-w-xl">
       {/* Profile */}
-      <div className="rounded-xl p-5 space-y-4" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+      <div className="rounded-xl p-5 space-y-4 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
         <h3 className="text-sm font-semibold text-[#2e6da4] uppercase tracking-wider">Profile</h3>
         <div className="space-y-3">
           <div>
@@ -2768,7 +2761,7 @@ function StudentSettingsView({ onNavigate }: { onNavigate: (v: ActiveView) => vo
       </div>
 
       {/* Password */}
-      <div className="rounded-xl p-5 space-y-3" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+      <div className="rounded-xl p-5 space-y-3 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
         <h3 className="text-sm font-semibold text-[#2e6da4] uppercase tracking-wider">Security</h3>
         <p className="text-xs text-gray-500">Need to change your password? Use the account security settings.</p>
         <a
@@ -2780,7 +2773,7 @@ function StudentSettingsView({ onNavigate }: { onNavigate: (v: ActiveView) => vo
       </div>
 
       {/* Billing */}
-      <div className="rounded-xl p-5 space-y-3" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+      <div className="rounded-xl p-5 space-y-3 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
         <h3 className="text-sm font-semibold text-[#2e6da4] uppercase tracking-wider">Subscription & Billing</h3>
         <p className="text-xs text-gray-500">Manage your student plan subscription.</p>
         <a
