@@ -743,7 +743,7 @@ function VirtualHorseView() {
       <SCard>
         <div className="flex items-center gap-4 mb-5">
           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-            <Sparkles className="w-7 h-7 text-slate-800" />
+            <Sparkles className="w-7 h-7 text-white" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-800">{vHorse.name}</h3>
@@ -2045,7 +2045,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
             </p>
             <div className="flex flex-wrap gap-2">
               {linkedCompetencies.map((key) => (
-                <span key={key} className="text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-300 border border-emerald-200 font-medium capitalize">
+                <span key={key} className="text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium capitalize">
                   {key.replace(/_/g, " ")}
                 </span>
               ))}
