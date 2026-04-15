@@ -10,10 +10,10 @@ import { toast } from "sonner";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
+  visible: (i: unknown) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, delay: i * 0.1 },
+    transition: { duration: 0.5, delay: (typeof i === "number" ? i : 0) * 0.1 },
   }),
 };
 

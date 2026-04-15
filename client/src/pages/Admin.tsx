@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -118,9 +118,26 @@ function getUserPlanTier(user: { preferences?: string | null }): "standard" | "s
   }
 }
 
+type AdminSection = "users" | "overdue" | "churn" | "leads" | "campaigns" | "whatsapp" | "system" | "settings" | "analytics" | "deleted" | "portals";
+
+const adminSections: { value: AdminSection; label: string; icon: typeof Users; group: string }[] = [
+  { value: "users", label: "Users", icon: Users, group: "People" },
+  { value: "overdue", label: "Overdue", icon: AlertCircle, group: "People" },
+  { value: "churn", label: "Churn", icon: Activity, group: "People" },
+  { value: "leads", label: "Leads", icon: MessageSquare, group: "Communications" },
+  { value: "campaigns", label: "Campaigns", icon: Mail, group: "Communications" },
+  { value: "whatsapp", label: "WhatsApp", icon: Smartphone, group: "Communications" },
+  { value: "system", label: "System", icon: Server, group: "System" },
+  { value: "settings", label: "Settings", icon: Settings, group: "System" },
+  { value: "analytics", label: "Analytics", icon: BarChart3, group: "System" },
+  { value: "deleted", label: "Deleted", icon: Trash2, group: "Other" },
+  { value: "portals", label: "Portals", icon: Eye, group: "Other" },
+];
+
 function AdminContent() {
   const [, navigate] = useLocation();
   const { viewMode, setViewMode } = useAdminViewMode();
+  const [activeSection, setActiveSection] = useState<AdminSection>("users");
   const [searchQuery, setSearchQuery] = useState("");
   const [suspendReason, setSuspendReason] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -500,74 +517,52 @@ function AdminContent() {
         </Card>
       </div>
 
-      {/* Main Tabs — clean top nav with grouped sections */}
-      <Tabs defaultValue="users" className="space-y-4">
-        <div className="bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-1.5 overflow-x-auto scrollbar-hide">
-          <TabsList className="flex flex-nowrap gap-0.5 bg-transparent w-max min-w-full h-auto p-0">
-            {/* ── People ── */}
-            <div className="flex items-center gap-0.5 pr-2 mr-2 border-r border-gray-200 dark:border-gray-700">
-              <TabsTrigger value="users" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <Users className="w-3.5 h-3.5" />
-                <span>Users</span>
-              </TabsTrigger>
-              <TabsTrigger value="overdue" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <AlertCircle className="w-3.5 h-3.5" />
-                <span>Overdue</span>
-              </TabsTrigger>
-              <TabsTrigger value="churn" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <Activity className="w-3.5 h-3.5" />
-                <span>Churn</span>
-              </TabsTrigger>
-            </div>
-
-            {/* ── Comms ── */}
-            <div className="flex items-center gap-0.5 pr-2 mr-2 border-r border-gray-200 dark:border-gray-700">
-              <TabsTrigger value="leads" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>Leads</span>
-              </TabsTrigger>
-              <TabsTrigger value="campaigns" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <Mail className="w-3.5 h-3.5" />
-                <span>Campaigns</span>
-              </TabsTrigger>
-              <TabsTrigger value="whatsapp" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <Smartphone className="w-3.5 h-3.5" />
-                <span>WhatsApp</span>
-              </TabsTrigger>
-            </div>
-
-            {/* ── System ── */}
-            <div className="flex items-center gap-0.5 pr-2 mr-2 border-r border-gray-200 dark:border-gray-700">
-              <TabsTrigger value="system" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <Server className="w-3.5 h-3.5" />
-                <span>System</span>
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <Settings className="w-3.5 h-3.5" />
-                <span>Settings</span>
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <BarChart3 className="w-3.5 h-3.5" />
-                <span>Analytics</span>
-              </TabsTrigger>
-            </div>
-
-            {/* ── Other ── */}
-            <div className="flex items-center gap-0.5">
-              <TabsTrigger value="deleted" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Deleted</span>
-              </TabsTrigger>
-              <TabsTrigger value="portals" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
-                <Eye className="w-3.5 h-3.5" />
-                <span>Portals</span>
-              </TabsTrigger>
-            </div>
-          </TabsList>
+      {/* Main layout — sidebar nav + content */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Sidebar nav (desktop) */}
+        <div className="hidden lg:block w-52 shrink-0">
+          <div className="sticky top-0 space-y-1">
+            {(["People", "Communications", "System", "Other"] as const).map((group) => (
+              <div key={group}>
+                <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 mb-2 mt-4 first:mt-0">{group}</p>
+                {adminSections.filter((s) => s.group === group).map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <button
+                      key={s.value}
+                      onClick={() => setActiveSection(s.value)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-left ${
+                        activeSection === s.value
+                          ? "bg-[#2e6da4]/10 text-[#2e6da4] dark:bg-[#2e6da4]/20 dark:text-[#5a9fd4]"
+                          : "text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{s.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Users Tab */}
-        <TabsContent value="users">
+        {/* Mobile section select */}
+        <div className="lg:hidden w-full">
+          <select
+            value={activeSection}
+            onChange={(e) => setActiveSection(e.target.value as AdminSection)}
+            className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-card px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2e6da4]/30"
+          >
+            {adminSections.map((s) => (
+              <option key={s.value} value={s.value}>{s.group} — {s.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Content area */}
+        <div className="flex-1 min-w-0 space-y-4">
+          {activeSection === "users" && (<>
           {/* User Segmentation — executive summary */}
           {segmentation && (
             <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm mb-4">
@@ -1132,10 +1127,9 @@ function AdminContent() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </>)}
 
-        {/* Overdue Tab */}
-        <TabsContent value="overdue">
+        {activeSection === "overdue" && (<>
           <Card>
             <CardHeader>
               <CardTitle>Overdue Subscriptions</CardTitle>
@@ -1194,10 +1188,9 @@ function AdminContent() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </>)}
 
-        {/* Settings Tab */}
-        <TabsContent value="settings">
+        {activeSection === "settings" && (<>
           <div className="space-y-6">
             {/* AI / LLM Configuration */}
             <Card>
@@ -1486,10 +1479,9 @@ function AdminContent() {
               </Card>
             )}
           </div>
-        </TabsContent>
+        </>)}
 
-        {/* System Health Tab */}
-        <TabsContent value="system" className="space-y-4">
+        {activeSection === "system" && (<>
           <Card>
             <CardHeader>
               <CardTitle>Environment Health</CardTitle>
@@ -1651,10 +1643,9 @@ function AdminContent() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </>)}
 
-        {/* Sales Leads Tab */}
-        <TabsContent value="leads">
+        {activeSection === "leads" && (<>
           <Card>
             <CardHeader>
               <CardTitle>Chat Leads</CardTitle>
@@ -1708,10 +1699,9 @@ function AdminContent() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </>)}
 
-        {/* WhatsApp Configuration Tab */}
-        <TabsContent value="whatsapp">
+        {activeSection === "whatsapp" && (<>
           <div className="space-y-4">
             <Card>
               <CardHeader>
@@ -1908,10 +1898,9 @@ function AdminContent() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </>)}
 
-        {/* Deleted Users Tab */}
-        <TabsContent value="deleted">
+        {activeSection === "deleted" && (<>
           <Card>
             <CardHeader>
               <CardTitle>Deleted Users</CardTitle>
@@ -2016,10 +2005,9 @@ function AdminContent() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </>)}
 
-        {/* Campaigns Tab */}
-        <TabsContent value="campaigns">
+        {activeSection === "campaigns" && (<>
           <Suspense
             fallback={
               <div className="flex justify-center py-12">
@@ -2029,10 +2017,9 @@ function AdminContent() {
           >
             <AdminCampaigns />
           </Suspense>
-        </TabsContent>
+        </>)}
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics">
+        {activeSection === "analytics" && (<>
           <Suspense
             fallback={
               <div className="flex justify-center py-12">
@@ -2042,10 +2029,9 @@ function AdminContent() {
           >
             <AdminAnalytics />
           </Suspense>
-        </TabsContent>
+        </>)}
 
-        {/* Churn Risk Tab */}
-        <TabsContent value="churn">
+        {activeSection === "churn" && (<>
           <div className="space-y-4">
             {/* Trial Expiring Soon */}
             <Card>
@@ -2138,10 +2124,9 @@ function AdminContent() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </>)}
 
-        {/* ── Portal Access ── */}
-        <TabsContent value="portals">
+        {activeSection === "portals" && (<>
           <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
@@ -2171,8 +2156,9 @@ function AdminContent() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </>)}
+        </div>
+      </div>
     </div>
   );
 }

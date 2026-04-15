@@ -77,7 +77,7 @@ function SidebarNav({
     undefined,
     { staleTime: 5 * 60 * 1000 },
   );
-  const isSchoolManaged = subscriptionStatus?.schoolId != null;
+  const isSchoolManaged = (subscriptionStatus as any)?.schoolId != null;
 
   const handleLogout = async () => {
     await logoutMut.mutateAsync();
