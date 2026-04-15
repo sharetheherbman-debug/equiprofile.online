@@ -34,7 +34,7 @@ const studentFeatures = [
     title: "Structured Lesson Pathways",
     description:
       "Follow professional pathways covering horse care foundations, rider skills, stable management, and more. Each lesson includes objectives, knowledge checks, and progress tracking — aligned with BHS and Pony Club syllabi.",
-    color: "from-blue-500 to-indigo-500",
+    color: "from-blue-500 to-[#5b8def]",
   },
   {
     icon: ClipboardList,
@@ -55,7 +55,7 @@ const studentFeatures = [
     title: "Scenario Training",
     description:
       "Practice real-world equine scenarios in a safe environment. Handle simulated emergencies, make feeding decisions, and develop the critical thinking skills that employers and examiners look for.",
-    color: "from-cyan-500 to-teal-500",
+    color: "from-[#7dd3c0] to-teal-500",
   },
   {
     icon: TrendingUp,
@@ -76,7 +76,7 @@ const studentFeatures = [
     title: "Teacher Connection",
     description:
       "Stay connected with your instructor through messaging, receive resource materials (PDFs, images, documents), and get personalised feedback on your lesson progress and riding development.",
-    color: "from-indigo-500 to-violet-500",
+    color: "from-[#5b8def] to-[#3a93b8]",
   },
 ];
 
@@ -113,7 +113,7 @@ export default function Students() {
         imagePosition="center"
       />
 
-      <div className="min-h-screen bg-[#0a1628] bg-gradient-to-br from-[#0a1628] via-[#0f1f45] to-[#0a1628]">
+      <div className="min-h-screen bg-[#0b1726] bg-gradient-to-br from-[#0b1726] via-[#0f1f45] to-[#0b1726]">
         {/* Hero Intro */}
         <section className="container mx-auto px-4 pt-16 pb-12">
           <motion.div
@@ -130,7 +130,7 @@ export default function Students() {
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-serif text-white mb-6 tracking-tight">
               Where Serious Equestrian{" "}
-              <span className="bg-gradient-to-r from-[#8b9cf7] to-cyan-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#8b9cf7] to-[#7dd3c0] bg-clip-text text-transparent">
                 Learning Begins
               </span>
             </h2>
@@ -220,8 +220,8 @@ export default function Students() {
           >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {[
-                { value: "95", label: "Structured Lessons", color: "from-indigo-500 to-violet-500" },
-                { value: "15", label: "Learning Pathways", color: "from-cyan-500 to-blue-500" },
+                { value: "95", label: "Structured Lessons", color: "from-[#5b8def] to-[#3a93b8]" },
+                { value: "15", label: "Learning Pathways", color: "from-[#7dd3c0] to-blue-500" },
                 { value: "4", label: "Progression Levels", color: "from-emerald-500 to-teal-500" },
                 { value: "3/day", label: "Practice Scenarios", color: "from-amber-500 to-orange-500" },
               ].map((stat, idx) => (
@@ -246,7 +246,7 @@ export default function Students() {
           >
             <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4 tracking-tight">
               Tools That Develop{" "}
-              <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                 Real Horsemen
               </span>
             </h2>
@@ -261,7 +261,7 @@ export default function Students() {
             {studentFeatures.map((feature, index) => (
               <motion.article
                 key={index}
-                className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-xl p-7 hover:border-white/25 transition-all duration-300 group"
+                className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-xl p-7 hover:border-white/25 transition-all duration-300 group"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.15 + index * 0.08 }}
@@ -293,7 +293,7 @@ export default function Students() {
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4 tracking-tight">
                 Designed for the{" "}
-                <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                   Whole Equestrian Journey
                 </span>
               </h2>
@@ -326,9 +326,9 @@ export default function Students() {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="bg-[#0f2040]/60 backdrop-blur-md border border-white/10 rounded-xl p-7 text-center hover:border-white/25 transition-colors duration-300"
+                  className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-xl p-7 text-center hover:border-white/25 transition-colors duration-300"
                 >
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 flex items-center justify-center mx-auto mb-5">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mx-auto mb-5">
                     <item.icon className="w-7 h-7 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-white mb-2">
@@ -351,7 +351,7 @@ export default function Students() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.35 }}
           >
-            <div className="bg-gradient-to-br from-[#4f5fd6]/10 to-indigo-500/5 border border-[#4f5fd6]/20 rounded-2xl p-8 md:p-12">
+            <div className="bg-gradient-to-br from-[#4f5fd6]/10 to-[#5b8def]/5 border border-[#4f5fd6]/20 rounded-2xl p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-10 items-start">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#4f5fd6]/15 border border-[#4f5fd6]/30 mb-5">
@@ -411,7 +411,7 @@ export default function Students() {
         </section>
 
         {/* Final CTA */}
-        <section className="container mx-auto px-4 py-16 pb-24">
+        <section className="container mx-auto px-4 py-16 pb-28">
           <motion.div
             className="max-w-4xl mx-auto"
             initial={{ opacity: 0 }}
@@ -419,7 +419,7 @@ export default function Students() {
             transition={{ duration: 0.6, delay: 0.5 }}
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#4f5fd6]/20 to-cyan-500/20 rounded-3xl blur-3xl" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#4f5fd6]/20 to-[#3a93b8]/20 rounded-3xl blur-3xl" />
               <div className="relative backdrop-blur-md bg-white/5 border-2 border-white/20 rounded-3xl p-8 md:p-12 hover:bg-white/10 hover:border-white/30 transition-all duration-500">
                 <div className="text-center">
                   <div className="inline-flex items-center gap-2 mb-6">
@@ -431,7 +431,7 @@ export default function Students() {
                   </div>
                   <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 text-white">
                     Your Equestrian Career{" "}
-                    <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                       Starts Here
                     </span>
                   </h2>
@@ -447,7 +447,7 @@ export default function Students() {
                   <Link href="/register?plan=student">
                     <Button
                       size="lg"
-                      className="text-lg px-10 py-6 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white border-0 shadow-2xl shadow-indigo-500/20 hover:scale-105 transition-transform group"
+                      className="text-lg px-10 py-6 bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#1a5276] hover:to-[#4a7dd4] text-white border-0 shadow-2xl shadow-[#5b8def]/20 hover:scale-105 transition-transform group"
                     >
                       Start Your Free Trial
                       <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
