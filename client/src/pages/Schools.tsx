@@ -86,7 +86,7 @@ function ROICalculator() {
           </div>
           <div className="bg-white/[0.04] rounded-xl p-4 text-center">
             <p className="text-xs text-gray-500 mb-1">Admin Time Saved</p>
-            <p className="text-xl font-bold text-cyan-400">{students * hoursSavedPerStudent}h/mo</p>
+            <p className="text-xl font-bold text-[#7dd3c0]">{students * hoursSavedPerStudent}h/mo</p>
           </div>
           <div className="bg-white/[0.04] rounded-xl p-4 text-center">
             <p className="text-xs text-gray-500 mb-1">Monthly Saving</p>
@@ -112,7 +112,7 @@ export default function Schools() {
     <>
       <Navbar />
       <PageTransition>
-        <div className="min-h-screen bg-[#0a1628]">
+        <div className="min-h-screen bg-[#0b1726]">
           {/* Hero */}
           <PageBanner
             title="For Schools & Organisations"
@@ -122,16 +122,16 @@ export default function Schools() {
           />
 
           {/* Value Prop Section */}
-          <section className="container mx-auto px-4 py-16 md:py-20">
+          <section className="container mx-auto px-4 py-16 md:py-28">
             <ScrollReveal>
               <div className="text-center max-w-3xl mx-auto mb-14">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6">
-                  <Building2 className="w-4 h-4 text-indigo-400" />
-                  <span className="text-sm text-indigo-300 font-medium">Purpose-Built for Schools</span>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#5b8def]/10 border border-[#5b8def]/20 mb-6">
+                  <Building2 className="w-4 h-4 text-[#5b8def]" />
+                  <span className="text-sm text-[#7baaf5] font-medium">Purpose-Built for Schools</span>
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4">
                   Everything Your School Needs in{" "}
-                  <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                     One Platform
                   </span>
                 </h2>
@@ -149,13 +149,13 @@ export default function Schools() {
                   icon: BookOpen,
                   title: "95+ Structured Lessons",
                   desc: "15 learning pathways across 4 levels — from beginner horse care to advanced welfare and nutrition.",
-                  gradient: "from-indigo-500 to-violet-500",
+                  gradient: "from-[#5b8def] to-[#3a93b8]",
                 },
                 {
                   icon: TrendingUp,
                   title: "Progression Tracking",
                   desc: "Level-gated content ensures students master fundamentals before advancing. Teachers see exactly where each student is.",
-                  gradient: "from-cyan-500 to-blue-500",
+                  gradient: "from-[#3a93b8] to-blue-500",
                 },
                 {
                   icon: Zap,
@@ -191,7 +191,7 @@ export default function Schools() {
                   icon: Users,
                   title: "Teacher & Student Management",
                   desc: "Invite teachers and students by email. Manage roles, seats, and access from your school dashboard.",
-                  gradient: "from-blue-500 to-indigo-500",
+                  gradient: "from-blue-500 to-[#5b8def]",
                 },
                 {
                   icon: Shield,
@@ -222,7 +222,7 @@ export default function Schools() {
           </section>
 
           {/* Use Cases */}
-          <section className="bg-[#0d1b30] py-16 md:py-20">
+          <section className="bg-[#0d1b30] py-16 md:py-28">
             <div className="container mx-auto px-4">
               <ScrollReveal>
                 <div className="text-center max-w-2xl mx-auto mb-12">
@@ -242,13 +242,13 @@ export default function Schools() {
                     title: "Riding Schools",
                     desc: "Structured learning for recreational and competitive students. Track progress, set assignments, and keep parents informed.",
                     features: ["Weekly lesson tracking", "Student progress reports", "Parent-friendly dashboards"],
-                    gradient: "from-indigo-600 to-violet-600",
+                    gradient: "from-[#2e86ab] to-violet-600",
                   },
                   {
                     title: "Equestrian Colleges",
                     desc: "Curriculum-aligned pathways with formal assessment support. Export data for accreditation and inspection bodies.",
                     features: ["Curriculum pathways", "Formal assessments", "Exportable records"],
-                    gradient: "from-cyan-600 to-blue-600",
+                    gradient: "from-[#3a93b8] to-blue-600",
                   },
                   {
                     title: "Training Centres",
@@ -284,7 +284,7 @@ export default function Schools() {
           </section>
 
           {/* ROI + Pricing CTA */}
-          <section className="container mx-auto px-4 py-16 md:py-20">
+          <section className="container mx-auto px-4 py-16 md:py-28">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
               {/* ROI Calculator */}
               <ScrollReveal>
@@ -295,8 +295,8 @@ export default function Schools() {
               <ScrollReveal>
                 <div className="bg-[#111827] border border-white/[0.06] rounded-2xl p-6 md:p-8">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-                      <Award className="w-5 h-5 text-indigo-400" />
+                    <div className="w-10 h-10 rounded-xl bg-[#5b8def]/20 flex items-center justify-center">
+                      <Award className="w-5 h-5 text-[#5b8def]" />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">School Pricing</h3>
@@ -326,7 +326,7 @@ export default function Schools() {
 
                   <div className="space-y-3">
                     <Link href="/pricing">
-                      <Button className="w-full bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white h-11 text-sm font-semibold">
+                      <Button className="w-full bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#1a5276] hover:to-[#4a7dd4] text-white h-11 text-sm font-semibold">
                         View Full Pricing <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     </Link>
@@ -342,7 +342,7 @@ export default function Schools() {
           </section>
 
           {/* How It Works */}
-          <section className="bg-[#0d1b30] py-16 md:py-20">
+          <section className="bg-[#0d1b30] py-16 md:py-28">
             <div className="container mx-auto px-4">
               <ScrollReveal>
                 <div className="text-center max-w-2xl mx-auto mb-12">
@@ -370,7 +370,7 @@ export default function Schools() {
                     transition={{ delay: idx * 0.1, duration: 0.4 }}
                     className="text-center"
                   >
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#3a93b8] to-[#5b8def] flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg">
                       {step.step}
                     </div>
                     <h3 className="text-sm font-semibold text-white mb-1">{step.title}</h3>
@@ -382,9 +382,9 @@ export default function Schools() {
           </section>
 
           {/* Final CTA */}
-          <section className="container mx-auto px-4 py-16 md:py-20">
+          <section className="container mx-auto px-4 py-16 md:py-28">
             <div className="max-w-2xl mx-auto text-center">
-              <GraduationCap className="w-12 h-12 text-indigo-400 mx-auto mb-4" />
+              <GraduationCap className="w-12 h-12 text-[#5b8def] mx-auto mb-4" />
               <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4">
                 Ready to Transform Your School?
               </h2>
@@ -394,7 +394,7 @@ export default function Schools() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/register">
-                  <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white px-8 h-12 text-sm font-semibold gap-2">
+                  <Button size="lg" className="bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#1a5276] hover:to-[#4a7dd4] text-white px-8 h-12 text-sm font-semibold gap-2">
                     Start 7-Day Free Trial <ChevronRight className="w-4 h-4" />
                   </Button>
                 </Link>
