@@ -2,22 +2,18 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Check,
   Loader2,
-  Clock,
-  XCircle,
-  Sparkles,
   Crown,
   Building2,
   GraduationCap,
   Users,
   Mail,
+  ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
@@ -25,10 +21,10 @@ import { Link, useLocation } from "wouter";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { MarketingLayout } from "@/components/MarketingLayout";
 import { PageBanner } from "@/components/PageBanner";
-import { DEFAULT_PRICING, SCHOOL_PRICING, FREE_TRIAL_DAYS, penceToGBP } from "@shared/pricing";
+import { DEFAULT_PRICING, SCHOOL_PRICING, FREE_TRIAL_DAYS } from "@shared/pricing";
 
 export default function Pricing() {
   const { user } = useAuth();
@@ -36,6 +32,7 @@ export default function Pricing() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const [audienceType, setAudienceType] = useState<"individual" | "school">("individual");
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const { data: pricing, isLoading: pricingLoading } =
     trpc.billing.getPricing.useQuery(undefined, {
@@ -155,7 +152,7 @@ export default function Pricing() {
         `${FREE_TRIAL_DAYS}-day free trial`,
       ],
       icon: GraduationCap,
-      iconColor: "from-[#34d399] to-[#7dd3c0]",
+      accent: "text-[#3a9d8f]",
       popular: false,
     },
     {
@@ -174,7 +171,7 @@ export default function Pricing() {
         `${FREE_TRIAL_DAYS}-day free trial`,
       ],
       icon: Crown,
-      iconColor: "from-[#5b8def] to-[#3a93b8]",
+      accent: "text-[#2e6da4]",
       popular: true,
     },
     {
@@ -193,9 +190,30 @@ export default function Pricing() {
         "Priority support",
       ],
       icon: Building2,
-      iconColor: "from-[#7dd3c0] to-[#34d399]",
+      accent: "text-[#1a3a5c]",
       popular: false,
     },
+  ];
+
+  const faqs = [
+    { question: "Can I cancel anytime?", answer: "Yes! Cancel your subscription at any time. Your access continues until the end of your billing period." },
+    { question: "What happens after the free trial?", answer: "Your account becomes read-only. Upgrade to a paid plan anytime to regain full access." },
+    { question: "Can I switch plans?", answer: "Yes! Upgrade or downgrade at any time. Changes are prorated automatically." },
+    { question: "What payment methods do you accept?", answer: "All major credit cards via Stripe. Your payment info is securely processed." },
+    { question: "What is the Student plan?", answer: "Designed for equestrian students — a dedicated dashboard with learning pathways, AI tutor, assignments, and progress tracking from £8/month." },
+    { question: "Do schools get volume discounts?", answer: "Yes — tiered pricing from £49/month for up to 10 students. Larger schools get even better rates." },
+    { question: "Do I need a credit card for the trial?", answer: `No! Start your ${FREE_TRIAL_DAYS}-day free trial without any payment info.` },
+    { question: "Can I export my data?", answer: "Yes! All paid plans include CSV and PDF export for backup or sharing." },
+  ];
+
+  const schoolFeatures = [
+    "Teacher & student accounts",
+    "Lesson management",
+    "Progress reporting",
+    "AI tutor for students",
+    "Group & class management",
+    "Assignment & feedback tools",
+    `${FREE_TRIAL_DAYS}-day free trial`,
   ];
 
   if (pricingLoading) {
@@ -207,10 +225,10 @@ export default function Pricing() {
           imageSrc="/images/price3.jpg"
           imagePosition="center"
         />
-        <div className="min-h-screen bg-[#0b1726] bg-gradient-to-br from-[#0b1726] via-[#132847] to-[#0b1726] flex items-center justify-center">
+        <div className="min-h-[60vh] bg-[#f8f6f3] flex items-center justify-center">
           <div className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-[#7dd3c0] mx-auto mb-4" />
-            <p className="text-gray-400">Loading pricing information...</p>
+            <Loader2 className="w-12 h-12 animate-spin text-[#2e6da4] mx-auto mb-4" />
+            <p className="text-[#1a3a5c]/60">Loading pricing information...</p>
           </div>
         </div>
       </MarketingLayout>
@@ -225,146 +243,127 @@ export default function Pricing() {
         imageSrc="/images/price3.jpg"
         imagePosition="center"
       />
-      <div className="min-h-screen bg-[#0b1726] bg-gradient-to-br from-[#0b1726] via-[#132847] to-[#0b1726]">
-        <div className="container mx-auto px-4 py-20">
-          {/* Top 3 Blocks */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 max-w-5xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mb-4">
-                  <Check className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">What's Included</h3>
-                <p className="text-gray-400 text-sm">All plans include unlimited updates, support, and access to all core features</p>
-              </div>
-            </div>
-            <div className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mb-4">
-                  <Clock className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{FREE_TRIAL_DAYS}-Day Free Trial</h3>
-                <p className="text-gray-400 text-sm">Try EquiProfile risk-free with full access for {FREE_TRIAL_DAYS} days. No credit card required.</p>
-              </div>
-            </div>
-            <div className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mb-4">
-                  <XCircle className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Cancel Anytime</h3>
-                <p className="text-gray-400 text-sm">No long-term contracts. Cancel or change your plan anytime with no hidden fees</p>
-              </div>
-            </div>
-          </motion.div>
 
-          {/* ── "Who are you?" Audience Switcher ── */}
-          <motion.div
-            className="text-center mb-8"
+      <div className="bg-[#f8f6f3]">
+        {/* ── Hero Heading ── */}
+        <section className="pt-28 pb-8 text-center px-4">
+          <motion.h1
+            className="font-serif text-4xl md:text-5xl font-bold text-[#1a3a5c] mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl font-bold text-white mb-4">Who are you?</h2>
-            <div className="inline-flex items-center gap-2 bg-[#101f3a]/60 backdrop-blur-md rounded-full p-1.5 border border-white/10">
-              <button
-                onClick={() => setAudienceType("individual")}
-                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
-                  audienceType === "individual"
-                    ? "bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white shadow-lg"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4" /> Individual
-                </span>
-              </button>
-              <button
-                onClick={() => setAudienceType("school")}
-                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
-                  audienceType === "school"
-                    ? "bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white shadow-lg"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4" /> School / Organisation
-                </span>
-              </button>
-            </div>
-          </motion.div>
+            Choose Your Plan
+          </motion.h1>
+          <motion.p
+            className="text-lg text-[#1a3a5c]/60 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            {FREE_TRIAL_DAYS}-day free trial on every plan. No credit card required. Cancel anytime.
+          </motion.p>
+        </section>
 
-          {/* ── Billing Period Toggle ── */}
+        {/* ── Audience Toggle ── */}
+        <section className="pb-6 text-center px-4">
           <motion.div
-            className="text-center mb-14"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="inline-flex items-center rounded-full bg-white p-1 shadow-sm border border-gray-200"
           >
-            <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">
-              Choose Your{" "}
-              <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] text-transparent bg-clip-text">
-                Perfect Plan
+            <button
+              onClick={() => setAudienceType("individual")}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+                audienceType === "individual"
+                  ? "bg-[#1a3a5c] text-white shadow-md"
+                  : "text-[#1a3a5c]/60 hover:text-[#1a3a5c]"
+              }`}
+            >
+              <GraduationCap className="w-4 h-4" />
+              Individual
+            </button>
+            <button
+              onClick={() => setAudienceType("school")}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+                audienceType === "school"
+                  ? "bg-[#1a3a5c] text-white shadow-md"
+                  : "text-[#1a3a5c]/60 hover:text-[#1a3a5c]"
+              }`}
+            >
+              <Building2 className="w-4 h-4" />
+              School / Organisation
+            </button>
+          </motion.div>
+        </section>
+
+        {/* ── Billing Period Toggle ── */}
+        <section className="pb-12 text-center px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="inline-flex items-center rounded-full bg-white p-1 shadow-sm border border-gray-200"
+          >
+            <button
+              onClick={() => setBillingPeriod("monthly")}
+              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+                billingPeriod === "monthly"
+                  ? "bg-[#1a3a5c] text-white shadow-md"
+                  : "text-[#1a3a5c]/60 hover:text-[#1a3a5c]"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod("yearly")}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+                billingPeriod === "yearly"
+                  ? "bg-[#1a3a5c] text-white shadow-md"
+                  : "text-[#1a3a5c]/60 hover:text-[#1a3a5c]"
+              }`}
+            >
+              Yearly
+              <span className="text-xs bg-[#3a9d8f] text-white px-2 py-0.5 rounded-full font-bold">
+                Save 17%
               </span>
-            </h2>
-            <div className="mt-6 inline-flex items-center gap-4 bg-[#101f3a]/60 backdrop-blur-md rounded-full p-2 border border-white/10">
-              <button
-                onClick={() => setBillingPeriod("monthly")}
-                className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                  billingPeriod === "monthly"
-                    ? "bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white shadow-lg"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBillingPeriod("yearly")}
-                className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                  billingPeriod === "yearly"
-                    ? "bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white shadow-lg"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                Yearly
-                <span className="ml-2 text-xs bg-[#34d399]/20 text-[#34d399] px-2 py-0.5 rounded-full">
-                  Save 17%
-                </span>
-              </button>
-            </div>
+            </button>
           </motion.div>
+        </section>
 
-          {/* Current Subscription Alert */}
-          {hasActiveSubscription && subscriptionStatus && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              <Alert className="mb-8 max-w-3xl mx-auto bg-[#101f3a]/60 backdrop-blur-md border-white/10 text-white">
-                <AlertDescription className="flex items-center justify-between">
-                  <span>
-                    Your current plan:{" "}
-                    <strong className="capitalize text-[#7dd3c0]">{subscriptionStatus.plan}</strong>
-                    {subscriptionStatus.status === "active" && " (Active)"}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleManageBilling}
-                    className="bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white border-0 hover:from-[#2e86ab] hover:to-[#5b8def]"
-                  >
-                    Manage Billing
-                  </Button>
-                </AlertDescription>
-              </Alert>
-            </motion.div>
-          )}
+        {/* ── Current Subscription Alert ── */}
+        {hasActiveSubscription && subscriptionStatus && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="px-4"
+          >
+            <Alert className="mb-8 max-w-3xl mx-auto bg-white border-[#3a9d8f]/30 text-[#1a3a5c]">
+              <AlertDescription className="flex items-center justify-between">
+                <span>
+                  Your current plan:{" "}
+                  <strong className="capitalize text-[#2e6da4]">{subscriptionStatus.plan}</strong>
+                  {subscriptionStatus.status === "active" && " (Active)"}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleManageBilling}
+                  className="border-[#2e6da4] text-[#2e6da4] hover:bg-[#2e6da4] hover:text-white"
+                >
+                  Manage Billing
+                </Button>
+              </AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
 
-          {/* ══════════ INDIVIDUAL VIEW ══════════ */}
-          {audienceType === "individual" && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        {/* ══════════ INDIVIDUAL CARDS ══════════ */}
+        {audienceType === "individual" && (
+          <section className="px-4 pb-24">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
               {individualPlans.map((planData, index) => {
                 const isActive = isCurrentPlan(planData.plan);
                 const loadKey = `${planData.plan}_${billingPeriod}`;
@@ -373,77 +372,91 @@ export default function Pricing() {
                     key={planData.plan}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    whileHover={{ scale: 1.03, y: -8 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
                     className="relative flex"
                   >
                     {planData.popular && (
-                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                        <span className="bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
-                          Most Popular
+                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
+                        <span className="bg-[#2e6da4] text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg">
+                          Recommended
                         </span>
                       </div>
                     )}
                     <Card
-                      className={`flex flex-col w-full min-h-[520px] bg-[#101f3a]/60 backdrop-blur-md border-white/10 hover:border-white/30 transition-all duration-300 overflow-hidden group ${
-                        planData.popular ? "border-2 border-[#3a93b8]/50 shadow-xl shadow-[#5b8def]/20" : ""
-                      } ${isActive ? "ring-2 ring-[#7dd3c0]/50" : ""}`}
+                      className={`flex flex-col w-full bg-white border transition-all duration-300 shadow-sm hover:shadow-lg ${
+                        planData.popular
+                          ? "ring-2 ring-[#2e6da4] border-[#2e6da4]/20 shadow-md"
+                          : "border-gray-200 hover:border-gray-300"
+                      } ${isActive ? "ring-2 ring-[#3a9d8f]" : ""}`}
                     >
-                      <div className="h-32 overflow-hidden bg-gradient-to-br from-[#1a3a6e]/20 to-[#1a5276]/20 relative flex items-center justify-center">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
-                        <div
-                          className={`relative z-20 w-20 h-20 rounded-full bg-gradient-to-r ${planData.iconColor} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-2xl`}
-                        >
-                          <planData.icon className="w-10 h-10 text-white" />
+                      <CardHeader className="pb-4 pt-8">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className={`w-10 h-10 rounded-lg bg-[#f8f6f3] flex items-center justify-center ${planData.accent}`}>
+                            <planData.icon className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="font-serif text-xl font-bold text-[#1a3a5c]">{planData.name}</h3>
+                          </div>
                         </div>
-                      </div>
-                      <CardHeader>
-                        <CardTitle className="text-white text-2xl">{planData.name}</CardTitle>
-                        <CardDescription className="text-gray-400">{planData.description}</CardDescription>
-                        <div className="mt-4">
-                          <span className="text-5xl font-bold bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] text-transparent bg-clip-text">
+                        <p className="text-sm text-[#1a3a5c]/60">{planData.description}</p>
+                        <div className="mt-4 flex items-baseline gap-1">
+                          <span className="text-4xl font-bold text-[#1a3a5c]">
                             {planData.price}
                           </span>
-                          <span className="text-gray-400 text-lg">
-                            /{billingPeriod === "monthly" ? "month" : "year"}
+                          <span className="text-[#1a3a5c]/50 text-base">
+                            /{billingPeriod === "monthly" ? "mo" : "yr"}
                           </span>
                         </div>
                         {billingPeriod === "yearly" && (
-                          <p className="text-sm text-[#34d399] font-semibold mt-2">Save 17% with yearly billing</p>
+                          <p className="text-sm text-[#3a9d8f] font-semibold mt-1">Save 17% with yearly billing</p>
                         )}
                       </CardHeader>
+
                       <CardContent className="flex-grow px-6 pb-4">
-                        <ul className="space-y-3.5">
-                          {planData.features.map((feature, i) => (
-                            <li key={i} className="flex items-start gap-3">
-                              <Check className="h-5 w-5 text-[#7dd3c0] shrink-0 mt-0.5" />
-                              <span className="text-sm text-gray-300">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
+                        <div className="border-t border-gray-100 pt-4">
+                          <ul className="space-y-3">
+                            {planData.features.map((feature, i) => (
+                              <li key={i} className="flex items-start gap-3">
+                                <div className="w-5 h-5 rounded-full bg-[#3a9d8f]/10 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Check className="h-3 w-3 text-[#3a9d8f]" />
+                                </div>
+                                <span className="text-sm text-[#1a3a5c]/80">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </CardContent>
-                      <CardFooter className="flex-col gap-2 mt-auto pt-6">
+
+                      <CardFooter className="mt-auto px-6 pb-6">
                         {isActive ? (
-                          <Button className="w-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white border-0" disabled>
+                          <Button className="w-full bg-[#1a3a5c]/10 text-[#1a3a5c] cursor-default" disabled>
                             Current Plan
                           </Button>
                         ) : planData.plan === "student" ? (
                           <Button
-                            className="w-full bg-gradient-to-r from-[#34d399] to-[#7dd3c0] text-white border-0 hover:from-[#2ab783] hover:to-[#6bc4b0] shadow-lg transition-all duration-300"
+                            className={`w-full text-white shadow-sm transition-all duration-200 ${
+                              planData.popular
+                                ? "bg-[#2e6da4] hover:bg-[#1a3a5c]"
+                                : "bg-[#1a3a5c] hover:bg-[#2e6da4]"
+                            }`}
                             onClick={() => setLocation(`/register?plan=student&interval=${billingPeriod}`)}
                           >
                             Start Free Trial
                           </Button>
                         ) : (
                           <Button
-                            className="w-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white border-0 hover:from-[#2e86ab] hover:to-[#5b8def] shadow-lg transition-all duration-300"
+                            className={`w-full text-white shadow-sm transition-all duration-200 ${
+                              planData.popular
+                                ? "bg-[#2e6da4] hover:bg-[#1a3a5c]"
+                                : "bg-[#1a3a5c] hover:bg-[#2e6da4]"
+                            }`}
                             onClick={() => handleSubscribe(planData.plan, billingPeriod)}
                             disabled={loadingPlan === loadKey}
                           >
                             {loadingPlan === loadKey ? (
                               <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
                             ) : (
-                              `Start Free Trial`
+                              "Start Free Trial"
                             )}
                           </Button>
                         )}
@@ -453,24 +466,24 @@ export default function Pricing() {
                 );
               })}
             </div>
-          )}
+          </section>
+        )}
 
-          {/* ══════════ SCHOOL / ORGANISATION VIEW ══════════ */}
-          {audienceType === "school" && (
+        {/* ══════════ SCHOOL / ORGANISATION CARDS ══════════ */}
+        {audienceType === "school" && (
+          <section className="px-4 pb-24">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="max-w-5xl mx-auto"
             >
-              <div className="text-center mb-8">
-                <p className="text-gray-400 max-w-2xl mx-auto">
-                  EquiProfile offers tailored pricing for riding schools, colleges, and training centres.
-                  Each plan includes teacher &amp; student accounts, lesson management, progress reporting, and AI tutor access.
-                </p>
-              </div>
+              <p className="text-center text-[#1a3a5c]/60 max-w-2xl mx-auto mb-10">
+                EquiProfile offers tailored pricing for riding schools, colleges, and training centres.
+                Each plan includes teacher &amp; student accounts, lesson management, progress reporting, and AI tutor access.
+              </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {SCHOOL_PRICING.tiers.map((tier, index) => {
                   const isEnterprise = tier.maxStudents === null;
                   const price = isEnterprise
@@ -484,59 +497,64 @@ export default function Pricing() {
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
-                      whileHover={{ scale: 1.03, y: -8 }}
+                      className="flex"
                     >
-                      <Card className="flex flex-col h-full bg-[#101f3a]/60 backdrop-blur-md border-white/10 hover:border-white/30 transition-all duration-300 overflow-hidden">
-                        <CardHeader className="text-center">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mx-auto mb-3">
-                            {isEnterprise ? <Building2 className="w-6 h-6 text-white" /> : <Users className="w-6 h-6 text-white" />}
+                      <Card className="flex flex-col w-full bg-white border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-lg transition-all duration-300">
+                        <CardHeader className="text-center pb-4 pt-8">
+                          <div className="w-12 h-12 rounded-lg bg-[#f8f6f3] flex items-center justify-center mx-auto mb-3 text-[#2e6da4]">
+                            {isEnterprise ? <Building2 className="w-6 h-6" /> : <Users className="w-6 h-6" />}
                           </div>
-                          <CardTitle className="text-white text-xl">{tier.label}</CardTitle>
-                          <CardDescription className="text-gray-400">
+                          <h3 className="font-serif text-lg font-bold text-[#1a3a5c]">{tier.label}</h3>
+                          <p className="text-sm text-[#1a3a5c]/50">
                             {isEnterprise ? "50+ students" : `Up to ${tier.maxStudents} students`}
-                          </CardDescription>
+                          </p>
                           <div className="mt-4">
                             {price ? (
-                              <>
-                                <span className="text-4xl font-bold bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] text-transparent bg-clip-text">
+                              <div className="flex items-baseline justify-center gap-1">
+                                <span className="text-3xl font-bold text-[#1a3a5c]">
                                   {price.display}
                                 </span>
-                                <span className="text-gray-400 text-lg">
+                                <span className="text-[#1a3a5c]/50">
                                   /{billingPeriod === "monthly" ? "mo" : "yr"}
                                 </span>
-                              </>
+                              </div>
                             ) : (
-                              <span className="text-2xl font-bold text-white">Custom</span>
+                              <span className="text-2xl font-bold text-[#1a3a5c]">Custom</span>
                             )}
                           </div>
                           {billingPeriod === "yearly" && price && (
-                            <p className="text-sm text-[#34d399] font-semibold mt-1">Save ~17% yearly</p>
+                            <p className="text-sm text-[#3a9d8f] font-semibold mt-1">Save ~17% yearly</p>
                           )}
                         </CardHeader>
-                        <CardContent className="flex-grow">
-                          <ul className="space-y-2.5 text-sm text-gray-300">
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Teacher & student accounts</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Lesson management</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Progress reporting</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> AI tutor for students</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Group & class management</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> Assignment & feedback tools</li>
-                            <li className="flex items-start gap-2"><Check className="h-4 w-4 text-[#7dd3c0] shrink-0 mt-0.5" /> {FREE_TRIAL_DAYS}-day free trial</li>
-                          </ul>
+
+                        <CardContent className="flex-grow px-5">
+                          <div className="border-t border-gray-100 pt-4">
+                            <ul className="space-y-2.5">
+                              {schoolFeatures.map((feature, i) => (
+                                <li key={i} className="flex items-start gap-2.5">
+                                  <div className="w-4 h-4 rounded-full bg-[#3a9d8f]/10 flex items-center justify-center shrink-0 mt-0.5">
+                                    <Check className="h-2.5 w-2.5 text-[#3a9d8f]" />
+                                  </div>
+                                  <span className="text-sm text-[#1a3a5c]/70">{feature}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         </CardContent>
-                        <CardFooter className="mt-auto pt-4">
+
+                        <CardFooter className="mt-auto px-5 pb-6">
                           {isEnterprise ? (
                             <Link href="/contact" className="w-full">
                               <Button
                                 variant="outline"
-                                className="w-full border-[#3a93b8]/40 text-[#7da8e0] hover:bg-[#3a93b8]/10 hover:text-white"
+                                className="w-full border-[#2e6da4]/30 text-[#2e6da4] hover:bg-[#2e6da4] hover:text-white"
                               >
                                 <Mail className="w-4 h-4 mr-2" /> Contact Us
                               </Button>
                             </Link>
                           ) : (
                             <Link href="/contact?plan=school" className="w-full">
-                              <Button className="w-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] text-white border-0 hover:from-[#2e86ab] hover:to-[#5b8def]">
+                              <Button className="w-full bg-[#1a3a5c] text-white hover:bg-[#2e6da4]">
                                 Start School Setup
                               </Button>
                             </Link>
@@ -548,90 +566,99 @@ export default function Pricing() {
                 })}
               </div>
             </motion.div>
-          )}
+          </section>
+        )}
 
-          {/* FAQ Section */}
-          <motion.div
-            className="mt-24 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold mb-8 text-white">
-              Frequently Asked{" "}
-              <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] text-transparent bg-clip-text">
-                Questions
-              </span>
-            </h2>
-            <div className="max-w-3xl mx-auto text-left grid md:grid-cols-2 gap-8">
-              {[
-                { question: "Can I cancel anytime?", answer: "Yes! Cancel your subscription at any time. Your access continues until the end of your billing period." },
-                { question: "What happens after the free trial?", answer: "Your account becomes read-only. Upgrade to a paid plan anytime to regain full access." },
-                { question: "Can I switch plans?", answer: "Yes! Upgrade or downgrade at any time. Changes are prorated automatically." },
-                { question: "What payment methods do you accept?", answer: "All major credit cards via Stripe. Your payment info is securely processed." },
-                { question: "What is the Student plan?", answer: "Designed for equestrian students — a dedicated dashboard with learning pathways, AI tutor, assignments, and progress tracking from £8/month." },
-                { question: "Do schools get volume discounts?", answer: "Yes — tiered pricing from £49/month for up to 10 students. Larger schools get even better rates." },
-                { question: "Do I need a credit card for the trial?", answer: "No! Start your 7-day free trial without any payment info." },
-                { question: "Can I export my data?", answer: "Yes! All paid plans include CSV and PDF export for backup or sharing." },
-              ].map((faq, index) => (
+        {/* ══════════ FAQ Section ══════════ */}
+        <section className="bg-white py-20 px-4">
+          <div className="max-w-3xl mx-auto">
+            <motion.h2
+              className="font-serif text-3xl md:text-4xl font-bold text-[#1a3a5c] text-center mb-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              Frequently Asked Questions
+            </motion.h2>
+
+            <div className="space-y-3">
+              {faqs.map((faq, index) => (
                 <motion.div
                   key={index}
-                  className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all duration-300"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
+                  transition={{ duration: 0.3, delay: 0.35 + index * 0.05 }}
+                  className="border border-gray-200 rounded-xl overflow-hidden bg-[#f8f6f3]/50"
                 >
-                  <h3 className="font-semibold mb-2 text-white">{faq.question}</h3>
-                  <p className="text-gray-400 text-sm">{faq.answer}</p>
+                  <button
+                    onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                    className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-[#f8f6f3] transition-colors"
+                  >
+                    <span className="font-semibold text-[#1a3a5c]">{faq.question}</span>
+                    <ChevronDown
+                      className={`w-5 h-5 text-[#1a3a5c]/40 shrink-0 ml-4 transition-transform duration-200 ${
+                        openFaq === index ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  <AnimatePresence>
+                    {openFaq === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="px-6 pb-4 text-sm text-[#1a3a5c]/60 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               ))}
             </div>
-          </motion.div>
+          </div>
+        </section>
 
-          {/* CTA Section */}
+        {/* ══════════ Bottom CTA ══════════ */}
+        <section className="py-20 px-4">
           <motion.div
-            className="mt-24 max-w-4xl mx-auto"
+            className="max-w-3xl mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#3a93b8]/20 to-[#5b8def]/20 rounded-3xl blur-3xl" />
-              <div className="relative backdrop-blur-md bg-white/5 border-2 border-white/20 rounded-3xl p-8 md:p-12 hover:bg-white/10 hover:border-white/30 transition-all duration-500">
-                <div className="text-center">
-                  <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 text-white">
-                    Ready to Get{" "}
-                    <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
-                      Started?
-                    </span>
-                  </h2>
-                  <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                    Start your free {FREE_TRIAL_DAYS}-day trial today. No credit card required.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link href="/register">
-                      <Button
-                        size="lg"
-                        className="text-lg px-10 py-6 bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#256d8a] hover:to-[#4a7cd4] text-white border-0 shadow-xl"
-                      >
-                        Start Free Trial
-                      </Button>
-                    </Link>
-                    <Link href="/contact">
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        className="text-lg px-10 py-6 border-white/20 text-white hover:bg-white/10"
-                      >
-                        Contact Sales
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
+            <div className="bg-white border border-gray-200 rounded-2xl p-10 md:p-14 text-center shadow-sm">
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1a3a5c] mb-4">
+                Ready to Get Started?
+              </h2>
+              <p className="text-lg text-[#1a3a5c]/60 mb-8 max-w-xl mx-auto">
+                Start your free {FREE_TRIAL_DAYS}-day trial today. No credit card required.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/register">
+                  <Button
+                    size="lg"
+                    className="text-base px-8 py-6 bg-[#2e6da4] hover:bg-[#1a3a5c] text-white shadow-md"
+                  >
+                    Start Free Trial
+                  </Button>
+                </Link>
+                <Link href="/contact">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-base px-8 py-6 border-[#1a3a5c]/20 text-[#1a3a5c] hover:bg-[#1a3a5c] hover:text-white"
+                  >
+                    Contact Sales
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>
-        </div>
+        </section>
       </div>
     </MarketingLayout>
   );
