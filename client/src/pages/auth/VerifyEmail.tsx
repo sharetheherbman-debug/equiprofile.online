@@ -15,10 +15,8 @@ import {
   Mail,
   ArrowRight,
 } from "lucide-react";
-import { PageTransition } from "@/components/PageTransition";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { AuthLayout } from "@/components/AuthLayout";
 import { motion } from "framer-motion";
 
 /**
@@ -109,8 +107,8 @@ export default function VerifyEmail() {
 
   return (
     <>
-      <Navbar alwaysDark />
-      <PageTransition>
+      <AuthLayout>
+      
         <AuthSplitLayout>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -218,8 +216,8 @@ export default function VerifyEmail() {
             </Card>
           </motion.div>
         </AuthSplitLayout>
-      </PageTransition>
-      <Footer />
+      
+      </AuthLayout>
     </>
   );
 }

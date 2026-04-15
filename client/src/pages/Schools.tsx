@@ -9,10 +9,8 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { ManagementLayout } from "@/components/management/ManagementLayout";
 import { PageBanner } from "@/components/PageBanner";
-import { PageTransition } from "@/components/PageTransition";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   GraduationCap,
@@ -110,8 +108,8 @@ function ROICalculator() {
 export default function Schools() {
   return (
     <>
-      <Navbar />
-      <PageTransition>
+      <ManagementLayout>
+      
         <div className="min-h-screen bg-[#0b1726]">
           {/* Hero */}
           <PageBanner
@@ -407,8 +405,8 @@ export default function Schools() {
             </div>
           </section>
         </div>
-      </PageTransition>
-      <Footer />
+      
+      </ManagementLayout>
     </>
   );
 }

@@ -17,11 +17,9 @@ import {
   Lock,
   ShieldCheck,
 } from "lucide-react";
-import { PageTransition } from "@/components/PageTransition";
-import { Navbar } from "@/components/Navbar";
+import { AuthLayout } from "@/components/AuthLayout";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
-import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 
 export default function ResetPassword() {
@@ -88,8 +86,8 @@ export default function ResetPassword() {
 
   return (
     <>
-      <Navbar alwaysDark />
-      <PageTransition>
+      <AuthLayout>
+      
         <AuthSplitLayout>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -226,8 +224,8 @@ export default function ResetPassword() {
             </Card>
           </motion.div>
         </AuthSplitLayout>
-      </PageTransition>
-      <Footer />
+      
+      </AuthLayout>
     </>
   );
 }

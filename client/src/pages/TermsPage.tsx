@@ -1,10 +1,10 @@
-import { MarketingLayout } from "@/components/MarketingLayout";
+import { LegalLayout } from "@/components/LegalLayout";
 import { PageBanner } from "@/components/PageBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function TermsPage() {
   return (
-    <MarketingLayout>
+    <LegalLayout>
       <div className="min-h-screen bg-[#0b1726]">
         <PageBanner
           title="Terms of Service"
@@ -597,6 +597,6 @@ export default function TermsPage() {
           </div>
         </div>
       </div>
-    </MarketingLayout>
+    </LegalLayout>
   );
 }

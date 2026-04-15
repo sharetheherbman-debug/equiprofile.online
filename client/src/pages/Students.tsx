@@ -1,6 +1,6 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import { Link } from "wouter";
-import { MarketingLayout } from "@/components/MarketingLayout";
+import { ManagementLayout } from "@/components/management/ManagementLayout";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import {
@@ -102,7 +102,7 @@ const schoolBenefits = [
 
 export default function Students() {
   return (
-    <MarketingLayout>
+    <ManagementLayout>
       {/* Hero */}
       <section className="bg-[#f8f6f3] pt-28 pb-20">
         <div className="container mx-auto px-4">
@@ -470,6 +470,6 @@ export default function Students() {
           </motion.div>
         </div>
       </section>
-    </MarketingLayout>
+    </ManagementLayout>
   );
 }
