@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import {
   Send,
   CheckCircle2,
-  Phone,
   Mail,
   Clock,
   Users,
@@ -56,15 +55,15 @@ const contactDetails = [
     href: "mailto:schools@equiprofile.online",
   },
   {
-    icon: Phone,
-    label: "Call Us",
-    value: "+44 (0) 123 456 7890",
-    href: "tel:+441234567890",
-  },
-  {
     icon: Clock,
     label: "Response Time",
     value: "Within 24 hours",
+    href: null,
+  },
+  {
+    icon: Clock,
+    label: "Support Hours",
+    value: "Mon–Fri, 9am–5pm GMT",
     href: null,
   },
 ];

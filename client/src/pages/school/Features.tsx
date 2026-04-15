@@ -153,12 +153,12 @@ const whyChooseUs = [
   {
     icon: TrendingUp,
     title: "Proven Results",
-    description: "Schools report 40% faster student progression and 60% less admin time.",
+    description: "Schools using structured pathways see clearer student progression and reduced admin overhead.",
   },
   {
     icon: Shield,
     title: "Secure & Reliable",
-    description: "Enterprise-grade security with 99.9% uptime for your school data.",
+    description: "Cloud-hosted with enterprise-grade security to protect your school data.",
   },
   {
     icon: MessageSquare,
@@ -397,7 +397,7 @@ export default function SchoolFeatures() {
               tailored to your school's needs.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/school/contact">
+              <Link href="/contact">
                 <Button
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white text-base px-8 py-6 rounded-xl shadow-lg"
@@ -406,7 +406,7 @@ export default function SchoolFeatures() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="/school/pricing">
+              <Link href="/pricing">
                 <Button
                   variant="outline"
                   size="lg"

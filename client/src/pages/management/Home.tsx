@@ -16,7 +16,6 @@ import {
   Star,
   Users,
   Server,
-  TrendingUp,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -52,10 +51,10 @@ function AnimatedSection({
 /* ------------------------------------------------------------------ */
 
 const stats = [
-  { icon: TrendingUp, value: "10,000+", label: "Horses tracked" },
-  { icon: Users, value: "500+", label: "Stables worldwide" },
-  { icon: Server, value: "99.8%", label: "Platform uptime" },
-  { icon: Star, value: "4.9 / 5", label: "Average rating" },
+  { icon: HeartPulse, value: "Complete", label: "Health tracking" },
+  { icon: Users, value: "All-in-one", label: "Stable management" },
+  { icon: Server, value: "Cloud", label: "Hosted & secure" },
+  { icon: Star, value: "UK-built", label: "Equine-first platform" },
 ];
 
 const features = [
