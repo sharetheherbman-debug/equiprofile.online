@@ -70,7 +70,7 @@ const painPoints = [
   },
   {
     icon: Folder,
-    gradient: "from-indigo-500 to-violet-500",
+    gradient: "from-[#5b8def] to-[#3a93b8]",
     problem: "Documents scattered across email and phone",
     solution:
       "Passports, insurance docs, competition records, and invoices stored in organised folders—accessible anywhere, at any time.",
@@ -149,7 +149,7 @@ export default function Home() {
     <>
       <Navbar />
       <PageTransition>
-        <div className="min-h-screen overflow-hidden bg-[#0a1628]">
+        <div className="min-h-screen overflow-hidden bg-[#0b1726]">
           {/* Hero Section with Image Slider Background */}
           <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden pt-[72px]">
             {/* Image Slider Background */}
@@ -161,7 +161,7 @@ export default function Home() {
                 showDots={false}
                 showText={false}
                 className="w-full h-full"
-                overlayClass="bg-[#0a1628]/50"
+                overlayClass="bg-[#0b1726]/50"
               />
             </div>
 
@@ -176,7 +176,7 @@ export default function Home() {
                 >
                   <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-6 text-white drop-shadow-2xl">
                     Horse Management &{" "}
-                    <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                       Equestrian Learning
                     </span>
                     <br />
@@ -193,7 +193,7 @@ export default function Home() {
                     <Link href={isAuthenticated ? "/dashboard" : "/register"}>
                       <Button
                         size="lg"
-                        className="text-lg px-10 py-6 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white shadow-2xl hover:scale-105 transition-transform group border-0"
+                        className="text-lg px-10 py-6 bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#1a5276] hover:to-[#4a7dd4] text-white shadow-2xl hover:scale-105 transition-transform group border-0"
                       >
                         {isAuthenticated
                           ? "Go to Dashboard"
@@ -210,11 +210,11 @@ export default function Home() {
                       <span>No credit card required</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-indigo-400" />
+                      <Clock className="w-4 h-4 text-[#5b8def]" />
                       <span>7-day free trial</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-cyan-400" />
+                      <Check className="w-4 h-4 text-[#7dd3c0]" />
                       <span>Cancel anytime</span>
                     </div>
                   </div>
@@ -224,7 +224,7 @@ export default function Home() {
           </section>
 
           {/* Features Highlight Section */}
-          <section className="py-20 bg-[#0f2040] relative overflow-hidden">
+          <section className="py-20 bg-[#101f3a] relative overflow-hidden">
             <div className="container px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -235,7 +235,7 @@ export default function Home() {
               >
                 <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4 text-white">
                   Powerful Features for{" "}
-                  <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                     Modern Equestrians
                   </span>
                 </h2>
@@ -278,7 +278,7 @@ export default function Home() {
                 <Link href="/features">
                   <Button
                     size="lg"
-                    className="text-lg px-8 py-6 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white shadow-xl hover:scale-105 transition-transform group border-0"
+                    className="text-lg px-8 py-6 bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#1a5276] hover:to-[#4a7dd4] text-white shadow-xl hover:scale-105 transition-transform group border-0"
                   >
                     View All Features
                     <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -289,8 +289,8 @@ export default function Home() {
           </section>
 
           {/* Premium CTA Quote Block */}
-          <section className="py-20 bg-[#0a1628] relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/20 via-black to-cyan-900/20 pointer-events-none" />
+          <section className="py-20 bg-[#0b1726] relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1a3a6e]/20 via-black to-[#1a6e5e]/20 pointer-events-none" />
             <div className="container px-4 relative z-10">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -301,7 +301,7 @@ export default function Home() {
               >
                 <p className="text-lg md:text-2xl font-serif text-white/90 italic leading-relaxed">
                   "The difference between a good stable and a great one is{" "}
-                  <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent not-italic font-semibold">
+                  <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent not-italic font-semibold">
                     the quality of the records behind it
                   </span>
                   ."
@@ -313,7 +313,7 @@ export default function Home() {
                   <Link href="/register">
                     <Button
                       size="lg"
-                      className="bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white border-0 shadow-lg shadow-indigo-500/20 px-8 hover:scale-105 transition-transform"
+                      className="bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#3a93b8] hover:to-[#5b8def] text-white border-0 shadow-lg shadow-[#5b8def]/20 px-8 hover:scale-105 transition-transform"
                     >
                       Start Your Free Trial
                     </Button>
@@ -324,8 +324,8 @@ export default function Home() {
           </section>
 
           {/* Learning Platform Section */}
-          <section className="py-24 bg-gradient-to-b from-[#0a1628] via-[#0d1a35] to-[#0a1628] relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/15 via-transparent to-transparent pointer-events-none" />
+          <section className="py-28 bg-gradient-to-b from-[#0b1726] via-[#0f1e38] to-[#0b1726] relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#1a3a6e]/15 via-transparent to-transparent pointer-events-none" />
             <div className="container px-4 relative z-10">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -334,13 +334,13 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="text-center mb-14"
               >
-                <Badge className="mb-4 inline-flex items-center gap-2 px-4 py-2 bg-indigo-500/10 backdrop-blur-md border-indigo-500/20 text-indigo-300">
+                <Badge className="mb-4 inline-flex items-center gap-2 px-4 py-2 bg-[#5b8def]/10 backdrop-blur-md border-[#5b8def]/20 text-[#7baaf5]">
                   <GraduationCap className="w-4 h-4" />
                   Equestrian Learning Portal
                 </Badge>
                 <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4 text-white">
                   More Than Management —{" "}
-                  <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                     A Complete Learning Platform
                   </span>
                 </h2>
@@ -352,7 +352,7 @@ export default function Home() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
                 {[
-                  { icon: BookOpen, title: "15 Learning Pathways", desc: "Horse care, rider skills, safety, nutrition, welfare, and more — structured across 4 levels", color: "from-indigo-500 to-violet-500" },
+                  { icon: BookOpen, title: "15 Learning Pathways", desc: "Horse care, rider skills, safety, nutrition, welfare, and more — structured across 4 levels", color: "from-[#5b8def] to-[#3a93b8]" },
                   { icon: Target, title: "Progression Gating", desc: "Students unlock content as they advance — Beginner → Developing → Intermediate → Advanced", color: "from-emerald-500 to-teal-500" },
                   { icon: Zap, title: "Daily Practice", desc: "3 fresh scenario challenges per day, matched to each student's level and weak areas", color: "from-amber-500 to-orange-500" },
                   { icon: Brain, title: "AI Tutor", desc: "Instant answers to equine questions — from lameness signs to feed ratios, available 24/7", color: "from-cyan-500 to-blue-500" },
@@ -388,16 +388,16 @@ export default function Home() {
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6 }}
                   viewport={{ once: true }}
-                  className="relative rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 p-7 hover:border-indigo-500/40 transition-colors"
+                  className="relative rounded-2xl border border-[#5b8def]/20 bg-gradient-to-br from-[#5b8def]/10 to-[#3a93b8]/10 p-7 hover:border-[#5b8def]/40 transition-colors"
                 >
-                  <GraduationCap className="w-10 h-10 text-indigo-400 mb-4" />
+                  <GraduationCap className="w-10 h-10 text-[#5b8def] mb-4" />
                   <h3 className="text-xl font-bold text-white mb-2">For Students & Riders</h3>
                   <p className="text-gray-400 text-sm leading-relaxed mb-4">
                     Follow professional pathways covering horse care, rider skills, stable management, nutrition, and welfare.
                     Track your progress, earn achievements, and build a verifiable learning portfolio — all from £8/month.
                   </p>
                   <Link href="/students">
-                    <Button className="bg-indigo-600 hover:bg-indigo-500 text-white border-0 group">
+                    <Button className="bg-[#2e86ab] hover:bg-[#3a93b8] text-white border-0 group">
                       Explore Student Programme
                       <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </Button>
@@ -429,7 +429,7 @@ export default function Home() {
           </section>
 
           {/* Features Grid */}
-          <section className="py-24 bg-[#0a1628] relative">
+          <section className="py-28 bg-[#0b1726] relative">
             <div className="container px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -445,7 +445,7 @@ export default function Home() {
                 <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
                   Comprehensive Features for
                   <br />
-                  <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                     Complete Horse Care
                   </span>
                 </h2>
@@ -464,7 +464,7 @@ export default function Home() {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <Card className="h-full bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 group cursor-pointer">
+                    <Card className="h-full bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl hover:shadow-[#5b8def]/20 transition-all duration-300 group cursor-pointer">
                       <CardHeader>
                         <div
                           className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.gradient} p-4 mb-4 group-hover:scale-110 transition-transform duration-300 flex items-center justify-center`}
@@ -488,7 +488,7 @@ export default function Home() {
           </section>
 
           {/* Testimonials Carousel */}
-          <section className="py-24 bg-[#0f2040] relative overflow-hidden">
+          <section className="py-28 bg-[#101f3a] relative overflow-hidden">
             <div className="container px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -504,7 +504,7 @@ export default function Home() {
                 <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
                   Loved by Horse Owners
                   <br />
-                  <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                     Around the World
                   </span>
                 </h2>
@@ -527,7 +527,7 @@ export default function Home() {
                       "{testimonials[activeTestimonial].content}"
                     </blockquote>
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xl">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#3a93b8] to-[#5b8def] flex items-center justify-center text-white font-bold text-xl">
                         {testimonials[activeTestimonial].avatar}
                       </div>
                       <div>
@@ -555,7 +555,7 @@ export default function Home() {
                       <span
                         className={`rounded-full transition-all duration-300 ${
                           index === activeTestimonial
-                            ? "bg-gradient-to-r from-indigo-500 to-cyan-500 w-12 h-2"
+                            ? "bg-gradient-to-r from-[#3a93b8] to-[#5b8def] w-12 h-2"
                             : "bg-white/30 w-2 h-2"
                         }`}
                       />
@@ -590,7 +590,7 @@ export default function Home() {
           </section>
 
           {/* Pain Points Section */}
-          <section className="py-24 bg-[#0f2040] relative">
+          <section className="py-28 bg-[#101f3a] relative">
             <div className="container px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -605,7 +605,7 @@ export default function Home() {
                 </Badge>
                 <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4 text-white">
                   Every horse owner knows{" "}
-                  <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
                     these struggles
                   </span>
                 </h2>
@@ -653,8 +653,8 @@ export default function Home() {
           </section>
 
           {/* Final CTA Section */}
-          <section className="py-16 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-cyan-600" />
+          <section className="py-20 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1a5276] via-[#2e86ab] to-[#3a93b8]" />
             <div className="absolute inset-0 bg-[url('/assets/pattern.svg')] opacity-10" />
             <div className="container px-4 relative z-10">
               <motion.div
@@ -662,7 +662,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="max-w-3xl mx-auto text-center bg-[#0a1628]/40 backdrop-blur-md border border-white/20 p-8 md:p-12 rounded-3xl"
+                className="max-w-3xl mx-auto text-center bg-[#0b1726]/40 backdrop-blur-md border border-white/20 p-8 md:p-12 rounded-3xl"
               >
                 <Award className="w-14 h-14 text-white mx-auto mb-6" />
                 <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-4">
@@ -677,7 +677,7 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     size="lg"
-                    className="text-base px-10 py-5 bg-white text-indigo-600 hover:bg-white/90 shadow-2xl hover:scale-105 transition-transform group border-0"
+                    className="text-base px-10 py-5 bg-white text-[#2e86ab] hover:bg-white/90 shadow-2xl hover:scale-105 transition-transform group border-0"
                     asChild
                   >
                     <Link href="/register">
