@@ -72,11 +72,18 @@ function SidebarNav({
 }) {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
+  const logoutMut = trpc.auth.logout.useMutation();
   const { data: subscriptionStatus } = trpc.billing.getStatus.useQuery(
     undefined,
     { staleTime: 5 * 60 * 1000 },
   );
   const isSchoolManaged = subscriptionStatus?.schoolId != null;
+
+  const handleLogout = async () => {
+    await logoutMut.mutateAsync();
+    logout();
+    setLocation("/login");
+  };
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-[#1a2435]">
@@ -176,7 +183,7 @@ function SidebarNav({
             </p>
           </div>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
             title="Sign Out"
             aria-label="Sign out"

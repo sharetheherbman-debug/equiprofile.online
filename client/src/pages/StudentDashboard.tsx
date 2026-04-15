@@ -2716,9 +2716,15 @@ function AssignmentsView() {
 // ─── Student Settings View ────────────────────────────────────
 function StudentSettingsView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
   const { user, logout } = useAuth();
+  const logoutMut = trpc.auth.logout.useMutation();
   const utils = trpc.useUtils();
   const [name, setName] = useState(user?.name ?? "");
   const [saved, setSaved] = useState(false);
+
+  const handleLogout = async () => {
+    await logoutMut.mutateAsync();
+    logout();
+  };
 
   const updateProfileMutation = trpc.user.updateProfile.useMutation({
     onSuccess: () => {
@@ -2786,10 +2792,10 @@ function StudentSettingsView({ onNavigate }: { onNavigate: (v: ActiveView) => vo
       </div>
 
       {/* Sign out */}
-      <div className="rounded-xl p-5" style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
+      <div className={`${S_CARD_CLASS} p-5`}>
         <h3 className="text-sm font-semibold text-rose-600 uppercase tracking-wider mb-3">Account</h3>
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="flex items-center gap-2 text-sm text-rose-600 hover:text-rose-500 transition-colors"
         >
           <LogOut className="w-4 h-4" /> Sign out
