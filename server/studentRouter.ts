@@ -831,6 +831,77 @@ const SCENARIO_DATA: Scenario[] = [
     ],
     learningTakeaway: "An emergency dismount is the absolute last resort. Free your feet from the stirrups, aim for soft ground, push away from the horse, and roll on landing.",
   },
+  // ── ADVANCED (additional) ─────────────────────────────────────────────────
+  {
+    id: "s046",
+    title: "Suspecting Kissing Spines",
+    level: "advanced" as ScenarioLevel,
+    category: "Health & Diagnostics",
+    prompt: "A horse you ride has been gradually becoming resistant to being saddled, dips away when you press along the back, and has started bucking into canter. The behaviour has worsened over several months. What is the most appropriate course of action?",
+    choices: [
+      { id: "a", text: "Use a stronger girth and more leg to ride through the resistance.", isCorrect: false, explanation: "Forcing the horse through pain-related behaviour is both unethical and dangerous. The underlying cause must be investigated." },
+      { id: "b", text: "Request a veterinary investigation including back palpation and potentially diagnostic imaging for kissing spines.", isCorrect: true, explanation: "Correct. The progressive pattern of back pain — saddle resistance, dipping, and bucking in canter — is classic for dorsal spinous process impingement (kissing spines). Veterinary assessment with X-rays is the gold standard." },
+      { id: "c", text: "Change to a treeless saddle and see if the behaviour improves.", isCorrect: false, explanation: "While saddle fit is important, changing equipment without diagnosis does not address a potential skeletal condition. A vet assessment is needed first." },
+      { id: "d", text: "Rest the horse for two weeks and then reassess.", isCorrect: false, explanation: "Rest alone won't resolve a structural issue. If kissing spines are the cause, the horse needs diagnosis and a targeted treatment plan." },
+    ],
+    learningTakeaway: "Progressive back pain signs — saddle resistance, dipping under pressure, and behavioural changes under saddle — warrant veterinary investigation for conditions like kissing spines.",
+  },
+  {
+    id: "s047",
+    title: "Designing a Rehab Programme",
+    level: "advanced" as ScenarioLevel,
+    category: "Rehabilitation & Management",
+    prompt: "A horse has been on box rest for 8 weeks following a superficial digital flexor tendon injury. The vet has cleared the horse for controlled rehabilitation. What is the correct approach to the initial phase?",
+    choices: [
+      { id: "a", text: "Start with 10 minutes of walk in-hand on firm, level ground, gradually increasing by 5 minutes per week.", isCorrect: true, explanation: "Correct. Controlled in-hand walking on firm ground allows the tendon to load progressively. Gradual increase is essential — too much too soon risks re-injury." },
+      { id: "b", text: "Lunge the horse at walk and trot for 20 minutes to rebuild fitness quickly.", isCorrect: false, explanation: "Lungeing places lateral forces on tendons and is inappropriate at this early stage. Only straight-line work should be used initially." },
+      { id: "c", text: "Turn the horse out in a small paddock to self-exercise.", isCorrect: false, explanation: "Uncontrolled movement, including sudden stops, turns, and bursts of speed, risks re-injury. Exercise must be strictly controlled in early rehab." },
+      { id: "d", text: "Begin ridden walk work immediately since the vet has given clearance.", isCorrect: false, explanation: "The vet cleared controlled rehabilitation, not ridden work. In-hand walking comes first. Ridden walk is typically introduced several weeks into the rehab programme." },
+    ],
+    learningTakeaway: "Tendon rehabilitation requires strict, progressive loading: start with short in-hand walks on firm ground, increase gradually, and avoid lateral forces or uncontrolled exercise.",
+  },
+  {
+    id: "s048",
+    title: "Assessing Nutritional Needs for a Veteran Horse",
+    level: "advanced" as ScenarioLevel,
+    category: "Nutrition & Management",
+    prompt: "You are responsible for a 22-year-old horse who has lost condition over winter despite ad-lib hay. He has poor dentition and is currently on a standard chaff-and-pony-nut diet. What changes would you prioritise?",
+    choices: [
+      { id: "a", text: "Simply increase the amount of pony nuts to add more calories.", isCorrect: false, explanation: "More of the same feed may not be digestible given the horse's dental issues. The feed type needs changing, not just the quantity." },
+      { id: "b", text: "Switch to a soaked, high-fibre veteran feed, add oil for calories, arrange a dental check, and consider soaked hay or hay replacer.", isCorrect: true, explanation: "Correct. Veteran horses with poor dentition need easily digestible fibre sources. Soaked feeds, beet pulp, and oil provide safe calories. A dental check is essential to assess chewing ability." },
+      { id: "c", text: "Add sugar beet and molasses to make the current feed more palatable.", isCorrect: false, explanation: "While sugar beet is useful, adding molasses increases sugar content unnecessarily. A more comprehensive dietary review is needed." },
+      { id: "d", text: "Put the horse on a high-protein competition feed to rebuild muscle.", isCorrect: false, explanation: "Competition feeds are too energy-dense and may contain high starch levels, which is inappropriate for a veteran. The approach should focus on digestible fibre and fat." },
+    ],
+    learningTakeaway: "Veteran horses with poor dentition need soaked, high-fibre feeds, supplementary oil for calories, regular dental care, and potentially hay replacers to maintain condition.",
+  },
+  {
+    id: "s049",
+    title: "Managing a Multi-Horse Field Dispute",
+    level: "advanced" as ScenarioLevel,
+    category: "Behaviour & Welfare",
+    prompt: "In a field of five horses, one gelding has become increasingly aggressive — resource guarding the water trough, chasing a particular mare, and causing minor bite wounds. The other horses are becoming stressed. How should you manage this?",
+    choices: [
+      { id: "a", text: "Remove the aggressive gelding and reassess the herd dynamics after a separation period.", isCorrect: true, explanation: "Correct. The immediate priority is safety. Remove the aggressor, treat any injuries, and allow the herd to settle. Reassess whether reintroduction is appropriate after addressing the behaviour." },
+      { id: "b", text: "Add a second water trough to reduce resource guarding and leave the group together.", isCorrect: false, explanation: "Adding resources may help but does not address the escalating aggression toward the mare. Safety must come first." },
+      { id: "c", text: "Leave them to sort it out — horses establish hierarchies naturally.", isCorrect: false, explanation: "While hierarchies are natural, persistent aggression causing injuries is not acceptable. Duty of care requires intervention." },
+      { id: "d", text: "Remove the mare being targeted since she is the victim.", isCorrect: false, explanation: "Removing the victim does not address the aggressor's behaviour and may redirect aggression toward another horse." },
+    ],
+    learningTakeaway: "Persistent aggression causing injuries requires immediate intervention — remove the aggressor, treat injuries, and reassess herd composition and dynamics.",
+  },
+  {
+    id: "s050",
+    title: "Evaluating Saddle Fit After Weight Change",
+    level: "advanced" as ScenarioLevel,
+    category: "Tack & Equipment",
+    prompt: "A horse has gained significant muscle along the topline after 3 months of correct work. The saddle, which fitted well previously, now appears to sit high at the pommel and the rider feels tipped backward. What is your assessment?",
+    choices: [
+      { id: "a", text: "The saddle needs reflocking or a wider tree to accommodate the increased muscle development.", isCorrect: true, explanation: "Correct. Increased topline muscle changes the horse's back shape. A saddle sitting high at the pommel with the rider tipped back indicates the tree is now too narrow. Reflocking or a wider gullet plate is needed." },
+      { id: "b", text: "Add a thick numnah to fill the gap between the saddle and the back.", isCorrect: false, explanation: "Extra padding on an ill-fitting saddle creates more pressure, not less. It does not solve a tree-width problem and can make it worse." },
+      { id: "c", text: "The horse needs to lose the excess muscle as it is causing saddle problems.", isCorrect: false, explanation: "Correct muscular development is positive. The saddle should be adjusted to fit the horse, not the other way around." },
+      { id: "d", text: "Continue using the saddle as it will compress the new muscle back to the original shape.", isCorrect: false, explanation: "An ill-fitting saddle causes pain, muscle atrophy, and behavioural issues. It must be adjusted to the horse's current shape." },
+    ],
+    learningTakeaway: "Saddle fit should be reassessed whenever a horse's body shape changes — muscle gain, weight loss, or fitness changes all affect how a saddle sits and distributes the rider's weight.",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
