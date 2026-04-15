@@ -421,134 +421,148 @@ function AdminContent() {
         </div>
       </div>
 
-      {/* Stats Overview — coloured accent tiles */}
+      {/* Stats Overview — clean white cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card className="border-blue-500/20 bg-gradient-to-br from-blue-950/30 to-indigo-950/20 dark:from-blue-950/40 dark:to-indigo-950/30">
+        <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm">
           <CardContent className="pt-4 pb-4">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-medium text-muted-foreground">Total Users</p>
-              <Users className="w-4 h-4 text-blue-400" />
+              <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground">Total Users</p>
+              <div className="w-8 h-8 rounded-lg bg-[#2e6da4]/10 flex items-center justify-center">
+                <Users className="w-4 h-4 text-[#2e6da4]" />
+              </div>
             </div>
             {statsLoading ? (
               <Skeleton className="h-8 w-16 mt-1" />
             ) : (
-              <p className="text-2xl font-bold text-blue-400">{stats?.users?.totalUsers || 0}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-foreground">{stats?.users?.totalUsers || 0}</p>
             )}
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-gray-400 dark:text-muted-foreground mt-1">
               {stats?.users?.activeUsers || 0} active
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-emerald-500/20 bg-gradient-to-br from-emerald-950/30 to-green-950/20 dark:from-emerald-950/40 dark:to-green-950/30">
+        <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm">
           <CardContent className="pt-4 pb-4">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-medium text-muted-foreground">Paid Subscribers</p>
-              <Shield className="w-4 h-4 text-emerald-400" />
+              <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground">Paid Subscribers</p>
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
+                <Shield className="w-4 h-4 text-[#2d6a4f]" />
+              </div>
             </div>
             {statsLoading ? (
               <Skeleton className="h-8 w-16 mt-1" />
             ) : (
-              <p className="text-2xl font-bold text-emerald-400">{stats?.users?.paidUsers || 0}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-foreground">{stats?.users?.paidUsers || 0}</p>
             )}
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-gray-400 dark:text-muted-foreground mt-1">
               {stats?.users?.trialUsers || 0} on trial
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-rose-500/20 bg-gradient-to-br from-rose-950/30 to-pink-950/20 dark:from-rose-950/40 dark:to-pink-950/30">
+        <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm">
           <CardContent className="pt-4 pb-4">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-medium text-muted-foreground">Total Horses</p>
-              <Heart className="w-4 h-4 text-rose-400" />
+              <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground">Total Horses</p>
+              <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center">
+                <Heart className="w-4 h-4 text-rose-500" />
+              </div>
             </div>
             {statsLoading ? (
               <Skeleton className="h-8 w-16 mt-1" />
             ) : (
-              <p className="text-2xl font-bold text-rose-400">{stats?.horses?.totalHorses || 0}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-foreground">{stats?.horses?.totalHorses || 0}</p>
             )}
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-gray-400 dark:text-muted-foreground mt-1">
               {stats?.horses?.activeHorses || 0} active
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-red-500/20 bg-gradient-to-br from-red-950/30 to-orange-950/20 dark:from-red-950/40 dark:to-orange-950/30">
+        <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm">
           <CardContent className="pt-4 pb-4">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-medium text-muted-foreground">Overdue Payments</p>
-              <AlertCircle className="w-4 h-4 text-red-400" />
+              <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground">Overdue Payments</p>
+              <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+              </div>
             </div>
             {statsLoading ? (
               <Skeleton className="h-8 w-16 mt-1" />
             ) : (
-              <p className="text-2xl font-bold text-red-400">{stats?.users?.overdueUsers || 0}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-foreground">{stats?.users?.overdueUsers || 0}</p>
             )}
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-gray-400 dark:text-muted-foreground mt-1">
               {stats?.users?.suspendedUsers || 0} suspended
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Tabs — grouped for clarity */}
+      {/* Main Tabs — clean top nav with grouped sections */}
       <Tabs defaultValue="users" className="space-y-4">
-        <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
-          <TabsList className="flex flex-nowrap gap-1 bg-muted/50 p-1 rounded-xl border border-border/40 w-max min-w-full">
+        <div className="bg-white dark:bg-card rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-1.5 overflow-x-auto scrollbar-hide">
+          <TabsList className="flex flex-nowrap gap-0.5 bg-transparent w-max min-w-full h-auto p-0">
             {/* ── People ── */}
-            <TabsTrigger value="users" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <Users className="w-3.5 h-3.5" />
-              <span>Users</span>
-            </TabsTrigger>
-            <TabsTrigger value="overdue" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <AlertCircle className="w-3.5 h-3.5" />
-              <span>Overdue</span>
-            </TabsTrigger>
-            <TabsTrigger value="churn" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <Activity className="w-3.5 h-3.5" />
-              <span>Churn</span>
-            </TabsTrigger>
-
-            <div className="w-px bg-border/60 mx-1 self-stretch" />
+            <div className="flex items-center gap-0.5 pr-2 mr-2 border-r border-gray-200 dark:border-gray-700">
+              <TabsTrigger value="users" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <Users className="w-3.5 h-3.5" />
+                <span>Users</span>
+              </TabsTrigger>
+              <TabsTrigger value="overdue" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>Overdue</span>
+              </TabsTrigger>
+              <TabsTrigger value="churn" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <Activity className="w-3.5 h-3.5" />
+                <span>Churn</span>
+              </TabsTrigger>
+            </div>
 
             {/* ── Comms ── */}
-            <TabsTrigger value="leads" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>Leads</span>
-            </TabsTrigger>
-            <TabsTrigger value="campaigns" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <Mail className="w-3.5 h-3.5" />
-              <span>Campaigns</span>
-            </TabsTrigger>
-            <TabsTrigger value="whatsapp" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <Smartphone className="w-3.5 h-3.5" />
-              <span>WhatsApp</span>
-            </TabsTrigger>
-
-            <div className="w-px bg-border/60 mx-1 self-stretch" />
+            <div className="flex items-center gap-0.5 pr-2 mr-2 border-r border-gray-200 dark:border-gray-700">
+              <TabsTrigger value="leads" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Leads</span>
+              </TabsTrigger>
+              <TabsTrigger value="campaigns" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <Mail className="w-3.5 h-3.5" />
+                <span>Campaigns</span>
+              </TabsTrigger>
+              <TabsTrigger value="whatsapp" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <Smartphone className="w-3.5 h-3.5" />
+                <span>WhatsApp</span>
+              </TabsTrigger>
+            </div>
 
             {/* ── System ── */}
-            <TabsTrigger value="system" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <Server className="w-3.5 h-3.5" />
-              <span>System</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <Settings className="w-3.5 h-3.5" />
-              <span>Settings</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <BarChart3 className="w-3.5 h-3.5" />
-              <span>Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger value="deleted" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Deleted</span>
-            </TabsTrigger>
-            <TabsTrigger value="portals" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm">
-              <Eye className="w-3.5 h-3.5" />
-              <span>Portals</span>
-            </TabsTrigger>
+            <div className="flex items-center gap-0.5 pr-2 mr-2 border-r border-gray-200 dark:border-gray-700">
+              <TabsTrigger value="system" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <Server className="w-3.5 h-3.5" />
+                <span>System</span>
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <Settings className="w-3.5 h-3.5" />
+                <span>Settings</span>
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <BarChart3 className="w-3.5 h-3.5" />
+                <span>Analytics</span>
+              </TabsTrigger>
+            </div>
+
+            {/* ── Other ── */}
+            <div className="flex items-center gap-0.5">
+              <TabsTrigger value="deleted" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Deleted</span>
+              </TabsTrigger>
+              <TabsTrigger value="portals" className="flex items-center gap-1.5 shrink-0 text-xs sm:text-sm px-3 py-2 rounded-lg data-[state=active]:bg-[#2e6da4] data-[state=active]:text-white data-[state=active]:shadow-sm">
+                <Eye className="w-3.5 h-3.5" />
+                <span>Portals</span>
+              </TabsTrigger>
+            </div>
           </TabsList>
         </div>
 
@@ -556,7 +570,7 @@ function AdminContent() {
         <TabsContent value="users">
           {/* User Segmentation — executive summary */}
           {segmentation && (
-            <Card className="border-indigo-500/20 mb-4">
+            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm mb-4">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
                   <div className="w-1 h-4 rounded-full bg-gradient-to-b from-indigo-500 to-purple-500 shrink-0" />
@@ -2128,10 +2142,10 @@ function AdminContent() {
 
         {/* ── Portal Access ── */}
         <TabsContent value="portals">
-          <Card>
+          <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Eye className="w-4 h-4 text-indigo-500" /> Quick Portal Access
+                <Eye className="w-4 h-4 text-[#2e6da4]" /> Quick Portal Access
               </CardTitle>
               <CardDescription>
                 Switch to any dashboard to preview the user experience.
@@ -2140,15 +2154,15 @@ function AdminContent() {
             <CardContent>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {[
-                  { label: "Pro Dashboard", icon: "🐴", path: "/dashboard", btnColor: "bg-blue-600 hover:bg-blue-500" },
-                  { label: "Stable Dashboard", icon: "🏠", path: "/stable-dashboard", btnColor: "bg-emerald-600 hover:bg-emerald-500" },
-                  { label: "Student Portal", icon: "🎓", path: "/student-dashboard", btnColor: "bg-violet-600 hover:bg-violet-500" },
-                  { label: "Teacher Portal", icon: "📋", path: "/teacher-dashboard", btnColor: "bg-amber-600 hover:bg-amber-500" },
+                  { label: "Pro Dashboard", icon: "🐴", path: "/dashboard", btnColor: "bg-[#2e6da4] hover:bg-[#245a8a]" },
+                  { label: "Stable Dashboard", icon: "🏠", path: "/stable-dashboard", btnColor: "bg-[#2d6a4f] hover:bg-[#245a42]" },
+                  { label: "Student Portal", icon: "🎓", path: "/student-dashboard", btnColor: "bg-[#4a9eca] hover:bg-[#3a8dba]" },
+                  { label: "Teacher Portal", icon: "📋", path: "/teacher-dashboard", btnColor: "bg-[#3a9d8f] hover:bg-[#2e8a7d]" },
                 ].map((portal) => (
                   <Button
                     key={portal.label}
                     size="sm"
-                    className={`w-full text-white text-xs h-auto py-3 ${portal.btnColor}`}
+                    className={`w-full text-white text-xs h-auto py-3 rounded-lg shadow-sm ${portal.btnColor}`}
                     onClick={() => navigate(portal.path)}
                   >
                     <span className="mr-2">{portal.icon}</span> {portal.label}
