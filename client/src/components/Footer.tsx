@@ -2,13 +2,14 @@ import { Link } from "wouter";
 
 export function Footer() {
   return (
-    <footer className="py-16 border-t border-white/10 bg-black relative">
-      <div className="absolute inset-0 bg-gradient-to-t from-indigo-950/10 to-transparent pointer-events-none" />
+    <footer className="pt-20 pb-16 bg-[#060e1a] relative">
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#2e86ab]/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#5b8def]/5 to-transparent pointer-events-none" />
       <div className="container relative">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10 mb-12">
           <div className="col-span-2 md:col-span-1">
             <div className="text-2xl font-bold font-serif mb-4">
-              <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#5b8def] via-[#3a93b8] to-[#7dd3c0] bg-clip-text text-transparent">
                 EquiProfile
               </span>
             </div>
@@ -151,7 +152,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="hover:text-gray-300 transition-colors"
             >
-              Amarkt<span className="text-blue-400 font-semibold">AI</span>{" "}
+              Amarkt<span className="text-[#5b8def] font-semibold">AI</span>{" "}
               Network
             </a>
           </p>
