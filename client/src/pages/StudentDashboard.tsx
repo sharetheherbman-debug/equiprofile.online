@@ -321,11 +321,9 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
   return (
     <div className="space-y-6">
       {/* Student mode banner */}
-      <div className="rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3"
-        className={isSchoolLed ? "bg-indigo-50 border border-indigo-200" : "bg-emerald-50 border border-emerald-200"}>
+      <div className={`rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 ${isSchoolLed ? "bg-indigo-50 border border-indigo-200" : "bg-emerald-50 border border-emerald-200"}`}>
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-            className={isSchoolLed ? "bg-indigo-100" : "bg-emerald-100"}>
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isSchoolLed ? "bg-indigo-100" : "bg-emerald-100"}`}>
             {isSchoolLed
               ? <GraduationCap className="w-4 h-4 text-indigo-500" />
               : <Route className="w-4 h-4 text-emerald-600" />}
@@ -398,8 +396,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
         const weekPct = Math.round((weeklyDone / weeklyGoal) * 100);
         const lastCompletedLesson = (lessonProgress ?? []).slice(-1)[0];
         return (
-          <div className="rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3"
-            className="bg-indigo-50 border border-indigo-200">
+          <div className="rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-indigo-50 border border-indigo-200">
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-indigo-50 shrink-0">
                 <Flame className="w-5 h-5 text-indigo-500" />
@@ -436,8 +433,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
 
       {/* Continue Learning / Recommended Next — from real progression data */}
       {unlockData?.recommendedNextLesson && (
-        <div className="rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3"
-          className="bg-emerald-50 border border-emerald-200">
+        <div className="rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-emerald-50 border border-emerald-200">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-50 shrink-0">
               <Lightbulb className="w-5 h-5 text-emerald-600" />
@@ -461,8 +457,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
 
       {/* Current Level & Progression */}
       {unlockData && (
-        <div className="rounded-xl p-4 flex items-center gap-3"
-          className="bg-indigo-50/50 border border-indigo-100">
+        <div className="rounded-xl p-4 flex items-center gap-3 bg-indigo-50/50 border border-indigo-100">
           <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-indigo-50 shrink-0">
             <Award className="w-4.5 h-4.5 text-indigo-500" />
           </div>
@@ -792,7 +787,7 @@ function VirtualHorseView() {
             onClick={() => toggleEngineMut.mutate()}
             disabled={toggleEngineMut.isPending}
             className={`relative shrink-0 w-11 h-6 rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
-              taskEngineStatus?.enabled ? "bg-emerald-500" : "bg-gray-700"
+              taskEngineStatus?.enabled ? "bg-emerald-500" : "bg-slate-300"
             }`}
             aria-label="Toggle daily task engine"
           >
@@ -909,7 +904,7 @@ function TasksView() {
                 setNewTask({ title: "", category: "care", frequency: "daily" });
                 setShowAdd(false);
               }}
-              className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-slate-800 text-sm font-medium disabled:opacity-50 shrink-0"
+              className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium disabled:opacity-50 shrink-0"
             >
               {createMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
             </button>
@@ -1071,7 +1066,7 @@ function TrainingView() {
           <button
             disabled={!f.title.trim() || createMut.isPending || updateMut.isPending}
             onClick={onSubmit}
-            className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-slate-800 text-sm font-medium disabled:opacity-50 w-full sm:w-auto"
+            className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium disabled:opacity-50 w-full sm:w-auto"
           >
             {(createMut.isPending || updateMut.isPending) ? <Loader2 className="w-4 h-4 animate-spin" /> : submitLabel}
           </button>
@@ -1416,7 +1411,7 @@ function AITutorView({ initialQuestion, onQuestionConsumed }: { initialQuestion?
           <button
             onClick={() => handleAsk()}
             disabled={!question.trim() || askMut.isPending}
-            className="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-slate-800 disabled:opacity-50 transition-colors shrink-0"
+            className="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 transition-colors shrink-0"
           >
             <Send className="w-4 h-4" />
           </button>
@@ -2147,7 +2142,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
                               isCorrect ? "border-emerald-500 bg-emerald-50 text-emerald-300" :
                               isWrong ? "border-rose-500 bg-rose-500/20 text-rose-300" :
                               selected ? "border-indigo-500 bg-indigo-50 text-indigo-600" :
-                              "border-gray-700 bg-gray-800/50 text-slate-500 hover:border-gray-600"
+                              "border-slate-200 bg-slate-100 text-slate-400 hover:border-slate-300"
                             }`}>
                             {opt}
                           </button>
@@ -2276,7 +2271,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
               <span className="text-xs text-slate-500">{totalLessons} lessons</span>
               <span className="text-xs text-emerald-600">{completedCount} completed</span>
               {totalLessons > 0 && (
-                <div className="flex-1 max-w-[200px] h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                <div className="flex-1 max-w-[200px] h-1.5 bg-slate-200 rounded-full overflow-hidden">
                   <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${(completedCount / totalLessons) * 100}%` }} />
                 </div>
               )}
@@ -2299,7 +2294,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
             className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
               levelFilter === lvl
                 ? "bg-indigo-600 text-white"
-                : "bg-gray-800 text-slate-500 hover:bg-gray-700"
+                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
             }`}>
             {lvl === "all" ? "All Levels" : lvl.charAt(0).toUpperCase() + lvl.slice(1)}
           </button>
@@ -2391,7 +2386,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
                         <span className="text-xs text-slate-500 flex items-center gap-1"><Clock className="w-3 h-3" />{estTime}</span>
                         <span className="text-xs text-slate-400">·</span>
                         <span className="text-xs text-emerald-600">{pwCompleted} done</span>
-                        <div className="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden min-w-[40px]">
+                        <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden min-w-[40px]">
                           <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(pwCompleted / pwLessons.length) * 100}%` }} />
                         </div>
                       </>
@@ -2429,7 +2424,7 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
                   }`}
                   style={{ background: STUDENT_CARD, border: `1px solid ${STUDENT_BORDER}` }}>
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                    isLocked ? "bg-gray-800/50" : isComplete ? "bg-emerald-50" : "bg-gray-800"
+                    isLocked ? "bg-slate-100" : isComplete ? "bg-emerald-50" : "bg-white"
                   }`}>
                     {isLocked ? <Lock className="w-4 h-4 text-slate-400" /> : isComplete ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <span className="text-xs text-slate-500 font-mono">{idx + 1}</span>}
                   </div>

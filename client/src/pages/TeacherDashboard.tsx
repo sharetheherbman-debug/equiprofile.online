@@ -223,7 +223,7 @@ function GroupsView() {
                   setForm({ name: "", description: "", level: "beginner", academicYear: "" });
                   setShowCreate(false);
                 }}
-                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-slate-800 text-sm font-medium disabled:opacity-50"
+                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50"
               >
                 {createMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Group"}
               </button>
@@ -291,7 +291,7 @@ function GroupsView() {
                         <div className="flex gap-2 justify-end">
                           <button onClick={() => { setAddingTo(null); setAddEmail(""); setAddError(""); }} className="text-xs text-slate-500 hover:text-slate-700">Cancel</button>
                           <button onClick={() => handleAddMember(g.id)} disabled={addMemberMut.isPending || !addEmail.trim()}
-                            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-slate-800 text-xs font-medium disabled:opacity-50">
+                            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium disabled:opacity-50">
                             {addMemberMut.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : "Add Student"}
                           </button>
                         </div>
@@ -371,7 +371,7 @@ function StudentsView({ onFeedback }: { onFeedback: (studentId: number, name: st
 
             <button
               onClick={() => onFeedback(summary.student.id, summary.student.name ?? "")}
-              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-slate-800 text-sm font-medium transition-colors"
+              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors"
             >
               <MessageSquare className="w-4 h-4 inline mr-2" /> Give Feedback to {summary.student.name}
             </button>
@@ -477,7 +477,7 @@ function TasksView() {
             <div className="flex gap-2">
               {(["student", "group"] as const).map(t => (
                 <button key={t} onClick={() => setAssignTo(t)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${assignTo === t ? "bg-emerald-600 text-slate-800" : "bg-slate-50 text-slate-500 hover:text-slate-700"}`}>
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${assignTo === t ? "bg-emerald-600 text-white" : "bg-slate-50 text-slate-500 hover:text-slate-700"}`}>
                   {t === "student" ? "Individual Student" : "Whole Group"}
                 </button>
               ))}
@@ -531,7 +531,7 @@ function TasksView() {
               <button
                 disabled={!form.title.trim() || (assignTo === "student" ? !form.studentUserId : !form.groupId) || assignMut.isPending}
                 onClick={handleAssign}
-                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-slate-800 text-sm font-medium disabled:opacity-50 w-full sm:w-auto"
+                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50 w-full sm:w-auto"
               >
                 {assignMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Assign Task"}
               </button>
@@ -682,7 +682,7 @@ function FeedbackView({ prefillStudentId, prefillStudentName, onClearPrefill }: 
               <button
                 disabled={!form.studentUserId || !form.comment.trim() || addMut.isPending}
                 onClick={handleAdd}
-                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-slate-800 text-sm font-medium disabled:opacity-50 w-full sm:w-auto"
+                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50 w-full sm:w-auto"
               >
                 {addMut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Feedback"}
               </button>
@@ -771,7 +771,7 @@ function ReportsView() {
               <button
                 key={t}
                 onClick={() => setReportType(t)}
-                className={`flex-1 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${reportType === t ? "bg-emerald-600 text-slate-800" : "bg-slate-50 text-slate-500 hover:text-slate-700"}`}
+                className={`flex-1 px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${reportType === t ? "bg-emerald-600 text-white" : "bg-slate-50 text-slate-500 hover:text-slate-700"}`}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
@@ -1093,7 +1093,7 @@ function TeacherLessonsView() {
         {(["assign", "review", "competencies"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors capitalize ${
-              tab === t ? "bg-emerald-600 text-slate-800" : "text-slate-500 hover:text-slate-700"
+              tab === t ? "bg-emerald-600 text-white" : "text-slate-500 hover:text-slate-700"
             }`}>
             {t === "assign" ? "Assign Lessons" : t === "review" ? "Reviews" : "Competencies"}
           </button>
@@ -1110,7 +1110,7 @@ function TeacherLessonsView() {
               {/* Target type */}
               <div>
                 <label className="block text-xs text-slate-500 mb-1">Assign to</label>
-                <select className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                <select className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                   value={assignForm.targetType}
                   onChange={e => setAssignForm(f => ({ ...f, targetType: e.target.value as "student" | "group", studentUserId: undefined, groupId: undefined }))}>
                   <option value="student">Individual Student</option>
@@ -1121,14 +1121,14 @@ function TeacherLessonsView() {
               <div>
                 <label className="block text-xs text-slate-500 mb-1">{assignForm.targetType === "student" ? "Student" : "Group"}</label>
                 {assignForm.targetType === "student" ? (
-                  <select className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                  <select className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                     value={assignForm.studentUserId ?? ""}
                     onChange={e => setAssignForm(f => ({ ...f, studentUserId: parseInt(e.target.value) || undefined }))}>
                     <option value="">Select student…</option>
                     {(students ?? []).map(s => <option key={s.id} value={s.id}>{s.name ?? s.email}</option>)}
                   </select>
                 ) : (
-                  <select className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                  <select className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                     value={assignForm.groupId ?? ""}
                     onChange={e => setAssignForm(f => ({ ...f, groupId: parseInt(e.target.value) || undefined }))}>
                     <option value="">Select group…</option>
@@ -1139,7 +1139,7 @@ function TeacherLessonsView() {
               {/* Assignment type */}
               <div>
                 <label className="block text-xs text-slate-500 mb-1">Assignment Type</label>
-                <select className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                <select className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                   value={assignForm.type}
                   onChange={e => setAssignForm(f => ({ ...f, type: e.target.value as "lesson" | "pathway" }))}>
                   <option value="lesson">Single Lesson</option>
@@ -1150,7 +1150,7 @@ function TeacherLessonsView() {
               <div>
                 <label className="block text-xs text-slate-500 mb-1">{assignForm.type === "lesson" ? "Lesson" : "Pathway"}</label>
                 {assignForm.type === "lesson" ? (
-                  <select className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                  <select className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                     value={assignForm.lessonSlug}
                     onChange={e => setAssignForm(f => ({ ...f, lessonSlug: e.target.value }))}>
                     <option value="">Select lesson…</option>
@@ -1161,7 +1161,7 @@ function TeacherLessonsView() {
                     ))}
                   </select>
                 ) : (
-                  <select className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                  <select className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                     value={assignForm.pathwaySlug}
                     onChange={e => setAssignForm(f => ({ ...f, pathwaySlug: e.target.value }))}>
                     <option value="">Select pathway…</option>
@@ -1172,14 +1172,14 @@ function TeacherLessonsView() {
               {/* Due date */}
               <div>
                 <label className="block text-xs text-slate-500 mb-1">Due Date (optional)</label>
-                <input type="date" className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                <input type="date" className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                   value={assignForm.dueDate}
                   onChange={e => setAssignForm(f => ({ ...f, dueDate: e.target.value }))} />
               </div>
               {/* Instructions */}
               <div className="sm:col-span-2">
                 <label className="block text-xs text-slate-500 mb-1">Instructions (optional)</label>
-                <textarea className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 placeholder-gray-600 resize-none"
+                <textarea className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 placeholder-slate-400 resize-none"
                   rows={2} placeholder="Additional notes for the student…"
                   value={assignForm.instructions}
                   onChange={e => setAssignForm(f => ({ ...f, instructions: e.target.value }))} />
@@ -1257,7 +1257,7 @@ function TeacherLessonsView() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-xs text-slate-500 mb-1">Student</label>
-                <select className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                <select className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                   value={reviewForm.studentUserId ?? ""}
                   onChange={e => setReviewForm(f => ({ ...f, studentUserId: parseInt(e.target.value) || undefined }))}>
                   <option value="">Select student…</option>
@@ -1266,7 +1266,7 @@ function TeacherLessonsView() {
               </div>
               <div>
                 <label className="block text-xs text-slate-500 mb-1">Lesson</label>
-                <select className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                <select className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                   value={reviewForm.lessonSlug}
                   onChange={e => setReviewForm(f => ({ ...f, lessonSlug: e.target.value }))}>
                   <option value="">Select lesson…</option>
@@ -1280,7 +1280,7 @@ function TeacherLessonsView() {
                 <div className="flex gap-2">
                   {(["satisfactory", "needs_improvement"] as const).map(s => (
                     <button key={s} onClick={() => setReviewForm(f => ({ ...f, reviewStatus: s }))}
-                      className={`flex-1 text-xs py-2 rounded-lg font-medium transition-colors ${reviewForm.reviewStatus === s ? (s === "satisfactory" ? "bg-emerald-600 text-slate-800" : "bg-amber-600 text-slate-800") : "bg-gray-800 text-slate-500 hover:text-slate-700"}`}>
+                      className={`flex-1 text-xs py-2 rounded-lg font-medium transition-colors ${reviewForm.reviewStatus === s ? (s === "satisfactory" ? "bg-emerald-600 text-white" : "bg-amber-600 text-white") : "bg-slate-100 text-slate-500 hover:text-slate-700"}`}>
                       {s === "satisfactory" ? "✓ Satisfactory" : "△ Needs Improvement"}
                     </button>
                   ))}
@@ -1288,7 +1288,7 @@ function TeacherLessonsView() {
               </div>
               <div>
                 <label className="block text-xs text-slate-500 mb-1">Recommended Next Lesson (optional)</label>
-                <select className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+                <select className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
                   value={reviewForm.recommendedNextLesson}
                   onChange={e => setReviewForm(f => ({ ...f, recommendedNextLesson: e.target.value }))}>
                   <option value="">None / not specified</option>
@@ -1299,7 +1299,7 @@ function TeacherLessonsView() {
               </div>
               <div className="sm:col-span-2">
                 <label className="block text-xs text-slate-500 mb-1">Feedback for student</label>
-                <textarea className="w-full text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 placeholder-gray-600 resize-none"
+                <textarea className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 placeholder-slate-400 resize-none"
                   rows={3} placeholder="Describe what the student demonstrated, areas of improvement, and next steps…"
                   value={reviewForm.feedback}
                   onChange={e => setReviewForm(f => ({ ...f, feedback: e.target.value }))} />
@@ -1354,7 +1354,7 @@ function TeacherLessonsView() {
           <TCard>
             <THeading icon={Award} title="Competency Sign-Off" />
             <p className="text-xs text-slate-500 mb-4">Select a student to view and sign off their competencies.</p>
-            <select className="w-full max-w-xs text-sm bg-gray-800 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
+            <select className="w-full max-w-xs text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800"
               value={selectedStudentForCompetency ?? ""}
               onChange={e => setSelectedStudentForCompetency(parseInt(e.target.value) || null)}>
               <option value="">Select student…</option>
@@ -1396,7 +1396,7 @@ function TeacherLessonsView() {
                             )}
                             {isEditing ? (
                               <div className="mt-2 space-y-2">
-                                <select className="w-full text-xs bg-gray-800 border border-slate-200 rounded px-2 py-1.5 text-slate-800"
+                                <select className="w-full text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-slate-800"
                                   value={competencyForm.status}
                                   onChange={e => setCompetencyForm(f => f ? { ...f, status: e.target.value } : null)}>
                                   <option value="not_assessed">Not Assessed</option>
@@ -1404,7 +1404,7 @@ function TeacherLessonsView() {
                                   <option value="achieved">Achieved ✓</option>
                                   <option value="needs_support">Needs Support</option>
                                 </select>
-                                <textarea className="w-full text-xs bg-gray-800 border border-slate-200 rounded px-2 py-1.5 text-slate-800 resize-none"
+                                <textarea className="w-full text-xs bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-slate-800 resize-none"
                                   rows={2} placeholder="Teacher comment…"
                                   value={competencyForm.comment}
                                   onChange={e => setCompetencyForm(f => f ? { ...f, comment: e.target.value } : null)} />
@@ -1416,11 +1416,11 @@ function TeacherLessonsView() {
                                     status: competencyForm.status as any,
                                     teacherComment: competencyForm.comment || undefined,
                                   })} disabled={signOffMutation.isPending}
-                                    className="text-xs px-3 py-1 rounded-lg bg-emerald-600 text-slate-800 hover:bg-emerald-500 transition-colors disabled:opacity-40">
+                                    className="text-xs px-3 py-1 rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 transition-colors disabled:opacity-40">
                                     {signOffMutation.isPending ? "Saving…" : "Save"}
                                   </button>
                                   <button onClick={() => setCompetencyForm(null)}
-                                    className="text-xs px-3 py-1 rounded-lg bg-gray-700 text-slate-600 hover:bg-gray-600 transition-colors">
+                                    className="text-xs px-3 py-1 rounded-lg bg-slate-200 text-slate-600 hover:bg-slate-300 transition-colors">
                                     Cancel
                                   </button>
                                 </div>
@@ -1780,7 +1780,7 @@ function TeacherAssignmentsView() {
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="e.g. Horse Anatomy Diagram Labelling"
-                className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+                className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500/40"
               />
             </div>
             <div>
@@ -1790,7 +1790,7 @@ function TeacherAssignmentsView() {
                 onChange={(e) => setNewDesc(e.target.value)}
                 placeholder="Instructions for the student..."
                 rows={3}
-                className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-gray-600 focus:outline-none focus:border-emerald-500/40 resize-none"
+                className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500/40 resize-none"
               />
             </div>
             <div>
@@ -1814,7 +1814,7 @@ function TeacherAssignmentsView() {
                   });
                 }}
                 disabled={!newTitle.trim() || !newStudentId || createMutation.isPending}
-                className="px-4 py-2 rounded-lg bg-emerald-600 text-slate-800 text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 transition-colors"
               >
                 {createMutation.isPending ? "Creating..." : "Create Assignment"}
               </button>
@@ -1887,7 +1887,7 @@ function TeacherAssignmentsView() {
                           value={grade}
                           onChange={(e) => setGrade(e.target.value)}
                           placeholder="e.g. A, B+, 85%"
-                          className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+                          className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500/40"
                         />
                       </div>
                       <div>
@@ -1897,7 +1897,7 @@ function TeacherAssignmentsView() {
                           onChange={(e) => setFeedback(e.target.value)}
                           placeholder="Your feedback for the student..."
                           rows={3}
-                          className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-gray-600 focus:outline-none focus:border-emerald-500/40 resize-none"
+                          className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500/40 resize-none"
                         />
                       </div>
                       <div className="flex gap-2">
@@ -1908,7 +1908,7 @@ function TeacherAssignmentsView() {
                             feedback: feedback.trim() || undefined,
                           })}
                           disabled={reviewMutation.isPending}
-                          className="px-3 py-1.5 rounded-lg bg-emerald-600 text-slate-800 text-xs font-medium hover:bg-emerald-500 disabled:opacity-50 transition-colors"
+                          className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-500 disabled:opacity-50 transition-colors"
                         >
                           {reviewMutation.isPending ? "Saving..." : "Submit Review"}
                         </button>
@@ -2034,7 +2034,7 @@ function MessagesView() {
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Type a message..."
-                  className="flex-1 bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+                  className="flex-1 bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500/40"
                 />
                 <button
                   onClick={handleSend}
@@ -2136,7 +2136,7 @@ function ResourcesView() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Horse Anatomy Diagram"
-                className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+                className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500/40"
               />
             </div>
             <div>
@@ -2145,7 +2145,7 @@ function ResourcesView() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief description of the resource"
-                className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-gray-600 focus:outline-none focus:border-emerald-500/40"
+                className="w-full bg-slate-50 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500/40"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -2193,7 +2193,7 @@ function ResourcesView() {
               <button
                 onClick={handleCreate}
                 disabled={!title.trim() || createMutation.isPending}
-                className="px-4 py-2 rounded-lg bg-emerald-600 text-slate-800 text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 transition-colors"
               >
                 {createMutation.isPending ? "Saving..." : "Upload"}
               </button>
