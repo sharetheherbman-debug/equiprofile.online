@@ -1,7 +1,6 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import { Link } from "wouter";
 import { MarketingLayout } from "@/components/MarketingLayout";
-import { PageBanner } from "@/components/PageBanner";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import {
@@ -16,370 +15,386 @@ import {
   CheckCircle2,
   School,
   Sparkles,
-  Star,
   ArrowRight,
-  Mail,
+  Monitor,
+  MessageCircle,
 } from "lucide-react";
 
+const fadeUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 },
+};
+
 const studentFeatures = [
-  {
-    icon: Heart,
-    title: "Your Own Horse to Manage",
-    description:
-      "Every student is paired with a horse — virtual or real. Record feeds, log health observations, manage turnout schedules, and develop the instincts that only come from genuine daily responsibility.",
-    color: "from-rose-500 to-pink-500",
-  },
   {
     icon: BookOpen,
     title: "Structured Lesson Pathways",
     description:
-      "Follow professional pathways covering horse care foundations, rider skills, stable management, and more. Each lesson includes objectives, knowledge checks, and progress tracking — aligned with BHS and Pony Club syllabi.",
-    color: "from-blue-500 to-[#5b8def]",
-  },
-  {
-    icon: ClipboardList,
-    title: "Assignments & Submissions",
-    description:
-      "Receive assignments from your teacher, upload PDF submissions, and get detailed feedback and marks. Track your assignment history and build evidence of your learning for assessments and qualifications.",
-    color: "from-amber-500 to-orange-500",
+      "Follow 15 professional pathways covering horse care, rider skills, stable management, and more — each with objectives, knowledge checks, and progress tracking.",
   },
   {
     icon: Brain,
     title: "AI-Powered Tutor",
     description:
-      "Ask questions about equine care and get clear, knowledgeable answers instantly. From understanding lameness signs to calculating feed ratios — your AI tutor is always available to help you learn.",
-    color: "from-violet-500 to-purple-500",
+      "Ask questions about equine care and get clear, knowledgeable answers instantly. From lameness signs to feed ratios — your AI tutor is always ready to help.",
   },
   {
     icon: Sparkles,
-    title: "Scenario Training",
+    title: "Virtual Horse Care Simulation",
     description:
-      "Practice real-world equine scenarios in a safe environment. Handle simulated emergencies, make feeding decisions, and develop the critical thinking skills that employers and examiners look for.",
-    color: "from-[#7dd3c0] to-teal-500",
+      "Practice with a realistic simulated horse that responds to your care decisions. Build confidence and core knowledge before setting foot in a stable.",
+  },
+  {
+    icon: Monitor,
+    title: "Scenario-Based Training",
+    description:
+      "Handle simulated emergencies, make feeding decisions, and develop the critical thinking skills that employers and examiners look for.",
   },
   {
     icon: TrendingUp,
     title: "Progress & Competency Tracking",
     description:
-      "Track your development across all skill areas with detailed competency maps. See your strengths, identify areas for improvement, and share verifiable progress reports with trainers and parents.",
-    color: "from-green-500 to-emerald-500",
+      "Track your development with detailed competency maps. See strengths, identify areas for improvement, and share verifiable progress reports.",
+  },
+  {
+    icon: ClipboardList,
+    title: "Assignments & Feedback",
+    description:
+      "Receive assignments from your teacher, submit your work, and get detailed feedback and marks. Build evidence of learning for qualifications.",
   },
   {
     icon: Trophy,
     title: "Achievements & Portfolios",
     description:
-      "Earn recognition for milestones — first solo health check, 100 logged care tasks, consistent training streaks. Build a verifiable portfolio for assessments, interviews, and qualifications.",
-    color: "from-yellow-500 to-amber-500",
+      "Earn recognition for milestones and build a verifiable portfolio for assessments, interviews, and qualifications.",
   },
   {
-    icon: Users,
+    icon: MessageCircle,
     title: "Teacher Connection",
     description:
-      "Stay connected with your instructor through messaging, receive resource materials (PDFs, images, documents), and get personalised feedback on your lesson progress and riding development.",
-    color: "from-[#5b8def] to-[#3a93b8]",
+      "Stay connected with your instructor through messaging, receive resources, and get personalised feedback on your lesson progress.",
   },
 ];
 
 const schoolBenefits = [
   {
-    title: "Curriculum-Aligned Learning",
+    title: "Curriculum-Aligned Content",
     description:
-      "Map student activities directly to your syllabus — BHS stages, Pony Club badges, NVQ modules, or your own bespoke programme. Every task contributes to measurable learning outcomes.",
+      "Map student activities to your syllabus — BHS stages, Pony Club badges, NVQ modules, or your own programme. Every task contributes to measurable outcomes.",
   },
   {
-    title: "Cohort & Horse Management",
+    title: "Student & Group Management",
     description:
-      "Assign horses to students, organise groups by level or class, set differentiated tasks, and monitor who's engaged — all from a single instructor dashboard.",
+      "Assign horses to students, organise groups by level, set differentiated tasks, and monitor engagement from a single dashboard.",
   },
   {
     title: "Automated Progress Reports",
     description:
-      "Generate detailed, data-driven reports for parents, inspectors, and accreditation bodies. Evidence student progress with real activity logs, not just instructor notes.",
+      "Generate data-driven reports for parents, inspectors, and accreditation bodies. Evidence progress with real activity logs, not just notes.",
   },
   {
     title: "Flexible School Pricing",
     description:
-      "Tiered plans from £49/month for up to 10 students, scaling to £199/month for 50. Larger schools can contact us for enterprise pricing. All plans include a 7-day free trial.",
+      "Tiered plans from £49/month for up to 10 students, scaling to £199/month for 50. All plans include a 7-day free trial.",
   },
 ];
 
 export default function Students() {
   return (
     <MarketingLayout>
-      <PageBanner
-        title="For Students"
-        subtitle="Professional equine management tools built for the next generation of horsemen and horsewomen"
-        imageSrc="/images/hero/image4.jpg"
-        imagePosition="center"
-      />
-
-      <div className="min-h-screen bg-[#0b1726] bg-gradient-to-br from-[#0b1726] via-[#0f1f45] to-[#0b1726]">
-        {/* Hero Intro */}
-        <section className="container mx-auto px-4 pt-16 pb-12">
+      {/* Hero */}
+      <section className="bg-[#f8f6f3] pt-28 pb-20">
+        <div className="container mx-auto px-4">
           <motion.div
             className="max-w-3xl mx-auto text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            {...fadeUp}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4f5fd6]/15 border border-[#4f5fd6]/30 mb-6">
-              <GraduationCap className="w-5 h-5 text-[#8b9cf7]" />
-              <span className="text-sm font-medium text-[#8b9cf7]">
-                Student Programme — From £8/month
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2e6da4]/10 border border-[#2e6da4]/20 mb-6">
+              <GraduationCap className="w-5 h-5 text-[#2e6da4]" />
+              <span className="text-sm font-medium text-[#2e6da4]">
+                Student Plan — From £8/month
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-serif text-white mb-6 tracking-tight">
-              Where Serious Equestrian{" "}
-              <span className="bg-gradient-to-r from-[#8b9cf7] to-[#7dd3c0] bg-clip-text text-transparent">
-                Learning Begins
-              </span>
-            </h2>
-            <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
-              EquiProfile gives every student their own professional-grade
-              dashboard with 95 structured lessons across 15 pathways —
-              from horse care foundations to advanced welfare and nutrition.
-              Manage a horse, earn level unlocks, practice daily scenarios,
-              and build a portfolio that proves real knowledge and competence.
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-[#1a3a5c] mb-6 tracking-tight">
+              Learn Horsemanship{" "}
+              <span className="text-[#3a9d8f]">the Smart Way</span>
+            </h1>
+            <p className="text-lg md:text-xl text-[#1a3a5c]/70 leading-relaxed max-w-2xl mx-auto mb-10">
+              95+ structured lessons, AI-powered tutoring, and hands-on
+              simulation — everything a student needs to build real equine
+              knowledge, from beginner to advanced.
             </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/register?plan=student">
+                <Button
+                  size="lg"
+                  className="text-lg px-8 py-6 bg-[#2e6da4] hover:bg-[#1a3a5c] text-white rounded-lg group"
+                >
+                  Start Free Trial
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="/pricing">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 py-6 border-[#1a3a5c]/20 text-[#1a3a5c] hover:bg-[#1a3a5c]/5 rounded-lg"
+                >
+                  View Pricing
+                </Button>
+              </Link>
+            </div>
           </motion.div>
-        </section>
+        </div>
+      </section>
 
-        {/* Virtual vs Real Horse */}
-        <section className="container mx-auto px-4 py-12">
+      {/* Stats Bar */}
+      <section className="bg-white border-y border-gray-100">
+        <div className="container mx-auto px-4 py-12">
           <motion.div
-            className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6"
+            className="max-w-4xl mx-auto grid grid-cols-3 gap-6 md:gap-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <div className="bg-gradient-to-br from-[#4f5fd6]/10 to-violet-500/10 border border-[#4f5fd6]/20 rounded-2xl p-8 hover:border-[#4f5fd6]/40 transition-colors duration-300">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-violet-500 to-purple-500 flex items-center justify-center mb-5">
-                <Sparkles className="w-7 h-7 text-white" />
+            {[
+              { value: "95+", label: "Structured Lessons" },
+              { value: "15", label: "Learning Pathways" },
+              { value: "4", label: "Learner Levels" },
+            ].map((stat, idx) => (
+              <div key={idx} className="text-center">
+                <p className="text-4xl md:text-5xl font-bold font-serif text-[#1a3a5c] mb-1">
+                  {stat.value}
+                </p>
+                <p className="text-sm md:text-base text-[#1a3a5c]/60">
+                  {stat.label}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Start with a Virtual Horse
-              </h3>
-              <p className="text-gray-400 leading-relaxed mb-4">
-                No yard access? No problem. Begin with a realistic simulated
-                horse that responds to your care decisions. Practice feeding
-                plans, spot early health concerns, and develop professional
-                routines — all before setting foot in a stable. Ideal for
-                building confidence and core knowledge from anywhere.
-              </p>
-              <ul className="space-y-2">
-                {[
-                  "Realistic daily care simulation",
-                  "Learn at your own pace, risk-free",
-                  "Master fundamentals before the real thing",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                    <CheckCircle2 className="w-4 h-4 text-violet-400 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-2xl p-8 hover:border-emerald-500/40 transition-colors duration-300">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center mb-5">
-                <Heart className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Work with a Real Horse
-              </h3>
-              <p className="text-gray-400 leading-relaxed mb-4">
-                At a riding school or training yard? Your instructor assigns
-                you a real horse to manage through EquiProfile. Log every
-                feed, record health checks after each session, and track
-                genuine training progress — building the kind of verifiable
-                experience that qualifications and employers look for.
-              </p>
-              <ul className="space-y-2">
-                {[
-                  "Hands-on care with real accountability",
-                  "Instructor-assigned and supervised",
-                  "Build a verified experience portfolio",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            ))}
           </motion.div>
-        </section>
+        </div>
+      </section>
 
-        {/* Learning at a Glance */}
-        <section className="container mx-auto px-4 py-12">
-          <motion.div
-            className="max-w-5xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-          >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {[
-                { value: "95", label: "Structured Lessons", color: "from-[#5b8def] to-[#3a93b8]" },
-                { value: "15", label: "Learning Pathways", color: "from-[#7dd3c0] to-blue-500" },
-                { value: "4", label: "Progression Levels", color: "from-emerald-500 to-teal-500" },
-                { value: "3/day", label: "Practice Scenarios", color: "from-amber-500 to-orange-500" },
-              ].map((stat, idx) => (
-                <div key={idx} className="text-center py-5 px-4 rounded-xl bg-white/5 border border-white/10">
-                  <p className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-1`}>
-                    {stat.value}
-                  </p>
-                  <p className="text-xs md:text-sm text-gray-400">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-
-        {/* Student Features Grid */}
-        <section className="container mx-auto px-4 py-16">
+      {/* Key Features Grid */}
+      <section className="bg-[#f8f6f3] py-20">
+        <div className="container mx-auto px-4">
           <motion.div
             className="text-center mb-14"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4 tracking-tight">
-              Tools That Develop{" "}
-              <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
-                Real Horsemen
-              </span>
+            <h2 className="text-3xl md:text-4xl font-bold font-serif text-[#1a3a5c] mb-4 tracking-tight">
+              Everything You Need to Learn
             </h2>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Not a watered-down demo — a professional management platform
-              designed to teach through doing, from first-time handlers to
-              competition-level riders
+            <p className="text-lg text-[#1a3a5c]/60 max-w-2xl mx-auto">
+              A complete learning platform designed to teach through doing
+              — from first-time handlers to competition-level riders
             </p>
           </motion.div>
 
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {studentFeatures.map((feature, index) => (
               <motion.article
                 key={index}
-                className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-xl p-7 hover:border-white/25 transition-all duration-300 group"
+                className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow duration-300 group"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.15 + index * 0.08 }}
+                transition={{ duration: 0.4, delay: 0.1 + index * 0.06 }}
               >
-                <div
-                  className={`w-12 h-12 rounded-xl bg-gradient-to-r ${feature.color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}
-                >
-                  <feature.icon className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-[#2e6da4]/10 flex items-center justify-center mb-4 group-hover:bg-[#2e6da4]/15 transition-colors duration-300">
+                  <feature.icon className="w-6 h-6 text-[#2e6da4]" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
+                <h3 className="text-base font-semibold text-[#1a3a5c] mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-sm text-gray-400 leading-relaxed">
+                <p className="text-sm text-[#1a3a5c]/60 leading-relaxed">
                   {feature.description}
                 </p>
               </motion.article>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Who Is This For */}
-        <section className="container mx-auto px-4 py-16">
+      {/* Virtual vs Real Horse */}
+      <section className="bg-white py-20">
+        <div className="container mx-auto px-4">
+          <motion.div
+            className="text-center mb-14"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold font-serif text-[#1a3a5c] mb-4 tracking-tight">
+              Learn Your Way
+            </h2>
+            <p className="text-lg text-[#1a3a5c]/60 max-w-2xl mx-auto">
+              Start with a virtual horse at home or work with a real horse at
+              your yard — EquiProfile supports both
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+          >
+            <div className="bg-[#f8f6f3] rounded-2xl p-8 border border-gray-100">
+              <div className="w-14 h-14 rounded-xl bg-[#4a9eca]/15 flex items-center justify-center mb-5">
+                <Sparkles className="w-7 h-7 text-[#4a9eca]" />
+              </div>
+              <h3 className="text-xl font-semibold font-serif text-[#1a3a5c] mb-3">
+                Start with a Virtual Horse
+              </h3>
+              <p className="text-[#1a3a5c]/60 leading-relaxed mb-5">
+                No yard access? No problem. Begin with a realistic simulated
+                horse that responds to your care decisions. Practice feeding
+                plans, spot early health concerns, and develop professional
+                routines — all from anywhere.
+              </p>
+              <ul className="space-y-3">
+                {[
+                  "Realistic daily care simulation",
+                  "Learn at your own pace, risk-free",
+                  "Master fundamentals before the real thing",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-2.5 text-sm text-[#1a3a5c]/70">
+                    <CheckCircle2 className="w-4 h-4 text-[#3a9d8f] shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-[#f8f6f3] rounded-2xl p-8 border border-gray-100">
+              <div className="w-14 h-14 rounded-xl bg-[#3a9d8f]/15 flex items-center justify-center mb-5">
+                <Heart className="w-7 h-7 text-[#3a9d8f]" />
+              </div>
+              <h3 className="text-xl font-semibold font-serif text-[#1a3a5c] mb-3">
+                Work with a Real Horse
+              </h3>
+              <p className="text-[#1a3a5c]/60 leading-relaxed mb-5">
+                At a riding school or training yard? Your instructor assigns
+                you a real horse to manage through EquiProfile. Log feeds,
+                record health checks, and track genuine progress — building
+                verifiable experience.
+              </p>
+              <ul className="space-y-3">
+                {[
+                  "Hands-on care with real accountability",
+                  "Instructor-assigned and supervised",
+                  "Build a verified experience portfolio",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-2.5 text-sm text-[#1a3a5c]/70">
+                    <CheckCircle2 className="w-4 h-4 text-[#3a9d8f] shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Who It's For */}
+      <section className="bg-[#f8f6f3] py-20">
+        <div className="container mx-auto px-4">
           <motion.div
             className="max-w-5xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold font-serif text-white mb-4 tracking-tight">
-                Designed for the{" "}
-                <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
-                  Whole Equestrian Journey
-                </span>
+            <div className="text-center mb-14">
+              <h2 className="text-3xl md:text-4xl font-bold font-serif text-[#1a3a5c] mb-4 tracking-tight">
+                Who Is EquiProfile For?
               </h2>
-              <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-                Whether you're mucking out for the first time or preparing for
-                professional qualifications — EquiProfile meets you where you are
+              <p className="text-lg text-[#1a3a5c]/60 max-w-2xl mx-auto">
+                Whether you're just starting out or preparing for professional
+                qualifications — EquiProfile meets you where you are
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
                   icon: GraduationCap,
                   title: "Students & Young Riders",
                   description:
-                    "Own your learning. Log daily care, track riding hours, study equine theory, and build a portfolio that shows what you can actually do — not just what you've been told. From Pony Club to BHS Stage exams, EquiProfile keeps you organised and motivated.",
+                    "Study equine theory, practise care routines, track your riding hours, and build a portfolio that proves what you can actually do. From Pony Club to BHS Stage exams, stay organised and motivated.",
                 },
                 {
                   icon: School,
                   title: "Riding Schools & Colleges",
                   description:
-                    "Give every student a structured, measurable learning path without adding admin burden. Assign horses, set care tasks that align to your syllabus, and generate progress evidence your inspectors and parents will value.",
+                    "Give every student a structured, measurable learning path. Assign horses, set tasks aligned to your syllabus, and generate evidence-based progress reports your inspectors will value.",
                 },
                 {
                   icon: Users,
                   title: "Parents & Trainers",
                   description:
-                    "See exactly what your child or student is learning — not vague updates, but real data. Care logs, training records, achievement milestones, and progress summaries that give you confidence their time in the saddle and on the yard is time well spent.",
+                    "See exactly what your child or student is learning — real data, not vague updates. Care logs, training records, achievement milestones, and progress summaries you can trust.",
                 },
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="bg-[#101f3a]/60 backdrop-blur-md border border-white/10 rounded-xl p-7 text-center hover:border-white/25 transition-colors duration-300"
+                  className="bg-white rounded-xl border border-gray-100 p-8 text-center shadow-sm"
                 >
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#3a93b8] to-[#5b8def] flex items-center justify-center mx-auto mb-5">
-                    <item.icon className="w-7 h-7 text-white" />
+                  <div className="w-14 h-14 rounded-full bg-[#1a3a5c]/10 flex items-center justify-center mx-auto mb-5">
+                    <item.icon className="w-7 h-7 text-[#1a3a5c]" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                  <h3 className="text-lg font-semibold font-serif text-[#1a3a5c] mb-3">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-gray-400 leading-relaxed">
+                  <p className="text-sm text-[#1a3a5c]/60 leading-relaxed">
                     {item.description}
                   </p>
                 </div>
               ))}
             </div>
           </motion.div>
-        </section>
+        </div>
+      </section>
 
-        {/* For Schools Section */}
-        <section className="container mx-auto px-4 py-16">
+      {/* School Benefits */}
+      <section className="bg-white py-20">
+        <div className="container mx-auto px-4">
           <motion.div
             className="max-w-5xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <div className="bg-gradient-to-br from-[#4f5fd6]/10 to-[#5b8def]/5 border border-[#4f5fd6]/20 rounded-2xl p-8 md:p-12">
+            <div className="bg-[#1a3a5c] rounded-2xl p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-10 items-start">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#4f5fd6]/15 border border-[#4f5fd6]/30 mb-5">
-                    <School className="w-4 h-4 text-[#8b9cf7]" />
-                    <span className="text-xs font-medium text-[#8b9cf7] uppercase tracking-wider">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 mb-5">
+                    <School className="w-4 h-4 text-[#4a9eca]" />
+                    <span className="text-xs font-medium text-[#4a9eca] uppercase tracking-wider">
                       For Riding Schools
                     </span>
                   </div>
                   <h2 className="text-2xl md:text-3xl font-bold font-serif text-white mb-4 tracking-tight">
-                    Equip Your{" "}
-                    <span className="text-[#8b9cf7]">Entire Yard</span>
+                    Equip Your Entire Yard
                   </h2>
-                  <p className="text-gray-400 leading-relaxed mb-4">
-                    EquiProfile transforms how riding schools deliver equine
-                    education. Replace paper worksheets and informal assessments
-                    with a professional digital platform your students will
+                  <p className="text-white/70 leading-relaxed mb-4">
+                    Replace paper worksheets and informal assessments with a
+                    professional digital learning platform your students will
                     actually want to use — and your inspectors will be
                     impressed by.
                   </p>
-                  <p className="text-gray-400 leading-relaxed mb-6">
-                    Individual student plans start at just{" "}
+                  <p className="text-white/70 leading-relaxed mb-6">
+                    Individual student plans start at{" "}
                     <span className="text-white font-semibold">£8/month</span>.
                     School plans from{" "}
                     <span className="text-white font-semibold">£49/month</span>{" "}
-                    for up to 10 students. View all school tiers on our pricing page.
+                    for up to 10 students.
                   </p>
                   <Link href="/pricing?type=school">
-                    <Button className="bg-[#4f5fd6] hover:bg-[#4554c4] text-white px-6 py-3 rounded-lg group">
+                    <Button className="bg-white text-[#1a3a5c] hover:bg-white/90 px-6 py-3 rounded-lg group font-semibold">
                       <School className="w-4 h-4 mr-2" />
                       View School Pricing
                       <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -391,14 +406,14 @@ export default function Students() {
                   {schoolBenefits.map((benefit, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-3 p-4 rounded-lg bg-white/5 border border-white/5"
+                      className="flex items-start gap-3 p-4 rounded-lg bg-white/5 border border-white/10"
                     >
-                      <CheckCircle2 className="w-5 h-5 text-[#8b9cf7] shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-[#3a9d8f] shrink-0 mt-0.5" />
                       <div>
                         <h4 className="text-sm font-semibold text-white mb-1">
                           {benefit.title}
                         </h4>
-                        <p className="text-xs text-gray-400 leading-relaxed">
+                        <p className="text-xs text-white/60 leading-relaxed">
                           {benefit.description}
                         </p>
                       </div>
@@ -408,57 +423,53 @@ export default function Students() {
               </div>
             </div>
           </motion.div>
-        </section>
+        </div>
+      </section>
 
-        {/* Final CTA */}
-        <section className="container mx-auto px-4 py-16 pb-28">
+      {/* Final CTA */}
+      <section className="bg-[#f8f6f3] py-20 pb-28">
+        <div className="container mx-auto px-4">
           <motion.div
-            className="max-w-4xl mx-auto"
+            className="max-w-3xl mx-auto text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#4f5fd6]/20 to-[#3a93b8]/20 rounded-3xl blur-3xl" />
-              <div className="relative backdrop-blur-md bg-white/5 border-2 border-white/20 rounded-3xl p-8 md:p-12 hover:bg-white/10 hover:border-white/30 transition-all duration-500">
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 mb-6">
-                    <Star className="w-5 h-5 text-amber-400" />
-                    <Star className="w-5 h-5 text-amber-400" />
-                    <Star className="w-5 h-5 text-amber-400" />
-                    <Star className="w-5 h-5 text-amber-400" />
-                    <Star className="w-5 h-5 text-amber-400" />
-                  </div>
-                  <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 text-white">
-                    Your Equestrian Career{" "}
-                    <span className="bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
-                      Starts Here
-                    </span>
-                  </h2>
-                  <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
-                    The riders who stand out aren't just talented — they're
-                    knowledgeable, organised, and dedicated. EquiProfile gives
-                    you the tools to prove all three.
-                  </p>
-                  <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-                    Start your free 7-day trial today. Just £8/month after that
-                    — less than a single riding lesson.
-                  </p>
-                  <Link href="/register?plan=student">
-                    <Button
-                      size="lg"
-                      className="text-lg px-10 py-6 bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#1a5276] hover:to-[#4a7dd4] text-white border-0 shadow-2xl shadow-[#5b8def]/20 hover:scale-105 transition-transform group"
-                    >
-                      Start Your Free Trial
-                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+            <h2 className="text-3xl md:text-4xl font-bold font-serif text-[#1a3a5c] mb-4 tracking-tight">
+              Ready to Start Learning?
+            </h2>
+            <p className="text-lg text-[#1a3a5c]/60 mb-4 max-w-2xl mx-auto">
+              The riders who stand out aren't just talented — they're
+              knowledgeable, organised, and dedicated. EquiProfile gives you the
+              tools to become all three.
+            </p>
+            <p className="text-[#1a3a5c]/50 mb-8 max-w-xl mx-auto">
+              Start your free 7-day trial today. Just £8/month after that —
+              less than a single riding lesson.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/register?plan=student">
+                <Button
+                  size="lg"
+                  className="text-lg px-10 py-6 bg-[#2e6da4] hover:bg-[#1a3a5c] text-white rounded-lg shadow-lg hover:shadow-xl transition-all group"
+                >
+                  Start Your Free Trial
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="/pricing">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-10 py-6 border-[#1a3a5c]/20 text-[#1a3a5c] hover:bg-[#1a3a5c]/5 rounded-lg"
+                >
+                  Compare Plans
+                </Button>
+              </Link>
             </div>
           </motion.div>
-        </section>
-      </div>
+        </div>
+      </section>
     </MarketingLayout>
   );
 }
