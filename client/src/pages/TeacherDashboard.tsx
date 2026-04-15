@@ -45,7 +45,7 @@ function THeading({ icon: Icon, title }: { icon: React.ComponentType<{ className
   return (
     <div className="flex items-center gap-2 mb-1">
       <Icon className="w-5 h-5 text-[#2d6a4f]" />
-      <h2 className="text-base font-semibold text-gray-800">{title}</h2>
+      <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">{title}</h2>
     </div>
   );
 }
@@ -66,7 +66,7 @@ function StatCard({ label, value, color = "#2d6a4f" }: { label: string; value: n
   return (
     <div className={T_CARD + " p-4"}>
       <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-2xl font-bold text-gray-800">{value}</p>
+      <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{value}</p>
       <div className="mt-2 h-0.5 rounded-full" style={{ backgroundColor: color, width: "40%" }} />
     </div>
   );
@@ -96,7 +96,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: TeacherView) => void }) 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-gray-800">Good to see you</h2>
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Good to see you</h2>
         <p className="text-sm text-gray-500 mt-0.5">Here's what's happening across your classes.</p>
       </div>
 
@@ -125,7 +125,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: TeacherView) => void }) 
               className="flex items-center gap-3 p-4 min-h-[56px] rounded-xl border border-gray-200 bg-white text-left hover:border-[#2d6a4f]/40 hover:bg-[#2d6a4f]/5 transition-all"
             >
               <AIcon className="w-5 h-5 text-[#2d6a4f] shrink-0" />
-              <span className="text-sm font-medium text-gray-800">{a.label}</span>
+              <span className="text-sm font-medium text-gray-800 dark:text-gray-100">{a.label}</span>
             </button>
           );
         })}
@@ -201,21 +201,21 @@ function GroupsView() {
           <div className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input placeholder="Group / class name *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
-                className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:border-[#2d6a4f] focus:outline-none" />
+                className="px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:border-[#2d6a4f] focus:outline-none" />
               <input placeholder="Academic year (e.g. 2025–26)" value={form.academicYear} onChange={e => setForm({ ...form, academicYear: e.target.value })}
-                className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:border-[#2d6a4f] focus:outline-none" />
+                className="px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:border-[#2d6a4f] focus:outline-none" />
               <select value={form.level} onChange={e => setForm({ ...form, level: e.target.value as typeof form.level })}
-                className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none">
+                className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none">
                 <option value="beginner">Beginner</option>
                 <option value="developing">Developing</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
               </select>
               <input placeholder="Description (optional)" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
-                className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:border-[#2d6a4f] focus:outline-none" />
+                className="px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:border-[#2d6a4f] focus:outline-none" />
             </div>
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-              <button onClick={() => setShowCreate(false)} className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+              <button onClick={() => setShowCreate(false)} className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Cancel</button>
               <button
                 disabled={!form.name.trim() || createMut.isPending}
                 onClick={() => {
@@ -247,7 +247,7 @@ function GroupsView() {
                       <UsersRound className="w-4 h-4" style={{ color: lc }} />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-800">{g.name}</p>
+                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{g.name}</p>
                       <p className="text-xs text-gray-500">{g.memberCount} students · <span style={{ color: lc }}>{g.level}</span>{g.academicYear ? ` · ${g.academicYear}` : ""}</p>
                     </div>
                     {isExpanded ? <ChevronDown className="w-4 h-4 text-gray-500 ml-auto" /> : <ChevronRight className="w-4 h-4 text-gray-500 ml-auto" />}
@@ -267,7 +267,7 @@ function GroupsView() {
                         {(members ?? []).map((m) => (
                           <div key={m.memberId} className="flex items-center justify-between">
                             <div>
-                              <p className="text-xs font-medium text-gray-800">{m.name}</p>
+                              <p className="text-xs font-medium text-gray-800 dark:text-gray-100">{m.name}</p>
                               <p className="text-[10px] text-gray-500">{m.email}</p>
                             </div>
                             <button onClick={() => removeMemberMut.mutate({ memberId: m.memberId })} className="text-gray-400 hover:text-red-500 transition-colors ml-2">
@@ -285,7 +285,7 @@ function GroupsView() {
                           placeholder="Student's email address"
                           value={addEmail}
                           onChange={e => { setAddEmail(e.target.value); setAddError(""); }}
-                          className="w-full px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:border-[#2d6a4f] focus:outline-none"
+                          className="w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:border-[#2d6a4f] focus:outline-none"
                         />
                         {addError && <p className="text-xs text-red-500">{addError}</p>}
                         <div className="flex gap-2 justify-end">
@@ -341,7 +341,7 @@ function StudentsView({ onFeedback }: { onFeedback: (studentId: number, name: st
                 <span className="text-sm font-bold text-[#2d6a4f]">{(summary.student.name ?? "?")[0]?.toUpperCase()}</span>
               </div>
               <div>
-                <h3 className="text-base font-bold text-gray-800">{summary.student.name}</h3>
+                <h3 className="text-base font-bold text-gray-800 dark:text-gray-100">{summary.student.name}</h3>
                 <p className="text-xs text-gray-500">{summary.student.email} · <span style={{ color: LEVEL_COLORS[summary.student.learnerLevel] ?? TEACHER_ACCENT }}>{summary.student.learnerLevel}</span></p>
               </div>
             </div>
@@ -486,23 +486,23 @@ function TasksView() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {assignTo === "student" ? (
                 <select value={form.studentUserId} onChange={e => setForm({ ...form, studentUserId: e.target.value })}
-                  className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none">
+                  className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none">
                   <option value="">Select student *</option>
                   {(students ?? []).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
               ) : (
                 <select value={form.groupId} onChange={e => setForm({ ...form, groupId: e.target.value })}
-                  className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none">
+                  className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none">
                   <option value="">Select group *</option>
                   {(groups ?? []).map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
                 </select>
               )}
 
               <input placeholder="Task title *" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-                className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:border-[#2d6a4f] focus:outline-none" />
+                className="px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:border-[#2d6a4f] focus:outline-none" />
 
               <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as typeof form.category })}
-                className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none">
+                className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none">
                 <option value="care">Care</option>
                 <option value="grooming">Grooming</option>
                 <option value="feeding">Feeding</option>
@@ -513,21 +513,21 @@ function TasksView() {
               </select>
 
               <select value={form.frequency} onChange={e => setForm({ ...form, frequency: e.target.value as typeof form.frequency })}
-                className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none">
+                className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none">
                 <option value="once">Once</option>
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
               </select>
 
               <input type="date" value={form.dueDate} onChange={e => setForm({ ...form, dueDate: e.target.value })}
-                className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none" />
+                className="px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none" />
 
               <input placeholder="Instructions (optional)" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
-                className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:border-[#2d6a4f] focus:outline-none" />
+                className="px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:border-[#2d6a4f] focus:outline-none" />
             </div>
 
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-              <button onClick={() => setShowForm(false)} className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+              <button onClick={() => setShowForm(false)} className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Cancel</button>
               <button
                 disabled={!form.title.trim() || (assignTo === "student" ? !form.studentUserId : !form.groupId) || assignMut.isPending}
                 onClick={handleAssign}
@@ -552,7 +552,7 @@ function TasksView() {
                   <TCard key={t.id} className="!p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-gray-800">{t.title}</p>
+                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{t.title}</p>
                         <p className="text-xs text-gray-500 mt-0.5">
                           {t.category} · {t.frequency}
                           {t.dueDate ? ` · Due ${String(t.dueDate).slice(0, 10)}` : ""}
@@ -578,7 +578,7 @@ function TasksView() {
                   <TCard key={t.id} className="!p-4 opacity-60">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-[#2d6a4f] shrink-0" />
-                      <p className="text-sm text-gray-800">{t.title}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-100">{t.title}</p>
                     </div>
                   </TCard>
                 ))}
@@ -651,19 +651,19 @@ function FeedbackView({ prefillStudentId, prefillStudentName, onClearPrefill }: 
           <div className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <select value={form.studentUserId} onChange={e => setForm({ ...form, studentUserId: e.target.value })}
-                className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none">
+                className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none">
                 <option value="">Select student *</option>
                 {(students ?? []).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
               <select value={form.entryType} onChange={e => setForm({ ...form, entryType: e.target.value as typeof form.entryType })}
-                className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none">
+                className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none">
                 <option value="general">General</option>
                 <option value="training_entry">Training Entry</option>
                 <option value="progress">Progress</option>
                 <option value="task">Task</option>
               </select>
               <select value={form.feedbackType} onChange={e => setForm({ ...form, feedbackType: e.target.value as typeof form.feedbackType })}
-                className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none">
+                className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none">
                 <option value="good">Good Work</option>
                 <option value="needs_improvement">Needs Improvement</option>
                 <option value="urgent">Urgent Attention</option>
@@ -675,10 +675,10 @@ function FeedbackView({ prefillStudentId, prefillStudentName, onClearPrefill }: 
               value={form.comment}
               onChange={e => setForm({ ...form, comment: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 text-sm focus:border-[#2d6a4f] focus:outline-none resize-none"
+              className="w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:border-[#2d6a4f] focus:outline-none resize-none"
             />
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-              <button onClick={() => setShowForm(false)} className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+              <button onClick={() => setShowForm(false)} className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Cancel</button>
               <button
                 disabled={!form.studentUserId || !form.comment.trim() || addMut.isPending}
                 onClick={handleAdd}
@@ -760,7 +760,7 @@ function ReportsView() {
               const student = (students ?? []).find(s => s.id === id);
               setSelectedStudent(student ? { id: student.id, name: student.name ?? "" } : null);
             }}
-            className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 text-sm focus:border-[#2d6a4f] focus:outline-none"
+            className="px-3 py-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:border-[#2d6a4f] focus:outline-none"
           >
             <option value="">Select student</option>
             {(students ?? []).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -836,7 +836,7 @@ function ReportsView() {
           {/* Readiness bar */}
           <TCard>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-semibold text-gray-800">Readiness Score</p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Readiness Score</p>
               <p className="text-sm font-bold" style={{ color: READINESS_COLORS[report.readiness.label] ?? TEACHER_ACCENT }}>
                 {report.readiness.score}%
               </p>
@@ -890,7 +890,7 @@ function ReportsView() {
                 {report.recentTraining.map((t, i) => (
                   <div key={i} className="pb-3 border-b border-gray-200 last:border-0">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-medium text-gray-800">{t.title}</p>
+                      <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{t.title}</p>
                       <p className="text-xs text-gray-500">{t.date} · {t.type}</p>
                     </div>
                     {t.wentWell && <p className="text-xs text-[#2d6a4f]">✓ {t.wentWell}</p>}
@@ -943,7 +943,7 @@ function ReportsView() {
                   {Object.entries((report as any).lessonsByPathway as Record<string, number>).map(([pathway, count]) => (
                     <div key={pathway} className="flex items-center justify-between">
                       <span className="text-xs text-gray-500 capitalize">{pathway.replace(/-/g, " ")}</span>
-                      <span className="text-xs font-semibold text-gray-800">{count} lesson{count !== 1 ? "s" : ""}</span>
+                      <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">{count} lesson{count !== 1 ? "s" : ""}</span>
                     </div>
                   ))}
                 </div>
@@ -973,7 +973,7 @@ function ReportsView() {
                 <div>
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs text-gray-500">Achievement rate</span>
-                    <span className="text-xs text-gray-800">
+                    <span className="text-xs text-gray-800 dark:text-gray-100">
                       {Math.round(((report as any).competencies.achieved / Math.max((report as any).competencies.total, 1)) * 100)}%
                     </span>
                   </div>
@@ -1127,7 +1127,7 @@ function TeacherLessonsView() {
               {/* Target type */}
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Assign to</label>
-                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                   value={assignForm.targetType}
                   onChange={e => setAssignForm(f => ({ ...f, targetType: e.target.value as "student" | "group", studentUserId: undefined, groupId: undefined }))}>
                   <option value="student">Individual Student</option>
@@ -1138,14 +1138,14 @@ function TeacherLessonsView() {
               <div>
                 <label className="block text-xs text-gray-500 mb-1">{assignForm.targetType === "student" ? "Student" : "Group"}</label>
                 {assignForm.targetType === "student" ? (
-                  <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                  <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                     value={assignForm.studentUserId ?? ""}
                     onChange={e => setAssignForm(f => ({ ...f, studentUserId: parseInt(e.target.value) || undefined }))}>
                     <option value="">Select student…</option>
                     {(students ?? []).map(s => <option key={s.id} value={s.id}>{s.name ?? s.email}</option>)}
                   </select>
                 ) : (
-                  <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                  <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                     value={assignForm.groupId ?? ""}
                     onChange={e => setAssignForm(f => ({ ...f, groupId: parseInt(e.target.value) || undefined }))}>
                     <option value="">Select group…</option>
@@ -1156,7 +1156,7 @@ function TeacherLessonsView() {
               {/* Assignment type */}
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Assignment Type</label>
-                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                   value={assignForm.type}
                   onChange={e => setAssignForm(f => ({ ...f, type: e.target.value as "lesson" | "pathway" }))}>
                   <option value="lesson">Single Lesson</option>
@@ -1167,7 +1167,7 @@ function TeacherLessonsView() {
               <div>
                 <label className="block text-xs text-gray-500 mb-1">{assignForm.type === "lesson" ? "Lesson" : "Pathway"}</label>
                 {assignForm.type === "lesson" ? (
-                  <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                  <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                     value={assignForm.lessonSlug}
                     onChange={e => setAssignForm(f => ({ ...f, lessonSlug: e.target.value }))}>
                     <option value="">Select lesson…</option>
@@ -1178,7 +1178,7 @@ function TeacherLessonsView() {
                     ))}
                   </select>
                 ) : (
-                  <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                  <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                     value={assignForm.pathwaySlug}
                     onChange={e => setAssignForm(f => ({ ...f, pathwaySlug: e.target.value }))}>
                     <option value="">Select pathway…</option>
@@ -1189,14 +1189,14 @@ function TeacherLessonsView() {
               {/* Due date */}
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Due Date (optional)</label>
-                <input type="date" className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                <input type="date" className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                   value={assignForm.dueDate}
                   onChange={e => setAssignForm(f => ({ ...f, dueDate: e.target.value }))} />
               </div>
               {/* Instructions */}
               <div className="sm:col-span-2">
                 <label className="block text-xs text-gray-500 mb-1">Instructions (optional)</label>
-                <textarea className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 resize-none"
+                <textarea className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
                   rows={2} placeholder="Additional notes for the student…"
                   value={assignForm.instructions}
                   onChange={e => setAssignForm(f => ({ ...f, instructions: e.target.value }))} />
@@ -1274,7 +1274,7 @@ function TeacherLessonsView() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Student</label>
-                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                   value={reviewForm.studentUserId ?? ""}
                   onChange={e => setReviewForm(f => ({ ...f, studentUserId: parseInt(e.target.value) || undefined }))}>
                   <option value="">Select student…</option>
@@ -1283,7 +1283,7 @@ function TeacherLessonsView() {
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Lesson</label>
-                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                   value={reviewForm.lessonSlug}
                   onChange={e => setReviewForm(f => ({ ...f, lessonSlug: e.target.value }))}>
                   <option value="">Select lesson…</option>
@@ -1305,7 +1305,7 @@ function TeacherLessonsView() {
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Recommended Next Lesson (optional)</label>
-                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                <select className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
                   value={reviewForm.recommendedNextLesson}
                   onChange={e => setReviewForm(f => ({ ...f, recommendedNextLesson: e.target.value }))}>
                   <option value="">None / not specified</option>
@@ -1316,7 +1316,7 @@ function TeacherLessonsView() {
               </div>
               <div className="sm:col-span-2">
                 <label className="block text-xs text-gray-500 mb-1">Feedback for student</label>
-                <textarea className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 resize-none"
+                <textarea className="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
                   rows={3} placeholder="Describe what the student demonstrated, areas of improvement, and next steps…"
                   value={reviewForm.feedback}
                   onChange={e => setReviewForm(f => ({ ...f, feedback: e.target.value }))} />
@@ -1371,7 +1371,7 @@ function TeacherLessonsView() {
           <TCard>
             <THeading icon={Award} title="Competency Sign-Off" />
             <p className="text-xs text-gray-500 mb-4">Select a student to view and sign off their competencies.</p>
-            <select className="w-full max-w-xs text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+            <select className="w-full max-w-xs text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 dark:text-gray-100"
               value={selectedStudentForCompetency ?? ""}
               onChange={e => setSelectedStudentForCompetency(parseInt(e.target.value) || null)}>
               <option value="">Select student…</option>
@@ -1402,7 +1402,7 @@ function TeacherLessonsView() {
                         return (
                           <div key={comp.key} className="p-3 rounded-lg bg-gray-50 border border-gray-200">
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-sm text-gray-800">{comp.label}</span>
+                              <span className="text-sm text-gray-800 dark:text-gray-100">{comp.label}</span>
                               <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0"
                                 style={{ color: style.color, backgroundColor: style.bg }}>
                                 {style.label}
@@ -1413,7 +1413,7 @@ function TeacherLessonsView() {
                             )}
                             {isEditing ? (
                               <div className="mt-2 space-y-2">
-                                <select className="w-full text-xs bg-gray-50 border border-gray-200 rounded px-2 py-1.5 text-gray-800"
+                                <select className="w-full text-xs bg-gray-50 border border-gray-200 rounded px-2 py-1.5 text-gray-800 dark:text-gray-100"
                                   value={competencyForm.status}
                                   onChange={e => setCompetencyForm(f => f ? { ...f, status: e.target.value } : null)}>
                                   <option value="not_assessed">Not Assessed</option>
@@ -1797,7 +1797,7 @@ function TeacherAssignmentsView() {
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="e.g. Horse Anatomy Diagram Labelling"
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#2d6a4f]/40"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2d6a4f]/40"
               />
             </div>
             <div>
@@ -1807,7 +1807,7 @@ function TeacherAssignmentsView() {
                 onChange={(e) => setNewDesc(e.target.value)}
                 placeholder="Instructions for the student..."
                 rows={3}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#2d6a4f]/40 resize-none"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2d6a4f]/40 resize-none"
               />
             </div>
             <div>
@@ -1856,7 +1856,7 @@ function TeacherAssignmentsView() {
               <div className="flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="text-sm font-medium text-gray-800">{a.title}</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{a.title}</p>
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColor[a.status] ?? "text-gray-500 bg-gray-50"}`}>
                       {a.status}
                     </span>
@@ -1904,7 +1904,7 @@ function TeacherAssignmentsView() {
                           value={grade}
                           onChange={(e) => setGrade(e.target.value)}
                           placeholder="e.g. A, B+, 85%"
-                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#2d6a4f]/40"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2d6a4f]/40"
                         />
                       </div>
                       <div>
@@ -1914,7 +1914,7 @@ function TeacherAssignmentsView() {
                           onChange={(e) => setFeedback(e.target.value)}
                           placeholder="Your feedback for the student..."
                           rows={3}
-                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#2d6a4f]/40 resize-none"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2d6a4f]/40 resize-none"
                         />
                       </div>
                       <div className="flex gap-2">
@@ -1998,7 +1998,7 @@ function MessagesView() {
                   key={s.id}
                   onClick={() => setSelectedStudent(s.id)}
                   className={`w-full flex items-center gap-3 px-3 py-3 text-left text-sm transition-colors border-b border-gray-100 ${
-                    selectedStudent === s.id ? "bg-[#2d6a4f]/10 text-gray-800" : "text-gray-500 hover:bg-gray-50"
+                    selectedStudent === s.id ? "bg-[#2d6a4f]/10 text-gray-800 dark:text-gray-100" : "text-gray-500 hover:bg-gray-50"
                   }`}
                 >
                   <div className="w-8 h-8 rounded-full bg-[#2d6a4f]/20 flex items-center justify-center text-xs font-bold text-[#2d6a4f]">
@@ -2024,7 +2024,7 @@ function MessagesView() {
                 <div className="w-7 h-7 rounded-full bg-[#2d6a4f]/20 flex items-center justify-center text-xs font-bold text-[#2d6a4f]">
                   {selectedName.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-sm font-medium text-gray-800">{selectedName}</span>
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-100">{selectedName}</span>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[250px]">
                 {(!threadMessages || threadMessages.length === 0) && (
@@ -2051,7 +2051,7 @@ function MessagesView() {
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Type a message..."
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#2d6a4f]/40"
+                  className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2d6a4f]/40"
                 />
                 <button
                   onClick={handleSend}
@@ -2153,7 +2153,7 @@ function ResourcesView() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Horse Anatomy Diagram"
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#2d6a4f]/40"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2d6a4f]/40"
               />
             </div>
             <div>
@@ -2162,7 +2162,7 @@ function ResourcesView() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief description of the resource"
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#2d6a4f]/40"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2d6a4f]/40"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">

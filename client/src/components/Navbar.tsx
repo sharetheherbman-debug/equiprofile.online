@@ -88,8 +88,8 @@ export function Navbar(_props: NavbarProps = {}) {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         showSolid
-          ? "bg-white/97 backdrop-blur-lg shadow-sm border-b border-gray-200/60"
-          : "bg-gradient-to-b from-black/30 to-transparent border-b border-transparent"
+          ? "bg-white/97 dark:bg-[#111827]/97 backdrop-blur-lg shadow-sm border-b border-gray-200/60 dark:border-gray-700/60"
+          : "bg-gradient-to-b from-black/50 to-transparent border-b border-transparent"
       }`}
       style={{ paddingTop: "var(--safe-area-top, 0px)" }}
     >
@@ -108,7 +108,7 @@ export function Navbar(_props: NavbarProps = {}) {
             <span
               className={`text-xl font-bold tracking-tight font-serif ${
                 showSolid
-                  ? "text-[#1a3a5c]"
+                  ? "text-[#1a3a5c] dark:text-white"
                   : "text-white"
               }`}
             >
@@ -125,8 +125,8 @@ export function Navbar(_props: NavbarProps = {}) {
                 className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   showSolid
                     ? location === link.path
-                      ? "text-[#2e6da4] bg-blue-50/60 font-semibold"
-                      : "text-gray-600 hover:text-[#1a3a5c] hover:bg-gray-50"
+                      ? "text-[#2e6da4] bg-blue-50/60 dark:bg-blue-900/20 font-semibold"
+                      : "text-gray-600 dark:text-gray-300 hover:text-[#1a3a5c] dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                     : location === link.path
                       ? "text-white font-semibold bg-white/10"
                       : "text-white/85 hover:text-white hover:bg-white/10"
@@ -141,7 +141,7 @@ export function Navbar(_props: NavbarProps = {}) {
                   <button
                     className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                       showSolid
-                        ? "text-gray-600 hover:text-[#1a3a5c] hover:bg-gray-50"
+                        ? "text-gray-600 dark:text-gray-300 hover:text-[#1a3a5c] dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                         : "text-white/85 hover:text-white hover:bg-white/10"
                     }`}
                   >
@@ -166,7 +166,7 @@ export function Navbar(_props: NavbarProps = {}) {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none">
+                  <button className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus:outline-none">
                     <Avatar className="h-8 w-8 ring-2 ring-[#2e6da4]/20">
                       <AvatarFallback className="text-xs font-semibold bg-[#2e6da4]/10 text-[#2e6da4]">
                         {user?.name?.charAt(0).toUpperCase() || "U"}
@@ -249,7 +249,7 @@ export function Navbar(_props: NavbarProps = {}) {
           <button
             className={`lg:hidden p-2.5 rounded-lg transition-colors ${
               showSolid
-                ? "text-gray-700 hover:bg-gray-100"
+                ? "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 : "text-white hover:bg-white/10"
             }`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -275,7 +275,7 @@ export function Navbar(_props: NavbarProps = {}) {
               exit: { opacity: 0, height: 0 },
               transition: { duration: 0.2 },
             } as any)}
-            className="lg:hidden border-t bg-white shadow-xl overflow-hidden"
+            className="lg:hidden border-t bg-white dark:bg-[#111827] shadow-xl overflow-hidden border-gray-200 dark:border-gray-700"
           >
             <div className="container mx-auto px-4 py-3 flex flex-col">
               {navLinks.map((link) => (
@@ -284,8 +284,8 @@ export function Navbar(_props: NavbarProps = {}) {
                   href={link.path}
                   className={`block px-3 py-2.5 text-base font-medium rounded-lg transition-colors ${
                     location === link.path
-                      ? "text-[#2e6da4] bg-blue-50/60 font-semibold"
-                      : "text-gray-700 hover:text-[#1a3a5c] hover:bg-gray-50"
+                      ? "text-[#2e6da4] bg-blue-50/60 dark:bg-blue-900/20 font-semibold"
+                      : "text-gray-700 dark:text-gray-300 hover:text-[#1a3a5c] dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
