@@ -22,6 +22,7 @@ import {
   Crown,
   Building2,
   GraduationCap,
+  School,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DEFAULT_PRICING, penceToGBP } from "@shared/pricing";
@@ -44,6 +45,15 @@ export default function BillingPage() {
   const { data: pricing } = trpc.billing.getPricing.useQuery();
   const { data: subscriptionStatus, refetch: refetchStatus } =
     trpc.billing.getStatus.useQuery();
+
+  // Check if the user belongs to a school organization (student/teacher under a school)
+  const { data: orgData } = trpc.school.getOrganization.useQuery(undefined, {
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+  const isSchoolLinked = !!orgData && orgData.myRole !== "school_owner";
+  const schoolOrgName = orgData?.name;
 
   const createCheckout = trpc.billing.createCheckout.useMutation({
     onError: (error) => {
@@ -231,6 +241,28 @@ export default function BillingPage() {
             </Alert>
           )}
 
+          {/* School-managed subscription notice */}
+          {isSchoolLinked && (
+            <Card className="mb-8 border-[#2e86ab]/30 bg-[#2e86ab]/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <School className="w-5 h-5 text-[#2e86ab]" />
+                  School-Managed Subscription
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Your account is managed by{" "}
+                  <strong className="text-foreground">{schoolOrgName || "your school"}</strong>.
+                  Your subscription, billing, and seat allocation are handled by your school administrator.
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  If you have questions about your access or plan, please contact your school administrator directly.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Current Status Card */}
           <Card className="mb-8">
             <CardHeader>
@@ -328,8 +360,8 @@ export default function BillingPage() {
             </CardContent>
           </Card>
 
-          {/* Billing Period Toggle */}
-          {!isSubscriptionActive && (
+          {/* Billing Period Toggle — hidden for school-linked users */}
+          {!isSubscriptionActive && !isSchoolLinked && (
             <>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
                 <h2 className="text-xl sm:text-2xl font-bold">Choose Your Plan</h2>
@@ -436,13 +468,13 @@ export default function BillingPage() {
                   <CardContent className="flex flex-col flex-1">
                     <div className="mb-5">
                       <div className="text-3xl font-bold">
-                        £{billingPeriod === "monthly" ? "5.00" : "50.00"}
+                        £{billingPeriod === "monthly" ? penceToGBP(DEFAULT_PRICING.student.monthly.amount) : penceToGBP(DEFAULT_PRICING.student.yearly.amount)}
                       </div>
                       <div className="text-muted-foreground text-sm">
                         per {billingPeriod === "monthly" ? "month" : "year"}
                         {billingPeriod === "yearly" && (
                           <span className="ml-2 text-xs text-green-600">
-                            (£4.17/mo)
+                            (£{(DEFAULT_PRICING.student.yearly.amount / 100 / 12).toFixed(2)}/mo)
                           </span>
                         )}
                       </div>
