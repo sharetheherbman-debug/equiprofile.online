@@ -5,12 +5,20 @@
  * This repo serves TWO separate frontend applications from one codebase:
  *
  *   1. Management frontend  → equiprofile.online
- *      Entry: client/management/index.html
+ *      Entry:  client/management/index.html
  *      Output: dist/public/management/
+ *      Assets: dist/public/management/management-assets/  (URL: /management-assets/)
  *
  *   2. School frontend      → school.equiprofile.online
- *      Entry: client/school/index.html
+ *      Entry:  client/school/index.html
  *      Output: dist/public/school/
+ *      Assets: dist/public/school/school-assets/          (URL: /school-assets/)
+ *
+ * Asset namespacing guarantees zero cross-site collisions:
+ *   - Management HTML references /management-assets/...
+ *   - School HTML references /school-assets/...
+ *   - The two namespaces never overlap, even for shared dependency chunks.
+ *   - No post-build merge step required or used.
  *
  * Both frontends share:
  *   - client/src/          (shared UI, hooks, contexts, lib, dashboard pages)
@@ -133,6 +141,11 @@ export default defineConfig({
   },
   build: {
     outDir: path.resolve(import.meta.dirname, "dist", "public", SITE_TARGET),
+    // Each frontend gets its own asset directory name so their URL paths never
+    // overlap.  Management HTML references /management-assets/..., school HTML
+    // references /school-assets/...  This eliminates any possibility of cross-
+    // site asset collisions without requiring a post-build merge step.
+    assetsDir: `${SITE_TARGET}-assets`,
     emptyOutDir: true,
     commonjsOptions: {
       transformMixedEsModules: true,
