@@ -8,6 +8,7 @@ import * as db from "../db";
 import * as email from "./email";
 import { ENV } from "./env";
 import { COOKIE_NAME } from "@shared/const";
+import { getSessionCookieOptions } from "./cookies";
 
 /** Hours before a verification token expires */
 const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
@@ -317,13 +318,11 @@ router.post("/login", loginLimiter, async (req, res) => {
       .setExpirationTime("30d")
       .sign(new TextEncoder().encode(ENV.cookieSecret));
 
-    // Set cookie
+    // Set cookie — options computed from the request so secure/domain are
+    // consistent with how the tRPC logout clears it (getSessionCookieOptions).
     res.cookie(COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: ENV.cookieSecure,
-      sameSite: "lax",
+      ...getSessionCookieOptions(req),
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      domain: ENV.cookieDomain,
     });
 
     const { planTier, freeAccess, bothDashboardsUnlocked, needsOnboarding } = extractPlanInfo(user.preferences);
@@ -493,12 +492,10 @@ router.post("/verify-email", async (req, res) => {
       .setExpirationTime("30d")
       .sign(new TextEncoder().encode(ENV.cookieSecret));
 
+    // Auto-login: generate JWT and set cookie (same options as /login for consistency)
     res.cookie(COOKIE_NAME, jwtToken, {
-      httpOnly: true,
-      secure: ENV.cookieSecure,
-      sameSite: "lax",
+      ...getSessionCookieOptions(req),
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      domain: ENV.cookieDomain,
     });
 
     // Send welcome email now that user is verified (async)
@@ -585,12 +582,10 @@ router.post("/resend-verification", resendLimiter, async (req, res) => {
  * Logout user (clear cookie)
  */
 router.post("/logout", (req, res) => {
-  res.clearCookie(COOKIE_NAME, {
-    httpOnly: true,
-    secure: ENV.cookieSecure,
-    sameSite: "lax",
-    domain: ENV.cookieDomain,
-  });
+  // Use the same options helper so the domain/secure flags mirror exactly
+  // how the cookie was set (prevents mismatched domain from leaving the
+  // cookie alive after logout on production with COOKIE_DOMAIN set).
+  res.clearCookie(COOKIE_NAME, getSessionCookieOptions(req));
   res.json({ success: true });
 });
 
