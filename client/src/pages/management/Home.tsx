@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ManagementLayout } from "@/components/management/ManagementLayout";
+import type { LucideIcon } from "lucide-react";
 import {
   HeartPulse,
   Dumbbell,
@@ -53,7 +54,7 @@ function AnimatedSection({
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-const platformStats = [
+const platformStats: { icon: LucideIcon; value: string; label: string; sub: string }[] = [
   { icon: MapPin, value: "1,200+", label: "Active Stables", sub: "and growing" },
   { icon: Users, value: "25,000+", label: "Horses Managed", sub: "across the UK & beyond" },
   { icon: ShieldCheck, value: "99.9%", label: "Platform Uptime", sub: "enterprise-grade reliability" },

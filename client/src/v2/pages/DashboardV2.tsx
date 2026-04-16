@@ -198,9 +198,7 @@ function MetricCard({
   color?: string;
 }) {
   const card = (
-    <div className={`rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5 transition-all duration-200 hover:shadow-md ${href ? "cursor-pointer" : ""}`}
-      style={href ? { borderColor: undefined } : undefined}
-    >
+    <div className={`rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5 transition-all duration-200 hover:shadow-md ${href ? "cursor-pointer" : ""}`}>
       <div className="flex items-center gap-4">
         <div
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
