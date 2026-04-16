@@ -102,23 +102,31 @@ export default function Contact() {
     <ManagementLayout>
       <div className="min-h-screen">
         {/* ======================== HERO ======================== */}
-        <section className="relative min-h-[440px] md:min-h-[500px] flex items-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0f1d2e] via-[#1a3152] to-[#0f1d2e]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#1a7a6d]/20 via-transparent to-transparent" />
+        <section className="relative min-h-[460px] md:min-h-[520px] flex items-center overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#070f1c] via-[#0f1d2e] to-[#0a1e35]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(26,122,109,0.16)_0%,_transparent_60%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(46,109,164,0.10)_0%,_transparent_60%)] pointer-events-none" />
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.025]"
+            style={{
+              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+          />
 
-          <div className="relative z-10 container mx-auto px-4 pt-28 pb-16 text-center">
+          <div className="relative z-10 container mx-auto px-4 pt-32 pb-20 text-center">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <p className="text-sm font-semibold tracking-widest uppercase text-[#c5a55a] mb-4">
+              <div className="inline-flex items-center gap-2 bg-[#c5a55a]/10 border border-[#c5a55a]/20 rounded-full px-4 py-1.5 text-sm font-bold text-[#c5a55a] tracking-widest uppercase mb-5">
                 Contact
-              </p>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-serif text-white leading-tight max-w-4xl mx-auto">
+              </div>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-bold font-serif text-white leading-tight max-w-4xl mx-auto">
                 Get in Touch
               </h1>
-              <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              <p className="mt-6 text-lg md:text-xl text-white/55 max-w-2xl mx-auto leading-relaxed">
                 Have a question, need a demo, or just want to say hello? We'd
                 love to hear from you.
               </p>
@@ -131,24 +139,24 @@ export default function Contact() {
         {/* ================= FORM + SIDEBAR ================= */}
         <section className="bg-[#f8f9fb] py-20 md:py-28">
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-3 gap-12 max-w-5xl mx-auto">
+            <div className="grid lg:grid-cols-3 gap-10 max-w-5xl mx-auto">
               {/* ---- FORM ---- */}
               <AnimatedSection className="lg:col-span-2">
-                <div className="rounded-2xl border border-[#0f1d2e]/5 bg-white p-8 md:p-10 shadow-sm">
+                <div className="rounded-2xl border border-[#0f1d2e]/5 bg-white p-8 md:p-10 shadow-sm hover:shadow-xl hover:shadow-[#2e6da4]/5 transition-shadow duration-300">
                   <h2 className="text-2xl font-bold font-serif text-[#0f1d2e] mb-1">
                     Send us a message
                   </h2>
-                  <p className="text-sm text-[#0f1d2e]/50 mb-8">
+                  <p className="text-sm text-[#0f1d2e]/45 mb-8">
                     Fill in the form below and we'll respond within one business
                     day.
                   </p>
 
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid sm:grid-cols-2 gap-6">
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid sm:grid-cols-2 gap-5">
                       <div>
                         <label
                           htmlFor="contact-name"
-                          className="block text-sm font-medium text-[#0f1d2e] mb-1.5"
+                          className="block text-sm font-semibold text-[#0f1d2e]/70 mb-1.5"
                         >
                           Name
                         </label>
@@ -164,7 +172,7 @@ export default function Contact() {
                       <div>
                         <label
                           htmlFor="contact-email"
-                          className="block text-sm font-medium text-[#0f1d2e] mb-1.5"
+                          className="block text-sm font-semibold text-[#0f1d2e]/70 mb-1.5"
                         >
                           Email
                         </label>
@@ -182,7 +190,7 @@ export default function Contact() {
                     <div>
                       <label
                         htmlFor="contact-subject"
-                        className="block text-sm font-medium text-[#0f1d2e] mb-1.5"
+                        className="block text-sm font-semibold text-[#0f1d2e]/70 mb-1.5"
                       >
                         Subject
                       </label>
@@ -199,7 +207,7 @@ export default function Contact() {
                     <div>
                       <label
                         htmlFor="contact-message"
-                        className="block text-sm font-medium text-[#0f1d2e] mb-1.5"
+                        className="block text-sm font-semibold text-[#0f1d2e]/70 mb-1.5"
                       >
                         Message
                       </label>
@@ -217,7 +225,7 @@ export default function Contact() {
                       type="submit"
                       size="lg"
                       disabled={submitting}
-                      className="bg-[#2e6da4] hover:bg-[#256091] text-white font-semibold rounded-full px-8 h-11 shadow-md shadow-[#2e6da4]/20"
+                      className="bg-[#2e6da4] hover:bg-[#256091] text-white font-bold rounded-full px-8 h-12 shadow-lg shadow-[#2e6da4]/20 transition-all duration-200 hover:-translate-y-0.5"
                     >
                       {submitting ? (
                         <>
@@ -237,37 +245,37 @@ export default function Contact() {
 
               {/* ---- SIDEBAR ---- */}
               <AnimatedSection delay={0.15}>
-                <div className="space-y-8">
+                <div className="space-y-6">
                   {/* Email card */}
-                  <div className="rounded-2xl border border-[#0f1d2e]/5 bg-white p-8 shadow-sm">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#2e6da4] to-[#4a9eca] text-white mb-5 shadow-md shadow-[#2e6da4]/15">
+                  <div className="rounded-2xl border border-[#0f1d2e]/5 bg-white p-7 shadow-sm hover:shadow-xl hover:shadow-[#2e6da4]/5 transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#2e6da4] to-[#4a9eca] text-white mb-4 shadow-md shadow-[#2e6da4]/15">
                       <Mail className="w-5 h-5" />
                     </div>
-                    <h3 className="text-lg font-bold font-serif text-[#0f1d2e] mb-1">
+                    <h3 className="text-base font-bold font-serif text-[#0f1d2e] mb-1">
                       Email Us
                     </h3>
-                    <p className="text-sm text-[#0f1d2e]/50 mb-3">
+                    <p className="text-sm text-[#0f1d2e]/45 mb-3">
                       For general enquiries and support:
                     </p>
                     <a
                       href="mailto:hello@equiprofile.online"
-                      className="text-[#2e6da4] font-medium hover:underline text-sm"
+                      className="text-[#2e6da4] font-semibold hover:underline text-sm"
                     >
                       hello@equiprofile.online
                     </a>
                   </div>
 
                   {/* Response time */}
-                  <div className="rounded-2xl border border-[#0f1d2e]/5 bg-white p-8 shadow-sm">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#1a7a6d] to-[#4a9eca] text-white mb-5 shadow-md shadow-[#1a7a6d]/15">
+                  <div className="rounded-2xl border border-[#0f1d2e]/5 bg-white p-7 shadow-sm hover:shadow-xl hover:shadow-[#1a7a6d]/5 transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[#1a7a6d] to-[#4eca9d] text-white mb-4 shadow-md shadow-[#1a7a6d]/15">
                       <Clock className="w-5 h-5" />
                     </div>
-                    <h3 className="text-lg font-bold font-serif text-[#0f1d2e] mb-1">
+                    <h3 className="text-base font-bold font-serif text-[#0f1d2e] mb-1">
                       Response Time
                     </h3>
-                    <p className="text-sm text-[#0f1d2e]/50">
+                    <p className="text-sm text-[#0f1d2e]/45">
                       We typically reply within{" "}
-                      <span className="font-semibold text-[#0f1d2e]">
+                      <span className="font-bold text-[#0f1d2e]">
                         24 hours
                       </span>{" "}
                       on business days. Priority support customers receive
@@ -276,19 +284,19 @@ export default function Contact() {
                   </div>
 
                   {/* FAQ nudge */}
-                  <div className="rounded-2xl border border-[#c5a55a]/20 bg-[#c5a55a]/5 p-8">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#c5a55a]/20 text-[#c5a55a] mb-5">
+                  <div className="rounded-2xl border border-[#c5a55a]/25 bg-gradient-to-br from-[#c5a55a]/6 to-[#c5a55a]/3 p-7 hover:-translate-y-1 transition-transform duration-300">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#c5a55a]/15 border border-[#c5a55a]/25 text-[#c5a55a] mb-4">
                       <MessageSquare className="w-5 h-5" />
                     </div>
-                    <h3 className="text-lg font-bold font-serif text-[#0f1d2e] mb-1">
+                    <h3 className="text-base font-bold font-serif text-[#0f1d2e] mb-1">
                       Quick Answers
                     </h3>
-                    <p className="text-sm text-[#0f1d2e]/50 mb-3">
+                    <p className="text-sm text-[#0f1d2e]/45 mb-3">
                       Many common questions are covered in our pricing FAQ.
                     </p>
                     <a
                       href="/pricing#faq"
-                      className="text-[#c5a55a] font-medium hover:underline text-sm"
+                      className="text-[#c5a55a] font-semibold hover:underline text-sm inline-flex items-center gap-1"
                     >
                       View FAQ →
                     </a>
