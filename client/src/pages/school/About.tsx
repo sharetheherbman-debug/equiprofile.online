@@ -76,7 +76,7 @@ const differentiators = [
 ];
 
 const schoolBenefits = [
-  "Reduce instructor preparation time by up to 60%",
+  "Save instructor preparation time with ready-made lesson structures",
   "Improve student retention with visible progress tracking",
   "Deliver consistent lesson quality across all instructors",
   "Generate professional progress reports for parents automatically",
@@ -336,7 +336,7 @@ export default function SchoolAbout() {
               with a free, personalised demo.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/school/contact">
+              <Link href="/contact">
                 <Button
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white text-base px-8 py-6 rounded-xl shadow-lg"
@@ -345,7 +345,7 @@ export default function SchoolAbout() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="/school/features">
+              <Link href="/features">
                 <Button
                   variant="outline"
                   size="lg"

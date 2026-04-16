@@ -25,8 +25,8 @@ const fadeUp = {
 const stats = [
   { value: "15", label: "Learning Pathways" },
   { value: "4", label: "Progressive Levels" },
-  { value: "500+", label: "Students Enrolled" },
-  { value: "98%", label: "Satisfaction Rate" },
+  { value: "Structured", label: "Curriculum System" },
+  { value: "Complete", label: "School Management" },
 ];
 
 const steps = [
@@ -102,7 +102,7 @@ const testimonials = [
   },
   {
     quote:
-      "The structured pathways gave our students clear goals. We've seen a 40% improvement in lesson retention since switching to EquiProfile.",
+      "The structured pathways gave our students clear goals. Lesson retention improved noticeably once students could see their own progress.",
     name: "James Whitfield",
     role: "Owner, Bridlepath Riding Academy",
     rating: 5,
@@ -148,7 +148,7 @@ export default function SchoolHome() {
             >
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium mb-6">
                 <GraduationCap className="w-4 h-4" />
-                Trusted by 100+ Riding Schools
+                Built for Riding Schools
               </span>
             </motion.div>
 
@@ -180,7 +180,7 @@ export default function SchoolHome() {
               transition={{ duration: 0.7, delay: 0.3 }}
               className="flex flex-wrap gap-4"
             >
-              <Link href="/school/contact">
+              <Link href="/contact">
                 <Button
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white text-base px-8 py-6 rounded-xl shadow-lg shadow-[#2d6a4f]/30"
@@ -189,7 +189,7 @@ export default function SchoolHome() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="/school/features">
+              <Link href="/features">
                 <Button
                   variant="ghost"
                   size="lg"
@@ -319,7 +319,7 @@ export default function SchoolHome() {
           </div>
 
           <motion.div {...fadeUp} className="text-center mt-12">
-            <Link href="/school/features">
+            <Link href="/features">
               <Button
                 variant="outline"
                 size="lg"
@@ -413,7 +413,7 @@ export default function SchoolHome() {
                   </motion.li>
                 ))}
               </ul>
-              <Link href="/school/pricing">
+              <Link href="/pricing">
                 <Button
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white rounded-xl px-8"
@@ -445,10 +445,10 @@ export default function SchoolHome() {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-[#1e293b]">
-                      40% Faster
+                      Measurable
                     </p>
                     <p className="text-xs text-[#1e293b]/50">
-                      Student Progression
+                      Student Progress
                     </p>
                   </div>
                 </div>
@@ -466,11 +466,11 @@ export default function SchoolHome() {
               Ready to Transform Your School?
             </h2>
             <p className="text-white/70 text-lg mb-8 max-w-2xl mx-auto">
-              Join hundreds of riding schools already using EquiProfile to
+              Join riding schools already using EquiProfile to
               deliver structured, trackable, and inspiring equestrian education.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/school/contact">
+              <Link href="/contact">
                 <Button
                   size="lg"
                   className="bg-white text-[#1e3a5f] hover:bg-white/90 text-base px-8 py-6 rounded-xl font-semibold shadow-lg"
@@ -479,7 +479,7 @@ export default function SchoolHome() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="/school/pricing">
+              <Link href="/pricing">
                 <Button
                   variant="ghost"
                   size="lg"

@@ -274,7 +274,7 @@ export default function SchoolPricing() {
                     {tierDescriptions[idx]}
                   </p>
 
-                  <Link href="/school/contact">
+                  <Link href="/contact">
                     <Button
                       className={`w-full rounded-xl ${
                         isPopular
@@ -384,35 +384,35 @@ export default function SchoolPricing() {
                 Return on Investment
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1e293b] mb-6">
-                The Numbers Speak{" "}
-                <span className="text-[#2d6a4f]">for Themselves</span>
+                Built to Deliver{" "}
+                <span className="text-[#2d6a4f]">Real Value</span>
               </h2>
               <p className="text-[#1e293b]/60 text-lg leading-relaxed mb-8">
-                Schools using EquiProfile see measurable improvements across
-                every metric that matters. Here's what our data shows:
+                EquiProfile is designed to improve how riding schools operate —
+                from student progression to admin efficiency.
               </p>
 
               <div className="grid sm:grid-cols-2 gap-6">
                 {[
                   {
-                    value: "40%",
+                    value: "✓",
                     label: "Faster Student Progression",
                     desc: "Students reach milestones faster with structured pathways",
                   },
                   {
-                    value: "60%",
+                    value: "✓",
                     label: "Less Admin Time",
                     desc: "Instructors spend more time teaching, less on paperwork",
                   },
                   {
-                    value: "35%",
-                    label: "Higher Retention",
+                    value: "✓",
+                    label: "Better Retention",
                     desc: "Students stay longer when they see their progress clearly",
                   },
                   {
-                    value: "25%",
-                    label: "Revenue Growth",
-                    desc: "Schools grow faster with structured, scalable programmes",
+                    value: "✓",
+                    label: "Scalable Growth",
+                    desc: "Schools grow effectively with structured, scalable programmes",
                   },
                 ].map((stat, idx) => (
                   <motion.div
@@ -542,10 +542,10 @@ export default function SchoolPricing() {
             </h2>
             <p className="text-white/70 text-lg mb-8 max-w-2xl mx-auto">
               No credit card required. Full access to all features. Cancel
-              anytime. See why hundreds of schools trust EquiProfile.
+              anytime. Experience the platform built for riding schools.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/school/contact">
+              <Link href="/contact">
                 <Button
                   size="lg"
                   className="bg-white text-[#1e3a5f] hover:bg-white/90 text-base px-8 py-6 rounded-xl font-semibold shadow-lg"
