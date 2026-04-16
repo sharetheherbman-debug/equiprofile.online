@@ -270,31 +270,45 @@ export default function Features() {
         </section>
 
         {/* ===================== CTA SECTION ===================== */}
-        <section className="relative py-24 md:py-32 overflow-hidden bg-[#f8f9fb]">
-          <div className="container mx-auto px-4 text-center">
+        <section className="relative py-28 md:py-36 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#070f1c] via-[#0f1d2e] to-[#091524]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_50%,_rgba(46,109,164,0.14)_0%,_transparent_70%)] pointer-events-none" />
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.03]"
+            style={{
+              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-px bg-gradient-to-r from-transparent via-[#c5a55a]/45 to-transparent" />
+
+          <div className="relative z-10 container mx-auto px-4 text-center">
             <AnimatedSection>
-              <h2 className="text-3xl md:text-5xl font-bold font-serif text-[#0f1d2e] max-w-3xl mx-auto leading-tight">
-                See it in action
+              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-5">
+                Try it free
+              </p>
+              <h2 className="text-4xl md:text-5xl font-bold font-serif text-white max-w-3xl mx-auto leading-tight">
+                See every feature in action
               </h2>
-              <p className="mt-6 text-[#0f1d2e]/60 text-lg max-w-xl mx-auto">
-                Start a 7-day free trial and explore every feature with your own
+              <p className="mt-6 text-white/45 text-lg max-w-xl mx-auto leading-relaxed">
+                Start a 7-day free trial and explore every module with your own
                 horses. No credit card needed.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/register">
                   <Button
                     size="lg"
-                    className="bg-[#2e6da4] hover:bg-[#256091] text-white font-semibold px-10 h-12 text-base rounded-full shadow-lg shadow-[#2e6da4]/20"
+                    className="bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] font-bold px-12 h-12 text-base rounded-full shadow-2xl shadow-[#c5a55a]/25 border-0 transition-all duration-200 hover:-translate-y-0.5 group"
                   >
                     Start Free Trial
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                   </Button>
                 </Link>
                 <Link href="/pricing">
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-[#0f1d2e]/20 text-[#0f1d2e] hover:bg-[#0f1d2e]/5 px-8 h-12 text-base rounded-full"
+                    className="border-white/15 text-white hover:bg-white/[0.07] hover:border-white/25 px-10 h-12 text-base rounded-full transition-all duration-200"
                   >
                     View Pricing
                   </Button>
