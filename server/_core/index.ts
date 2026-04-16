@@ -702,11 +702,14 @@ async function startServer() {
   });
 
   // Favicon handler - serve favicon.svg as favicon.ico with correct headers (rate limited)
+  // Production: dist/index.js lives in dist/, so import.meta.dirname = dist/
+  // Vite copies client/public/* into EACH frontend build dir (management/ and school/).
+  // Both contain the same favicon, so we resolve from management/ as the canonical copy.
   app.get("/favicon.ico", healthLimiter, (req, res) => {
     const faviconPath =
       process.env.NODE_ENV === "development"
         ? resolve(process.cwd(), "client/public/favicon.svg")
-        : resolve(import.meta.dirname, "public/favicon.svg");
+        : resolve(import.meta.dirname, "public/management/favicon.svg");
 
     if (fs.existsSync(faviconPath)) {
       res.setHeader("Content-Type", "image/svg+xml");
@@ -720,6 +723,7 @@ async function startServer() {
   // Apple touch icon handler — iOS and Safari request these paths at the root
   // level regardless of what is declared in <link> tags.  Without an explicit
   // handler they would fall through to the SPA catch-all and receive HTML.
+  // Same path convention as favicon: resolve from management/ build in production.
   const appleTouchIconRoutes = [
     "/apple-touch-icon.png",
     "/apple-touch-icon-precomposed.png",
@@ -730,7 +734,7 @@ async function startServer() {
     const iconPath =
       process.env.NODE_ENV === "development"
         ? resolve(process.cwd(), "client/public/icons/icon-192x192.png")
-        : resolve(import.meta.dirname, "public/icons/icon-192x192.png");
+        : resolve(import.meta.dirname, "public/management/icons/icon-192x192.png");
 
     if (fs.existsSync(iconPath)) {
       res.setHeader("Content-Type", "image/png");

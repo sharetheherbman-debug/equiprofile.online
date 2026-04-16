@@ -2709,15 +2709,12 @@ function AssignmentsView() {
 // ─── Student Settings View ────────────────────────────────────
 function StudentSettingsView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
   const { user, logout } = useAuth();
-  const logoutMut = trpc.auth.logout.useMutation();
   const utils = trpc.useUtils();
   const [name, setName] = useState(user?.name ?? "");
   const [saved, setSaved] = useState(false);
 
-  const handleLogout = async () => {
-    await logoutMut.mutateAsync();
-    logout();
-  };
+  // Single canonical logout path via useAuth().logout (clears cookie, cache, and redirects)
+  const handleLogout = () => logout();
 
   const updateProfileMutation = trpc.user.updateProfile.useMutation({
     onSuccess: () => {
