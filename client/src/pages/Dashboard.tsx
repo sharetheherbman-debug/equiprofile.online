@@ -418,38 +418,38 @@ function DashboardContent() {
         className="grid grid-cols-3 gap-3 sm:gap-4"
       >
         <Link href="/horses">
-          <div className="flex flex-col items-center gap-1 p-3 rounded-xl border border-rose-500/20 bg-gradient-to-br from-rose-950/40 to-pink-950/30 hover:from-rose-950/60 transition-all cursor-pointer text-center">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-rose-500/20 bg-gradient-to-br from-rose-950/40 to-pink-950/30 hover:from-rose-950/60 hover:border-rose-500/35 transition-all cursor-pointer text-center group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Heart className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl font-bold leading-none">{(horses as any[]).length}</p>
-            <p className="text-[10px] text-muted-foreground leading-tight">
+            <p className="text-2xl font-bold font-serif leading-none mt-0.5">{(horses as any[]).length}</p>
+            <p className="text-[10px] text-muted-foreground leading-tight font-medium uppercase tracking-wider">
               Horses
             </p>
           </div>
         </Link>
         <Link href="/calendar">
-          <div className="flex flex-col items-center gap-1 p-3 rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-950/40 to-violet-950/30 hover:from-purple-950/60 transition-all cursor-pointer text-center">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-950/40 to-violet-950/30 hover:from-purple-950/60 hover:border-purple-500/35 transition-all cursor-pointer text-center group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Calendar className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl font-bold leading-none">
+            <p className="text-2xl font-bold font-serif leading-none mt-0.5">
               {(upcomingCalendarEvents as any[]).length}
             </p>
-            <p className="text-[10px] text-muted-foreground leading-tight">
+            <p className="text-[10px] text-muted-foreground leading-tight font-medium uppercase tracking-wider">
               Events
             </p>
           </div>
         </Link>
         <Link href="/tasks">
-          <div className="flex flex-col items-center gap-1 p-3 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-950/40 to-orange-950/30 hover:from-amber-950/60 transition-all cursor-pointer text-center">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-950/40 to-orange-950/30 hover:from-amber-950/60 hover:border-amber-500/35 transition-all cursor-pointer text-center group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Activity className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl font-bold leading-none">
+            <p className="text-2xl font-bold font-serif leading-none mt-0.5">
               {activeTasks.length}
             </p>
-            <p className="text-[10px] text-muted-foreground leading-tight">
+            <p className="text-[10px] text-muted-foreground leading-tight font-medium uppercase tracking-wider">
               Tasks
             </p>
           </div>
@@ -910,10 +910,10 @@ function DashboardContent() {
           transition={{ duration: 0.35, delay: 0.28 }}
           className="space-y-4"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 pb-1 border-b border-white/5">
             <div className="w-1 h-5 rounded-full bg-gradient-to-b from-indigo-500 via-purple-600 to-pink-600" />
             <h2 className="font-serif text-base font-semibold">All Features</h2>
-            <span className="text-xs text-muted-foreground">Browse your complete toolkit</span>
+            <span className="text-xs text-muted-foreground/70">Your complete toolkit</span>
           </div>
           <div className="space-y-3">
             {dashboardModuleGroups.map((group) => {
@@ -938,12 +938,27 @@ function DashboardContent() {
               const visibleItems = isExpanded ? items : items.slice(0, LIMIT);
               const hasMore = items.length > LIMIT;
               return (
-                <div key={group.label} className="rounded-xl border border-white/5 bg-card/40 p-4 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-sm bg-gradient-to-br ${group.gradient} shrink-0`} />
-                    <p className={`text-xs font-bold uppercase tracking-widest ${group.labelColor}`}>
-                      {group.label}
-                    </p>
+                <div key={group.label} className="rounded-xl border border-white/[0.07] bg-card/50 p-4 space-y-3 hover:border-white/[0.12] transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2.5 h-2.5 rounded-sm bg-gradient-to-br ${group.gradient} shrink-0`} />
+                      <p className={`text-[11px] font-bold uppercase tracking-widest ${group.labelColor}`}>
+                        {group.label}
+                      </p>
+                    </div>
+                    {hasMore && (
+                      <button
+                        onClick={() => setExpandedGroups((prev) => {
+                          const next = new Set(prev);
+                          if (isExpanded) next.delete(group.label);
+                          else next.add(group.label);
+                          return next;
+                        })}
+                        className="text-[10px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                      >
+                        {isExpanded ? "Show less ↑" : `+${items.length - LIMIT} more`}
+                      </button>
+                    )}
                   </div>
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                     {visibleItems.map((item) => {
@@ -960,7 +975,7 @@ function DashboardContent() {
                           }`}
                         >
                           <div
-                            className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${group.gradient}`}
+                            className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${group.gradient} group-hover:scale-105 transition-transform duration-200`}
                           >
                             <Icon className="h-5 w-5 text-white" />
                           </div>
@@ -971,19 +986,6 @@ function DashboardContent() {
                       );
                     })}
                   </div>
-                  {hasMore && (
-                    <button
-                      onClick={() => setExpandedGroups((prev) => {
-                        const next = new Set(prev);
-                        if (isExpanded) next.delete(group.label);
-                        else next.add(group.label);
-                        return next;
-                      })}
-                      className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {isExpanded ? "Show less ↑" : `See all ${items.length} →`}
-                    </button>
-                  )}
                 </div>
               );
             })}

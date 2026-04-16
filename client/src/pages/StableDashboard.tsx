@@ -353,38 +353,38 @@ function StableDashboardContent() {
         className="grid grid-cols-2 min-[480px]:grid-cols-3 gap-3 sm:gap-4"
       >
         <Link href="/horses">
-          <div className="flex flex-col items-center gap-1 p-3 rounded-xl border border-rose-500/20 bg-gradient-to-br from-rose-950/40 to-pink-950/20 hover:from-rose-950/60 transition-all cursor-pointer text-center">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-rose-500/20 bg-gradient-to-br from-rose-950/40 to-pink-950/20 hover:from-rose-950/60 hover:border-rose-500/35 transition-all cursor-pointer text-center group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Heart className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl font-bold leading-none">
+            <p className="text-2xl font-bold font-serif leading-none mt-0.5">
               {horsesLoading ? "…" : (horses as HorseEntry[]).length}
             </p>
-            <p className="text-[10px] text-muted-foreground leading-tight">
+            <p className="text-[10px] text-muted-foreground leading-tight font-medium uppercase tracking-wider">
               Horses
             </p>
           </div>
         </Link>
         <Link href="/tasks">
-          <div className="flex flex-col items-center gap-1 p-3 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-950/40 to-orange-950/20 hover:from-amber-950/60 transition-all cursor-pointer text-center">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-950/40 to-orange-950/20 hover:from-amber-950/60 hover:border-amber-500/35 transition-all cursor-pointer text-center group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <ClipboardList className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl font-bold leading-none">{activeTasks.length}</p>
-            <p className="text-[10px] text-muted-foreground leading-tight">
+            <p className="text-2xl font-bold font-serif leading-none mt-0.5">{activeTasks.length}</p>
+            <p className="text-[10px] text-muted-foreground leading-tight font-medium uppercase tracking-wider">
               Tasks
             </p>
           </div>
         </Link>
         <Link href="/calendar">
-          <div className="flex flex-col items-center gap-1 p-3 rounded-xl border border-indigo-500/20 bg-gradient-to-br from-indigo-950/40 to-blue-950/20 hover:from-indigo-950/60 transition-all cursor-pointer text-center">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-indigo-500/20 bg-gradient-to-br from-indigo-950/40 to-blue-950/20 hover:from-indigo-950/60 hover:border-indigo-500/35 transition-all cursor-pointer text-center group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Calendar className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl font-bold leading-none">
+            <p className="text-2xl font-bold font-serif leading-none mt-0.5">
               {futureAppointments.length}
             </p>
-            <p className="text-[10px] text-muted-foreground leading-tight">
+            <p className="text-[10px] text-muted-foreground leading-tight font-medium uppercase tracking-wider">
               Upcoming
             </p>
           </div>
@@ -708,17 +708,17 @@ function StableDashboardContent() {
           transition={{ duration: 0.35, delay: 0.28 }}
           className="space-y-4"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 pb-1 border-b border-white/5">
             <div className="w-1 h-5 rounded-full bg-gradient-to-b from-amber-500 via-orange-500 to-rose-500" />
             <h2 className="font-serif text-base font-semibold">All Features</h2>
-            <span className="text-xs text-muted-foreground">Complete stable toolkit</span>
+            <span className="text-xs text-muted-foreground/70">Complete stable toolkit</span>
           </div>
           <div className="space-y-3">
             {stableModuleGroups.map((group) => (
-              <div key={group.label} className="rounded-xl border border-white/5 bg-card/40 p-4 space-y-3">
+              <div key={group.label} className="rounded-xl border border-white/[0.07] bg-card/50 p-4 space-y-3 hover:border-white/[0.12] transition-colors">
                 <div className="flex items-center gap-2">
                   <div className={`w-2.5 h-2.5 rounded-sm bg-gradient-to-br ${group.gradient} shrink-0`} />
-                  <p className={`text-xs font-bold uppercase tracking-widest ${group.labelColor}`}>
+                  <p className={`text-[11px] font-bold uppercase tracking-widest ${group.labelColor}`}>
                     {group.label}
                   </p>
                 </div>
@@ -728,7 +728,7 @@ function StableDashboardContent() {
                     return (
                       <Link key={item.path} href={item.path}>
                         <div className="group flex flex-col items-center gap-1.5 p-3 rounded-xl border border-white/5 bg-card/60 hover:bg-card hover:border-white/15 hover:shadow-sm transition-all duration-200 text-center cursor-pointer active:scale-95">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${group.gradient}`}>
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${group.gradient} group-hover:scale-105 transition-transform duration-200`}>
                             <Icon className="h-5 w-5 text-white" />
                           </div>
                           <span className="text-[11px] leading-tight font-medium">{item.label}</span>
