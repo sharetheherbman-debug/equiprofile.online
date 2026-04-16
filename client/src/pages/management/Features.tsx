@@ -146,27 +146,37 @@ export default function Features() {
     <ManagementLayout>
       <div className="min-h-screen">
         {/* ======================== HERO ======================== */}
-        <section className="relative min-h-[480px] md:min-h-[540px] flex items-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0f1d2e] via-[#1a3152] to-[#0f1d2e]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#2e6da4]/20 via-transparent to-transparent" />
+        <section className="relative min-h-[500px] md:min-h-[560px] flex items-center overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#070f1c] via-[#0f1d2e] to-[#0a1e35]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(46,109,164,0.22)_0%,_transparent_60%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(26,122,109,0.12)_0%,_transparent_60%)] pointer-events-none" />
 
-          <div className="relative z-10 container mx-auto px-4 pt-28 pb-16 text-center">
+          {/* Subtle dot grid */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.025]"
+            style={{
+              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+          />
+
+          <div className="relative z-10 container mx-auto px-4 pt-32 pb-20 text-center">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <p className="text-sm font-semibold tracking-widest uppercase text-[#c5a55a] mb-4">
+              <div className="inline-flex items-center gap-2 bg-[#c5a55a]/10 border border-[#c5a55a]/20 rounded-full px-4 py-1.5 text-sm font-bold text-[#c5a55a] tracking-widest uppercase mb-5">
                 Features
-              </p>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-serif text-white leading-tight max-w-5xl mx-auto">
+              </div>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-bold font-serif text-white leading-tight max-w-5xl mx-auto">
                 Everything You Need to
                 <br />
-                <span className="bg-gradient-to-r from-[#4a9eca] to-[#1a7a6d] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#4a9eca] via-[#2e6da4] to-[#1a7a6d] bg-clip-text text-transparent">
                   Manage Your Horses
                 </span>
               </h1>
-              <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              <p className="mt-6 text-lg md:text-xl text-white/55 max-w-2xl mx-auto leading-relaxed">
                 Eight powerful modules working in harmony — from daily health
                 records to stable-wide business management.
               </p>
@@ -191,28 +201,33 @@ export default function Features() {
                 >
                   {/* Image — bordered container prevents awkward crops */}
                   <AnimatedSection className="lg:[direction:ltr]">
-                    <div className="relative rounded-2xl overflow-hidden shadow-2xl group border border-[#0f1d2e]/10">
+                    <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
+                      {/* Subtle border ring */}
+                      <div className="absolute inset-0 ring-1 ring-inset ring-[#0f1d2e]/8 rounded-2xl pointer-events-none z-10" />
                       <img
                         src={feature.image}
                         alt={feature.title}
                         className={`w-full h-[320px] md:h-[420px] object-cover ${feature.imagePosition} transition-transform duration-700 group-hover:scale-105`}
                       />
-                      <div className="absolute inset-0 ring-1 ring-inset ring-[#0f1d2e]/10 rounded-2xl pointer-events-none" />
+                      {/* Icon badge overlay */}
+                      <div className="absolute top-4 left-4 z-10">
+                        <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-[#2e6da4] to-[#4a9eca] text-white shadow-lg shadow-[#2e6da4]/30 backdrop-blur-sm">
+                          <feature.icon className="w-5 h-5" />
+                        </div>
+                      </div>
                     </div>
                   </AnimatedSection>
 
                   {/* Text */}
                   <AnimatedSection delay={0.12} className="lg:[direction:ltr]">
-                    <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-[#2e6da4] to-[#4a9eca] text-white mb-6 shadow-md shadow-[#2e6da4]/20">
-                      <feature.icon className="w-6 h-6" />
-                    </div>
-                    <p className="text-sm font-semibold tracking-widest uppercase text-[#1a7a6d] mb-2">
+                    <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#1a7a6d] mb-2">
                       {feature.subtitle}
                     </p>
                     <h2 className="text-3xl md:text-4xl font-bold font-serif text-[#0f1d2e] leading-tight">
                       {feature.title}
                     </h2>
-                    <p className="mt-5 text-[#0f1d2e]/60 leading-relaxed text-lg">
+                    <div className="mt-3 w-12 h-1 rounded-full bg-gradient-to-r from-[#2e6da4] to-[#3a9d8f]" />
+                    <p className="mt-5 text-[#0f1d2e]/58 leading-relaxed text-lg">
                       {feature.description}
                     </p>
                   </AnimatedSection>
@@ -223,26 +238,28 @@ export default function Features() {
         })}
 
         {/* ================ SEE ALL FEATURES GRID ================ */}
-        <section className="bg-[#0f1d2e] py-20 md:py-28">
+        <section className="bg-[#070f1c] py-20 md:py-28">
           <div className="container mx-auto px-4">
             <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
-              <p className="text-sm font-semibold tracking-widest uppercase text-[#c5a55a] mb-3">
+              <div className="inline-flex items-center gap-2 bg-[#c5a55a]/10 border border-[#c5a55a]/20 rounded-full px-4 py-1.5 text-xs font-bold text-[#c5a55a] tracking-widest uppercase mb-4">
                 And More
-              </p>
+              </div>
               <h2 className="text-3xl md:text-4xl font-bold font-serif text-white">
                 Plus dozens of thoughtful extras
               </h2>
-              <p className="mt-4 text-gray-400 text-lg">
+              <p className="mt-4 text-white/40 text-lg">
                 Little details that add up to a delightful experience.
               </p>
             </AnimatedSection>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
               {extraFeatures.map((ef, i) => (
                 <AnimatedSection key={ef.title} delay={i * 0.06}>
-                  <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 text-center transition-all duration-300 hover:bg-white/10 hover:border-white/20">
-                    <ef.icon className="w-6 h-6 text-[#4a9eca]" />
-                    <span className="text-sm font-semibold text-white">
+                  <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/8 bg-white/[0.04] p-6 text-center transition-all duration-300 hover:bg-white/[0.08] hover:border-white/15 hover:-translate-y-1">
+                    <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-[#2e6da4]/30 to-[#4a9eca]/20 border border-[#4a9eca]/20">
+                      <ef.icon className="w-5 h-5 text-[#4a9eca]" />
+                    </div>
+                    <span className="text-sm font-semibold text-white/85">
                       {ef.title}
                     </span>
                   </div>
