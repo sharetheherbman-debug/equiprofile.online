@@ -381,7 +381,7 @@ export default function SchoolPricing() {
               transition={{ duration: 0.6 }}
             >
               <span className="inline-block px-4 py-1.5 rounded-full bg-[#10b981]/10 text-[#10b981] text-sm font-semibold mb-4">
-                Return on Investment
+                Why It Works
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1e293b] mb-6">
                 Built to Deliver{" "}
@@ -443,35 +443,41 @@ export default function SchoolPricing() {
                 <div className="flex items-center gap-3 mb-6">
                   <Zap className="w-6 h-6 text-[#f59e0b]" />
                   <h3 className="font-serif text-xl font-bold">
-                    Quick Savings Estimate
+                    What You Get
                   </h3>
                 </div>
 
                 <div className="space-y-5">
                   <div className="bg-white/10 rounded-xl p-5">
                     <p className="text-white/60 text-sm mb-1">
-                      Average instructor time saved per week
+                      Less time on admin
                     </p>
-                    <p className="text-2xl font-bold font-serif">5+ hours</p>
+                    <p className="text-base font-semibold font-serif leading-snug">
+                      Automated lesson plans and progress reports mean instructors focus on teaching, not paperwork.
+                    </p>
                   </div>
                   <div className="bg-white/10 rounded-xl p-5">
                     <p className="text-white/60 text-sm mb-1">
-                      Estimated annual admin savings
+                      Students who see their progress
                     </p>
-                    <p className="text-2xl font-bold font-serif">£3,000+</p>
+                    <p className="text-base font-semibold font-serif leading-snug">
+                      Structured pathways give students clear milestones and a reason to stay enrolled.
+                    </p>
                   </div>
                   <div className="bg-white/10 rounded-xl p-5">
                     <p className="text-white/60 text-sm mb-1">
-                      Additional revenue from improved retention
+                      A platform built for riding schools
                     </p>
-                    <p className="text-2xl font-bold font-serif">£5,000+</p>
+                    <p className="text-base font-semibold font-serif leading-snug">
+                      Not adapted from generic software — designed from the ground up for equestrian education.
+                    </p>
                   </div>
                   <div className="bg-[#10b981]/20 rounded-xl p-5 border border-[#10b981]/30">
                     <p className="text-[#10b981] text-sm font-medium mb-1">
-                      Typical first-year ROI
+                      7-day free trial
                     </p>
-                    <p className="text-3xl font-bold font-serif text-[#10b981]">
-                      10–15×
+                    <p className="text-base font-bold font-serif text-white">
+                      No credit card required. See the difference for yourself.
                     </p>
                   </div>
                 </div>

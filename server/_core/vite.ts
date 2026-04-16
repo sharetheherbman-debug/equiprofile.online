@@ -3,11 +3,12 @@
  *
  * Production:
  *   dist/public/management/  →  served on equiprofile.online
+ *     management-assets/     →  /management-assets/ URL namespace
  *   dist/public/school/      →  served on school.equiprofile.online
+ *     school-assets/         →  /school-assets/ URL namespace
  *
- * Each is a full SPA with its own index.html, assets, and routes.
- * Static assets (hashed JS/CSS) are shared via the same /assets/ prefix
- * since both builds output to sub-dirs of dist/public/.
+ * Each frontend has its own isolated asset directory.  URL namespaces never
+ * overlap, so cross-site asset collisions are impossible — no merge step needed.
  *
  * Development:
  *   Uses Vite dev server for the site set by VITE_SITE env var
@@ -167,7 +168,10 @@ export function serveStatic(app: Express) {
       res.setHeader("Expires", "0");
       res.setHeader("Content-Type", "application/javascript");
       res.setHeader("Service-Worker-Allowed", "/");
-    } else if (filePath.includes("/assets/")) {
+    } else if (
+      filePath.includes("/management-assets/") ||
+      filePath.includes("/school-assets/")
+    ) {
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     }
   };
@@ -181,8 +185,9 @@ export function serveStatic(app: Express) {
   });
 
   // Serve static assets from BOTH frontend builds.
-  // Since asset filenames are hashed, there is no risk of collision.
-  // We serve management first, then school — the first match wins.
+  // Assets live in distinct URL namespaces (/management-assets/ and
+  // /school-assets/) so express.static serving from both dirs is safe —
+  // the paths are orthogonal and cannot collide.
   app.use(
     express.static(mgmtDist, { index: false, setHeaders: setStaticHeaders }),
   );
@@ -230,7 +235,8 @@ export function serveStatic(app: Express) {
 
     // Don't serve index.html for real asset requests
     const isStaticFile =
-      req.originalUrl.startsWith("/assets/") ||
+      req.originalUrl.startsWith("/management-assets/") ||
+      req.originalUrl.startsWith("/school-assets/") ||
       STATIC_FILE_EXTENSIONS.some((ext) => req.originalUrl.endsWith(ext));
     if (isStaticFile) {
       return res.status(404).send("Not Found");

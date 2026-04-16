@@ -352,7 +352,7 @@ export default function Home() {
                 Ready to elevate your horse management?
               </h2>
               <p className="mt-6 text-gray-400 text-lg max-w-xl mx-auto">
-                Join thousands of equestrians who rely on EquiProfile every day.
+                The platform built for equestrians who take horse care seriously.
                 Start your free 7-day trial — no credit card required.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
