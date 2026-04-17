@@ -50,6 +50,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -81,6 +87,7 @@ import {
   Smartphone,
   Mail,
   BarChart3,
+  ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -519,68 +526,70 @@ function AdminContent() {
         </Card>
       </div>
 
-      {/* Main layout — sidebar nav + content */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Sidebar nav (desktop) */}
-        <div className="hidden lg:block w-56 shrink-0">
-          <div className="sticky top-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-card shadow-sm overflow-hidden">
-            {/* Admin identity header */}
-            <div className="px-4 py-3 bg-gradient-to-r from-[#0c2352] to-[#1a3a6b]">
-              <div className="flex items-center gap-2">
-                <Shield className="w-3.5 h-3.5 text-blue-300 shrink-0" />
-                <span className="text-[10px] font-bold tracking-widest uppercase text-blue-100">Control Centre</span>
-              </div>
-            </div>
-            {/* Nav groups */}
-            <nav className="p-2">
-              {(["People", "Communications", "System", "Other"] as const).map((group) => (
-                <div key={group}>
-                  <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-3 pt-3 pb-1.5">{group}</p>
-                  {adminSections.filter((s) => s.group === group).map((s) => {
+      {/* Top navigation menu with dropdown groups */}
+      <div className="rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-card shadow-sm overflow-hidden">
+        <div className="flex items-center gap-1 flex-wrap px-3 py-2 bg-gradient-to-r from-[#0c2352] to-[#1a3a6b]">
+          <div className="flex items-center gap-2 mr-2 shrink-0">
+            <Shield className="w-3.5 h-3.5 text-blue-300 shrink-0" />
+            <span className="text-[10px] font-bold tracking-widest uppercase text-blue-100">Control Centre</span>
+          </div>
+          <div className="h-4 w-px bg-white/20 mx-1 hidden sm:block shrink-0" />
+          {(["People", "Communications", "System", "Other"] as const).map((group) => {
+            const groupItems = adminSections.filter((s) => s.group === group);
+            const isGroupActive = groupItems.some((s) => s.value === activeSection);
+            return (
+              <DropdownMenu key={group}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
+                      isGroupActive
+                        ? "bg-white/20 text-white"
+                        : "text-blue-200 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {group}
+                    <ChevronDown className="w-3 h-3 opacity-70" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="min-w-[160px]">
+                  {groupItems.map((s) => {
                     const Icon = s.icon;
                     const isActive = activeSection === s.value;
                     return (
-                      <button
+                      <DropdownMenuItem
                         key={s.value}
                         onClick={() => setActiveSection(s.value)}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-left border-l-2 ${
-                          isActive
-                            ? "bg-[#0c2352]/[0.07] dark:bg-[#2e6da4]/15 text-[#0c2352] dark:text-[#5a9fd4] border-[#2563eb]"
-                            : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/60 hover:text-gray-700 dark:hover:text-gray-200 border-transparent"
-                        }`}
+                        className={isActive ? "bg-accent text-accent-foreground font-medium" : ""}
                       >
-                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#2563eb]" : ""}`} />
-                        <span>{s.label}</span>
-                      </button>
+                        <Icon className="w-4 h-4 mr-2 shrink-0" />
+                        {s.label}
+                        {isActive && <CheckCircle2 className="w-3.5 h-3.5 ml-auto text-[#2563eb] shrink-0" />}
+                      </DropdownMenuItem>
                     );
                   })}
-                </div>
-              ))}
-            </nav>
-          </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          })}
         </div>
+        {/* Active section breadcrumb */}
+        {(() => {
+          const active = adminSections.find((s) => s.value === activeSection);
+          if (!active) return null;
+          const Icon = active.icon;
+          return (
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100 dark:border-gray-800">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">{active.group}</span>
+              <span className="text-gray-300 dark:text-gray-600 text-xs">/</span>
+              <Icon className="w-3.5 h-3.5 text-[#2563eb]" />
+              <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">{active.label}</span>
+            </div>
+          );
+        })()}
+      </div>
 
-        {/* Mobile section select */}
-        <div className="lg:hidden w-full">
-          <Select value={activeSection} onValueChange={(v) => setActiveSection(v as AdminSection)}>
-            <SelectTrigger className="w-full bg-white dark:bg-card border-gray-200 dark:border-gray-700 shadow-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {(["People", "Communications", "System", "Other"] as const).map((group) => (
-                <SelectGroup key={group}>
-                  <SelectLabel className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{group}</SelectLabel>
-                  {adminSections.filter((s) => s.group === group).map((s) => (
-                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                  ))}
-                </SelectGroup>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Content area */}
-        <div className="flex-1 min-w-0 space-y-4">
+      {/* Content area */}
+      <div className="space-y-4">
           {activeSection === "users" && (<>
           {/* User Segmentation — executive summary */}
           {segmentation && (
@@ -2175,7 +2184,6 @@ function AdminContent() {
           </Card>
         </>)}
         </div>
-      </div>
     </div>
   );
 }
