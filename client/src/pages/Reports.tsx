@@ -49,10 +49,7 @@ import { format } from "date-fns";
 import jsPDF from "jspdf";
 import { downloadCSV } from "@/lib/csvDownload";
 import { PageHeader } from "@/components/PageHeader";
-
-/** Brand color for PDF letterhead — premium dark navy */
-const BRAND_BLUE_RGB = [12, 35, 82] as const;
-const BRAND_ACCENT_RGB = [37, 99, 235] as const;
+import { BRAND_BLUE_RGB, BRAND_ACCENT_RGB, loadLogoBase64 } from "@/lib/utils/pdf";
 
 const REPORT_TYPES = [
   { value: "monthly_summary", label: "Monthly Summary" },
@@ -208,27 +205,6 @@ export default function Reports() {
 
   const getReportTypeName = (type: string) => {
     return REPORT_TYPES.find((t) => t.value === type)?.label || type;
-  };
-
-  /**
-   * Load the brand logo as a base64-encoded data URL for PDF embedding.
-   */
-  const loadLogoBase64 = (): Promise<string | null> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) { resolve(null); return; }
-        ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL("image/png"));
-      };
-      img.onerror = () => resolve(null);
-      img.src = "/logo.png";
-    });
   };
 
   /**

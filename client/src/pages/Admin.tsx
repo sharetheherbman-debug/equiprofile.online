@@ -44,7 +44,9 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -520,44 +522,61 @@ function AdminContent() {
       {/* Main layout — sidebar nav + content */}
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar nav (desktop) */}
-        <div className="hidden lg:block w-52 shrink-0">
-          <div className="sticky top-0 space-y-1">
-            {(["People", "Communications", "System", "Other"] as const).map((group) => (
-              <div key={group}>
-                <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 mb-2 mt-4 first:mt-0">{group}</p>
-                {adminSections.filter((s) => s.group === group).map((s) => {
-                  const Icon = s.icon;
-                  return (
-                    <button
-                      key={s.value}
-                      onClick={() => setActiveSection(s.value)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-left ${
-                        activeSection === s.value
-                          ? "bg-[#2e6da4]/10 text-[#2e6da4] dark:bg-[#2e6da4]/20 dark:text-[#5a9fd4]"
-                          : "text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{s.label}</span>
-                    </button>
-                  );
-                })}
+        <div className="hidden lg:block w-56 shrink-0">
+          <div className="sticky top-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-card shadow-sm overflow-hidden">
+            {/* Admin identity header */}
+            <div className="px-4 py-3 bg-gradient-to-r from-[#0c2352] to-[#1a3a6b]">
+              <div className="flex items-center gap-2">
+                <Shield className="w-3.5 h-3.5 text-blue-300 shrink-0" />
+                <span className="text-[10px] font-bold tracking-widest uppercase text-blue-100">Control Centre</span>
               </div>
-            ))}
+            </div>
+            {/* Nav groups */}
+            <nav className="p-2">
+              {(["People", "Communications", "System", "Other"] as const).map((group) => (
+                <div key={group}>
+                  <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest px-3 pt-3 pb-1.5">{group}</p>
+                  {adminSections.filter((s) => s.group === group).map((s) => {
+                    const Icon = s.icon;
+                    const isActive = activeSection === s.value;
+                    return (
+                      <button
+                        key={s.value}
+                        onClick={() => setActiveSection(s.value)}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-left border-l-2 ${
+                          isActive
+                            ? "bg-[#0c2352]/[0.07] dark:bg-[#2e6da4]/15 text-[#0c2352] dark:text-[#5a9fd4] border-[#2563eb]"
+                            : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/60 hover:text-gray-700 dark:hover:text-gray-200 border-transparent"
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#2563eb]" : ""}`} />
+                        <span>{s.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
+            </nav>
           </div>
         </div>
 
         {/* Mobile section select */}
         <div className="lg:hidden w-full">
-          <select
-            value={activeSection}
-            onChange={(e) => setActiveSection(e.target.value as AdminSection)}
-            className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-card px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2e6da4]/30"
-          >
-            {adminSections.map((s) => (
-              <option key={s.value} value={s.value}>{s.group} — {s.label}</option>
-            ))}
-          </select>
+          <Select value={activeSection} onValueChange={(v) => setActiveSection(v as AdminSection)}>
+            <SelectTrigger className="w-full bg-white dark:bg-card border-gray-200 dark:border-gray-700 shadow-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(["People", "Communications", "System", "Other"] as const).map((group) => (
+                <SelectGroup key={group}>
+                  <SelectLabel className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{group}</SelectLabel>
+                  {adminSections.filter((s) => s.group === group).map((s) => (
+                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                  ))}
+                </SelectGroup>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Content area */}

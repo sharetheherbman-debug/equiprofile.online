@@ -415,7 +415,7 @@ function DashboardContent() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, delay: 0.05 }}
-        className="grid grid-cols-3 gap-3 sm:gap-4"
+        className="grid grid-cols-2 min-[380px]:grid-cols-3 gap-3 sm:gap-4"
       >
         <Link href="/horses">
           <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-rose-500/20 bg-gradient-to-br from-rose-950/40 to-pink-950/30 hover:from-rose-950/60 hover:border-rose-500/35 transition-all cursor-pointer text-center group">

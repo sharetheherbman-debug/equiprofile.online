@@ -2,8 +2,8 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
 /** Brand color constants for PDF generation — premium dark navy */
-const BRAND_BLUE_RGB = [12, 35, 82] as const;
-const BRAND_ACCENT_RGB = [37, 99, 235] as const;
+export const BRAND_BLUE_RGB = [12, 35, 82] as const;
+export const BRAND_ACCENT_RGB = [37, 99, 235] as const;
 const PDF_JPEG_QUALITY = 0.95;
 
 export interface PDFOptions {

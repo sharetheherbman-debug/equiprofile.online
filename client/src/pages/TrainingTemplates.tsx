@@ -29,6 +29,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { trpc } from "@/lib/trpc";
 import {
   Plus,
@@ -39,6 +44,8 @@ import {
   Globe,
   Lock,
   Sparkles,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
@@ -1231,6 +1238,18 @@ function TrainingTemplatesContent() {
     horseId: "",
     startDate: new Date().toISOString().split("T")[0],
   });
+  // Collapsible state for predesigned template categories — foundation open by default
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(["foundation"]),
+  );
+  const toggleCategory = (key: string) => {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const utils = trpc.useUtils();
   const { data: templates, isLoading } =
@@ -1615,73 +1634,87 @@ function TrainingTemplatesContent() {
         ].map((group) => {
           const groupTemplates = PREDESIGNED_TEMPLATES.filter((t) => t.category === group.key);
           if (groupTemplates.length === 0) return null;
+          const isOpen = expandedCategories.has(group.key);
           return (
-            <div key={group.key} className="space-y-3">
-              <div className="flex items-baseline gap-2 px-1">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{group.label}</h3>
-                <span className="text-xs text-gray-400 dark:text-gray-500">{group.desc}</span>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {groupTemplates.map((predesigned) => (
-            <Card
-              key={predesigned.id}
-              className="bg-white dark:bg-[#1a2435] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#2e6da4]" />
-                      {predesigned.name}
-                    </CardTitle>
-                    <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      {predesigned.description}
-                    </CardDescription>
+            <Collapsible key={group.key} open={isOpen} onOpenChange={() => toggleCategory(group.key)}>
+              <CollapsibleTrigger asChild>
+                <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2435] hover:bg-gray-50 dark:hover:bg-[#1e2940] transition-colors shadow-sm group">
+                  {isOpen
+                    ? <ChevronDown className="w-4 h-4 text-[#2e6da4] shrink-0" />
+                    : <ChevronRight className="w-4 h-4 text-gray-400 shrink-0 group-hover:text-[#2e6da4] transition-colors" />
+                  }
+                  <div className="flex-1 flex items-baseline gap-2 text-left">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{group.label}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">{group.desc}</span>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-1.5">
-                    {predesigned.discipline && (
-                      <Badge variant="outline" className={`text-xs ${getDisciplineBadgeClass(predesigned.discipline)}`}>
-                        {predesigned.discipline}
-                      </Badge>
-                    )}
-                    {predesigned.level && (
-                      <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
-                        {predesigned.level}
-                      </Badge>
-                    )}
-                    {predesigned.duration && (
-                      <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
-                        {predesigned.duration} weeks
-                      </Badge>
-                    )}
-                  </div>
+                  <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 shrink-0">
+                    {groupTemplates.length}
+                  </Badge>
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pt-3 pb-1 px-1">
+                  {groupTemplates.map((predesigned) => (
+                    <Card
+                      key={predesigned.id}
+                      className="bg-white dark:bg-[#1a2435] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                              <Sparkles className="w-4 h-4 text-[#2e6da4]" />
+                              {predesigned.name}
+                            </CardTitle>
+                            <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                              {predesigned.description}
+                            </CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div className="flex flex-wrap gap-1.5">
+                            {predesigned.discipline && (
+                              <Badge variant="outline" className={`text-xs ${getDisciplineBadgeClass(predesigned.discipline)}`}>
+                                {predesigned.discipline}
+                              </Badge>
+                            )}
+                            {predesigned.level && (
+                              <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
+                                {predesigned.level}
+                              </Badge>
+                            )}
+                            {predesigned.duration && (
+                              <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
+                                {predesigned.duration} weeks
+                              </Badge>
+                            )}
+                          </div>
 
-                  {predesigned.goals && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
-                      {predesigned.goals}
-                    </p>
-                  )}
+                          {predesigned.goals && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                              {predesigned.goals}
+                            </p>
+                          )}
 
-                  <Button
-                    size="sm"
-                    variant="default"
-                    onClick={() => handleAddPredesignedTemplate(predesigned)}
-                    disabled={usePredesignedMutation.isPending}
-                    className="w-full bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
-                  >
-                    <Plus className="w-3 h-3 mr-1" />
-                    Use This Template
-                  </Button>
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => handleAddPredesignedTemplate(predesigned)}
+                            disabled={usePredesignedMutation.isPending}
+                            className="w-full bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
+                          >
+                            <Plus className="w-3 h-3 mr-1" />
+                            Use This Template
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-              </div>
-            </div>
+              </CollapsibleContent>
+            </Collapsible>
           );
         })}
       </div>

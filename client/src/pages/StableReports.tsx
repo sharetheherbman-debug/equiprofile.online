@@ -36,10 +36,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import jsPDF from "jspdf";
 import { format } from "date-fns";
-import { loadLogoBase64 } from "@/lib/utils/pdf";
-
-const BRAND_BLUE_RGB = [12, 35, 82] as const;
-const BRAND_ACCENT_RGB = [37, 99, 235] as const;
+import { loadLogoBase64, BRAND_BLUE_RGB, BRAND_ACCENT_RGB } from "@/lib/utils/pdf";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 

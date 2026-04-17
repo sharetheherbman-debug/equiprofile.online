@@ -580,6 +580,12 @@ function WeatherContent() {
               Intelligent training suggestions based on current weather
               conditions
             </p>
+            <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/20 dark:text-amber-300 mt-1">
+              <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              <span>
+                <strong>AI-generated guidance — informational only.</strong> Always apply your own judgement. This is not professional equestrian or veterinary advice and no safety guarantee is implied.
+              </span>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-4">
