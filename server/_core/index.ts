@@ -1107,10 +1107,18 @@ async function startServer() {
   // The 4-argument signature is required by Express to recognise this as an
   // error handler (not a regular middleware).
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  app.use((err: Error, req: any, res: any, next: any) => {
+  app.use((err: any, req: any, res: any, next: any) => {
     // Only override if the response hasn't started and the request is an API call
     if (!res.headersSent && req.originalUrl.startsWith("/api/")) {
+      const status: number = err.status || err.statusCode || 500;
       console.error("[API Error]", req.method, req.originalUrl, err.message);
+      // Return a JSON error body for payload-too-large so tRPC clients receive
+      // structured JSON instead of nginx/Express default HTML pages.
+      if (status === 413 || err.type === "entity.too.large") {
+        return res.status(413).json({
+          error: "File too large. Maximum upload size is 10MB.",
+        });
+      }
       return res.status(500).json({ error: "Internal server error" });
     }
     next(err);

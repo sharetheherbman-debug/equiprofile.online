@@ -151,11 +151,44 @@ const trpcClient = trpc.createClient({
     httpBatchLink({
       url: "/api/trpc",
       transformer: superjson,
-      fetch(input, init) {
-        return globalThis.fetch(input, {
+      async fetch(input, init) {
+        const response = await globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
         });
+
+        // If the server returns a non-JSON response (e.g. nginx/Express HTML 413
+        // page), tRPC's batch parser will crash with "Unexpected token '<'".
+        // Detect this early and synthesise a parseable JSON error response so
+        // the calling mutation receives a proper TRPCClientError instead of
+        // an unhandled JS exception.
+        const contentType = response.headers.get("content-type") ?? "";
+        if (!response.ok && !contentType.includes("application/json")) {
+          let message = "Request failed";
+          if (response.status === 413) {
+            message = "File too large. Maximum upload size is 10MB.";
+          }
+          // Return a synthetic Response that tRPC can parse as a batch error.
+          const body = JSON.stringify([
+            {
+              error: {
+                message,
+                code: -32000,
+                data: {
+                  code:
+                    response.status === 413 ? "PAYLOAD_TOO_LARGE" : "INTERNAL_SERVER_ERROR",
+                  httpStatus: response.status,
+                },
+              },
+            },
+          ]);
+          return new Response(body, {
+            status: response.status,
+            headers: { "content-type": "application/json" },
+          });
+        }
+
+        return response;
       },
     }),
   ],
