@@ -1,4 +1,17 @@
 @import "tailwindcss";
+
+/* ── Tailwind v4 source scanning ──────────────────────────────────────────────
+   @tailwindcss/vite auto-detects source files using the Vite `root` directory.
+   Because each frontend sets root: "client/management" (or "client/school"),
+   Tailwind would only scan that subdirectory and miss all shared components in
+   client/src/.  These @source directives explicitly include every directory
+   that contains Tailwind class names so the CSS bundle is complete.
+*/
+@source ".";                  /* client/src/         — shared components, pages, hooks */
+@source "../management";      /* client/management/  — ManagementApp.tsx and management entry */
+@source "../school";          /* client/school/      — SchoolApp.tsx and school entry */
+@source "../../shared";       /* shared/             — shared types and constants */
+
 @import "tw-animate-css";
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap");
 
