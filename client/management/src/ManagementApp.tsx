@@ -14,7 +14,7 @@ import {
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { useUpgradeModal } from "@/hooks/useUpgradeModal";
-import { ProtectedRoute, StableRoute, StudentRoute, TeacherRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute, StableRoute } from "@/components/ProtectedRoute";
 import { SalesChatWidget } from "@/components/SalesChatWidget";
 import { CookieConsent } from "@/components/CookieConsent";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
@@ -30,8 +30,6 @@ import MgmtContact from "@/pages/management/Contact";
 // Shared public pages wrapped in ManagementLayout
 import TermsPage from "@/pages/TermsPage";
 import PrivacyPage from "@/pages/PrivacyPage";
-import Students from "@/pages/Students";
-import Schools from "@/pages/Schools";
 
 // Auth Pages — kept eager so login/register loads instantly
 import Login from "@/pages/auth/Login";
@@ -91,9 +89,6 @@ const StableReports = lazy(() => import("@/pages/StableReports"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const Competitions = lazy(() => import("@/pages/Competitions"));
 const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
-const StudentDashboard = lazy(() => import("@/pages/StudentDashboard"));
-const TeacherDashboard = lazy(() => import("@/pages/TeacherDashboard"));
-const SchoolDashboard = lazy(() => import("@/pages/SchoolDashboard"));
 
 // V2 Frontend Pages — lazy-loaded for code splitting
 const DashboardV2 = lazy(() => import("@/v2/pages/DashboardV2"));
@@ -126,8 +121,7 @@ function ManagementRouter() {
       return ActiveDashboard;
     }
     if (viewMode === "stable") return ActiveStableDashboard;
-    if (viewMode === "student") return StudentDashboard;
-    if (viewMode === "teacher") return TeacherDashboard;
+    // student/teacher view modes are not available in the management frontend
     return ActiveDashboard;
   })();
 
@@ -150,8 +144,6 @@ function ManagementRouter() {
             <Route path="/about" component={MgmtAbout} />
             <Route path="/contact" component={MgmtContact} />
             {/* Shared public pages */}
-            <Route path="/students" component={Students} />
-            <Route path="/schools" component={Schools} />
             <Route path="/terms" component={TermsPage} />
             <Route path="/privacy" component={PrivacyPage} />
 
@@ -167,27 +159,6 @@ function ManagementRouter() {
             <Route path="/onboarding">
               <ProtectedRoute>
                 <Onboarding />
-              </ProtectedRoute>
-            </Route>
-
-            {/* Student Dashboard — student plan users and admin */}
-            <Route path="/student-dashboard">
-              <StudentRoute>
-                <StudentDashboard />
-              </StudentRoute>
-            </Route>
-
-            {/* Teacher Dashboard — teacher plan users and admin */}
-            <Route path="/teacher-dashboard">
-              <TeacherRoute>
-                <TeacherDashboard />
-              </TeacherRoute>
-            </Route>
-
-            {/* School Dashboard — school_owner plan users */}
-            <Route path="/school-dashboard">
-              <ProtectedRoute>
-                <SchoolDashboard />
               </ProtectedRoute>
             </Route>
 

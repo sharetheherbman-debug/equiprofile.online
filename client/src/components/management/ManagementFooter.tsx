@@ -151,12 +151,6 @@ export function ManagementFooter() {
               Amarkt<span className="text-[#4a9eca] font-semibold">AI</span> Network
             </a>
           </p>
-          <a
-            href="https://school.equiprofile.online"
-            className="text-xs text-gray-600 hover:text-[#4a9eca] transition-colors"
-          >
-            EquiProfile School Platform →
-          </a>
         </div>
       </div>
     </footer>
