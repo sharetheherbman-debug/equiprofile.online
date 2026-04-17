@@ -17,8 +17,8 @@ import {
   Share2,
   Smartphone,
   ShieldCheck,
-  Palette,
-  Globe,
+  GitBranch,
+  Trophy,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -133,8 +133,8 @@ const extraFeatures = [
   { icon: Share2, title: "Team Sharing" },
   { icon: Smartphone, title: "Mobile Friendly" },
   { icon: ShieldCheck, title: "Data Encryption" },
-  { icon: Palette, title: "Custom Branding" },
-  { icon: Globe, title: "Multi-Language" },
+  { icon: GitBranch, title: "Pedigree Records" },
+  { icon: Trophy, title: "Competition Tracking" },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -173,13 +173,12 @@ export default function Features() {
                 </span>
               </h1>
               <p className="mt-6 text-lg md:text-xl text-white/55 max-w-2xl mx-auto leading-relaxed">
-                Eight powerful modules working in harmony — from daily health
-                records to stable-wide business management.
+                Powerful, interconnected modules covering health, training, nutrition, documents, weather, stable management and more — all in one premium platform.
               </p>
             </motion.div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f8f9fb] to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#f8f9fb]/70 to-transparent" />
         </section>
 
         {/* =============== ALTERNATING FEATURE SECTIONS =============== */}
