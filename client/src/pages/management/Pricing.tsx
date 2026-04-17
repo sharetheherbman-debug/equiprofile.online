@@ -79,6 +79,23 @@ const planFeatures: PlanFeature[] = [
 
 type BillingCycle = "monthly" | "yearly";
 
+/* Derived savings — calculated from pricing constants so they stay accurate if prices change */
+const YEARLY_SAVING_PCT = Math.round(
+  (1 - DEFAULT_PRICING.individual.yearly.amount / (DEFAULT_PRICING.individual.monthly.amount * 12)) * 100
+);
+const YEARLY_FREE_MONTHS = Math.round(
+  12 - DEFAULT_PRICING.individual.yearly.amount / DEFAULT_PRICING.individual.monthly.amount
+);
+
+/* Yearly per-month equivalent display prices */
+function penceToMonthlyEquiv(yearlyPence: number): string {
+  const perMonth = yearlyPence / 12 / 100;
+  const whole = Math.floor(perMonth);
+  const frac = Math.round((perMonth - whole) * 100);
+  if (frac === 0) return `£${whole}`;
+  return `£${whole}.${frac.toString().padStart(2, "0")}`;
+}
+
 const plans = [
   {
     id: "individual",
@@ -87,7 +104,7 @@ const plans = [
     description: "Perfect for the individual owner managing up to 5 horses.",
     monthlyPrice: DEFAULT_PRICING.individual.monthly.display,
     yearlyPrice: DEFAULT_PRICING.individual.yearly.display,
-    yearlyMonthlyEquiv: "£8.33",
+    yearlyMonthlyEquiv: penceToMonthlyEquiv(DEFAULT_PRICING.individual.yearly.amount),
     period: "/mo",
     popular: false,
     cta: "Start Free Trial",
@@ -100,7 +117,7 @@ const plans = [
     description: "For yards, trainers and teams managing up to 20 horses.",
     monthlyPrice: DEFAULT_PRICING.stable.monthly.display,
     yearlyPrice: DEFAULT_PRICING.stable.yearly.display,
-    yearlyMonthlyEquiv: "£25",
+    yearlyMonthlyEquiv: penceToMonthlyEquiv(DEFAULT_PRICING.stable.yearly.amount),
     period: "/mo",
     popular: true,
     cta: "Start Free Trial",
@@ -262,7 +279,7 @@ export default function Pricing() {
                   Yearly
                   <span className="inline-flex items-center gap-1 bg-[#c5a55a]/15 text-[#c5a55a] text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide">
                     <Zap className="w-2.5 h-2.5" />
-                    SAVE 17%
+                    SAVE {YEARLY_SAVING_PCT}%
                   </span>
                 </button>
               </div>
@@ -276,7 +293,7 @@ export default function Pricing() {
                     transition={{ duration: 0.2 }}
                     className="mt-3 text-sm text-[#1a7a6d] font-medium"
                   >
-                    Billed annually — equivalent to 2 months free
+                    Billed annually — equivalent to {YEARLY_FREE_MONTHS} months free
                   </motion.p>
                 )}
               </AnimatePresence>
@@ -368,7 +385,7 @@ export default function Pricing() {
                           )}
                           {billingCycle === "monthly" && plan.yearlyMonthlyEquiv && (
                             <p className="mt-1.5 text-xs text-[#1a7a6d] font-medium">
-                              or {plan.yearlyPrice}/yr — save 2 months
+                              or {plan.yearlyPrice}/yr — save {YEARLY_FREE_MONTHS} months
                             </p>
                           )}
                         </div>

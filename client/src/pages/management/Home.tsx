@@ -56,7 +56,7 @@ function AnimatedSection({
 
 const platformStats: { icon: LucideIcon; value: string; label: string; sub: string }[] = [
   { icon: Zap, value: "7-day", label: "Free Trial", sub: "no credit card needed" },
-  { icon: ShieldCheck, value: "Equine-First", label: "Platform", sub: "built by equestrians" },
+  { icon: ShieldCheck, value: "Equestrian-Built", label: "Platform", sub: "built by equestrians" },
   { icon: MapPin, value: "All sizes", label: "Yards Supported", sub: "solo owner to full stable" },
   { icon: Users, value: "Multi-horse", label: "Management", sub: "Pro & Stable plans" },
 ];
