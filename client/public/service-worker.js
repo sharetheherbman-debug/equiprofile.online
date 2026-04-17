@@ -34,12 +34,10 @@ const STATIC_CACHE_URLS = [
 
 // Install service worker and prepare cache
 self.addEventListener("install", (event) => {
-  console.log("[Service Worker] Installing version", CACHE_VERSION);
   event.waitUntil(
     caches
       .open(CACHE_NAME)
       .then((cache) => {
-        console.log("[Service Worker] Cache opened");
         return cache.addAll(STATIC_CACHE_URLS);
       })
       .then(() => {
@@ -51,7 +49,6 @@ self.addEventListener("install", (event) => {
 
 // Activate and clean old caches
 self.addEventListener("activate", (event) => {
-  console.log("[Service Worker] Activating version", CACHE_VERSION);
   event.waitUntil(
     caches
       .keys()
@@ -59,7 +56,6 @@ self.addEventListener("activate", (event) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== CACHE_NAME && cacheName !== DATA_CACHE_NAME) {
-              console.log("[Service Worker] Deleting old cache:", cacheName);
               return caches.delete(cacheName);
             }
           }),
@@ -130,7 +126,6 @@ self.addEventListener("fetch", (event) => {
             // Serve cached data when offline
             return cache.match(request).then((cached) => {
               if (cached) {
-                console.log("[SW] Serving cached API data:", url.pathname);
                 return cached;
               }
               return new Response(
@@ -248,7 +243,6 @@ async function queueOfflineMutation(pathname, body) {
       tx.oncomplete = resolve;
       tx.onerror = reject;
     });
-    console.log("[SW] Queued offline mutation:", pathname);
     // Notify clients about queued item
     const clients = await self.clients.matchAll();
     clients.forEach((client) => {
@@ -313,7 +307,6 @@ async function replayOfflineMutations() {
           await new Promise((resolve) => {
             deleteTx.oncomplete = resolve;
           });
-          console.log("[SW] Synced offline mutation:", item.pathname);
         }
       } catch (e) {
         console.warn("[SW] Failed to replay mutation:", item.pathname, e);

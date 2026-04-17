@@ -122,23 +122,23 @@ const whyPoints = [
 
 const testimonials = [
   {
-    name: "Eleanor Whitfield",
-    role: "Dressage Trainer, Berkshire",
-    initials: "EW",
+    name: "Dressage Trainer",
+    role: "Berkshire, UK",
+    initials: "DT",
     quote:
       "EquiProfile transformed the way we manage our yard. Health records, feeding plans — everything in one place. I can't imagine going back.",
   },
   {
-    name: "James Haverford",
-    role: "Stable Owner, Yorkshire",
-    initials: "JH",
+    name: "Stable Owner",
+    role: "Yorkshire, UK",
+    initials: "SO",
     quote:
       "The training logs alone saved us hours every week. My grooms finally have a single source of truth they actually enjoy using.",
   },
   {
-    name: "Sofia Lindgren",
-    role: "Event Rider, Hampshire",
-    initials: "SL",
+    name: "Event Rider",
+    role: "Hampshire, UK",
+    initials: "ER",
     quote:
       "Beautifully designed and genuinely useful. The weather integration is a game-changer for scheduling — highly recommend.",
   },
@@ -281,8 +281,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Gradient fade to light — gradual to avoid harsh white flash */}
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent via-[#f8f9fb]/50 to-[#f8f9fb]" />
+          {/* Gradient fade to next section — progressive dark → mid → light to avoid harsh flash */}
+          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-b from-transparent via-[#0d1a2e]/80 to-[#f8f9fb]" />
         </section>
 
         {/* ==================== FEATURES GRID ==================== */}
@@ -457,13 +457,13 @@ export default function Home() {
           <div className="relative container mx-auto px-4">
             <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
               <div className="inline-flex items-center gap-2 bg-[#2e6da4]/8 rounded-full px-4 py-1.5 text-sm font-semibold text-[#2e6da4] tracking-widest uppercase mb-4">
-                Testimonials
+                What Users Say
               </div>
               <h2 className="text-3xl md:text-[42px] font-bold font-serif text-[#0f1d2e] leading-tight">
-                Trusted by equestrians everywhere
+                Built for the people of the yard
               </h2>
               <p className="mt-4 text-[#0f1d2e]/50 text-lg">
-                From solo owners to professional training yards.
+                Representative feedback from equestrian professionals across the UK.
               </p>
             </AnimatedSection>
 

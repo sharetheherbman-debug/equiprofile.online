@@ -24,7 +24,9 @@ export function registerServiceWorker() {
       navigator.serviceWorker
         .register("/service-worker.js")
         .then((registration) => {
-          console.log("[SW] Registration successful");
+          if (import.meta.env.DEV) {
+            console.log("[SW] Registration successful");
+          }
 
           // Check for updates periodically - keep reference so we can clear on unload
           const updateInterval = setInterval(() => {
@@ -51,7 +53,7 @@ export function registerServiceWorker() {
       .then((registrations) => {
         for (const registration of registrations) {
           registration.unregister().then((success) => {
-            if (success) {
+            if (success && import.meta.env.DEV) {
               console.log(
                 "[SW] Unregistered stale service worker:",
                 registration.scope,

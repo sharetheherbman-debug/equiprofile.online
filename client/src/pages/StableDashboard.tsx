@@ -123,6 +123,8 @@ const stableModuleGroups = [
     items: [
       { icon: Home, label: "Stable Profile", path: "/stable" },
       { icon: Wrench, label: "Stable Setup", path: "/stable-setup" },
+      { icon: Users, label: "Client Portal", path: "/client-portal" },
+      { icon: BarChart3, label: "Stable Reports", path: "/stable-reports" },
       { icon: MessageSquare, label: "Messages", path: "/messages" },
       { icon: TrendingUp, label: "AI Assistant", path: "/ai-chat" },
     ],
