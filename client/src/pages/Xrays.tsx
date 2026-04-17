@@ -158,11 +158,11 @@ function XraysContent() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const maxSize = 20 * 1024 * 1024; // 20MB for x-ray images
+    const maxSize = 10 * 1024 * 1024; // 10MB — matches server-side limit
     if (file.size > maxSize) {
       toast({
         title: "File too large",
-        description: "Max 20MB",
+        description: "Max 10MB",
         variant: "destructive",
       });
       return;

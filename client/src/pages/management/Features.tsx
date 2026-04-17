@@ -178,7 +178,7 @@ export default function Features() {
             </motion.div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f8f9fb]/80 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-[#0d1422]/60 to-[#f8f9fb]" />
         </section>
 
         {/* =============== ALTERNATING FEATURE SECTIONS =============== */}

@@ -474,9 +474,9 @@ function DashboardContent() {
   const firstName = user?.name?.split(" ")[0] ?? "there";
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219] relative overflow-hidden">
+    <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219] relative">
       {/* ── Subtle Premium Background Depth ────────────────────── */}
-      <div className="pointer-events-none absolute inset-0">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-[#4f5fd6]/[0.04] blur-3xl" />
         <div className="absolute top-1/3 -left-24 h-72 w-72 rounded-full bg-[#3b7dd8]/[0.03] blur-3xl" />
         <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-[#2d8a56]/[0.03] blur-3xl" />
@@ -565,17 +565,23 @@ function DashboardContent() {
 // ─── Page Component ──────────────────────────────────────────────────────────
 
 export default function DashboardV2() {
-  const { loading } = useAuth({ redirectOnUnauthenticated: true });
+  const { loading, user } = useAuth({ redirectOnUnauthenticated: true });
   const { data: subscription } = trpc.user.getSubscriptionStatus.useQuery();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
+    // Admin users bypass all redirects — they can view any dashboard
+    if (user?.role === "admin") return;
     if (subscription?.planTier === "stable" && !subscription?.bothDashboardsUnlocked) {
       setLocation("/stable-dashboard");
     } else if (subscription?.planTier === "student") {
       setLocation("/student-dashboard");
+    } else if (subscription?.planTier === "teacher") {
+      setLocation("/teacher-dashboard");
+    } else if (subscription?.planTier === "school_owner") {
+      setLocation("/school-dashboard");
     }
-  }, [subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
+  }, [user?.role, subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
 
   if (loading) {
     return (

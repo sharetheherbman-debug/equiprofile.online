@@ -477,9 +477,9 @@ function StableDashboardContent() {
   const stableName = user?.name ? `${user.name.split(" ")[0]}'s Stable` : "Stable";
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219] relative overflow-hidden">
+    <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219] relative">
       {/* ── Subtle Premium Background Depth ────────────────────── */}
-      <div className="pointer-events-none absolute inset-0">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-[#4f5fd6]/[0.04] blur-3xl" />
         <div className="absolute top-1/2 -left-20 h-64 w-64 rounded-full bg-[#3b7dd8]/[0.03] blur-3xl" />
         <div className="absolute bottom-1/4 right-1/3 h-56 w-56 rounded-full bg-[#2d8a56]/[0.03] blur-3xl" />
@@ -492,7 +492,7 @@ function StableDashboardContent() {
             <div>
               <div className="flex items-center gap-3">
                 <div
-                  className="flex h-10 w-10 items-center justify-center rounded-lg"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
                   style={{ backgroundColor: `${ACCENT}14` }}
                 >
                   <Building2 className="h-5 w-5" style={{ color: ACCENT }} />
@@ -501,7 +501,7 @@ function StableDashboardContent() {
                   Stable Dashboard
                 </h1>
               </div>
-              <p className="mt-1 ml-[3.25rem] text-sm text-[#5c6370] dark:text-[#9ca3b0]">
+              <p className="mt-1 pl-[3.25rem] text-sm text-[#5c6370] dark:text-[#9ca3b0]">
                 {today}
               </p>
             </div>

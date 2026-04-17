@@ -196,7 +196,7 @@ const moreModuleGroups = [
     items: [
       { icon: FileText, label: "Documents", path: "/documents" },
       { icon: BarChart3, label: "Analytics", path: "/analytics" },
-      { icon: FileText, label: "Reports", path: "/reports" },
+      { icon: FileText, label: "Reports", path: "/reports", stableOverride: "/stable-reports" },
       { icon: Tag, label: "Tags", path: "/tags" },
       { icon: GitBranch, label: "Pedigree", path: "/pedigree" },
       { icon: Shield, label: "Equine Passport", path: "/equine-passport" },
@@ -207,7 +207,10 @@ const moreModuleGroups = [
     iconBg: "bg-gradient-to-br from-cyan-500 to-teal-600",
     items: [
       { icon: Home, label: "Stable Management", path: "/stable" },
+      { icon: Wrench, label: "Stable Setup", path: "/stable-setup", stableOnly: true },
       { icon: UserCog, label: "Staff", path: "/staff" },
+      { icon: Users, label: "Client Portal", path: "/client-portal", stableOnly: true },
+      { icon: BarChart3, label: "Stable Reports", path: "/stable-reports", stableOnly: true },
       { icon: MessageSquare, label: "Messages", path: "/messages" },
     ],
   },
@@ -662,19 +665,26 @@ function DashboardLayoutContent({
                   </SheetHeader>
                   <div className="space-y-6" style={{ paddingBottom: 'calc(1.5rem + var(--safe-area-bottom, 0px))' }}>
                     {moreModuleGroups.map((group) => {
-                      // Filter stable-only items for non-stable users
-                      const items = group.items.filter((item) => {
-                        if (
-                          !isStablePlan &&
-                          (item.label === "Breeding" ||
-                            item.label === "Lessons" ||
-                            item.label === "Stable Management" ||
-                            item.label === "Staff" ||
-                            item.label === "Messages")
-                        )
-                          return false;
-                        return true;
-                      });
+                      // Filter and adapt items based on plan:
+                      // - stableOnly items shown only to stable users (or admin)
+                      // - stableOverride replaces the path/label for stable users
+                      // - Legacy label-based filter retained for Breeding/Lessons
+                      const items = group.items
+                        .filter((item) => {
+                          if (
+                            (item.stableOnly || item.label === "Breeding" || item.label === "Lessons") &&
+                            !isStablePlan &&
+                            !isAdmin
+                          )
+                            return false;
+                          return true;
+                        })
+                        .map((item) => ({
+                          ...item,
+                          // Stable plan users see /stable-reports instead of /reports
+                          path: isStablePlan && item.stableOverride ? item.stableOverride : item.path,
+                          label: isStablePlan && item.stableOverride ? "Stable Reports" : item.label,
+                        }));
                       if (items.length === 0) return null;
                       return (
                         <div key={group.label}>
