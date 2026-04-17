@@ -1242,6 +1242,9 @@ function TrainingTemplatesContent() {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(["foundation"]),
   );
+  // Active category filter for quick jump (null = show all)
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
   const toggleCategory = (key: string) => {
     setExpandedCategories((prev) => {
       const next = new Set(prev);
@@ -1617,11 +1620,54 @@ function TrainingTemplatesContent() {
       </div>
 
       {/* Predesigned Templates Section — Grouped by Purpose */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center gap-2">
           <div className="w-1 h-5 rounded-full bg-gradient-to-b from-[#2e6da4] to-[#2e6da4]/40" />
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Predesigned Templates</h2>
-          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">— Professional training programs ready to use</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1 hidden sm:inline">— Professional training programs ready to use</span>
+        </div>
+
+        {/* Category filter tabs */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <button
+            onClick={() => setActiveCategory(null)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+              activeCategory === null
+                ? "bg-[#2e6da4] text-white border-[#2e6da4] shadow-sm"
+                : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#2e6da4]/50 hover:text-[#2e6da4]"
+            }`}
+          >
+            All
+          </button>
+          {[
+            { key: "foundation", label: "Foundation" },
+            { key: "fitness", label: "Fitness" },
+            { key: "rehabilitation", label: "Rehab" },
+            { key: "development", label: "Development" },
+            { key: "warmup", label: "Warm-Up" },
+            { key: "recovery", label: "Recovery" },
+          ].map((cat) => {
+            const count = PREDESIGNED_TEMPLATES.filter((t) => t.category === cat.key).length;
+            if (count === 0) return null;
+            return (
+              <button
+                key={cat.key}
+                onClick={() => {
+                  setActiveCategory(cat.key);
+                  // Auto-expand selected category
+                  setExpandedCategories((prev) => new Set([...prev, cat.key]));
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                  activeCategory === cat.key
+                    ? "bg-[#2e6da4] text-white border-[#2e6da4] shadow-sm"
+                    : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#2e6da4]/50 hover:text-[#2e6da4]"
+                }`}
+              >
+                {cat.label}
+                <span className={`ml-1.5 text-[10px] ${activeCategory === cat.key ? "text-blue-200" : "text-gray-400"}`}>{count}</span>
+              </button>
+            );
+          })}
         </div>
 
         {[
@@ -1631,7 +1677,7 @@ function TrainingTemplatesContent() {
           { key: "development", label: "Young Horse Development", desc: "Structured programmes for young or green horses" },
           { key: "warmup", label: "Warm-Up & Cool-Down", desc: "Structured warm-up and cool-down routines" },
           { key: "recovery", label: "Recovery & Rest", desc: "Active recovery and rest day planning" },
-        ].map((group) => {
+        ].filter((group) => activeCategory === null || group.key === activeCategory).map((group) => {
           const groupTemplates = PREDESIGNED_TEMPLATES.filter((t) => t.category === group.key);
           if (groupTemplates.length === 0) return null;
           const isOpen = expandedCategories.has(group.key);

@@ -5,7 +5,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Loader2, ChevronRight, Home, Building2, Check, GraduationCap } from "lucide-react";
+import { Loader2, ChevronRight, Home, Building2, Check } from "lucide-react";
 
 /**
  * Post-registration experience selection page.
@@ -17,7 +17,7 @@ import { Loader2, ChevronRight, Home, Building2, Check, GraduationCap } from "lu
 export default function Onboarding() {
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
-  const [selected, setSelected] = useState<"standard" | "stable" | "student" | null>(null);
+  const [selected, setSelected] = useState<"standard" | "stable" | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -45,14 +45,11 @@ export default function Onboarding() {
     setSaving(true);
     setError("");
     try {
-      // Backend now accepts "standard" | "stable" | "student" (Phase 2)
       await setExperience.mutateAsync({ experience: selected });
       // Invalidate auth cache so planTier is fresh
       await utils.auth.me.invalidate();
       if (selected === "stable") {
         window.location.href = "/stable-setup";
-      } else if (selected === "student") {
-        window.location.href = "/student-dashboard";
       } else {
         window.location.href = "/dashboard";
       }
@@ -90,7 +87,7 @@ export default function Onboarding() {
         </div>
 
         {/* Choice cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           {/* Standard */}
           <button
             type="button"
@@ -158,43 +155,6 @@ export default function Onboarding() {
                 <span
                   key={tag}
                   className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </button>
-
-          {/* Student */}
-          <button
-            type="button"
-            onClick={() => setSelected("student")}
-            className={`relative group text-left rounded-2xl border-2 p-5 transition-all duration-200 focus:outline-none ${
-              selected === "student"
-                ? "border-emerald-500 bg-emerald-500/10 shadow-lg shadow-emerald-500/20"
-                : "border-white/10 bg-white/5 hover:border-emerald-500/50 hover:bg-white/8"
-            }`}
-          >
-            {selected === "student" && (
-              <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
-                <Check className="w-3 h-3 text-white" />
-              </div>
-            )}
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-3 shadow-sm">
-              <GraduationCap className="w-5 h-5 text-white" />
-            </div>
-            <h2 className="font-semibold text-white text-sm mb-1">
-              Student
-            </h2>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              For equestrian students and learners. Manage a virtual or real
-              horse, track training progress, and study equine care.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-1">
-              {["My Horse", "Tasks", "Study", "Progress"].map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
                 >
                   {tag}
                 </span>
