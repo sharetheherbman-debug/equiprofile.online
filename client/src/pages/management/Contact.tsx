@@ -137,19 +137,16 @@ export default function Contact() {
       <div className="min-h-screen">
 
         {/* ======================== HERO ======================== */}
-        <section className="relative bg-gradient-to-br from-[#0f1d2e] via-[#143456] to-[#1a3a6d] pt-28 pb-20 overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 40% 50%, rgba(255,255,255,0.12) 0%, transparent 55%)",
-              }}
-            />
-          </div>
+        <section className="relative min-h-[420px] flex items-center overflow-hidden">
+          <img
+            src="/images/hero/image6.jpg"
+            alt="Equestrian yard at dusk"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/70 via-[#0f1d2e]/62 to-[#0f1d2e]/80" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(197,165,90,0.07)_0%,_transparent_60%)] pointer-events-none" />
 
-          <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-28 pb-16">
             <motion.span
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -180,6 +177,8 @@ export default function Contact() {
               the form and we'll be in touch quickly.
             </motion.p>
           </div>
+
+          <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#f0f4f8] via-[#f0f4f8]/50 to-transparent" />
         </section>
 
         {/* ================= FORM + SIDEBAR ================= */}

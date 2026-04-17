@@ -56,7 +56,7 @@ function AnimatedSection({
 
 const platformStats: { icon: LucideIcon; value: string; label: string; sub: string }[] = [
   { icon: Zap, value: "7-day", label: "Free Trial", sub: "no credit card needed" },
-  { icon: ShieldCheck, value: "UK-Built", label: "Platform", sub: "built by equestrians" },
+  { icon: ShieldCheck, value: "Equestrian-Built", label: "Platform", sub: "built by equestrians" },
   { icon: MapPin, value: "All sizes", label: "Yards Supported", sub: "solo owner to full stable" },
   { icon: Users, value: "Multi-horse", label: "Management", sub: "Pro & Stable plans" },
 ];
@@ -160,8 +160,8 @@ export default function Home() {
             alt="Horses in a field at sunset"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          {/* Deep layered overlay — navy base, teal tint, preserve silhouettes */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/85 via-[#0a1628]/78 to-[#0a1628]/95" />
+          {/* Deep layered overlay — lightened for readability and elegance */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/70 via-[#0a1628]/60 to-[#0a1628]/80" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,_rgba(46,109,164,0.12)_0%,_transparent_70%)]" />
 
           {/* Subtle decorative corners */}
@@ -243,7 +243,7 @@ export default function Home() {
               {[
                 { icon: ShieldCheck, text: "7-day free trial" },
                 { icon: Zap, text: "No credit card required" },
-                { icon: MapPin, text: "UK-built platform" },
+                { icon: MapPin, text: "Equestrian-built platform" },
               ].map(({ icon: Icon, text }) => (
                 <span key={text} className="flex items-center gap-1.5 text-xs text-white/45 font-medium tracking-wide">
                   <Icon className="w-3 h-3 text-[#c5a55a]/70" />
@@ -253,8 +253,8 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Bottom fade */}
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0a1628] via-[#0a1628]/80 to-transparent" />
+          {/* Bottom fade — gradual transition to light section */}
+          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#0a1628] via-[#0a1628]/70 to-transparent" />
         </section>
 
         {/* ====================== PLATFORM STATS ====================== */}
@@ -281,8 +281,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Gradient fade to light */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-[#f8f9fb]" />
+          {/* Gradient fade to light — gradual to avoid harsh white flash */}
+          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent via-[#f8f9fb]/50 to-[#f8f9fb]" />
         </section>
 
         {/* ==================== FEATURES GRID ==================== */}
@@ -365,6 +365,7 @@ export default function Home() {
                     <img
                       src={img.src}
                       alt={img.alt}
+                      loading="lazy"
                       className="w-full h-52 sm:h-64 md:h-80 object-cover object-center transition-transform duration-700 group-hover:scale-105"
                     />
                     {/* Gradient overlay */}
@@ -394,12 +395,13 @@ export default function Home() {
                   <img
                     src="/images/hero/image3.jpg"
                     alt="Horse and rider training"
+                    loading="lazy"
                     className="w-full h-[380px] md:h-[500px] object-cover object-center group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 ring-1 ring-inset ring-white/8 rounded-2xl pointer-events-none" />
                   {/* Corner accent */}
                   <div className="absolute top-4 right-4 bg-[#c5a55a]/90 backdrop-blur-sm rounded-lg px-3 py-1.5">
-                    <span className="text-[11px] font-bold text-[#0f1d2e] tracking-wider uppercase">UK-Built</span>
+                    <span className="text-[11px] font-bold text-[#0f1d2e] tracking-wider uppercase">Equestrian-Built</span>
                   </div>
                 </div>
               </AnimatedSection>
@@ -529,9 +531,6 @@ export default function Home() {
               <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-5">
                 Start today
               </p>
-              <blockquote className="text-base md:text-lg italic text-white/40 max-w-2xl mx-auto mb-8 leading-relaxed">
-                "Manage every horse, from any device — all in one place."
-              </blockquote>
               <h2 className="text-4xl md:text-5xl lg:text-[56px] font-bold font-serif text-white max-w-3xl mx-auto leading-tight">
                 Ready to elevate your
                 <br />

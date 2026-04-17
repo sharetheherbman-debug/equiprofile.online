@@ -1,11 +1,11 @@
 {
-  "name": "EquiProfile — Horse Management & Learning",
+  "name": "EquiProfile — Professional Horse Management",
   "short_name": "EquiProfile",
-  "description": "Professional equine management and equestrian learning platform. Manage horses, track health, study equine care through 95+ structured lessons, and run your stable — all from one place.",
+  "description": "Professional equine management platform. Manage horses, track health records, training logs, nutrition plans and run your stable — all in one premium system.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#0a1628",
-  "theme_color": "#6366f1",
+  "background_color": "#0f1d2e",
+  "theme_color": "#0f1d2e",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -69,7 +69,7 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["business", "education", "lifestyle", "productivity"],
+  "categories": ["business", "lifestyle", "productivity"],
   "shortcuts": [
     {
       "name": "My Horses",
@@ -79,10 +79,10 @@
       "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
     },
     {
-      "name": "Learning Path",
-      "short_name": "Learn",
-      "description": "Continue your equestrian learning journey",
-      "url": "/student-dashboard",
+      "name": "Health Records",
+      "short_name": "Health",
+      "description": "View horse health records and vet logs",
+      "url": "/health",
       "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
     },
     {

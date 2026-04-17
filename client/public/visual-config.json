@@ -10,26 +10,29 @@
   },
 
   "colors": {
-    "primary": "#667eea",
-    "primaryHover": "#5568d3",
-    "secondary": "#764ba2",
-    "accent": "#f093fb",
-    "background": "#ffffff",
-    "foreground": "#1a202c"
+    "primary": "#2e6da4",
+    "primaryHover": "#3578b0",
+    "secondary": "#4a9eca",
+    "accent": "#c5a55a",
+    "background": "#f8f9fb",
+    "foreground": "#0f1d2e",
+    "dark": "#0f1d2e",
+    "darkDeep": "#070f1c",
+    "darkAlt": "#0a1628"
   },
 
   "logos": {
-    "header": "/images/logo.png",
-    "footer": "/images/logo.png",
-    "favicon": "/favicon.ico",
+    "header": "/logo.png",
+    "footer": "/logo.png",
+    "favicon": "/favicon.svg",
     "alt": "EquiProfile Logo"
   },
 
   "hero": {
-    "backgroundImage": "",
-    "backgroundGradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    "title": "Manage Your Horses Like a Pro",
-    "subtitle": "All-in-one platform for horse health, training, and care",
+    "backgroundImage": "/images/hero/image1.jpg",
+    "backgroundGradient": "linear-gradient(to bottom, rgba(7,15,28,0.70), rgba(10,22,40,0.60), rgba(10,22,40,0.80))",
+    "title": "Professional Horse Management Software",
+    "subtitle": "The all-in-one platform trusted by trainers, owners and stables",
     "ctaText": "Get Started Free",
     "ctaLink": "/register"
   },
@@ -40,7 +43,7 @@
   },
 
   "footer": {
-    "copyrightText": "© 2024 EquiProfile. All rights reserved.",
+    "copyrightText": "© 2025 EquiProfile. All rights reserved.",
     "showSocialLinks": false,
     "socialLinks": {
       "facebook": null,

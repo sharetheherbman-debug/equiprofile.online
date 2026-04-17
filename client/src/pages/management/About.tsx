@@ -124,8 +124,8 @@ export default function About() {
             alt="EquiProfile team and horses"
             className="absolute inset-0 w-full h-full object-cover object-top"
           />
-          {/* Deep layered overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/88 via-[#0f1d2e]/75 to-[#0a1628]/92" />
+          {/* Lightened overlay for an elevated, premium feel */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/70 via-[#0f1d2e]/60 to-[#0a1628]/80" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,_rgba(26,122,109,0.12)_0%,_transparent_70%)]" />
 
           <div className="relative z-10 container mx-auto px-4 pt-32 pb-20 text-center">
@@ -147,7 +147,7 @@ export default function About() {
             </motion.div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#f8f9fb] to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-[#f8f9fb] via-[#f8f9fb]/60 to-transparent" />
         </section>
 
         {/* ====================== MISSION ====================== */}
@@ -190,6 +190,7 @@ export default function About() {
                   <img
                     src="/images/hero/image5.jpg"
                     alt="Close-up of horse and rider"
+                    loading="lazy"
                     className="w-full h-[380px] md:h-[480px] object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 ring-1 ring-inset ring-[#0f1d2e]/8 rounded-2xl pointer-events-none" />

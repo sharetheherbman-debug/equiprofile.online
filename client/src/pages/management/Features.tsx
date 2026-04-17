@@ -152,7 +152,7 @@ export default function Features() {
             alt="Training session with horse"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/88 via-[#0f1d2e]/80 to-[#0a1628]/92" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/70 via-[#0f1d2e]/62 to-[#0a1628]/80" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(46,109,164,0.22)_0%,_transparent_60%)] pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(26,122,109,0.12)_0%,_transparent_60%)] pointer-events-none" />
 
@@ -178,7 +178,7 @@ export default function Features() {
             </motion.div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#f8f9fb]/70 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f8f9fb]/80 to-transparent" />
         </section>
 
         {/* =============== ALTERNATING FEATURE SECTIONS =============== */}
@@ -202,6 +202,7 @@ export default function Features() {
                       <img
                         src={feature.image}
                         alt={feature.title}
+                        loading="lazy"
                         className={`w-full h-[320px] md:h-[420px] object-cover ${feature.imagePosition} transition-transform duration-700 group-hover:scale-105`}
                       />
                       {/* Icon badge overlay */}

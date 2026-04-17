@@ -23,10 +23,15 @@ function AuthHeader() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f1d2e]/98 backdrop-blur-xl border-b border-white/[0.06]">
       <div className="container flex items-center justify-between h-16 px-4 md:px-6">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-xl font-bold font-serif text-white tracking-tight">
-            Equi<span className="text-[#4a9eca]">Profile</span>
+        {/* Logo — matches ManagementNavbar treatment */}
+        <Link href="/" className="flex items-center gap-3 group">
+          <img
+            src="/logo.png"
+            alt="EquiProfile"
+            className="h-10 w-auto object-contain drop-shadow-sm"
+          />
+          <span className="text-xl font-bold font-serif text-white tracking-tight leading-none">
+            EquiProfile
           </span>
         </Link>
 

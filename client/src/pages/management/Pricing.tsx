@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ManagementLayout } from "@/components/management/ManagementLayout";
@@ -13,6 +13,7 @@ import {
   Sparkles,
   Crown,
   User,
+  Zap,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -76,13 +77,34 @@ const planFeatures: PlanFeature[] = [
   { label: "Dedicated account manager", individual: false, stable: false, enterprise: true },
 ];
 
+type BillingCycle = "monthly" | "yearly";
+
+/* Derived savings — calculated from pricing constants so they stay accurate if prices change */
+const YEARLY_SAVING_PCT = Math.round(
+  (1 - DEFAULT_PRICING.individual.yearly.amount / (DEFAULT_PRICING.individual.monthly.amount * 12)) * 100
+);
+const YEARLY_FREE_MONTHS = Math.round(
+  12 - DEFAULT_PRICING.individual.yearly.amount / DEFAULT_PRICING.individual.monthly.amount
+);
+
+/* Yearly per-month equivalent display prices */
+function penceToMonthlyEquiv(yearlyPence: number): string {
+  const perMonth = yearlyPence / 12 / 100;
+  const whole = Math.floor(perMonth);
+  const frac = Math.round((perMonth - whole) * 100);
+  if (frac === 0) return `£${whole}`;
+  return `£${whole}.${frac.toString().padStart(2, "0")}`;
+}
+
 const plans = [
   {
     id: "individual",
     name: "Pro",
     icon: User,
     description: "Perfect for the individual owner managing up to 5 horses.",
-    price: DEFAULT_PRICING.individual.monthly.display,
+    monthlyPrice: DEFAULT_PRICING.individual.monthly.display,
+    yearlyPrice: DEFAULT_PRICING.individual.yearly.display,
+    yearlyMonthlyEquiv: penceToMonthlyEquiv(DEFAULT_PRICING.individual.yearly.amount),
     period: "/mo",
     popular: false,
     cta: "Start Free Trial",
@@ -93,7 +115,9 @@ const plans = [
     name: "Stable",
     icon: Sparkles,
     description: "For yards, trainers and teams managing up to 20 horses.",
-    price: DEFAULT_PRICING.stable.monthly.display,
+    monthlyPrice: DEFAULT_PRICING.stable.monthly.display,
+    yearlyPrice: DEFAULT_PRICING.stable.yearly.display,
+    yearlyMonthlyEquiv: penceToMonthlyEquiv(DEFAULT_PRICING.stable.yearly.amount),
     period: "/mo",
     popular: true,
     cta: "Start Free Trial",
@@ -104,7 +128,9 @@ const plans = [
     name: "Enterprise",
     icon: Crown,
     description: "Bespoke solutions for large yards and professional operations.",
-    price: "Custom",
+    monthlyPrice: "Custom",
+    yearlyPrice: "Custom",
+    yearlyMonthlyEquiv: null,
     period: "",
     popular: false,
     cta: "Contact Sales",
@@ -187,6 +213,8 @@ function FaqAccordion({ items }: { items: FaqItem[] }) {
 /* ------------------------------------------------------------------ */
 
 export default function Pricing() {
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
+
   return (
     <ManagementLayout>
       <div className="min-h-screen">
@@ -197,7 +225,7 @@ export default function Pricing() {
             alt="Horses in a stable yard"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/88 via-[#0f1d2e]/80 to-[#0a1628]/92" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/70 via-[#0f1d2e]/62 to-[#0f1d2e]/82" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(26,122,109,0.18)_0%,_transparent_60%)] pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(46,109,164,0.12)_0%,_transparent_60%)] pointer-events-none" />
 
@@ -213,109 +241,204 @@ export default function Pricing() {
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-bold font-serif text-white leading-tight max-w-4xl mx-auto">
                 Simple, Transparent Pricing
               </h1>
-              <p className="mt-6 text-lg md:text-xl text-white/55 max-w-2xl mx-auto leading-relaxed">
+              <p className="mt-6 text-lg md:text-xl text-white/65 max-w-2xl mx-auto leading-relaxed">
                 Choose the plan that fits your yard. Every plan includes a{" "}
                 {FREE_TRIAL_DAYS}-day free trial — no credit card required.
               </p>
             </motion.div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f8f9fb] to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#f8f9fb] via-[#f8f9fb]/60 to-transparent" />
         </section>
 
         {/* ===================== PRICING CARDS ===================== */}
-        <section className="bg-[#f8f9fb] py-20 md:py-28">
+        <section className="bg-[#f8f9fb] py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto items-start">
-              {plans.map((plan, i) => (
-                <AnimatedSection key={plan.id} delay={i * 0.1}>
-                  <div
-                    className={`relative rounded-2xl bg-white flex flex-col h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 overflow-hidden ${
-                      plan.popular
-                        ? "shadow-xl shadow-[#c5a55a]/12 border-2 border-[#c5a55a]/40"
-                        : "border border-[#0f1d2e]/8 shadow-sm"
-                    }`}
+
+            {/* Billing cycle toggle */}
+            <AnimatedSection className="flex flex-col items-center mb-12">
+              <div className="inline-flex items-center bg-white rounded-full shadow-sm border border-[#0f1d2e]/8 p-1 gap-1">
+                <button
+                  onClick={() => setBillingCycle("monthly")}
+                  className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+                    billingCycle === "monthly"
+                      ? "bg-[#0f1d2e] text-white shadow-md"
+                      : "text-[#0f1d2e]/55 hover:text-[#0f1d2e]"
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setBillingCycle("yearly")}
+                  className={`relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${
+                    billingCycle === "yearly"
+                      ? "bg-[#0f1d2e] text-white shadow-md"
+                      : "text-[#0f1d2e]/55 hover:text-[#0f1d2e]"
+                  }`}
+                >
+                  Yearly
+                  <span className="inline-flex items-center gap-1 bg-[#c5a55a]/15 text-[#c5a55a] text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide">
+                    <Zap className="w-2.5 h-2.5" />
+                    SAVE {YEARLY_SAVING_PCT}%
+                  </span>
+                </button>
+              </div>
+              <AnimatePresence>
+                {billingCycle === "yearly" && (
+                  <motion.p
+                    key="yearly-note"
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-3 text-sm text-[#1a7a6d] font-medium"
                   >
-                    {/* Colored top strip */}
+                    Billed annually — equivalent to {YEARLY_FREE_MONTHS} months free
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </AnimatedSection>
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto items-start">
+              {plans.map((plan, i) => {
+                const displayPrice =
+                  billingCycle === "yearly" && plan.yearlyMonthlyEquiv
+                    ? plan.yearlyMonthlyEquiv
+                    : billingCycle === "yearly"
+                    ? plan.yearlyPrice
+                    : plan.monthlyPrice;
+                const showYearlyTotal =
+                  billingCycle === "yearly" && plan.yearlyMonthlyEquiv;
+
+                return (
+                  <AnimatedSection key={plan.id} delay={i * 0.1}>
                     <div
-                      className={`h-1.5 w-full ${
+                      className={`relative rounded-2xl bg-white flex flex-col h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 overflow-hidden ${
                         plan.popular
-                          ? "bg-gradient-to-r from-[#c5a55a] via-[#e8d08a] to-[#c5a55a]"
-                          : "bg-gradient-to-r from-[#2e6da4] to-[#4a9eca]"
+                          ? "shadow-xl shadow-[#c5a55a]/12 border-2 border-[#c5a55a]/40"
+                          : "border border-[#0f1d2e]/8 shadow-sm"
                       }`}
-                    />
-
-                    {plan.popular && (
-                      <div className="absolute top-4 right-4">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[#c5a55a] px-3 py-1 text-[10px] font-bold text-[#0f1d2e] uppercase tracking-wider shadow-md">
-                          <Sparkles className="w-2.5 h-2.5" />
-                          Most Popular
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="p-8 flex flex-col flex-1">
+                    >
+                      {/* Colored top strip */}
                       <div
-                        className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-5 shadow-md ${
+                        className={`h-1.5 w-full ${
                           plan.popular
-                            ? "bg-gradient-to-br from-[#c5a55a] to-[#e8c85a] text-[#0f1d2e] shadow-[#c5a55a]/20"
-                            : "bg-gradient-to-br from-[#2e6da4] to-[#4a9eca] text-white shadow-[#2e6da4]/15"
+                            ? "bg-gradient-to-r from-[#c5a55a] via-[#e8d08a] to-[#c5a55a]"
+                            : "bg-gradient-to-r from-[#2e6da4] to-[#4a9eca]"
                         }`}
-                      >
-                        <plan.icon className="w-5 h-5" />
-                      </div>
+                      />
 
-                      <h3 className="text-xl font-bold font-serif text-[#0f1d2e]">
-                        {plan.name}
-                      </h3>
-                      <p className="mt-1 text-sm text-[#0f1d2e]/48">
-                        {plan.description}
-                      </p>
-
-                      <div className="mt-6 mb-8 pb-6 border-b border-[#0f1d2e]/6">
-                        <span className={`text-4xl font-bold font-serif ${plan.popular ? "text-[#c5a55a]" : "text-[#0f1d2e]"}`}>
-                          {plan.price}
-                        </span>
-                        {plan.period && (
-                          <span className="text-[#0f1d2e]/38 ml-1 text-sm">
-                            {plan.period}
+                      {plan.popular && (
+                        <div className="absolute top-4 right-4">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#c5a55a] px-3 py-1 text-[10px] font-bold text-[#0f1d2e] uppercase tracking-wider shadow-md">
+                            <Sparkles className="w-2.5 h-2.5" />
+                            Most Popular
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
 
-                      {/* Feature checklist */}
-                      <ul className="space-y-2.5 mb-8 flex-1">
-                        {planFeatures.map((f) => {
-                          const included =
-                            f[plan.id as keyof Pick<PlanFeature, "individual" | "stable" | "enterprise">];
-                          if (!included) return null;
-                          return (
-                            <li key={f.label} className="flex items-start gap-2.5 text-sm text-[#0f1d2e]/65">
-                              <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? "text-[#c5a55a]" : "text-[#1a7a6d]"}`} />
-                              {f.label}
-                            </li>
-                          );
-                        })}
-                      </ul>
-
-                      <Link href={plan.href}>
-                        <Button
-                          size="lg"
-                          className={`w-full rounded-full font-bold h-12 transition-all duration-200 hover:-translate-y-0.5 ${
+                      <div className="p-8 flex flex-col flex-1">
+                        <div
+                          className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-5 shadow-md ${
                             plan.popular
-                              ? "bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] shadow-lg shadow-[#c5a55a]/25"
-                              : "bg-[#0f1d2e] hover:bg-[#1a2e45] text-white"
+                              ? "bg-gradient-to-br from-[#c5a55a] to-[#e8c85a] text-[#0f1d2e] shadow-[#c5a55a]/20"
+                              : "bg-gradient-to-br from-[#2e6da4] to-[#4a9eca] text-white shadow-[#2e6da4]/15"
                           }`}
                         >
-                          {plan.cta}
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
+                          <plan.icon className="w-5 h-5" />
+                        </div>
+
+                        <h3 className="text-xl font-bold font-serif text-[#0f1d2e]">
+                          {plan.name}
+                        </h3>
+                        <p className="mt-1 text-sm text-[#0f1d2e]/48">
+                          {plan.description}
+                        </p>
+
+                        <div className="mt-6 mb-8 pb-6 border-b border-[#0f1d2e]/6">
+                          <div className="flex items-end gap-1.5">
+                            <AnimatePresence mode="wait">
+                              <motion.span
+                                key={`${plan.id}-${billingCycle}`}
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -8 }}
+                                transition={{ duration: 0.2 }}
+                                className={`text-4xl font-bold font-serif ${plan.popular ? "text-[#c5a55a]" : "text-[#0f1d2e]"}`}
+                              >
+                                {displayPrice}
+                              </motion.span>
+                            </AnimatePresence>
+                            {plan.yearlyMonthlyEquiv && (
+                              <span className="text-[#0f1d2e]/38 text-sm mb-1">/mo</span>
+                            )}
+                            {!plan.yearlyMonthlyEquiv && plan.period && (
+                              <span className="text-[#0f1d2e]/38 ml-1 text-sm mb-1">
+                                {billingCycle === "yearly" ? "/yr" : plan.period}
+                              </span>
+                            )}
+                          </div>
+                          {showYearlyTotal && (
+                            <p className="mt-1.5 text-xs text-[#0f1d2e]/40">
+                              {plan.yearlyPrice} billed annually
+                            </p>
+                          )}
+                          {billingCycle === "monthly" && plan.yearlyMonthlyEquiv && (
+                            <p className="mt-1.5 text-xs text-[#1a7a6d] font-medium">
+                              or {plan.yearlyPrice}/yr — save {YEARLY_FREE_MONTHS} months
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Feature checklist */}
+                        <ul className="space-y-2.5 mb-8 flex-1">
+                          {planFeatures.map((f) => {
+                            const included =
+                              f[plan.id as keyof Pick<PlanFeature, "individual" | "stable" | "enterprise">];
+                            if (!included) return null;
+                            return (
+                              <li key={f.label} className="flex items-start gap-2.5 text-sm text-[#0f1d2e]/65">
+                                <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? "text-[#c5a55a]" : "text-[#1a7a6d]"}`} />
+                                {f.label}
+                              </li>
+                            );
+                          })}
+                        </ul>
+
+                        <Link href={plan.href}>
+                          <Button
+                            size="lg"
+                            className={`w-full rounded-full font-bold h-12 transition-all duration-200 hover:-translate-y-0.5 ${
+                              plan.popular
+                                ? "bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] shadow-lg shadow-[#c5a55a]/25"
+                                : "bg-[#0f1d2e] hover:bg-[#1a2e45] text-white"
+                            }`}
+                          >
+                            {plan.cta}
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                </AnimatedSection>
-              ))}
+                  </AnimatedSection>
+                );
+              })}
             </div>
+
+            {/* Trust strip */}
+            <AnimatedSection delay={0.35} className="mt-10 flex flex-wrap items-center justify-center gap-x-7 gap-y-2">
+              {[
+                `${FREE_TRIAL_DAYS}-day free trial included`,
+                "No credit card required",
+                "Cancel anytime",
+                "Full access during trial",
+              ].map((item) => (
+                <span key={item} className="flex items-center gap-1.5 text-xs text-[#0f1d2e]/40 font-medium">
+                  <Check className="w-3 h-3 text-[#1a7a6d]" />
+                  {item}
+                </span>
+              ))}
+            </AnimatedSection>
           </div>
         </section>
 
@@ -423,25 +546,45 @@ export default function Pricing() {
               <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-5">
                 Start today
               </p>
-              <blockquote className="text-base md:text-lg italic text-white/40 max-w-2xl mx-auto mb-8 leading-relaxed">
-                "Invest in your horse's future without breaking the bank."
-              </blockquote>
               <h2 className="text-4xl md:text-5xl font-bold font-serif text-white max-w-3xl mx-auto leading-tight">
                 Start your free trial today
               </h2>
-              <p className="mt-6 text-white/45 text-lg max-w-xl mx-auto leading-relaxed">
+              <p className="mt-5 text-white/50 text-lg max-w-xl mx-auto leading-relaxed">
                 No credit card. No commitment. Just {FREE_TRIAL_DAYS} days of
                 full access to see why equestrians love EquiProfile.
               </p>
-              <Link href="/register">
-                <Button
-                  size="lg"
-                  className="mt-10 bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] font-bold px-12 h-12 text-base rounded-full shadow-2xl shadow-[#c5a55a]/25 border-0 transition-all duration-200 hover:-translate-y-0.5 group"
-                >
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-                </Button>
-              </Link>
+              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link href="/register">
+                  <Button
+                    size="lg"
+                    className="bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] font-bold px-12 h-12 text-base rounded-full shadow-2xl shadow-[#c5a55a]/25 border-0 transition-all duration-200 hover:-translate-y-0.5 group"
+                  >
+                    Get Started Free
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                  </Button>
+                </Link>
+                <Link href="/contact">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white/15 text-white hover:bg-white/[0.07] hover:border-white/25 px-10 h-12 text-base rounded-full transition-all duration-200"
+                  >
+                    Talk to Sales
+                  </Button>
+                </Link>
+              </div>
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
+                {[
+                  "No credit card required",
+                  "Cancel anytime",
+                  "Full access during trial",
+                ].map((item) => (
+                  <span key={item} className="text-xs text-white/35 flex items-center gap-1.5">
+                    <Check className="w-3 h-3 text-[#c5a55a]/60" />
+                    {item}
+                  </span>
+                ))}
+              </div>
             </AnimatedSection>
           </div>
         </section>

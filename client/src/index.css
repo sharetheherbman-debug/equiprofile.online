@@ -64,6 +64,14 @@
   --color-brand-warm: #f5f0e8;
   --color-brand-cream: #faf8f4;
   --color-brand-forest: #2d6a4f;
+  /* ── Shared dark background token ────────────────────────────────────────
+     Used behind the management navbar and unified across all dark marketing
+     sections. Change this single value to roll back the dark unification.
+  ──────────────────────────────────────────────────────────────────────── */
+  --ep-dark-bg: #0f1d2e;
+  --ep-dark-bg-deep: #070f1c;
+  --ep-dark-bg-alt: #0a1628;
+  --ep-section-light: #f8f9fb;
 }
 
 :root {
