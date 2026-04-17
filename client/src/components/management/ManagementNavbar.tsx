@@ -49,14 +49,11 @@ export function ManagementNavbar() {
             <img
               src="/logo.png"
               alt="EquiProfile"
-              className="h-10 w-auto object-contain drop-shadow-sm"
+              className="h-11 w-auto object-contain drop-shadow-sm"
             />
             <div className="flex flex-col">
-              <span className="text-lg font-bold text-white tracking-tight font-serif leading-none">
+              <span className="text-xl font-bold text-white tracking-tight font-serif leading-none">
                 EquiProfile
-              </span>
-              <span className="text-[10px] font-medium text-[#4a9eca] tracking-[0.15em] uppercase mt-0.5">
-                Management
               </span>
             </div>
           </Link>

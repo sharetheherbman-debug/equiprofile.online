@@ -479,7 +479,7 @@ function WeatherContent() {
           <CardContent>
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {(hourly as any[]).slice(0, 24).map((h: any, i: number) => {
-                const hourLabel = new Date(h.time).toLocaleTimeString([], {
+                const hourLabel = new Date(h.timestamp).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 });

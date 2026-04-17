@@ -7,9 +7,9 @@ interface PageTransitionProps {
 }
 
 const pageVariants = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
+  exit: { opacity: 0, y: -8 },
 };
 
 /**
@@ -29,7 +29,7 @@ export function PageTransition({
         initial: "initial",
         animate: "animate",
         exit: "exit",
-        transition: { duration: 0.3, ease: "easeOut" },
+        transition: { duration: 0.45, ease: "easeOut" },
       } as any)}
       className={className}
     >
@@ -56,7 +56,7 @@ export function AnimatedRoute({ children, routeKey }: AnimatedRouteProps) {
           initial: "initial",
           animate: "animate",
           exit: "exit",
-          transition: { duration: 0.3, ease: "easeOut" },
+          transition: { duration: 0.45, ease: "easeOut" },
         } as any)}
       >
         {children}

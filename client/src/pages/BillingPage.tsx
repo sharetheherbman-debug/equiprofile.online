@@ -172,7 +172,6 @@ export default function BillingPage() {
     "ALL features enabled",
     "Basic health records",
     "Training session logging",
-    "Secure storage",
     "Email support",
   ];
 
@@ -181,7 +180,6 @@ export default function BillingPage() {
     "Complete health tracking",
     "Advanced training logs",
     "Competition results",
-    "Secure storage",
     "AI weather analysis (50/day)",
     "Email reminders",
     "Export to CSV/PDF",
@@ -193,7 +191,6 @@ export default function BillingPage() {
     "Up to 5 users",
     "Role-based permissions",
     "Stable management",
-    "Secure storage",
     "Unlimited AI weather",
     "Advanced analytics",
     "Priority email support",
@@ -216,7 +213,6 @@ export default function BillingPage() {
     "ALL features enabled",
     "Basic health records",
     "Training session logging",
-    "Secure storage",
     "Email support",
   ];
 

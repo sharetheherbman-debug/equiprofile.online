@@ -78,28 +78,28 @@ const values = [
 
 const timeline = [
   {
-    year: "2022",
+    year: "The Idea",
     title: "The Spark",
     description:
       "Frustrated with scattered spreadsheets and paper files, our founder — a lifelong rider — began sketching a better way to manage horse care.",
   },
   {
-    year: "2023",
+    year: "Early Beta",
     title: "First Beta",
     description:
       "A small group of yards in the UK tested the earliest version, providing invaluable feedback that shaped the core features.",
   },
   {
-    year: "2024",
+    year: "Launch",
     title: "Public Launch",
     description:
-      "EquiProfile launched to the public with health records, training logs, nutrition plans and document storage — and the response was overwhelming.",
+      "EquiProfile launched to the public with health records, training logs, nutrition plans and document storage — and the response was encouraging.",
   },
   {
-    year: "2025",
-    title: "Growing Fast",
+    year: "Today",
+    title: "Growing",
     description:
-      "Today EquiProfile serves hundreds of stables, with weather integration, reporting dashboards and an ever-expanding feature set.",
+      "EquiProfile continues to grow, adding weather integration, reporting dashboards, stable management tools, and an ever-expanding feature set — all shaped by real user feedback.",
   },
 ];
 
@@ -243,17 +243,19 @@ export default function About() {
         </section>
 
         {/* ==================== ORIGIN STORY ==================== */}
-        <section className="bg-[#070f1c] py-24 md:py-32 overflow-hidden">
+        <section className="relative bg-[#0f1d2e] py-24 md:py-32 overflow-hidden">
+          {/* Gradual entry from white sections above */}
+          <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
           <div className="container mx-auto px-4">
             <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
               <div className="inline-flex items-center gap-2 bg-[#c5a55a]/10 border border-[#c5a55a]/20 rounded-full px-4 py-1.5 text-xs font-bold text-[#c5a55a] tracking-widest uppercase mb-4">
                 Our Journey
               </div>
               <h2 className="text-3xl md:text-[42px] font-bold font-serif text-white leading-tight">
-                From a stable yard to a global platform
+                Building something that matters
               </h2>
               <p className="mt-4 text-white/40 text-lg">
-                Four years of building, listening and improving.
+                From the first sketch to a fully featured platform — shaped entirely by real equestrians.
               </p>
             </AnimatedSection>
 
@@ -302,6 +304,9 @@ export default function About() {
               <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-5">
                 Join us
               </p>
+              <blockquote className="text-base md:text-lg italic text-white/40 max-w-2xl mx-auto mb-8 leading-relaxed">
+                "Our technology exists to serve the horse, not the other way around."
+              </blockquote>
               <h2 className="text-4xl md:text-5xl font-bold font-serif text-white max-w-3xl mx-auto leading-tight">
                 Join us on the journey
               </h2>

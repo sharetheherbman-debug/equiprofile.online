@@ -57,9 +57,6 @@ export function ManagementFooter() {
                 <span className="text-base font-bold font-serif text-white leading-none">
                   EquiProfile
                 </span>
-                <span className="text-[9px] font-semibold text-[#4a9eca]/80 tracking-[0.18em] uppercase mt-0.5">
-                  Management
-                </span>
               </div>
             </Link>
             <p className="text-sm text-gray-500 leading-relaxed mb-5 max-w-xs">
@@ -114,6 +111,11 @@ export function ManagementFooter() {
                 <Link href="/contact" className="text-gray-500 hover:text-white transition-colors">
                   Contact
                 </Link>
+              </li>
+              <li>
+                <a href="https://school.equiprofile.online" className="text-gray-500 hover:text-white transition-colors">
+                  EquiProfile School
+                </a>
               </li>
             </ul>
           </div>

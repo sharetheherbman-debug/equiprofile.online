@@ -55,19 +55,23 @@ interface PlanFeature {
 }
 
 const planFeatures: PlanFeature[] = [
-  { label: "Up to 3 horse profiles", individual: true, stable: true, enterprise: true },
-  { label: "Unlimited horse profiles", individual: false, stable: true, enterprise: true },
+  { label: "Up to 5 horse profiles", individual: true, stable: false, enterprise: false },
+  { label: "Up to 20 horse profiles", individual: false, stable: true, enterprise: false },
+  { label: "Unlimited horse profiles", individual: false, stable: false, enterprise: true },
   { label: "Health & medical records", individual: true, stable: true, enterprise: true },
   { label: "Training logs", individual: true, stable: true, enterprise: true },
   { label: "Nutrition plans", individual: true, stable: true, enterprise: true },
-  { label: "Document storage (1 GB)", individual: true, stable: false, enterprise: false },
-  { label: "Document storage (10 GB)", individual: false, stable: true, enterprise: false },
-  { label: "Document storage (unlimited)", individual: false, stable: false, enterprise: true },
-  { label: "Weather & riding conditions", individual: true, stable: true, enterprise: true },
+  { label: "Document storage", individual: true, stable: true, enterprise: true },
+  { label: "Competition tracking", individual: true, stable: true, enterprise: true },
+  { label: "AI weather analysis (50/day)", individual: true, stable: false, enterprise: false },
+  { label: "Unlimited AI weather analysis", individual: false, stable: true, enterprise: true },
+  { label: "Export to CSV / PDF", individual: true, stable: true, enterprise: true },
+  { label: "Email reminders", individual: true, stable: true, enterprise: true },
   { label: "Insights & reports", individual: false, stable: true, enterprise: true },
   { label: "Team members & roles", individual: false, stable: true, enterprise: true },
   { label: "Stable management tools", individual: false, stable: true, enterprise: true },
-  { label: "Priority support", individual: false, stable: false, enterprise: true },
+  { label: "Priority email support", individual: false, stable: true, enterprise: true },
+  { label: "WhatsApp support", individual: false, stable: true, enterprise: true },
   { label: "Custom branding", individual: false, stable: false, enterprise: true },
   { label: "Dedicated account manager", individual: false, stable: false, enterprise: true },
 ];
@@ -75,9 +79,9 @@ const planFeatures: PlanFeature[] = [
 const plans = [
   {
     id: "individual",
-    name: "Individual",
+    name: "Pro",
     icon: User,
-    description: "Perfect for the hands-on owner managing a few horses.",
+    description: "Perfect for the individual owner managing up to 5 horses.",
     price: DEFAULT_PRICING.individual.monthly.display,
     period: "/mo",
     popular: false,
@@ -88,7 +92,7 @@ const plans = [
     id: "stable",
     name: "Stable",
     icon: Sparkles,
-    description: "For yards, trainers and teams managing multiple horses.",
+    description: "For yards, trainers and teams managing up to 20 horses.",
     price: DEFAULT_PRICING.stable.monthly.display,
     period: "/mo",
     popular: true,
@@ -188,16 +192,14 @@ export default function Pricing() {
       <div className="min-h-screen">
         {/* ======================== HERO ======================== */}
         <section className="relative min-h-[460px] md:min-h-[520px] flex items-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#070f1c] via-[#0f1d2e] to-[#0a1e35]" />
+          <img
+            src="/images/hero/image4.jpg"
+            alt="Horses in a stable yard"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/88 via-[#0f1d2e]/80 to-[#0a1628]/92" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(26,122,109,0.18)_0%,_transparent_60%)] pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(46,109,164,0.12)_0%,_transparent_60%)] pointer-events-none" />
-          <div
-            className="absolute inset-0 pointer-events-none opacity-[0.025]"
-            style={{
-              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-              backgroundSize: "32px 32px",
-            }}
-          />
 
           <div className="relative z-10 container mx-auto px-4 pt-32 pb-20 text-center">
             <motion.div
@@ -421,6 +423,9 @@ export default function Pricing() {
               <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-5">
                 Start today
               </p>
+              <blockquote className="text-base md:text-lg italic text-white/40 max-w-2xl mx-auto mb-8 leading-relaxed">
+                "Invest in your horse's future without breaking the bank."
+              </blockquote>
               <h2 className="text-4xl md:text-5xl font-bold font-serif text-white max-w-3xl mx-auto leading-tight">
                 Start your free trial today
               </h2>

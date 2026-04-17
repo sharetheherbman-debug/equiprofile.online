@@ -55,10 +55,10 @@ function AnimatedSection({
 /* ------------------------------------------------------------------ */
 
 const platformStats: { icon: LucideIcon; value: string; label: string; sub: string }[] = [
-  { icon: MapPin, value: "1,200+", label: "Active Stables", sub: "and growing" },
-  { icon: Users, value: "25,000+", label: "Horses Managed", sub: "across the UK & beyond" },
-  { icon: ShieldCheck, value: "99.9%", label: "Platform Uptime", sub: "enterprise-grade reliability" },
   { icon: Zap, value: "7-day", label: "Free Trial", sub: "no credit card needed" },
+  { icon: ShieldCheck, value: "UK-Built", label: "Platform", sub: "built by equestrians" },
+  { icon: MapPin, value: "All sizes", label: "Yards Supported", sub: "solo owner to full stable" },
+  { icon: Users, value: "Multi-horse", label: "Management", sub: "Pro & Stable plans" },
 ];
 
 const features = [
@@ -282,7 +282,7 @@ export default function Home() {
           </div>
 
           {/* Gradient fade to light */}
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-b from-transparent to-[#f8f9fb]" />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-[#f8f9fb]" />
         </section>
 
         {/* ==================== FEATURES GRID ==================== */}
@@ -298,7 +298,7 @@ export default function Home() {
                 <span className="text-[#2e6da4]">nothing you don't</span>
               </h2>
               <p className="mt-5 text-[#0f1d2e]/55 text-lg max-w-xl mx-auto">
-                Six powerful modules designed by equestrians, for equestrians.
+                Purpose-built modules designed by equestrians, for equestrians — covering every aspect of modern horse management.
               </p>
             </AnimatedSection>
 
@@ -529,6 +529,9 @@ export default function Home() {
               <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-5">
                 Start today
               </p>
+              <blockquote className="text-base md:text-lg italic text-white/40 max-w-2xl mx-auto mb-8 leading-relaxed">
+                "Manage every horse, from any device — all in one place."
+              </blockquote>
               <h2 className="text-4xl md:text-5xl lg:text-[56px] font-bold font-serif text-white max-w-3xl mx-auto leading-tight">
                 Ready to elevate your
                 <br />
