@@ -316,7 +316,7 @@ function ModuleGroupCard({
   return (
     <div className="rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] overflow-hidden">
       {gradient && (
-        <div className={`h-1 w-full bg-gradient-to-r ${gradient}`} />
+        <div className={`h-1 w-full bg-gradient-to-r ${gradient}`} aria-hidden="true" />
       )}
       <div className="p-5">
         <h3
