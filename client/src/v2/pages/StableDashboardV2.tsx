@@ -51,6 +51,8 @@ const ACCENT = "#4f5fd6";
 const stableModuleGroups = [
   {
     label: "Operations",
+    color: "#f59e0b",
+    gradient: "from-amber-500 to-orange-600",
     items: [
       { icon: Heart, label: "Horses", path: "/horses" },
       { icon: UserCog, label: "Staff", path: "/staff" },
@@ -62,6 +64,8 @@ const stableModuleGroups = [
   },
   {
     label: "Health",
+    color: "#f43f5e",
+    gradient: "from-rose-500 to-red-600",
     items: [
       { icon: Stethoscope, label: "Health Hub", path: "/health" },
       { icon: Syringe, label: "Vaccinations", path: "/vaccinations" },
@@ -74,6 +78,8 @@ const stableModuleGroups = [
   },
   {
     label: "Training & Activity",
+    color: "#10b981",
+    gradient: "from-emerald-500 to-green-600",
     items: [
       { icon: Dumbbell, label: "Training Log", path: "/training" },
       { icon: BookOpen, label: "Templates", path: "/training-templates" },
@@ -84,6 +90,8 @@ const stableModuleGroups = [
   },
   {
     label: "Nutrition",
+    color: "#84cc16",
+    gradient: "from-lime-500 to-green-600",
     items: [
       { icon: Apple, label: "Feeding Plans", path: "/feeding" },
       { icon: FileText, label: "Nutrition Plans", path: "/nutrition-plans" },
@@ -93,6 +101,8 @@ const stableModuleGroups = [
   },
   {
     label: "Stable Management",
+    color: "#3b82f6",
+    gradient: "from-blue-500 to-indigo-600",
     items: [
       { icon: Building2, label: "Stable", path: "/stable" },
       { icon: Wrench, label: "Stable Setup", path: "/stable-setup" },
@@ -102,6 +112,8 @@ const stableModuleGroups = [
   },
   {
     label: "Reports & Settings",
+    color: "#8b5cf6",
+    gradient: "from-violet-500 to-purple-600",
     items: [
       { icon: FileText, label: "Documents", path: "/documents" },
       { icon: Tag, label: "Tags", path: "/tags" },
@@ -185,26 +197,28 @@ function MetricCard({
   label,
   value,
   href,
+  color = ACCENT,
 }: {
   icon: LucideIcon;
   label: string;
   value: number | string;
   href?: string;
+  color?: string;
 }) {
   const card = (
-    <div className={`rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5 transition-all duration-200 hover:shadow-md ${href ? "cursor-pointer hover:border-[#4f5fd6]/40" : ""}`}>
+    <div className={`rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5 transition-all duration-200 hover:shadow-md ${href ? "cursor-pointer" : ""}`}>
       <div className="flex items-center gap-4">
         <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg"
-          style={{ backgroundColor: `${ACCENT}14` }}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+          style={{ backgroundColor: `${color}18` }}
         >
-          <Icon className="h-5 w-5" style={{ color: ACCENT }} />
+          <Icon className="h-5 w-5" style={{ color }} />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-[#5c6370] dark:text-[#9ca3b0]">
             {label}
           </p>
-          <p className="mt-0.5 text-2xl font-semibold text-[#1a1d24] dark:text-[#e8eaef]">
+          <p className="mt-0.5 text-2xl font-bold text-[#1a1d24] dark:text-[#e8eaef]">
             {value}
           </p>
         </div>
@@ -291,37 +305,49 @@ function QuickActionCard({
 function ModuleGroupCard({
   label,
   items,
+  color = ACCENT,
+  gradient,
 }: {
   label: string;
   items: { icon: LucideIcon; label: string; path: string }[];
+  color?: string;
+  gradient?: string;
 }) {
   return (
-    <div className="rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5">
-      <h3 className="mb-4 font-serif text-sm font-semibold uppercase tracking-wider text-[#5c6370] dark:text-[#9ca3b0]">
-        {label}
-      </h3>
-      <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4">
-        {items.map((item) => {
-          const ItemIcon = item.icon;
-          return (
-            <Link
-              key={item.path}
-              href={item.path}
-              className="group flex flex-col items-center gap-2 rounded-lg p-3 text-center transition-colors duration-200 hover:bg-[#4f5fd6]/5 dark:hover:bg-[#4f5fd6]/10"
-              aria-label={item.label}
-            >
-              <div
-                className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-200 group-hover:bg-[#4f5fd6] group-hover:text-white"
-                style={{ backgroundColor: `${ACCENT}0d`, color: ACCENT }}
+    <div className="rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] overflow-hidden">
+      {gradient && (
+        <div className={`h-1 w-full bg-gradient-to-r ${gradient}`} aria-hidden="true" />
+      )}
+      <div className="p-5">
+        <h3
+          className="mb-4 text-xs font-bold uppercase tracking-[0.15em]"
+          style={{ color }}
+        >
+          {label}
+        </h3>
+        <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {items.map((item) => {
+            const ItemIcon = item.icon;
+            return (
+              <Link
+                key={item.path}
+                href={item.path}
+                className="group flex flex-col items-center gap-2 rounded-lg p-3 text-center transition-all duration-200 hover:bg-[#f7f8fa] dark:hover:bg-[#242a38]"
+                aria-label={item.label}
               >
-                <ItemIcon className="h-4.5 w-4.5" />
-              </div>
-              <span className="text-xs font-medium text-[#1a1d24] dark:text-[#e8eaef]">
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 group-hover:scale-110"
+                  style={{ backgroundColor: `${color}18`, color }}
+                >
+                  <ItemIcon className="h-4 w-4" />
+                </div>
+                <span className="text-xs font-medium text-[#1a1d24] dark:text-[#e8eaef] leading-tight">
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -331,7 +357,7 @@ function ModuleGroupCard({
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-serif text-lg font-semibold text-[#1a1d24] dark:text-[#e8eaef]">
+    <h2 className="font-serif text-base font-semibold text-[#1a1d24] dark:text-[#e8eaef] tracking-tight">
       {children}
     </h2>
   );
@@ -500,12 +526,12 @@ function StableDashboardContent() {
               </>
             ) : (
               <>
-                <MetricCard icon={Heart} label="Total Horses" value={horseCount} href="/horses" />
-                <MetricCard icon={Users} label="Active Staff" value={stableMembers?.length ?? "—"} href="/staff" />
-                <MetricCard icon={AlertCircle} label="Health Alerts" value={alertCount} href="/health" />
-                <MetricCard icon={ClipboardList} label="Tasks Due" value={pendingTasks.length} href="/tasks" />
-                <MetricCard icon={Calendar} label="Appointments Today" value={todayAppointments.length} href="/appointments" />
-                <MetricCard icon={Dumbbell} label="Training This Week" value={weekTrainingCount} href="/training" />
+                <MetricCard icon={Heart} label="Total Horses" value={horseCount} href="/horses" color="#f43f5e" />
+                <MetricCard icon={Users} label="Active Staff" value={stableMembers?.length ?? "—"} href="/staff" color="#3b82f6" />
+                <MetricCard icon={AlertCircle} label="Health Alerts" value={alertCount} href="/health" color="#f59e0b" />
+                <MetricCard icon={ClipboardList} label="Tasks Due" value={pendingTasks.length} href="/tasks" color="#8b5cf6" />
+                <MetricCard icon={Calendar} label="Appointments Today" value={todayAppointments.length} href="/appointments" color="#0ea5e9" />
+                <MetricCard icon={Dumbbell} label="Training This Week" value={weekTrainingCount} href="/training" color="#10b981" />
               </>
             )}
           </div>
@@ -610,7 +636,7 @@ function StableDashboardContent() {
           <SectionHeading>Modules</SectionHeading>
           <div className="mt-4 space-y-4">
             {stableModuleGroups.map((group) => (
-              <ModuleGroupCard key={group.label} label={group.label} items={group.items} />
+              <ModuleGroupCard key={group.label} label={group.label} items={group.items} color={group.color} gradient={group.gradient} />
             ))}
           </div>
         </section>

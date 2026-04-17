@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ManagementLayout } from "@/components/management/ManagementLayout";
+import type { LucideIcon } from "lucide-react";
 import {
   HeartPulse,
   Dumbbell,
@@ -53,11 +54,11 @@ function AnimatedSection({
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-const platformStats = [
-  { value: "1,200+", label: "Active Stables", sub: "and growing" },
-  { value: "25,000+", label: "Horses Managed", sub: "across the UK & beyond" },
-  { value: "99.9%", label: "Platform Uptime", sub: "enterprise-grade reliability" },
-  { value: "7-day", label: "Free Trial", sub: "no credit card needed" },
+const platformStats: { icon: LucideIcon; value: string; label: string; sub: string }[] = [
+  { icon: MapPin, value: "1,200+", label: "Active Stables", sub: "and growing" },
+  { icon: Users, value: "25,000+", label: "Horses Managed", sub: "across the UK & beyond" },
+  { icon: ShieldCheck, value: "99.9%", label: "Platform Uptime", sub: "enterprise-grade reliability" },
+  { icon: Zap, value: "7-day", label: "Free Trial", sub: "no credit card needed" },
 ];
 
 const features = [
@@ -266,6 +267,9 @@ export default function Home() {
               {platformStats.map((s, i) => (
                 <AnimatedSection key={s.label} delay={i * 0.08}>
                   <div className="flex flex-col items-center text-center px-6 py-8 bg-[#0a1628] hover:bg-white/[0.03] transition-colors duration-300 group h-full">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-full bg-[#c5a55a]/10 border border-[#c5a55a]/20 mb-4 group-hover:bg-[#c5a55a]/15 transition-colors">
+                      <s.icon className="w-4 h-4 text-[#c5a55a]/80" />
+                    </div>
                     <p className="text-3xl md:text-4xl font-bold font-serif bg-gradient-to-r from-[#c5a55a] to-[#e8d08a] bg-clip-text text-transparent leading-none">
                       {s.value}
                     </p>
@@ -361,14 +365,18 @@ export default function Home() {
                     <img
                       src={img.src}
                       alt={img.alt}
-                      className="w-full h-44 sm:h-56 md:h-64 object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                      className="w-full h-52 sm:h-64 md:h-80 object-cover object-center transition-transform duration-700 group-hover:scale-105"
                     />
-                    {/* Label overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628]/80 via-transparent to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <span className="text-xs font-semibold text-white/80 tracking-wide">
-                        {img.label}
-                      </span>
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628]/85 via-[#0a1628]/15 to-transparent" />
+                    {/* Label */}
+                    <div className="absolute bottom-0 left-0 right-0 p-5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#c5a55a]/80 shrink-0" />
+                        <span className="text-xs font-semibold text-white/85 tracking-wide">
+                          {img.label}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </AnimatedSection>

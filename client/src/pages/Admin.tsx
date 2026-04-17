@@ -2137,12 +2137,10 @@ function AdminContent() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: "Pro Dashboard", icon: "🐴", path: "/dashboard", btnColor: "bg-[#2e6da4] hover:bg-[#245a8a]" },
                   { label: "Stable Dashboard", icon: "🏠", path: "/stable-dashboard", btnColor: "bg-[#2d6a4f] hover:bg-[#245a42]" },
-                  { label: "Student Portal", icon: "🎓", path: "/student-dashboard", btnColor: "bg-[#4a9eca] hover:bg-[#3a8dba]" },
-                  { label: "Teacher Portal", icon: "📋", path: "/teacher-dashboard", btnColor: "bg-[#3a9d8f] hover:bg-[#2e8a7d]" },
                 ].map((portal) => (
                   <Button
                     key={portal.label}

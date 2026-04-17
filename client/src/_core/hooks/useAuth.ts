@@ -56,16 +56,16 @@ export function useAuth(options?: UseAuthOptions) {
       utils.auth.me.setData(undefined, null);
       // Clear all client-side auth storage
       clearLocalAuthState();
-      // Invalidate all cached queries so no stale data remains
-      utils.invalidate();
-      // Hard navigate to login — this also clears in-memory React state
+      // Hard navigate to login — this fully unloads React state and all cached queries.
+      // No utils.invalidate() call here: we're navigating away immediately, so any
+      // background refetch it would schedule would be wasted and could race with
+      // the cookie-clearing Set-Cookie header the server just sent.
       window.location.href = "/login";
     },
     onError: () => {
-      // Even on error, ensure client state is cleared
+      // Even on error, ensure client state is cleared before redirecting
       clearLocalAuthState();
       utils.auth.me.setData(undefined, null);
-      utils.invalidate();
       window.location.href = "/login";
     },
   });
@@ -81,16 +81,16 @@ export function useAuth(options?: UseAuthOptions) {
         error instanceof TRPCClientError &&
         error.data?.code === "UNAUTHORIZED"
       ) {
-        // Already logged out on server — still clean up client state
-        utils.invalidate();
+        // Already logged out on server — clean up client state and redirect
+        clearLocalAuthState();
+        utils.auth.me.setData(undefined, null);
         window.location.href = "/login";
         return;
       }
       throw error;
-    } finally {
-      // Guarantee cache is always cleared
-      await utils.auth.me.invalidate();
     }
+    // No finally block needed: onSuccess/onError both hard-navigate to /login,
+    // which fully reloads the page and clears all in-memory state.
   }, [logoutMutation, utils]);
 
   const state = useMemo(() => {

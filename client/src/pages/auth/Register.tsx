@@ -94,10 +94,6 @@ export default function Register() {
           const prefs = JSON.parse(user.preferences);
           if (prefs.planTier === "stable" || prefs.bothDashboardsUnlocked) {
             destination = "/stable-dashboard";
-          } else if (prefs.planTier === "student") {
-            destination = "/student-dashboard";
-          } else if (prefs.planTier === "teacher" || prefs.selectedExperience === "teacher") {
-            destination = "/teacher-dashboard";
           }
         }
       } catch { /* ignore */ }
