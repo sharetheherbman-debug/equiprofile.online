@@ -486,13 +486,13 @@ export default function AdminCampaigns() {
                     <span className="inline-block w-2 h-2 rounded-full bg-[#2e6da4]" />
                     Management Platform
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {templates.data
                       ?.filter((t) => !t.id.startsWith("school-"))
                       .map((tpl) => (
                         <div
                           key={tpl.id}
-                          className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                          className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col"
                         >
                           <div className="flex items-center gap-2 mb-2">
                             <div
@@ -501,17 +501,30 @@ export default function AdminCampaigns() {
                             />
                             <h4 className="font-medium text-sm leading-snug">{tpl.name}</h4>
                           </div>
-                          <p className="text-xs text-muted-foreground mb-3">
+                          <p className="text-xs text-muted-foreground mb-3 flex-1">
                             {tpl.description}
                           </p>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            onClick={() => handlePreview(tpl.id)}
-                          >
-                            <Eye className="w-3 h-3 mr-1" /> Preview
-                          </Button>
+                          <div className="flex gap-2 mt-auto">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => handlePreview(tpl.id)}
+                            >
+                              <Eye className="w-3 h-3 mr-1" /> Preview
+                            </Button>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => {
+                                setNewCampaign((p) => ({ ...p, templateId: tpl.id }));
+                                setCreateOpen(true);
+                              }}
+                            >
+                              <Plus className="w-3 h-3 mr-1" /> Use
+                            </Button>
+                          </div>
                         </div>
                       ))}
                   </div>
@@ -531,7 +544,7 @@ export default function AdminCampaigns() {
                       .map((tpl) => (
                         <div
                           key={tpl.id}
-                          className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                          className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col"
                         >
                           <div className="flex items-center gap-2 mb-2">
                             <div
@@ -540,17 +553,30 @@ export default function AdminCampaigns() {
                             />
                             <h4 className="font-medium text-sm leading-snug">{tpl.name}</h4>
                           </div>
-                          <p className="text-xs text-muted-foreground mb-3">
+                          <p className="text-xs text-muted-foreground mb-3 flex-1">
                             {tpl.description}
                           </p>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            onClick={() => handlePreview(tpl.id)}
-                          >
-                            <Eye className="w-3 h-3 mr-1" /> Preview
-                          </Button>
+                          <div className="flex gap-2 mt-auto">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => handlePreview(tpl.id)}
+                            >
+                              <Eye className="w-3 h-3 mr-1" /> Preview
+                            </Button>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => {
+                                setNewCampaign((p) => ({ ...p, templateId: tpl.id }));
+                                setCreateOpen(true);
+                              }}
+                            >
+                              <Plus className="w-3 h-3 mr-1" /> Use
+                            </Button>
+                          </div>
                         </div>
                       ))}
                   </div>
