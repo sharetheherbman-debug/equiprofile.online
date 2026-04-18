@@ -88,6 +88,9 @@ import {
   Mail,
   BarChart3,
   ChevronDown,
+  FileText,
+  ChevronRight,
+  Dumbbell,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -96,6 +99,59 @@ import { useAdminViewMode, type AdminViewMode } from "@/contexts/AdminViewContex
 
 const AdminCampaigns = lazy(() => import("./AdminCampaigns"));
 const AdminAnalytics = lazy(() => import("./AdminAnalytics"));
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Admin-visible training template catalogue
+   These mirror the PREDESIGNED_TEMPLATES in TrainingTemplates.tsx so the
+   admin can browse, review and validate platform content.
+   ────────────────────────────────────────────────────────────────────────── */
+
+type TemplateCategory = "foundation" | "fitness" | "warmup" | "rehabilitation" | "development" | "competition" | "conditioning";
+type TemplateDiscipline = "general" | "dressage" | "jumping" | "eventing" | "western";
+
+interface AdminTemplate {
+  id: string;
+  name: string;
+  category: TemplateCategory;
+  discipline: TemplateDiscipline;
+  level: "beginner" | "intermediate" | "advanced";
+  duration: number;
+  description: string;
+}
+
+const ADMIN_TEMPLATES: AdminTemplate[] = [
+  { id: "flatwork",           name: "Flatwork Session",           category: "foundation",      discipline: "general",   level: "beginner",     duration: 4,  description: "Foundation flatwork focusing on rhythm, suppleness, and connection." },
+  { id: "jumping",            name: "Jumping Session",            category: "foundation",      discipline: "jumping",   level: "intermediate", duration: 4,  description: "Progressive jump training with grid work and oxers." },
+  { id: "dressage",           name: "Dressage Session",           category: "foundation",      discipline: "dressage",  level: "intermediate", duration: 4,  description: "Classical dressage training for collection and impulsion." },
+  { id: "conditioning",       name: "Conditioning Session",       category: "fitness",         discipline: "general",   level: "beginner",     duration: 6,  description: "Fitness conditioning programme to build stamina and strength." },
+  { id: "warmup",             name: "Warmup Session",             category: "warmup",          discipline: "general",   level: "beginner",     duration: 1,  description: "Standard pre-work warmup routine." },
+  { id: "rehab",              name: "Rehab Session",              category: "rehabilitation",  discipline: "general",   level: "beginner",     duration: 6,  description: "Gentle rehabilitation programme for returning horses." },
+  { id: "young-horse",        name: "Young Horse Basics",         category: "development",     discipline: "general",   level: "beginner",     duration: 8,  description: "Foundation training programme for horses aged 3–5." },
+  { id: "schooling",          name: "Schooling / Arena Session",  category: "foundation",      discipline: "general",   level: "intermediate", duration: 4,  description: "Structured arena schooling focusing on obedience and suppleness." },
+  { id: "pole-work",          name: "Pole Work Session",          category: "foundation",      discipline: "jumping",   level: "beginner",     duration: 4,  description: "Pole and grid work to improve stride and straightness." },
+  { id: "jump-conditioning",  name: "Jump Conditioning",          category: "fitness",         discipline: "jumping",   level: "intermediate", duration: 4,  description: "Build jumping fitness with progressive pole and fence sets." },
+  { id: "hacking",            name: "Hacking & Trail",            category: "conditioning",    discipline: "general",   level: "beginner",     duration: 4,  description: "Outdoor hacking and trail rides for mental relaxation and fitness." },
+  { id: "competition-prep",   name: "Competition Preparation",    category: "competition",     discipline: "general",   level: "intermediate", duration: 4,  description: "Pre-competition readiness programme including practice tests." },
+];
+
+const TEMPLATE_DISCIPLINE_COLOURS: Record<TemplateDiscipline, string> = {
+  general:   "bg-blue-50 text-[#2e6da4] border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700",
+  dressage:  "bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700",
+  jumping:   "bg-emerald-50 text-[#2d6a4f] border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700",
+  eventing:  "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-700",
+  western:   "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-700",
+};
+
+const TEMPLATE_CATEGORIES: { value: "all" | TemplateCategory; label: string }[] = [
+  { value: "all",            label: "All Types" },
+  { value: "foundation",     label: "Foundation" },
+  { value: "fitness",        label: "Fitness" },
+  { value: "warmup",         label: "Warm-Up" },
+  { value: "rehabilitation", label: "Rehabilitation" },
+  { value: "development",    label: "Development" },
+  { value: "competition",    label: "Competition Prep" },
+  { value: "conditioning",   label: "Conditioning" },
+];
 
 function hasUserFreeAccess(user: { preferences?: string | null }): boolean {
   if (!user.preferences) return false;
@@ -127,7 +183,7 @@ function getUserPlanTier(user: { preferences?: string | null }): "standard" | "s
   }
 }
 
-type AdminSection = "users" | "overdue" | "churn" | "leads" | "campaigns" | "whatsapp" | "system" | "settings" | "analytics" | "deleted" | "portals";
+type AdminSection = "users" | "overdue" | "churn" | "leads" | "campaigns" | "whatsapp" | "system" | "settings" | "analytics" | "deleted" | "portals" | "templates";
 
 const adminSections: { value: AdminSection; label: string; icon: typeof Users; group: string }[] = [
   { value: "users", label: "Users", icon: Users, group: "People" },
@@ -141,6 +197,7 @@ const adminSections: { value: AdminSection; label: string; icon: typeof Users; g
   { value: "analytics", label: "Analytics", icon: BarChart3, group: "System" },
   { value: "deleted", label: "Deleted", icon: Trash2, group: "Other" },
   { value: "portals", label: "Portals", icon: Eye, group: "Other" },
+  { value: "templates", label: "Templates", icon: FileText, group: "Other" },
 ];
 
 function AdminContent() {
@@ -148,6 +205,8 @@ function AdminContent() {
   const { viewMode, setViewMode } = useAdminViewMode();
   const [activeSection, setActiveSection] = useState<AdminSection>("users");
   const [searchQuery, setSearchQuery] = useState("");
+  const [templateCategoryFilter, setTemplateCategoryFilter] = useState<"all" | TemplateCategory>("all");
+  const [expandedTemplate, setExpandedTemplate] = useState<string | null>(null);
   const [suspendReason, setSuspendReason] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [resetPasswordUserId, setResetPasswordUserId] = useState<number | null>(
@@ -2180,6 +2239,127 @@ function AdminContent() {
                   </Button>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+        </>)}
+
+        {/* ─── Templates ──────────────────────────────────────────────────── */}
+        {activeSection === "templates" && (<>
+          <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm">
+            <CardHeader>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Dumbbell className="w-4 h-4 text-[#2e6da4]" /> Training Templates
+                  </CardTitle>
+                  <CardDescription>
+                    Platform predesigned templates available to all users. Browse by type or discipline.
+                  </CardDescription>
+                </div>
+                {/* Type filter dropdown */}
+                <Select
+                  value={templateCategoryFilter}
+                  onValueChange={(v) => setTemplateCategoryFilter(v as typeof templateCategoryFilter)}
+                >
+                  <SelectTrigger className="w-full sm:w-48 h-9 text-xs">
+                    <SelectValue placeholder="Filter by type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Template Type
+                      </SelectLabel>
+                      {TEMPLATE_CATEGORIES.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value} className="text-xs">
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* Stats row */}
+              <div className="grid grid-cols-3 gap-3 mb-5">
+                {(["foundation", "fitness", "rehabilitation"] as TemplateCategory[]).map((cat) => {
+                  const count = ADMIN_TEMPLATES.filter((t) => t.category === cat).length;
+                  return (
+                    <div
+                      key={cat}
+                      className="flex flex-col items-center p-3 rounded-lg bg-muted/40 border border-muted/60 cursor-pointer hover:bg-muted/70 transition-colors text-center"
+                      onClick={() => setTemplateCategoryFilter(cat)}
+                    >
+                      <p className="text-xl font-bold font-serif leading-none">{count}</p>
+                      <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mt-0.5 capitalize">{cat}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Template list */}
+              <div className="space-y-2">
+                {ADMIN_TEMPLATES
+                  .filter((t) => templateCategoryFilter === "all" || t.category === templateCategoryFilter)
+                  .map((template) => {
+                    const isExpanded = expandedTemplate === template.id;
+                    return (
+                      <div
+                        key={template.id}
+                        className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+                      >
+                        {/* Row header */}
+                        <button
+                          className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-colors"
+                          onClick={() => setExpandedTemplate(isExpanded ? null : template.id)}
+                        >
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate">{template.name}</p>
+                              <p className="text-[10px] text-muted-foreground capitalize">
+                                {template.category} · {template.duration}wk · {template.level}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Badge className={`text-[10px] h-5 px-1.5 ${TEMPLATE_DISCIPLINE_COLOURS[template.discipline]}`}>
+                              {template.discipline}
+                            </Badge>
+                            <ChevronRight className={`w-4 h-4 text-muted-foreground/50 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                          </div>
+                        </button>
+
+                        {/* Expanded detail */}
+                        {isExpanded && (
+                          <div className="px-4 pb-4 pt-1 bg-muted/20 border-t border-gray-200 dark:border-gray-700">
+                            <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                              {template.description}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="outline" className="text-[10px] h-5 px-1.5">
+                                📅 {template.duration} weeks
+                              </Badge>
+                              <Badge variant="outline" className="text-[10px] h-5 px-1.5 capitalize">
+                                🎯 {template.level}
+                              </Badge>
+                              <Badge variant="outline" className="text-[10px] h-5 px-1.5 capitalize">
+                                🏷️ {template.category.replace("-", " ")}
+                              </Badge>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+
+              {ADMIN_TEMPLATES.filter((t) => templateCategoryFilter === "all" || t.category === templateCategoryFilter).length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No templates in this category</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </>)}

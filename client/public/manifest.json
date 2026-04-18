@@ -4,8 +4,8 @@
   "description": "Professional equine management platform. Manage horses, track health records, training logs, nutrition plans and run your stable — all in one premium system.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#0f1d2e",
-  "theme_color": "#0f1d2e",
+  "background_color": "#1e3a5f",
+  "theme_color": "#1e3a5f",
   "orientation": "portrait-primary",
   "icons": [
     {

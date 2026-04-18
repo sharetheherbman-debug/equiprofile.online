@@ -222,9 +222,9 @@ export default function Pricing() {
         {/* ======================== HERO ======================== */}
         <section className="relative min-h-[460px] md:min-h-[520px] flex items-center overflow-hidden">
           <img
-            src="/images/hero/image3.jpg"
-            alt="Horse and rider at a stable"
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            src="/images/price3.jpg"
+            alt="Premium equestrian training facility"
+            className="absolute inset-0 w-full h-full object-cover object-top"
           />
           <div className="mgmt-hero-overlay" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(26,122,109,0.18)_0%,_transparent_60%)] pointer-events-none" />

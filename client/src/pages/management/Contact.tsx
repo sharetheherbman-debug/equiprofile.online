@@ -140,8 +140,8 @@ export default function Contact() {
         {/* ======================== HERO ======================== */}
         <section className="relative min-h-[420px] flex items-center overflow-hidden">
           <img
-            src="/images/hero/image6.jpg"
-            alt="Equestrian yard at dusk"
+            src="/images/aboutus.jpg"
+            alt="Equestrian team at the yard"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
           <div className="mgmt-hero-overlay" />

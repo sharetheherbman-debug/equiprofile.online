@@ -214,19 +214,22 @@ function DashboardContent() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Redirect Stable plan users to the Stable Dashboard, Student plan users to the Student Dashboard
-  // Skip redirect if user has both dashboards unlocked (admin-granted free access)
-  // Admin users bypass all redirects — they can view any dashboard via the Portals tab
+  // Redirect Stable plan users to the Stable Dashboard.
+  // Student / teacher / school_owner plans are not hosted in this management
+  // frontend — redirect them to onboarding so they can pick the correct path.
+  // Admin users bypass all redirects — they can view any dashboard via Portals.
   useEffect(() => {
     if (user?.role === "admin") return;
     if (subscription?.planTier === "stable" && !subscription?.bothDashboardsUnlocked) {
       setLocation("/stable-dashboard");
-    } else if (subscription?.planTier === "student") {
-      setLocation("/student-dashboard");
-    } else if (subscription?.planTier === "teacher") {
-      setLocation("/teacher-dashboard");
-    } else if (subscription?.planTier === "school_owner") {
-      setLocation("/school-dashboard");
+    } else if (
+      subscription?.planTier === "student" ||
+      subscription?.planTier === "teacher" ||
+      subscription?.planTier === "school_owner"
+    ) {
+      // These plan types don't have dedicated dashboards in the management app.
+      // Send them to onboarding so they can access the right platform.
+      setLocation("/onboarding");
     }
   }, [user?.role, subscription?.planTier, subscription?.bothDashboardsUnlocked, setLocation]);
 

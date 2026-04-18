@@ -53,20 +53,25 @@ export default function Login() {
     return decoded;
   })();
 
-  // Redirect if already authenticated — honour ?redirect= or go to default dashboard
+  // Redirect if already authenticated — honour ?redirect= or go to role-correct destination
   if (isAuthenticated) {
     if (postLoginUrl) {
       setLocation(postLoginUrl);
     } else {
-      let goToStable = false;
-      try {
-        if (user?.preferences) {
-          const prefs = JSON.parse(user.preferences);
-          goToStable = prefs?.planTier === "stable" || !!prefs?.bothDashboardsUnlocked;
-        }
-      } catch { /* ignore */ }
-      if (goToStable) setLocation("/stable-dashboard");
-      else setLocation("/dashboard");
+      // Admin always goes to the admin panel, never to a user dashboard directly
+      if (user?.role === "admin") {
+        setLocation("/admin");
+      } else {
+        let goToStable = false;
+        try {
+          if (user?.preferences) {
+            const prefs = JSON.parse(user.preferences);
+            goToStable = prefs?.planTier === "stable" || !!prefs?.bothDashboardsUnlocked;
+          }
+        } catch { /* ignore */ }
+        if (goToStable) setLocation("/stable-dashboard");
+        else setLocation("/dashboard");
+      }
     }
     return null;
   }
@@ -122,7 +127,7 @@ export default function Login() {
         return;
       }
 
-      // Redirect — honour ?redirect= (e.g. from stable invite link), otherwise go to dashboard
+      // Redirect — honour ?redirect= (e.g. from stable invite link), otherwise go to role-correct dashboard
       if (postLoginUrl) {
         // Use URL constructor to guarantee same-origin redirect (satisfies static analysis)
         const safe = new URL(postLoginUrl, window.location.origin);
@@ -132,8 +137,16 @@ export default function Login() {
           window.location.href = "/dashboard";
         }
       } else {
-        const goToStable = data.planTier === "stable" || data.bothDashboardsUnlocked === true;
-        window.location.href = goToStable ? "/stable-dashboard" : "/dashboard";
+        // Admin always lands in the admin portal — never in a user dashboard
+        if (data.user?.role === "admin") {
+          window.location.href = "/admin";
+        } else if (data.needsOnboarding) {
+          // New users who haven't completed experience selection go to onboarding
+          window.location.href = "/onboarding";
+        } else {
+          const goToStable = data.planTier === "stable" || data.bothDashboardsUnlocked === true;
+          window.location.href = goToStable ? "/stable-dashboard" : "/dashboard";
+        }
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
