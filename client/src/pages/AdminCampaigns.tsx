@@ -795,7 +795,10 @@ export default function AdminCampaigns() {
                         ?.filter((t) => !t.id.startsWith("school-"))
                         .map((t) => (
                           <SelectItem key={t.id} value={t.id}>
-                            {t.name}
+                            <span className="flex items-center gap-2">
+                              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: t.previewColor }} />
+                              {t.name}
+                            </span>
                           </SelectItem>
                         ))}
                     </SelectGroup>
@@ -809,7 +812,10 @@ export default function AdminCampaigns() {
                           ?.filter((t) => t.id.startsWith("school-"))
                           .map((t) => (
                             <SelectItem key={t.id} value={t.id}>
-                              {t.name}
+                              <span className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: t.previewColor }} />
+                                {t.name}
+                              </span>
                             </SelectItem>
                           ))}
                       </SelectGroup>

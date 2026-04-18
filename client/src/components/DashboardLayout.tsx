@@ -329,10 +329,16 @@ function DashboardLayoutContent({
   // Determine which dashboard view is active for users with both dashboards
   const isOnStablePages = location.startsWith("/stable");
 
-  // Plan-aware nav and bottom nav
-  const activeNavItems = bothDashboardsUnlocked
-    ? (isOnStablePages ? stableNavItems : menuItems)
-    : (isStablePlan ? stableNavItems : menuItems);
+  // Plan-aware nav and bottom nav.
+  // When an admin is previewing a specific dashboard via AdminViewContext, honour
+  // their viewMode so the nav reflects the simulated user type.
+  const activeNavItems = (() => {
+    if (isAdmin && viewMode === "stable") return stableNavItems;
+    if (isAdmin && (viewMode === "pro" || viewMode === "student" || viewMode === "teacher")) return menuItems;
+    return bothDashboardsUnlocked
+      ? (isOnStablePages ? stableNavItems : menuItems)
+      : (isStablePlan ? stableNavItems : menuItems);
+  })();
   const bottomNavItems = bothDashboardsUnlocked
     ? (isOnStablePages ? stableBottomNavItems : standardBottomNavItems)
     : (isStablePlan ? stableBottomNavItems : standardBottomNavItems);
@@ -535,7 +541,7 @@ function DashboardLayoutContent({
         {isMobile && (
           <div className="flex border-b border-white/5 h-14 items-center justify-between bg-background/90 px-2 backdrop-blur-md sticky top-0 z-40" style={{ paddingTop: 'var(--safe-area-top, 0px)' }}>
             <div className="flex items-center gap-2">
-              <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
+              <SidebarTrigger className="h-11 w-11 rounded-lg bg-background" />
               <div className="flex items-center gap-3">
                 <div className="flex flex-col gap-1">
                   <span className="tracking-tight text-foreground">

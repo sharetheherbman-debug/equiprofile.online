@@ -118,7 +118,7 @@ self.addEventListener("fetch", (event) => {
         return fetch(request)
           .then((response) => {
             if (response && response.status === 200) {
-              cache.put(request, response.clone());
+              try { cache.put(request, response.clone()); } catch (e) { /* ignore cache write errors */ }
             }
             return response;
           })
@@ -160,7 +160,9 @@ self.addEventListener("fetch", (event) => {
           // Cache the HTML shell for offline SPA navigation
           if (response && response.status === 200 && !url.pathname.includes("service-worker")) {
             const cloned = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put("/index.html", cloned));
+            caches.open(CACHE_NAME).then((cache) => {
+              try { cache.put("/index.html", cloned); } catch (e) { /* ignore cache write errors */ }
+            });
           }
           return response;
         })
@@ -204,7 +206,7 @@ self.addEventListener("fetch", (event) => {
           return fetch(request).then((networkResponse) => {
             // Only cache successful responses
             if (networkResponse && networkResponse.status === 200) {
-              cache.put(request, networkResponse.clone());
+              try { cache.put(request, networkResponse.clone()); } catch (e) { /* ignore cache write errors */ }
             }
             return networkResponse;
           });

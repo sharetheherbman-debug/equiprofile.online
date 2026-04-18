@@ -56,9 +56,9 @@ function AnimatedSection({
 /* ------------------------------------------------------------------ */
 
 const platformStats: { icon: LucideIcon; value: string; label: string; sub: string }[] = [
-  { icon: HeartPulse, value: "Complete", label: "Health Records", sub: "vets, farriers & medications" },
-  { icon: ShieldCheck, value: "Encrypted", label: "Secure Storage", sub: "your data, always protected" },
-  { icon: MapPin, value: "Any Yard", label: "Any Scale", sub: "solo owner to full stable" },
+  { icon: HeartPulse, value: "10+", label: "Health Modules", sub: "vet, farrier, dental & more" },
+  { icon: ShieldCheck, value: "100%", label: "Encrypted", sub: "end-to-end data security" },
+  { icon: MapPin, value: "1–50+", label: "Horses", sub: "solo owner to full yard" },
   { icon: Zap, value: "7-Day", label: "Free Trial", sub: "no credit card required" },
 ];
 
@@ -115,10 +115,10 @@ const showcaseImages = [
 ];
 
 const whyPoints = [
-  "Designed for equestrians, not generic pet software",
-  "Offline-capable — works even at remote yards",
-  "Invite your team with role-based permissions",
-  "Secure, encrypted storage for all your records",
+  "All-in-one: health, training, feeding, scheduling and more",
+  "Offline-capable — works even at remote yards with no signal",
+  "Role-based team access — grooms, vets and managers",
+  "Your data is encrypted and always yours to export",
 ];
 
 const testimonials = [

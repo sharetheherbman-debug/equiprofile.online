@@ -185,6 +185,7 @@ function DocumentsContent() {
 
   const uploadMutation = trpc.documents.upload.useMutation({
     onSuccess: async () => {
+      setUploading(false);
       toast.success("Document uploaded!");
       setIsDialogOpen(false);
       await utils.documents.list.invalidate();
@@ -196,7 +197,10 @@ function DocumentsContent() {
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     },
-    onError: (error) => toast.error(error.message),
+    onError: (error) => {
+      setUploading(false);
+      toast.error(error.message);
+    },
   });
 
   const deleteMutation = trpc.documents.delete.useMutation({
@@ -233,29 +237,34 @@ function DocumentsContent() {
     }
 
     setUploading(true);
+    let reader: FileReader;
     try {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const base64 = (reader.result as string).split(",")[1];
-        uploadMutation.mutate({
-          horseId:
-            formData.horseId && formData.horseId !== "none"
-              ? parseInt(formData.horseId)
-              : undefined,
-          category: formData.documentType,
-          description: formData.title,
-          fileName: selectedFile.name,
-          fileData: base64,
-          fileType: selectedFile.type,
-          fileSize: selectedFile.size,
-        });
-      };
-      reader.readAsDataURL(selectedFile);
-    } catch (error) {
-      toast.error("Failed to upload file");
-    } finally {
+      reader = new FileReader();
+    } catch {
       setUploading(false);
+      toast.error("Failed to read file. Please try again.");
+      return;
     }
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(",")[1];
+      uploadMutation.mutate({
+        horseId:
+          formData.horseId && formData.horseId !== "none"
+            ? parseInt(formData.horseId)
+            : undefined,
+        category: formData.documentType,
+        description: formData.title,
+        fileName: selectedFile.name,
+        fileData: base64,
+        fileType: selectedFile.type,
+        fileSize: selectedFile.size,
+      });
+    };
+    reader.onerror = () => {
+      setUploading(false);
+      toast.error("Failed to read file. Please try again.");
+    };
+    reader.readAsDataURL(selectedFile);
   };
 
   const getCategoryIcon = (category: string, mimeType?: string) => {

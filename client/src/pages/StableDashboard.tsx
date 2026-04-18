@@ -43,7 +43,8 @@ import {
   Apple,
   ShoppingCart,
   BookOpen,
-  TrendingUp,
+  Trophy,
+  Cloud,
   Syringe,
   Pill,
   Scissors,
@@ -64,6 +65,7 @@ const stableModuleGroups = [
       { icon: Calendar, label: "Calendar", path: "/calendar" },
       { icon: ClipboardList, label: "Tasks", path: "/tasks" },
       { icon: Clock, label: "Appointments", path: "/appointments" },
+      { icon: Cloud, label: "Weather", path: "/weather" },
     ],
   },
   {
@@ -88,6 +90,7 @@ const stableModuleGroups = [
       { icon: Dumbbell, label: "Training Log", path: "/training" },
       { icon: BookOpen, label: "Templates", path: "/training-templates" },
       { icon: Navigation, label: "GPS Tracking", path: "/ride-tracking" },
+      { icon: Trophy, label: "Competitions", path: "/competitions" },
       { icon: Activity, label: "Lessons", path: "/lessons" },
       { icon: Baby, label: "Breeding", path: "/breeding" },
     ],
@@ -110,7 +113,7 @@ const stableModuleGroups = [
     items: [
       { icon: FolderOpen, label: "Documents", path: "/documents" },
       { icon: BarChart3, label: "Analytics", path: "/analytics" },
-      { icon: FileText, label: "Reports", path: "/reports" },
+      { icon: FileText, label: "Reports", path: "/stable-reports" },
       { icon: Tag, label: "Tags", path: "/tags" },
       { icon: GitBranch, label: "Pedigree", path: "/pedigree" },
       { icon: Shield, label: "Equine Passport", path: "/equine-passport" },
@@ -126,7 +129,7 @@ const stableModuleGroups = [
       { icon: Users, label: "Client Portal", path: "/client-portal" },
       { icon: BarChart3, label: "Stable Reports", path: "/stable-reports" },
       { icon: MessageSquare, label: "Messages", path: "/messages" },
-      { icon: TrendingUp, label: "AI Assistant", path: "/ai-chat" },
+      { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
     ],
   },
   {
@@ -310,40 +313,27 @@ function StableDashboardContent() {
           </div>
         </div>
 
-        {/* Quick actions */}
+        {/* Quick actions — pill style matching standard dashboard */}
         <div className="relative mt-4 flex flex-wrap gap-2">
-          <Link href="/horses/new">
-            <Button
-              size="sm"
-              className="h-8 text-xs bg-white/10 hover:bg-white/20 text-white border border-white/15 gap-1"
-            >
-              <Plus className="w-3.5 h-3.5" /> Add Horse
-            </Button>
-          </Link>
-          <Link href="/staff">
-            <Button
-              size="sm"
-              className="h-8 text-xs bg-white/10 hover:bg-white/20 text-white border border-white/15 gap-1"
-            >
-              <UserCog className="w-3.5 h-3.5" /> Staff
-            </Button>
-          </Link>
-          <Link href="/calendar">
-            <Button
-              size="sm"
-              className="h-8 text-xs bg-white/10 hover:bg-white/20 text-white border border-white/15 gap-1"
-            >
-              <Calendar className="w-3.5 h-3.5" /> Calendar
-            </Button>
-          </Link>
-          <Link href="/ai-chat">
-            <Button
-              size="sm"
-              className="h-8 text-xs bg-white/10 hover:bg-white/20 text-white border border-white/15 gap-1"
-            >
-              <Brain className="w-3.5 h-3.5" /> AI
-            </Button>
-          </Link>
+          {[
+            { label: "Add Horse", href: "/horses/new", icon: Plus, color: "from-rose-500 to-pink-600" },
+            { label: "Staff", href: "/staff", icon: UserCog, color: "from-blue-500 to-indigo-600" },
+            { label: "Calendar", href: "/calendar", icon: Calendar, color: "from-amber-500 to-orange-600" },
+            { label: "AI Chat", href: "/ai-chat", icon: Brain, color: "from-indigo-500 to-violet-600" },
+            { label: "Reports", href: "/stable-reports", icon: BarChart3, color: "from-cyan-500 to-teal-600" },
+          ].map((action) => {
+            const ActionIcon = action.icon;
+            return (
+              <Link key={action.href} href={action.href}>
+                <button className="flex items-center gap-1.5 shrink-0 px-3 py-2 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-xs font-medium text-white border border-white/15">
+                  <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${action.color} flex items-center justify-center`}>
+                    <ActionIcon className="w-2.5 h-2.5 text-white" />
+                  </div>
+                  {action.label}
+                </button>
+              </Link>
+            );
+          })}
         </div>
       </motion.div>
 
