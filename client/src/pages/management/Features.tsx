@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
 import { ManagementLayout } from "@/components/management/ManagementLayout";
+import { MgmtCTASection } from "@/components/management/MgmtCTASection";
+import { mgmtHeroFade } from "@/styles/managementTheme";
 import {
   HeartPulse,
   Dumbbell,
@@ -12,13 +12,12 @@ import {
   BarChart3,
   CalendarDays,
   Building2,
-  ArrowRight,
   Bell,
   Share2,
-  Smartphone,
-  ShieldCheck,
   GitBranch,
   Trophy,
+  Navigation,
+  Brain,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -130,9 +129,9 @@ const majorFeatures = [
 
 const extraFeatures = [
   { icon: Bell, title: "Smart Reminders" },
+  { icon: Navigation, title: "GPS Ride Tracking" },
+  { icon: Brain, title: "AI Chat Assistant" },
   { icon: Share2, title: "Team Sharing" },
-  { icon: Smartphone, title: "Mobile Friendly" },
-  { icon: ShieldCheck, title: "Data Encryption" },
   { icon: GitBranch, title: "Pedigree Records" },
   { icon: Trophy, title: "Competition Tracking" },
 ];
@@ -152,7 +151,7 @@ export default function Features() {
             alt="Training session with horse"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/70 via-[#0f1d2e]/62 to-[#0a1628]/80" />
+          <div className="mgmt-hero-overlay" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(46,109,164,0.22)_0%,_transparent_60%)] pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(26,122,109,0.12)_0%,_transparent_60%)] pointer-events-none" />
 
@@ -178,7 +177,7 @@ export default function Features() {
             </motion.div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent via-[#0a1628]/30 to-[#f8f9fb]" />
+          <div className={mgmtHeroFade} />
         </section>
 
         {/* =============== ALTERNATING FEATURE SECTIONS =============== */}
@@ -266,56 +265,14 @@ export default function Features() {
         </section>
 
         {/* ===================== CTA SECTION ===================== */}
-        <section className="relative py-28 md:py-36 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0f2238] via-[#1e3a5f] to-[#11253e]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_50%,_rgba(46,109,164,0.14)_0%,_transparent_70%)] pointer-events-none" />
-          <div
-            className="absolute inset-0 pointer-events-none opacity-[0.03]"
-            style={{
-              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-            }}
-          />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-px bg-gradient-to-r from-transparent via-[#c5a55a]/45 to-transparent" />
-
-          <div className="relative z-10 container mx-auto px-4 text-center">
-            <AnimatedSection>
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-5">
-                Try it free
-              </p>
-              <blockquote className="text-base md:text-lg italic text-white/40 max-w-2xl mx-auto mb-8 leading-relaxed">
-                "Built by riders, for riders — every feature tells our story."
-              </blockquote>
-              <h2 className="text-4xl md:text-5xl font-bold font-serif text-white max-w-3xl mx-auto leading-tight">
-                See every feature in action
-              </h2>
-              <p className="mt-6 text-white/45 text-lg max-w-xl mx-auto leading-relaxed">
-                Start a 7-day free trial and explore every module with your own
-                horses. No credit card needed.
-              </p>
-              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/register">
-                  <Button
-                    size="lg"
-                    className="bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] font-bold px-12 h-12 text-base rounded-full shadow-2xl shadow-[#c5a55a]/25 border-0 transition-all duration-200 hover:-translate-y-0.5 group"
-                  >
-                    Start Free Trial
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-                  </Button>
-                </Link>
-                <Link href="/pricing">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white/15 text-white hover:bg-white/[0.07] hover:border-white/25 px-10 h-12 text-base rounded-full transition-all duration-200"
-                  >
-                    View Pricing
-                  </Button>
-                </Link>
-              </div>
-            </AnimatedSection>
-          </div>
-        </section>
+        <MgmtCTASection
+          eyebrow="Try it free"
+          quote="Built by riders, for riders — every feature tells our story."
+          heading="See every feature in action"
+          body="Start a 7-day free trial and explore every module with your own horses. No credit card needed."
+          primaryCta={{ label: "Start Free Trial", href: "/register" }}
+          secondaryCta={{ label: "View Pricing", href: "/pricing" }}
+        />
       </div>
     </ManagementLayout>
   );

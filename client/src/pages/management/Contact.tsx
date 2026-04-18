@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ManagementLayout } from "@/components/management/ManagementLayout";
+import { mgmtHeroFadeAlt } from "@/styles/managementTheme";
 import { toast } from "sonner";
 import {
   Mail,
@@ -143,7 +144,7 @@ export default function Contact() {
             alt="Equestrian yard at dusk"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/70 via-[#0f1d2e]/62 to-[#0f1d2e]/80" />
+          <div className="mgmt-hero-overlay" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(197,165,90,0.07)_0%,_transparent_60%)] pointer-events-none" />
 
           <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-28 pb-16">
@@ -178,7 +179,7 @@ export default function Contact() {
             </motion.p>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#f0f4f8] via-[#f0f4f8]/50 to-transparent" />
+          <div className={mgmtHeroFadeAlt} />
         </section>
 
         {/* ================= FORM + SIDEBAR ================= */}
@@ -399,50 +400,6 @@ export default function Contact() {
               </motion.div>
 
             </div>
-          </div>
-        </section>
-
-        {/* ===================== CTA BANNER ===================== */}
-        <section className="relative py-24 md:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0f2238] via-[#1e3a5f] to-[#11253e]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_50%,_rgba(197,165,90,0.08)_0%,_transparent_70%)] pointer-events-none" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-px bg-gradient-to-r from-transparent via-[#c5a55a]/50 to-transparent" />
-          <div className="relative z-10 container mx-auto px-4 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 32 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-            >
-              <blockquote className="text-base md:text-lg italic text-white/40 max-w-2xl mx-auto mb-8 leading-relaxed">
-                "Your question matters to us — we're here to help."
-              </blockquote>
-              <h2 className="text-3xl md:text-4xl font-bold font-serif text-white max-w-2xl mx-auto leading-tight">
-                Not sure where to start?
-              </h2>
-              <p className="mt-5 text-white/45 text-lg max-w-xl mx-auto leading-relaxed">
-                Try EquiProfile free for 7 days with no commitment. See the platform for yourself.
-              </p>
-              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="/register">
-                  <Button
-                    size="lg"
-                    className="bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] font-bold px-10 h-12 rounded-full shadow-2xl shadow-[#c5a55a]/25 border-0 transition-all duration-200 hover:-translate-y-0.5"
-                  >
-                    Start Free Trial
-                  </Button>
-                </a>
-                <a href="/pricing">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white/15 text-white hover:bg-white/[0.07] px-10 h-12 rounded-full"
-                  >
-                    View Pricing
-                  </Button>
-                </a>
-              </div>
-            </motion.div>
           </div>
         </section>
 

@@ -1,15 +1,13 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
 import { ManagementLayout } from "@/components/management/ManagementLayout";
+import { MgmtCTASection } from "@/components/management/MgmtCTASection";
+import { mgmtHeroFade } from "@/styles/managementTheme";
 import {
   Heart,
   Shield,
   Lightbulb,
   Users,
-  ArrowRight,
-  ChevronRight,
   Check,
 } from "lucide-react";
 
@@ -124,9 +122,10 @@ export default function About() {
             alt="EquiProfile team and horses"
             className="absolute inset-0 w-full h-full object-cover object-top"
           />
-          {/* Lightened overlay for an elevated, premium feel */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/70 via-[#0f1d2e]/60 to-[#0a1628]/80" />
+          {/* School-aligned dark overlay */}
+          <div className="mgmt-hero-overlay" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,_rgba(26,122,109,0.12)_0%,_transparent_70%)]" />
+
 
           <div className="relative z-10 container mx-auto px-4 pt-32 pb-20 text-center">
             <motion.div
@@ -147,7 +146,7 @@ export default function About() {
             </motion.div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent via-transparent to-[#f8f9fb]" />
+          <div className={mgmtHeroFade} />
         </section>
 
         {/* ====================== MISSION ====================== */}
@@ -271,7 +270,7 @@ export default function About() {
                   className="relative pl-16 md:pl-20 pb-12 last:pb-0"
                 >
                   {/* Dot */}
-                  <div className="absolute left-[14px] md:left-[18px] top-1 w-5 h-5 rounded-full border-2 border-[#c5a55a] bg-[#070f1c] shadow-lg shadow-[#c5a55a]/20" />
+                  <div className="absolute left-[14px] md:left-[18px] top-1 w-5 h-5 rounded-full border-2 border-[#c5a55a] bg-[#0f2238] shadow-lg shadow-[#c5a55a]/20" />
                   <span className="inline-block text-xs font-bold tracking-widest uppercase text-[#c5a55a] mb-2">
                     {item.year}
                   </span>
@@ -288,57 +287,14 @@ export default function About() {
         </section>
 
         {/* ===================== CTA BANNER ===================== */}
-        <section className="relative py-28 md:py-36 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0f2238] via-[#1e3a5f] to-[#11253e]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_50%,_rgba(26,122,109,0.12)_0%,_transparent_70%)] pointer-events-none" />
-          <div
-            className="absolute inset-0 pointer-events-none opacity-[0.03]"
-            style={{
-              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-            }}
-          />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-px bg-gradient-to-r from-transparent via-[#c5a55a]/45 to-transparent" />
-
-          <div className="relative z-10 container mx-auto px-4 text-center">
-            <AnimatedSection>
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-5">
-                Join us
-              </p>
-              <blockquote className="text-base md:text-lg italic text-white/40 max-w-2xl mx-auto mb-8 leading-relaxed">
-                "Our technology exists to serve the horse, not the other way around."
-              </blockquote>
-              <h2 className="text-4xl md:text-5xl font-bold font-serif text-white max-w-3xl mx-auto leading-tight">
-                Join us on the journey
-              </h2>
-              <p className="mt-6 text-white/45 text-lg max-w-xl mx-auto leading-relaxed">
-                Whether you're an individual rider or manage a busy yard,
-                EquiProfile is built for you. Start your free trial today.
-              </p>
-              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/register">
-                  <Button
-                    size="lg"
-                    className="bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] font-bold px-12 h-12 text-base rounded-full shadow-2xl shadow-[#c5a55a]/25 border-0 transition-all duration-200 hover:-translate-y-0.5 group"
-                  >
-                    Get Started Free
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-                  </Button>
-                </Link>
-                <Link href="/contact">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white/15 text-white hover:bg-white/[0.07] hover:border-white/25 px-10 h-12 text-base rounded-full transition-all duration-200"
-                  >
-                    Contact Us
-                    <ChevronRight className="ml-1 h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </AnimatedSection>
-          </div>
-        </section>
+        <MgmtCTASection
+          eyebrow="Join us"
+          quote="Our technology exists to serve the horse, not the other way around."
+          heading="Join us on the journey"
+          body="Whether you're an individual rider or manage a busy yard, EquiProfile is built for you. Start your free trial today."
+          primaryCta={{ label: "Get Started Free", href: "/register" }}
+          secondaryCta={{ label: "Contact Us", href: "/contact" }}
+        />
       </div>
     </ManagementLayout>
   );

@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ManagementLayout } from "@/components/management/ManagementLayout";
+import { MgmtCTASection } from "@/components/management/MgmtCTASection";
 import type { LucideIcon } from "lucide-react";
 import {
   HeartPulse,
@@ -160,8 +161,8 @@ export default function Home() {
             alt="Horses in a field at sunset"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          {/* Deep layered overlay — lightened for readability and elegance */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070f1c]/70 via-[#0a1628]/60 to-[#0a1628]/80" />
+          {/* Deep layered overlay — school-aligned dark palette */}
+          <div className="mgmt-hero-overlay" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,_rgba(46,109,164,0.12)_0%,_transparent_70%)]" />
 
           {/* Subtle decorative corners */}
@@ -253,12 +254,12 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Bottom fade — gradual transition to light section */}
-          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#0a1628] via-[#0a1628]/70 to-transparent" />
+          {/* Bottom fade — gradual transition to stats section */}
+          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#162d4a] via-[#162d4a]/70 to-transparent" />
         </section>
 
         {/* ====================== PLATFORM STATS ====================== */}
-        <section className="relative bg-[#0a1628] pb-20 pt-4">
+        <section className="relative bg-[#162d4a] pb-20 pt-4">
           <div className="container mx-auto px-4">
             {/* Decorative top separator */}
             <div className="w-full max-w-3xl mx-auto h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent mb-12" />
@@ -266,7 +267,7 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/[0.05] rounded-2xl overflow-hidden border border-white/[0.06] max-w-5xl mx-auto">
               {platformStats.map((s, i) => (
                 <AnimatedSection key={s.label} delay={i * 0.08}>
-                  <div className="flex flex-col items-center text-center px-6 py-8 bg-[#0a1628] hover:bg-white/[0.03] transition-colors duration-300 group h-full">
+                  <div className="flex flex-col items-center text-center px-6 py-8 bg-[#162d4a] hover:bg-white/[0.03] transition-colors duration-300 group h-full">
                     <div className="flex items-center justify-center w-9 h-9 rounded-full bg-[#c5a55a]/10 border border-[#c5a55a]/20 mb-4 group-hover:bg-[#c5a55a]/15 transition-colors">
                       <s.icon className="w-4 h-4 text-[#c5a55a]/80" />
                     </div>
@@ -369,7 +370,7 @@ export default function Home() {
                       className="w-full h-52 sm:h-64 md:h-80 object-cover object-center transition-transform duration-700 group-hover:scale-105"
                     />
                     {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628]/85 via-[#0a1628]/15 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#162d4a]/85 via-[#162d4a]/15 to-transparent" />
                     {/* Label */}
                     <div className="absolute bottom-0 left-0 right-0 p-5">
                       <div className="flex items-center gap-2">
@@ -508,73 +509,24 @@ export default function Home() {
         </section>
 
         {/* ===================== CTA BANNER ===================== */}
-        <section className="relative py-28 md:py-36 overflow-hidden">
-          {/* Background layers */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0f2238] via-[#1e3a5f] to-[#11253e]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_50%,_rgba(46,109,164,0.15)_0%,_transparent_70%)] pointer-events-none" />
-
-          {/* Subtle dot grid pattern */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-[0.03]"
-            style={{
-              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-            }}
-          />
-
-          {/* Gold accent lines */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-px bg-gradient-to-r from-transparent via-[#c5a55a]/50 to-transparent" />
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-[#c5a55a]/20 to-transparent" />
-
-          <div className="relative z-10 container mx-auto px-4 text-center">
-            <AnimatedSection>
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-5">
-                Start today
-              </p>
-              <h2 className="text-4xl md:text-5xl lg:text-[56px] font-bold font-serif text-white max-w-3xl mx-auto leading-tight">
-                Ready to elevate your
-                <br />
-                horse management?
-              </h2>
-              <p className="mt-6 text-white/45 text-lg max-w-xl mx-auto leading-relaxed">
-                The platform built for equestrians who take horse care seriously.
-                Start your free 7-day trial — no credit card required.
-              </p>
-              <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/register">
-                  <Button
-                    size="lg"
-                    className="bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] font-bold px-12 h-13 text-base rounded-full shadow-2xl shadow-[#c5a55a]/25 border-0 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[#c5a55a]/40 group"
-                  >
-                    Start Free Trial
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-                  </Button>
-                </Link>
-                <Link href="/pricing">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white/15 text-white hover:bg-white/[0.07] hover:border-white/25 px-10 h-13 text-base rounded-full transition-all duration-200"
-                  >
-                    View Pricing
-                  </Button>
-                </Link>
-              </div>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
-                {[
-                  "No credit card required",
-                  "Cancel anytime",
-                  "Full feature access during trial",
-                ].map((item) => (
-                  <span key={item} className="text-xs text-white/35 flex items-center gap-1.5">
-                    <Check className="w-3 h-3 text-[#c5a55a]/60" />
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </AnimatedSection>
-          </div>
-        </section>
+        <MgmtCTASection
+          eyebrow="Start today"
+          heading={
+            <>
+              Ready to elevate your
+              <br />
+              horse management?
+            </>
+          }
+          body="The platform built for equestrians who take horse care seriously. Start your free 7-day trial — no credit card required."
+          primaryCta={{ label: "Start Free Trial", href: "/register" }}
+          secondaryCta={{ label: "View Pricing", href: "/pricing" }}
+          trustItems={[
+            "No credit card required",
+            "Cancel anytime",
+            "Full feature access during trial",
+          ]}
+        />
       </div>
     </ManagementLayout>
   );

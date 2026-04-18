@@ -9,10 +9,10 @@ import { Button } from "@/components/ui/button";
 
 export function ManagementFooter() {
   return (
-    <footer className="relative bg-[#0a1628] text-gray-300 overflow-hidden">
+    <footer className="relative bg-[#162d4a] text-gray-300 overflow-hidden">
       {/* Pre-footer CTA strip */}
       <div className="relative border-b border-white/[0.06] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0f1d2e] via-[#132035] to-[#0f1d2e]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1e3a5f] via-[#223f68] to-[#1e3a5f]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_100%_at_50%_0%,_rgba(197,165,90,0.06)_0%,_transparent_100%)]" />
         <div className="relative container mx-auto px-4 sm:px-6 py-10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 max-w-4xl mx-auto text-center sm:text-left">

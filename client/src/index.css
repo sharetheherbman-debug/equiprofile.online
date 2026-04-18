@@ -64,14 +64,25 @@
   --color-brand-warm: #f5f0e8;
   --color-brand-cream: #faf8f4;
   --color-brand-forest: #2d6a4f;
-  /* ── Shared dark background token ────────────────────────────────────────
-     Used behind the management navbar and unified across all dark marketing
-     sections. Change this single value to roll back the dark unification.
+  /* ── Management site dark background tokens ──────────────────────────────
+     These drive the .mgmt-* utility classes below.  Changing a value here
+     updates ALL management dark sections, hero overlays and CTA sections
+     site-wide — avoiding scattered inline hex values in each component.
   ──────────────────────────────────────────────────────────────────────── */
-  --ep-dark-bg: #0f1d2e;
-  --ep-dark-bg-deep: #070f1c;
-  --ep-dark-bg-alt: #0a1628;
+  /** Primary dark — aligned with the school/academy site */
+  --ep-dark-bg: #1e3a5f;
+  /** Deep dark — CTA gradient start / hero overlay base */
+  --ep-dark-bg-deep: #0f2238;
+  /** Mid dark — hero overlay midpoint */
+  --ep-dark-bg-alt: #162d4a;
+  /** CTA gradient endpoint */
+  --ep-dark-cta-end: #11253e;
+  /** Light section background */
   --ep-section-light: #f8f9fb;
+  /** Alt light section background (Contact form area) */
+  --ep-section-alt: #f0f4f8;
+  /** Brand gold */
+  --ep-gold: #c5a55a;
 }
 
 :root {
@@ -658,6 +669,70 @@
   .reveal.active {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ── Management marketing site utility classes ────────────────────────────────
+   These classes are referenced by management pages instead of inline hex values.
+   Changing a value here updates ALL pages that use the class — this IS the
+   shared style system that prevents scattered inline colour sprawl.
+   ─────────────────────────────────────────────────────────────────────────── */
+@layer utilities {
+  /* Dark content sections — showcase grids, feature grids, origin timelines */
+  .mgmt-dark-section {
+    background-color: var(--ep-dark-bg);
+  }
+
+  /* CTA sections — page-ending dark banner with gradient */
+  .mgmt-cta-section {
+    background-image: linear-gradient(
+      to bottom right,
+      var(--ep-dark-bg-deep),
+      var(--ep-dark-bg),
+      var(--ep-dark-cta-end)
+    );
+  }
+
+  /* Hero image overlay — gradient over photo backgrounds */
+  .mgmt-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--ep-dark-bg-deep) 70%, transparent),
+      color-mix(in srgb, var(--ep-dark-bg) 60%, transparent),
+      color-mix(in srgb, var(--ep-dark-bg-alt) 80%, transparent)
+    );
+  }
+
+  /* Hero fade into #f8f9fb light section */
+  .mgmt-hero-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 10rem; /* h-40 */
+    background-image: linear-gradient(
+      to bottom,
+      transparent,
+      transparent,
+      var(--ep-section-light)
+    );
+  }
+
+  /* Hero fade into #f0f4f8 alt light section (Contact page) */
+  .mgmt-hero-fade-alt {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 7rem; /* h-28 */
+    background-image: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--ep-section-alt) 50%, transparent),
+      var(--ep-section-alt)
+    );
   }
 }
 
