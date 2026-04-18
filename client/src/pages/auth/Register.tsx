@@ -194,7 +194,7 @@ export default function Register() {
         credentials: "include",
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         // If re-submitting with an unverified email, show verification state

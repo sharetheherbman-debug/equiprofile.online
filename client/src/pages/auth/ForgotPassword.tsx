@@ -40,7 +40,7 @@ export default function ForgotPassword() {
         body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         setError(data.error || "Failed to send reset email");

@@ -549,11 +549,11 @@ function DashboardLayoutContent({
       <SidebarInset className="min-w-0">
         {isMobile && (
           <div className="flex border-b border-white/5 h-14 items-center justify-between bg-background/90 px-2 backdrop-blur-md sticky top-0 z-40" style={{ paddingTop: 'var(--safe-area-top, 0px)' }}>
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="h-11 w-11 rounded-lg bg-background" />
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col gap-1">
-                  <span className="tracking-tight text-foreground">
+            <div className="flex items-center gap-2 min-w-0">
+              <SidebarTrigger className="h-11 w-11 rounded-lg bg-background shrink-0" />
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="tracking-tight text-foreground truncate">
                     {activeMenuItem?.label ?? "Menu"}
                   </span>
                 </div>

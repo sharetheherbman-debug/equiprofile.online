@@ -161,8 +161,8 @@ export default function Features() {
           fadeVariant="light"
         />
 
-        {/* =============== ALTERNATING FEATURE SECTIONS =============== */}
-        {majorFeatures.map((feature, index) => {
+        {/* =============== ALTERNATING FEATURE SECTIONS — first half =============== */}
+        {majorFeatures.slice(0, 4).map((feature, index) => {
           const isEven = index % 2 === 0;
           const bg = isEven ? "bg-[#f8f9fb]" : "bg-white";
 
@@ -213,7 +213,67 @@ export default function Features() {
           );
         })}
 
-        {/* ================ SEE ALL FEATURES GRID ================ */}
+        {/* ===================== MID-PAGE CTA ===================== */}
+        <MgmtCTASection
+          eyebrow="Try it free"
+          quote="Built by riders, for riders — every feature tells our story."
+          heading="See every feature in action"
+          body="Start a 7-day free trial and explore every module with your own horses. No credit card needed."
+          primaryCta={{ label: "Start Free Trial", href: "/register" }}
+          secondaryCta={{ label: "View Pricing", href: "/pricing" }}
+        />
+
+        {/* =============== ALTERNATING FEATURE SECTIONS — second half =============== */}
+        {majorFeatures.slice(4).map((feature, index) => {
+          const isEven = index % 2 === 0;
+          const bg = isEven ? "bg-[#f8f9fb]" : "bg-white";
+
+          return (
+            <section key={feature.title} className={`${bg} py-20 md:py-28 overflow-hidden`}>
+              <div className="container mx-auto px-4">
+                <div
+                  className={`grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto ${
+                    isEven ? "" : "lg:[direction:rtl]"
+                  }`}
+                >
+                  {/* Image */}
+                  <AnimatedSection className="lg:[direction:ltr]">
+                    <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
+                      <div className="absolute inset-0 ring-1 ring-inset ring-[#0f1d2e]/8 rounded-2xl pointer-events-none z-10" />
+                      <img
+                        src={feature.image}
+                        alt={feature.title}
+                        loading="lazy"
+                        className={`w-full h-[320px] md:h-[420px] object-cover ${feature.imagePosition} transition-transform duration-700 group-hover:scale-105`}
+                      />
+                      <div className="absolute top-4 left-4 z-10">
+                        <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-[#2e6da4] to-[#4a9eca] text-white shadow-lg shadow-[#2e6da4]/30 backdrop-blur-sm">
+                          <feature.icon className="w-5 h-5" />
+                        </div>
+                      </div>
+                    </div>
+                  </AnimatedSection>
+
+                  {/* Text */}
+                  <AnimatedSection delay={0.12} className="lg:[direction:ltr]">
+                    <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#1a7a6d] mb-2">
+                      {feature.subtitle}
+                    </p>
+                    <h2 className="text-3xl md:text-4xl font-bold font-serif text-[#0f1d2e] leading-tight">
+                      {feature.title}
+                    </h2>
+                    <div className="mt-3 w-12 h-1 rounded-full bg-gradient-to-r from-[#2e6da4] to-[#3a9d8f]" />
+                    <p className="mt-5 text-[#0f1d2e]/58 leading-relaxed text-lg">
+                      {feature.description}
+                    </p>
+                  </AnimatedSection>
+                </div>
+              </div>
+            </section>
+          );
+        })}
+
+        {/* ================ MORE FEATURES GRID ================ */}
         <section className="mgmt-dark-section py-20 md:py-28">
           <div className="container mx-auto px-4">
             <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
@@ -244,16 +304,6 @@ export default function Features() {
             </div>
           </div>
         </section>
-
-        {/* ===================== CTA SECTION ===================== */}
-        <MgmtCTASection
-          eyebrow="Try it free"
-          quote="Built by riders, for riders — every feature tells our story."
-          heading="See every feature in action"
-          body="Start a 7-day free trial and explore every module with your own horses. No credit card needed."
-          primaryCta={{ label: "Start Free Trial", href: "/register" }}
-          secondaryCta={{ label: "View Pricing", href: "/pricing" }}
-        />
       </div>
     </ManagementLayout>
   );
