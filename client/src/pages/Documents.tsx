@@ -237,14 +237,7 @@ function DocumentsContent() {
     }
 
     setUploading(true);
-    let reader: FileReader;
-    try {
-      reader = new FileReader();
-    } catch {
-      setUploading(false);
-      toast.error("Failed to read file. Please try again.");
-      return;
-    }
+    const reader = new FileReader();
     reader.onload = () => {
       const base64 = (reader.result as string).split(",")[1];
       uploadMutation.mutate({

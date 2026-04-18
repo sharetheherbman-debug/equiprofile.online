@@ -134,8 +134,7 @@ function HorseFormContent() {
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/heic", "image/heif"];
-    if (!allowedTypes.includes(file.type) && !file.type.startsWith("image/")) {
+    if (!file.type.startsWith("image/")) {
       toast.error("Please select a valid image file (JPEG, PNG, WebP, etc.)");
       if (e.target) e.target.value = "";
       return;
