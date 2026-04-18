@@ -195,7 +195,17 @@ function HorseFormContent() {
         }
         setStagedFile(null);
       } catch (err: any) {
-        toast.error(err.message || "Failed to upload photo");
+        const msg: string = err?.message || "";
+        // A JSON parse error typically means the server returned HTML (e.g. a
+        // proxy error page) instead of a tRPC response.  Surface a clear
+        // human-readable message instead of the raw "Unexpected token <" noise.
+        if (msg.includes("Unexpected token") || msg.includes("JSON") || msg.includes("json")) {
+          toast.error("Upload failed — the server returned an unexpected response. Please try again or use a smaller image.");
+        } else if (msg.includes("10MB") || msg.includes("10 MB") || msg.includes("size")) {
+          toast.error("Photo is too large. Please use an image under 10MB.");
+        } else {
+          toast.error(msg || "Failed to upload photo. Please try again.");
+        }
         return;
       }
     }

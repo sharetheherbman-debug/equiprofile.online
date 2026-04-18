@@ -688,10 +688,10 @@ function DashboardLayoutContent({
                       if (items.length === 0) return null;
                       return (
                         <div key={group.label}>
-                          <p className="text-xs font-semibold uppercase tracking-wider mb-3 px-1 text-center" style={{ color: "#4f5fd6" }}>
+                          <p className="text-xs font-semibold uppercase tracking-wider mb-3 px-1 text-center text-primary">
                             {group.label}
                           </p>
-                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                             {items.map((item) => {
                               const Icon = item.icon;
                               const isActive = location === item.path;
@@ -702,16 +702,16 @@ function DashboardLayoutContent({
                                     setLocation(item.path);
                                     setMoreSheetOpen(false);
                                   }}
-                                  className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all text-center active:scale-[0.97] min-h-[80px] ${
+                                  className={`flex flex-col items-center gap-1.5 p-3 sm:p-4 rounded-2xl border transition-all text-center active:scale-[0.97] min-h-[72px] sm:min-h-[80px] ${
                                     isActive
                                       ? "border-primary/40 bg-primary/10 text-primary shadow-sm"
                                       : "border-border/50 bg-card hover:bg-accent/50 hover:border-border"
                                   }`}
                                 >
-                                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isActive ? "bg-primary/20" : group.iconBg}`}>
-                                    <Icon className="h-5 w-5 text-white" />
+                                  <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 ${isActive ? "bg-primary/20" : group.iconBg}`}>
+                                    <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                                   </div>
-                                  <span className="text-xs leading-snug font-medium">
+                                  <span className="text-[10px] sm:text-xs leading-snug font-medium line-clamp-2">
                                     {item.label}
                                   </span>
                                 </button>

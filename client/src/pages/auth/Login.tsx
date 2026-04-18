@@ -192,8 +192,9 @@ export default function Login() {
             <Card className="bg-[#0b1726]/70 backdrop-blur-xl border border-white/10 shadow-2xl">
               <CardHeader className="space-y-3 pb-2">
                 {/* Brand logo */}
-                <div className="flex justify-center mb-2">
+                <div className="flex flex-col items-center gap-1.5 mb-2">
                   <img src="/logo.png" alt="EquiProfile" className="h-14 w-auto object-contain" />
+                  <span className="text-base font-bold text-white tracking-tight font-serif leading-none">EquiProfile</span>
                 </div>
 
                 {/* Step indicator */}

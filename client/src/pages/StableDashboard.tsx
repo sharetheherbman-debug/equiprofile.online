@@ -282,10 +282,10 @@ function StableDashboardContent() {
         <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-amber-500/10" />
         <div className="pointer-events-none absolute -bottom-6 right-14 h-28 w-28 rounded-full bg-orange-500/[0.07]" />
         <div className="relative flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-0.5">
+          <div className="min-w-0 space-y-0.5">
             <p className="text-xs font-medium text-amber-300/70 flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5" />
-              {greeting}, {user?.name?.split(" ")[0] || "Manager"}
+              <Building2 className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{greeting}, {user?.name?.split(" ")[0] || "Manager"}</span>
             </p>
             <h1 className="font-serif text-2xl sm:text-3xl font-bold leading-tight">
               Stable Operations

@@ -20,7 +20,7 @@ export function initServiceWorkerUpdates() {
   // Listen for controller change (new service worker activated)
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (refreshing) return;
-    console.log("[SW Update] New service worker activated, reloading page");
+    if (import.meta.env.DEV) console.log("[SW Update] New service worker activated, reloading page");
     refreshing = true;
     window.location.reload();
   });
@@ -29,7 +29,7 @@ export function initServiceWorkerUpdates() {
   setInterval(
     () => {
       navigator.serviceWorker.ready.then((registration) => {
-        console.log("[SW Update] Checking for updates...");
+        if (import.meta.env.DEV) console.log("[SW Update] Checking for updates...");
         registration.update();
       });
     },
@@ -38,7 +38,7 @@ export function initServiceWorkerUpdates() {
 
   // Check for updates immediately
   navigator.serviceWorker.ready.then((registration) => {
-    console.log("[SW Update] Service worker ready, checking for updates");
+    if (import.meta.env.DEV) console.log("[SW Update] Service worker ready, checking for updates");
 
     // Listen for new service worker waiting
     if (registration.waiting) {
@@ -56,6 +56,7 @@ export function initServiceWorkerUpdates() {
           navigator.serviceWorker.controller
         ) {
           // New service worker installed and waiting
+          if (import.meta.env.DEV) console.log("[SW Update] New version available");
           showUpdatePrompt(newWorker);
         }
       });
@@ -66,11 +67,7 @@ export function initServiceWorkerUpdates() {
   });
 }
 
-/**
- * Show update prompt to user
- */
 function showUpdatePrompt(worker: ServiceWorker) {
-  console.log("[SW Update] New version available");
 
   // Create a simple toast notification
   const toast = document.createElement("div");

@@ -368,8 +368,8 @@ function DashboardContent() {
         <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/[0.06]" />
         <div className="pointer-events-none absolute -bottom-6 right-14 h-28 w-28 rounded-full bg-white/[0.04]" />
         <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-medium text-emerald-300/80 mb-1">
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-emerald-300/80 mb-1 truncate">
               {greeting}, {user?.name?.split(" ")[0] || "Rider"} 🐎
             </p>
             <h1 className="font-serif text-2xl sm:text-3xl font-bold leading-tight">
