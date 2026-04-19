@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { Link } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
   CalendarIcon,
@@ -11,6 +12,10 @@ import {
   Clock,
   List,
   LayoutGrid,
+  ClipboardList,
+  CalendarCheck,
+  Tag,
+  ExternalLink,
 } from "lucide-react";
 import {
   Card,
@@ -126,6 +131,7 @@ export default function CalendarPage() {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [pendingDeleteItem, setPendingDeleteItem] = useState<any>(null);
   const [selectedDayEvents, setSelectedDayEvents] = useState<any[]>([]);
   const [isDayDialogOpen, setIsDayDialogOpen] = useState(false);
   const [newEvent, setNewEvent] = useState<EventForm>({ ...EMPTY_FORM });
@@ -207,6 +213,46 @@ export default function CalendarPage() {
       setIsViewDialogOpen(false);
       setSelectedEvent(null);
       setViewItem(null);
+      setPendingDeleteItem(null);
+      refetch();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const deleteTrainingSession = trpc.training.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Training session deleted");
+      setIsDeleteAlertOpen(false);
+      setIsViewDialogOpen(false);
+      setSelectedEvent(null);
+      setViewItem(null);
+      setPendingDeleteItem(null);
+      refetch();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const deleteTask = trpc.tasks.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Task deleted");
+      setIsDeleteAlertOpen(false);
+      setIsViewDialogOpen(false);
+      setSelectedEvent(null);
+      setViewItem(null);
+      setPendingDeleteItem(null);
+      refetch();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const deleteAppointment = trpc.appointments.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Appointment deleted");
+      setIsDeleteAlertOpen(false);
+      setIsViewDialogOpen(false);
+      setSelectedEvent(null);
+      setViewItem(null);
+      setPendingDeleteItem(null);
       refetch();
     },
     onError: (error) => toast.error(error.message),
@@ -214,7 +260,7 @@ export default function CalendarPage() {
 
   interface CalendarItem {
     id: string;
-    source: "event" | "task" | "appointment";
+    source: "event" | "task" | "appointment" | "training";
     title: string;
     date: Date;
     type: string;
@@ -250,7 +296,7 @@ export default function CalendarPage() {
           date: d,
           type: t.taskType,
           colorClass: "bg-orange-500",
-          isEditable: false,
+          isEditable: true,
           originalData: t,
         });
       }
@@ -267,7 +313,7 @@ export default function CalendarPage() {
           date: d,
           type: a.appointmentType,
           colorClass: "bg-pink-500",
-          isEditable: false,
+          isEditable: true,
           originalData: a,
         });
       }
@@ -299,12 +345,12 @@ export default function CalendarPage() {
       if (!calendarEventIds.has(title.toLowerCase().trim())) {
         items.push({
           id: `training-${s.id}`,
-          source: "event" as const,
+          source: "training" as const,
           title,
           date: d,
           type: "training",
           colorClass: "bg-blue-700",
-          isEditable: false,
+          isEditable: true,
           originalData: s,
         });
       }
@@ -381,7 +427,7 @@ export default function CalendarPage() {
           date: d,
           type: t.taskType,
           colorClass: "bg-orange-500",
-          isEditable: false,
+          isEditable: true,
           originalData: t,
         });
       }
@@ -399,7 +445,7 @@ export default function CalendarPage() {
           date: d,
           type: a.appointmentType,
           colorClass: "bg-pink-500",
-          isEditable: false,
+          isEditable: true,
           originalData: a,
         });
       }
@@ -428,12 +474,12 @@ export default function CalendarPage() {
       if (!calendarEventTitles.has(title.toLowerCase().trim())) {
         items.push({
           id: `training-${s.id}`,
-          source: "event" as const,
+          source: "training" as const,
           title,
           date: d,
           type: "training",
           colorClass: "bg-blue-700",
-          isEditable: false,
+          isEditable: true,
           originalData: s,
         });
       }
@@ -639,7 +685,7 @@ export default function CalendarPage() {
                           key={item.id}
                           className={`text-[10px] px-1 py-0.5 rounded text-white truncate ${item.colorClass} ${item.source !== "event" ? "opacity-80" : ""}`}
                         >
-                          {item.source === "task" ? "📋 " : item.source === "appointment" ? "📅 " : ""}{item.title}
+                          {item.title}
                         </div>
                       ))}
                       {dayItems.length > 2 && (
@@ -730,19 +776,21 @@ export default function CalendarPage() {
 
                       {/* Item details */}
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">
-                          {item.source === "task" ? "📋 " : item.source === "appointment" ? "📅 " : ""}{item.title}
-                        </p>
+                        <div className="flex items-center gap-1.5">
+                          {item.source === "task" && <ClipboardList className="h-3 w-3 text-orange-500 shrink-0" />}
+                          {item.source === "appointment" && <CalendarCheck className="h-3 w-3 text-pink-500 shrink-0" />}
+                          <p className="font-medium text-sm truncate">{item.title}</p>
+                        </div>
                         <p className="text-xs text-muted-foreground truncate">
                           {!isToday && `${dayLabel} · `}
-                          {item.source === "event"
+                          {item.source === "event" || item.source === "training"
                             ? eventDate.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
                             : item.source === "task" ? "Task" : "Appointment"}
-                          {item.source === "event" && item.originalData.location ? ` · ${item.originalData.location}` : ""}
+                          {(item.source === "event" || item.source === "training") && item.originalData.location ? ` · ${item.originalData.location}` : ""}
                         </p>
                         {horseName && (
-                          <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded mt-0.5 inline-block">
-                            🐎 {horseName}
+                          <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded mt-0.5 inline-flex items-center gap-1">
+                            <Tag className="h-2.5 w-2.5" />{horseName}
                           </span>
                         )}
                       </div>
@@ -750,7 +798,7 @@ export default function CalendarPage() {
                       {/* Type badge + edit */}
                       <div className="flex flex-col items-end gap-1 shrink-0">
                         <div className={`w-2.5 h-2.5 rounded-full ${item.colorClass}`} />
-                        {item.isEditable && (
+                        {item.isEditable && item.source === "event" && (
                           <Button
                             variant="ghost"
                             size="icon"
@@ -796,22 +844,24 @@ export default function CalendarPage() {
                       className={`w-2.5 h-2.5 rounded-full ${item.colorClass}`}
                     />
                     <div>
-                      <p className="font-medium text-sm">
-                        {item.source === "task" ? "📋 " : item.source === "appointment" ? "📅 " : ""}{item.title}
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        {item.source === "task" && <ClipboardList className="h-3 w-3 text-orange-500 shrink-0" />}
+                        {item.source === "appointment" && <CalendarCheck className="h-3 w-3 text-pink-500 shrink-0" />}
+                        <p className="font-medium text-sm">{item.title}</p>
+                      </div>
                       <p className="text-xs text-muted-foreground">
-                        {item.source === "event"
+                        {item.source === "event" || item.source === "training"
                           ? item.date.toLocaleTimeString("en-GB", {
                               hour: "2-digit",
                               minute: "2-digit",
                             })
                           : item.source === "task" ? "Task" : "Appointment"}
-                        {horseName && ` · 🐎 ${horseName}`}
+                        {horseName && ` · ${horseName}`}
                       </p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-xs">
-                    {item.source === "event"
+                    {item.source === "event" || item.source === "training"
                       ? (EVENT_TYPE_LABELS[item.type] || item.type)
                       : item.source === "task" ? "Task" : "Appointment"}
                   </Badge>
@@ -842,6 +892,8 @@ export default function CalendarPage() {
             <DialogDescription>
               {viewItem?.source === "event"
                 ? EVENT_TYPE_LABELS[viewItem?.type] || viewItem?.type || "Calendar event"
+                : viewItem?.source === "training"
+                ? "Training session"
                 : viewItem?.source === "task"
                 ? "Task"
                 : viewItem?.source === "appointment"
@@ -855,24 +907,42 @@ export default function CalendarPage() {
                 <span className={`inline-block w-2.5 h-2.5 rounded-full ${viewItem.colorClass}`} />
                 <span className="text-muted-foreground">
                   {viewItem.date.toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-                  {viewItem.source === "event" && !viewItem.originalData?.isAllDay && (
+                  {(viewItem.source === "event" && !viewItem.originalData?.isAllDay) || viewItem.source === "training" ? (
                     <>
                       {" · "}
                       {viewItem.date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
                     </>
-                  )}
+                  ) : null}
                 </span>
               </div>
-              {viewItem.source === "event" && viewItem.originalData?.location && (
+              {(viewItem.source === "event" || viewItem.source === "training") && viewItem.originalData?.location && (
                 <div className="text-muted-foreground">
                   <span className="font-medium text-foreground">Location:</span>{" "}
                   {viewItem.originalData.location}
                 </div>
               )}
               {viewItem.source === "event" && viewItem.originalData?.horseId && getHorseName(viewItem.originalData.horseId) && (
+                <div className="text-muted-foreground flex items-center gap-1.5">
+                  <span className="font-medium text-foreground">Horse:</span>
+                  <Tag className="h-3 w-3" />{getHorseName(viewItem.originalData.horseId)}
+                </div>
+              )}
+              {viewItem.source === "training" && viewItem.originalData?.horseId && getHorseName(viewItem.originalData.horseId) && (
+                <div className="text-muted-foreground flex items-center gap-1.5">
+                  <span className="font-medium text-foreground">Horse:</span>
+                  <Tag className="h-3 w-3" />{getHorseName(viewItem.originalData.horseId)}
+                </div>
+              )}
+              {viewItem.source === "training" && viewItem.originalData?.duration && (
                 <div className="text-muted-foreground">
-                  <span className="font-medium text-foreground">Horse:</span>{" "}
-                  🐎 {getHorseName(viewItem.originalData.horseId)}
+                  <span className="font-medium text-foreground">Duration:</span>{" "}
+                  {viewItem.originalData.duration} min
+                </div>
+              )}
+              {viewItem.source === "training" && viewItem.originalData?.notes && (
+                <div className="text-muted-foreground whitespace-pre-wrap">
+                  <span className="font-medium text-foreground">Notes:</span>{" "}
+                  {viewItem.originalData.notes}
                 </div>
               )}
               {viewItem.source === "event" && viewItem.originalData?.description && (
@@ -908,12 +978,14 @@ export default function CalendarPage() {
             >
               Close
             </Button>
-            {viewItem?.isEditable && viewItem?.source === "event" && (
+            {viewItem?.isEditable && (
               <div className="flex gap-2">
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={() => {
+                    setPendingDeleteItem(viewItem);
+                    if (viewItem.source === "event") setSelectedEvent(viewItem.originalData);
                     setIsViewDialogOpen(false);
                     setIsDeleteAlertOpen(true);
                   }}
@@ -921,15 +993,36 @@ export default function CalendarPage() {
                   <Trash2 className="h-4 w-4 mr-1" />
                   Delete
                 </Button>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    if (viewItem?.originalData) handleOpenEdit(viewItem.originalData);
-                  }}
-                >
-                  <Edit2 className="h-4 w-4 mr-1" />
-                  Edit
-                </Button>
+                {viewItem?.source === "event" ? (
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      if (viewItem?.originalData) handleOpenEdit(viewItem.originalData);
+                    }}
+                  >
+                    <Edit2 className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                ) : (
+                  <Link
+                    href={
+                      viewItem?.source === "training"
+                        ? "/training"
+                        : viewItem?.source === "task"
+                        ? "/tasks"
+                        : "/appointments"
+                    }
+                  >
+                    <Button size="sm" onClick={() => setIsViewDialogOpen(false)}>
+                      <ExternalLink className="h-4 w-4 mr-1" />
+                      {viewItem?.source === "training"
+                        ? "Open Training"
+                        : viewItem?.source === "task"
+                        ? "Open Tasks"
+                        : "Open Appointments"}
+                    </Button>
+                  </Link>
+                )}
               </div>
             )}
           </DialogFooter>
@@ -1154,7 +1247,7 @@ export default function CalendarPage() {
                       {" "}
                       · Horse:{" "}
                       <span className="font-medium">
-                        🐎 {getHorseName(selectedEvent.horseId)}
+                        {getHorseName(selectedEvent.horseId)}
                       </span>
                     </>
                   )}
@@ -1165,7 +1258,12 @@ export default function CalendarPage() {
             <Button
               variant="destructive"
               size="sm"
-              onClick={() => setIsDeleteAlertOpen(true)}
+              onClick={() => {
+                if (selectedEvent) {
+                  setPendingDeleteItem({ source: "event", title: selectedEvent.title, originalData: selectedEvent });
+                }
+                setIsDeleteAlertOpen(true);
+              }}
               disabled={deleteEvent.isPending}
             >
               <Trash2 className="h-4 w-4 mr-1" />
@@ -1200,18 +1298,42 @@ export default function CalendarPage() {
       <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Event?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {pendingDeleteItem?.source === "training"
+                ? "Delete Training Session?"
+                : pendingDeleteItem?.source === "task"
+                ? "Delete Task?"
+                : pendingDeleteItem?.source === "appointment"
+                ? "Delete Appointment?"
+                : "Delete Event?"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete "{selectedEvent?.title}". This action
+              This will permanently delete "{pendingDeleteItem?.title ?? selectedEvent?.title}". This action
               cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setPendingDeleteItem(null)}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() =>
-                selectedEvent && deleteEvent.mutate({ id: selectedEvent.id })
-              }
+              onClick={() => {
+                const item = pendingDeleteItem;
+                if (!item) {
+                  // fallback: legacy calendar event delete from edit dialog
+                  if (selectedEvent) deleteEvent.mutate({ id: selectedEvent.id });
+                  return;
+                }
+                if (item.source === "training") {
+                  deleteTrainingSession.mutate({ id: item.originalData.id });
+                } else if (item.source === "task") {
+                  deleteTask.mutate({ id: item.originalData.id });
+                } else if (item.source === "appointment") {
+                  deleteAppointment.mutate({ id: item.originalData.id });
+                } else {
+                  // calendar event
+                  const ev = item.originalData ?? selectedEvent;
+                  if (ev) deleteEvent.mutate({ id: ev.id });
+                }
+              }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete

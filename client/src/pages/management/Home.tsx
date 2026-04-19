@@ -107,13 +107,6 @@ const features = [
   },
 ];
 
-const showcaseImages = [
-  { src: "/images/hero/image2.jpg", alt: "Training session", label: "Training & performance" },
-  { src: "/images/gallery/1.jpg", alt: "Stable yard", label: "Stable management" },
-  { src: "/images/hero/image4.jpg", alt: "Horse and rider", label: "Health tracking" },
-  { src: "/images/gallery/2.jpg", alt: "Equestrian care", label: "Complete care records" },
-];
-
 const whyPoints = [
   "All-in-one: health, training, feeding, scheduling and more",
   "Offline-capable — works even at remote yards with no signal",
@@ -168,7 +161,7 @@ export default function Home() {
         */}
         <section className="relative min-h-[96vh] flex items-center overflow-hidden">
           <img
-            src="/images/price3.jpg"
+            src="/images/management/landing2.jpg"
             alt="Horses in a field at sunset"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
@@ -253,7 +246,7 @@ export default function Home() {
               {[
                 { icon: ShieldCheck, text: "7-day free trial" },
                 { icon: Zap, text: "No credit card required" },
-                { icon: MapPin, text: "Equestrian-built platform" },
+                { icon: MapPin, text: "Built by riders, for riders" },
               ].map(({ icon: Icon, text }) => (
                 <span key={text} className="flex items-center gap-1.5 text-xs text-white/45 font-medium tracking-wide">
                   <Icon className="w-3 h-3 text-[#c5a55a]/70" />
@@ -350,96 +343,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================== SHOWCASE GRID ================== */}
-        <section className="bg-[#1e3a5f] py-20 md:py-28 overflow-hidden">
-          <div className="container mx-auto px-4">
-            <AnimatedSection className="text-center max-w-3xl mx-auto mb-12">
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#c5a55a] mb-3">
-                Built for professionals
-              </p>
-              <h2 className="text-3xl md:text-4xl font-bold font-serif text-white leading-tight">
-                Designed for the demands of the yard
-              </h2>
-              <p className="mt-4 text-white/45 text-base max-w-lg mx-auto">
-                From competition yards to solo owners — EquiProfile adapts to every operation.
-              </p>
-            </AnimatedSection>
-
-            {/* 2×2 image grid */}
-            <div className="grid grid-cols-2 gap-4 md:gap-5 max-w-5xl mx-auto">
-              {showcaseImages.map((img, i) => (
-                <AnimatedSection key={img.src} delay={i * 0.1}>
-                  <div className="relative group rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-xl shadow-black/35">
-                    <img
-                      src={img.src}
-                      alt={img.alt}
-                      loading="lazy"
-                      className="w-full h-52 sm:h-64 md:h-80 object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                    />
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#162d4a]/85 via-[#162d4a]/15 to-transparent" />
-                    {/* Label */}
-                    <div className="absolute bottom-0 left-0 right-0 p-5">
-                      <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#c5a55a]/80 shrink-0" />
-                        <span className="text-xs font-semibold text-white/85 tracking-wide">
-                          {img.label}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </AnimatedSection>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ================== STABLE MANAGEMENT ================== */}
-        <section className="bg-[#f8f9fb] py-20 md:py-28 overflow-hidden border-t border-[#0f1d2e]/[0.04]">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
-              <AnimatedSection delay={0.1}>
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
-                  <img
-                    src="/images/management/landing-page.jpg"
-                    alt="Horses in a stable yard"
-                    loading="lazy"
-                    className="w-full h-[380px] md:h-[480px] object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 ring-1 ring-inset ring-[#0f1d2e]/8 rounded-2xl pointer-events-none" />
-                </div>
-              </AnimatedSection>
-
-              <AnimatedSection delay={0.2}>
-                <div className="inline-flex items-center gap-2 bg-[#1a7a6d]/8 rounded-full px-4 py-1.5 text-sm font-bold text-[#1a7a6d] tracking-widest uppercase mb-5">
-                  Stable Management
-                </div>
-                <h2 className="text-3xl md:text-[42px] font-bold font-serif text-[#0f1d2e] leading-tight">
-                  Run your yard with confidence
-                </h2>
-                <div className="mt-3 w-12 h-1 rounded-full bg-gradient-to-r from-[#1a7a6d] to-[#4a9eca]" />
-                <p className="mt-6 text-[#0f1d2e]/58 leading-relaxed text-lg">
-                  From daily feeds to farrier schedules, EquiProfile gives yard managers a single dashboard to oversee every horse, every task and every team member — all in real time.
-                </p>
-                <ul className="mt-8 space-y-3">
-                  {[
-                    "Centralised task management across the whole yard",
-                    "Role-based access for grooms, vets and owners",
-                    "Live notifications for overdue health events",
-                  ].map((point) => (
-                    <li key={point} className="flex items-start gap-3 text-[#0f1d2e]/70">
-                      <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-[#1a7a6d]/15 border border-[#1a7a6d]/40 flex items-center justify-center">
-                        <Check className="w-3 h-3 text-[#1a7a6d]" />
-                      </span>
-                      <span className="text-[15px]">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </AnimatedSection>
-            </div>
-          </div>
-        </section>
-
         {/* ================== WHY EQUIPROFILE ================== */}
         <section className="bg-[#1e3a5f] py-20 md:py-28 overflow-hidden border-t border-white/[0.04]">
           <div className="container mx-auto px-4">
@@ -447,15 +350,15 @@ export default function Home() {
               <AnimatedSection>
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
                   <img
-                    src="/images/hero/image3.jpg"
-                    alt="Horse and rider training"
+                    src="/images/management/landing-page.jpg"
+                    alt="Horses in a stable yard"
                     loading="lazy"
                     className="w-full h-[380px] md:h-[500px] object-cover object-center group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 ring-1 ring-inset ring-white/8 rounded-2xl pointer-events-none" />
                   {/* Corner accent */}
                   <div className="absolute top-4 right-4 bg-[#c5a55a]/90 backdrop-blur-sm rounded-lg px-3 py-1.5">
-                    <span className="text-[11px] font-bold text-[#0f1d2e] tracking-wider uppercase">Equestrian-Built</span>
+                    <span className="text-[11px] font-bold text-[#0f1d2e] tracking-wider uppercase">Made for Yards</span>
                   </div>
                 </div>
               </AnimatedSection>

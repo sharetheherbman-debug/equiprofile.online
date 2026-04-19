@@ -139,7 +139,7 @@ export default function Contact() {
 
         {/* ======================== HERO ======================== */}
         <MgmtHero
-          imageSrc="/images/management/contact.jpg"
+          imageSrc="/images/management/contact-v2.jpg"
           imageAlt="Horse and rider at the yard"
           eyebrow="Get in Touch"
           eyebrowVariant="glass"

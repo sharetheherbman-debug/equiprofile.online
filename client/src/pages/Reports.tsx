@@ -8,6 +8,14 @@ import {
   Clock,
   Mail,
   Trash2,
+  Heart,
+  Stethoscope,
+  Dumbbell,
+  CalendarCheck,
+  CheckCircle2,
+  Wheat,
+  Users,
+  Trophy,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
@@ -807,7 +815,8 @@ export default function Reports() {
                 {
                   label: "Horses",
                   description: "All horse profiles, breeds, ages & registration details",
-                  icon: "🐴",
+                  icon: Heart,
+                  iconColor: "text-rose-500",
                   onClick: async () => {
                     try {
                       const r = await utils.client.horses.exportCSV.query();
@@ -821,7 +830,8 @@ export default function Reports() {
                 {
                   label: "Health Records",
                   description: "Vet visits, treatments, vaccinations & health history",
-                  icon: "🩺",
+                  icon: Stethoscope,
+                  iconColor: "text-purple-500",
                   onClick: async () => {
                     try {
                       const r = await utils.client.healthRecords.exportCSV.query();
@@ -835,7 +845,8 @@ export default function Reports() {
                 {
                   label: "Training Sessions",
                   description: "Training logs, disciplines, duration & performance notes",
-                  icon: "🎯",
+                  icon: Dumbbell,
+                  iconColor: "text-blue-500",
                   onClick: async () => {
                     try {
                       const r = await utils.client.training.exportCSV.query();
@@ -849,7 +860,8 @@ export default function Reports() {
                 {
                   label: "Appointments",
                   description: "Calendar appointments, vet & farrier bookings",
-                  icon: "📅",
+                  icon: CalendarCheck,
+                  iconColor: "text-pink-500",
                   onClick: async () => {
                     try {
                       const r = await utils.client.appointments.exportCSV.query();
@@ -863,7 +875,8 @@ export default function Reports() {
                 {
                   label: "Tasks",
                   description: "All tasks with status, priority & due dates",
-                  icon: "✅",
+                  icon: CheckCircle2,
+                  iconColor: "text-green-500",
                   onClick: async () => {
                     try {
                       const r = await utils.client.tasks.exportCSV.query();
@@ -877,7 +890,8 @@ export default function Reports() {
                 {
                   label: "Feeding & Nutrition",
                   description: "Feed plans, supplement schedules & nutrition logs",
-                  icon: "🌾",
+                  icon: Wheat,
+                  iconColor: "text-amber-500",
                   onClick: async () => {
                     try {
                       const r = await utils.client.feeding.exportCSV.query();
@@ -891,7 +905,8 @@ export default function Reports() {
                 {
                   label: "Contacts",
                   description: "Vets, farriers, trainers & other contacts",
-                  icon: "👤",
+                  icon: Users,
+                  iconColor: "text-indigo-500",
                   onClick: async () => {
                     try {
                       const r = await utils.client.contacts.exportCSV.query();
@@ -905,7 +920,8 @@ export default function Reports() {
                 {
                   label: "Documents",
                   description: "Document library metadata, names, types & upload dates",
-                  icon: "📄",
+                  icon: FileText,
+                  iconColor: "text-slate-500",
                   onClick: async () => {
                     try {
                       const r = await utils.client.documents.exportCSV.query();
@@ -919,7 +935,8 @@ export default function Reports() {
                 {
                   label: "Competitions",
                   description: "All competition results, placements & prize money",
-                  icon: "🏆",
+                  icon: Trophy,
+                  iconColor: "text-yellow-500",
                   onClick: async () => {
                     try {
                       const r = await utils.client.competitions.exportCSV.query();
@@ -934,7 +951,9 @@ export default function Reports() {
                 <Card key={item.label}>
                   <CardContent className="pt-5 pb-4">
                     <div className="flex items-start gap-3">
-                      <span className="text-2xl">{item.icon}</span>
+                      <div className={`mt-0.5 shrink-0 ${item.iconColor}`}>
+                        <item.icon className="w-5 h-5" />
+                      </div>
                       <div className="flex-1">
                         <p className="font-semibold">{item.label}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">

@@ -1376,6 +1376,30 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
     }
     console.log("[Database] Column migrations applied");
 
+    // ENUM migrations — idempotent MODIFY COLUMN for ENUM columns that gained
+    // new values in later migrations.  MODIFY COLUMN replaces the full ENUM
+    // definition so running these multiple times is safe.
+    const enumMigrations: string[] = [
+      // migrations 0006 + 0010: extended documents.category from the original
+      // ('health','registration','insurance','competition','other') to include
+      // passport, training, feeding, invoice, and gallery.  Production databases
+      // that were set up before these migrations were applied will reject any
+      // INSERT with the newer category values (MySQL: "Data truncated for column
+      // 'category'"), causing uploads to fail with a "Failed query" error.
+      `ALTER TABLE \`documents\` MODIFY COLUMN \`category\` ENUM(
+        'health','passport','registration','insurance','competition',
+        'training','feeding','invoice','gallery','other'
+      ) DEFAULT 'other'`,
+    ];
+    for (const stmt of enumMigrations) {
+      try {
+        await db.execute(sql.raw(stmt));
+      } catch (enumError) {
+        console.warn("[Database] ENUM migration warning:", enumError);
+      }
+    }
+    console.log("[Database] ENUM migrations applied");
+
     // Index migrations — add performance indexes if not already present.
     const indexMigrations: string[] = [
       // Events query: WHERE userId=? AND startDate BETWEEN ? AND ? ORDER BY startDate

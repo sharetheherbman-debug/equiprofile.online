@@ -295,6 +295,17 @@ function DocumentsContent() {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  // Build a download URL that forces a file download via the server-side
+  // Content-Disposition: attachment header.  Only applies to local /api/files/
+  // URLs; remote storage proxy URLs are used as-is.
+  const toDownloadUrl = (fileUrl: string) => {
+    if (!fileUrl) return fileUrl;
+    if (fileUrl.startsWith("/api/files/")) {
+      return `${fileUrl}?download=1`;
+    }
+    return fileUrl;
+  };
+
   const isHeic = (url: string, mimeType?: string) => {
     if (mimeType === "image/heic" || mimeType === "image/heif") return true;
     const lower = url.toLowerCase();
@@ -601,7 +612,7 @@ function DocumentsContent() {
                     </p>
                     {doc.fileUrl && (
                       <Button variant="ghost" size="sm" asChild className="h-7 text-xs">
-                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                        <a href={toDownloadUrl(doc.fileUrl)} download>
                           <Download className="w-3 h-3 mr-1" />
                           {isHeicFile ? "Download HEIC" : "Download"}
                         </a>
@@ -636,7 +647,7 @@ function DocumentsContent() {
                         className="h-7 w-7 bg-white/90 hover:bg-white"
                         asChild
                       >
-                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" download>
+                        <a href={toDownloadUrl(doc.fileUrl)} download>
                           <Download className="w-3.5 h-3.5" />
                         </a>
                       </Button>
@@ -716,7 +727,7 @@ function DocumentsContent() {
                     )}
                     {doc.fileUrl && (
                       <Button variant="outline" size="icon" asChild>
-                        <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={toDownloadUrl(doc.fileUrl)} download>
                           <Download className="w-4 h-4" />
                         </a>
                       </Button>
@@ -752,7 +763,7 @@ function DocumentsContent() {
                       HEIC images cannot be previewed in the browser.
                     </p>
                     <Button asChild>
-                      <a href={previewDoc.url} target="_blank" rel="noopener noreferrer" download>
+                      <a href={toDownloadUrl(previewDoc.url)} download>
                         <Download className="w-4 h-4 mr-2" />
                         Download to view
                       </a>
@@ -770,17 +781,30 @@ function DocumentsContent() {
                       if (fallback) fallback.style.display = "flex";
                     }}
                   />
-                ) : (
+                ) : previewDoc.type === "application/pdf" || /\.pdf$/i.test(previewDoc.url) ? (
                   <iframe
                     src={previewDoc.url}
                     title={previewDoc.name}
                     className="w-full h-[60vh] border-0 rounded"
                   />
+                ) : (
+                  <div className="flex flex-col items-center gap-4 p-8 text-center">
+                    <FileText className="w-12 h-12 text-muted-foreground/40" />
+                    <p className="text-muted-foreground text-sm">
+                      This file type cannot be previewed in the browser.
+                    </p>
+                    <Button asChild>
+                      <a href={toDownloadUrl(previewDoc.url)} download>
+                        <Download className="w-4 h-4 mr-2" />
+                        Download to view
+                      </a>
+                    </Button>
+                  </div>
                 )}
               </div>
               <DialogFooter>
                 <Button variant="outline" asChild>
-                  <a href={previewDoc.url} target="_blank" rel="noopener noreferrer" download>
+                  <a href={toDownloadUrl(previewDoc.url)} download>
                     <Download className="w-4 h-4 mr-2" />
                     Download
                   </a>
