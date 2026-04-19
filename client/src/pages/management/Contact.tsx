@@ -151,8 +151,7 @@ export default function Contact() {
             </>
           }
           subtitle="Have a question, need a demo, or just want to say hello? Fill in the form and we'll be in touch quickly."
-          minHeight="min-h-[420px]"
-          fadeVariant="alt-light"
+          minHeight="min-h-[500px] md:min-h-[560px]"
         />
 
         {/* ================= FORM + SIDEBAR ================= */}

@@ -123,8 +123,7 @@ export default function About() {
           eyebrow="Our Story"
           title="About EquiProfile"
           subtitle="Born from a love of horses and a frustration with outdated tools, EquiProfile is on a mission to modernise equine management."
-          minHeight="min-h-[520px] md:min-h-[580px]"
-          fadeVariant="light"
+          minHeight="min-h-[500px] md:min-h-[560px]"
         />
 
         {/* ====================== MISSION ====================== */}

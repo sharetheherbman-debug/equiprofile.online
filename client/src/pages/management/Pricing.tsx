@@ -228,8 +228,7 @@ export default function Pricing() {
           eyebrow="Pricing"
           title="Simple, Transparent Pricing"
           subtitle={`Choose the plan that fits your yard. Every plan includes a ${FREE_TRIAL_DAYS}-day free trial — no credit card required.`}
-          minHeight="min-h-[460px] md:min-h-[520px]"
-          fadeVariant="light"
+          minHeight="min-h-[500px] md:min-h-[560px]"
         />
 
         {/* ===================== PRICING CARDS ===================== */}

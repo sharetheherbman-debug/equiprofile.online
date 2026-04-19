@@ -14,10 +14,10 @@ import {
   Building2,
   Bell,
   Share2,
+  Smartphone,
+  ShieldCheck,
   GitBranch,
   Trophy,
-  Navigation,
-  Brain,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -129,9 +129,9 @@ const majorFeatures = [
 
 const extraFeatures = [
   { icon: Bell, title: "Smart Reminders" },
-  { icon: Navigation, title: "GPS Ride Tracking" },
-  { icon: Brain, title: "AI Chat Assistant" },
   { icon: Share2, title: "Team Sharing" },
+  { icon: Smartphone, title: "Mobile Friendly" },
+  { icon: ShieldCheck, title: "Data Encryption" },
   { icon: GitBranch, title: "Pedigree Records" },
   { icon: Trophy, title: "Competition Tracking" },
 ];
@@ -158,7 +158,6 @@ export default function Features() {
           }
           subtitle="Powerful, interconnected modules covering health, training, nutrition, documents, weather, stable management and more — all in one premium platform."
           minHeight="min-h-[500px] md:min-h-[560px]"
-          fadeVariant="light"
         />
 
         {/* =============== ALTERNATING FEATURE SECTIONS — first half =============== */}

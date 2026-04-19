@@ -73,8 +73,8 @@ export const mgmtHeroOverlay =
  * Hero fade into the light section (#f8f9fb).
  * Place as the last child of the hero section (absolute positioned).
  *
- * Updated to use a 3-stop gradient for a smooth, non-harsh transition.
- * MgmtHero component uses this same gradient inline — change both together.
+ * @deprecated — MgmtHero now uses fadeVariant="none" by default.
+ * Kept for backward compatibility if re-enabled.
  */
 export const mgmtHeroFade =
   "absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-b from-transparent via-[#f8f9fb]/35 to-[#f8f9fb]";
@@ -83,8 +83,8 @@ export const mgmtHeroFade =
  * Hero fade into the alt light section (#f0f4f8) — Contact page.
  * Place as the last child of the hero section (absolute positioned).
  *
- * Updated to use a taller, smoother 3-stop gradient.
- * MgmtHero component uses this same gradient inline — change both together.
+ * @deprecated — MgmtHero now uses fadeVariant="none" by default.
+ * Kept for backward compatibility if re-enabled.
  */
 export const mgmtHeroFadeAlt =
   "absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-b from-transparent via-[#f0f4f8]/50 to-[#f0f4f8]";

@@ -16,20 +16,17 @@
  *                         colored spans, line breaks, etc.
  *   subtitle            — supporting paragraph below the title
  *   minHeight           — Tailwind min-height classes (override default)
- *   fadeVariant         — "light" (→ #f8f9fb) | "alt-light" (→ #f0f4f8) | "none"
+ *   fadeVariant         — "light" (→ #f8f9fb) | "alt-light" (→ #f0f4f8) | "none" (default)
  *
- * FADE QUALITY GUARANTEE
- * ----------------------
- * Both fade variants use a smooth 3-stop gradient (transparent → low-opacity
- * mid → solid) over a tall div, eliminating the harsh colour cutoff.
- * "light"     : h-64, via 35%
- * "alt-light" : h-36, via 50%
+ * FADE NOTE
+ * ---------
+ * fadeVariant defaults to "none" — no bottom fade overlay is rendered.
+ * The "light" and "alt-light" variants are available for opt-in use but
+ * were removed from all pages because the h-64 fade obscured hero images.
  *
  * STYLING SOURCE OF TRUTH
  * -----------------------
  * - Overlay:   `.mgmt-hero-overlay` CSS class (index.css → @layer utilities)
- * - Fade:       inline Tailwind classes below (complete literals so Tailwind
- *               v4 scanner includes them)
  * - Colours:    EP_DARK / EP_GOLD palette from managementTheme.ts
  */
 
@@ -70,7 +67,7 @@ export interface MgmtHeroProps {
   subtitle: ReactNode;
   /** Override the default min-height Tailwind classes. */
   minHeight?: string;
-  /** Controls the bottom-fade treatment. Defaults to "light". */
+  /** Controls the bottom-fade treatment. Defaults to "none" — no fade. */
   fadeVariant?: keyof typeof FADE_CLASS | "none";
 }
 
@@ -86,7 +83,7 @@ export function MgmtHero({
   title,
   subtitle,
   minHeight = "min-h-[500px] md:min-h-[560px]",
-  fadeVariant = "light",
+  fadeVariant = "none",
 }: MgmtHeroProps) {
   const objectPosClass = OBJECT_POS[imageObjectPosition];
   const fadeClass = fadeVariant !== "none" ? FADE_CLASS[fadeVariant] : null;
