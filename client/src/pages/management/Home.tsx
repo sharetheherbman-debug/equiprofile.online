@@ -175,9 +175,8 @@ export default function Home() {
           {/* Deep layered overlay — school-aligned dark palette */}
           <div className="mgmt-hero-overlay" />
 
-          {/* Subtle decorative corners */}
+          {/* Subtle decorative accent */}
           <div className="absolute top-28 left-8 w-32 h-32 rounded-full bg-[#c5a55a]/5 blur-3xl pointer-events-none" />
-          <div className="absolute top-32 right-12 w-48 h-48 rounded-full bg-[#2e6da4]/8 blur-3xl pointer-events-none" />
 
           <div className="relative z-10 container mx-auto px-4 pt-32 pb-28 text-center">
             {/* Eyebrow pill */}

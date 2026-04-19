@@ -38,11 +38,13 @@ import {
   CalendarPlus,
   ListChecks,
   CheckCircle2,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 
 const CHAT_SESSION_KEY = "equiprofile_ai_chat_session";
+const AI_DISCLAIMER_KEY = "equiprofile_ai_disclaimer_accepted";
 
 /** Build the system prompt with today's date. */
 function buildSystemMessage(): Message {
@@ -121,6 +123,20 @@ export default function AIChat() {
     isUnlocked: boolean;
     expiresAt?: Date;
   }>({ isUnlocked: false });
+
+  // AI disclaimer — shown once per browser; remembered in localStorage
+  const [showDisclaimer, setShowDisclaimer] = useState(() => {
+    try {
+      return !localStorage.getItem(AI_DISCLAIMER_KEY);
+    } catch {
+      return true;
+    }
+  });
+
+  function acceptDisclaimer() {
+    try { localStorage.setItem(AI_DISCLAIMER_KEY, "1"); } catch { /* ignore */ }
+    setShowDisclaimer(false);
+  }
 
   // Quick action dialog state
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
@@ -296,54 +312,62 @@ export default function AIChat() {
     });
   };
 
-  // Initialize Web Speech API
+  // Initialize Web Speech API — support both standard and webkit-prefixed versions
   useEffect(() => {
-    if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
-      const recognition = new (window as any).webkitSpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = "en-US";
+    if (typeof window === "undefined") return;
+    const SpeechRecognitionAPI =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) return;
 
-      recognition.onresult = (event: any) => {
-        let finalTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + " ";
-          }
+    const recognition = new SpeechRecognitionAPI();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event: any) => {
+      let finalTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + " ";
         }
-        if (finalTranscript) {
-          setNoteContent((prev) => prev + finalTranscript);
-        }
-      };
+      }
+      if (finalTranscript) {
+        setNoteContent((prev) => prev + finalTranscript);
+      }
+    };
 
-      recognition.onerror = (event: any) => {
-        console.error("Speech recognition error:", event.error);
-        setIsListening(false);
-        if (event.error !== "no-speech") {
-          toast.error(`Voice recognition error: ${event.error}`);
-        }
-      };
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+      if (event.error === "not-allowed" || event.error === "permission-denied") {
+        toast.error("Microphone access denied. Please allow microphone permission in your browser settings and try again.");
+      } else if (event.error === "network") {
+        toast.error("Network error during voice recognition. Please check your connection.");
+      } else if (event.error !== "no-speech" && event.error !== "aborted") {
+        toast.error(`Voice recognition error: ${event.error}. Please try again.`);
+      }
+    };
 
-      recognition.onend = () => {
-        setIsListening(false);
-        // Mark that voice was used for this note so transcribed flag is set correctly on save
-        setWasVoiceRecorded(true);
-      };
+    recognition.onend = () => {
+      setIsListening(false);
+      // Mark that voice was used for this note so transcribed flag is set correctly on save
+      setWasVoiceRecorded(true);
+    };
 
-      recognitionRef.current = recognition;
-    }
+    recognitionRef.current = recognition;
 
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try { recognitionRef.current.stop(); } catch { /* ignore stop errors on unmount */ }
       }
     };
   }, []);
 
   const toggleListening = () => {
     if (!recognitionRef.current) {
-      toast.error("Voice recognition not supported in your browser");
+      toast.error("Voice recognition is not supported in your browser. Try Chrome or Edge for best results.");
       return;
     }
 
@@ -353,8 +377,17 @@ export default function AIChat() {
     } else {
       // Starting a new recording — reset the voice flag for fresh session
       setWasVoiceRecorded(false);
-      recognitionRef.current.start();
-      setIsListening(true);
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err: any) {
+        if (err?.message?.includes("already started")) {
+          recognitionRef.current.stop();
+          setIsListening(false);
+        } else {
+          toast.error("Could not start voice recording. Please ensure microphone access is allowed.");
+        }
+      }
     }
   };
 
@@ -471,6 +504,43 @@ export default function AIChat() {
 
   return (
     <DashboardLayout>
+      {/* ── AI Disclaimer Modal ─────────────────────────────────────────────── */}
+      <Dialog open={showDisclaimer} onOpenChange={(open) => { if (!open) acceptDisclaimer(); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Info className="w-5 h-5 text-amber-500" />
+              AI Assistant — Important Notice
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+            <p>
+              The EquiProfile AI Assistant provides general information and guidance to
+              help you manage your horses and use the platform effectively.
+            </p>
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 space-y-2">
+              <p className="font-semibold text-amber-800 dark:text-amber-300 text-xs uppercase tracking-wide">Please note:</p>
+              <ul className="space-y-1.5 text-amber-700 dark:text-amber-400 text-xs">
+                <li>• AI responses are <strong>informational only</strong> — not veterinary, medical, or professional advice</li>
+                <li>• Always consult a qualified vet for any health or welfare concerns</li>
+                <li>• AI guidance should never replace professional judgement for safety-critical decisions</li>
+                <li>• The AI can make mistakes — always verify important information</li>
+              </ul>
+            </div>
+            <p className="text-xs">
+              By continuing, you acknowledge that AI-generated content is provided for
+              general guidance purposes only.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={acceptDisclaimer} className="w-full">
+              <CheckCircle2 className="w-4 h-4 mr-2" />
+              I understand — continue to AI Chat
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="container mx-auto p-3 sm:p-6 max-w-6xl">
         <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
           <PageHeader title="AI Assistant & Notes" />

@@ -1533,7 +1533,7 @@ function MarketingContactsSection() {
   );
 }
 
-// ─── Suppression List with Manual Add ────────────────────────────────────────
+// ─── Suppression List with Manual Add/Remove ─────────────────────────────────
 
 function SuppressionListSection() {
   const [suppressEmail, setSuppressEmail] = useState("");
@@ -1547,6 +1547,16 @@ function SuppressionListSection() {
       toast.success(data.message || "Email added to suppression list");
       setSuppressEmail("");
       setSuppressReason("");
+      utils.admin.getUnsubscribes.invalidate();
+      utils.admin.getMarketingContacts.invalidate();
+      utils.admin.getSegmentCounts.invalidate();
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const removeSuppressionMutation = trpc.admin.removeSuppression.useMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Email removed from suppression list");
       utils.admin.getUnsubscribes.invalidate();
       utils.admin.getMarketingContacts.invalidate();
       utils.admin.getSegmentCounts.invalidate();
@@ -1573,7 +1583,7 @@ function SuppressionListSection() {
           Suppression List
         </CardTitle>
         <CardDescription>
-          Unsubscribed emails — these are permanently excluded from all marketing sends
+          Unsubscribed emails — excluded from all marketing sends. Remove an entry to re-enable sending if requested by the user.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -1623,6 +1633,7 @@ function SuppressionListSection() {
                   <TableHead>Reason</TableHead>
                   <TableHead>Source</TableHead>
                   <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1633,6 +1644,21 @@ function SuppressionListSection() {
                     <TableCell className="text-xs">{u.source || "—"}</TableCell>
                     <TableCell className="text-xs">
                       {u.unsubscribedAt ? new Date(u.unsubscribedAt).toLocaleDateString("en-GB") : "—"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-xs h-7 px-2"
+                        disabled={removeSuppressionMutation.isPending}
+                        onClick={() => {
+                          if (confirm(`Remove ${u.email} from suppression list? They will be able to receive marketing emails again.`)) {
+                            removeSuppressionMutation.mutate({ email: u.email });
+                          }
+                        }}
+                      >
+                        Remove
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

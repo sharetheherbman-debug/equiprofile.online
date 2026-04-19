@@ -131,6 +131,14 @@ export default function Reports() {
     onError: (error) => toast.error(error.message),
   });
 
+  const deleteReport = trpc.reports.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Report deleted");
+      refetchReports();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
   const resetGenerateForm = () => {
     setGenerateForm({
       reportType: "",
@@ -657,6 +665,16 @@ export default function Reports() {
                             </Badge>
                           </CardDescription>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => deleteReport.mutate({ id: report.id })}
+                          disabled={deleteReport.isPending}
+                          title="Delete report"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </CardHeader>
                     <CardContent className="flex flex-col flex-1 space-y-3">

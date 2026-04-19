@@ -112,10 +112,6 @@ export function MgmtHero({
       {/* Dark gradient overlay — sourced from .mgmt-hero-overlay in index.css */}
       <div className="mgmt-hero-overlay" />
 
-      {/* Subtle radial accent glows — consistent across inner pages */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(46,109,164,0.10)_0%,_transparent_60%)] pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(26,122,109,0.10)_0%,_transparent_60%)] pointer-events-none" />
-
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 pt-32 pb-20 text-center">
         <motion.div

@@ -224,7 +224,7 @@ export default function Pricing() {
         <MgmtHero
           imageSrc="/images/management/pricing.jpg"
           imageAlt="Premium equestrian training facility"
-          imageObjectPosition="top"
+          imageObjectPosition="center"
           eyebrow="Pricing"
           title="Simple, Transparent Pricing"
           subtitle={`Choose the plan that fits your yard. Every plan includes a ${FREE_TRIAL_DAYS}-day free trial — no credit card required.`}

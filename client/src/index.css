@@ -693,15 +693,17 @@
     );
   }
 
-  /* Hero image overlay — gradient over photo backgrounds */
+  /* Hero image overlay — neutral dark gradient over photo backgrounds.
+     Uses pure-black stops (no brand-blue mix) so the hero photograph
+     shows through naturally without any blue/navy tint. */
   .mgmt-hero-overlay {
     position: absolute;
     inset: 0;
     background-image: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--ep-dark-bg-deep) 45%, transparent),
-      color-mix(in srgb, var(--ep-dark-bg) 32%, transparent),
-      color-mix(in srgb, var(--ep-dark-bg-alt) 55%, transparent)
+      rgba(0, 0, 0, 0.38),
+      rgba(0, 0, 0, 0.18),
+      rgba(0, 0, 0, 0.42)
     );
   }
 }

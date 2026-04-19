@@ -4347,6 +4347,25 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return { success: true, message: "Email added to suppression list" };
       }),
 
+    removeSuppression: adminUnlockedProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        const email = input.email.toLowerCase();
+        await dbConn.delete(emailUnsubscribes)
+          .where(eq(emailUnsubscribes.email, email));
+        // Re-activate marketing contact if it was unsubscribed
+        await dbConn.update(marketingContacts)
+          .set({ status: "active" })
+          .where(and(
+            eq(marketingContacts.email, email),
+            eq(marketingContacts.status, "unsubscribed"),
+          ))
+          .catch(() => {});
+        return { success: true, message: "Email removed from suppression list" };
+      }),
+
     // ──────────────────────────────────────────────────────────
     // Marketing Contacts CRUD
     // ──────────────────────────────────────────────────────────
@@ -5956,6 +5975,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             and(
               eq(reportSchedules.id, input.id),
               eq(reportSchedules.userId, ctx.user!.id),
+            ),
+          );
+
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+        await db
+          .delete(reports)
+          .where(
+            and(
+              eq(reports.id, input.id),
+              eq(reports.userId, ctx.user!.id),
             ),
           );
 
