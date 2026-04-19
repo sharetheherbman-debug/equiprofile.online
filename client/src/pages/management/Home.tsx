@@ -168,9 +168,9 @@ export default function Home() {
         */}
         <section className="relative min-h-[96vh] flex items-center overflow-hidden">
           <img
-            src="/images/management/landing-page.jpg"
+            src="/images/price3.jpg"
             alt="Horses in a field at sunset"
-            className="absolute inset-0 w-full h-full object-cover object-top sm:object-center"
+            className="absolute inset-0 w-full h-full object-cover object-center"
           />
           {/* Deep layered overlay — school-aligned dark palette */}
           <div className="mgmt-hero-overlay" />
@@ -263,8 +263,8 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Bottom fade — minimal dark vignette to transition into stats section */}
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#162d4a] to-transparent" />
+          {/* Bottom fade — dark neutral vignette to transition into stats section */}
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/75 to-transparent" />
         </section>
 
         {/* ====================== PLATFORM STATS ====================== */}
@@ -390,6 +390,52 @@ export default function Home() {
                   </div>
                 </AnimatedSection>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ================== STABLE MANAGEMENT ================== */}
+        <section className="bg-[#f8f9fb] py-20 md:py-28 overflow-hidden border-t border-[#0f1d2e]/[0.04]">
+          <div className="container mx-auto px-4">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
+              <AnimatedSection delay={0.1}>
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
+                  <img
+                    src="/images/management/landing-page.jpg"
+                    alt="Horses in a stable yard"
+                    loading="lazy"
+                    className="w-full h-[380px] md:h-[480px] object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 ring-1 ring-inset ring-[#0f1d2e]/8 rounded-2xl pointer-events-none" />
+                </div>
+              </AnimatedSection>
+
+              <AnimatedSection delay={0.2}>
+                <div className="inline-flex items-center gap-2 bg-[#1a7a6d]/8 rounded-full px-4 py-1.5 text-sm font-bold text-[#1a7a6d] tracking-widest uppercase mb-5">
+                  Stable Management
+                </div>
+                <h2 className="text-3xl md:text-[42px] font-bold font-serif text-[#0f1d2e] leading-tight">
+                  Run your yard with confidence
+                </h2>
+                <div className="mt-3 w-12 h-1 rounded-full bg-gradient-to-r from-[#1a7a6d] to-[#4a9eca]" />
+                <p className="mt-6 text-[#0f1d2e]/58 leading-relaxed text-lg">
+                  From daily feeds to farrier schedules, EquiProfile gives yard managers a single dashboard to oversee every horse, every task and every team member — all in real time.
+                </p>
+                <ul className="mt-8 space-y-3">
+                  {[
+                    "Centralised task management across the whole yard",
+                    "Role-based access for grooms, vets and owners",
+                    "Live notifications for overdue health events",
+                  ].map((point) => (
+                    <li key={point} className="flex items-start gap-3 text-[#0f1d2e]/70">
+                      <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-[#1a7a6d]/15 border border-[#1a7a6d]/40 flex items-center justify-center">
+                        <Check className="w-3 h-3 text-[#1a7a6d]" />
+                      </span>
+                      <span className="text-[15px]">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </AnimatedSection>
             </div>
           </div>
         </section>
