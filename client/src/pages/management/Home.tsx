@@ -293,8 +293,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Gradient fade to next section — progressive dark → mid → light to avoid harsh flash */}
-          <div className="absolute bottom-0 left-0 right-0 h-56 bg-gradient-to-b from-transparent via-[#162d4a]/40 to-[#f8f9fb]" />
         </section>
 
         {/* ==================== FEATURES GRID ==================== */}

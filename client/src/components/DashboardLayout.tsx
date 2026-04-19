@@ -324,9 +324,10 @@ function DashboardLayoutContent({
     { staleTime: 5 * 60 * 1000 },
   );
   const isStablePlan = subscriptionStatus?.planTier === "stable";
-  // Admin users get both dashboards unlocked in the nav — same as paid bothDashboardsUnlocked
   const isAdmin = user?.role === "admin";
-  const bothDashboardsUnlocked = !!subscriptionStatus?.bothDashboardsUnlocked || isAdmin;
+  // Only unlock dual-dashboard switcher for users whose subscription explicitly grants it.
+  // Admin users must use the hidden admin flow — they do not automatically get the switcher.
+  const bothDashboardsUnlocked = !!subscriptionStatus?.bothDashboardsUnlocked;
 
   // Determine which dashboard view is active for users with both dashboards
   const isOnStablePages = location.startsWith("/stable");
@@ -337,6 +338,7 @@ function DashboardLayoutContent({
   const activeNavItems = (() => {
     if (isAdmin && viewMode === "stable") return stableNavItems;
     if (isAdmin && (viewMode === "pro" || viewMode === "student" || viewMode === "teacher")) return menuItems;
+    if (isAdmin) return menuItems;
     return bothDashboardsUnlocked
       ? (isOnStablePages ? stableNavItems : menuItems)
       : (isStablePlan ? stableNavItems : menuItems);
