@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -523,6 +524,9 @@ export default function AIChat() {
               <Info className="w-5 h-5 text-amber-500" />
               AI Assistant — Important Notice
             </DialogTitle>
+            <DialogDescription>
+              Please read the following information before using the AI assistant.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
             <p>
@@ -811,6 +815,9 @@ export default function AIChat() {
               <ListChecks className="h-5 w-5 text-primary" />
               Create Task
             </DialogTitle>
+            <DialogDescription>
+              Add a new task to your to-do list.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
@@ -906,6 +913,9 @@ export default function AIChat() {
               <CalendarPlus className="h-5 w-5 text-primary" />
               Add to Calendar
             </DialogTitle>
+            <DialogDescription>
+              Schedule a new event on your calendar.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">

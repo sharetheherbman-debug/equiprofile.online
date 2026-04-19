@@ -123,6 +123,7 @@ export default function CalendarPage() {
   const [calendarView, setCalendarView] = useState<"month" | "agenda">("month");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [selectedDayEvents, setSelectedDayEvents] = useState<any[]>([]);
@@ -203,7 +204,9 @@ export default function CalendarPage() {
       toast.success("Event deleted");
       setIsDeleteAlertOpen(false);
       setIsEditDialogOpen(false);
+      setIsViewDialogOpen(false);
       setSelectedEvent(null);
+      setViewItem(null);
       refetch();
     },
     onError: (error) => toast.error(error.message),
@@ -469,7 +472,19 @@ export default function CalendarPage() {
     });
     setSelectedEvent(event);
     setIsEditDialogOpen(true);
+    setIsViewDialogOpen(false);
     setIsDayDialogOpen(false);
+  };
+
+  const [viewItem, setViewItem] = useState<any>(null);
+
+  const handleOpenView = (item: any) => {
+    setViewItem(item);
+    if (item.source === "event" && item.isEditable) {
+      setSelectedEvent(item.originalData);
+    }
+    setIsDayDialogOpen(false);
+    setIsViewDialogOpen(true);
   };
 
   const handleUpdateEvent = () => {
@@ -698,8 +713,8 @@ export default function CalendarPage() {
                   return (
                     <div
                       key={item.id}
-                      className={`flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-muted/30 transition-colors ${item.isEditable ? "cursor-pointer active:scale-[0.99]" : ""}`}
-                      onClick={() => item.isEditable && handleOpenEdit(item.originalData)}
+                      className={`flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-muted/30 transition-colors cursor-pointer active:scale-[0.99]`}
+                      onClick={() => handleOpenView(item)}
                     >
                       {/* Date badge */}
                       <div className={`flex flex-col items-center justify-center min-w-[44px] h-[44px] rounded-lg ${isToday ? "bg-primary text-primary-foreground" : "bg-muted/60"}`}>
@@ -773,8 +788,8 @@ export default function CalendarPage() {
               return (
                 <div
                   key={item.id}
-                  className={`flex items-center justify-between p-3 rounded-lg border hover:bg-muted/20 ${item.isEditable ? "cursor-pointer" : ""}`}
-                  onClick={() => item.isEditable && handleOpenEdit(item.originalData)}
+                  className={`flex items-center justify-between p-3 rounded-lg border hover:bg-muted/20 cursor-pointer`}
+                  onClick={() => handleOpenView(item)}
                 >
                   <div className="flex items-center gap-2">
                     <div
@@ -815,6 +830,108 @@ export default function CalendarPage() {
               <Plus className="mr-2 h-4 w-4" />
               Add Event
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Event / Item Dialog */}
+      <Dialog open={isViewDialogOpen} onOpenChange={(open) => { setIsViewDialogOpen(open); if (!open) setViewItem(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{viewItem?.title ?? "Event Details"}</DialogTitle>
+            <DialogDescription>
+              {viewItem?.source === "event"
+                ? EVENT_TYPE_LABELS[viewItem?.type] || viewItem?.type || "Calendar event"
+                : viewItem?.source === "task"
+                ? "Task"
+                : viewItem?.source === "appointment"
+                ? "Appointment"
+                : "Event"}
+            </DialogDescription>
+          </DialogHeader>
+          {viewItem && (
+            <div className="space-y-3 text-sm py-1">
+              <div className="flex items-center gap-2">
+                <span className={`inline-block w-2.5 h-2.5 rounded-full ${viewItem.colorClass}`} />
+                <span className="text-muted-foreground">
+                  {viewItem.date.toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                  {viewItem.source === "event" && !viewItem.originalData?.isAllDay && (
+                    <>
+                      {" · "}
+                      {viewItem.date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+                    </>
+                  )}
+                </span>
+              </div>
+              {viewItem.source === "event" && viewItem.originalData?.location && (
+                <div className="text-muted-foreground">
+                  <span className="font-medium text-foreground">Location:</span>{" "}
+                  {viewItem.originalData.location}
+                </div>
+              )}
+              {viewItem.source === "event" && viewItem.originalData?.horseId && getHorseName(viewItem.originalData.horseId) && (
+                <div className="text-muted-foreground">
+                  <span className="font-medium text-foreground">Horse:</span>{" "}
+                  🐎 {getHorseName(viewItem.originalData.horseId)}
+                </div>
+              )}
+              {viewItem.source === "event" && viewItem.originalData?.description && (
+                <div className="text-muted-foreground whitespace-pre-wrap">
+                  <span className="font-medium text-foreground">Notes:</span>{" "}
+                  {viewItem.originalData.description}
+                </div>
+              )}
+              {viewItem.source === "task" && viewItem.originalData?.description && (
+                <div className="text-muted-foreground whitespace-pre-wrap">
+                  <span className="font-medium text-foreground">Description:</span>{" "}
+                  {viewItem.originalData.description}
+                </div>
+              )}
+              {viewItem.source === "task" && (
+                <div className="text-muted-foreground">
+                  <span className="font-medium text-foreground">Priority:</span>{" "}
+                  <span className="capitalize">{viewItem.originalData?.priority ?? "normal"}</span>
+                </div>
+              )}
+              {viewItem.source === "appointment" && viewItem.originalData?.notes && (
+                <div className="text-muted-foreground whitespace-pre-wrap">
+                  <span className="font-medium text-foreground">Notes:</span>{" "}
+                  {viewItem.originalData.notes}
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={() => setIsViewDialogOpen(false)}
+            >
+              Close
+            </Button>
+            {viewItem?.isEditable && viewItem?.source === "event" && (
+              <div className="flex gap-2">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    setIsViewDialogOpen(false);
+                    setIsDeleteAlertOpen(true);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    if (viewItem?.originalData) handleOpenEdit(viewItem.originalData);
+                  }}
+                >
+                  <Edit2 className="h-4 w-4 mr-1" />
+                  Edit
+                </Button>
+              </div>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -170,7 +170,7 @@ export default function Home() {
           <img
             src="/images/management/landing-page.jpg"
             alt="Horses in a field at sunset"
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            className="absolute inset-0 w-full h-full object-cover object-top sm:object-center"
           />
           {/* Deep layered overlay — school-aligned dark palette */}
           <div className="mgmt-hero-overlay" />
@@ -263,8 +263,8 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Bottom fade — gradual transition to stats section */}
-          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#162d4a] via-[#162d4a]/70 to-transparent" />
+          {/* Bottom fade — minimal dark vignette to transition into stats section */}
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#162d4a] to-transparent" />
         </section>
 
         {/* ====================== PLATFORM STATS ====================== */}

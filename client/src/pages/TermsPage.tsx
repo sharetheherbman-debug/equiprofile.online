@@ -21,7 +21,7 @@ export default function TermsPage() {
               </h2>
               <p className="text-gray-400">
                 Last updated:{" "}
-                <span className="text-white">January 5, 2026</span>
+                <span className="text-white">April 19, 2026</span>
               </p>
             </div>
 
@@ -576,7 +576,175 @@ export default function TermsPage() {
               <Card className="bg-white/5 backdrop-blur-md border-white/10">
                 <CardHeader>
                   <CardTitle className="text-white">
-                    14. Contact Information
+                    14. AI Features — Limitations &amp; Disclaimer
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-slate max-w-none">
+                  <p className="text-gray-300">
+                    EquiProfile includes AI-powered features including, but not limited to, an
+                    in-app AI chat assistant, AI-generated riding recommendations, and
+                    automated suggestions for horse care and management. By using these
+                    features, you acknowledge and agree to the following:
+                  </p>
+                  <p className="font-semibold mt-4">
+                    IMPORTANT — AI DISCLAIMER:
+                  </p>
+                  <ul>
+                    <li className="text-gray-300">
+                      AI-generated content is provided for <strong>general informational
+                      and guidance purposes only</strong> and does not constitute
+                      veterinary, medical, nutritional, professional, or legal advice.
+                    </li>
+                    <li className="text-gray-300">
+                      AI responses may contain errors, inaccuracies, or outdated
+                      information. You must independently verify any AI-generated
+                      information before acting upon it.
+                    </li>
+                    <li className="text-gray-300">
+                      Always consult a qualified veterinary surgeon or relevant
+                      professional for decisions concerning the health, welfare, or
+                      treatment of your horse.
+                    </li>
+                    <li className="text-gray-300">
+                      EquiProfile accepts no liability for any loss, injury, or damage
+                      (to horses, riders, or third parties) arising from decisions made
+                      in reliance on AI-generated content within the Service.
+                    </li>
+                    <li className="text-gray-300">
+                      AI features are not a substitute for professional judgement,
+                      hands-on assessment, or expert supervision.
+                    </li>
+                  </ul>
+                  <p className="text-gray-300">
+                    Nothing in this clause limits our liability for death or personal
+                    injury caused by our negligence, or for any other liability that
+                    cannot be excluded or limited under English law.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    15. Record Accuracy &amp; Data Limitations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-slate max-w-none">
+                  <p className="text-gray-300">
+                    EquiProfile provides tools for recording, storing, and organising
+                    horse management data, including health records, training logs,
+                    feeding plans, and related documents. You acknowledge that:
+                  </p>
+                  <ul>
+                    <li className="text-gray-300">
+                      The accuracy, completeness, and reliability of all records
+                      stored on the Service is entirely your responsibility. EquiProfile
+                      does not verify, validate, or audit any information you enter.
+                    </li>
+                    <li className="text-gray-300">
+                      Records stored in EquiProfile are <strong>not a substitute for
+                      official veterinary records, breed registration documents, or
+                      legally required documentation</strong>. Always maintain
+                      originals through appropriate official channels.
+                    </li>
+                    <li className="text-gray-300">
+                      EquiProfile accepts no liability for decisions made on the basis
+                      of inaccurate, incomplete, or out-of-date records stored within
+                      the Service.
+                    </li>
+                    <li className="text-gray-300">
+                      You are advised to maintain independent backups of any
+                      important records and documents.
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    16. File Uploads &amp; User Content Responsibility
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-slate max-w-none">
+                  <p className="text-gray-300">
+                    EquiProfile allows users to upload files, images, and documents
+                    to the Service. By uploading content, you confirm that:
+                  </p>
+                  <ul>
+                    <li className="text-gray-300">
+                      You own or have the necessary rights, licences, and permissions
+                      to upload and store the content.
+                    </li>
+                    <li className="text-gray-300">
+                      The content does not infringe the intellectual property rights,
+                      privacy rights, or other rights of any third party.
+                    </li>
+                    <li className="text-gray-300">
+                      The content does not contain malicious code, viruses, or
+                      unlawful material.
+                    </li>
+                    <li className="text-gray-300">
+                      You are solely responsible for the content you upload. EquiProfile
+                      is not responsible for reviewing, moderating, or verifying the
+                      accuracy or legality of uploaded content.
+                    </li>
+                    <li className="text-gray-300">
+                      Uploads are subject to file size and type restrictions as
+                      displayed in the Service. Maximum file size is currently 10 MB
+                      per file.
+                    </li>
+                  </ul>
+                  <p className="text-gray-300">
+                    We reserve the right to remove any uploaded content that violates
+                    these Terms or applicable law, without prior notice.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    17. Communication Templates &amp; Platform Role
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="prose prose-slate max-w-none">
+                  <p className="text-gray-300">
+                    EquiProfile provides pre-designed communication and training plan
+                    templates as a convenience tool to assist users in managing and
+                    communicating equestrian activities. You acknowledge that:
+                  </p>
+                  <ul>
+                    <li className="text-gray-300">
+                      Templates are provided as <strong>starting points and examples
+                      only</strong>. They are not tailored to your specific horses,
+                      circumstances, or professional requirements.
+                    </li>
+                    <li className="text-gray-300">
+                      Training plan templates do not constitute professional training
+                      advice. Always consult a qualified equestrian trainer or coach
+                      before applying any training programme.
+                    </li>
+                    <li className="text-gray-300">
+                      EquiProfile acts solely as a platform facilitating organisation
+                      and communication. We are not a party to any arrangement,
+                      agreement, or transaction between users or between users and
+                      third parties (such as vets, farriers, or trainers).
+                    </li>
+                    <li className="text-gray-300">
+                      Any communications sent using EquiProfile tools are your sole
+                      responsibility. You must ensure all communications comply with
+                      applicable laws, including UK data protection and marketing
+                      regulations.
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    18. Contact Information
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="prose prose-slate max-w-none">

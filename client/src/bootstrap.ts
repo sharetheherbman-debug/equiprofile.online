@@ -30,7 +30,13 @@ export function registerServiceWorker() {
 
           // Check for updates periodically - keep reference so we can clear on unload
           const updateInterval = setInterval(() => {
-            registration.update();
+            registration.update().catch((err: unknown) => {
+              // InvalidStateError is expected when the SW registration is
+              // superseded or unregistered — suppress it silently.
+              if ((err as DOMException)?.name !== "InvalidStateError") {
+                console.warn("[SW] Update check failed:", err);
+              }
+            });
           }, 60000); // Check every minute
 
           // Clean up interval when the page is unloaded to prevent leaks

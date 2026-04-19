@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
@@ -601,6 +602,9 @@ export function MedicalPassport({
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-center">QR Code — {horse.name}</DialogTitle>
+            <DialogDescription className="text-center">
+              Scan to view {horse.name}'s equine passport on any device.
+            </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center gap-4 py-4">
             {qrCodeUrl && (

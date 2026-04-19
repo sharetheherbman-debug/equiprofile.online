@@ -65,6 +65,8 @@ import {
   Sparkles,
   ChevronDown,
   ChevronRight,
+  Search,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
@@ -1416,6 +1418,8 @@ function TrainingTemplatesContent() {
   );
   // Active category filter for quick jump (null = show all)
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  // Template search query
+  const [templateSearch, setTemplateSearch] = useState("");
 
   const toggleCategory = (key: string) => {
     setExpandedCategories((prev) => {
@@ -1799,18 +1803,40 @@ function TrainingTemplatesContent() {
           <span className="text-xs text-gray-500 dark:text-gray-400 ml-1 hidden sm:inline">— Professional training programs ready to use</span>
         </div>
 
-        {/* Category filter tabs */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <button
-            onClick={() => setActiveCategory(null)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
-              activeCategory === null
-                ? "bg-[#2e6da4] text-white border-[#2e6da4] shadow-sm"
-                : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#2e6da4]/50 hover:text-[#2e6da4]"
-            }`}
-          >
-            All
-          </button>
+        {/* Search + category filter row */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          {/* Search input */}
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              value={templateSearch}
+              onChange={(e) => setTemplateSearch(e.target.value)}
+              placeholder="Search templates…"
+              className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2435] text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2e6da4]/30 focus:border-[#2e6da4]"
+            />
+            {templateSearch && (
+              <button
+                onClick={() => setTemplateSearch("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+
+          {/* Category filter tabs */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <button
+              onClick={() => setActiveCategory(null)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                activeCategory === null
+                  ? "bg-[#2e6da4] text-white border-[#2e6da4] shadow-sm"
+                  : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#2e6da4]/50 hover:text-[#2e6da4]"
+              }`}
+            >
+              All
+            </button>
           {[
             { key: "foundation", label: "Foundation" },
             { key: "fitness", label: "Fitness" },
@@ -1840,10 +1866,80 @@ function TrainingTemplatesContent() {
               </button>
             );
           })}
+          </div>
         </div>
 
-        {[
-          { key: "foundation", label: "Foundation Training", desc: "Core flatwork, schooling, and groundwork sessions" },
+        {/* Search results — flat list when searching */}
+        {templateSearch.trim() ? (
+          (() => {
+            const q = templateSearch.toLowerCase();
+            const matched = PREDESIGNED_TEMPLATES.filter(
+              (t) =>
+                t.name.toLowerCase().includes(q) ||
+                t.description.toLowerCase().includes(q) ||
+                t.discipline.toLowerCase().includes(q) ||
+                t.level.toLowerCase().includes(q) ||
+                (t.goals || "").toLowerCase().includes(q),
+            );
+            if (matched.length === 0) {
+              return (
+                <div className="text-center py-8 text-sm text-gray-500 dark:text-gray-400">
+                  No templates found for "{templateSearch}".{" "}
+                  <button onClick={() => setTemplateSearch("")} className="text-[#2e6da4] underline underline-offset-2">Clear search</button>
+                </div>
+              );
+            }
+            return (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {matched.map((predesigned) => (
+                  <Card
+                    key={predesigned.id}
+                    className="bg-white dark:bg-[#1a2435] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-[#2e6da4]" />
+                        {predesigned.name}
+                      </CardTitle>
+                      <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        {predesigned.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap gap-1.5">
+                          {predesigned.discipline && (
+                            <Badge variant="outline" className={`text-xs ${getDisciplineBadgeClass(predesigned.discipline)}`}>
+                              {predesigned.discipline}
+                            </Badge>
+                          )}
+                          {predesigned.level && (
+                            <Badge variant="outline" className="text-xs">
+                              {predesigned.level}
+                            </Badge>
+                          )}
+                          <Badge variant="outline" className="text-xs">
+                            {predesigned.duration} wks
+                          </Badge>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="w-full bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg text-xs"
+                          onClick={() => handleAddPredesignedTemplate(predesigned)}
+                          disabled={usePredesignedMutation.isPending}
+                        >
+                          <Play className="w-3 h-3 mr-1.5" />
+                          Use Template
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            );
+          })()
+        ) : (
+          [{ key: "foundation", label: "Foundation Training", desc: "Core flatwork, schooling, and groundwork sessions" },
           { key: "fitness", label: "Fitness & Conditioning", desc: "Build strength, stamina, and athletic performance" },
           { key: "rehabilitation", label: "Rehabilitation & Confidence", desc: "Recovery programmes and confidence rebuilding" },
           { key: "development", label: "Young Horse Development", desc: "Structured programmes for young or green horses" },
@@ -1934,9 +2030,9 @@ function TrainingTemplatesContent() {
               </CollapsibleContent>
             </Collapsible>
           );
-        })}
+        })
+        )}
       </div>
-
       {/* User Templates Section */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-4">
