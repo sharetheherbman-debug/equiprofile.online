@@ -117,7 +117,7 @@ export default function About() {
       <div className="min-h-screen">
         {/* ======================== HERO ======================== */}
         <MgmtHero
-          imageSrc="/images/aboutus.jpg"
+          imageSrc="/images/management/about.jpg"
           imageAlt="EquiProfile team and horses"
           imageObjectPosition="top"
           eyebrow="Our Story"

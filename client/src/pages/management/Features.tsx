@@ -146,7 +146,7 @@ export default function Features() {
       <div className="min-h-screen">
         {/* ======================== HERO ======================== */}
         <MgmtHero
-          imageSrc="/images/hero/image2.jpg"
+          imageSrc="/images/management/features.jpg"
           imageAlt="Training session with horse"
           eyebrow="Features"
           title={

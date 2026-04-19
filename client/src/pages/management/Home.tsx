@@ -168,7 +168,7 @@ export default function Home() {
         */}
         <section className="relative min-h-[96vh] flex items-center overflow-hidden">
           <img
-            src="/images/hero/image1.jpg"
+            src="/images/management/landing-page.jpg"
             alt="Horses in a field at sunset"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />

@@ -222,7 +222,7 @@ export default function Pricing() {
       <div className="min-h-screen">
         {/* ======================== HERO ======================== */}
         <MgmtHero
-          imageSrc="/images/price3.jpg"
+          imageSrc="/images/management/pricing.jpg"
           imageAlt="Premium equestrian training facility"
           imageObjectPosition="top"
           eyebrow="Pricing"
