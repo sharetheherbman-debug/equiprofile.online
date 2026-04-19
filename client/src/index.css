@@ -699,9 +699,9 @@
     inset: 0;
     background-image: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--ep-dark-bg-deep) 55%, transparent),
-      color-mix(in srgb, var(--ep-dark-bg) 45%, transparent),
-      color-mix(in srgb, var(--ep-dark-bg-alt) 65%, transparent)
+      color-mix(in srgb, var(--ep-dark-bg-deep) 45%, transparent),
+      color-mix(in srgb, var(--ep-dark-bg) 32%, transparent),
+      color-mix(in srgb, var(--ep-dark-bg-alt) 55%, transparent)
     );
   }
 }

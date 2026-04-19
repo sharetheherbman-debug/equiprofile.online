@@ -174,7 +174,6 @@ export default function Home() {
           />
           {/* Deep layered overlay — school-aligned dark palette */}
           <div className="mgmt-hero-overlay" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,_rgba(46,109,164,0.12)_0%,_transparent_70%)]" />
 
           {/* Subtle decorative corners */}
           <div className="absolute top-28 left-8 w-32 h-32 rounded-full bg-[#c5a55a]/5 blur-3xl pointer-events-none" />
