@@ -230,7 +230,7 @@ function CampaignAutopilotPanel() {
                 <Bot className="w-3.5 h-3.5 text-[#2e6da4] mt-0.5 shrink-0" />
                 <p className="text-xs text-muted-foreground">
                   Last run: enrolled <strong>{lastRun.management}</strong> management +{" "}
-                  <strong>{lastRun.academy}</strong> academy (total{" "}
+                  <strong>{lastRun.academy}</strong> academy (total:{" "}
                   <strong>{lastRun.total}</strong>).
                 </p>
               </div>
