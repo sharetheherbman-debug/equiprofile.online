@@ -252,6 +252,9 @@ function DocumentsContent() {
     reader.onload = () => {
       try {
         const result = reader.result as string;
+        // Use indexOf/slice instead of split(",")[1] to handle files whose
+        // content might contain a comma, ensuring only the data URL prefix
+        // (e.g. "data:image/jpeg;base64,") is stripped.
         const commaIdx = result.indexOf(",");
         const base64 = commaIdx >= 0 ? result.slice(commaIdx + 1) : result;
         if (!base64) {

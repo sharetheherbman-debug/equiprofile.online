@@ -755,7 +755,10 @@ function TasksContent() {
                             {getHorseName(task.horseId)}
                           </p>
                           {task.description && (
-                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                            <p
+                              className="text-sm text-muted-foreground mt-1 line-clamp-2"
+                              title={task.description}
+                            >
                               {task.description}
                             </p>
                           )}
@@ -765,13 +768,13 @@ function TasksContent() {
                             </p>
                           )}
                         </div>
-                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-2">
                           {getPriorityBadge(task.priority)}
                           <Button
                             size="sm"
                             variant="ghost"
                             title="View"
-                            onClick={() => openView(task)}
+                            onClick={(e) => { e.stopPropagation(); openView(task); }}
                           >
                             <Eye className="w-3 h-3" />
                           </Button>
@@ -779,16 +782,17 @@ function TasksContent() {
                             size="sm"
                             variant="ghost"
                             title="Edit"
-                            onClick={() => openEdit(task)}
+                            onClick={(e) => { e.stopPropagation(); openEdit(task); }}
                           >
                             <Edit className="w-3 h-3" />
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() =>
-                              completeMutation.mutate({ id: task.id })
-                            }
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              completeMutation.mutate({ id: task.id });
+                            }}
                           >
                             <CheckCircle className="w-3 h-3 mr-1" />
                             Complete
@@ -796,9 +800,10 @@ function TasksContent() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() =>
-                              deleteMutation.mutate({ id: task.id })
-                            }
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteMutation.mutate({ id: task.id });
+                            }}
                           >
                             <Trash2 className="w-3 h-3" />
                           </Button>
