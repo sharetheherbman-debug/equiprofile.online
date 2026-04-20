@@ -169,7 +169,7 @@ ${headerBlock("linear-gradient(135deg, #0f2e6b 0%, #2e6da4 100%)")}
 
 function template2_trainingPerformance(): string {
   return wrapEmail(`
-${headerBlock("#1a1a2e")}
+${headerBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
     Level Up Your Training, {{firstName}}
@@ -182,28 +182,28 @@ ${headerBlock("#1a1a2e")}
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
     <tr>
       <td style="width:50%;padding:8px;vertical-align:top;">
-        <div style="background:#faf5ff;border-radius:10px;padding:20px;border-top:3px solid #7c3aed;">
-          <h3 style="margin:0 0 6px;font-size:14px;color:#7c3aed;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Session Logs</h3>
+        <div style="background:#eaf1fb;border-radius:10px;padding:20px;border-top:3px solid #2e6da4;">
+          <h3 style="margin:0 0 6px;font-size:14px;color:#2e6da4;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Session Logs</h3>
           <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Duration, type, intensity, and trainer notes — all in one place.</p>
         </div>
       </td>
       <td style="width:50%;padding:8px;vertical-align:top;">
-        <div style="background:#f0fdf4;border-radius:10px;padding:20px;border-top:3px solid #16a34a;">
-          <h3 style="margin:0 0 6px;font-size:14px;color:#16a34a;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Performance</h3>
+        <div style="background:#fdf8ee;border-radius:10px;padding:20px;border-top:3px solid #c5a55a;">
+          <h3 style="margin:0 0 6px;font-size:14px;color:#9a7d3a;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Performance</h3>
           <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Rate sessions and track measurable improvement over weeks and months.</p>
         </div>
       </td>
     </tr>
     <tr>
       <td style="width:50%;padding:8px;vertical-align:top;">
-        <div style="background:#fff7ed;border-radius:10px;padding:20px;border-top:3px solid #ea580c;">
-          <h3 style="margin:0 0 6px;font-size:14px;color:#ea580c;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Scheduling</h3>
+        <div style="background:#e8f4f0;border-radius:10px;padding:20px;border-top:3px solid #1a7a6d;">
+          <h3 style="margin:0 0 6px;font-size:14px;color:#1a7a6d;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Scheduling</h3>
           <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Plan sessions with integrated calendar and automated reminders.</p>
         </div>
       </td>
       <td style="width:50%;padding:8px;vertical-align:top;">
-        <div style="background:#eff6ff;border-radius:10px;padding:20px;border-top:3px solid #2563eb;">
-          <h3 style="margin:0 0 6px;font-size:14px;color:#2563eb;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">AI Insights</h3>
+        <div style="background:#eaf1fb;border-radius:10px;padding:20px;border-top:3px solid #163563;">
+          <h3 style="margin:0 0 6px;font-size:14px;color:#163563;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">AI Insights</h3>
           <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">AI-powered training recommendations tailored to your horse.</p>
         </div>
       </td>
@@ -212,14 +212,14 @@ ${headerBlock("#1a1a2e")}
 </td></tr>
 <tr><td style="padding:24px 40px 12px;text-align:center;">
   <p style="font-size:15px;color:#64748b;line-height:1.6;margin:0 0 8px;">
-    Try it free for <strong style="color:#7c3aed;">7 days</strong> — no credit card required.
+    Try it free for <strong style="color:#2e6da4;">7 days</strong> — no credit card required.
   </p>
-  ${ctaButton("Start Training Smarter", "{{signupLink}}", "#7c3aed")}
+  ${ctaButton("Start Training Smarter", "{{signupLink}}", "#2e6da4")}
 </td></tr>
 <tr><td style="padding:0 40px 32px;text-align:center;">
   <p style="margin:0;font-size:13px;color:#94a3b8;">Join hundreds of equestrians managing their horses professionally.</p>
 </td></tr>
-`, "#f5f3ff");
+`);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -271,10 +271,10 @@ ${headerBlock("linear-gradient(135deg, #065f46 0%, #10b981 100%)")}
 
 function template4_aiAndWeather(): string {
   return wrapEmail(`
-${headerBlock("linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)")}
+${headerBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    Meet Your AI Horse Assistant, {{firstName}} 🤖
+    Your AI Horse Assistant Is Here, {{firstName}}
   </h1>
   <p style="margin:0 0 20px;font-size:16px;color:#64748b;line-height:1.6;">
     EquiProfile includes an intelligent AI assistant and real-time weather analysis — built right into your dashboard.
@@ -283,16 +283,16 @@ ${headerBlock("linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)")}
 <tr><td style="padding:0 40px;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
     <tr><td style="padding-bottom:16px;">
-      <div style="background:linear-gradient(135deg,#eef2ff,#faf5ff);border-radius:12px;padding:24px;border:1px solid #e0e7ff;">
-        <h3 style="margin:0 0 8px;font-size:16px;color:#4f46e5;">🧠 AI Chat Assistant</h3>
+      <div style="background:linear-gradient(135deg,#eaf1fb,#e8f4f0);border-radius:12px;padding:24px;border:1px solid #bcd5ee;">
+        <h3 style="margin:0 0 8px;font-size:16px;color:#2e6da4;">🧠 AI Chat Assistant</h3>
         <p style="margin:0;font-size:14px;color:#475569;line-height:1.6;">
           Ask questions about horse care, get training suggestions, understand health records, and manage your stable — all through natural conversation.
         </p>
       </div>
     </td></tr>
     <tr><td>
-      <div style="background:linear-gradient(135deg,#ecfeff,#f0f9ff);border-radius:12px;padding:24px;border:1px solid #cffafe;">
-        <h3 style="margin:0 0 8px;font-size:16px;color:#0891b2;">🌤️ Smart Weather Analysis</h3>
+      <div style="background:linear-gradient(135deg,#fdf8ee,#eaf1fb);border-radius:12px;padding:24px;border:1px solid #e2d5a8;">
+        <h3 style="margin:0 0 8px;font-size:16px;color:#9a7d3a;">🌤️ Smart Weather Analysis</h3>
         <p style="margin:0;font-size:14px;color:#475569;line-height:1.6;">
           Get AI-powered riding suitability forecasts based on your stable's location. Know exactly when conditions are ideal for training, hacking, or turnout.
         </p>
@@ -302,14 +302,14 @@ ${headerBlock("linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)")}
 </td></tr>
 <tr><td style="padding:24px 40px 12px;text-align:center;">
   <p style="font-size:15px;color:#64748b;line-height:1.6;margin:0 0 8px;">
-    Experience it free for <strong style="color:#4f46e5;">7 days</strong> — no credit card needed.
+    Experience it free for <strong style="color:#2e6da4;">7 days</strong> — no credit card needed.
   </p>
-  ${ctaButton("Try AI Features Free →", "{{signupLink}}", "#4f46e5")}
+  ${ctaButton("Try AI Features Free →", "{{signupLink}}", "#2e6da4")}
 </td></tr>
 <tr><td style="padding:0 40px 32px;text-align:center;">
   <p style="margin:0;font-size:13px;color:#94a3b8;">Powered by advanced AI. Always learning. Always helpful.</p>
 </td></tr>
-`, "#eef2ff");
+`);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

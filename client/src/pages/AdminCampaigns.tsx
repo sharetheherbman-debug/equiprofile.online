@@ -1862,9 +1862,20 @@ function FileImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange:
       return;
     }
 
+    // Client-side deduplication — dedupe by email (case-insensitive) before sending
+    const seenEmails = new Set<string>();
+    let clientDuplicates = 0;
+
     for (const row of parsed.allRows) {
       const email = row[reverseMap.email]?.trim();
       if (!email || !email.includes("@")) continue;
+
+      const emailLower = email.toLowerCase();
+      if (seenEmails.has(emailLower)) {
+        clientDuplicates++;
+        continue;
+      }
+      seenEmails.add(emailLower);
 
       contacts.push({
         email,
@@ -1881,6 +1892,10 @@ function FileImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange:
     if (contacts.length === 0) {
       toast.error("No valid contacts found with the current mapping");
       return;
+    }
+
+    if (clientDuplicates > 0) {
+      toast.info(`Removed ${clientDuplicates} duplicate email${clientDuplicates > 1 ? "s" : ""} from the file before importing.`);
     }
 
     importMutation.mutate({ contacts, source: "file_import" });

@@ -2194,23 +2194,23 @@ function AdminContent() {
           <Card className="bg-white dark:bg-card border border-gray-200 dark:border-gray-700 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Eye className="w-4 h-4 text-[#2e6da4]" /> Quick Portal Access
+                <Eye className="w-4 h-4 text-[#2e6da4]" /> Dashboard Portal Access
               </CardTitle>
               <CardDescription>
-                Switch to any dashboard to preview the user experience.
+                Select a dashboard to access it with full functionality.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: "Pro Dashboard", icon: "🐴", path: "/dashboard", btnColor: "bg-[#2e6da4] hover:bg-[#245a8a]" },
-                  { label: "Stable Dashboard", icon: "🏠", path: "/stable-dashboard", btnColor: "bg-[#2d6a4f] hover:bg-[#245a42]" },
+                  { label: "Pro Dashboard", icon: "🐴", path: "/dashboard", mode: "pro" as const, btnColor: "bg-[#2e6da4] hover:bg-[#245a8a]" },
+                  { label: "Stable Dashboard", icon: "🏠", path: "/stable-dashboard", mode: "stable" as const, btnColor: "bg-[#2d6a4f] hover:bg-[#245a42]" },
                 ].map((portal) => (
                   <Button
                     key={portal.label}
                     size="sm"
                     className={`w-full text-white text-xs h-auto py-3 rounded-lg shadow-sm ${portal.btnColor}`}
-                    onClick={() => navigate(portal.path)}
+                    onClick={() => { setViewMode(portal.mode); navigate(portal.path); }}
                   >
                     <span className="mr-2">{portal.icon}</span> {portal.label}
                   </Button>

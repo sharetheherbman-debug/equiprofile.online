@@ -16,6 +16,7 @@ import {
   Wheat,
   Users,
   Trophy,
+  Eye,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
@@ -102,6 +103,9 @@ export default function Reports() {
   const { data: horses = [] } = trpc.horses.list.useQuery();
   const { data: scheduledReports = [], refetch: refetchSchedules } =
     trpc.reports.listSchedules.useQuery();
+
+  // View report state — declared after generatedReports so the type is available
+  const [viewingReport, setViewingReport] = useState<(typeof generatedReports)[0] | null>(null);
 
   // Mutations
   const generateReport = trpc.reports.generate.useMutation({
@@ -697,14 +701,23 @@ export default function Reports() {
                           Horse: {getHorseName(report.horseId)}
                         </div>
                       )}
-                      <div className="mt-auto pt-2">
+                      <div className="mt-auto pt-2 flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => setViewingReport(report)}
+                        >
+                          <Eye className="mr-2 h-3 w-3" />
+                          View
+                        </Button>
                         <Button
                           size="sm"
-                          className="w-full"
+                          className="flex-1"
                           onClick={() => handleDownloadReport(report)}
                         >
                           <Download className="mr-2 h-3 w-3" />
-                          Export PDF
+                          PDF
                         </Button>
                       </div>
                     </CardContent>
@@ -1061,6 +1074,62 @@ export default function Reports() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* View Report Dialog */}
+      <Dialog open={!!viewingReport} onOpenChange={(open) => { if (!open) setViewingReport(null); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              {viewingReport?.title}
+            </DialogTitle>
+            <DialogDescription>
+              {viewingReport && getReportTypeName(viewingReport.reportType)} &nbsp;·&nbsp;
+              {viewingReport && format(new Date(viewingReport.generatedAt), "PPp")}
+            </DialogDescription>
+          </DialogHeader>
+          {viewingReport && (() => {
+            let data: Record<string, unknown> = {};
+            try { data = JSON.parse(viewingReport.reportData); } catch { /* ignore */ }
+            const rows: Array<{ label: string; value: string | number }> = [];
+            const flatten = (obj: Record<string, unknown>, prefix = "") => {
+              for (const [k, v] of Object.entries(obj)) {
+                const label = (prefix ? `${prefix} › ` : "") + k.replace(/_/g, " ").replace(/([A-Z])/g, " $1").trim();
+                if (v !== null && typeof v === "object" && !Array.isArray(v)) {
+                  flatten(v as Record<string, unknown>, label);
+                } else if (!Array.isArray(v)) {
+                  rows.push({ label, value: String(v ?? "—") });
+                }
+              }
+            };
+            flatten(data);
+            return (
+              <div className="max-h-[55vh] overflow-y-auto">
+                <div className="space-y-1 py-2">
+                  {rows.slice(0, 60).map((row, i) => (
+                    <div key={i} className="flex items-start justify-between gap-4 py-1.5 border-b border-border/40 last:border-0">
+                      <span className="text-sm text-muted-foreground capitalize shrink-0 max-w-[55%]">{row.label}</span>
+                      <span className="text-sm font-medium text-right break-words">{row.value}</span>
+                    </div>
+                  ))}
+                  {rows.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-4">No data to display.</p>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewingReport(null)}>Close</Button>
+            {viewingReport && (
+              <Button onClick={() => handleDownloadReport(viewingReport)}>
+                <Download className="mr-2 h-3 w-3" /> Export PDF
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </DashboardLayout>
   );
 }

@@ -339,8 +339,8 @@ export default function AnalyticsPage() {
                     <ResponsiveContainer width="100%" height={280}>
                       <BarChart data={trainingChartData} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                        <XAxis dataKey="month" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 12 }} axisLine={false} tickLine={false} unit="h" />
+                        <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} unit="h" />
                         <Tooltip content={<CustomTooltip />} />
                         <Bar dataKey="hours" fill={CHART_COLORS.primary} name="Training Hours" radius={[4, 4, 0, 0]} maxBarSize={48} />
                         <Bar dataKey="sessions" fill={CHART_COLORS.secondary} name="Sessions" radius={[4, 4, 0, 0]} maxBarSize={48} />
@@ -362,8 +362,8 @@ export default function AnalyticsPage() {
                     <ResponsiveContainer width="100%" height={280}>
                       <BarChart data={sessionTypeChartData} layout="vertical" margin={{ top: 5, right: 10, bottom: 5, left: 60 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                        <XAxis type="number" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                        <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} width={55} />
+                        <XAxis type="number" tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} />
+                        <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} width={55} />
                         <Tooltip content={<CustomTooltip />} />
                         <Bar dataKey="count" name="Sessions" radius={[0, 4, 4, 0]} maxBarSize={24}>
                           {sessionTypeChartData.map((_: any, index: number) => (
@@ -549,8 +549,8 @@ export default function AnalyticsPage() {
                     <ResponsiveContainer width="100%" height={260}>
                       <LineChart data={healthCostData} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                        <XAxis dataKey="month" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                        <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} />
                         <Tooltip content={<CustomTooltip />} formatter={(v: any) => `£${v}`} />
                         <Legend iconType="circle" iconSize={10} />
                         <Line
@@ -627,8 +627,8 @@ export default function AnalyticsPage() {
                   <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={horseComparisonData} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                      <XAxis dataKey="name" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} axisLine={false} tickLine={false} />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend iconType="circle" iconSize={10} />
                       <Bar dataKey="training" fill={CHART_COLORS.primary} name="Training Sessions" radius={[4, 4, 0, 0]} maxBarSize={40} />

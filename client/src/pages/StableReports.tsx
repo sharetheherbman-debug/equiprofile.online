@@ -607,9 +607,10 @@ function StableReportsContent() {
                   </div>
                   <div className="p-3 rounded-lg bg-muted/40">
                     <p className="text-2xl font-bold">
-                      {trainingStats.avgPerformance
-                        ? trainingStats.avgPerformance.toFixed(1)
-                        : "—"}
+                      {(() => {
+                        const v = Number(trainingStats.avgPerformance);
+                        return !isNaN(v) && v > 0 ? v.toFixed(1) : "—";
+                      })()}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">Avg performance</p>
                   </div>
