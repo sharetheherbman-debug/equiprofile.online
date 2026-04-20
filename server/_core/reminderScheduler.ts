@@ -7,7 +7,14 @@ import {
   userHasWhatsAppEnabled,
 } from "./whatsapp";
 import { sendEmail } from "./email";
-import { getTodayDateString } from "./campaignService";
+import {
+  getTodayDateString,
+  isWeekday,
+  NEW_OUTREACH_DAILY_CAP,
+  TOTAL_MAILBOX_DAILY_CAP,
+  NEW_OUTREACH_PER_WINDOW,
+  SEND_WINDOWS,
+} from "./campaignService";
 
 /**
  * Reminder Scheduler
@@ -153,9 +160,10 @@ export function startReminderScheduler() {
   });
 
   // ── Campaign Follow-Up Sequence Scheduler ───────────────────
-  // Runs daily at 10:00 AM UTC — checks for pending sequence steps
+  // Runs daily at 10:00 AM UTC on weekdays — checks for pending sequence steps
   // that have reached their scheduled date and sends them automatically.
-  cron.schedule("0 10 * * *", async () => {
+  // Respects global TOTAL_MAILBOX_DAILY_CAP so follow-ups never exceed the cap.
+  cron.schedule("0 10 * * 1-5", async () => {
     console.log("[CampaignFollowUp] Checking for due follow-up steps...");
 
     try {
@@ -165,7 +173,13 @@ export function startReminderScheduler() {
         return;
       }
 
-      const { eq, and, lte, or } = await import("drizzle-orm");
+      // Extra weekday guard in case cron expression is ever relaxed
+      if (!isWeekday()) {
+        console.log("[CampaignFollowUp] Weekend — skipping");
+        return;
+      }
+
+      const { eq, and, lte, or, sql } = await import("drizzle-orm");
       const {
         campaignSequences,
         campaignSequenceRecipients,
@@ -173,9 +187,34 @@ export function startReminderScheduler() {
         emailUnsubscribes,
         marketingContacts,
         emailCampaigns,
+        campaignSendLog,
       } = await import("../../drizzle/schema");
 
       const today = getTodayDateString();
+
+      // ── Check global daily caps before doing any work ──
+      const [outreachResult] = await dbConn
+        .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+        .from(campaignSendLog)
+        .where(eq(campaignSendLog.sendDate, today));
+      const outreachSentToday = Number(outreachResult?.total ?? 0);
+
+      const [followupCountResult] = await dbConn
+        .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
+        .from(campaignSequenceRecipients)
+        .where(and(
+          eq(campaignSequenceRecipients.status, "sent"),
+          sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+        ));
+      const followupSentToday = Number(followupCountResult?.total ?? 0);
+      let globalTotalSentToday = outreachSentToday + followupSentToday;
+
+      if (globalTotalSentToday >= TOTAL_MAILBOX_DAILY_CAP) {
+        console.log(
+          `[CampaignFollowUp] Total mailbox cap (${TOTAL_MAILBOX_DAILY_CAP}) already reached — skipping all follow-ups`,
+        );
+        return;
+      }
 
       // Find pending sequence steps whose scheduledDate is today or earlier
       const dueSteps = await dbConn
@@ -215,6 +254,12 @@ export function startReminderScheduler() {
       const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
 
       for (const step of dueSteps) {
+        // Respect global cap: stop processing further steps if cap is hit
+        if (globalTotalSentToday >= TOTAL_MAILBOX_DAILY_CAP) {
+          console.log(`[CampaignFollowUp] Total mailbox cap reached mid-run — deferring remaining steps`);
+          break;
+        }
+
         try {
           // Check that parent campaign exists and is not paused/draft-cancelled
           const [campaign] = await dbConn
@@ -227,6 +272,13 @@ export function startReminderScheduler() {
             );
             continue;
           }
+
+          // Deduplicate: skip contacts already processed for this step
+          const alreadyProcessed = await dbConn
+            .select({ email: campaignSequenceRecipients.email })
+            .from(campaignSequenceRecipients)
+            .where(eq(campaignSequenceRecipients.sequenceId, step.id));
+          const alreadyProcessedSet = new Set(alreadyProcessed.map(r => r.email.toLowerCase()));
 
           // Get original recipients who were successfully sent the initial campaign
           const recipients = await dbConn
@@ -241,9 +293,19 @@ export function startReminderScheduler() {
 
           let sentCount = 0;
           let failedCount = 0;
+          let skippedCount = 0;
 
           for (const recipient of recipients) {
-            // Skip if suppressed/unsubscribed
+            // Respect global cap mid-loop
+            if (globalTotalSentToday >= TOTAL_MAILBOX_DAILY_CAP) break;
+
+            // Skip if already processed for this step
+            if (alreadyProcessedSet.has(recipient.email.toLowerCase())) {
+              skippedCount++;
+              continue;
+            }
+
+            // Skip if suppressed/unsubscribed/bounced
             if (suppressedSet.has(recipient.email.toLowerCase())) {
               await dbConn.insert(campaignSequenceRecipients).values({
                 sequenceId: step.id,
@@ -251,6 +313,7 @@ export function startReminderScheduler() {
                 email: recipient.email,
                 status: "skipped",
               });
+              skippedCount++;
               continue;
             }
 
@@ -281,6 +344,7 @@ export function startReminderScheduler() {
                 sentAt: new Date(),
               });
               sentCount++;
+              globalTotalSentToday++;
             } catch (err) {
               await dbConn.insert(campaignSequenceRecipients).values({
                 sequenceId: step.id,
@@ -300,7 +364,7 @@ export function startReminderScheduler() {
             .where(eq(campaignSequences.id, step.id));
 
           console.log(
-            `[CampaignFollowUp] Step ${step.id} (Day ${step.delayDays}): sent=${sentCount} failed=${failedCount} skipped=${recipients.length - sentCount - failedCount}`,
+            `[CampaignFollowUp] Step ${step.id} (Day ${step.delayDays}): sent=${sentCount} failed=${failedCount} skipped=${skippedCount}`,
           );
         } catch (stepErr) {
           console.error(
@@ -315,6 +379,305 @@ export function startReminderScheduler() {
       console.error("[CampaignFollowUp] Error:", error);
     }
   });
+
+  // ── Automated New-Outreach Stagger Windows ───────────────────────────────
+  // Fires at 08:30, 10:30, 12:30, 14:30, 16:30 UTC — weekdays only.
+  // Each window processes up to NEW_OUTREACH_PER_WINDOW (5) emails from paused
+  // campaigns that still have un-sent recipients.
+  //
+  // A campaign is "paused" after the first manual send if not all recipients
+  // could be sent in that trigger (due to per-window and daily caps).
+  // These cron windows automatically continue sending until all recipients are
+  // covered or the daily cap is reached.
+
+  async function processOutreachWindow(windowLabel: string) {
+    console.log(`[CampaignOutreach] Processing window ${windowLabel}...`);
+
+    try {
+      // Redundant weekday guard (cron already uses 1-5 pattern)
+      if (!isWeekday()) {
+        console.log("[CampaignOutreach] Weekend — skipping");
+        return;
+      }
+
+      const dbConn = await db.getDb();
+      if (!dbConn) {
+        console.log("[CampaignOutreach] No DB connection — skipping");
+        return;
+      }
+
+      const { eq, and, or, sql } = await import("drizzle-orm");
+      const {
+        emailCampaigns,
+        emailCampaignRecipients,
+        emailUnsubscribes,
+        marketingContacts,
+        campaignSendLog,
+        campaignSequenceRecipients,
+        chatLeads,
+        users,
+      } = await import("../../drizzle/schema");
+
+      const today = getTodayDateString();
+
+      // ── Check global daily caps ──
+      const [outreachResult] = await dbConn
+        .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+        .from(campaignSendLog)
+        .where(eq(campaignSendLog.sendDate, today));
+      const outreachSentToday = Number(outreachResult?.total ?? 0);
+
+      if (outreachSentToday >= NEW_OUTREACH_DAILY_CAP) {
+        console.log(`[CampaignOutreach] New outreach cap (${NEW_OUTREACH_DAILY_CAP}) reached — skipping window`);
+        return;
+      }
+
+      const [followupResult] = await dbConn
+        .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
+        .from(campaignSequenceRecipients)
+        .where(and(
+          eq(campaignSequenceRecipients.status, "sent"),
+          sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+        ));
+      const followupSentToday = Number(followupResult?.total ?? 0);
+      const totalSentToday = outreachSentToday + followupSentToday;
+
+      if (totalSentToday >= TOTAL_MAILBOX_DAILY_CAP) {
+        console.log(`[CampaignOutreach] Total mailbox cap (${TOTAL_MAILBOX_DAILY_CAP}) reached — skipping window`);
+        return;
+      }
+
+      // ── Find paused campaigns ──
+      const pausedCampaigns = await dbConn
+        .select()
+        .from(emailCampaigns)
+        .where(eq(emailCampaigns.status, "paused"));
+
+      if (pausedCampaigns.length === 0) {
+        console.log("[CampaignOutreach] No paused campaigns — nothing to process");
+        return;
+      }
+
+      // ── Build global suppression set ──
+      const suppressions = await dbConn
+        .select({ email: emailUnsubscribes.email })
+        .from(emailUnsubscribes);
+      const suppressedSet = new Set(suppressions.map((s) => s.email.toLowerCase()));
+
+      const mcBounced = await dbConn
+        .select({ email: marketingContacts.email })
+        .from(marketingContacts)
+        .where(or(
+          eq(marketingContacts.status, "unsubscribed"),
+          eq(marketingContacts.status, "bounced"),
+        ));
+      for (const b of mcBounced) suppressedSet.add(b.email.toLowerCase());
+
+      const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
+      const { sendEmail: sendCampaignEmail } = await import("./email");
+      const { applyMergeFields, extractFirstName, formatDateGB } = await import("./emailTemplates");
+
+      let windowSentTotal = 0;
+
+      for (const campaign of pausedCampaigns) {
+        if (windowSentTotal >= NEW_OUTREACH_PER_WINDOW) break;
+        if (outreachSentToday + windowSentTotal >= NEW_OUTREACH_DAILY_CAP) break;
+        if (totalSentToday + windowSentTotal >= TOTAL_MAILBOX_DAILY_CAP) break;
+
+        // ── Rebuild eligible recipient list for this campaign ──
+        type Recipient = { email: string; name: string | null; unsubscribeToken?: string };
+        let allRecipients: Recipient[] = [];
+
+        if (campaign.segment === "leads") {
+          const leads = await dbConn.select().from(chatLeads);
+          allRecipients = leads.map((l) => ({ email: l.email, name: l.name }));
+        } else if (campaign.segment === "marketing") {
+          const conditions = [eq(marketingContacts.status, "active")];
+          if (campaign.targetCountry) {
+            conditions.push(eq(marketingContacts.country, campaign.targetCountry));
+          }
+          if (campaign.targetType) {
+            conditions.push(eq(marketingContacts.contactType, campaign.targetType));
+          }
+          const contacts = await dbConn.select().from(marketingContacts).where(and(...conditions));
+          allRecipients = contacts.map((c) => ({
+            email: c.email,
+            name: c.name,
+            unsubscribeToken: c.unsubscribeToken,
+          }));
+        } else {
+          let condition;
+          if (campaign.segment === "trial") {
+            condition = and(eq(users.subscriptionStatus, "trial"), eq(users.isActive, true));
+          } else if (campaign.segment === "paid") {
+            condition = and(eq(users.subscriptionStatus, "active"), eq(users.isActive, true));
+          } else {
+            condition = eq(users.isActive, true);
+          }
+          const userList = await dbConn
+            .select({ email: users.email, name: users.name })
+            .from(users)
+            .where(condition);
+          allRecipients = userList.filter((u) => u.email) as Recipient[];
+        }
+
+        // ── Exclude already-sent and suppressed ──
+        const alreadySent = await dbConn
+          .select({ email: emailCampaignRecipients.email })
+          .from(emailCampaignRecipients)
+          .where(and(
+            eq(emailCampaignRecipients.campaignId, campaign.id),
+            eq(emailCampaignRecipients.status, "sent"),
+          ));
+        const alreadySentSet = new Set(alreadySent.map((r) => r.email.toLowerCase()));
+
+        const seen = new Set<string>();
+        const eligibleRecipients = allRecipients.filter((r) => {
+          if (!r.email || seen.has(r.email.toLowerCase())) return false;
+          if (suppressedSet.has(r.email.toLowerCase())) return false;
+          if (alreadySentSet.has(r.email.toLowerCase())) return false;
+          seen.add(r.email.toLowerCase());
+          return true;
+        });
+
+        if (eligibleRecipients.length === 0) {
+          // Campaign is fully sent — mark it done
+          await dbConn
+            .update(emailCampaigns)
+            .set({ status: "sent", sentAt: new Date() })
+            .where(eq(emailCampaigns.id, campaign.id));
+          console.log(`[CampaignOutreach] Campaign ${campaign.id} fully sent — marking as sent`);
+          continue;
+        }
+
+        // ── Determine how many to send this window ──
+        const windowRemaining = NEW_OUTREACH_PER_WINDOW - windowSentTotal;
+        const outreachRemaining = NEW_OUTREACH_DAILY_CAP - (outreachSentToday + windowSentTotal);
+        const globalRemaining = TOTAL_MAILBOX_DAILY_CAP - (totalSentToday + windowSentTotal);
+        const sendBatch = eligibleRecipients.slice(
+          0,
+          Math.min(windowRemaining, outreachRemaining, globalRemaining),
+        );
+
+        const currentDate = formatDateGB();
+        let sentCount = 0;
+        let failedCount = 0;
+
+        // ── Look up existing send log entry ──
+        const [todayLog] = await dbConn
+          .select({ sendCount: campaignSendLog.sendCount })
+          .from(campaignSendLog)
+          .where(and(
+            eq(campaignSendLog.campaignId, campaign.id),
+            eq(campaignSendLog.sendDate, today),
+          ));
+        const alreadySentTodayCount = todayLog?.sendCount || 0;
+
+        for (const recipient of sendBatch) {
+          try {
+            let unsubToken = recipient.unsubscribeToken || "";
+            if (!unsubToken) {
+              const [mc] = await dbConn
+                .select()
+                .from(marketingContacts)
+                .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
+              unsubToken = mc?.unsubscribeToken || "";
+            }
+            const unsubLink = unsubToken
+              ? `${BASE_URL}/unsubscribe?token=${unsubToken}`
+              : `${BASE_URL}/unsubscribe`;
+
+            const html = applyMergeFields(campaign.htmlBody, {
+              firstName: extractFirstName(recipient.name),
+              email: recipient.email,
+              currentDate,
+              unsubscribeLink: unsubLink,
+            });
+
+            await sendCampaignEmail(recipient.email, campaign.subject, html, unsubLink);
+
+            await dbConn.insert(emailCampaignRecipients).values({
+              campaignId: campaign.id,
+              email: recipient.email,
+              name: recipient.name || null,
+              status: "sent",
+              sentAt: new Date(),
+            });
+            sentCount++;
+            windowSentTotal++;
+
+            // Update lastContactedAt
+            await dbConn.update(marketingContacts)
+              .set({ lastContactedAt: new Date() })
+              .where(eq(marketingContacts.email, recipient.email.toLowerCase()))
+              .catch(() => {});
+          } catch (err) {
+            await dbConn.insert(emailCampaignRecipients).values({
+              campaignId: campaign.id,
+              email: recipient.email,
+              name: recipient.name || null,
+              status: "failed",
+              error: err instanceof Error ? err.message : "Unknown error",
+            });
+            failedCount++;
+          }
+        }
+
+        // ── Update campaign send log ──
+        if (sentCount > 0) {
+          if (todayLog) {
+            await dbConn.update(campaignSendLog)
+              .set({ sendCount: alreadySentTodayCount + sentCount })
+              .where(and(
+                eq(campaignSendLog.campaignId, campaign.id),
+                eq(campaignSendLog.sendDate, today),
+              ));
+          } else {
+            await dbConn.insert(campaignSendLog).values({
+              campaignId: campaign.id,
+              sendDate: today,
+              sendCount: sentCount,
+            });
+          }
+        }
+
+        // ── Update campaign record ──
+        const updatedSentCount = (campaign.sentCount || 0) + sentCount;
+        const updatedFailedCount = (campaign.failedCount || 0) + failedCount;
+        // After this batch, recheck if fully sent
+        const remainingAfterBatch = eligibleRecipients.length - sendBatch.length;
+        const newStatus = remainingAfterBatch <= 0 ? "sent" : "paused";
+
+        await dbConn
+          .update(emailCampaigns)
+          .set({
+            status: newStatus,
+            sentCount: updatedSentCount,
+            failedCount: updatedFailedCount,
+            sentToday: alreadySentTodayCount + sentCount,
+            lastSendDate: today,
+            sentAt: newStatus === "sent" ? new Date() : campaign.sentAt,
+            pausedAt: newStatus === "paused" ? new Date() : null,
+          })
+          .where(eq(emailCampaigns.id, campaign.id));
+
+        console.log(
+          `[CampaignOutreach] Window ${windowLabel}: campaign ${campaign.id} — sent=${sentCount} failed=${failedCount} remaining≈${remainingAfterBatch} status=${newStatus}`,
+        );
+      }
+
+      console.log(`[CampaignOutreach] Window ${windowLabel} complete — total sent this window: ${windowSentTotal}`);
+    } catch (error) {
+      console.error(`[CampaignOutreach] Error in window ${windowLabel}:`, error);
+    }
+  }
+
+  // Schedule 5 send windows per weekday (1-5 = Mon–Fri)
+  for (const w of SEND_WINDOWS) {
+    const cronExpr = `${w.minute} ${w.hour} * * 1-5`;
+    cron.schedule(cronExpr, () => processOutreachWindow(w.label));
+  }
+  console.log("[CampaignOutreach] Scheduled 5 automated outreach windows:", SEND_WINDOWS.map(w => w.label).join(", "));
 
   isRunning = true;
   console.log("[Reminders] Scheduler started successfully");

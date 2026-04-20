@@ -390,10 +390,36 @@ export function isWithinSendHours(date?: Date): boolean {
 // ─── Follow-up schedule (default) ────────────────────────────
 export const DEFAULT_FOLLOWUP_SCHEDULE = [
   { stepNumber: 1, delayDays: 0, label: "Initial Send" },
-  { stepNumber: 2, delayDays: 3, label: "Follow-up 1" },
-  { stepNumber: 3, delayDays: 7, label: "Follow-up 2" },
-  { stepNumber: 4, delayDays: 14, label: "Follow-up 3 (Final)" },
+  { stepNumber: 2, delayDays: 3, label: "Follow-up 1 (Day 3)" },
+  { stepNumber: 3, delayDays: 6, label: "Follow-up 2 (Day 6)" },
+  { stepNumber: 4, delayDays: 10, label: "Final Nudge (Day 10)" },
 ];
+
+/**
+ * Staggered send windows for new outreach — UTC.
+ * Five windows per weekday, each allowing up to NEW_OUTREACH_PER_WINDOW sends.
+ * Total across all windows: 5 × 5 = 25 = NEW_OUTREACH_DAILY_CAP.
+ */
+export const SEND_WINDOWS: Array<{ hour: number; minute: number; label: string }> = [
+  { hour: 8, minute: 30, label: "08:30 UTC" },
+  { hour: 10, minute: 30, label: "10:30 UTC" },
+  { hour: 12, minute: 30, label: "12:30 UTC" },
+  { hour: 14, minute: 30, label: "14:30 UTC" },
+  { hour: 16, minute: 30, label: "16:30 UTC" },
+];
+
+/**
+ * Returns the next upcoming send window label for today (UTC), or null if all
+ * windows have passed (meaning next window is tomorrow's 08:30 UTC).
+ */
+export function getNextSendWindow(now: Date = new Date()): string | null {
+  const currentMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+  for (const w of SEND_WINDOWS) {
+    const windowMinutes = w.hour * 60 + w.minute;
+    if (windowMinutes > currentMinutes) return w.label;
+  }
+  return null; // all windows passed — next is tomorrow 08:30 UTC
+}
 
 export function getScheduledDate(initialDate: Date, delayDays: number): string {
   const d = new Date(initialDate);

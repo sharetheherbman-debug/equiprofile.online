@@ -95,8 +95,144 @@ import {
   Building2,
   GraduationCap,
   Info,
+  TrendingUp,
+  Zap,
+  Timer,
 } from "lucide-react";
 import { toast } from "sonner";
+
+// ─── Campaign Operations Panel ───────────────────────────────────────────────
+/**
+ * Live mailbox status panel — shows today's outreach counts, follow-up counts,
+ * remaining capacity, queued campaigns, and the next automated send window.
+ */
+function CampaignOperationsPanel() {
+  const { data, isLoading, refetch } = trpc.admin.getCampaignMailboxStatus.useQuery(undefined, {
+    refetchInterval: 60_000, // refresh every 60 s
+  });
+
+  const now = new Date();
+  const nowUTC = `${String(now.getUTCHours()).padStart(2, "0")}:${String(now.getUTCMinutes()).padStart(2, "0")} UTC`;
+
+  const newPct = data ? Math.round((data.newOutreachSentToday / data.newOutreachCap) * 100) : 0;
+  const totalPct = data ? Math.round((data.totalSentToday / data.totalCap) * 100) : 0;
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Zap className="w-4 h-4 text-[#2e6da4]" />
+            Campaign Engine — Today's Status
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{nowUTC}</span>
+            <Button size="sm" variant="ghost" onClick={() => refetch()} className="h-7 px-2 text-xs">
+              Refresh
+            </Button>
+          </div>
+        </div>
+        <CardDescription>
+          Live view of today's send activity, remaining capacity, and automated queue
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)}
+          </div>
+        ) : data ? (
+          <div className="space-y-4">
+            {/* Status indicators */}
+            <div className="flex flex-wrap gap-2">
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${data.isWeekday ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"}`}>
+                {data.isWeekday ? "✓ Weekday — sends active" : "✗ Weekend — sends paused"}
+              </span>
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${data.isWithinSendHours ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}`}>
+                {data.isWithinSendHours ? "✓ Within send hours" : "○ Outside send hours"}
+              </span>
+            </div>
+
+            {/* Metrics grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {/* New outreach */}
+              <div className="rounded-xl border border-[#2e6da4]/20 bg-[#f0f6ff] dark:bg-[#0c1e3c]/30 p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">New Outreach</p>
+                <p className="text-2xl font-bold text-[#2e6da4]">{data.newOutreachSentToday}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">of {data.newOutreachCap} today</p>
+                <div className="mt-1.5 h-1.5 rounded-full bg-[#2e6da4]/15 overflow-hidden">
+                  <div className="h-full rounded-full bg-[#2e6da4] transition-all" style={{ width: `${Math.min(100, newPct)}%` }} />
+                </div>
+              </div>
+
+              {/* Follow-ups */}
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700/30 p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">Follow-ups</p>
+                <p className="text-2xl font-bold text-emerald-600">{data.followupsSentToday}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">auto-sequenced today</p>
+              </div>
+
+              {/* Total sent */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700/40 bg-slate-50 dark:bg-slate-800/30 p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">Total Sent</p>
+                <p className="text-2xl font-bold">{data.totalSentToday}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">of {data.totalCap} cap</p>
+                <div className="mt-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all ${totalPct >= 90 ? "bg-red-500" : totalPct >= 70 ? "bg-amber-500" : "bg-emerald-500"}`}
+                    style={{ width: `${Math.min(100, totalPct)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Remaining capacity */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700/40 bg-slate-50 dark:bg-slate-800/30 p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">Remaining Today</p>
+                <p className={`text-2xl font-bold ${data.totalRemaining === 0 ? "text-red-500" : data.totalRemaining <= 5 ? "text-amber-500" : "text-slate-700 dark:text-slate-200"}`}>
+                  {data.totalRemaining}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {data.newOutreachRemaining} outreach + {Math.max(0, data.totalRemaining - data.newOutreachRemaining)} followup
+                </p>
+              </div>
+            </div>
+
+            {/* Queue + next window row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Queued */}
+              <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700/30 px-4 py-3">
+                <Timer className="w-5 h-5 text-amber-600 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                    {data.queuedForNextWindow} queued
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {data.pausedCampaignsCount} paused campaign{data.pausedCampaignsCount !== 1 ? "s" : ""} · up to {data.perWindowLimit}/window
+                  </p>
+                </div>
+              </div>
+
+              {/* Next window */}
+              <div className="flex items-center gap-3 rounded-xl border border-[#2e6da4]/20 bg-[#f0f6ff] dark:bg-[#0c1e3c]/30 px-4 py-3">
+                <TrendingUp className="w-5 h-5 text-[#2e6da4] shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-[#0c1e3c] dark:text-blue-200">
+                    Next window: {data.nextSendWindow}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Windows: {data.sendWindows.join(" · ")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground py-4 text-center">Unable to load status</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 // ─── Status Badge Helper ─────────────────────────────────────────────────────
 
@@ -614,7 +750,7 @@ export default function AdminCampaigns() {
             </span>
             <span className="text-xs text-muted-foreground flex items-center gap-1.5">
               <Send className="w-3 h-3 text-[#2e6da4]" />
-              Max <strong>5 per send window</strong> (staggered delivery)
+              <strong>5 per window</strong> · auto-staggered at 08:30 / 10:30 / 12:30 / 14:30 / 16:30 UTC
             </span>
             <span className="text-xs text-muted-foreground flex items-center gap-1.5">
               <ShieldCheck className="w-3 h-3 text-green-600" />
@@ -623,6 +759,9 @@ export default function AdminCampaigns() {
           </div>
         </div>
       </div>
+
+      {/* Campaign Operations Panel */}
+      <CampaignOperationsPanel />
 
       {/* Create Campaign */}
       <Card>

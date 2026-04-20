@@ -104,6 +104,8 @@ import {
   NEW_OUTREACH_DAILY_CAP,
   TOTAL_MAILBOX_DAILY_CAP,
   NEW_OUTREACH_PER_WINDOW,
+  SEND_WINDOWS,
+  getNextSendWindow,
   isWeekday,
   isWithinSendHours,
   DEFAULT_FOLLOWUP_SCHEDULE,
@@ -4312,6 +4314,87 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const sentToday = log?.sendCount || 0;
         return { sentToday, dailyLimit, remaining: Math.max(0, dailyLimit - sentToday) };
       }),
+
+    /**
+     * getCampaignMailboxStatus — single source of truth for today's send activity.
+     * Powers the Admin Campaign Operations Panel.
+     */
+    getCampaignMailboxStatus: adminUnlockedProcedure.query(async () => {
+      const dbConn = await getDb();
+      if (!dbConn) {
+        const nextWindow = getNextSendWindow();
+        return {
+          newOutreachSentToday: 0,
+          followupsSentToday: 0,
+          totalSentToday: 0,
+          newOutreachCap: NEW_OUTREACH_DAILY_CAP,
+          totalCap: TOTAL_MAILBOX_DAILY_CAP,
+          perWindowLimit: NEW_OUTREACH_PER_WINDOW,
+          newOutreachRemaining: NEW_OUTREACH_DAILY_CAP,
+          totalRemaining: TOTAL_MAILBOX_DAILY_CAP,
+          queuedForNextWindow: 0,
+          pausedCampaignsCount: 0,
+          nextSendWindow: nextWindow ?? "Next weekday 08:30 UTC",
+          isWeekday: isWeekday(),
+          isWithinSendHours: isWithinSendHours(),
+          sendWindows: SEND_WINDOWS.map(w => w.label),
+        };
+      }
+
+      const today = getTodayDateString();
+
+      // New outreach sent today (sum across all campaigns)
+      const [outreachResult] = await dbConn
+        .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+        .from(campaignSendLog)
+        .where(eq(campaignSendLog.sendDate, today));
+      const newOutreachSentToday = Number(outreachResult?.total ?? 0);
+
+      // Follow-ups sent today
+      const [followupResult] = await dbConn
+        .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
+        .from(campaignSequenceRecipients)
+        .where(and(
+          eq(campaignSequenceRecipients.status, "sent"),
+          sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+        ));
+      const followupsSentToday = Number(followupResult?.total ?? 0);
+      const totalSentToday = newOutreachSentToday + followupsSentToday;
+
+      // Paused campaigns (have remaining recipients to send)
+      const pausedCampaigns = await dbConn
+        .select({
+          id: emailCampaigns.id,
+          recipientCount: emailCampaigns.recipientCount,
+          sentCount: emailCampaigns.sentCount,
+        })
+        .from(emailCampaigns)
+        .where(eq(emailCampaigns.status, "paused"));
+
+      const queuedForNextWindow = pausedCampaigns.reduce(
+        (acc, c) => acc + Math.max(0, (c.recipientCount || 0) - (c.sentCount || 0)),
+        0,
+      );
+
+      const nextWindow = getNextSendWindow();
+
+      return {
+        newOutreachSentToday,
+        followupsSentToday,
+        totalSentToday,
+        newOutreachCap: NEW_OUTREACH_DAILY_CAP,
+        totalCap: TOTAL_MAILBOX_DAILY_CAP,
+        perWindowLimit: NEW_OUTREACH_PER_WINDOW,
+        newOutreachRemaining: Math.max(0, NEW_OUTREACH_DAILY_CAP - newOutreachSentToday),
+        totalRemaining: Math.max(0, TOTAL_MAILBOX_DAILY_CAP - totalSentToday),
+        queuedForNextWindow,
+        pausedCampaignsCount: pausedCampaigns.length,
+        nextSendWindow: nextWindow ?? "Next weekday 08:30 UTC",
+        isWeekday: isWeekday(),
+        isWithinSendHours: isWithinSendHours(),
+        sendWindows: SEND_WINDOWS.map(w => w.label),
+      };
+    }),
 
     parseImportFile: adminUnlockedProcedure
       .input(z.object({
