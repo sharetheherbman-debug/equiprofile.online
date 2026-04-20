@@ -88,6 +88,7 @@ import {
 } from "./_core/emailTemplates";
 import { sendEmail, sendCampaignEmail, sendStableInviteEmail, sendCompensationEmail } from "./_core/email";
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
+import { detectDuplicatePeople, DUP_THRESHOLD } from "./_core/dupPersonDetection";
 import { studentRouter } from "./studentRouter";
 import { teacherRouter } from "./teacherRouter";
 import { schoolRouter } from "./schoolRouter";
@@ -4390,7 +4391,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
      */
     getCampaignAssignmentPreview: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
-      if (!dbConn) return { management: 0, academy: 0, blocked: 0, alreadySent: 0, total: 0 };
+      if (!dbConn) return { management: 0, academy: 0, blocked: 0, alreadySent: 0, suspectedDuplicate: 0, total: 0 };
 
       const contacts = await dbConn.select().from(marketingContacts);
       const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
@@ -4409,12 +4410,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       let academy = 0;
       let blocked = 0;
       let alreadySent = 0;
+      let suspectedDuplicate = 0;
 
       for (const c of contacts) {
         const email = c.email?.toLowerCase() || "";
         if (!email || !email.includes("@")) { blocked++; continue; }
         if (c.status !== "active" || suppressedSet.has(email)) { blocked++; continue; }
         if (alreadySentSet.has(email)) { alreadySent++; continue; }
+        // Contacts flagged as suspected duplicates are soft-blocked from autopilot
+        if (c.suspectedDuplicateOf != null) { suspectedDuplicate++; continue; }
         if (academyTypes.has(c.contactType || "")) {
           academy++;
         } else {
@@ -4427,6 +4431,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         academy,
         blocked,
         alreadySent,
+        suspectedDuplicate,
         total: contacts.length,
       };
     }),
@@ -4493,7 +4498,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         for (const r of enrolledRows) enrolledSet.add(r.email.toLowerCase());
       }
 
-      // ── Step 4: Classify unenrolled contacts ─────────────────────────────
+      // ── Step 4: Classify unenrolled contacts (skip suspected duplicates) ──
       const managementEmails: Array<{ email: string; name: string | null }> = [];
       const academyEmails: Array<{ email: string; name: string | null }> = [];
 
@@ -4503,6 +4508,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (suppressedSet.has(email)) continue;
         if (alreadySentSet.has(email)) continue;
         if (enrolledSet.has(email)) continue;
+        // Skip contacts flagged as suspected duplicates — admin must clear flag to include
+        if (c.suspectedDuplicateOf != null) continue;
 
         if (ACADEMY_TYPES.has(c.contactType || "")) {
           academyEmails.push({ email, name: c.name });
@@ -4611,6 +4618,84 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         academyCampaignId,
       };
     }),
+
+    /**
+     * runDuplicatePersonScan — scans all marketing contacts using the
+     * deterministic trigram + domain + geography fuzzy algorithm, then writes
+     * suspected-duplicate flags directly to the DB.
+     *
+     * Safe to run repeatedly: existing flags are ONLY updated, never downgraded
+     * without an explicit clearDuplicateFlag call from an admin.
+     *
+     * Contacts that already have a flag set are NOT re-evaluated (their flag
+     * was either placed by a previous scan or manually overridden).
+     *
+     * Returns: how many contacts were newly flagged in this scan.
+     */
+    runDuplicatePersonScan: adminUnlockedProcedure.mutation(async () => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      // Only scan contacts that haven't already been flagged
+      const contacts = await dbConn
+        .select({
+          id: marketingContacts.id,
+          email: marketingContacts.email,
+          name: marketingContacts.name,
+          businessName: marketingContacts.businessName,
+          country: marketingContacts.country,
+          region: marketingContacts.region,
+          contactType: marketingContacts.contactType,
+          suspectedDuplicateOf: marketingContacts.suspectedDuplicateOf,
+        })
+        .from(marketingContacts)
+        .where(eq(marketingContacts.status, "active"));
+
+      // Run the in-memory detection
+      const results = detectDuplicatePeople(contacts);
+
+      // Only persist newly found duplicates (don't overwrite manually cleared flags)
+      const alreadyFlagged = new Set(
+        contacts
+          .filter((c) => c.suspectedDuplicateOf != null)
+          .map((c) => c.id),
+      );
+
+      let newlyFlagged = 0;
+      for (const r of results) {
+        if (alreadyFlagged.has(r.contactId)) continue; // already flagged — leave it
+        await dbConn
+          .update(marketingContacts)
+          .set({
+            suspectedDuplicateOf: r.suspectedDuplicateOf,
+            dupRiskScore: r.riskScore,
+          })
+          .where(eq(marketingContacts.id, r.contactId));
+        newlyFlagged++;
+      }
+
+      return {
+        scanned: contacts.length,
+        newlyFlagged,
+        totalFlagged: alreadyFlagged.size + newlyFlagged,
+      };
+    }),
+
+    /**
+     * clearDuplicateFlag — admin override: removes the suspected-duplicate flag
+     * from a single contact, making it eligible for the next autopilot run.
+     */
+    clearDuplicateFlag: adminUnlockedProcedure
+      .input(z.object({ contactId: z.number() }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        await dbConn
+          .update(marketingContacts)
+          .set({ suspectedDuplicateOf: null, dupRiskScore: null })
+          .where(eq(marketingContacts.id, input.contactId));
+        return { success: true };
+      }),
 
     pauseCampaign: adminUnlockedProcedure
       .input(z.object({ campaignId: z.number() }))

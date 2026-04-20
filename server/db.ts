@@ -1366,6 +1366,9 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`lastContactedAt\` timestamp NULL DEFAULT NULL`,
       // Campaign enhancements (migration 0016) — add scheduledDate to campaignSequences
       `ALTER TABLE \`campaignSequences\` ADD COLUMN IF NOT EXISTS \`scheduledDate\` varchar(10) DEFAULT NULL`,
+      // Duplicate-person detection (migration 0020) — add fuzzy-dup columns to marketingContacts
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`suspectedDuplicateOf\` int DEFAULT NULL`,
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`dupRiskScore\` tinyint unsigned DEFAULT NULL`,
     ];
     for (const stmt of columnMigrations) {
       try {
@@ -1415,6 +1418,8 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       // Campaign enhancements indexes (migration 0016)
       `CREATE INDEX IF NOT EXISTS \`idx_mc_country\` ON \`marketingContacts\` (\`country\`)`,
       `CREATE INDEX IF NOT EXISTS \`idx_mc_contact_type\` ON \`marketingContacts\` (\`contactType\`)`,
+      // Duplicate-person detection index (migration 0020)
+      `CREATE INDEX IF NOT EXISTS \`idx_mc_dup_of\` ON \`marketingContacts\` (\`suspectedDuplicateOf\`)`,
     ];
     for (const stmt of indexMigrations) {
       try {

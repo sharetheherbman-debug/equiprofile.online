@@ -714,6 +714,49 @@ export function startReminderScheduler() {
   });
   console.log("[CampaignReplies] Reply poller scheduled (every 15 min, weekdays 08:00–19:00 UTC)");
 
+  // ── Duplicate-Person Scan ─────────────────────────────────────────────────
+  // Runs at 07:00 UTC on weekdays, 30 minutes BEFORE the autopilot run so that
+  // newly flagged suspected duplicates are already excluded when the autopilot
+  // classifies contacts at 07:30.
+  cron.schedule("0 7 * * 1-5", async () => {
+    if (!isWeekday()) return;
+    console.log("[DupScan] Running daily duplicate-person scan...");
+    try {
+      const dbConn = await db.getDb();
+      if (!dbConn) { console.log("[DupScan] No DB — skipping"); return; }
+
+      const { eq: _eq } = await import("drizzle-orm");
+      const { marketingContacts: _mc } = await import("../../drizzle/schema");
+      const { detectDuplicatePeople: _detect } = await import("./dupPersonDetection");
+
+      const contacts = await dbConn.select({
+        id: _mc.id,
+        email: _mc.email,
+        name: _mc.name,
+        businessName: _mc.businessName,
+        country: _mc.country,
+        region: _mc.region,
+        contactType: _mc.contactType,
+        suspectedDuplicateOf: _mc.suspectedDuplicateOf,
+      }).from(_mc).where(_eq(_mc.status, "active"));
+
+      const results = _detect(contacts);
+      const alreadyFlagged = new Set(contacts.filter(c => c.suspectedDuplicateOf != null).map(c => c.id));
+      let newlyFlagged = 0;
+      for (const r of results) {
+        if (alreadyFlagged.has(r.contactId)) continue;
+        await dbConn.update(_mc)
+          .set({ suspectedDuplicateOf: r.suspectedDuplicateOf, dupRiskScore: r.riskScore })
+          .where(_eq(_mc.id, r.contactId));
+        newlyFlagged++;
+      }
+      console.log(`[DupScan] Complete — scanned ${contacts.length}, newly flagged ${newlyFlagged}`);
+    } catch (err) {
+      console.error("[DupScan] Error:", err);
+    }
+  });
+  console.log("[DupScan] Daily duplicate scan scheduled (07:00 UTC weekdays)");
+
   // ── Campaign Autopilot ────────────────────────────────────────────────────
   // Runs at 07:30 UTC on weekdays, before the first send window (08:30).
   // Classifies any new uncontacted marketing contacts into Management or
@@ -767,6 +810,8 @@ export function startReminderScheduler() {
         const email = c.email?.toLowerCase();
         if (!email || !email.includes("@")) continue;
         if (suppressedSet.has(email) || sentSet.has(email) || enrolledSet.has(email)) continue;
+        // Skip contacts flagged as suspected duplicates — admin must clear flag
+        if (c.suspectedDuplicateOf != null) continue;
         (ACADEMY_TYPES.has(c.contactType || "") ? academy : management).push({ email, name: c.name });
       }
 
