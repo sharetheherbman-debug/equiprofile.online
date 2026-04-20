@@ -177,8 +177,8 @@ const moreModuleGroups = [
       { icon: BookOpen, label: "Templates", path: "/training-templates" },
       { icon: Navigation, label: "GPS Tracking", path: "/ride-tracking" },
       { icon: Trophy, label: "Competitions", path: "/competitions" },
-      { icon: Users, label: "Lessons", path: "/lessons" },
-      { icon: Baby, label: "Breeding", path: "/breeding" },
+      { icon: Users, label: "Lessons", path: "/lessons", stableOnly: true },
+      { icon: Baby, label: "Breeding", path: "/breeding", stableOnly: true },
     ],
   },
   {
@@ -212,7 +212,7 @@ const moreModuleGroups = [
       { icon: UserCog, label: "Staff", path: "/staff", stableOnly: true },
       { icon: Users, label: "Client Portal", path: "/client-portal", stableOnly: true },
       { icon: BarChart3, label: "Stable Reports", path: "/stable-reports", stableOnly: true },
-      { icon: MessageSquare, label: "Messages", path: "/messages" },
+      { icon: MessageSquare, label: "Messages", path: "/messages", stableOnly: true },
     ],
   },
   {
@@ -692,14 +692,9 @@ function DashboardLayoutContent({
                       // Filter and adapt items based on plan:
                       // - stableOnly items shown only to stable users (or admin)
                       // - stableOverride replaces the path/label for stable users
-                      // - Legacy label-based filter retained for Breeding/Lessons
                       const items = group.items
                         .filter((item) => {
-                          if (
-                            (item.stableOnly || item.label === "Breeding" || item.label === "Lessons") &&
-                            !isStablePlan &&
-                            !isAdmin
-                          )
+                          if (item.stableOnly && !isStablePlan && !isAdmin)
                             return false;
                           return true;
                         })

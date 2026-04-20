@@ -72,27 +72,51 @@ Amarktai Network Ltd. All rights reserved.
 
 /**
  * Standard EquiProfile email letterhead.
- * Uses ONE consistent brand header for all templates — single navy gradient,
- * square logo (icon-128x128.png, proper 1:1 ratio), premium typography.
- * The accent parameter is retained for backwards compatibility but is no longer used.
+ * Premium navy gradient with accent bar, vertical divider, and brand typography.
+ * The accent parameter is retained for backwards compatibility but is not used.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function headerBlock(_accent?: string): string {
   return `<tr>
-<td style="background:linear-gradient(135deg, #0c1e3c 0%, #163563 45%, #2e6da4 100%);padding:36px 40px 28px;text-align:center;">
-<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+<td style="background:linear-gradient(150deg, #040e20 0%, #0c1e3c 55%, #163563 100%);padding:44px 40px 36px;">
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td style="padding-right:16px;vertical-align:middle;">
-      <img src="${LOGO_URL}" alt="EquiProfile" width="52" height="52" style="display:block;border-radius:10px;width:52px;height:52px;border:2px solid rgba(255,255,255,0.22);box-shadow:0 2px 8px rgba(0,0,0,0.25);"/>
+    <td style="vertical-align:middle;padding-right:20px;width:72px;">
+      <img src="${LOGO_URL}" alt="EquiProfile" width="56" height="56" style="display:block;border-radius:12px;width:56px;height:56px;border:1.5px solid rgba(255,255,255,0.20);box-shadow:0 4px 16px rgba(0,0,0,0.45);"/>
     </td>
-    <td style="vertical-align:middle;text-align:left;">
-      <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.3px;line-height:1.1;display:block;">EquiProfile</span>
-      <span style="display:block;margin-top:4px;color:rgba(255,255,255,0.70);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;">Professional Horse Management</span>
+    <td style="vertical-align:middle;border-left:1px solid rgba(255,255,255,0.12);padding-left:20px;">
+      <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1.1;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">EquiProfile</span>
+      <span style="display:block;margin-top:5px;color:rgba(164,198,255,0.82);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Professional Equestrian Platform</span>
     </td>
   </tr>
 </table>
 </td>
-</tr>`;
+</tr>
+<tr><td style="height:3px;background:linear-gradient(90deg, #1a5ca0 0%, #3b82f6 50%, #1a5ca0 100%);"></td></tr>`;
+}
+
+/**
+ * EquiProfile Academy email letterhead.
+ * Same premium treatment as headerBlock but with "Academy" branding.
+ */
+function academyHeaderBlock(): string {
+  return `<tr>
+<td style="background:linear-gradient(150deg, #040e20 0%, #0c1e3c 55%, #163563 100%);padding:44px 40px 36px;">
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td style="vertical-align:middle;padding-right:20px;width:72px;">
+      <img src="${LOGO_URL}" alt="EquiProfile Academy" width="56" height="56" style="display:block;border-radius:12px;width:56px;height:56px;border:1.5px solid rgba(255,255,255,0.20);box-shadow:0 4px 16px rgba(0,0,0,0.45);"/>
+    </td>
+    <td style="vertical-align:middle;border-left:1px solid rgba(255,255,255,0.12);padding-left:20px;">
+      <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1.1;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">EquiProfile <span style="color:rgba(147,197,253,0.90);font-weight:500;">Academy</span></span>
+      <span style="display:block;margin-top:5px;color:rgba(164,198,255,0.82);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Structured Equestrian Education</span>
+    </td>
+  </tr>
+</table>
+</td>
+</tr>
+<tr><td style="height:3px;background:linear-gradient(90deg, #163563 0%, #3b82f6 50%, #163563 100%);"></td></tr>`;
+}
 }
 
 /** Branded call-to-action button. color should be a solid hex. */
@@ -992,21 +1016,7 @@ ${bulletRow("No credit card required")}
     previewColor: "#163563",
     category: "academy_school",
     getHtml: () => wrapEmail(`
-<tr>
-<td style="background:linear-gradient(135deg, #0c1e3c 0%, #163563 50%, #1a5ca0 100%);padding:36px 40px 28px;text-align:center;">
-<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-  <tr>
-    <td style="padding-right:16px;vertical-align:middle;">
-      <img src="${LOGO_URL}" alt="EquiProfile" width="52" height="52" style="display:block;border-radius:10px;width:52px;height:52px;border:2px solid rgba(255,255,255,0.22);box-shadow:0 2px 8px rgba(0,0,0,0.25);"/>
-    </td>
-    <td style="vertical-align:middle;text-align:left;">
-      <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.3px;line-height:1.1;display:block;">EquiProfile Academy</span>
-      <span style="display:block;margin-top:4px;color:rgba(255,255,255,0.70);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;">Structured Equestrian Education</span>
-    </td>
-  </tr>
-</table>
-</td>
-</tr>
+${academyHeaderBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">A structured learning platform designed for equestrian schools</h1>
   <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Hi {{firstName}},</p>
@@ -1032,21 +1042,7 @@ ${bulletRow("<strong>Parent visibility</strong> — progress updates without adm
     previewColor: "#163563",
     category: "academy_school",
     getHtml: () => wrapEmail(`
-<tr>
-<td style="background:linear-gradient(135deg, #0c1e3c 0%, #163563 50%, #1a5ca0 100%);padding:36px 40px 28px;text-align:center;">
-<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-  <tr>
-    <td style="padding-right:16px;vertical-align:middle;">
-      <img src="${LOGO_URL}" alt="EquiProfile" width="52" height="52" style="display:block;border-radius:10px;width:52px;height:52px;border:2px solid rgba(255,255,255,0.22);box-shadow:0 2px 8px rgba(0,0,0,0.25);"/>
-    </td>
-    <td style="vertical-align:middle;text-align:left;">
-      <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.3px;line-height:1.1;display:block;">EquiProfile Academy</span>
-      <span style="display:block;margin-top:4px;color:rgba(255,255,255,0.70);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;">Structured Equestrian Education</span>
-    </td>
-  </tr>
-</table>
-</td>
-</tr>
+${academyHeaderBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">What does your school gain from going digital?</h1>
   <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Hi {{firstName}},</p>
@@ -1074,21 +1070,7 @@ ${bulletRow("School leadership sees real data — enrolment, progression, retent
     previewColor: "#163563",
     category: "academy_school",
     getHtml: () => wrapEmail(`
-<tr>
-<td style="background:linear-gradient(135deg, #0c1e3c 0%, #163563 50%, #1a5ca0 100%);padding:36px 40px 28px;text-align:center;">
-<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-  <tr>
-    <td style="padding-right:16px;vertical-align:middle;">
-      <img src="${LOGO_URL}" alt="EquiProfile" width="52" height="52" style="display:block;border-radius:10px;width:52px;height:52px;border:2px solid rgba(255,255,255,0.22);box-shadow:0 2px 8px rgba(0,0,0,0.25);"/>
-    </td>
-    <td style="vertical-align:middle;text-align:left;">
-      <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.3px;line-height:1.1;display:block;">EquiProfile Academy</span>
-      <span style="display:block;margin-top:4px;color:rgba(255,255,255,0.70);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;">Structured Equestrian Education</span>
-    </td>
-  </tr>
-</table>
-</td>
-</tr>
+${academyHeaderBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">Trusted by riding schools across the UK &amp; Ireland</h1>
   <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Hi {{firstName}},</p>
@@ -1119,21 +1101,7 @@ ${bulletRow("Flat pricing — no per-student fees", "#163563")}
     previewColor: "#163563",
     category: "academy_school",
     getHtml: () => wrapEmail(`
-<tr>
-<td style="background:linear-gradient(135deg, #0c1e3c 0%, #163563 50%, #1a5ca0 100%);padding:36px 40px 28px;text-align:center;">
-<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-  <tr>
-    <td style="padding-right:16px;vertical-align:middle;">
-      <img src="${LOGO_URL}" alt="EquiProfile" width="52" height="52" style="display:block;border-radius:10px;width:52px;height:52px;border:2px solid rgba(255,255,255,0.22);box-shadow:0 2px 8px rgba(0,0,0,0.25);"/>
-    </td>
-    <td style="vertical-align:middle;text-align:left;">
-      <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.3px;line-height:1.1;display:block;">EquiProfile Academy</span>
-      <span style="display:block;margin-top:4px;color:rgba(255,255,255,0.70);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;">Structured Equestrian Education</span>
-    </td>
-  </tr>
-</table>
-</td>
-</tr>
+${academyHeaderBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">One last note — if the timing is finally right</h1>
   <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Hi {{firstName}},</p>
@@ -1155,43 +1123,6 @@ ${bulletRow("No credit card required", "#163563")}
 </td></tr>
 `),
   },
-  // ── Management / Stable / Yard / Owner Campaign Templates ────────────────
-  {
-    id: "health-tracking",
-    name: "Health Tracking Spotlight",
-    description:
-      "Promotes comprehensive health tracking features — vaccinations, dental, hoof care, and more.",
-    previewColor: "#2e6da4",
-    category: "management",
-    getHtml: template1_healthTracking,
-  },
-  {
-    id: "training-performance",
-    name: "Training & Performance",
-    description:
-      "Highlights training logs, performance tracking, scheduling, and AI insights.",
-    previewColor: "#2e6da4",
-    category: "management",
-    getHtml: template2_trainingPerformance,
-  },
-  {
-    id: "stable-management",
-    name: "Stable Management",
-    description:
-      "Showcases the Stable Plan — multi-horse, staff, client portal, messaging.",
-    previewColor: "#2e6da4",
-    category: "management",
-    getHtml: template3_stableManagement,
-  },
-  {
-    id: "ai-weather",
-    name: "AI Assistant & Weather",
-    description:
-      "Promotes the AI chat assistant and smart weather-based riding analysis.",
-    previewColor: "#2e6da4",
-    category: "management",
-    getHtml: template4_aiAndWeather,
-  },
   {
     id: "general",
     name: "General Campaign",
@@ -1200,111 +1131,6 @@ ${bulletRow("No credit card required", "#163563")}
     previewColor: "#2e6da4",
     category: "management",
     getHtml: template5_general,
-  },
-  // ── Academy / School / Education Campaign Templates ───────────────────────
-  {
-    id: "school-introduction",
-    name: "School Introduction Email",
-    description: "Introduces EquiProfile to a new school — structured learning, progression tracking, teacher tools.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate1_introduction,
-  },
-  {
-    id: "school-partnership",
-    name: "Riding School Partnership Pitch",
-    description: "Partnership proposal highlighting professional benefits for riding schools.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate2_partnershipPitch,
-  },
-  {
-    id: "school-student-overview",
-    name: "Student Learning Platform Overview",
-    description: "Showcases the student learning experience — pathways, AI tutor, practice, progress.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate3_studentPlatformOverview,
-  },
-  {
-    id: "school-teacher-onboarding",
-    name: "Teacher Onboarding Pack",
-    description: "Step-by-step guide for teachers getting started with the instructor portal.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate4_teacherOnboarding,
-  },
-  {
-    id: "school-parent-info",
-    name: "Parent Information Pack",
-    description: "Information for parents about how their child learns on EquiProfile.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate5_parentInfoPack,
-  },
-  {
-    id: "school-trial-invitation",
-    name: "School Trial Invitation (7-day)",
-    description: "Invites a school to try EquiProfile free for 7 days — no credit card required.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate6_trialInvitation,
-  },
-  {
-    id: "school-performance-tracking",
-    name: "Performance Tracking & Reporting Pitch",
-    description: "Highlights reporting, analytics, and performance tracking for schools.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate7_performanceTracking,
-  },
-  {
-    id: "school-digital-upgrade",
-    name: "Digital Training Upgrade Pitch",
-    description: "Persuades schools to move from paper-based to digital training with EquiProfile.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate8_digitalUpgrade,
-  },
-  {
-    id: "school-stable-learning",
-    name: "Stable Management + Learning Combined Pitch",
-    description: "Showcases the unique combination of stable management and student learning on one platform.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate9_stableAndLearning,
-  },
-  {
-    id: "school-followup-conversion",
-    name: "Follow-up Conversion Email",
-    description: "Follow-up email for schools that haven't converted — recap of value and gentle CTA.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: schoolTemplate10_followUpConversion,
-  },
-  {
-    id: "academy-competition-prep",
-    name: "Academy Competition Preparation",
-    description: "Academy-focused email promoting EquiProfile's competition tracking, preparation tools, and analytics for schools entering competitions.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: academyTemplate1_competitionPrep,
-  },
-  {
-    id: "academy-safety-welfare",
-    name: "Academy Safety & Welfare Messaging",
-    description: "Positions EquiProfile as a welfare-first platform — health monitoring, vet records, incident logging, and rider safety tools for academies.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: academyTemplate2_safetyWelfare,
-  },
-  {
-    id: "academy-seasonal-enrolment",
-    name: "Academy Seasonal Enrolment Drive",
-    description: "Seasonal marketing email to encourage new student enrolments — perfect for beginning-of-term or show-season campaigns.",
-    previewColor: "#1a5ca0",
-    category: "academy_school",
-    getHtml: academyTemplate3_seasonalEnrolment,
   },
 ];
 

@@ -533,35 +533,37 @@ function HealthContent() {
                 return (
                   <div
                     key={record.id}
-                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/30 transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
                       {getRecordIcon(record.recordType)}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{record.title}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium truncate">{record.title}</p>
                         {horse && (
-                          <span className="text-sm text-muted-foreground">
-                            • {horse.name}
+                          <span className="text-sm text-muted-foreground shrink-0">
+                            · {horse.name}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(record.recordDate).toLocaleDateString()}
-                        {record.vetName && ` • ${record.vetName}`}
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="capitalize">
-                      {record.recordType}
-                    </Badge>
-                    {record.nextDueDate && (
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
-                        {new Date(record.nextDueDate).toLocaleDateString()}
+                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(record.recordDate).toLocaleDateString()}
+                          {record.vetName && ` · ${record.vetName}`}
+                        </span>
+                        <Badge variant="outline" className="capitalize text-[10px] h-4 px-1.5">
+                          {record.recordType}
+                        </Badge>
+                        {record.nextDueDate && (
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(record.nextDueDate).toLocaleDateString()}
+                          </span>
+                        )}
                       </div>
-                    )}
-                    <div className="flex items-center gap-1">
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
                       <Button
                         variant="ghost"
                         size="icon"
