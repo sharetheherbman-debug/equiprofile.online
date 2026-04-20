@@ -1,6 +1,5 @@
 import {
   int,
-  tinyint,
   mysqlEnum,
   mysqlTable,
   text,
@@ -1362,7 +1361,7 @@ export const marketingContacts = mysqlTable("marketingContacts", {
    * 0–100 risk score produced by the deterministic trigram + domain + geography
    * algorithm.  Null = not yet scanned.  >= 55 triggers the suspectedDuplicateOf flag.
    */
-  dupRiskScore: tinyint("dupRiskScore").unsigned(),
+  dupRiskScore: int("dupRiskScore"),
 });
 
 export type MarketingContact = typeof marketingContacts.$inferSelect;
