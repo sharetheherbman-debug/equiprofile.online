@@ -200,14 +200,18 @@ function DocumentsContent() {
     onError: (error) => {
       setUploading(false);
       const msg = error.message ?? "";
-      // "Unable to transform response from server" is a TRPC internal error that
-      // can occur on intermittent network issues — show a clean message instead.
+      // "Unable to transform response from server" is a tRPC internal error that
+      // fires when the server returns a non-JSON response (e.g. HTTP 413 Payload
+      // Too Large from nginx/Express when the encoded payload exceeds the limit).
+      // Show a file-size-specific message rather than a misleading "connection" one.
       if (
         msg.toLowerCase().includes("transform") ||
         msg.toLowerCase().includes("parse") ||
         msg.toLowerCase().includes("unexpected token")
       ) {
-        toast.error("Upload failed. Please check your connection and try again.");
+        toast.error("Upload failed. The file may be too large for the server - please keep files under 10 MB and try again.");
+      } else if (msg.toLowerCase().includes("file size") || msg.toLowerCase().includes("10 mb") || msg.toLowerCase().includes("10mb") || msg.toLowerCase().includes("limit")) {
+        toast.error(msg);
       } else {
         toast.error(msg || "Document upload failed. Please try again.");
       }

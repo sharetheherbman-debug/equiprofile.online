@@ -1,5 +1,6 @@
 import {
   int,
+  tinyint,
   mysqlEnum,
   mysqlTable,
   text,
@@ -1351,6 +1352,17 @@ export const marketingContacts = mysqlTable("marketingContacts", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastContactedAt: timestamp("lastContactedAt"),
+  /**
+   * If non-null, this contact has been flagged by the duplicate-person scan
+   * as a probable duplicate of the contact with this ID.
+   * Autopilot enrollment skips flagged contacts until an admin clears the flag.
+   */
+  suspectedDuplicateOf: int("suspectedDuplicateOf"),
+  /**
+   * 0–100 risk score produced by the deterministic trigram + domain + geography
+   * algorithm.  Null = not yet scanned.  >= 55 triggers the suspectedDuplicateOf flag.
+   */
+  dupRiskScore: tinyint("dupRiskScore").unsigned(),
 });
 
 export type MarketingContact = typeof marketingContacts.$inferSelect;

@@ -91,8 +91,8 @@ const dashboardModuleGroups = [
       { icon: Dumbbell, label: "Training Log", path: "/training" },
       { icon: BookOpen, label: "Templates", path: "/training-templates" },
       { icon: Navigation, label: "GPS Tracking", path: "/ride-tracking" },
-      { icon: Users, label: "Lessons", path: "/lessons" },
-      { icon: Baby, label: "Breeding", path: "/breeding" },
+      { icon: Users, label: "Lessons", path: "/lessons", stableOnly: true },
+      { icon: Baby, label: "Breeding", path: "/breeding", stableOnly: true },
     ],
   },
   {
@@ -124,9 +124,9 @@ const dashboardModuleGroups = [
     gradient: "from-cyan-500 to-teal-600",
     labelColor: "text-cyan-400",
     items: [
-      { icon: Home, label: "Stable Management", path: "/stable" },
-      { icon: UserCog, label: "Staff", path: "/staff" },
-      { icon: MessageSquare, label: "Messages", path: "/messages" },
+      { icon: Home, label: "Stable Management", path: "/stable", stableOnly: true },
+      { icon: UserCog, label: "Staff", path: "/staff", stableOnly: true },
+      { icon: MessageSquare, label: "Messages", path: "/messages", stableOnly: true },
     ],
   },
   {
@@ -923,16 +923,8 @@ function DashboardContent() {
               const isStablePlan =
                 subscription?.bothDashboardsUnlocked ||
                 subscription?.planTier === "stable";
-              const items = group.items.filter((item) => {
-                if (
-                  !isStablePlan &&
-                  (item.label === "Breeding" ||
-                    item.label === "Lessons" ||
-                    item.label === "Stable Management" ||
-                    item.label === "Staff" ||
-                    item.label === "Messages")
-                )
-                  return false;
+              const items = group.items.filter((item: any) => {
+                if (!isStablePlan && item.stableOnly) return false;
                 return true;
               });
               if (items.length === 0) return null;

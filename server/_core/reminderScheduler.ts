@@ -529,13 +529,19 @@ export function startReminderScheduler() {
           allRecipients = userList.filter((u) => u.email) as Recipient[];
         }
 
-        // ── Exclude already-sent and suppressed ──
+        // ── Exclude already-sent, already-skipped, and suppressed ──
+        // "skipped" rows are pre-inserted by runCampaignAutopilot to mark
+        // contacts from the wrong campaign family so they are never emailed
+        // from this campaign. Treat them the same as already-sent.
         const alreadySent = await dbConn
           .select({ email: emailCampaignRecipients.email })
           .from(emailCampaignRecipients)
           .where(and(
             eq(emailCampaignRecipients.campaignId, campaign.id),
-            eq(emailCampaignRecipients.status, "sent"),
+            or(
+              eq(emailCampaignRecipients.status, "sent"),
+              eq(emailCampaignRecipients.status, "skipped"),
+            ),
           ));
         const alreadySentSet = new Set(alreadySent.map((r) => r.email.toLowerCase()));
 
@@ -707,6 +713,188 @@ export function startReminderScheduler() {
       .catch((err) => console.error("[CampaignReplies] Error:", err));
   });
   console.log("[CampaignReplies] Reply poller scheduled (every 15 min, weekdays 08:00–19:00 UTC)");
+
+  // ── Duplicate-Person Scan ─────────────────────────────────────────────────
+  // Runs at 07:00 UTC on weekdays, 30 minutes BEFORE the autopilot run so that
+  // newly flagged suspected duplicates are already excluded when the autopilot
+  // classifies contacts at 07:30.
+  cron.schedule("0 7 * * 1-5", async () => {
+    if (!isWeekday()) return;
+    console.log("[DupScan] Running daily duplicate-person scan...");
+    try {
+      const dbConn = await db.getDb();
+      if (!dbConn) { console.log("[DupScan] No DB — skipping"); return; }
+
+      const { eq: _eq } = await import("drizzle-orm");
+      const { marketingContacts: _mc } = await import("../../drizzle/schema");
+      const { detectDuplicatePeople: _detect } = await import("./dupPersonDetection");
+
+      const contacts = await dbConn.select({
+        id: _mc.id,
+        email: _mc.email,
+        name: _mc.name,
+        businessName: _mc.businessName,
+        country: _mc.country,
+        region: _mc.region,
+        contactType: _mc.contactType,
+        suspectedDuplicateOf: _mc.suspectedDuplicateOf,
+      }).from(_mc).where(_eq(_mc.status, "active"));
+
+      const results = _detect(contacts);
+      const alreadyFlagged = new Set(contacts.filter(c => c.suspectedDuplicateOf != null).map(c => c.id));
+      let newlyFlagged = 0;
+      for (const r of results) {
+        if (alreadyFlagged.has(r.contactId)) continue;
+        await dbConn.update(_mc)
+          .set({ suspectedDuplicateOf: r.suspectedDuplicateOf, dupRiskScore: r.riskScore })
+          .where(_eq(_mc.id, r.contactId));
+        newlyFlagged++;
+      }
+      console.log(`[DupScan] Complete — scanned ${contacts.length}, newly flagged ${newlyFlagged}`);
+    } catch (err) {
+      console.error("[DupScan] Error:", err);
+    }
+  });
+  console.log("[DupScan] Daily duplicate scan scheduled (07:00 UTC weekdays)");
+
+  // ── Campaign Autopilot ────────────────────────────────────────────────────
+  // Runs at 07:30 UTC on weekdays, before the first send window (08:30).
+  // Classifies any new uncontacted marketing contacts into Management or
+  // Academy autopilot campaigns and marks them as "paused" so the send
+  // windows pick them up within the same day.
+  cron.schedule("30 7 * * 1-5", async () => {
+    if (!isWeekday()) return;
+    console.log("[CampaignAutopilot] Running daily contact classification...");
+
+    try {
+      const dbConn = await db.getDb();
+      if (!dbConn) {
+        console.log("[CampaignAutopilot] No DB — skipping");
+        return;
+      }
+
+      const { eq: _eq, inArray: _inArray, sql: _drizzleSql } = await import("drizzle-orm");
+      const {
+        marketingContacts: _mc,
+        emailCampaignRecipients: _ecr,
+        emailCampaigns: _ec,
+        emailUnsubscribes: _eu,
+      } = await import("../../drizzle/schema");
+      const { CAMPAIGN_TEMPLATES: _templates } = await import("./emailTemplates");
+
+      const ACADEMY_TYPES = new Set(["school", "college", "academy", "student", "teacher", "instructor"]);
+
+      const allContacts = await dbConn.select().from(_mc).where(_eq(_mc.status, "active"));
+      const suppressed = await dbConn.select({ email: _eu.email }).from(_eu);
+      const suppressedSet = new Set(suppressed.map((s) => s.email.toLowerCase()));
+
+      const sentRows = await dbConn.select({ email: _ecr.email }).from(_ecr).where(_eq(_ecr.status, "sent"));
+      const sentSet = new Set(sentRows.map((r) => r.email.toLowerCase()));
+
+      const autopilotCampaigns = await dbConn
+        .select({ id: _ec.id })
+        .from(_ec)
+        .where(_drizzleSql`${_ec.name} LIKE 'Autopilot — %'`);
+      const apIds = autopilotCampaigns.map((r) => r.id);
+
+      const enrolledSet = new Set<string>();
+      if (apIds.length > 0) {
+        const enrolledRows = await dbConn.select({ email: _ecr.email }).from(_ecr).where(_inArray(_ecr.campaignId, apIds));
+        for (const r of enrolledRows) enrolledSet.add(r.email.toLowerCase());
+      }
+
+      const management: Array<{ email: string; name: string | null }> = [];
+      const academy: Array<{ email: string; name: string | null }> = [];
+
+      for (const c of allContacts) {
+        const email = c.email?.toLowerCase();
+        if (!email || !email.includes("@")) continue;
+        if (suppressedSet.has(email) || sentSet.has(email) || enrolledSet.has(email)) continue;
+        // Skip contacts flagged as suspected duplicates — admin must clear flag
+        if (c.suspectedDuplicateOf != null) continue;
+        (ACADEMY_TYPES.has(c.contactType || "") ? academy : management).push({ email, name: c.name });
+      }
+
+      if (management.length === 0 && academy.length === 0) {
+        console.log("[CampaignAutopilot] No unenrolled contacts — nothing to do");
+        return;
+      }
+
+      const today = new Date().toISOString().split("T")[0];
+      const ADMIN_USER_ID = 1; // system / scheduler user
+
+      if (management.length > 0) {
+        const mgmtTpl = _templates.find((t) => t.id === "mgmt-intro");
+        if (mgmtTpl) {
+          const ins = await dbConn.insert(_ec).values({
+            name: `Autopilot — Management (${today})`,
+            subject: "The professional platform built for equestrian businesses",
+            htmlBody: mgmtTpl.getHtml(),
+            templateId: "mgmt-intro",
+            segment: "marketing",
+            customFilter: null,
+            targetCountry: null,
+            targetType: null,
+            dailyLimit: 25,
+            sentToday: 0,
+            lastSendDate: null,
+            recipientCount: management.length,
+            sentCount: 0,
+            failedCount: 0,
+            status: "paused",
+            sentAt: null,
+            pausedAt: new Date(),
+            sentByUserId: ADMIN_USER_ID,
+          });
+          const campId = Number(ins[0].insertId);
+          if (academy.length > 0) {
+            const vals = academy.map((c) => ({ campaignId: campId, email: c.email, name: c.name, status: "skipped" as const }));
+            for (let i = 0; i < vals.length; i += 500) {
+              await dbConn.insert(_ecr).values(vals.slice(i, i + 500));
+            }
+          }
+          console.log(`[CampaignAutopilot] Management campaign ${campId} created — ${management.length} contacts enrolled`);
+        }
+      }
+
+      if (academy.length > 0) {
+        const acaTpl = _templates.find((t) => t.id === "academy-intro");
+        if (acaTpl) {
+          const ins = await dbConn.insert(_ec).values({
+            name: `Autopilot — Academy (${today})`,
+            subject: "A structured learning platform designed for equestrian schools",
+            htmlBody: acaTpl.getHtml(),
+            templateId: "academy-intro",
+            segment: "marketing",
+            customFilter: null,
+            targetCountry: null,
+            targetType: null,
+            dailyLimit: 15,
+            sentToday: 0,
+            lastSendDate: null,
+            recipientCount: academy.length,
+            sentCount: 0,
+            failedCount: 0,
+            status: "paused",
+            sentAt: null,
+            pausedAt: new Date(),
+            sentByUserId: ADMIN_USER_ID,
+          });
+          const campId = Number(ins[0].insertId);
+          if (management.length > 0) {
+            const vals = management.map((c) => ({ campaignId: campId, email: c.email, name: c.name, status: "skipped" as const }));
+            for (let i = 0; i < vals.length; i += 500) {
+              await dbConn.insert(_ecr).values(vals.slice(i, i + 500));
+            }
+          }
+          console.log(`[CampaignAutopilot] Academy campaign ${campId} created — ${academy.length} contacts enrolled`);
+        }
+      }
+    } catch (err) {
+      console.error("[CampaignAutopilot] Error:", err);
+    }
+  });
+  console.log("[CampaignAutopilot] Daily autopilot scheduled (07:30 UTC weekdays)");
 
   isRunning = true;
   console.log("[Reminders] Scheduler started successfully");

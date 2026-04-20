@@ -503,47 +503,90 @@ function TrainingContent() {
                     return (
                       <div
                         key={session.id}
-                        className="flex items-center gap-4 p-4 rounded-lg border bg-muted/30"
+                        className="p-3 sm:p-4 rounded-lg border bg-muted/30 space-y-2 sm:space-y-0"
                       >
-                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Activity className="w-6 h-6 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium capitalize">
-                              {session.sessionType}
-                            </p>
-                            {horse && (
-                              <Badge variant="outline">{horse.name}</Badge>
-                            )}
+                        {/* Top row: icon + content + desktop actions */}
+                        <div className="flex items-start gap-3 sm:items-center sm:gap-4">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(session.sessionDate).toLocaleDateString(
-                              "en-GB",
-                              {
-                                weekday: "long",
-                                day: "numeric",
-                                month: "long",
-                              },
-                            )}
-                            {session.startTime && ` at ${session.startTime}`}
-                          </p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-medium capitalize">
+                                {session.sessionType}
+                              </p>
+                              {horse && (
+                                <Badge variant="outline" className="text-xs">{horse.name}</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {new Date(session.sessionDate).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  weekday: "long",
+                                  day: "numeric",
+                                  month: "long",
+                                },
+                              )}
+                              {session.startTime && ` at ${session.startTime}`}
+                            </p>
+                          </div>
+                          {/* Desktop-only inline actions */}
+                          <div className="hidden sm:flex items-center gap-2 shrink-0">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                completeMutation.mutate({ id: session.id })
+                              }
+                            >
+                              <CheckCircle className="w-4 h-4 mr-1.5" />
+                              Complete
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => handleView(session)}
+                              title="View details"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => handleEdit(session)}
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive hover:text-destructive"
+                              onClick={() => handleDeleteConfirm(session.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        {/* Mobile-only action row — sits below content so nothing overflows */}
+                        <div className="flex sm:hidden items-center gap-2 pl-0">
                           <Button
                             variant="outline"
                             size="sm"
+                            className="flex-1 h-8 text-xs"
                             onClick={() =>
                               completeMutation.mutate({ id: session.id })
                             }
                           >
-                            <CheckCircle className="w-4 h-4 mr-2" />
+                            <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
                             Complete
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 shrink-0"
                             onClick={() => handleView(session)}
                             title="View details"
                           >
@@ -552,7 +595,7 @@ function TrainingContent() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 shrink-0"
                             onClick={() => handleEdit(session)}
                           >
                             <Pencil className="w-4 h-4" />
@@ -560,7 +603,7 @@ function TrainingContent() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            className="h-8 w-8 shrink-0 text-destructive hover:text-destructive"
                             onClick={() => handleDeleteConfirm(session.id)}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -613,40 +656,41 @@ function TrainingContent() {
                     return (
                       <div
                         key={session.id}
-                        className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/30 transition-colors"
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors"
                       >
-                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                          <Activity className="w-5 h-5 text-muted-foreground" />
+                        <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                          <Activity className="w-4 h-4 text-muted-foreground" />
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium capitalize">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className="font-medium capitalize text-sm">
                               {session.sessionType}
                             </p>
                             {horse && (
-                              <span className="text-sm text-muted-foreground">
-                                • {horse.name}
+                              <span className="text-xs text-muted-foreground shrink-0">
+                                · {horse.name}
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(session.sessionDate).toLocaleDateString()}
-                            {session.duration && ` • ${session.duration} min`}
-                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(session.sessionDate).toLocaleDateString()}
+                              {session.duration && ` · ${session.duration} min`}
+                            </p>
+                            <Badge
+                              variant={session.isCompleted ? "secondary" : "outline"}
+                              className="text-[10px] h-4 px-1.5"
+                            >
+                              {session.isCompleted ? "Completed" : "Scheduled"}
+                            </Badge>
+                            {session.performance && (
+                              <Badge variant="outline" className="capitalize text-[10px] h-4 px-1.5">
+                                {session.performance}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
-                        <Badge
-                          variant={
-                            session.isCompleted ? "secondary" : "outline"
-                          }
-                        >
-                          {session.isCompleted ? "Completed" : "Scheduled"}
-                        </Badge>
-                        {session.performance && (
-                          <Badge variant="outline" className="capitalize">
-                            {session.performance}
-                          </Badge>
-                        )}
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 shrink-0">
                           <Button
                             variant="ghost"
                             size="icon"

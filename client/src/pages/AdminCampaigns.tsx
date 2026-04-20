@@ -99,42 +99,125 @@ import {
   TrendingUp,
   Zap,
   Timer,
+  Bot,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  AlertTriangle,
+  ScanSearch,
 } from "lucide-react";
 import { toast } from "sonner";
 
-// ─── Campaign Operations Panel ───────────────────────────────────────────────
+// ─── Unified Campaign Control Center ─────────────────────────────────────────
 /**
- * Live mailbox status panel — shows today's outreach counts, follow-up counts,
- * remaining capacity, queued campaigns, and the next automated send window.
+ * Single-panel operations console merging:
+ *   • Live mailbox status (today's sends, follow-ups, capacity, next window)
+ *   • Autopilot status (management/academy ready, suspected duplicates, last run)
+ *   • Scan + Run Autopilot actions
+ *
+ * Replaces the former CampaignAutopilotPanel + CampaignOperationsPanel.
+ * Autopilot also runs automatically at 07:30 UTC on weekdays.
+ * Duplicate scan runs at 07:00 UTC on weekdays.
  */
-function CampaignOperationsPanel() {
-  const { data, isLoading, refetch } = trpc.admin.getCampaignMailboxStatus.useQuery(undefined, {
-    refetchInterval: 60_000, // refresh every 60 s
+function CampaignControlCenter() {
+  const utils = trpc.useUtils();
+
+  const mailbox = trpc.admin.getCampaignMailboxStatus.useQuery(undefined, {
+    refetchInterval: 60_000,
+  });
+  const preview = trpc.admin.getCampaignAssignmentPreview.useQuery(undefined, {
+    refetchInterval: 120_000,
   });
 
   const now = new Date();
   const nowUTC = `${String(now.getUTCHours()).padStart(2, "0")}:${String(now.getUTCMinutes()).padStart(2, "0")} UTC`;
 
-  const newPct = data ? Math.round((data.newOutreachSentToday / data.newOutreachCap) * 100) : 0;
-  const totalPct = data ? Math.round((data.totalSentToday / data.totalCap) * 100) : 0;
+  const [lastRun, setLastRun] = useState<{
+    management: number;
+    academy: number;
+    total: number;
+  } | null>(null);
+  const [lastScan, setLastScan] = useState<{
+    scanned: number;
+    newlyFlagged: number;
+  } | null>(null);
+
+  const autopilotMutation = trpc.admin.runCampaignAutopilot.useMutation({
+    onSuccess: (data) => {
+      setLastRun({ management: data.management, academy: data.academy, total: data.total });
+      if (data.total === 0) {
+        toast.info("Autopilot: no new contacts to enrol — everyone is already in a campaign.");
+      } else {
+        toast.success(
+          `Autopilot enrolled ${data.total} contact${data.total !== 1 ? "s" : ""}` +
+          ` (${data.management} management · ${data.academy} academy)` +
+          ` — campaigns queued for next send window.`,
+        );
+      }
+      utils.admin.getCampaigns.invalidate();
+      utils.admin.getCampaignAssignmentPreview.invalidate();
+    },
+    onError: (e) => toast.error(`Autopilot error: ${e.message}`),
+  });
+
+  const scanMutation = trpc.admin.runDuplicatePersonScan.useMutation({
+    onSuccess: (data) => {
+      setLastScan({ scanned: data.scanned, newlyFlagged: data.newlyFlagged });
+      if (data.newlyFlagged === 0) {
+        toast.info(`Dup scan complete — no new suspected duplicates found (${data.scanned} contacts scanned).`);
+      } else {
+        toast.warning(`Dup scan: flagged ${data.newlyFlagged} new suspected duplicate${data.newlyFlagged !== 1 ? "s" : ""} (${data.scanned} contacts scanned). Review in the Contacts tab.`);
+      }
+      utils.admin.getCampaignAssignmentPreview.invalidate();
+    },
+    onError: (e) => toast.error(`Dup scan error: ${e.message}`),
+  });
+
+  const ready = (preview.data?.management ?? 0) + (preview.data?.academy ?? 0);
+  const newPct = mailbox.data ? Math.round((mailbox.data.newOutreachSentToday / mailbox.data.newOutreachCap) * 100) : 0;
+  const totalPct = mailbox.data ? Math.round((mailbox.data.totalSentToday / mailbox.data.totalCap) * 100) : 0;
+  const dupCount = preview.data?.suspectedDuplicate ?? 0;
+
+  const isLoading = mailbox.isLoading || preview.isLoading;
 
   return (
     <Card>
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <CardTitle className="flex items-center gap-2 text-base">
             <Zap className="w-4 h-4 text-[#2e6da4]" />
-            Campaign Engine — Today's Status
+            Campaign Engine — Operations Center
           </CardTitle>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs text-muted-foreground">{nowUTC}</span>
-            <Button size="sm" variant="ghost" onClick={() => refetch()} className="h-7 px-2 text-xs">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 px-2 text-xs gap-1"
+              onClick={() => scanMutation.mutate()}
+              disabled={scanMutation.isPending}
+              title="Scan all active contacts for probable duplicates"
+            >
+              {scanMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <ScanSearch className="w-3 h-3" />}
+              Scan Dups
+            </Button>
+            <Button
+              size="sm"
+              className="h-7 px-2 text-xs gap-1 bg-[#2e6da4] hover:bg-[#1a5ca0]"
+              onClick={() => autopilotMutation.mutate()}
+              disabled={autopilotMutation.isPending}
+            >
+              {autopilotMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+              Run Autopilot
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => { mailbox.refetch(); preview.refetch(); }} className="h-7 px-2 text-xs">
               Refresh
             </Button>
           </div>
         </div>
         <CardDescription>
-          Live view of today's send activity, remaining capacity, and automated queue
+          Live send activity · capacity · autopilot status · duplicate protection.
+          Dup scan runs at <strong>07:00 UTC</strong>, autopilot at <strong>07:30 UTC</strong> (weekdays).
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -142,98 +225,144 @@ function CampaignOperationsPanel() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)}
           </div>
-        ) : data ? (
+        ) : (
           <div className="space-y-4">
-            {/* Status indicators */}
+            {/* ── Row 1: engine status badges ──────────────────────────── */}
             <div className="flex flex-wrap gap-2">
-              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${data.isWeekday ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"}`}>
-                {data.isWeekday ? "✓ Weekday — sends active" : "✗ Weekend — sends paused"}
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${mailbox.data?.isWeekday ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"}`}>
+                {mailbox.data?.isWeekday ? "✓ Weekday — sends active" : "✗ Weekend — sends paused"}
               </span>
-              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${data.isWithinSendHours ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}`}>
-                {data.isWithinSendHours ? "✓ Within send hours" : "○ Outside send hours"}
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${mailbox.data?.isWithinSendHours ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}`}>
+                {mailbox.data?.isWithinSendHours ? "✓ Within send hours" : "○ Outside send hours"}
               </span>
+              {dupCount > 0 && (
+                <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                  ⚠ {dupCount} suspected dup{dupCount !== 1 ? "s" : ""} suppressed
+                </span>
+              )}
             </div>
 
-            {/* Metrics grid */}
+            {/* ── Row 2: today's send metrics ──────────────────────────── */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {/* New outreach */}
               <div className="rounded-xl border border-[#2e6da4]/20 bg-[#f0f6ff] dark:bg-[#0c1e3c]/30 p-3">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">New Outreach</p>
-                <p className="text-2xl font-bold text-[#2e6da4]">{data.newOutreachSentToday}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">of {data.newOutreachCap} today</p>
+                <p className="text-2xl font-bold text-[#2e6da4]">{mailbox.data?.newOutreachSentToday ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">of {mailbox.data?.newOutreachCap ?? 25} today</p>
                 <div className="mt-1.5 h-1.5 rounded-full bg-[#2e6da4]/15 overflow-hidden">
                   <div className="h-full rounded-full bg-[#2e6da4] transition-all" style={{ width: `${Math.min(100, newPct)}%` }} />
                 </div>
               </div>
 
-              {/* Follow-ups */}
               <div className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700/30 p-3">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">Follow-ups</p>
-                <p className="text-2xl font-bold text-emerald-600">{data.followupsSentToday}</p>
+                <p className="text-2xl font-bold text-emerald-600">{mailbox.data?.followupsSentToday ?? 0}</p>
                 <p className="text-[10px] text-muted-foreground mt-0.5">auto-sequenced today</p>
               </div>
 
-              {/* Total sent */}
               <div className="rounded-xl border border-slate-200 dark:border-slate-700/40 bg-slate-50 dark:bg-slate-800/30 p-3">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">Total Sent</p>
-                <p className="text-2xl font-bold">{data.totalSentToday}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">of {data.totalCap} cap</p>
+                <p className="text-2xl font-bold">{mailbox.data?.totalSentToday ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">of {mailbox.data?.totalCap ?? 40} cap</p>
                 <div className="mt-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all ${totalPct >= 90 ? "bg-red-500" : totalPct >= 70 ? "bg-amber-500" : "bg-emerald-500"}`}
-                    style={{ width: `${Math.min(100, totalPct)}%` }}
-                  />
+                  <div className={`h-full rounded-full transition-all ${totalPct >= 90 ? "bg-red-500" : totalPct >= 70 ? "bg-amber-500" : "bg-emerald-500"}`}
+                    style={{ width: `${Math.min(100, totalPct)}%` }} />
                 </div>
               </div>
 
-              {/* Remaining capacity */}
               <div className="rounded-xl border border-slate-200 dark:border-slate-700/40 bg-slate-50 dark:bg-slate-800/30 p-3">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">Remaining Today</p>
-                <p className={`text-2xl font-bold ${data.totalRemaining === 0 ? "text-red-500" : data.totalRemaining <= 5 ? "text-amber-500" : "text-slate-700 dark:text-slate-200"}`}>
-                  {data.totalRemaining}
+                <p className={`text-2xl font-bold ${(mailbox.data?.totalRemaining ?? 1) === 0 ? "text-red-500" : (mailbox.data?.totalRemaining ?? 1) <= 5 ? "text-amber-500" : "text-slate-700 dark:text-slate-200"}`}>
+                  {mailbox.data?.totalRemaining ?? 0}
                 </p>
                 <p className="text-[10px] text-muted-foreground mt-0.5">
-                  {data.newOutreachRemaining} outreach + {Math.max(0, data.totalRemaining - data.newOutreachRemaining)} followup
+                  {mailbox.data?.newOutreachRemaining ?? 0} outreach + {Math.max(0, (mailbox.data?.totalRemaining ?? 0) - (mailbox.data?.newOutreachRemaining ?? 0))} followup
                 </p>
               </div>
             </div>
 
-            {/* Queue + next window row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Queued */}
-              <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700/30 px-4 py-3">
-                <Timer className="w-5 h-5 text-amber-600 shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                    {data.queuedForNextWindow} queued
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {data.pausedCampaignsCount} paused campaign{data.pausedCampaignsCount !== 1 ? "s" : ""} · up to {data.perWindowLimit}/window
-                  </p>
-                </div>
+            {/* ── Row 3: family / queue / dup metrics ──────────────────── */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="rounded-xl border border-[#2e6da4]/20 bg-[#f0f6ff] dark:bg-[#0c1e3c]/30 p-3 text-center">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1 flex items-center justify-center gap-1">
+                  <Building2 className="w-3 h-3" /> Management
+                </p>
+                <p className="text-2xl font-bold text-[#2e6da4]">{preview.data?.management ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground">ready to enrol</p>
               </div>
 
-              {/* Next window */}
-              <div className="flex items-center gap-3 rounded-xl border border-[#2e6da4]/20 bg-[#f0f6ff] dark:bg-[#0c1e3c]/30 px-4 py-3">
-                <TrendingUp className="w-5 h-5 text-[#2e6da4] shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-[#0c1e3c] dark:text-blue-200">
-                    Next window: {data.nextSendWindow}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Windows: {data.sendWindows.join(" · ")}
-                  </p>
-                </div>
+              <div className="rounded-xl border border-[#163563]/20 bg-[#eff6ff] dark:bg-[#0c1e3c]/30 p-3 text-center">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1 flex items-center justify-center gap-1">
+                  <GraduationCap className="w-3 h-3" /> Academy
+                </p>
+                <p className="text-2xl font-bold text-[#163563]">{preview.data?.academy ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground">ready to enrol</p>
+              </div>
+
+              <div className={`rounded-xl border p-3 text-center ${dupCount > 0 ? "border-amber-200 bg-amber-50 dark:bg-amber-900/20" : "border-slate-200 dark:border-slate-700/40 bg-slate-50 dark:bg-slate-800/30"}`}>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1 flex items-center justify-center gap-1">
+                  <AlertTriangle className={`w-3 h-3 ${dupCount > 0 ? "text-amber-500" : ""}`} /> Suspected Dups
+                </p>
+                <p className={`text-2xl font-bold ${dupCount > 0 ? "text-amber-600" : ""}`}>{dupCount}</p>
+                <p className="text-[10px] text-muted-foreground">suppressed from autopilot</p>
+              </div>
+
+              <div className="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700/30 p-3 text-center">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1 flex items-center justify-center gap-1">
+                  <Timer className="w-3 h-3 text-amber-600" /> Queued
+                </p>
+                <p className="text-2xl font-bold text-amber-700">{mailbox.data?.queuedForNextWindow ?? 0}</p>
+                <p className="text-[10px] text-muted-foreground">{mailbox.data?.pausedCampaignsCount ?? 0} campaign{mailbox.data?.pausedCampaignsCount !== 1 ? "s" : ""} paused</p>
               </div>
             </div>
+
+            {/* ── Row 4: next window + contextual alerts ────────────────── */}
+            <div className="flex items-center gap-3 rounded-xl border border-[#2e6da4]/20 bg-[#f0f6ff] dark:bg-[#0c1e3c]/30 px-4 py-3">
+              <TrendingUp className="w-5 h-5 text-[#2e6da4] shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-[#0c1e3c] dark:text-blue-200">
+                  Next window: {mailbox.data?.nextSendWindow ?? "—"}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  Windows: {mailbox.data?.sendWindows?.join(" · ") ?? "08:30 · 10:30 · 12:30 · 14:30 · 16:30 UTC"}
+                </p>
+              </div>
+            </div>
+
+            {/* ── Contextual notices ────────────────────────────────────── */}
+            {ready > 0 && (
+              <div className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700/30 px-3 py-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                <p className="text-xs text-emerald-800 dark:text-emerald-300">
+                  <strong>{ready} contact{ready !== 1 ? "s" : ""}</strong> ready to enrol. Click <em>Run Autopilot</em> or wait for the 07:30 UTC automatic run.
+                </p>
+              </div>
+            )}
+
+            {lastRun && (
+              <div className="flex items-start gap-2 rounded-lg border border-[#2e6da4]/20 bg-[#f0f6ff] dark:bg-[#0c1e3c]/30 px-3 py-2">
+                <Bot className="w-3.5 h-3.5 text-[#2e6da4] mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  Last autopilot run: enrolled <strong>{lastRun.management}</strong> management + <strong>{lastRun.academy}</strong> academy (total: <strong>{lastRun.total}</strong>).
+                </p>
+              </div>
+            )}
+
+            {lastScan && (
+              <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/20 px-3 py-2">
+                <ScanSearch className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
+                <p className="text-xs text-amber-800 dark:text-amber-300">
+                  Last dup scan: {lastScan.scanned} contacts scanned, <strong>{lastScan.newlyFlagged}</strong> newly flagged.
+                  {lastScan.newlyFlagged > 0 && " Review and clear flags in the Contacts tab."}
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <p className="text-sm text-muted-foreground py-4 text-center">Unable to load status</p>
         )}
       </CardContent>
     </Card>
   );
 }
+
 
 // ─── Status Badge Helper ─────────────────────────────────────────────────────
 
@@ -280,8 +409,10 @@ export default function AdminCampaigns() {
   const [createOpen, setCreateOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [confirmSendId, setConfirmSendId] = useState<number | null>(null);
+  const [showAdvancedTemplates, setShowAdvancedTemplates] = useState(false);
   // campaign type drives which template subset is shown
   const [campaignCategory, setCampaignCategory] = useState<"management" | "academy_school" | "">("");
+  const [historyFilter, setHistoryFilter] = useState<"all" | "manual" | "autopilot">("all");
   const [newCampaign, setNewCampaign] = useState({
     name: "",
     subject: "",
@@ -559,7 +690,7 @@ export default function AdminCampaigns() {
               Email Templates
             </CardTitle>
             <CardDescription>
-              Professional branded templates — one standard EquiProfile letterhead
+              Primary conversion sequences (4-email drip families) and advanced spotlight templates
             </CardDescription>
           </div>
         </CardHeader>
@@ -571,17 +702,17 @@ export default function AdminCampaigns() {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Management / Stable / Yard / Owner Templates */}
-              {templates.data?.filter((t) => t.category === "management").length ? (
+              {/* ── Primary: Management sequence templates ── */}
+              {templates.data?.filter((t) => t.category === "management" && !t.isAdvanced).length ? (
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
                     <Building2 className="w-3.5 h-3.5 text-[#2e6da4]" />
-                    Management · Stable · Yard · Owner
-                    <Badge variant="secondary" className="text-[10px] ml-auto">{templates.data?.filter((t) => t.category === "management").length} templates</Badge>
+                    Management · Stable · Yard · Owner — Primary Sequence
+                    <Badge variant="secondary" className="text-[10px] ml-auto">{templates.data?.filter((t) => t.category === "management" && !t.isAdvanced).length} templates</Badge>
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {templates.data
-                      ?.filter((t) => t.category === "management")
+                      ?.filter((t) => t.category === "management" && !t.isAdvanced)
                       .map((tpl) => (
                         <div
                           key={tpl.id}
@@ -624,19 +755,19 @@ export default function AdminCampaigns() {
                 </div>
               ) : null}
 
-              {/* Academy / School / Education Templates */}
-              {templates.data?.filter((t) => t.category === "academy_school").length ? (
+              {/* ── Primary: Academy sequence templates ── */}
+              {templates.data?.filter((t) => t.category === "academy_school" && !t.isAdvanced).length ? (
                 <div>
                   <div className="pt-2 border-t border-border mb-3">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                       <GraduationCap className="w-3.5 h-3.5 text-[#1a5ca0]" />
-                      Academy · Riding School · Education
-                      <Badge variant="secondary" className="text-[10px] ml-auto">{templates.data?.filter((t) => t.category === "academy_school").length} templates</Badge>
+                      Academy · Riding School · Education — Primary Sequence
+                      <Badge variant="secondary" className="text-[10px] ml-auto">{templates.data?.filter((t) => t.category === "academy_school" && !t.isAdvanced).length} templates</Badge>
                     </p>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {templates.data
-                      ?.filter((t) => t.category === "academy_school")
+                      ?.filter((t) => t.category === "academy_school" && !t.isAdvanced)
                       .map((tpl) => (
                         <div
                           key={tpl.id}
@@ -678,6 +809,126 @@ export default function AdminCampaigns() {
                   </div>
                 </div>
               ) : null}
+
+              {/* ── Advanced / Spotlight Templates (collapsible) ── */}
+              {templates.data?.some((t) => t.isAdvanced) && (
+                <div className="pt-2 border-t border-border">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 w-full text-left mb-3 group"
+                    onClick={() => setShowAdvancedTemplates((v) => !v)}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
+                      Advanced &amp; Spotlight Templates
+                    </span>
+                    <Badge variant="outline" className="text-[10px] ml-1">
+                      {templates.data?.filter((t) => t.isAdvanced).length}
+                    </Badge>
+                    <span className="ml-auto text-muted-foreground">
+                      {showAdvancedTemplates
+                        ? <ChevronUp className="w-3.5 h-3.5" />
+                        : <ChevronDown className="w-3.5 h-3.5" />}
+                    </span>
+                  </button>
+
+                  {showAdvancedTemplates && (
+                    <div className="space-y-4">
+                      <p className="text-xs text-muted-foreground -mt-1 mb-2">
+                        Standalone feature-spotlight and seasonal emails. Use for specific re-engagement or targeted pushes outside the main sequence.
+                      </p>
+                      {/* Advanced management */}
+                      {templates.data?.filter((t) => t.category === "management" && t.isAdvanced).length ? (
+                        <div>
+                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                            <Building2 className="w-3 h-3 text-[#2e6da4]" /> Management
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {templates.data
+                              .filter((t) => t.category === "management" && t.isAdvanced)
+                              .map((tpl) => (
+                                <div
+                                  key={tpl.id}
+                                  className="border border-dashed rounded-xl p-4 hover:shadow-sm hover:border-[#2e6da4]/40 transition-all flex flex-col bg-white dark:bg-[#0f1a2e]/30"
+                                >
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-6 h-6 rounded-md shrink-0 flex items-center justify-center" style={{ background: "#0c1e3c" }}>
+                                      <Building2 className="w-3 h-3 text-white" />
+                                    </div>
+                                    <h4 className="font-semibold text-sm leading-snug">{tpl.name}</h4>
+                                    <Badge variant="outline" className="ml-auto text-[9px] py-0 shrink-0">Advanced</Badge>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mb-3 flex-1 leading-relaxed">{tpl.description}</p>
+                                  <div className="flex gap-2 mt-auto">
+                                    <Button variant="outline" size="sm" className="flex-1" onClick={() => handlePreview(tpl.id)}>
+                                      <Eye className="w-3 h-3 mr-1" /> Preview
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="flex-1 border-[#2e6da4]/50 text-[#2e6da4] hover:bg-[#f0f6ff]"
+                                      onClick={() => {
+                                        setCampaignCategory("management");
+                                        setNewCampaign((p) => ({ ...p, templateId: tpl.id }));
+                                        setCreateOpen(true);
+                                      }}
+                                    >
+                                      <Plus className="w-3 h-3 mr-1" /> Use
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      ) : null}
+                      {/* Advanced academy */}
+                      {templates.data?.filter((t) => t.category === "academy_school" && t.isAdvanced).length ? (
+                        <div>
+                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                            <GraduationCap className="w-3 h-3 text-[#1a5ca0]" /> Academy / School
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {templates.data
+                              .filter((t) => t.category === "academy_school" && t.isAdvanced)
+                              .map((tpl) => (
+                                <div
+                                  key={tpl.id}
+                                  className="border border-dashed rounded-xl p-4 hover:shadow-sm hover:border-[#163563]/40 transition-all flex flex-col bg-white dark:bg-[#0f1a2e]/30"
+                                >
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-6 h-6 rounded-md shrink-0 flex items-center justify-center" style={{ background: "#163563" }}>
+                                      <GraduationCap className="w-3 h-3 text-white" />
+                                    </div>
+                                    <h4 className="font-semibold text-sm leading-snug">{tpl.name}</h4>
+                                    <Badge variant="outline" className="ml-auto text-[9px] py-0 shrink-0">Advanced</Badge>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mb-3 flex-1 leading-relaxed">{tpl.description}</p>
+                                  <div className="flex gap-2 mt-auto">
+                                    <Button variant="outline" size="sm" className="flex-1" onClick={() => handlePreview(tpl.id)}>
+                                      <Eye className="w-3 h-3 mr-1" /> Preview
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="flex-1 border-[#163563]/50 text-[#163563] hover:bg-[#eff6ff]"
+                                      onClick={() => {
+                                        setCampaignCategory("academy_school");
+                                        setNewCampaign((p) => ({ ...p, templateId: tpl.id }));
+                                        setCreateOpen(true);
+                                      }}
+                                    >
+                                      <Plus className="w-3 h-3 mr-1" /> Use
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </CardContent>
@@ -709,8 +960,8 @@ export default function AdminCampaigns() {
         </div>
       </div>
 
-      {/* Campaign Operations Panel */}
-      <CampaignOperationsPanel />
+      {/* Unified Campaign Control Center */}
+      <CampaignControlCenter />
 
       {/* Create Campaign */}
       <Card>
@@ -736,13 +987,29 @@ export default function AdminCampaigns() {
       {/* Campaign History */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            Campaign History
-          </CardTitle>
-          <CardDescription>
-            Past and pending email campaigns
-          </CardDescription>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5" />
+                Campaign History
+              </CardTitle>
+              <CardDescription>
+                Past and pending email campaigns
+              </CardDescription>
+            </div>
+            {/* Filter tabs */}
+            <div className="flex rounded-lg border border-border overflow-hidden text-xs">
+              {(["all", "manual", "autopilot"] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setHistoryFilter(f)}
+                  className={`px-3 py-1.5 font-medium transition-colors capitalize ${historyFilter === f ? "bg-[#2e6da4] text-white" : "bg-background text-muted-foreground hover:bg-muted"}`}
+                >
+                  {f === "autopilot" ? <span className="flex items-center gap-1"><Bot className="w-3 h-3" />Autopilot</span> : f.charAt(0).toUpperCase() + f.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {campaigns.isLoading ? (
@@ -772,10 +1039,22 @@ export default function AdminCampaigns() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {campaigns.data.map((c) => (
+                  {campaigns.data
+                    .filter((c) => {
+                      const isAutopilot = c.name?.startsWith("Autopilot — ");
+                      if (historyFilter === "autopilot") return isAutopilot;
+                      if (historyFilter === "manual") return !isAutopilot;
+                      return true;
+                    })
+                    .map((c) => (
                     <TableRow key={c.id}>
                       <TableCell className="font-medium">
-                        {c.name}
+                        {c.name?.startsWith("Autopilot — ") ? (
+                          <span className="flex items-center gap-1.5">
+                            <Bot className="w-3.5 h-3.5 text-[#2e6da4] shrink-0" />
+                            <span className="truncate max-w-[200px]" title={c.name}>{c.name}</span>
+                          </span>
+                        ) : c.name}
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary">{c.segment}</Badge>
@@ -975,48 +1254,78 @@ export default function AdminCampaigns() {
                     <SelectValue placeholder={campaignCategory ? "Select template" : "Select type first"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {/* Show templates filtered by the selected campaign category */}
                     {campaignCategory === "management" && (
-                      <SelectGroup>
-                        <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 flex items-center gap-1.5">
-                          <Building2 className="w-3 h-3" /> Management Platform
-                        </SelectLabel>
-                        {templates.data
-                          ?.filter((t) => t.category === "management")
-                          .map((t) => (
-                            <SelectItem key={t.id} value={t.id}>
-                              {t.name}
-                            </SelectItem>
-                          ))}
-                      </SelectGroup>
-                    )}
-                    {campaignCategory === "academy_school" && (
-                      <SelectGroup>
-                        <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 flex items-center gap-1.5">
-                          <GraduationCap className="w-3 h-3" /> Academy / School
-                        </SelectLabel>
-                        {templates.data
-                          ?.filter((t) => t.category === "academy_school")
-                          .map((t) => (
-                            <SelectItem key={t.id} value={t.id}>
-                              {t.name}
-                            </SelectItem>
-                          ))}
-                      </SelectGroup>
-                    )}
-                    {/* Fallback: show all if no type selected */}
-                    {!campaignCategory && (
                       <>
                         <SelectGroup>
-                          <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Management Platform</SelectLabel>
-                          {templates.data?.filter((t) => t.category === "management").map((t) => (
+                          <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 flex items-center gap-1.5">
+                            <Building2 className="w-3 h-3" /> Primary Sequence
+                          </SelectLabel>
+                          {templates.data?.filter((t) => t.category === "management" && !t.isAdvanced).map((t) => (
                             <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                           ))}
                         </SelectGroup>
-                        {templates.data?.some((t) => t.category === "academy_school") && (
+                        {templates.data?.some((t) => t.category === "management" && t.isAdvanced) && (
                           <SelectGroup>
-                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 mt-1 border-t border-border pt-2">Academy / School</SelectLabel>
-                            {templates.data?.filter((t) => t.category === "academy_school").map((t) => (
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 mt-1 border-t border-border pt-2">
+                              Advanced / Spotlight
+                            </SelectLabel>
+                            {templates.data.filter((t) => t.category === "management" && t.isAdvanced).map((t) => (
+                              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                      </>
+                    )}
+                    {campaignCategory === "academy_school" && (
+                      <>
+                        <SelectGroup>
+                          <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 flex items-center gap-1.5">
+                            <GraduationCap className="w-3 h-3" /> Primary Sequence
+                          </SelectLabel>
+                          {templates.data?.filter((t) => t.category === "academy_school" && !t.isAdvanced).map((t) => (
+                            <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                        {templates.data?.some((t) => t.category === "academy_school" && t.isAdvanced) && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 mt-1 border-t border-border pt-2">
+                              Advanced / Spotlight
+                            </SelectLabel>
+                            {templates.data.filter((t) => t.category === "academy_school" && t.isAdvanced).map((t) => (
+                              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                      </>
+                    )}
+                    {!campaignCategory && (
+                      <>
+                        <SelectGroup>
+                          <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Management — Primary</SelectLabel>
+                          {templates.data?.filter((t) => t.category === "management" && !t.isAdvanced).map((t) => (
+                            <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                        {templates.data?.some((t) => t.category === "management" && t.isAdvanced) && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Management — Advanced</SelectLabel>
+                            {templates.data?.filter((t) => t.category === "management" && t.isAdvanced).map((t) => (
+                              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                        {templates.data?.some((t) => t.category === "academy_school" && !t.isAdvanced) && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 mt-1 border-t border-border pt-2">Academy — Primary</SelectLabel>
+                            {templates.data?.filter((t) => t.category === "academy_school" && !t.isAdvanced).map((t) => (
+                              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                        {templates.data?.some((t) => t.category === "academy_school" && t.isAdvanced) && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Academy — Advanced</SelectLabel>
+                            {templates.data?.filter((t) => t.category === "academy_school" && t.isAdvanced).map((t) => (
                               <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                             ))}
                           </SelectGroup>
@@ -1303,9 +1612,6 @@ export default function AdminCampaigns() {
       {/* Marketing Contacts Section */}
       <MarketingContactsSection />
 
-      {/* Campaign Assignment Preview */}
-      <CampaignAssignmentPreview />
-
       {/* Replies Inbox */}
       <Card>
         <CardHeader>
@@ -1497,6 +1803,15 @@ function MarketingContactsSection() {
       toast.error(`Bulk delete failed: ${e.message}`);
       setBulkDeleteOpen(false);
     },
+  });
+
+  const clearDupFlagMutation = trpc.admin.clearDuplicateFlag.useMutation({
+    onSuccess: () => {
+      toast.success("Duplicate flag cleared — contact will be included in next autopilot run.");
+      utils.admin.getMarketingContacts.invalidate();
+      utils.admin.getCampaignAssignmentPreview.invalidate();
+    },
+    onError: (e) => toast.error(`Clear flag failed: ${e.message}`),
   });
 
   const hasMore = (contacts.data?.length ?? 0) >= pageSize;
@@ -1765,16 +2080,36 @@ function MarketingContactsSection() {
                           >
                             {contact.status}
                           </Badge>
+                          {contact.suspectedDuplicateOf != null && (
+                            <Badge variant="outline" className="text-xs ml-1 border-amber-400 text-amber-700 dark:text-amber-300 gap-1">
+                              <AlertTriangle className="w-2.5 h-2.5" />
+                              Dup?
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive"
-                            onClick={() => deleteMutation.mutate({ id: contact.id })}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <div className="flex items-center justify-end gap-1">
+                            {contact.suspectedDuplicateOf != null && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-2 text-xs text-amber-700 hover:text-amber-900 hover:bg-amber-50"
+                                title={`Suspected dup of contact #${contact.suspectedDuplicateOf} (score: ${contact.dupRiskScore ?? "?"}). Click to clear.`}
+                                onClick={() => clearDupFlagMutation.mutate({ contactId: contact.id })}
+                                disabled={clearDupFlagMutation.isPending}
+                              >
+                                Clear Flag
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive"
+                              onClick={() => deleteMutation.mutate({ id: contact.id })}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

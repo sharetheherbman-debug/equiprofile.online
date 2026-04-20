@@ -88,6 +88,7 @@ import {
 } from "./_core/emailTemplates";
 import { sendEmail, sendCampaignEmail, sendStableInviteEmail, sendCompensationEmail } from "./_core/email";
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
+import { detectDuplicatePeople, DUP_THRESHOLD } from "./_core/dupPersonDetection";
 import { studentRouter } from "./studentRouter";
 import { teacherRouter } from "./teacherRouter";
 import { schoolRouter } from "./schoolRouter";
@@ -3738,6 +3739,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         description: t.description,
         previewColor: t.previewColor,
         category: t.category,
+        isAdvanced: t.isAdvanced ?? false,
       }));
     }),
 
@@ -4389,7 +4391,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
      */
     getCampaignAssignmentPreview: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
-      if (!dbConn) return { management: 0, academy: 0, blocked: 0, alreadySent: 0, total: 0 };
+      if (!dbConn) return { management: 0, academy: 0, blocked: 0, alreadySent: 0, suspectedDuplicate: 0, total: 0 };
 
       const contacts = await dbConn.select().from(marketingContacts);
       const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
@@ -4408,12 +4410,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       let academy = 0;
       let blocked = 0;
       let alreadySent = 0;
+      let suspectedDuplicate = 0;
 
       for (const c of contacts) {
         const email = c.email?.toLowerCase() || "";
         if (!email || !email.includes("@")) { blocked++; continue; }
         if (c.status !== "active" || suppressedSet.has(email)) { blocked++; continue; }
         if (alreadySentSet.has(email)) { alreadySent++; continue; }
+        // Contacts flagged as suspected duplicates are soft-blocked from autopilot
+        if (c.suspectedDuplicateOf != null) { suspectedDuplicate++; continue; }
         if (academyTypes.has(c.contactType || "")) {
           academy++;
         } else {
@@ -4426,9 +4431,271 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         academy,
         blocked,
         alreadySent,
+        suspectedDuplicate,
         total: contacts.length,
       };
     }),
+
+    /**
+     * Campaign Autopilot — classify uncontacted marketing contacts and
+     * create family-appropriate paused campaigns ready for the send windows.
+     *
+     * Rules:
+     * - Only active, non-suppressed contacts that have never been sent any
+     *   campaign email are eligible.
+     * - Management contacts → enrolled into a Management Autopilot campaign
+     *   using the mgmt-intro template.
+     * - Academy contacts (school/college/academy/student/teacher/instructor)
+     *   → enrolled into an Academy Autopilot campaign using the academy-intro
+     *   template.
+     * - For each campaign, contacts from the OTHER family are pre-marked as
+     *   "skipped" so the send windows never accidentally email the wrong
+     *   family from a campaign intended for the other.
+     * - Both campaigns are set to "paused" so the automated outreach windows
+     *   (08:30–16:30 UTC weekdays) pick them up immediately.
+     * - Idempotent: if all contacts are already enrolled, returns zeros.
+     */
+    runCampaignAutopilot: adminUnlockedProcedure.mutation(async ({ ctx }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      // Academy family types (same set used by getCampaignAssignmentPreview)
+      const ACADEMY_TYPES = new Set(["school", "college", "academy", "student", "teacher", "instructor"]);
+
+      // ── Step 1: Find all active, non-suppressed contacts ─────────────────
+      const allContacts = await dbConn
+        .select()
+        .from(marketingContacts)
+        .where(eq(marketingContacts.status, "active"));
+
+      const suppressions = await dbConn
+        .select({ email: emailUnsubscribes.email })
+        .from(emailUnsubscribes);
+      const suppressedSet = new Set(suppressions.map((s) => s.email.toLowerCase()));
+
+      // ── Step 2: Find contacts already sent any campaign email ─────────────
+      const alreadySentRows = await dbConn
+        .select({ email: emailCampaignRecipients.email })
+        .from(emailCampaignRecipients)
+        .where(eq(emailCampaignRecipients.status, "sent"));
+      const alreadySentSet = new Set(alreadySentRows.map((r) => r.email.toLowerCase()));
+
+      // ── Step 3: Find contacts already enrolled in any autopilot campaign ──
+      // "enrolled" = already has a record in emailCampaignRecipients for a
+      //   campaign whose name starts with "Autopilot —"
+      const autopilotCampaignRows = await dbConn
+        .select({ id: emailCampaigns.id })
+        .from(emailCampaigns)
+        .where(sql`${emailCampaigns.name} LIKE 'Autopilot — %'`);
+      const autopilotIds = autopilotCampaignRows.map((r) => r.id);
+
+      const enrolledSet = new Set<string>();
+      if (autopilotIds.length > 0) {
+        const enrolledRows = await dbConn
+          .select({ email: emailCampaignRecipients.email })
+          .from(emailCampaignRecipients)
+          .where(inArray(emailCampaignRecipients.campaignId, autopilotIds));
+        for (const r of enrolledRows) enrolledSet.add(r.email.toLowerCase());
+      }
+
+      // ── Step 4: Classify unenrolled contacts (skip suspected duplicates) ──
+      const managementEmails: Array<{ email: string; name: string | null }> = [];
+      const academyEmails: Array<{ email: string; name: string | null }> = [];
+
+      for (const c of allContacts) {
+        const email = c.email?.toLowerCase();
+        if (!email || !email.includes("@")) continue;
+        if (suppressedSet.has(email)) continue;
+        if (alreadySentSet.has(email)) continue;
+        if (enrolledSet.has(email)) continue;
+        // Skip contacts flagged as suspected duplicates — admin must clear flag to include
+        if (c.suspectedDuplicateOf != null) continue;
+
+        if (ACADEMY_TYPES.has(c.contactType || "")) {
+          academyEmails.push({ email, name: c.name });
+        } else {
+          managementEmails.push({ email, name: c.name });
+        }
+      }
+
+      let managementCampaignId: number | null = null;
+      let academyCampaignId: number | null = null;
+      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
+      // ── Step 5: Create Management Autopilot campaign if needed ────────────
+      if (managementEmails.length > 0) {
+        const mgmtTemplate = CAMPAIGN_TEMPLATES.find((t) => t.id === "mgmt-intro");
+        if (!mgmtTemplate) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "mgmt-intro template not found" });
+
+        const mgmtResult = await dbConn.insert(emailCampaigns).values({
+          name: `Autopilot — Management (${today})`,
+          subject: "The professional platform built for equestrian businesses",
+          htmlBody: mgmtTemplate.getHtml(),
+          templateId: "mgmt-intro",
+          segment: "marketing",
+          customFilter: null,
+          targetCountry: null,
+          targetType: null,
+          dailyLimit: 25,
+          sentToday: 0,
+          lastSendDate: null,
+          recipientCount: managementEmails.length,
+          sentCount: 0,
+          failedCount: 0,
+          status: "paused",
+          sentAt: null,
+          pausedAt: new Date(),
+          sentByUserId: ctx.user.id,
+        });
+        managementCampaignId = Number(mgmtResult[0].insertId);
+
+        // Pre-mark academy contacts as "skipped" in the management campaign
+        // so the send windows never email academy contacts from this campaign.
+        if (academyEmails.length > 0) {
+          const skipValues = academyEmails.map((c) => ({
+            campaignId: managementCampaignId!,
+            email: c.email,
+            name: c.name || null,
+            status: "skipped" as const,
+          }));
+          // Insert in batches of 500 to avoid packet size issues
+          for (let i = 0; i < skipValues.length; i += 500) {
+            await dbConn.insert(emailCampaignRecipients).values(skipValues.slice(i, i + 500));
+          }
+        }
+      }
+
+      // ── Step 6: Create Academy Autopilot campaign if needed ───────────────
+      if (academyEmails.length > 0) {
+        const acaTemplate = CAMPAIGN_TEMPLATES.find((t) => t.id === "academy-intro");
+        if (!acaTemplate) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "academy-intro template not found" });
+
+        const acaResult = await dbConn.insert(emailCampaigns).values({
+          name: `Autopilot — Academy (${today})`,
+          subject: "A structured learning platform designed for equestrian schools",
+          htmlBody: acaTemplate.getHtml(),
+          templateId: "academy-intro",
+          segment: "marketing",
+          customFilter: null,
+          targetCountry: null,
+          targetType: null,
+          dailyLimit: 15,
+          sentToday: 0,
+          lastSendDate: null,
+          recipientCount: academyEmails.length,
+          sentCount: 0,
+          failedCount: 0,
+          status: "paused",
+          sentAt: null,
+          pausedAt: new Date(),
+          sentByUserId: ctx.user.id,
+        });
+        academyCampaignId = Number(acaResult[0].insertId);
+
+        // Pre-mark management contacts as "skipped" in the academy campaign
+        if (managementEmails.length > 0) {
+          const skipValues = managementEmails.map((c) => ({
+            campaignId: academyCampaignId!,
+            email: c.email,
+            name: c.name || null,
+            status: "skipped" as const,
+          }));
+          for (let i = 0; i < skipValues.length; i += 500) {
+            await dbConn.insert(emailCampaignRecipients).values(skipValues.slice(i, i + 500));
+          }
+        }
+      }
+
+      console.log(
+        `[CampaignAutopilot] Enrolled: management=${managementEmails.length} (campaignId=${managementCampaignId}) academy=${academyEmails.length} (campaignId=${academyCampaignId})`,
+      );
+
+      return {
+        management: managementEmails.length,
+        academy: academyEmails.length,
+        total: managementEmails.length + academyEmails.length,
+        managementCampaignId,
+        academyCampaignId,
+      };
+    }),
+
+    /**
+     * runDuplicatePersonScan — scans all marketing contacts using the
+     * deterministic trigram + domain + geography fuzzy algorithm, then writes
+     * suspected-duplicate flags directly to the DB.
+     *
+     * Safe to run repeatedly: existing flags are ONLY updated, never downgraded
+     * without an explicit clearDuplicateFlag call from an admin.
+     *
+     * Contacts that already have a flag set are NOT re-evaluated (their flag
+     * was either placed by a previous scan or manually overridden).
+     *
+     * Returns: how many contacts were newly flagged in this scan.
+     */
+    runDuplicatePersonScan: adminUnlockedProcedure.mutation(async () => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      // Only scan contacts that haven't already been flagged
+      const contacts = await dbConn
+        .select({
+          id: marketingContacts.id,
+          email: marketingContacts.email,
+          name: marketingContacts.name,
+          businessName: marketingContacts.businessName,
+          country: marketingContacts.country,
+          region: marketingContacts.region,
+          contactType: marketingContacts.contactType,
+          suspectedDuplicateOf: marketingContacts.suspectedDuplicateOf,
+        })
+        .from(marketingContacts)
+        .where(eq(marketingContacts.status, "active"));
+
+      // Run the in-memory detection
+      const results = detectDuplicatePeople(contacts);
+
+      // Only persist newly found duplicates (don't overwrite manually cleared flags)
+      const alreadyFlagged = new Set(
+        contacts
+          .filter((c) => c.suspectedDuplicateOf != null)
+          .map((c) => c.id),
+      );
+
+      let newlyFlagged = 0;
+      for (const r of results) {
+        if (alreadyFlagged.has(r.contactId)) continue; // already flagged — leave it
+        await dbConn
+          .update(marketingContacts)
+          .set({
+            suspectedDuplicateOf: r.suspectedDuplicateOf,
+            dupRiskScore: r.riskScore,
+          })
+          .where(eq(marketingContacts.id, r.contactId));
+        newlyFlagged++;
+      }
+
+      return {
+        scanned: contacts.length,
+        newlyFlagged,
+        totalFlagged: alreadyFlagged.size + newlyFlagged,
+      };
+    }),
+
+    /**
+     * clearDuplicateFlag — admin override: removes the suspected-duplicate flag
+     * from a single contact, making it eligible for the next autopilot run.
+     */
+    clearDuplicateFlag: adminUnlockedProcedure
+      .input(z.object({ contactId: z.number() }))
+      .mutation(async ({ input }) => {
+        const dbConn = await getDb();
+        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        await dbConn
+          .update(marketingContacts)
+          .set({ suspectedDuplicateOf: null, dupRiskScore: null })
+          .where(eq(marketingContacts.id, input.contactId));
+        return { success: true };
+      }),
 
     pauseCampaign: adminUnlockedProcedure
       .input(z.object({ campaignId: z.number() }))
