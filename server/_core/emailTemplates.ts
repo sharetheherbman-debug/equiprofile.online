@@ -117,7 +117,6 @@ function academyHeaderBlock(): string {
 </tr>
 <tr><td style="height:3px;background:linear-gradient(90deg, #163563 0%, #3b82f6 50%, #163563 100%);"></td></tr>`;
 }
-}
 
 /** Branded call-to-action button. color should be a solid hex. */
 function ctaButton(text: string, url: string, color: string): string {
@@ -290,53 +289,6 @@ ${headerBlock("linear-gradient(135deg, #065f46 0%, #10b981 100%)")}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TEMPLATE 4: Feature Spotlight — AI Assistant & Weather
-// ─────────────────────────────────────────────────────────────────────────────
-
-function template4_aiAndWeather(): string {
-  return wrapEmail(`
-${headerBlock()}
-<tr><td style="padding:40px 40px 0;">
-  <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    Your AI Horse Assistant Is Here, {{firstName}}
-  </h1>
-  <p style="margin:0 0 20px;font-size:16px;color:#64748b;line-height:1.6;">
-    EquiProfile includes an intelligent AI assistant and real-time weather analysis — built right into your dashboard.
-  </p>
-</td></tr>
-<tr><td style="padding:0 40px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    <tr><td style="padding-bottom:16px;">
-      <div style="background:linear-gradient(135deg,#eaf1fb,#e8f4f0);border-radius:12px;padding:24px;border:1px solid #bcd5ee;">
-        <h3 style="margin:0 0 8px;font-size:16px;color:#2e6da4;">🧠 AI Chat Assistant</h3>
-        <p style="margin:0;font-size:14px;color:#475569;line-height:1.6;">
-          Ask questions about horse care, get training suggestions, understand health records, and manage your stable — all through natural conversation.
-        </p>
-      </div>
-    </td></tr>
-    <tr><td>
-      <div style="background:linear-gradient(135deg,#fdf8ee,#eaf1fb);border-radius:12px;padding:24px;border:1px solid #e2d5a8;">
-        <h3 style="margin:0 0 8px;font-size:16px;color:#9a7d3a;">🌤️ Smart Weather Analysis</h3>
-        <p style="margin:0;font-size:14px;color:#475569;line-height:1.6;">
-          Get AI-powered riding suitability forecasts based on your stable's location. Know exactly when conditions are ideal for training, hacking, or turnout.
-        </p>
-      </div>
-    </td></tr>
-  </table>
-</td></tr>
-<tr><td style="padding:24px 40px 12px;text-align:center;">
-  <p style="font-size:15px;color:#64748b;line-height:1.6;margin:0 0 8px;">
-    Experience it free for <strong style="color:#2e6da4;">7 days</strong> — no credit card needed.
-  </p>
-  ${ctaButton("Try AI Features Free →", "{{signupLink}}", "#2e6da4")}
-</td></tr>
-<tr><td style="padding:0 40px 32px;text-align:center;">
-  <p style="margin:0;font-size:13px;color:#94a3b8;">Powered by advanced AI. Always learning. Always helpful.</p>
-</td></tr>
-`);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // TEMPLATE 5: General Campaign / Admin Template
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -445,41 +397,6 @@ ${headerBlock("linear-gradient(135deg, #059669 0%, #10b981 100%)")}
 `);
 }
 
-function schoolTemplate3_studentPlatformOverview(): string {
-  return wrapEmail(`
-${headerBlock("linear-gradient(135deg, #6366f1 0%, #818cf8 100%)")}
-<tr><td style="padding:40px 40px 0;">
-  <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    The Student Learning Experience 📚
-  </h1>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    Hi {{firstName}},
-  </p>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    Here's what your students will experience on EquiProfile — a clean, structured learning platform designed to make equestrian education engaging and measurable.
-  </p>
-</td></tr>
-<tr><td style="padding:0 40px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
-    <tr><td style="padding:24px;background:#eef2ff;">
-      <h2 style="margin:0 0 16px;font-size:18px;color:#4f46e5;">Student Dashboard Features</h2>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📖 Structured learning pathways with clear progression</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🎯 Daily practice scenarios matched to their level</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🤖 AI tutor available 24/7 for questions</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📋 Teacher-assigned tasks and homework</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📈 Visual progress tracking and level badges</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">💬 Direct messaging with instructors</td></tr>
-      </table>
-    </td></tr>
-  </table>
-</td></tr>
-<tr><td style="padding:24px 40px 12px;text-align:center;">
-  ${ctaButton("See the Platform →", "{{signupLink}}", "#6366f1")}
-</td></tr>
-`);
-}
-
 function schoolTemplate4_teacherOnboarding(): string {
   return wrapEmail(`
 ${headerBlock("linear-gradient(135deg, #d97706 0%, #f59e0b 100%)")}
@@ -511,40 +428,6 @@ ${headerBlock("linear-gradient(135deg, #d97706 0%, #f59e0b 100%)")}
 </td></tr>
 <tr><td style="padding:24px 40px 12px;text-align:center;">
   ${ctaButton("Open Instructor Portal →", "{{signupLink}}", "#d97706")}
-</td></tr>
-`);
-}
-
-function schoolTemplate5_parentInfoPack(): string {
-  return wrapEmail(`
-${headerBlock("linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)")}
-<tr><td style="padding:40px 40px 0;">
-  <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    Parent Information Pack 👨‍👩‍👧
-  </h1>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    Hi {{firstName}},
-  </p>
-  <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.6;">
-    Your child's riding school uses <strong style="color:#1e293b;">EquiProfile</strong> to deliver structured equestrian education. Here's what that means for you and your child.
-  </p>
-</td></tr>
-<tr><td style="padding:0 40px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
-    <tr><td style="padding:24px;background:#ecfeff;">
-      <h2 style="margin:0 0 16px;font-size:18px;color:#0891b2;">What Your Child Gets</h2>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🎓 Structured learning from beginner to advanced</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📊 Clear progress reports you can review</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🤖 AI tutor for safe, instant answers to equine questions</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📱 Mobile-friendly — learn anytime, anywhere</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🏆 Level badges and achievements to keep them motivated</td></tr>
-      </table>
-    </td></tr>
-  </table>
-</td></tr>
-<tr><td style="padding:24px 40px 12px;text-align:center;">
-  ${ctaButton("Learn More About EquiProfile →", "{{signupLink}}", "#0891b2")}
 </td></tr>
 `);
 }
@@ -583,112 +466,6 @@ ${headerBlock("linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)")}
 <tr><td style="padding:24px 40px 12px;text-align:center;">
   ${ctaButton("Start Your Free Trial →", "{{signupLink}}", "#7c3aed")}
   <p style="margin:8px 0 0;font-size:12px;color:#94a3b8;">No credit card needed. Cancel anytime.</p>
-</td></tr>
-`);
-}
-
-function schoolTemplate7_performanceTracking(): string {
-  return wrapEmail(`
-${headerBlock("linear-gradient(135deg, #dc2626 0%, #ef4444 100%)")}
-<tr><td style="padding:40px 40px 0;">
-  <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    Track Student Performance Like Never Before 📊
-  </h1>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    Hi {{firstName}},
-  </p>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    EquiProfile gives your school powerful tools to track every student's learning journey — from lesson completion to competency development to overall progression.
-  </p>
-</td></tr>
-<tr><td style="padding:0 40px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
-    <tr><td style="padding:24px;background:#fef2f2;">
-      <h2 style="margin:0 0 16px;font-size:18px;color:#dc2626;">Reporting & Analytics</h2>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📈 Individual student progress dashboards</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🏆 Level progression tracking (Beginner → Advanced)</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📋 Assignment completion rates</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🔍 Identify weak areas and students needing support</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📄 Exportable reports for parents and inspections</td></tr>
-      </table>
-    </td></tr>
-  </table>
-</td></tr>
-<tr><td style="padding:24px 40px 12px;text-align:center;">
-  ${ctaButton("See Reporting Tools →", "{{signupLink}}", "#dc2626")}
-</td></tr>
-`);
-}
-
-function schoolTemplate8_digitalUpgrade(): string {
-  return wrapEmail(`
-${headerBlock("linear-gradient(135deg, #0f172a 0%, #334155 100%)")}
-<tr><td style="padding:40px 40px 0;">
-  <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    Upgrade to Digital Training 🚀
-  </h1>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    Hi {{firstName}},
-  </p>
-  <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.6;">
-    Still managing student records on paper? Running lessons from memory? EquiProfile brings your school into the digital age — professionally and effortlessly.
-  </p>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    Schools using EquiProfile report better student engagement, clearer communication with parents, and significant time savings on administration.
-  </p>
-</td></tr>
-<tr><td style="padding:0 40px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
-    <tr><td style="padding:24px;background:#f8fafc;">
-      <h2 style="margin:0 0 16px;font-size:18px;color:#0f172a;">Why Go Digital?</h2>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">⏱️ Save hours on admin every week</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📱 Students learn on any device, anywhere</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🤖 AI-powered learning support 24/7</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">👨‍👩‍👧 Parents can track progress in real-time</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🏆 Professional image that attracts more students</td></tr>
-      </table>
-    </td></tr>
-  </table>
-</td></tr>
-<tr><td style="padding:24px 40px 12px;text-align:center;">
-  ${ctaButton("Upgrade Your School →", "{{signupLink}}", "#334155")}
-</td></tr>
-`);
-}
-
-function schoolTemplate9_stableAndLearning(): string {
-  return wrapEmail(`
-${headerBlock("linear-gradient(135deg, #065f46 0%, #10b981 100%)")}
-<tr><td style="padding:40px 40px 0;">
-  <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    Stable Management + Learning = One Platform 🐴📚
-  </h1>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    Hi {{firstName}},
-  </p>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    EquiProfile uniquely combines stable management with structured student learning. Manage your horses and teach your students — all in one integrated platform.
-  </p>
-</td></tr>
-<tr><td style="padding:0 40px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
-    <tr><td style="padding:24px;background:#ecfdf5;">
-      <h2 style="margin:0 0 16px;font-size:18px;color:#065f46;">The Combined Advantage</h2>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🏠 Stable management for your yard operations</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📖 Structured learning for student education</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🐴 Link horses to students for real-world learning</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">👨‍🏫 Teacher tools for assignments and feedback</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📊 Unified reporting across both areas</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">💬 Messaging for staff, students, and parents</td></tr>
-      </table>
-    </td></tr>
-  </table>
-</td></tr>
-<tr><td style="padding:24px 40px 12px;text-align:center;">
-  ${ctaButton("Explore the Platform →", "{{signupLink}}", "#065f46")}
 </td></tr>
 `);
 }
@@ -745,6 +522,13 @@ export interface CampaignTemplate {
   /** management = stable/yard/owner campaigns; academy_school = education/riding-school campaigns */
   category: "management" | "academy_school";
   getHtml: () => string;
+  /**
+   * When true, this template is shown in the "Advanced / Spotlight" section of the
+   * template picker rather than the primary sequence section.
+   * Primary templates form the 4-email conversion sequences.
+   * Advanced templates are standalone spotlight or re-engagement emails.
+   */
+  isAdvanced?: boolean;
 }
 
 // ─── Daily sending policy defaults ──────────────────────────────────────────
@@ -793,57 +577,6 @@ ${headerBlock("linear-gradient(135deg, #92400e 0%, #d97706 100%)")}
   <p style="margin:8px 0 0;font-size:13px;color:#94a3b8;">Start your 7-day free trial — no credit card required.</p>
 </td></tr>
 `);
-}
-
-function academyTemplate2_safetyWelfare(): string {
-  return wrapEmail(`
-${headerBlock("linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%)")}
-<tr><td style="padding:40px 40px 0;">
-  <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    Welfare First. Every Horse. Every Day.
-  </h1>
-  <p style="margin:0 0 8px;font-size:15px;color:#475569;line-height:1.6;">Hi {{firstName}},</p>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    For equestrian academies, welfare compliance and horse health documentation is not optional — it's foundational. EquiProfile makes it straightforward, organised, and audit-ready.
-  </p>
-</td></tr>
-<tr><td style="padding:0 40px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    <tr>
-      <td style="width:50%;padding:6px;vertical-align:top;">
-        <div style="background:#fff1f2;border-radius:10px;padding:18px;border-top:3px solid #dc2626;">
-          <h3 style="margin:0 0 8px;font-size:13px;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Health Monitoring</h3>
-          <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Full health records per horse — vaccinations, dental, farrier, medications, and vet visits, all in one place.</p>
-        </div>
-      </td>
-      <td style="width:50%;padding:6px;vertical-align:top;">
-        <div style="background:#fef2f2;border-radius:10px;padding:18px;border-top:3px solid #ef4444;">
-          <h3 style="margin:0 0 8px;font-size:13px;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Incident Logging</h3>
-          <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Log incidents, near-misses, and welfare concerns with dates, notes, and follow-up actions recorded safely.</p>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:6px;vertical-align:top;">
-        <div style="background:#fff7ed;border-radius:10px;padding:18px;border-top:3px solid #f97316;">
-          <h3 style="margin:0 0 8px;font-size:13px;color:#c2410c;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Audit Readiness</h3>
-          <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">All records are exportable as professional PDFs. Ready for BHS, riding club, or insurance inspections.</p>
-        </div>
-      </td>
-      <td style="padding:6px;vertical-align:top;">
-        <div style="background:#fef9c3;border-radius:10px;padding:18px;border-top:3px solid #ca8a04;">
-          <h3 style="margin:0 0 8px;font-size:13px;color:#92400e;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Document Storage</h3>
-          <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Store passports, insurance documents, vet certificates, and more — linked directly to each horse.</p>
-        </div>
-      </td>
-    </tr>
-  </table>
-</td></tr>
-<tr><td style="padding:24px 40px;text-align:center;">
-  ${ctaButton("See How It Works", "{{signupLink}}", "#dc2626")}
-  <p style="margin:8px 0 0;font-size:13px;color:#94a3b8;">7-day free trial — no credit card required.</p>
-</td></tr>
-`, "#fef2f2");
 }
 
 function academyTemplate3_seasonalEnrolment(): string {
@@ -1131,6 +864,103 @@ ${bulletRow("No credit card required", "#163563")}
     previewColor: "#2e6da4",
     category: "management",
     getHtml: template5_general,
+  },
+
+  // ── Advanced / Spotlight Templates (management) ──────────────────────────
+  // These are high-quality standalone templates for specific feature angles.
+  // They appear in the "Advanced Templates" section of the template picker,
+  // not in the primary conversion sequence section.
+  {
+    id: "health-tracking",
+    name: "Health Tracking Spotlight",
+    description: "Feature spotlight on health records — vaccinations, dental, farrier, deworming, and vet notes. Strong trial CTA.",
+    previewColor: "#2e6da4",
+    category: "management",
+    isAdvanced: true,
+    getHtml: template1_healthTracking,
+  },
+  {
+    id: "training-performance",
+    name: "Training & Performance",
+    description: "Feature spotlight on training logs, session tracking, performance monitoring, and AI insights.",
+    previewColor: "#2e6da4",
+    category: "management",
+    isAdvanced: true,
+    getHtml: template2_trainingPerformance,
+  },
+  {
+    id: "stable-management",
+    name: "Stable Management Spotlight",
+    description: "Feature spotlight for yard owners — multi-horse management, staff, client portal, yard calendar.",
+    previewColor: "#10b981",
+    category: "management",
+    isAdvanced: true,
+    getHtml: template3_stableManagement,
+  },
+
+  // ── Advanced / Spotlight Templates (academy_school) ──────────────────────
+  {
+    id: "school-introduction",
+    name: "School Introduction",
+    description: "First outreach to riding schools — structured learning, progression tracking, teacher tools.",
+    previewColor: "#4f46e5",
+    category: "academy_school",
+    isAdvanced: true,
+    getHtml: schoolTemplate1_introduction,
+  },
+  {
+    id: "school-partnership",
+    name: "Riding School Partnership Pitch",
+    description: "Partnership proposal for riding schools — professional digital infrastructure, measurable outcomes.",
+    previewColor: "#4f46e5",
+    category: "academy_school",
+    isAdvanced: true,
+    getHtml: schoolTemplate2_partnershipPitch,
+  },
+  {
+    id: "school-teacher-outreach",
+    name: "Instructor & Teacher Outreach",
+    description: "Targeted email for instructors and teachers — lesson planning tools, student progress, assessment features.",
+    previewColor: "#4f46e5",
+    category: "academy_school",
+    isAdvanced: true,
+    getHtml: schoolTemplate4_teacherOnboarding,
+  },
+  {
+    id: "school-trial-invite",
+    name: "School Trial Invitation",
+    description: "Low-friction 7-day trial invitation for riding schools and equestrian colleges.",
+    previewColor: "#4f46e5",
+    category: "academy_school",
+    isAdvanced: true,
+    getHtml: schoolTemplate6_trialInvitation,
+  },
+  {
+    id: "school-conversion",
+    name: "School Follow-Up & Conversion",
+    description: "Re-engagement and conversion email for school decision-makers who haven't yet started a trial.",
+    previewColor: "#4f46e5",
+    category: "academy_school",
+    isAdvanced: true,
+    getHtml: schoolTemplate10_followUpConversion,
+  },
+  {
+    id: "academy-competition",
+    name: "Competition Season Prep",
+    description: "Seasonal urgency email around competition season — training logs, performance tracking, event scheduling.",
+    previewColor: "#163563",
+    category: "academy_school",
+    isAdvanced: true,
+    getHtml: academyTemplate1_competitionPrep,
+  },
+  {
+    id: "academy-seasonal",
+    name: "Academy Seasonal Enrolment Drive",
+    description: "Term-time seasonal enrolment email — 40% admin savings metric, free migration, no per-student fees.",
+    previewColor: "#163563",
+    category: "academy_school",
+    isAdvanced: true,
+    getHtml: academyTemplate3_seasonalEnrolment,
   },
 ];
 

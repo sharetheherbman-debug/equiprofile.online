@@ -99,8 +99,153 @@ import {
   TrendingUp,
   Zap,
   Timer,
+  Bot,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
+
+// ─── Campaign Autopilot Panel ─────────────────────────────────────────────────
+/**
+ * Shows unenrolled contact counts per family, last autopilot run result,
+ * and a button to manually trigger the autopilot mutation.
+ *
+ * The autopilot also runs automatically at 07:30 UTC on weekdays.
+ */
+function CampaignAutopilotPanel() {
+  const utils = trpc.useUtils();
+  const preview = trpc.admin.getCampaignAssignmentPreview.useQuery(undefined, {
+    refetchInterval: 120_000,
+  });
+
+  const [lastRun, setLastRun] = useState<{
+    management: number;
+    academy: number;
+    total: number;
+  } | null>(null);
+
+  const autopilotMutation = trpc.admin.runCampaignAutopilot.useMutation({
+    onSuccess: (data) => {
+      setLastRun({ management: data.management, academy: data.academy, total: data.total });
+      if (data.total === 0) {
+        toast.info("Autopilot: no new contacts to enrol — everyone is already in a campaign.");
+      } else {
+        toast.success(
+          `Autopilot enrolled ${data.total} contact${data.total !== 1 ? "s" : ""}` +
+          ` (${data.management} management · ${data.academy} academy)` +
+          ` — campaigns queued for next send window.`,
+        );
+      }
+      utils.admin.getCampaigns.invalidate();
+      utils.admin.getCampaignAssignmentPreview.invalidate();
+    },
+    onError: (e) => toast.error(`Autopilot error: ${e.message}`),
+  });
+
+  const ready = (preview.data?.management ?? 0) + (preview.data?.academy ?? 0);
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Bot className="w-4 h-4 text-[#2e6da4]" />
+            Campaign Autopilot
+          </CardTitle>
+          <Button
+            size="sm"
+            className="bg-[#2e6da4] hover:bg-[#1a5ca0] text-xs"
+            onClick={() => autopilotMutation.mutate()}
+            disabled={autopilotMutation.isPending}
+          >
+            {autopilotMutation.isPending ? (
+              <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+            ) : (
+              <Sparkles className="w-3 h-3 mr-1.5" />
+            )}
+            Run Autopilot Now
+          </Button>
+        </div>
+        <CardDescription>
+          Automatically classifies new marketing contacts into Management or Academy families and
+          creates paused campaigns ready for the next send window. Also runs at{" "}
+          <strong>07:30 UTC on weekdays</strong>.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {preview.isLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-16 rounded-lg" />)}
+          </div>
+        ) : preview.data ? (
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {/* Ready for management */}
+              <div className="rounded-xl border border-[#2e6da4]/20 bg-[#f0f6ff] dark:bg-[#0c1e3c]/30 p-3 text-center">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">
+                  Management Ready
+                </p>
+                <p className="text-2xl font-bold text-[#2e6da4]">{preview.data.management}</p>
+                <p className="text-[10px] text-muted-foreground">unenrolled leads</p>
+              </div>
+              {/* Ready for academy */}
+              <div className="rounded-xl border border-[#163563]/20 bg-[#eff6ff] dark:bg-[#0c1e3c]/30 p-3 text-center">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">
+                  Academy Ready
+                </p>
+                <p className="text-2xl font-bold text-[#163563]">{preview.data.academy}</p>
+                <p className="text-[10px] text-muted-foreground">unenrolled leads</p>
+              </div>
+              {/* Already sent */}
+              <div className="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 p-3 text-center">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">
+                  Already Sent
+                </p>
+                <p className="text-2xl font-bold text-amber-600">{preview.data.alreadySent}</p>
+                <p className="text-[10px] text-muted-foreground">won't re-enrol</p>
+              </div>
+              {/* Blocked */}
+              <div className="rounded-xl border border-red-200 bg-red-50 dark:bg-red-900/20 p-3 text-center">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold mb-1">
+                  Blocked
+                </p>
+                <p className="text-2xl font-bold text-red-500">{preview.data.blocked}</p>
+                <p className="text-[10px] text-muted-foreground">suppressed / invalid</p>
+              </div>
+            </div>
+
+            {ready > 0 && (
+              <div className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700/30 px-3 py-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                <p className="text-xs text-emerald-800 dark:text-emerald-300">
+                  <strong>{ready} contact{ready !== 1 ? "s" : ""}</strong> ready to enrol. Click{" "}
+                  <em>Run Autopilot Now</em> or wait for the 07:30 UTC automatic run.
+                </p>
+              </div>
+            )}
+
+            {lastRun && (
+              <div className="flex items-start gap-2 rounded-lg border border-[#2e6da4]/20 bg-[#f0f6ff] dark:bg-[#0c1e3c]/30 px-3 py-2">
+                <Bot className="w-3.5 h-3.5 text-[#2e6da4] mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  Last run: enrolled <strong>{lastRun.management}</strong> management +{" "}
+                  <strong>{lastRun.academy}</strong> academy (total{" "}
+                  <strong>{lastRun.total}</strong>).
+                </p>
+              </div>
+            )}
+
+            <p className="text-xs text-muted-foreground">
+              Academy types: school, college, academy, student, teacher, instructor. All others → Management.
+              Contacts already sent any campaign are excluded.
+            </p>
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
 
 // ─── Campaign Operations Panel ───────────────────────────────────────────────
 /**
@@ -280,6 +425,7 @@ export default function AdminCampaigns() {
   const [createOpen, setCreateOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [confirmSendId, setConfirmSendId] = useState<number | null>(null);
+  const [showAdvancedTemplates, setShowAdvancedTemplates] = useState(false);
   // campaign type drives which template subset is shown
   const [campaignCategory, setCampaignCategory] = useState<"management" | "academy_school" | "">("");
   const [newCampaign, setNewCampaign] = useState({
@@ -559,7 +705,7 @@ export default function AdminCampaigns() {
               Email Templates
             </CardTitle>
             <CardDescription>
-              Professional branded templates — one standard EquiProfile letterhead
+              Primary conversion sequences (4-email drip families) and advanced spotlight templates
             </CardDescription>
           </div>
         </CardHeader>
@@ -571,17 +717,17 @@ export default function AdminCampaigns() {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Management / Stable / Yard / Owner Templates */}
-              {templates.data?.filter((t) => t.category === "management").length ? (
+              {/* ── Primary: Management sequence templates ── */}
+              {templates.data?.filter((t) => t.category === "management" && !t.isAdvanced).length ? (
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
                     <Building2 className="w-3.5 h-3.5 text-[#2e6da4]" />
-                    Management · Stable · Yard · Owner
-                    <Badge variant="secondary" className="text-[10px] ml-auto">{templates.data?.filter((t) => t.category === "management").length} templates</Badge>
+                    Management · Stable · Yard · Owner — Primary Sequence
+                    <Badge variant="secondary" className="text-[10px] ml-auto">{templates.data?.filter((t) => t.category === "management" && !t.isAdvanced).length} templates</Badge>
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {templates.data
-                      ?.filter((t) => t.category === "management")
+                      ?.filter((t) => t.category === "management" && !t.isAdvanced)
                       .map((tpl) => (
                         <div
                           key={tpl.id}
@@ -624,19 +770,19 @@ export default function AdminCampaigns() {
                 </div>
               ) : null}
 
-              {/* Academy / School / Education Templates */}
-              {templates.data?.filter((t) => t.category === "academy_school").length ? (
+              {/* ── Primary: Academy sequence templates ── */}
+              {templates.data?.filter((t) => t.category === "academy_school" && !t.isAdvanced).length ? (
                 <div>
                   <div className="pt-2 border-t border-border mb-3">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                       <GraduationCap className="w-3.5 h-3.5 text-[#1a5ca0]" />
-                      Academy · Riding School · Education
-                      <Badge variant="secondary" className="text-[10px] ml-auto">{templates.data?.filter((t) => t.category === "academy_school").length} templates</Badge>
+                      Academy · Riding School · Education — Primary Sequence
+                      <Badge variant="secondary" className="text-[10px] ml-auto">{templates.data?.filter((t) => t.category === "academy_school" && !t.isAdvanced).length} templates</Badge>
                     </p>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {templates.data
-                      ?.filter((t) => t.category === "academy_school")
+                      ?.filter((t) => t.category === "academy_school" && !t.isAdvanced)
                       .map((tpl) => (
                         <div
                           key={tpl.id}
@@ -678,6 +824,126 @@ export default function AdminCampaigns() {
                   </div>
                 </div>
               ) : null}
+
+              {/* ── Advanced / Spotlight Templates (collapsible) ── */}
+              {templates.data?.some((t) => t.isAdvanced) && (
+                <div className="pt-2 border-t border-border">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 w-full text-left mb-3 group"
+                    onClick={() => setShowAdvancedTemplates((v) => !v)}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
+                      Advanced &amp; Spotlight Templates
+                    </span>
+                    <Badge variant="outline" className="text-[10px] ml-1">
+                      {templates.data?.filter((t) => t.isAdvanced).length}
+                    </Badge>
+                    <span className="ml-auto text-muted-foreground">
+                      {showAdvancedTemplates
+                        ? <ChevronUp className="w-3.5 h-3.5" />
+                        : <ChevronDown className="w-3.5 h-3.5" />}
+                    </span>
+                  </button>
+
+                  {showAdvancedTemplates && (
+                    <div className="space-y-4">
+                      <p className="text-xs text-muted-foreground -mt-1 mb-2">
+                        Standalone feature-spotlight and seasonal emails. Use for specific re-engagement or targeted pushes outside the main sequence.
+                      </p>
+                      {/* Advanced management */}
+                      {templates.data?.filter((t) => t.category === "management" && t.isAdvanced).length ? (
+                        <div>
+                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                            <Building2 className="w-3 h-3 text-[#2e6da4]" /> Management
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {templates.data
+                              .filter((t) => t.category === "management" && t.isAdvanced)
+                              .map((tpl) => (
+                                <div
+                                  key={tpl.id}
+                                  className="border border-dashed rounded-xl p-4 hover:shadow-sm hover:border-[#2e6da4]/40 transition-all flex flex-col bg-white dark:bg-[#0f1a2e]/30"
+                                >
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-6 h-6 rounded-md shrink-0 flex items-center justify-center" style={{ background: "#0c1e3c" }}>
+                                      <Building2 className="w-3 h-3 text-white" />
+                                    </div>
+                                    <h4 className="font-semibold text-sm leading-snug">{tpl.name}</h4>
+                                    <Badge variant="outline" className="ml-auto text-[9px] py-0 shrink-0">Advanced</Badge>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mb-3 flex-1 leading-relaxed">{tpl.description}</p>
+                                  <div className="flex gap-2 mt-auto">
+                                    <Button variant="outline" size="sm" className="flex-1" onClick={() => handlePreview(tpl.id)}>
+                                      <Eye className="w-3 h-3 mr-1" /> Preview
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="flex-1 border-[#2e6da4]/50 text-[#2e6da4] hover:bg-[#f0f6ff]"
+                                      onClick={() => {
+                                        setCampaignCategory("management");
+                                        setNewCampaign((p) => ({ ...p, templateId: tpl.id }));
+                                        setCreateOpen(true);
+                                      }}
+                                    >
+                                      <Plus className="w-3 h-3 mr-1" /> Use
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      ) : null}
+                      {/* Advanced academy */}
+                      {templates.data?.filter((t) => t.category === "academy_school" && t.isAdvanced).length ? (
+                        <div>
+                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                            <GraduationCap className="w-3 h-3 text-[#1a5ca0]" /> Academy / School
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {templates.data
+                              .filter((t) => t.category === "academy_school" && t.isAdvanced)
+                              .map((tpl) => (
+                                <div
+                                  key={tpl.id}
+                                  className="border border-dashed rounded-xl p-4 hover:shadow-sm hover:border-[#163563]/40 transition-all flex flex-col bg-white dark:bg-[#0f1a2e]/30"
+                                >
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-6 h-6 rounded-md shrink-0 flex items-center justify-center" style={{ background: "#163563" }}>
+                                      <GraduationCap className="w-3 h-3 text-white" />
+                                    </div>
+                                    <h4 className="font-semibold text-sm leading-snug">{tpl.name}</h4>
+                                    <Badge variant="outline" className="ml-auto text-[9px] py-0 shrink-0">Advanced</Badge>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mb-3 flex-1 leading-relaxed">{tpl.description}</p>
+                                  <div className="flex gap-2 mt-auto">
+                                    <Button variant="outline" size="sm" className="flex-1" onClick={() => handlePreview(tpl.id)}>
+                                      <Eye className="w-3 h-3 mr-1" /> Preview
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="flex-1 border-[#163563]/50 text-[#163563] hover:bg-[#eff6ff]"
+                                      onClick={() => {
+                                        setCampaignCategory("academy_school");
+                                        setNewCampaign((p) => ({ ...p, templateId: tpl.id }));
+                                        setCreateOpen(true);
+                                      }}
+                                    >
+                                      <Plus className="w-3 h-3 mr-1" /> Use
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </CardContent>
@@ -711,6 +977,9 @@ export default function AdminCampaigns() {
 
       {/* Campaign Operations Panel */}
       <CampaignOperationsPanel />
+
+      {/* Campaign Autopilot */}
+      <CampaignAutopilotPanel />
 
       {/* Create Campaign */}
       <Card>
@@ -975,48 +1244,78 @@ export default function AdminCampaigns() {
                     <SelectValue placeholder={campaignCategory ? "Select template" : "Select type first"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {/* Show templates filtered by the selected campaign category */}
                     {campaignCategory === "management" && (
-                      <SelectGroup>
-                        <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 flex items-center gap-1.5">
-                          <Building2 className="w-3 h-3" /> Management Platform
-                        </SelectLabel>
-                        {templates.data
-                          ?.filter((t) => t.category === "management")
-                          .map((t) => (
-                            <SelectItem key={t.id} value={t.id}>
-                              {t.name}
-                            </SelectItem>
-                          ))}
-                      </SelectGroup>
-                    )}
-                    {campaignCategory === "academy_school" && (
-                      <SelectGroup>
-                        <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 flex items-center gap-1.5">
-                          <GraduationCap className="w-3 h-3" /> Academy / School
-                        </SelectLabel>
-                        {templates.data
-                          ?.filter((t) => t.category === "academy_school")
-                          .map((t) => (
-                            <SelectItem key={t.id} value={t.id}>
-                              {t.name}
-                            </SelectItem>
-                          ))}
-                      </SelectGroup>
-                    )}
-                    {/* Fallback: show all if no type selected */}
-                    {!campaignCategory && (
                       <>
                         <SelectGroup>
-                          <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Management Platform</SelectLabel>
-                          {templates.data?.filter((t) => t.category === "management").map((t) => (
+                          <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 flex items-center gap-1.5">
+                            <Building2 className="w-3 h-3" /> Primary Sequence
+                          </SelectLabel>
+                          {templates.data?.filter((t) => t.category === "management" && !t.isAdvanced).map((t) => (
                             <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                           ))}
                         </SelectGroup>
-                        {templates.data?.some((t) => t.category === "academy_school") && (
+                        {templates.data?.some((t) => t.category === "management" && t.isAdvanced) && (
                           <SelectGroup>
-                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 mt-1 border-t border-border pt-2">Academy / School</SelectLabel>
-                            {templates.data?.filter((t) => t.category === "academy_school").map((t) => (
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 mt-1 border-t border-border pt-2">
+                              Advanced / Spotlight
+                            </SelectLabel>
+                            {templates.data.filter((t) => t.category === "management" && t.isAdvanced).map((t) => (
+                              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                      </>
+                    )}
+                    {campaignCategory === "academy_school" && (
+                      <>
+                        <SelectGroup>
+                          <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 flex items-center gap-1.5">
+                            <GraduationCap className="w-3 h-3" /> Primary Sequence
+                          </SelectLabel>
+                          {templates.data?.filter((t) => t.category === "academy_school" && !t.isAdvanced).map((t) => (
+                            <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                        {templates.data?.some((t) => t.category === "academy_school" && t.isAdvanced) && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 mt-1 border-t border-border pt-2">
+                              Advanced / Spotlight
+                            </SelectLabel>
+                            {templates.data.filter((t) => t.category === "academy_school" && t.isAdvanced).map((t) => (
+                              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                      </>
+                    )}
+                    {!campaignCategory && (
+                      <>
+                        <SelectGroup>
+                          <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Management — Primary</SelectLabel>
+                          {templates.data?.filter((t) => t.category === "management" && !t.isAdvanced).map((t) => (
+                            <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                        {templates.data?.some((t) => t.category === "management" && t.isAdvanced) && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Management — Advanced</SelectLabel>
+                            {templates.data?.filter((t) => t.category === "management" && t.isAdvanced).map((t) => (
+                              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                        {templates.data?.some((t) => t.category === "academy_school" && !t.isAdvanced) && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5 mt-1 border-t border-border pt-2">Academy — Primary</SelectLabel>
+                            {templates.data?.filter((t) => t.category === "academy_school" && !t.isAdvanced).map((t) => (
+                              <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )}
+                        {templates.data?.some((t) => t.category === "academy_school" && t.isAdvanced) && (
+                          <SelectGroup>
+                            <SelectLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Academy — Advanced</SelectLabel>
+                            {templates.data?.filter((t) => t.category === "academy_school" && t.isAdvanced).map((t) => (
                               <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                             ))}
                           </SelectGroup>
@@ -1302,9 +1601,6 @@ export default function AdminCampaigns() {
 
       {/* Marketing Contacts Section */}
       <MarketingContactsSection />
-
-      {/* Campaign Assignment Preview */}
-      <CampaignAssignmentPreview />
 
       {/* Replies Inbox */}
       <Card>
