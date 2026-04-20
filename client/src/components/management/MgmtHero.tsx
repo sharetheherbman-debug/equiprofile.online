@@ -125,7 +125,7 @@ export function MgmtHero({
             {title}
           </h1>
 
-          <p className="mt-6 text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
             {subtitle}
           </p>
         </motion.div>

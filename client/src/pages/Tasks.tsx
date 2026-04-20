@@ -36,6 +36,7 @@ import {
   AlertCircle,
   Trash2,
   Edit,
+  Eye,
   Search,
   Download,
 } from "lucide-react";
@@ -52,6 +53,8 @@ function TasksContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [viewingTask, setViewingTask] = useState<(typeof localTasks)[0] | null>(null);
   const [editingTask, setEditingTask] = useState<(typeof localTasks)[0] | null>(
     null,
   );
@@ -159,6 +162,11 @@ function TasksContent() {
     if (result.data) {
       downloadCSV(result.data.csv, result.data.filename);
     }
+  };
+
+  const openView = (task: (typeof localTasks)[0]) => {
+    setViewingTask(task);
+    setIsViewOpen(true);
   };
 
   const openEdit = (task: (typeof localTasks)[0]) => {
@@ -480,6 +488,72 @@ function TasksContent() {
         </div>
       </div>
 
+      {/* View Task Dialog */}
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{viewingTask?.title}</DialogTitle>
+            <DialogDescription>Task details</DialogDescription>
+          </DialogHeader>
+          {viewingTask && (
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center gap-2">
+                {getStatusIcon(viewingTask.status)}
+                <span className="capitalize">{viewingTask.status.replace("_", " ")}</span>
+                {getPriorityBadge(viewingTask.priority)}
+              </div>
+              {viewingTask.description && (
+                <p className="text-muted-foreground">{viewingTask.description}</p>
+              )}
+              <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
+                <div>
+                  <span className="font-medium text-foreground">Horse:</span>{" "}
+                  {getHorseName(viewingTask.horseId)}
+                </div>
+                <div>
+                  <span className="font-medium text-foreground">Type:</span>{" "}
+                  {viewingTask.taskType.replace(/_/g, " ")}
+                </div>
+                {viewingTask.dueDate && (
+                  <div>
+                    <span className="font-medium text-foreground">Due:</span>{" "}
+                    {new Date(viewingTask.dueDate).toLocaleDateString()}
+                  </div>
+                )}
+                {viewingTask.assignedTo && (
+                  <div>
+                    <span className="font-medium text-foreground">Assigned to:</span>{" "}
+                    {viewingTask.assignedTo}
+                  </div>
+                )}
+                {viewingTask.notes && (
+                  <div className="col-span-2">
+                    <span className="font-medium text-foreground">Notes:</span>{" "}
+                    {viewingTask.notes}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setIsViewOpen(false)}>
+              Close
+            </Button>
+            {viewingTask && viewingTask.status !== "completed" && (
+              <Button
+                onClick={() => {
+                  setIsViewOpen(false);
+                  openEdit(viewingTask);
+                }}
+              >
+                <Edit className="w-3.5 h-3.5 mr-1.5" />
+                Edit Task
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Edit Task Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
@@ -669,7 +743,8 @@ function TasksContent() {
                 {pendingTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-start gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                    className="flex items-start gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                    onClick={() => openView(task)}
                   >
                     {getStatusIcon(task.status)}
                     <div className="flex-1">
@@ -680,7 +755,7 @@ function TasksContent() {
                             {getHorseName(task.horseId)}
                           </p>
                           {task.description && (
-                            <p className="text-sm text-muted-foreground mt-1">
+                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                               {task.description}
                             </p>
                           )}
@@ -690,11 +765,20 @@ function TasksContent() {
                             </p>
                           )}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                           {getPriorityBadge(task.priority)}
                           <Button
                             size="sm"
                             variant="ghost"
+                            title="View"
+                            onClick={() => openView(task)}
+                          >
+                            <Eye className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            title="Edit"
                             onClick={() => openEdit(task)}
                           >
                             <Edit className="w-3 h-3" />
@@ -743,7 +827,8 @@ function TasksContent() {
                 {completedTasks.slice(0, 10).map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-center gap-3 p-3 border rounded-lg opacity-60 hover:opacity-80 transition-opacity"
+                    className="flex items-center gap-3 p-3 border rounded-lg opacity-60 hover:opacity-80 transition-opacity cursor-pointer"
+                    onClick={() => openView(task)}
                   >
                     <CheckCircle className="w-4 h-4 text-green-600" />
                     <div className="flex-1">
@@ -760,7 +845,16 @@ function TasksContent() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => deleteMutation.mutate({ id: task.id })}
+                      title="View"
+                      onClick={(e) => { e.stopPropagation(); openView(task); }}
+                    >
+                      <Eye className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      title="Delete"
+                      onClick={(e) => { e.stopPropagation(); deleteMutation.mutate({ id: task.id }); }}
                     >
                       <Trash2 className="w-3 h-3" />
                     </Button>

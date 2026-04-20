@@ -61,7 +61,8 @@ const PERFORMANCE_COLORS: Record<string, string> = {
   GOOD: "#2e6da4",
   AVERAGE: "#f59e0b",
   POOR: "#ef4444",
-  NOT_RATED: "#94a3b8",
+  // Darker slate so the "Not Rated" slice is legible against a white chart background
+  NOT_RATED: "#64748b",
 };
 
 const PIE_COLORS = [

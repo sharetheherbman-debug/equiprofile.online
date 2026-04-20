@@ -161,8 +161,8 @@ export default function Home() {
         */}
         <section className="relative min-h-[96vh] flex items-center overflow-hidden">
           <img
-            src="/images/management/bones64-stable-1683924_1280.jpg"
-            alt="Horse stable corridor with rows of wooden stalls"
+            src="/images/management/landingV3.jpg"
+            alt="Professional equine management — stables and horses"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
           {/* Deep layered overlay — school-aligned dark palette */}
@@ -203,7 +203,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.28 }}
-              className="mt-7 text-lg md:text-xl text-white/65 max-w-2xl mx-auto leading-relaxed"
+              className="mt-7 text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed"
             >
               The all-in-one platform trusted by trainers, owners and stables to
               keep every horse healthy, happy and performing at its best.

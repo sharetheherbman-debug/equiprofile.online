@@ -11,7 +11,9 @@
  *   {{billingLink}} – billing/upgrade URL
  */
 
-const LOGO_URL = "https://equiprofile.online/logo.png";
+// Square PWA icon — ensures the logo is never squashed in email clients.
+// The icon-128x128.png is a true square (128×128 px) derived from the brand mark.
+const LOGO_URL = "https://equiprofile.online/icons/icon-128x128.png";
 const SIGNUP_URL = "https://equiprofile.online/register";
 const BILLING_URL = "https://equiprofile.online/billing";
 const SITE_URL = "https://equiprofile.online";
@@ -71,21 +73,21 @@ Amarktai Network Ltd. All rights reserved.
 /**
  * Standard EquiProfile email letterhead.
  * Uses ONE consistent brand header for all templates — single navy gradient,
- * larger logo, premium typography. The accent parameter is retained for
- * backwards compatibility but is no longer used.
+ * square logo (icon-128x128.png, proper 1:1 ratio), premium typography.
+ * The accent parameter is retained for backwards compatibility but is no longer used.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function headerBlock(_accent?: string): string {
   return `<tr>
-<td style="background:linear-gradient(135deg, #0c1e3c 0%, #163563 45%, #2e6da4 100%);padding:40px 40px 32px;text-align:center;">
+<td style="background:linear-gradient(135deg, #0c1e3c 0%, #163563 45%, #2e6da4 100%);padding:36px 40px 28px;text-align:center;">
 <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
   <tr>
-    <td style="padding-right:14px;vertical-align:middle;">
-      <img src="${LOGO_URL}" alt="EquiProfile" width="54" height="54" style="display:block;border-radius:12px;width:54px;height:54px;border:2px solid rgba(255,255,255,0.18);"/>
+    <td style="padding-right:16px;vertical-align:middle;">
+      <img src="${LOGO_URL}" alt="EquiProfile" width="52" height="52" style="display:block;border-radius:10px;width:52px;height:52px;border:2px solid rgba(255,255,255,0.22);box-shadow:0 2px 8px rgba(0,0,0,0.25);"/>
     </td>
     <td style="vertical-align:middle;text-align:left;">
-      <span style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1;">EquiProfile</span>
-      <p style="margin:3px 0 0;color:rgba(255,255,255,0.65);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;">Professional Horse Management</p>
+      <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.3px;line-height:1.1;display:block;">EquiProfile</span>
+      <span style="display:block;margin-top:4px;color:rgba(255,255,255,0.70);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;">Professional Horse Management</span>
     </td>
   </tr>
 </table>

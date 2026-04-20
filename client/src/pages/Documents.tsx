@@ -199,7 +199,18 @@ function DocumentsContent() {
     },
     onError: (error) => {
       setUploading(false);
-      toast.error(error.message);
+      const msg = error.message ?? "";
+      // "Unable to transform response from server" is a TRPC internal error that
+      // can occur on intermittent network issues — show a clean message instead.
+      if (
+        msg.toLowerCase().includes("transform") ||
+        msg.toLowerCase().includes("parse") ||
+        msg.toLowerCase().includes("unexpected token")
+      ) {
+        toast.error("Upload failed. Please check your connection and try again.");
+      } else {
+        toast.error(msg || "Document upload failed. Please try again.");
+      }
     },
   });
 
@@ -239,19 +250,31 @@ function DocumentsContent() {
     setUploading(true);
     const reader = new FileReader();
     reader.onload = () => {
-      const base64 = (reader.result as string).split(",")[1];
-      uploadMutation.mutate({
-        horseId:
-          formData.horseId && formData.horseId !== "none"
-            ? parseInt(formData.horseId)
-            : undefined,
-        category: formData.documentType,
-        description: formData.title,
-        fileName: selectedFile.name,
-        fileData: base64,
-        fileType: selectedFile.type,
-        fileSize: selectedFile.size,
-      });
+      try {
+        const result = reader.result as string;
+        const commaIdx = result.indexOf(",");
+        const base64 = commaIdx >= 0 ? result.slice(commaIdx + 1) : result;
+        if (!base64) {
+          setUploading(false);
+          toast.error("Failed to read file data. Please try again.");
+          return;
+        }
+        uploadMutation.mutate({
+          horseId:
+            formData.horseId && formData.horseId !== "none"
+              ? parseInt(formData.horseId)
+              : undefined,
+          category: formData.documentType,
+          description: formData.title,
+          fileName: selectedFile.name,
+          fileData: base64,
+          fileType: selectedFile.type,
+          fileSize: selectedFile.size,
+        });
+      } catch {
+        setUploading(false);
+        toast.error("Failed to process file. Please try again.");
+      }
     };
     reader.onerror = () => {
       setUploading(false);
