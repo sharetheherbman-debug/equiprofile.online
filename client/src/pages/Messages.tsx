@@ -172,8 +172,8 @@ export default function MessagesPage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-6">
-        <div className="flex justify-between items-center mb-4">
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
           <div>
             <PageHeader
               title="Messages"

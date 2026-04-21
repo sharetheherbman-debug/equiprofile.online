@@ -556,8 +556,8 @@ export default function AIChat() {
         </DialogContent>
       </Dialog>
 
-      <div className="container mx-auto p-3 sm:p-6 max-w-6xl">
-        <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
+      <div className="max-w-6xl mx-auto space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
           <PageHeader title="AI Assistant & Notes" />
           {adminStatus.isUnlocked && (
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">

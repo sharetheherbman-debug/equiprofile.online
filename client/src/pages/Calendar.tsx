@@ -580,7 +580,7 @@ export default function CalendarPage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto px-4 py-4 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">

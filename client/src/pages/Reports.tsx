@@ -473,7 +473,7 @@ export default function Reports() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-3 sm:p-4 space-y-4 sm:space-y-6">
+      <div className="space-y-6">
         <div>
           <PageHeader
             title="Reports"
