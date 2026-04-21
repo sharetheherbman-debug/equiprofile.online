@@ -77,14 +77,14 @@ function getDisciplineBadgeClass(discipline: string): string {
     case "dressage":
       return "bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700";
     case "jumping":
-      return "bg-emerald-50 text-[#2d6a4f] border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700";
+      return "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700";
     case "eventing":
       return "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-700";
     case "western":
       return "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-700";
     case "general":
     default:
-      return "bg-blue-50 text-[#2e6da4] border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700";
+      return "bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700";
   }
 }
 
@@ -1655,7 +1655,7 @@ function TrainingTemplatesContent() {
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg">
+            <Button className="rounded-lg">
               <Plus className="w-4 h-4 mr-2" />
               Create Template
             </Button>
@@ -1786,7 +1786,7 @@ function TrainingTemplatesContent() {
               <Button
                 onClick={handleCreate}
                 disabled={createMutation.isPending}
-                className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
+                className="rounded-lg"
               >
                 {createMutation.isPending ? "Creating..." : "Create Template"}
               </Button>
@@ -1798,7 +1798,7 @@ function TrainingTemplatesContent() {
       {/* Predesigned Templates Section — Grouped by Purpose */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <div className="w-1 h-5 rounded-full bg-gradient-to-b from-[#2e6da4] to-[#2e6da4]/40" />
+          <div className="w-1 h-5 rounded-full bg-gradient-to-b from-primary to-primary/40" />
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Predesigned Templates</h2>
           <span className="text-xs text-gray-500 dark:text-gray-400 ml-1 hidden sm:inline">— Professional training programs ready to use</span>
         </div>
@@ -1813,7 +1813,7 @@ function TrainingTemplatesContent() {
               value={templateSearch}
               onChange={(e) => setTemplateSearch(e.target.value)}
               placeholder="Search templates…"
-              className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2435] text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2e6da4]/30 focus:border-[#2e6da4]"
+              className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2435] text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
             />
             {templateSearch && (
               <button
@@ -1831,8 +1831,8 @@ function TrainingTemplatesContent() {
               onClick={() => setActiveCategory(null)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                 activeCategory === null
-                  ? "bg-[#2e6da4] text-white border-[#2e6da4] shadow-sm"
-                  : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#2e6da4]/50 hover:text-[#2e6da4]"
+                  ? "bg-primary text-white border-primary shadow-sm"
+                  : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:text-primary"
               }`}
             >
               All
@@ -1857,8 +1857,8 @@ function TrainingTemplatesContent() {
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                   activeCategory === cat.key
-                    ? "bg-[#2e6da4] text-white border-[#2e6da4] shadow-sm"
-                    : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#2e6da4]/50 hover:text-[#2e6da4]"
+                    ? "bg-primary text-white border-primary shadow-sm"
+                    : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:text-primary"
                 }`}
               >
                 {cat.label}
@@ -1885,7 +1885,7 @@ function TrainingTemplatesContent() {
               return (
                 <div className="text-center py-8 text-sm text-gray-500 dark:text-gray-400">
                   No templates found for "{templateSearch}".{" "}
-                  <button onClick={() => setTemplateSearch("")} className="text-[#2e6da4] underline underline-offset-2">Clear search</button>
+                  <button onClick={() => setTemplateSearch("")} className="text-primary underline underline-offset-2">Clear search</button>
                 </div>
               );
             }
@@ -1898,7 +1898,7 @@ function TrainingTemplatesContent() {
                   >
                     <CardHeader className="pb-3">
                       <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-[#2e6da4]" />
+                        <Sparkles className="w-4 h-4 text-primary" />
                         {predesigned.name}
                       </CardTitle>
                       <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -1924,7 +1924,7 @@ function TrainingTemplatesContent() {
                         </div>
                         <Button
                           size="sm"
-                          className="w-full bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg text-xs"
+                          className="w-full rounded-lg text-xs"
                           onClick={() => handleAddPredesignedTemplate(predesigned)}
                           disabled={usePredesignedMutation.isPending}
                         >
@@ -1954,8 +1954,8 @@ function TrainingTemplatesContent() {
               <CollapsibleTrigger asChild>
                 <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2435] hover:bg-gray-50 dark:hover:bg-[#1e2940] transition-colors shadow-sm group">
                   {isOpen
-                    ? <ChevronDown className="w-4 h-4 text-[#2e6da4] shrink-0" />
-                    : <ChevronRight className="w-4 h-4 text-gray-400 shrink-0 group-hover:text-[#2e6da4] transition-colors" />
+                    ? <ChevronDown className="w-4 h-4 text-primary shrink-0" />
+                    : <ChevronRight className="w-4 h-4 text-gray-400 shrink-0 group-hover:text-primary transition-colors" />
                   }
                   <div className="flex-1 flex items-baseline gap-2 text-left">
                     <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{group.label}</span>
@@ -1977,7 +1977,7 @@ function TrainingTemplatesContent() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                              <Sparkles className="w-4 h-4 text-[#2e6da4]" />
+                              <Sparkles className="w-4 h-4 text-primary" />
                               {predesigned.name}
                             </CardTitle>
                             <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -2017,7 +2017,7 @@ function TrainingTemplatesContent() {
                             variant="default"
                             onClick={() => handleAddPredesignedTemplate(predesigned)}
                             disabled={usePredesignedMutation.isPending}
-                            className="w-full bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
+                            className="w-full rounded-lg"
                           >
                             <Plus className="w-3 h-3 mr-1" />
                             Use This Template
@@ -2036,7 +2036,7 @@ function TrainingTemplatesContent() {
       {/* User Templates Section */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-1 h-5 rounded-full bg-gradient-to-b from-[#2e6da4] to-[#2e6da4]/40" />
+          <div className="w-1 h-5 rounded-full bg-gradient-to-b from-primary to-primary/40" />
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Your Templates</h2>
           {templates && templates.length > 0 && (
             <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
@@ -2049,8 +2049,8 @@ function TrainingTemplatesContent() {
         {!templates || templates.length === 0 ? (
           <Card className="border-dashed bg-white dark:bg-[#1a2435] rounded-xl border-gray-200 dark:border-gray-700">
             <CardContent className="flex flex-col items-center justify-center py-16">
-              <div className="w-16 h-16 rounded-2xl bg-[#2e6da4]/10 flex items-center justify-center mb-4">
-                <Play className="w-8 h-8 text-[#2e6da4]" />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                <Play className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-gray-100">
                 No custom templates yet
@@ -2061,7 +2061,6 @@ function TrainingTemplatesContent() {
               </p>
               <Button
                 onClick={() => setIsCreateOpen(true)}
-                className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Template
@@ -2087,7 +2086,7 @@ function TrainingTemplatesContent() {
                         </CardDescription>
                       </div>
                       {template.isPublic ? (
-                        <Badge variant="secondary" className="ml-2 bg-blue-50 text-[#2e6da4] border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700">
+                        <Badge variant="secondary" className="ml-2 bg-blue-50 text-primary border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700">
                           <Globe className="w-3 h-3 mr-1" />
                           Public
                         </Badge>
@@ -2126,7 +2125,7 @@ function TrainingTemplatesContent() {
                           size="sm"
                           variant="default"
                           onClick={() => openApplyDialog(template)}
-                          className="flex-1 bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg"
+                          className="flex-1 rounded-lg"
                         >
                           <Play className="w-3 h-3 mr-1" />
                           Apply
@@ -2288,7 +2287,7 @@ function TrainingTemplatesContent() {
             >
               Cancel
             </Button>
-            <Button onClick={handleEdit} disabled={updateMutation.isPending} className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg">
+            <Button onClick={handleEdit} disabled={updateMutation.isPending} className="rounded-lg">
               {updateMutation.isPending ? "Updating..." : "Update Template"}
             </Button>
           </DialogFooter>
@@ -2352,7 +2351,7 @@ function TrainingTemplatesContent() {
             >
               Cancel
             </Button>
-            <Button onClick={handleApply} disabled={applyMutation.isPending} className="bg-[#2e6da4] hover:bg-[#245a8a] text-white rounded-lg">
+            <Button onClick={handleApply} disabled={applyMutation.isPending} className="rounded-lg">
               {applyMutation.isPending ? "Applying..." : "Apply Template"}
             </Button>
           </DialogFooter>
