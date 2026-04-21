@@ -1760,12 +1760,13 @@ function MarketingContactsSection() {
     offset: page * pageSize,
   });
 
-  // Total count for current filter — use max allowed limit (500) to get total for display
+  // Total count for current filter — capped at 500 to match backend validator max (z.number().max(500)).
+  // Using a higher value causes a 400 validation error from the server.
   const filteredTotal = trpc.admin.getMarketingContacts.useQuery({
     search: searchQuery || undefined,
     country: filterCountry || undefined,
     contactType: filterType || undefined,
-    limit: 500,
+    limit: 500, // Must not exceed backend validator max of 500
     offset: 0,
   });
 

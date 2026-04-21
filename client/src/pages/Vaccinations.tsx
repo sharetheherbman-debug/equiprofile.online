@@ -260,7 +260,7 @@ function VaccinationsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-foreground">
               <AlertCircle className="h-5 w-5 text-amber-500" />
-              Upcoming & Overdue ({upcomingVaccinations.length})
+              Upcoming & Overdue Vaccinations
             </CardTitle>
           </CardHeader>
           <CardContent>

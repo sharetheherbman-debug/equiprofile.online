@@ -378,7 +378,7 @@ export default function Dewormings() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-foreground">
                 <Calendar className="h-5 w-5 text-amber-500" />
-                Upcoming (Next 30 Days)
+                Upcoming Dewormings (Next 30 Days)
               </CardTitle>
             </CardHeader>
             <CardContent>

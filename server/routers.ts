@@ -4309,7 +4309,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           return { replies: rows, total: Number(countResult?.total ?? 0) };
         } catch (err) {
           // Table may not yet exist in this environment — return empty result gracefully
-          console.error("[getCampaignReplies] DB query failed:", err);
+          console.error("[getCampaignReplies] DB query failed (table may not exist in this environment):", err);
           return { replies: [], total: 0 };
         }
       }),
