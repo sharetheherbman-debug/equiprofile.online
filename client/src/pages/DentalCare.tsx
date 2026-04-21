@@ -2,6 +2,13 @@ import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "../components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -26,7 +33,6 @@ import {
   Trash2,
   Calendar,
   Stethoscope,
-  AlertCircle,
 } from "lucide-react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { useRealtimeModule } from "../hooks/useRealtime";
@@ -460,110 +466,83 @@ function DentalCareContent() {
         </div>
       )}
 
-      <div className="grid gap-4">
-        <h2 className="text-xl font-semibold">Dental Records</h2>
-        {localRecords.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            <Stethoscope className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>No dental records yet. Add your first record to get started.</p>
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {localRecords.map((record) => (
-              <div
-                key={record.id}
-                className="border rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-lg">
-                        {getHorseName(record.horseId)}
-                      </h3>
+      <Card>
+        <CardHeader>
+          <CardTitle>Dental Records</CardTitle>
+          <CardDescription>All dental exams and procedures</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {localRecords.length === 0 ? (
+            <div className="text-center py-8">
+              <Stethoscope className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">No dental records yet</p>
+              <Button onClick={() => setOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add First Record
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {localRecords.map((record) => (
+                <div
+                  key={record.id}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <Stethoscope className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium truncate">{getHorseName(record.horseId)}</p>
                       {record.teethCondition && (
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${getConditionBadge(record.teethCondition)}`}
-                        >
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${getConditionBadge(record.teethCondition)}`}>
                           {record.teethCondition}
                         </span>
                       )}
                       {record.sedationUsed && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                           Sedated
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(record.examDate).toLocaleDateString()}
-                      {record.dentistName && ` • ${record.dentistName}`}
-                      {record.dentistClinic && ` (${record.dentistClinic})`}
-                    </p>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(record.examDate).toLocaleDateString()}
+                        {record.dentistName && ` · ${record.dentistName}`}
+                        {record.procedureType && ` · ${record.procedureType}`}
+                      </span>
+                      {record.nextDueDate && (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(record.nextDueDate).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-1 shrink-0">
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
+                      className="h-8 w-8"
                       onClick={() => handleEdit(record)}
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive"
                       onClick={() => handleDelete(record.id)}
                     >
-                      <Trash2 className="w-4 h-4 text-red-600" />
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
-
-                {record.procedureType && (
-                  <div className="mb-2">
-                    <span className="text-sm font-medium">Procedure: </span>
-                    <span className="text-sm">{record.procedureType}</span>
-                  </div>
-                )}
-
-                {record.findings && (
-                  <div className="mb-2">
-                    <span className="text-sm font-medium">Findings: </span>
-                    <span className="text-sm text-muted-foreground">
-                      {record.findings}
-                    </span>
-                  </div>
-                )}
-
-                {record.treatmentPerformed && (
-                  <div className="mb-2">
-                    <span className="text-sm font-medium">Treatment: </span>
-                    <span className="text-sm text-muted-foreground">
-                      {record.treatmentPerformed}
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-2">
-                  {record.nextDueDate && (
-                    <div className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      Next: {new Date(record.nextDueDate).toLocaleDateString()}
-                    </div>
-                  )}
-                  {record.cost && (
-                    <div>Cost: £{(record.cost / 100).toFixed(2)}</div>
-                  )}
-                </div>
-
-                {record.notes && (
-                  <div className="mt-2 text-sm text-muted-foreground border-t pt-2">
-                    {record.notes}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

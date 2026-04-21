@@ -487,90 +487,73 @@ function HoofcareContent() {
         </Card>
       )}
 
-      <div className="grid gap-4">
-        {localRecords && localRecords.length > 0 ? (
-          localRecords.map((record: any) => (
-            <Card key={record.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Heart className="h-5 w-5" />
-                      {getHorseName(record.horseId)} - {record.careType}
-                    </CardTitle>
-                    <CardDescription>
-                      {new Date(record.date).toLocaleDateString()} •{" "}
-                      {record.farrierName}
-                    </CardDescription>
+      <Card>
+        <CardHeader>
+          <CardTitle>Hoofcare Records</CardTitle>
+          <CardDescription>All farrier visits and hoof maintenance</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!localRecords || localRecords.length === 0 ? (
+            <div className="text-center py-8">
+              <Heart className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">No hoofcare records yet</p>
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <PlusCircle className="w-4 h-4 mr-2" />
+                Add First Record
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {localRecords.map((record: any) => (
+                <div
+                  key={record.id}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <Heart className="w-4 h-4" />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium truncate">{getHorseName(record.horseId)}</p>
+                      <span className="text-xs text-muted-foreground capitalize shrink-0">{record.careType}</span>
+                      {getConditionBadge(record.hoofCondition)}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(record.date).toLocaleDateString()}
+                        {record.farrierName && ` · ${record.farrierName}`}
+                      </span>
+                      {record.nextDueDate && (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
+                          <span>Next: {new Date(record.nextDueDate).toLocaleDateString()}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
+                      className="h-8 w-8"
                       onClick={() => handleEdit(record)}
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive"
                       onClick={() => handleDelete(record.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">Condition:</span>
-                    {getConditionBadge(record.hoofCondition)}
-                  </div>
-                  {record.workPerformed && (
-                    <div>
-                      <span className="font-medium">Work Performed:</span>{" "}
-                      {record.workPerformed}
-                    </div>
-                  )}
-                  {record.findings && (
-                    <div>
-                      <span className="font-medium">Findings:</span>{" "}
-                      {record.findings}
-                    </div>
-                  )}
-                  {record.nextDueDate && (
-                    <div>
-                      <span className="font-medium">Next Due:</span>{" "}
-                      {new Date(record.nextDueDate).toLocaleDateString()}
-                    </div>
-                  )}
-                  {record.cost > 0 && (
-                    <div>
-                      <span className="font-medium">Cost:</span> £
-                      {(record.cost / 100).toFixed(2)}
-                    </div>
-                  )}
-                  {record.notes && (
-                    <div>
-                      <span className="font-medium">Notes:</span> {record.notes}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Heart className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                No hoofcare records yet. Add your first record above.
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -522,86 +522,81 @@ function XraysContent() {
         </Dialog>
       </div>
 
-      <div className="grid gap-4">
-        {localXrays && localXrays.length > 0 ? (
-          localXrays.map((xray: any) => (
-            <Card key={xray.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileImage className="h-5 w-5" />
-                      {getHorseName(xray.horseId)} - {xray.bodyPart}
-                    </CardTitle>
-                    <CardDescription>
-                      {new Date(xray.date).toLocaleDateString()} •{" "}
-                      {xray.vetName || "No vet specified"}
-                    </CardDescription>
+      <Card>
+        <CardHeader>
+          <CardTitle>X-ray Records</CardTitle>
+          <CardDescription>All x-ray records and imaging</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!localXrays || localXrays.length === 0 ? (
+            <div className="text-center py-8">
+              <FileImage className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">No x-ray records yet</p>
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <PlusCircle className="w-4 h-4 mr-2" />
+                Add First Record
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {localXrays.map((xray: any) => (
+                <div
+                  key={xray.id}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <FileImage className="w-4 h-4" />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium truncate">{getHorseName(xray.horseId)}</p>
+                      {xray.bodyPart && (
+                        <span className="text-xs text-muted-foreground shrink-0">{xray.bodyPart}</span>
+                      )}
+                      {xray.fileUrl && (
+                        <a
+                          href={xray.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
+                        >
+                          <FileImage className="w-3 h-3" />
+                          View
+                        </a>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(xray.date).toLocaleDateString()}
+                        {xray.vetName && ` · ${xray.vetName}`}
+                        {xray.diagnosis && ` · ${xray.diagnosis}`}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
+                      className="h-8 w-8"
                       onClick={() => handleEdit(xray)}
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive"
                       onClick={() => handleDelete(xray.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-2 text-sm">
-                  {xray.vetClinic && (
-                    <div>
-                      <span className="font-medium">Clinic:</span>{" "}
-                      {xray.vetClinic}
-                    </div>
-                  )}
-                  {xray.findings && (
-                    <div>
-                      <span className="font-medium">Findings:</span>{" "}
-                      {xray.findings}
-                    </div>
-                  )}
-                  {xray.diagnosis && (
-                    <div>
-                      <span className="font-medium">Diagnosis:</span>{" "}
-                      {xray.diagnosis}
-                    </div>
-                  )}
-                  {xray.cost > 0 && (
-                    <div>
-                      <span className="font-medium">Cost:</span> £
-                      {(xray.cost / 100).toFixed(2)}
-                    </div>
-                  )}
-                  {xray.notes && (
-                    <div>
-                      <span className="font-medium">Notes:</span> {xray.notes}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <FileImage className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                No x-ray records yet. Add your first record above.
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
