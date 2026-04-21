@@ -30,14 +30,14 @@ export function PageHeader({ title, subtitle, subtitleClassName }: PageHeaderPro
   return (
     <div>
       {isV2() && (
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <div className="w-4 h-[2px] rounded-full bg-[#4f5fd6]" />
-          <span className="text-[10px] tracking-[0.15em] uppercase text-[#4f5fd6] font-semibold">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-5 h-[2px] rounded-full bg-primary" />
+          <span className="text-[10px] tracking-[0.15em] uppercase text-primary font-semibold">
             EquiProfile
           </span>
         </div>
       )}
-      <h1 className="font-serif text-3xl font-bold text-foreground">{title}</h1>
+      <h1 className="font-serif text-2xl sm:text-3xl font-bold text-foreground leading-tight">{title}</h1>
       {subtitle && (
         <p className={cn("text-muted-foreground mt-1 text-sm", subtitleClassName)}>
           {subtitle}

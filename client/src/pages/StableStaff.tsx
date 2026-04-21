@@ -211,7 +211,7 @@ function StableStaffContent() {
                       key={member.id}
                       className="flex items-center gap-3 p-3 rounded-lg border border-muted/40 bg-muted/20 hover:bg-muted/30 transition-colors"
                     >
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
                         {member.avatarUrl ? (
                           <img
                             src={member.avatarUrl}
@@ -219,7 +219,7 @@ function StableStaffContent() {
                             className="w-10 h-10 rounded-full object-cover"
                           />
                         ) : (
-                          <span className="text-sm text-white font-bold">
+                          <span className="text-sm text-foreground font-bold">
                             {(member.name ?? member.email ?? "?")
                               .charAt(0)
                               .toUpperCase()}
@@ -499,8 +499,8 @@ export default function StableStaff() {
     return (
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-4">
-            <Shield className="w-8 h-8 text-white" />
+          <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5">
+            <Shield className="w-5 h-5 text-primary" />
           </div>
           <h2 className="font-serif text-2xl font-bold mb-2">
             Stable Plan Required
@@ -510,12 +510,9 @@ export default function StableStaff() {
             subscribers. Upgrade to invite and manage your stable's team.
           </p>
           <Link href="/billing">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white border-0"
-            >
+            <Button>
               Upgrade to Stable Plan
-              <ChevronRight className="w-5 h-5 ml-2" />
+              <ChevronRight className="w-4 h-4 ml-1.5" />
             </Button>
           </Link>
         </div>

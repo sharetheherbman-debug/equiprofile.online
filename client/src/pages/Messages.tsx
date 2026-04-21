@@ -146,8 +146,8 @@ export default function MessagesPage() {
     return (
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-4">
-            <Shield className="w-8 h-8 text-white" />
+          <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5">
+            <Shield className="w-5 h-5 text-primary" />
           </div>
           <h2 className="font-serif text-2xl font-bold mb-2">Stable Plan Required</h2>
           <p className="text-muted-foreground mb-6 max-w-sm text-sm">
@@ -155,12 +155,9 @@ export default function MessagesPage() {
             communicate with your yard team, clients, and staff.
           </p>
           <Link href="/billing">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white border-0"
-            >
+            <Button>
               Upgrade to Stable Plan
-              <ChevronRight className="w-5 h-5 ml-2" />
+              <ChevronRight className="w-4 h-4 ml-1.5" />
             </Button>
           </Link>
         </div>

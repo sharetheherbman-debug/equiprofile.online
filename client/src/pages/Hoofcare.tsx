@@ -476,7 +476,7 @@ function HoofcareContent() {
       </div>
 
       {upcomingRecords.length > 0 && (
-        <Card className="mb-6 border-[#4f5fd6]/20 bg-[#4f5fd6]/5 dark:bg-[#4f5fd6]/10">
+        <Card className="mb-6 border-primary/20 bg-primary/5 dark:bg-primary/10">
           <CardHeader>
             <CardTitle className="text-foreground">Upcoming Visits</CardTitle>
             <CardDescription className="text-muted-foreground">
