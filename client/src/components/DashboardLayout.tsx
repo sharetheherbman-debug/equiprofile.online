@@ -145,10 +145,12 @@ const stableBottomNavItems = [
 ];
 
 // All modules grouped for the "More" sheet — organised for clarity
+// Icon backgrounds use deeper, muted 700/800-range tones to feel premium rather
+// than the saturated 500/600 "candy" gradients which looked toy-like.
 const moreModuleGroups = [
   {
     label: "Core",
-    iconBg: "bg-gradient-to-br from-sky-500 to-blue-600",
+    iconBg: "bg-gradient-to-br from-blue-700 to-blue-800",
     items: [
       { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
       { icon: Cloud, label: "Weather", path: "/weather" },
@@ -158,7 +160,7 @@ const moreModuleGroups = [
   },
   {
     label: "Health",
-    iconBg: "bg-gradient-to-br from-rose-500 to-red-600",
+    iconBg: "bg-gradient-to-br from-rose-700 to-rose-800",
     items: [
       { icon: Stethoscope, label: "Health Hub", path: "/health" },
       { icon: Syringe, label: "Vaccinations", path: "/vaccinations" },
@@ -171,7 +173,7 @@ const moreModuleGroups = [
   },
   {
     label: "Training & Activity",
-    iconBg: "bg-gradient-to-br from-green-500 to-emerald-600",
+    iconBg: "bg-gradient-to-br from-emerald-700 to-emerald-800",
     items: [
       { icon: Dumbbell, label: "Training Log", path: "/training" },
       { icon: BookOpen, label: "Templates", path: "/training-templates" },
@@ -183,7 +185,7 @@ const moreModuleGroups = [
   },
   {
     label: "Nutrition",
-    iconBg: "bg-gradient-to-br from-lime-500 to-green-600",
+    iconBg: "bg-gradient-to-br from-teal-700 to-teal-800",
     items: [
       { icon: Apple, label: "Feeding Plans", path: "/feeding" },
       { icon: FileText, label: "Nutrition Plans", path: "/nutrition-plans" },
@@ -193,7 +195,7 @@ const moreModuleGroups = [
   },
   {
     label: "Data & Reports",
-    iconBg: "bg-gradient-to-br from-indigo-500 to-violet-600",
+    iconBg: "bg-gradient-to-br from-indigo-700 to-indigo-800",
     items: [
       { icon: FileText, label: "Documents", path: "/documents" },
       { icon: BarChart3, label: "Analytics", path: "/analytics" },
@@ -205,7 +207,7 @@ const moreModuleGroups = [
   },
   {
     label: "Stable & People",
-    iconBg: "bg-gradient-to-br from-cyan-500 to-teal-600",
+    iconBg: "bg-gradient-to-br from-cyan-700 to-teal-800",
     items: [
       { icon: Home, label: "Stable Management", path: "/stable", stableOnly: true },
       { icon: Wrench, label: "Stable Setup", path: "/stable-setup", stableOnly: true },
@@ -217,7 +219,7 @@ const moreModuleGroups = [
   },
   {
     label: "Account",
-    iconBg: "bg-gradient-to-br from-slate-500 to-gray-600",
+    iconBg: "bg-gradient-to-br from-slate-600 to-slate-700",
     items: [
       { icon: Settings, label: "Settings", path: "/settings" },
       { icon: DollarSign, label: "Billing", path: "/billing" },
@@ -420,7 +422,7 @@ function DashboardLayoutContent({
                     alt="EquiProfile"
                     className="h-10 w-auto object-contain shrink-0"
                   />
-                  <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent truncate">
+                  <span className="text-lg font-semibold tracking-tight text-sidebar-foreground truncate">
                     EquiProfile
                   </span>
                 </div>

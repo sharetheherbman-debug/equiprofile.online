@@ -205,22 +205,22 @@
     scroll-behavior: smooth;
   }
 
-  /* Custom scrollbar */
+  /* Custom scrollbar — neutral, unobtrusive */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-gray-100 dark:bg-slate-900;
+    @apply bg-transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-blue-400 dark:bg-blue-600 rounded-full;
+    @apply bg-border rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-blue-500 dark:bg-blue-500;
+    @apply bg-muted-foreground/35 rounded-full;
   }
 }
 
@@ -278,8 +278,16 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px -12px rgba(46, 109, 164, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -8px rgba(46, 109, 164, 0.18);
+  }
+
+  /* Standard empty-state treatment — consistent across all pages */
+  .ep-empty {
+    @apply flex flex-col items-center justify-center py-14 text-center;
+  }
+  .ep-empty > svg:first-child {
+    @apply w-12 h-12 text-muted-foreground/25 mx-auto mb-4;
   }
 
   /* Hides scrollbar visually while keeping scroll functionality */

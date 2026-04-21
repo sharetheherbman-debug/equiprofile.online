@@ -60,8 +60,8 @@ import {
 const dashboardModuleGroups = [
   {
     label: "Core",
-    gradient: "from-sky-500 to-blue-600",
-    labelColor: "text-sky-400",
+    gradient: "from-blue-700 to-blue-800",
+    labelColor: "text-blue-400",
     items: [
       { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
       { icon: Cloud, label: "Weather", path: "/weather" },
@@ -71,7 +71,7 @@ const dashboardModuleGroups = [
   },
   {
     label: "Health",
-    gradient: "from-rose-500 to-red-600",
+    gradient: "from-rose-700 to-rose-800",
     labelColor: "text-rose-400",
     items: [
       { icon: Stethoscope, label: "Health Hub", path: "/health" },
@@ -85,7 +85,7 @@ const dashboardModuleGroups = [
   },
   {
     label: "Training & Activity",
-    gradient: "from-green-500 to-emerald-600",
+    gradient: "from-emerald-700 to-emerald-800",
     labelColor: "text-emerald-400",
     items: [
       { icon: Dumbbell, label: "Training Log", path: "/training" },
@@ -97,8 +97,8 @@ const dashboardModuleGroups = [
   },
   {
     label: "Nutrition",
-    gradient: "from-lime-500 to-green-600",
-    labelColor: "text-lime-400",
+    gradient: "from-teal-700 to-teal-800",
+    labelColor: "text-teal-400",
     items: [
       { icon: Apple, label: "Feeding Plans", path: "/feeding" },
       { icon: FileText, label: "Nutrition Plans", path: "/nutrition-plans" },
@@ -108,7 +108,7 @@ const dashboardModuleGroups = [
   },
   {
     label: "Data & Reports",
-    gradient: "from-indigo-500 to-violet-600",
+    gradient: "from-indigo-700 to-indigo-800",
     labelColor: "text-indigo-400",
     items: [
       { icon: FileText, label: "Documents", path: "/documents" },
@@ -121,7 +121,7 @@ const dashboardModuleGroups = [
   },
   {
     label: "Stable & People",
-    gradient: "from-cyan-500 to-teal-600",
+    gradient: "from-cyan-700 to-teal-800",
     labelColor: "text-cyan-400",
     items: [
       { icon: Home, label: "Stable Management", path: "/stable", stableOnly: true },
@@ -131,7 +131,7 @@ const dashboardModuleGroups = [
   },
   {
     label: "Account",
-    gradient: "from-slate-500 to-gray-600",
+    gradient: "from-slate-600 to-slate-700",
     labelColor: "text-slate-400",
     items: [
       { icon: Settings, label: "Settings", path: "/settings" },
@@ -156,31 +156,31 @@ const quickActions = [
     label: "Add Horse",
     href: "/horses/new",
     icon: Plus,
-    color: "from-rose-500 to-pink-600",
+    color: "from-rose-700 to-rose-800",
   },
   {
     label: "Log Training",
     href: "/training",
     icon: Dumbbell,
-    color: "from-green-500 to-emerald-600",
+    color: "from-emerald-700 to-emerald-800",
   },
   {
     label: "Weather",
     href: "/weather",
     icon: CloudSun,
-    color: "from-sky-500 to-blue-600",
+    color: "from-blue-700 to-blue-800",
   },
   {
     label: "AI Chat",
     href: "/ai-chat",
     icon: Sparkles,
-    color: "from-indigo-500 to-violet-600",
+    color: "from-indigo-700 to-indigo-800",
   },
   {
     label: "Analytics",
     href: "/analytics",
     icon: TrendingUp,
-    color: "from-cyan-500 to-blue-600",
+    color: "from-teal-700 to-teal-800",
   },
 ];
 
@@ -422,7 +422,7 @@ function DashboardContent() {
       >
         <Link href="/horses">
           <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-rose-500/20 bg-gradient-to-br from-rose-950/40 to-pink-950/30 hover:from-rose-950/60 hover:border-rose-500/35 transition-all cursor-pointer text-center group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-700 to-rose-800 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Heart className="w-4 h-4 text-white" />
             </div>
             <p className="text-2xl font-bold font-serif leading-none mt-0.5">{(horses as any[]).length}</p>
@@ -433,7 +433,7 @@ function DashboardContent() {
         </Link>
         <Link href="/calendar">
           <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-purple-500/20 bg-gradient-to-br from-purple-950/40 to-violet-950/30 hover:from-purple-950/60 hover:border-purple-500/35 transition-all cursor-pointer text-center group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-700 to-violet-800 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Calendar className="w-4 h-4 text-white" />
             </div>
             <p className="text-2xl font-bold font-serif leading-none mt-0.5">
@@ -446,7 +446,7 @@ function DashboardContent() {
         </Link>
         <Link href="/tasks">
           <div className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-950/40 to-orange-950/30 hover:from-amber-950/60 hover:border-amber-500/35 transition-all cursor-pointer text-center group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-700 to-orange-800 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Activity className="w-4 h-4 text-white" />
             </div>
             <p className="text-2xl font-bold font-serif leading-none mt-0.5">
@@ -781,7 +781,7 @@ function DashboardContent() {
                           }}
                         />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-700 to-rose-800 flex items-center justify-center shrink-0">
                           <span className="text-[10px] text-white font-bold">
                             {horse.name.charAt(0)}
                           </span>
@@ -914,7 +914,7 @@ function DashboardContent() {
           className="space-y-4"
         >
           <div className="flex items-center gap-3 pb-1 border-b border-white/5">
-            <div className="w-1 h-5 rounded-full bg-gradient-to-b from-indigo-500 via-purple-600 to-pink-600" />
+            <div className="w-1 h-5 rounded-full bg-gradient-to-b from-primary to-primary/50" />
             <h2 className="font-serif text-base font-semibold">All Features</h2>
             <span className="text-xs text-muted-foreground/70">Your complete toolkit</span>
           </div>
