@@ -3,6 +3,13 @@ import { trpc } from "@/lib/trpc";
 import { useRealtimeModule } from "../hooks/useRealtime";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -225,36 +232,36 @@ function AppointmentsContent() {
 
   const getStatusBadge = (status: string) => {
     const colors = {
-      scheduled: "bg-blue-100 text-blue-800",
-      confirmed: "bg-green-100 text-green-800",
-      completed: "bg-gray-100 text-gray-800",
-      cancelled: "bg-red-100 text-red-800",
+      scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+      confirmed: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+      completed: "bg-muted text-muted-foreground",
+      cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
     };
-    return colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800";
+    return colors[status as keyof typeof colors] || "bg-muted text-muted-foreground";
   };
 
   const getTypeBadge = (type: string) => {
     const colors = {
-      vet: "bg-purple-100 text-purple-800",
-      farrier: "bg-orange-100 text-orange-800",
-      dentist: "bg-teal-100 text-teal-800",
-      physio: "bg-pink-100 text-pink-800",
-      trainer: "bg-indigo-100 text-indigo-800",
-      other: "bg-gray-100 text-gray-800",
+      vet: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
+      farrier: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+      dentist: "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300",
+      physio: "bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300",
+      trainer: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300",
+      other: "bg-muted text-muted-foreground",
     };
-    return colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800";
+    return colors[type as keyof typeof colors] || "bg-muted text-muted-foreground";
   };
 
   return (
-    <div className="p-3 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <div>
           <PageHeader
             title="Appointments"
             subtitle="Schedule and manage appointments"
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -464,143 +471,115 @@ function AppointmentsContent() {
       </div>
 
       {/* Upcoming Appointments */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">
-          Upcoming Appointments ({upcomingAppointments.length})
-        </h2>
-        <div className="grid gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Upcoming Appointments</CardTitle>
+          <CardDescription>Scheduled and confirmed upcoming appointments</CardDescription>
+        </CardHeader>
+        <CardContent>
           {upcomingAppointments.length === 0 ? (
-            <p className="text-gray-500">No upcoming appointments</p>
+            <div className="text-center py-8">
+              <Calendar className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">No upcoming appointments</p>
+              <Button onClick={() => { resetForm(); setOpen(true); }}>
+                <Plus className="h-4 w-4 mr-2" />
+                Schedule Appointment
+              </Button>
+            </div>
           ) : (
-            upcomingAppointments.map((appointment: any) => (
-              <div
-                key={appointment.id}
-                className="bg-white dark:bg-card border rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between items-start gap-2">
+            <div className="space-y-1">
+              {upcomingAppointments.map((appointment: any) => (
+                <div
+                  key={appointment.id}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <Calendar className="w-4 h-4" />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-base truncate">
-                        {appointment.title ||
-                          appointment.providerName ||
-                          appointment.provider}
-                      </h3>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium shrink-0 ${getTypeBadge(appointment.appointmentType || appointment.type)}`}
-                      >
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium truncate">
+                        {appointment.title || appointment.providerName || appointment.provider}
+                      </p>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${getTypeBadge(appointment.appointmentType || appointment.type)}`}>
                         {appointment.appointmentType || appointment.type}
                       </span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium shrink-0 ${getStatusBadge(appointment.status)}`}
-                      >
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${getStatusBadge(appointment.status)}`}>
                         {appointment.status}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Horse:{" "}
-                      {horses?.find((h: any) => h.id === appointment.horseId)
-                        ?.name || "Unknown"}
-                    </p>
-                    <p className="text-sm flex items-center gap-1">
-                      <Calendar className="h-4 w-4 shrink-0" />
-                      {new Date(
-                        appointment.appointmentDate,
-                      ).toLocaleDateString()}
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap text-xs text-muted-foreground">
+                      <span>{horses?.find((h: any) => h.id === appointment.horseId)?.name || "Unknown"}</span>
+                      <span>·</span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(appointment.appointmentDate).toLocaleDateString()}
+                      </span>
                       {appointment.appointmentTime && (
-                        <>
-                          <Clock className="h-4 w-4 ml-2 shrink-0" />
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
                           {appointment.appointmentTime}
-                        </>
+                        </span>
                       )}
-                    </p>
-                    {appointment.location && (
-                      <p className="text-sm">
-                        <strong>Location:</strong> {appointment.location}
-                      </p>
-                    )}
-                    {appointment.cost && (
-                      <p className="text-sm">
-                        <strong>Cost:</strong> £
-                        {(appointment.cost / 100).toFixed(2)}
-                      </p>
-                    )}
-                    {appointment.notes && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        {appointment.notes}
-                      </p>
-                    )}
+                      {appointment.location && <span>· {appointment.location}</span>}
+                    </div>
                   </div>
-                  <div className="flex gap-2 shrink-0">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(appointment)}
-                    >
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleEdit(appointment)}>
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDelete(appointment.id)}
-                    >
+                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDelete(appointment.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Past Appointments */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">
-          Past Appointments ({pastAppointments.length})
-        </h2>
-        <div className="grid gap-4">
-          {pastAppointments.slice(0, 10).map((appointment: any) => (
-            <div
-              key={appointment.id}
-              className="bg-gray-50 border rounded-lg p-4"
-            >
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-semibold">
-                      {appointment.title ||
-                        appointment.providerName ||
-                        appointment.provider}
-                    </h3>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeBadge(appointment.appointmentType || appointment.type)}`}
-                    >
-                      {appointment.appointmentType || appointment.type}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Horse:{" "}
-                    {horses?.find((h: any) => h.id === appointment.horseId)
-                      ?.name || "Unknown"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {new Date(appointment.appointmentDate).toLocaleDateString()}
-                    {appointment.appointmentTime &&
-                      ` at ${appointment.appointmentTime}`}
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleEdit(appointment)}
+      {pastAppointments.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Past Appointments</CardTitle>
+            <CardDescription>Completed and historical appointments</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-1">
+              {pastAppointments.slice(0, 10).map((appointment: any) => (
+                <div
+                  key={appointment.id}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors"
                 >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </div>
+                  <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">
+                    <Calendar className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium truncate text-muted-foreground">
+                        {appointment.title || appointment.providerName || appointment.provider}
+                      </p>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${getTypeBadge(appointment.appointmentType || appointment.type)}`}>
+                        {appointment.appointmentType || appointment.type}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap text-xs text-muted-foreground">
+                      <span>{horses?.find((h: any) => h.id === appointment.horseId)?.name || "Unknown"}</span>
+                      <span>· {new Date(appointment.appointmentDate).toLocaleDateString()}</span>
+                      {appointment.appointmentTime && <span>at {appointment.appointmentTime}</span>}
+                    </div>
+                  </div>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 shrink-0" onClick={() => handleEdit(appointment)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
