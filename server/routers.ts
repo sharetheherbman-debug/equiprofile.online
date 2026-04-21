@@ -2436,6 +2436,20 @@ export const appRouter = router({
 
         // Decode base64
         let buffer = Buffer.from(input.fileData, "base64");
+
+        // Validate decoded buffer size is consistent with the declared file size.
+        // base64 expands data by ~33%, so the decoded length should be close to
+        // fileSize.  A large discrepancy means the base64 payload was truncated or
+        // corrupted in transit — reject early rather than store a corrupt file.
+        // Allow 5% tolerance for minor encoding edge-cases.
+        const sizeDelta = Math.abs(buffer.length - input.fileSize);
+        const tolerance = Math.max(1024, input.fileSize * 0.05); // at least 1 KB
+        if (sizeDelta > tolerance) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `File upload appears corrupted: expected ${input.fileSize} bytes but decoded ${buffer.length} bytes. Please try again.`,
+          });
+        }
         let finalFileType = input.fileType;
         let finalFileName = safeFileName;
 

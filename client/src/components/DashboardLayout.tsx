@@ -329,6 +329,18 @@ function DashboardLayoutContent({
   // Admin users must use the hidden admin flow — they do not automatically get the switcher.
   const bothDashboardsUnlocked = !!subscriptionStatus?.bothDashboardsUnlocked;
 
+  // When admin is previewing a specific plan type, derive an effective stable-plan flag
+  // so the More sheet respects the simulated user's feature set rather than always
+  // showing all features.  Real users are unaffected.
+  const effectiveIsStablePlan = (() => {
+    if (isAdmin && viewMode === "stable") return true;
+    if (isAdmin && viewMode !== null && viewMode !== "admin") return false;
+    return isStablePlan;
+  })();
+  // effectiveIsAdmin: admins in their own "admin" view can still see everything;
+  // admins previewing another plan type should be gated like that plan.
+  const effectiveIsAdmin = isAdmin && (!viewMode || viewMode === "admin");
+
   // Determine which dashboard view is active for users with both dashboards
   const isOnStablePages = location.startsWith("/stable");
 
@@ -694,15 +706,15 @@ function DashboardLayoutContent({
                       // - stableOverride replaces the path/label for stable users
                       const items = group.items
                         .filter((item) => {
-                          if (item.stableOnly && !isStablePlan && !isAdmin)
+                          if (item.stableOnly && !effectiveIsStablePlan && !effectiveIsAdmin)
                             return false;
                           return true;
                         })
                         .map((item) => ({
                           ...item,
                           // Stable plan users see /stable-reports instead of /reports
-                          path: isStablePlan && item.stableOverride ? item.stableOverride : item.path,
-                          label: isStablePlan && item.stableOverride ? "Stable Reports" : item.label,
+                          path: effectiveIsStablePlan && item.stableOverride ? item.stableOverride : item.path,
+                          label: effectiveIsStablePlan && item.stableOverride ? "Stable Reports" : item.label,
                         }));
                       if (items.length === 0) return null;
                       return (

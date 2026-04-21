@@ -44,30 +44,29 @@ import { downloadCSV } from "@/lib/csvDownload";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 
-// Premium, brand-aligned colour palette
+// Premium, brand-aligned colour palette — chosen for high contrast in both light and dark mode
 const CHART_COLORS = {
-  primary: "#2e6da4",
-  secondary: "#1a7a6d",
-  accent: "#c5a55a",
-  muted: "#64748b",
-  success: "#22c55e",
-  warning: "#f59e0b",
-  danger: "#ef4444",
-  purple: "#7c3aed",
+  primary: "#3b82f6",   // blue-500 — vibrant, visible on dark and light
+  secondary: "#10b981", // emerald-500 — clear green
+  accent: "#f59e0b",    // amber-500 — warm, high contrast
+  muted: "#94a3b8",     // slate-400 — lighter gray, readable in dark mode
+  success: "#22c55e",   // green-500
+  warning: "#fb923c",   // orange-400 — distinct from amber
+  danger: "#f87171",    // red-400 — softer red, works in dark mode
+  purple: "#a78bfa",    // violet-400 — lighter purple, visible on dark
 };
 
 const PERFORMANCE_COLORS: Record<string, string> = {
   EXCELLENT: "#22c55e",
-  GOOD: "#2e6da4",
+  GOOD: "#3b82f6",
   AVERAGE: "#f59e0b",
-  POOR: "#ef4444",
-  // Darker slate so the "Not Rated" slice is legible against a white chart background
-  NOT_RATED: "#64748b",
+  POOR: "#f87171",
+  NOT_RATED: "#94a3b8",
 };
 
 const PIE_COLORS = [
-  "#2e6da4", "#1a7a6d", "#c5a55a", "#7c3aed",
-  "#22c55e", "#f59e0b", "#ef4444", "#64748b",
+  "#3b82f6", "#10b981", "#f59e0b", "#a78bfa",
+  "#22c55e", "#fb923c", "#f87171", "#94a3b8",
 ];
 
 /**

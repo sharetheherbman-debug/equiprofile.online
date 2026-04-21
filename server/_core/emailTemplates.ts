@@ -82,8 +82,8 @@ function headerBlock(_accent?: string): string {
 <td style="background:linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);padding:36px 40px 32px;">
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td style="vertical-align:middle;padding-right:18px;width:88px;">
-      <img src="${LOGO_URL}" alt="EquiProfile" width="72" height="72" style="display:block;border-radius:14px;width:72px;height:72px;background:#ffffff;"/>
+    <td style="vertical-align:middle;padding-right:20px;width:112px;">
+      <img src="${LOGO_URL}" alt="EquiProfile" width="96" height="96" style="display:block;width:96px;height:96px;"/>
     </td>
     <td style="vertical-align:middle;">
       <span style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1.1;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">EquiProfile</span>
@@ -105,8 +105,8 @@ function academyHeaderBlock(): string {
 <td style="background:linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);padding:36px 40px 32px;">
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td style="vertical-align:middle;padding-right:18px;width:88px;">
-      <img src="${LOGO_URL}" alt="EquiProfile Academy" width="72" height="72" style="display:block;border-radius:14px;width:72px;height:72px;background:#ffffff;"/>
+    <td style="vertical-align:middle;padding-right:20px;width:112px;">
+      <img src="${LOGO_URL}" alt="EquiProfile Academy" width="96" height="96" style="display:block;width:96px;height:96px;"/>
     </td>
     <td style="vertical-align:middle;">
       <span style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1.1;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">EquiProfile <span style="color:rgba(186,230,253,0.95);font-weight:500;">Academy</span></span>

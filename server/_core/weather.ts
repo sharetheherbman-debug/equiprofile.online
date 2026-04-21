@@ -13,6 +13,10 @@ export interface WeatherData {
   humidity: number;
   condition: string;
   timestamp: string;
+  /** Today's sunrise time as an ISO-like local-time string, e.g. "2024-03-15T06:30" */
+  sunrise?: string;
+  /** Today's sunset time as an ISO-like local-time string, e.g. "2024-03-15T19:45" */
+  sunset?: string;
 }
 
 export interface RidingAdvice {
@@ -45,7 +49,12 @@ export async function getCurrentWeather(
     "current",
     "temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code",
   );
+  // Request today's sunrise and sunset so getRidingAdvice can use actual daylight hours
+  // instead of fixed clock-based thresholds.  Open-Meteo returns these in local time
+  // (timezone=auto) as ISO-like strings, e.g. "2024-03-15T06:30".
+  url.searchParams.set("daily", "sunrise,sunset");
   url.searchParams.set("timezone", "auto");
+  url.searchParams.set("forecast_days", "1");
 
   const response = await fetch(url.toString());
   if (!response.ok) {
@@ -54,6 +63,9 @@ export async function getCurrentWeather(
 
   const data = await response.json();
   const current = data.current;
+  // daily arrays contain one entry for today
+  const sunrise: string | undefined = data.daily?.sunrise?.[0];
+  const sunset: string | undefined = data.daily?.sunset?.[0];
 
   return {
     temperature: current.temperature_2m,
@@ -62,6 +74,8 @@ export async function getCurrentWeather(
     humidity: current.relative_humidity_2m,
     condition: getWeatherCondition(current.weather_code),
     timestamp: current.time,
+    sunrise,
+    sunset,
   };
 }
 
@@ -125,9 +139,40 @@ export function getRidingAdvice(weather: WeatherData, hourOfDay?: number): Ridin
       }
     })();
 
-  const isNighttime = hour < 6 || hour >= 21;
-  const isDusk = hour >= 19 && hour < 21;
-  const isDawn = hour >= 5 && hour < 7;
+  // ── Daylight detection ──────────────────────────────────────────────────
+  // Parse a timestamp like "2024-03-15T06:30" into total minutes since midnight.
+  const toMinutes = (ts: string | undefined): number | null => {
+    if (!ts) return null;
+    const m = ts.match(/T(\d{2}):(\d{2})/);
+    if (!m) return null;
+    return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  };
+
+  // Current time in minutes from the weather timestamp (local time).
+  const currentMins = (() => {
+    const m = weather.timestamp.match(/T(\d{2}):(\d{2})/);
+    return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : hour * 60;
+  })();
+
+  const sunriseMins = toMinutes(weather.sunrise);
+  const sunsetMins = toMinutes(weather.sunset);
+
+  let isNighttime: boolean;
+  let isDusk: boolean;
+  let isDawn: boolean;
+
+  if (sunriseMins !== null && sunsetMins !== null) {
+    // Use actual local sunrise/sunset from the API — correct for any location and season.
+    isNighttime = currentMins < sunriseMins || currentMins >= sunsetMins;
+    // 45 minutes before sunset → dusk; 45 minutes after sunrise → dawn
+    isDusk = !isNighttime && (sunsetMins - currentMins) <= 45;
+    isDawn = !isNighttime && (currentMins - sunriseMins) <= 45;
+  } else {
+    // Fallback to fixed thresholds when sunrise/sunset data is unavailable.
+    isNighttime = hour < 6 || hour >= 21;
+    isDusk = hour >= 19 && hour < 21;
+    isDawn = hour >= 5 && hour < 7;
+  }
 
   const warnings: string[] = [];
 
