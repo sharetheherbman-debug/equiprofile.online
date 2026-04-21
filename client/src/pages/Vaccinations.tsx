@@ -281,10 +281,10 @@ function VaccinationsContent() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium truncate">{vaccination.vaccineName}</p>
                       {isOverdue(vaccination.nextDueDate) && (
-                        <Badge variant="destructive" className="text-[10px] h-4 px-1.5">Overdue</Badge>
+                        <Badge variant="destructive" className="text-xs h-4 px-1.5">Overdue</Badge>
                       )}
                       {isDueNext30Days(vaccination.nextDueDate) && !isOverdue(vaccination.nextDueDate) && (
-                        <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-amber-100 dark:bg-amber-950/40">Due Soon</Badge>
+                        <Badge variant="outline" className="text-xs h-4 px-1.5 bg-amber-100 dark:bg-amber-950/40">Due Soon</Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap text-xs text-muted-foreground">

@@ -43,7 +43,7 @@ ${body}
   <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 0 auto;">
     <tr>
       <td style="width:40px;height:1px;background:#e2e8f0;"></td>
-      <td style="padding:0 12px;font-size:11px;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;">EquiProfile</td>
+      <td style="padding:0 12px;font-size:12px;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;">EquiProfile</td>
       <td style="width:40px;height:1px;background:#e2e8f0;"></td>
     </tr>
   </table>
@@ -53,13 +53,13 @@ ${body}
 <p style="margin:4px 0 0 0;"><a href="${SITE_URL}" style="color:#2e6da4;text-decoration:none;">equiprofile.online</a></p>
 <p style="margin:6px 0 0 0;">{{currentDate}}</p>
 </td></tr>
-<tr><td align="center" style="padding:6px 16px 16px;font-size:11px;color:#b0b8c4;line-height:1.5;">
+<tr><td align="center" style="padding:6px 16px 16px;font-size:12px;color:#b0b8c4;line-height:1.5;">
 <p style="margin:0;">
 You received this email because you subscribed to EquiProfile communications or were contacted as a business.<br/>
 <a href="{{unsubscribeLink}}" style="color:#2e6da4;text-decoration:underline;">Unsubscribe</a> &nbsp;|&nbsp;
 <a href="${SITE_URL}/privacy" style="color:#2e6da4;text-decoration:underline;">Privacy Policy</a>
 </p>
-<p style="margin:6px 0 0 0;font-size:10px;color:#c5cdd8;">
+<p style="margin:6px 0 0 0;font-size:11px;color:#c5cdd8;">
 Amarktai Network Ltd. All rights reserved.
 </p>
 </td></tr>
@@ -87,7 +87,7 @@ function headerBlock(_accent?: string): string {
     </td>
     <td style="vertical-align:middle;">
       <span style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1.1;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">EquiProfile</span>
-      <span style="display:block;margin-top:4px;color:rgba(219,234,254,0.90);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Professional Equestrian Platform</span>
+      <span style="display:block;margin-top:4px;color:rgba(219,234,254,0.90);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Professional Equestrian Platform</span>
     </td>
   </tr>
 </table>
@@ -110,7 +110,7 @@ function academyHeaderBlock(): string {
     </td>
     <td style="vertical-align:middle;">
       <span style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1.1;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">EquiProfile <span style="color:rgba(186,230,253,0.95);font-weight:500;">Academy</span></span>
-      <span style="display:block;margin-top:4px;color:rgba(219,234,254,0.90);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Structured Equestrian Education</span>
+      <span style="display:block;margin-top:4px;color:rgba(219,234,254,0.90);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Structured Equestrian Education</span>
     </td>
   </tr>
 </table>

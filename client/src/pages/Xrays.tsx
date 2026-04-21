@@ -558,7 +558,7 @@ function XraysContent() {
                           href={xray.fileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
+                          className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
                         >
                           <FileImage className="w-3 h-3" />
                           View

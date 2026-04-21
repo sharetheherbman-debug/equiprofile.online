@@ -501,10 +501,10 @@ function AppointmentsContent() {
                       <p className="font-medium truncate">
                         {appointment.title || appointment.providerName || appointment.provider}
                       </p>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${getTypeBadge(appointment.appointmentType || appointment.type)}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-xs font-medium shrink-0 ${getTypeBadge(appointment.appointmentType || appointment.type)}`}>
                         {appointment.appointmentType || appointment.type}
                       </span>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${getStatusBadge(appointment.status)}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-xs font-medium shrink-0 ${getStatusBadge(appointment.status)}`}>
                         {appointment.status}
                       </span>
                     </div>
@@ -561,7 +561,7 @@ function AppointmentsContent() {
                       <p className="font-medium truncate text-muted-foreground">
                         {appointment.title || appointment.providerName || appointment.provider}
                       </p>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${getTypeBadge(appointment.appointmentType || appointment.type)}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-xs font-medium shrink-0 ${getTypeBadge(appointment.appointmentType || appointment.type)}`}>
                         {appointment.appointmentType || appointment.type}
                       </span>
                     </div>

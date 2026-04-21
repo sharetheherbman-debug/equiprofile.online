@@ -452,10 +452,10 @@ function TreatmentsContent() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium truncate">{treatment.treatmentName || treatment.name}</p>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${getStatusBadge(treatment.status)}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${getStatusBadge(treatment.status)}`}>
                         {treatment.status}
                       </span>
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                      <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                         {treatment.treatmentType || treatment.type}
                       </span>
                     </div>
@@ -501,7 +501,7 @@ function TreatmentsContent() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium truncate text-muted-foreground">{treatment.treatmentName || treatment.name}</p>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${getStatusBadge(treatment.status)}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${getStatusBadge(treatment.status)}`}>
                         {treatment.status}
                       </span>
                     </div>

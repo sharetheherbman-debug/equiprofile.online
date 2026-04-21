@@ -495,12 +495,12 @@ function DentalCareContent() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium truncate">{getHorseName(record.horseId)}</p>
                       {record.teethCondition && (
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${getConditionBadge(record.teethCondition)}`}>
+                        <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${getConditionBadge(record.teethCondition)}`}>
                           {record.teethCondition}
                         </span>
                       )}
                       {record.sedationUsed && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                        <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                           Sedated
                         </span>
                       )}
