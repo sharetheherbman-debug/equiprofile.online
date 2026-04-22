@@ -159,11 +159,14 @@ const trpcClient = trpc.createClient({
 
         // If the server returns a non-JSON response (e.g. nginx/Express HTML 413
         // page), tRPC's batch parser will crash with "Unexpected token '<'".
-        // Detect this early and synthesise a parseable JSON error response so
-        // the calling mutation receives a proper TRPCClientError instead of
+        // Also intercept JSON 413 responses from Express — the Express body-parser
+        // returns {"error":"..."} which is not a valid tRPC batch array, causing
+        // tRPC to throw "Unable to transform response from server".
+        // Detect both cases early and synthesise a parseable JSON error response
+        // so the calling mutation receives a proper TRPCClientError instead of
         // an unhandled JS exception.
         const contentType = response.headers.get("content-type") ?? "";
-        if (!response.ok && !contentType.includes("application/json")) {
+        if (!response.ok && (response.status === 413 || !contentType.includes("application/json"))) {
           let message = "Request failed";
           if (response.status === 413) {
             message = "File too large. Maximum upload size is 10MB.";

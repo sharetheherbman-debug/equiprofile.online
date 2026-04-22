@@ -74,6 +74,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
+import type { ComponentType } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from "./DashboardLayoutSkeleton";
 import { Button } from "./ui/button";
@@ -144,10 +145,26 @@ const stableBottomNavItems = [
   { icon: ListChecks, label: "Tasks", path: "/tasks" },
 ];
 
+// Explicit types for the More sheet module data so TypeScript correctly
+// recognises optional stableOnly / stableOverride on all item shapes.
+interface MoreModuleItem {
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  path: string;
+  stableOnly?: boolean;
+  stableOverride?: string;
+}
+interface MoreModuleGroup {
+  label: string;
+  iconBg: string;
+  stableOnly?: boolean;
+  items: MoreModuleItem[];
+}
+
 // All modules grouped for the "More" sheet — organised for clarity
 // Icon backgrounds use deeper, muted 700/800-range tones to feel premium rather
 // than the saturated 500/600 "candy" gradients which looked toy-like.
-const moreModuleGroups = [
+const moreModuleGroups: MoreModuleGroup[] = [
   {
     label: "Core",
     iconBg: "bg-gradient-to-br from-blue-700 to-blue-800",

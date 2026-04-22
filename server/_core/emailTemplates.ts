@@ -82,8 +82,8 @@ function headerBlock(_accent?: string): string {
 <td style="background:linear-gradient(135deg,#1e3a8a 0%,#1e40af 60%,#2563eb 100%);padding:32px 40px 28px;">
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td style="vertical-align:middle;padding-right:18px;width:90px;">
-      <img src="https://equiprofile.online/logo.png" alt="EquiProfile" width="80" height="80" style="display:block;width:80px;height:auto;border:0;outline:none;"/>
+    <td style="vertical-align:middle;padding-right:20px;width:130px;">
+      <img src="https://equiprofile.online/logo.png" alt="EquiProfile" width="110" height="110" style="display:block;width:110px;height:auto;border:0;outline:none;"/>
     </td>
     <td style="vertical-align:middle;">
       <span style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1.1;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">EquiProfile</span>
@@ -104,8 +104,8 @@ function academyHeaderBlock(): string {
 <td style="background:linear-gradient(135deg,#1e3a8a 0%,#1e40af 60%,#2563eb 100%);padding:32px 40px 28px;">
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td style="vertical-align:middle;padding-right:18px;width:90px;">
-      <img src="https://equiprofile.online/logo.png" alt="EquiProfile Academy" width="80" height="80" style="display:block;width:80px;height:auto;border:0;outline:none;"/>
+    <td style="vertical-align:middle;padding-right:20px;width:130px;">
+      <img src="https://equiprofile.online/logo.png" alt="EquiProfile Academy" width="110" height="110" style="display:block;width:110px;height:auto;border:0;outline:none;"/>
     </td>
     <td style="vertical-align:middle;">
       <span style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;line-height:1.1;display:block;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">EquiProfile <span style="color:rgba(147,197,253,0.95);font-weight:500;">Academy</span></span>
