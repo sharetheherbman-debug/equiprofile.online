@@ -46,27 +46,27 @@ import { PageHeader } from "@/components/PageHeader";
 
 // Premium, brand-aligned colour palette — chosen for high contrast in both light and dark mode
 const CHART_COLORS = {
-  primary: "#3b82f6",   // blue-500 — vibrant, visible on dark and light
-  secondary: "#10b981", // emerald-500 — clear green
-  accent: "#f59e0b",    // amber-500 — warm, high contrast
-  muted: "#94a3b8",     // slate-400 — lighter gray, readable in dark mode
-  success: "#22c55e",   // green-500
-  warning: "#fb923c",   // orange-400 — distinct from amber
-  danger: "#f87171",    // red-400 — softer red, works in dark mode
-  purple: "#a78bfa",    // violet-400 — lighter purple, visible on dark
+  primary: "#2563eb",   // blue-600 — strong, visible on dark and light
+  secondary: "#059669", // emerald-600 — saturated green
+  accent: "#d97706",    // amber-600 — warm, high contrast
+  muted: "#64748b",     // slate-500 — mid-tone gray, readable in both modes
+  success: "#16a34a",   // green-600 — deep green
+  warning: "#ea580c",   // orange-600 — distinct from amber
+  danger: "#dc2626",    // red-600 — clear, strong red
+  purple: "#7c3aed",    // violet-600 — deep purple, visible on light backgrounds
 };
 
 const PERFORMANCE_COLORS: Record<string, string> = {
-  EXCELLENT: "#22c55e",
-  GOOD: "#3b82f6",
-  AVERAGE: "#f59e0b",
-  POOR: "#f87171",
-  NOT_RATED: "#94a3b8",
+  EXCELLENT: "#16a34a",
+  GOOD: "#2563eb",
+  AVERAGE: "#d97706",
+  POOR: "#dc2626",
+  NOT_RATED: "#64748b",
 };
 
 const PIE_COLORS = [
-  "#3b82f6", "#10b981", "#f59e0b", "#a78bfa",
-  "#22c55e", "#fb923c", "#f87171", "#94a3b8",
+  "#2563eb", "#059669", "#d97706", "#7c3aed",
+  "#16a34a", "#ea580c", "#dc2626", "#64748b",
 ];
 
 /**

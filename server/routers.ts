@@ -4300,32 +4300,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const dbConn = await getDb();
         if (!dbConn) return { replies: [], total: 0 };
 
-        try {
-          const conditions: ReturnType<typeof eq>[] = [];
-          if (input.status && input.status !== "all") {
-            conditions.push(eq(campaignReplies.status, input.status));
-          }
-
-          const { desc } = await import("drizzle-orm");
-          const rows = await dbConn
-            .select()
-            .from(campaignReplies)
-            .where(conditions.length ? and(...conditions) : undefined)
-            .orderBy(desc(campaignReplies.receivedAt))
-            .limit(input.limit)
-            .offset(input.offset);
-
-          const [countResult] = await dbConn
-            .select({ total: sql<number>`COUNT(*)` })
-            .from(campaignReplies)
-            .where(conditions.length ? and(...conditions) : undefined);
-
-          return { replies: rows, total: Number(countResult?.total ?? 0) };
-        } catch (err) {
-          // Table may not yet exist in this environment — return empty result gracefully
-          console.error("[getCampaignReplies] DB query failed (table may not exist in this environment):", err);
-          return { replies: [], total: 0 };
+        const conditions: ReturnType<typeof eq>[] = [];
+        if (input.status && input.status !== "all") {
+          conditions.push(eq(campaignReplies.status, input.status));
         }
+
+        const { desc } = await import("drizzle-orm");
+        const rows = await dbConn
+          .select()
+          .from(campaignReplies)
+          .where(conditions.length ? and(...conditions) : undefined)
+          .orderBy(desc(campaignReplies.receivedAt))
+          .limit(input.limit)
+          .offset(input.offset);
+
+        const [countResult] = await dbConn
+          .select({ total: sql<number>`COUNT(*)` })
+          .from(campaignReplies)
+          .where(conditions.length ? and(...conditions) : undefined);
+
+        return { replies: rows, total: Number(countResult?.total ?? 0) };
       }),
 
     updateReplyStatus: adminUnlockedProcedure
