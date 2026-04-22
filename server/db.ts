@@ -1322,6 +1322,28 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       KEY \`idx_tsm_teacherId\` (\`teacherId\`),
       KEY \`idx_tsm_studentId\` (\`studentId\`)
     )`,
+
+    // Campaign Replies — admin inbox for matched inbound email replies (migration 0019)
+    `CREATE TABLE IF NOT EXISTS \`campaignReplies\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`messageId\` varchar(500) NOT NULL,
+      \`fromEmail\` varchar(320) NOT NULL,
+      \`fromName\` varchar(200),
+      \`subject\` varchar(500),
+      \`snippet\` text,
+      \`receivedAt\` timestamp NOT NULL,
+      \`matchedCampaignId\` int,
+      \`matchedContactId\` int,
+      \`status\` varchar(30) NOT NULL DEFAULT 'new',
+      \`notes\` text,
+      \`sequenceStopped\` boolean NOT NULL DEFAULT false,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`campaignReplies_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_campaignReplies_fromEmail\` (\`fromEmail\`),
+      KEY \`idx_campaignReplies_matchedCampaignId\` (\`matchedCampaignId\`),
+      KEY \`idx_campaignReplies_status\` (\`status\`)
+    )`,
   ];
 
   try {

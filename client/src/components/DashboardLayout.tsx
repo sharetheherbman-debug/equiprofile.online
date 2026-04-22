@@ -208,6 +208,7 @@ const moreModuleGroups = [
   {
     label: "Stable & People",
     iconBg: "bg-gradient-to-br from-cyan-700 to-teal-800",
+    stableOnly: true,
     items: [
       { icon: Home, label: "Stable Management", path: "/stable", stableOnly: true },
       { icon: Wrench, label: "Stable Setup", path: "/stable-setup", stableOnly: true },
@@ -700,6 +701,12 @@ function DashboardLayoutContent({
                   </SheetHeader>
                   <div className="space-y-6" style={{ paddingBottom: 'calc(1.5rem + var(--safe-area-bottom, 0px))' }}>
                     {moreModuleGroups.map((group) => {
+                      // Skip groups that are exclusively for Stable plan users
+                      // when the current user is not on the Stable plan.
+                      // This group-level check is the primary gate; item-level
+                      // stableOnly filtering below acts as a secondary guard.
+                      if ((group as any).stableOnly && !effectiveIsStablePlan && !effectiveIsAdmin)
+                        return null;
                       // Filter and adapt items based on plan:
                       // - stableOnly items shown only to stable users (or admin)
                       // - stableOverride replaces the path/label for stable users

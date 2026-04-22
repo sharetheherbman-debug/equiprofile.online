@@ -153,6 +153,27 @@ else
         echo "ERROR: Nginx config still contains YOUR_DOMAIN_HERE placeholder"
         echo "Please edit /etc/nginx/sites-available/equiprofile and replace with your actual domain"
     else
+        # ── Ensure client_max_body_size is 50M in every server block ──────────
+        # When certbot rewrites the nginx config to add SSL it may not preserve
+        # the server-level client_max_body_size directive that was in the
+        # original HTTP block.  We patch it in-place now so that file uploads
+        # are not rejected with 413 on the HTTPS endpoint.
+        #
+        # Strategy:
+        #  1. Replace any existing (possibly lower) client_max_body_size value.
+        #  2. If the directive is missing entirely in a server block, insert it
+        #     immediately after the first server_name line in that block.
+        NGINX_CONF="/etc/nginx/sites-available/equiprofile"
+        if grep -q "client_max_body_size" "$NGINX_CONF" 2>/dev/null; then
+            # Update any existing value (e.g. 1M, 10M) to 50M
+            sed -i 's/client_max_body_size [0-9]*[mMkKgG];/client_max_body_size 50M;/g' "$NGINX_CONF"
+            echo "Nginx: client_max_body_size patched to 50M"
+        else
+            # Directive is missing entirely — add after every server_name line
+            sed -i '/^\s*server_name /a\    client_max_body_size 50M;' "$NGINX_CONF"
+            echo "Nginx: client_max_body_size 50M inserted after server_name directives"
+        fi
+
         # Test nginx config
         if nginx -t 2>/dev/null; then
             echo "Nginx configuration is valid"
