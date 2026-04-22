@@ -705,7 +705,7 @@ function DashboardLayoutContent({
                       // when the current user is not on the Stable plan.
                       // This group-level check is the primary gate; item-level
                       // stableOnly filtering below acts as a secondary guard.
-                      if ((group as any).stableOnly && !effectiveIsStablePlan && !effectiveIsAdmin)
+                      if (group.stableOnly && !effectiveIsStablePlan && !effectiveIsAdmin)
                         return null;
                       // Filter and adapt items based on plan:
                       // - stableOnly items shown only to stable users (or admin)

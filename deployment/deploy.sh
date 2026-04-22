@@ -170,7 +170,7 @@ else
             echo "Nginx: client_max_body_size patched to 50M"
         else
             # Directive is missing entirely — add after every server_name line
-            sed -i '/^\s*server_name /a\    client_max_body_size 50M;' "$NGINX_CONF"
+            sed -i '/^[[:space:]]*server_name /a\    client_max_body_size 50M;' "$NGINX_CONF"
             echo "Nginx: client_max_body_size 50M inserted after server_name directives"
         fi
 
