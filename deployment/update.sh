@@ -138,22 +138,78 @@ else
 fi
 echo ""
 
-# Step 8: Check nginx configuration
-info "Checking nginx configuration..."
-if [ -f "$APP_DIR/deployment/nginx-webdock.conf" ]; then
-  if [ -f /etc/nginx/sites-available/equiprofile ]; then
-    # Check if there are significant differences
-    if ! diff -q "$APP_DIR/deployment/nginx-webdock.conf" /etc/nginx/sites-available/equiprofile >/dev/null 2>&1; then
-      warn "Nginx configuration template has changed"
-      warn "Please review: $APP_DIR/deployment/nginx-webdock.conf"
-      warn "Current config: /etc/nginx/sites-available/equiprofile"
-      warn "Update manually if needed and reload nginx"
-    else
-      success "Nginx configuration unchanged"
-    fi
+# Step 8: Patch nginx configuration (ensure client_max_body_size 50M in every server block)
+# deploy.sh installs the initial config; update.sh must also patch it on every update.
+# Without this, a certbot-generated HTTPS server block may be missing the directive
+# (defaulting to nginx's 1 MB limit) and rejecting document uploads with HTTP 413.
+info "Patching nginx configuration (client_max_body_size)..."
+NGINX_CONF="/etc/nginx/sites-available/equiprofile"
+if [ -f "$NGINX_CONF" ] && ! grep -q "YOUR_DOMAIN_HERE" "$NGINX_CONF" 2>/dev/null; then
+  python3 - "$NGINX_CONF" << 'PYEOF'
+import sys, re
+
+conf = sys.argv[1]
+try:
+    with open(conf) as f:
+        content = f.read()
+except Exception as e:
+    print(f"Nginx: could not open {conf}: {e}")
+    sys.exit(0)
+
+# Step 1: normalise any existing client_max_body_size value to 50M
+content = re.sub(r'(client_max_body_size\s+)[^\s;]+;', r'\g<1>50M;', content)
+
+# Step 2: walk the config line-by-line with brace-depth tracking so we can
+# detect top-level server { } blocks and insert the directive into any that
+# still lack it (e.g. certbot-generated HTTPS blocks).
+lines = content.split('\n')
+result = []
+depth = 0
+in_server = False
+server_has_limit = False
+server_name_insert_after = -1
+
+for line in lines:
+    opens = line.count('{')
+    closes = line.count('}')
+    stripped = line.strip()
+
+    # Detect the opening of a top-level server block
+    if depth == 0 and opens > 0 and re.search(r'\bserver\b', line):
+        in_server = True
+        server_has_limit = False
+        server_name_insert_after = -1
+
+    result.append(line)
+    depth += opens - closes
+
+    # Inspect lines that belong directly to the server block (depth == 1)
+    if in_server and depth == 1:
+        if 'client_max_body_size' in stripped:
+            server_has_limit = True
+        elif stripped.startswith('server_name '):
+            server_name_insert_after = len(result) - 1
+
+    # End of the top-level server block
+    if in_server and depth == 0:
+        if not server_has_limit and server_name_insert_after >= 0:
+            result.insert(server_name_insert_after + 1, '    client_max_body_size 50M;')
+        in_server = False
+
+with open(conf, 'w') as f:
+    f.write('\n'.join(result))
+print("Nginx: client_max_body_size 50M ensured in all server blocks")
+PYEOF
+
+  if nginx -t >/dev/null 2>&1; then
+    systemctl reload nginx
+    success "Nginx patched and reloaded"
+  else
+    warn "Nginx config test failed after patching — check $NGINX_CONF manually"
+    nginx -t
   fi
 else
-  info "No nginx configuration to update"
+  info "No live nginx config to patch (skipping)"
 fi
 echo ""
 

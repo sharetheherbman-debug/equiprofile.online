@@ -357,6 +357,12 @@ function DashboardLayoutContent({
   // effectiveIsAdmin is true only when the user is an admin AND either has no viewMode set or is
   // explicitly in "admin" viewMode — ensures admins previewing other plans are gated like those plans.
   const effectiveIsAdmin = isAdmin && (!viewMode || viewMode === "admin");
+  // When admin is previewing a specific plan (pro, stable, teacher, etc.), suppress the
+  // dual-dashboard switcher and bottom-nav stable branch so Stable nav items don't bleed
+  // into the Pro/teacher/student preview.  Real users always get their real value.
+  const effectiveBothDashboardsUnlocked = (isAdmin && !!viewMode && viewMode !== "admin")
+    ? false
+    : bothDashboardsUnlocked;
 
   // Determine which dashboard view is active for users with both dashboards
   const isOnStablePages = location.startsWith("/stable");
@@ -376,7 +382,7 @@ function DashboardLayoutContent({
   // personally holds a stable subscription but is previewing Pro mode does not
   // see the stable bottom-nav item — the More-sheet already uses the effective
   // flag for the same reason.
-  const bottomNavItems = bothDashboardsUnlocked
+  const bottomNavItems = effectiveBothDashboardsUnlocked
     ? (isOnStablePages ? stableBottomNavItems : standardBottomNavItems)
     : (effectiveIsStablePlan ? stableBottomNavItems : standardBottomNavItems);
   const activeMenuItem = activeNavItems.find((item) => item.path === location);
@@ -451,7 +457,7 @@ function DashboardLayoutContent({
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
-              {bothDashboardsUnlocked && (
+              {effectiveBothDashboardsUnlocked && (
                 <>
                   <SidebarMenuItem>
                     <SidebarMenuButton
