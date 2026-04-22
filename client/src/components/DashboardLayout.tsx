@@ -372,9 +372,13 @@ function DashboardLayoutContent({
       ? (isOnStablePages ? stableNavItems : menuItems)
       : (isStablePlan ? stableNavItems : menuItems);
   })();
+  // Use effectiveIsStablePlan (not the raw isStablePlan) so that an admin who
+  // personally holds a stable subscription but is previewing Pro mode does not
+  // see the stable bottom-nav item — the More-sheet already uses the effective
+  // flag for the same reason.
   const bottomNavItems = bothDashboardsUnlocked
     ? (isOnStablePages ? stableBottomNavItems : standardBottomNavItems)
-    : (isStablePlan ? stableBottomNavItems : standardBottomNavItems);
+    : (effectiveIsStablePlan ? stableBottomNavItems : standardBottomNavItems);
   const activeMenuItem = activeNavItems.find((item) => item.path === location);
 
   useEffect(() => {

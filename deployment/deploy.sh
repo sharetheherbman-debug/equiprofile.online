@@ -55,6 +55,12 @@ fi
 mkdir -p /var/log/equiprofile
 chown -R www-data:www-data /var/log/equiprofile
 
+# Create uploads directory (default production path used when STORAGE_PATH is unset)
+# The Node.js app runs as www-data so this directory must be writable by that user.
+mkdir -p /var/www/equiprofile/uploads
+chown -R www-data:www-data /var/www/equiprofile/uploads
+echo "Uploads directory ready: /var/www/equiprofile/uploads"
+
 # Step 3: Pull latest code (if git repo)
 echo ""
 echo "[3/9] Updating code..."
@@ -164,15 +170,67 @@ else
         #  2. If the directive is missing entirely in a server block, insert it
         #     immediately after the first server_name line in that block.
         NGINX_CONF="/etc/nginx/sites-available/equiprofile"
-        if grep -q "client_max_body_size" "$NGINX_CONF" 2>/dev/null; then
-            # Update any existing value (e.g. 1M, 10M) to 50M
-            sed -i 's/client_max_body_size [0-9]*[mMkKgG];/client_max_body_size 50M;/g' "$NGINX_CONF"
-            echo "Nginx: client_max_body_size patched to 50M"
-        else
-            # Directive is missing entirely — add after every server_name line
-            sed -i '/^[[:space:]]*server_name /a\    client_max_body_size 50M;' "$NGINX_CONF"
-            echo "Nginx: client_max_body_size 50M inserted after server_name directives"
-        fi
+        # Use a Python state-machine to ensure EVERY server block in the live
+        # config has client_max_body_size 50M.  The simple grep+sed approach
+        # used previously had a gap: when certbot adds an HTTPS 443 block that
+        # lacks the directive, grep finds it in the HTTP redirect block and
+        # skips the "insert" branch — leaving the 443 block at nginx's 1 MB
+        # default and causing 413 errors on document uploads.
+        python3 - "$NGINX_CONF" << 'PYEOF'
+import sys, re
+
+conf = sys.argv[1]
+try:
+    with open(conf) as f:
+        content = f.read()
+except Exception as e:
+    print(f"Nginx: could not open {conf}: {e}")
+    sys.exit(0)
+
+# Step 1: normalise any existing client_max_body_size value to 50M
+content = re.sub(r'(client_max_body_size\s+)[^\s;]+;', r'\g<1>50M;', content)
+
+# Step 2: walk the config line-by-line with brace-depth tracking so we can
+# detect top-level server { } blocks and insert the directive into any that
+# still lack it (e.g. certbot-generated HTTPS blocks).
+lines = content.split('\n')
+result = []
+depth = 0
+in_server = False
+server_has_limit = False
+server_name_insert_after = -1
+
+for line in lines:
+    opens = line.count('{')
+    closes = line.count('}')
+    stripped = line.strip()
+
+    # Detect the opening of a top-level server block
+    if depth == 0 and opens > 0 and re.search(r'\bserver\b', line):
+        in_server = True
+        server_has_limit = False
+        server_name_insert_after = -1
+
+    result.append(line)
+    depth += opens - closes
+
+    # Inspect lines that belong directly to the server block (depth == 1)
+    if in_server and depth == 1:
+        if 'client_max_body_size' in stripped:
+            server_has_limit = True
+        elif stripped.startswith('server_name '):
+            server_name_insert_after = len(result) - 1
+
+    # End of the top-level server block
+    if in_server and depth == 0:
+        if not server_has_limit and server_name_insert_after >= 0:
+            result.insert(server_name_insert_after + 1, '    client_max_body_size 50M;')
+        in_server = False
+
+with open(conf, 'w') as f:
+    f.write('\n'.join(result))
+print("Nginx: client_max_body_size 50M ensured in all server blocks")
+PYEOF
 
         # Test nginx config
         if nginx -t 2>/dev/null; then
