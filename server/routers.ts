@@ -2414,11 +2414,40 @@ export const appRouter = router({
         }),
       )
       .mutation(async ({ ctx, input }) => {
+        // Infer MIME type from file extension when the browser did not supply one.
+        // iOS Safari and some Android browsers send an empty string for types they
+        // don't recognise (CSV, Word, etc.).  Falling back to extension-based
+        // detection avoids a blanket "File type not allowed: " rejection.
+        const EXT_TO_MIME: Record<string, string> = {
+          ".pdf":  "application/pdf",
+          ".csv":  "text/csv",
+          ".txt":  "text/plain",
+          ".doc":  "application/msword",
+          ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          ".xls":  "application/vnd.ms-excel",
+          ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          ".jpg":  "image/jpeg",
+          ".jpeg": "image/jpeg",
+          ".png":  "image/png",
+          ".gif":  "image/gif",
+          ".webp": "image/webp",
+          ".svg":  "image/svg+xml",
+          ".heic": "image/heic",
+          ".heif": "image/heif",
+        };
+        let resolvedFileType = input.fileType;
+        if (!resolvedFileType) {
+          const ext = (input.fileName.match(/\.[^.]+$/) ?? [""])[0].toLowerCase();
+          resolvedFileType = EXT_TO_MIME[ext] ?? "";
+        }
+
         // Validate MIME type — allow images, PDFs, common document types only
-        if (!ALLOWED_UPLOAD_MIME_TYPES.includes(input.fileType as any)) {
+        if (!ALLOWED_UPLOAD_MIME_TYPES.includes(resolvedFileType as any)) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: `File type not allowed: ${input.fileType}`,
+            message: resolvedFileType
+              ? `File type not allowed: ${resolvedFileType}`
+              : `Cannot determine file type for "${input.fileName}". Please try a PDF, image, Word, Excel, or CSV file.`,
           });
         }
 
@@ -2450,13 +2479,13 @@ export const appRouter = router({
             message: `File upload appears corrupted: expected ${input.fileSize} bytes but decoded ${buffer.length} bytes. Please try again.`,
           });
         }
-        let finalFileType = input.fileType;
+        let finalFileType = resolvedFileType;
         let finalFileName = safeFileName;
 
         // HEIC/HEIF → JPEG conversion (iPhone default photo format)
         if (
-          input.fileType === "image/heic" ||
-          input.fileType === "image/heif"
+          resolvedFileType === "image/heic" ||
+          resolvedFileType === "image/heif"
         ) {
           try {
             const heicConvert = await import("heic-convert");
