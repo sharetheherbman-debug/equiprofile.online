@@ -1,7 +1,7 @@
 /**
  * ManagementFooter — Premium footer for equiprofile.online
  *
- * Rich navy background, management-focused links, subtle cross-link to School.
+ * Rich navy background, management-focused links, subtle cross-link to Academy.
  */
 import { Link } from "wouter";
 import { Mail, ArrowRight } from "lucide-react";
@@ -115,7 +115,7 @@ export function ManagementFooter({ hidePreFooterCta = false }: { hidePreFooterCt
                 </Link>
               </li>
               <li>
-                <a href="https://school.equiprofile.online" className="text-gray-500 hover:text-white transition-colors">
+                <a href="https://school.equiprofile.online/academy" className="text-gray-500 hover:text-white transition-colors">
                   EquiProfile Academy
                 </a>
               </li>
