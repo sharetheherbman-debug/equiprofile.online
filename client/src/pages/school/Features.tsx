@@ -3,7 +3,6 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { SchoolLayout } from "@/components/school/SchoolLayout";
 import {
-  BookOpen,
   GraduationCap,
   BarChart3,
   Users,
@@ -29,21 +28,21 @@ const fadeUp = {
 
 const majorFeatures = [
   {
-    badge: "Core Feature",
+    badge: "Core Learning",
     badgeColor: "bg-[#2d6a4f]/10 text-[#2d6a4f]",
     title: "Learning Pathways",
     subtitle: "15 Pathways · 4 Progressive Levels",
     description:
-      "Our structured learning pathways guide students from absolute beginner to advanced rider. Each pathway covers a specific discipline — from groundwork and stable management to dressage, jumping, and cross-country. Students progress through four clearly defined levels: Foundation, Developing, Competent, and Advanced.",
+      "EquiProfile Academy organises existing structured equestrian lessons into progressive pathways across horse care, riding, safety, welfare, tack, health, stable management, competition, coaching, nutrition, and related topics. Lessons combine objectives, detailed content, practical application, safety notes, knowledge checks, and linked competencies where configured.",
     highlights: [
-      "15 discipline-specific pathways",
-      "4 progressive skill levels per pathway",
-      "Aligned with BHS and Pony Club standards",
-      "Automatic progression when criteria are met",
-      "Visual skill maps for students and parents",
+      "15 current learning pathways",
+      "Beginner, developing, intermediate, and advanced levels",
+      "Original EquiProfile educational content",
+      "Knowledge checks with answer explanations",
+      "Safety notes and practical application",
     ],
     image: "/images/hero/image1.jpg",
-    imageAlt: "Learning pathways",
+    imageAlt: "Equestrian learning pathways",
     icon: GraduationCap,
     reverse: false,
   },
@@ -51,34 +50,34 @@ const majorFeatures = [
     badge: "Student Experience",
     badgeColor: "bg-[#3b82f6]/10 text-[#3b82f6]",
     title: "Student Dashboard",
-    subtitle: "Personalised Learning Hub",
+    subtitle: "Connected Learning Hub",
     description:
-      "Every student gets a personalised dashboard showing their current pathways, upcoming lessons, recent achievements, and areas for improvement. The visual progress indicators make learning tangible and motivating — students can see exactly where they are and what comes next.",
+      "The existing student experience brings together lesson pathways, progress, assigned work, instructor feedback, competency records, practical tasks, and other student learning tools. Academy work is focused on completing and validating those flows rather than replacing them with a separate LMS.",
     highlights: [
-      "Personal progress overview at a glance",
-      "Upcoming lessons and assignments",
-      "Achievement badges and milestones",
-      "Skill-level visualisation across pathways",
-      "Lesson history and instructor feedback",
+      "Lesson and pathway progress",
+      "Teacher-assigned lessons and tasks",
+      "Competency records",
+      "Instructor feedback and lesson reviews",
+      "Learning history and recommended next work",
     ],
     image: "/images/gallery/10.jpg",
-    imageAlt: "Student dashboard",
+    imageAlt: "Student learning dashboard",
     icon: Layout,
     reverse: true,
   },
   {
-    badge: "Instructor Power",
+    badge: "Coach & Teacher",
     badgeColor: "bg-[#f59e0b]/10 text-[#f59e0b]",
     title: "Teacher Dashboard",
-    subtitle: "Everything Instructors Need",
+    subtitle: "Teaching and Progress Tools",
     description:
-      "Teachers get a powerful command centre for managing their classes, tracking student progress, and planning lessons. The dashboard surfaces the insights that matter — who's ready to advance, who needs extra support, and what to focus on in each lesson.",
+      "Teachers can work with assigned students, lesson assignments, competency assessment, feedback, learning resources, and lesson-related workflows. The Academy completion work is validating these existing capabilities and making the final experience consistent and transparent.",
     highlights: [
-      "Class management and scheduling",
-      "Individual student progress tracking",
-      "Lesson planning with pathway alignment",
-      "Attendance tracking and reporting",
-      "Parent communication tools",
+      "Assigned students and learning groups where configured",
+      "Lesson assignments",
+      "Competency assessment",
+      "Student feedback and lesson reviews",
+      "Lesson scheduling and planning workflows",
     ],
     image: "/images/hero/image2.jpg",
     imageAlt: "Teacher dashboard",
@@ -89,15 +88,15 @@ const majorFeatures = [
     badge: "Active Learning",
     badgeColor: "bg-[#10b981]/10 text-[#10b981]",
     title: "Assignments & Practice",
-    subtitle: "Learning Beyond the Arena",
+    subtitle: "Learning Beyond a Single Lesson",
     description:
-      "Reinforce lessons between sessions with structured assignments. Teachers can set theory tasks, stable management practice, or reflective exercises that keep students engaged and progressing even when they're not in the saddle.",
+      "Existing assignment and task systems let teachers connect learning between sessions. Students can receive individual or group work, complete assigned tasks, and keep educational activity linked to their Academy record.",
     highlights: [
-      "Teacher-created assignments per pathway",
-      "Theory and practical task types",
-      "Completion tracking and reminders",
-      "Student self-reflection prompts",
-      "Integration with progress tracking",
+      "Individual and group assignment foundations",
+      "Lesson and pathway assignments",
+      "Due dates and instructions",
+      "Student completion state",
+      "Teacher feedback foundations",
     ],
     image: "/images/gallery/15.jpg",
     imageAlt: "Assignments and practice",
@@ -105,40 +104,40 @@ const majorFeatures = [
     reverse: true,
   },
   {
-    badge: "Data & Insights",
+    badge: "Progress",
     badgeColor: "bg-[#3b82f6]/10 text-[#3b82f6]",
-    title: "Progress & Reports",
-    subtitle: "Measure What Matters",
+    title: "Progress & Competencies",
+    subtitle: "Evidence of Learning",
     description:
-      "Comprehensive reporting tools give schools, instructors, and parents clear visibility into student development. From individual progress reports to school-wide analytics, you'll always know how your students and school are performing.",
+      "Academy combines persisted lesson completion with competency assessment, reviews, assignments, and progress intelligence. Current implementation work is hardening those calculations so progress is always derived from trusted curriculum and server-side facts.",
     highlights: [
-      "Individual student progress reports",
-      "School-wide performance analytics",
-      "Exportable PDF reports for parents",
-      "Trend analysis and improvement tracking",
-      "Customisable report templates",
+      "Persisted lesson completion",
+      "Competency status and teacher sign-off foundations",
+      "Lesson reviews and feedback",
+      "Progress summaries",
+      "Recommended next-learning foundations",
     ],
     image: "/images/gallery/12.jpg",
-    imageAlt: "Progress reports",
+    imageAlt: "Learning progress",
     icon: BarChart3,
     reverse: false,
   },
   {
     badge: "Administration",
     badgeColor: "bg-[#1e4d8c]/10 text-[#1e4d8c]",
-    title: "School Administration",
-    subtitle: "Run Your School Efficiently",
+    title: "Academy Administration",
+    subtitle: "Education Inside EquiProfile",
     description:
-      "From student enrolment to instructor management, EquiProfile School handles the admin so you can focus on teaching. Manage your entire school operation from one unified platform designed specifically for riding schools.",
+      "EquiProfile already has school-owner, student, teacher, scheduling, and education administration foundations. The Academy rebrand keeps compatible internal identifiers where necessary while presenting one consistent customer-facing Academy product.",
     highlights: [
-      "Student enrolment and management",
-      "Instructor profiles and scheduling",
-      "Billing and subscription management",
-      "Multi-location support for larger schools",
-      "Role-based access control",
+      "Student and teacher management foundations",
+      "Role-aware access",
+      "Lesson scheduling",
+      "Curriculum and learning records",
+      "Compatibility with existing accounts and persisted role values",
     ],
     image: "/images/hero/image3.jpg",
-    imageAlt: "School administration",
+    imageAlt: "Academy administration",
     icon: Settings,
     reverse: true,
   },
@@ -148,48 +147,54 @@ const whyChooseUs = [
   {
     icon: Star,
     title: "Purpose-Built",
-    description: "Designed exclusively for equestrian education, not adapted from generic tools.",
+    description:
+      "Equestrian education lives inside the same EquiProfile ecosystem as horse-management workflows rather than in a disconnected generic LMS.",
   },
   {
     icon: TrendingUp,
-    title: "Proven Results",
-    description: "Schools using structured pathways see clearer student progression and reduced admin overhead.",
+    title: "Progressive",
+    description:
+      "Pathways, lesson completion, competencies, assignments, and feedback are designed to form a coherent learning journey.",
   },
   {
     icon: Shield,
-    title: "Secure & Reliable",
-    description: "Cloud-hosted with enterprise-grade security to protect your school data.",
+    title: "Compatibility-First",
+    description:
+      "The Academy migration preserves existing accounts, persisted identifiers, and legacy routes while customer-facing branding evolves safely.",
   },
   {
     icon: MessageSquare,
-    title: "Dedicated Support",
-    description: "Real equestrian experts supporting you, not generic helpdesk agents.",
+    title: "Teacher Feedback",
+    description:
+      "Existing lesson-review and feedback foundations keep instructor judgement visible alongside digital learning activity.",
   },
   {
     icon: Calendar,
-    title: "Regular Updates",
-    description: "New features and improvements released monthly based on school feedback.",
+    title: "Practical + Digital",
+    description:
+      "Scheduling, assignments, progress, and structured content are designed to support real practical equestrian instruction, not replace it.",
   },
   {
     icon: Layers,
-    title: "Scalable Platform",
-    description: "From 5 students to 500, the platform grows seamlessly with your school.",
+    title: "Shared Platform",
+    description:
+      "Academy reuses EquiProfile auth, roles, UI, backend, database conventions, and AI abstraction instead of duplicating core systems.",
   },
 ];
 
 const additionalFeatures = [
-  "Lesson scheduling & calendar",
-  "Automated parent notifications",
-  "Student attendance records",
-  "Achievement certificates",
-  "Waitlist management",
-  "Custom branding options",
-  "API integrations",
-  "Data export tools",
-  "Mobile-responsive design",
-  "Multi-language support",
-  "Offline lesson recording",
-  "Photo & video attachments",
+  "Lesson scheduling",
+  "Structured lesson catalogue",
+  "Learning pathways",
+  "Knowledge checks and answer explanations",
+  "Lesson completion records",
+  "Competency assessment foundations",
+  "Teacher lesson assignments",
+  "Student groups foundations",
+  "Instructor feedback and lesson reviews",
+  "Study topics and scenario training",
+  "AI Tutor through the server-side AI abstraction",
+  "Role-aware student and teacher experiences",
 ];
 
 export default function SchoolFeatures() {
@@ -215,7 +220,7 @@ export default function SchoolFeatures() {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium mb-6"
           >
             <FileText className="w-4 h-4" />
-            Full Feature Overview
+            EquiProfile Academy
           </motion.span>
 
           <motion.h1
@@ -224,9 +229,9 @@ export default function SchoolFeatures() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
           >
-            Everything Your
+            Connected Equestrian
             <br />
-            <span className="text-[#10b981]">School Needs</span>
+            <span className="text-[#10b981]">Learning Features</span>
           </motion.h1>
 
           <motion.p
@@ -235,8 +240,8 @@ export default function SchoolFeatures() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed"
           >
-            A comprehensive platform built from the ground up for equestrian
-            education. Explore every feature designed to help your school thrive.
+            Explore the existing learning, teaching, progress, competency, and
+            administration foundations being completed as EquiProfile Academy.
           </motion.p>
         </div>
       </section>
@@ -320,14 +325,14 @@ export default function SchoolFeatures() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div {...fadeUp} className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 rounded-full bg-[#2d6a4f]/10 text-[#2d6a4f] text-sm font-semibold mb-4">
-              And More
+              Existing Foundations
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1e293b] mb-4">
-              Plus Dozens More Features
+              Built on the EquiProfile Education System
             </h2>
             <p className="text-[#1e293b]/60 max-w-2xl mx-auto text-lg">
-              Every detail has been considered to make running your school
-              smoother and teaching more effective.
+              These capabilities already exist in the application or its data
+              model and are being audited, connected, and hardened for Academy.
             </p>
           </motion.div>
 
@@ -347,18 +352,19 @@ export default function SchoolFeatures() {
         </div>
       </section>
 
-      {/* ───── Why Schools Choose Us ───── */}
+      {/* ───── Why Academy Architecture ───── */}
       <section className="py-24 bg-gradient-to-br from-[#1e3a5f] to-[#1e4d8c]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div {...fadeUp} className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 text-white/90 text-sm font-semibold mb-4">
-              Trusted Choice
+              Academy Principles
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">
-              Why Schools Choose Us
+              One EquiProfile Ecosystem
             </h2>
             <p className="text-white/60 max-w-2xl mx-auto text-lg">
-              More than just software — we're a partner in your school's success.
+              Academy is being completed by reusing the application's working
+              systems and adding compatibility where needed.
             </p>
           </motion.div>
 
@@ -390,23 +396,23 @@ export default function SchoolFeatures() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div {...fadeUp}>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1e293b] mb-4">
-              See It All in Action
+              Explore EquiProfile Academy
             </h2>
             <p className="text-[#1e293b]/60 text-lg mb-8 max-w-2xl mx-auto">
-              Book a personalised demo and we'll walk you through every feature
-              tailored to your school's needs.
+              Book a demo to discuss the Academy learning and management
+              experience for your equestrian organisation.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/contact">
+              <Link href="/academy/contact">
                 <Button
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white text-base px-8 py-6 rounded-xl shadow-lg"
                 >
-                  Book Your Free Demo
+                  Book a Demo
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="/pricing">
+              <Link href="/academy/pricing">
                 <Button
                   variant="outline"
                   size="lg"
