@@ -10,7 +10,6 @@ import {
   ClipboardCheck,
   BarChart3,
   Settings,
-  Star,
   ArrowRight,
   CheckCircle2,
   Play,
@@ -26,7 +25,7 @@ const stats = [
   { value: "15", label: "Learning Pathways" },
   { value: "4", label: "Progressive Levels" },
   { value: "Structured", label: "Curriculum System" },
-  { value: "Complete", label: "School Management" },
+  { value: "Connected", label: "Academy Management" },
 ];
 
 const steps = [
@@ -34,21 +33,21 @@ const steps = [
     step: "01",
     title: "Enrol",
     description:
-      "Register your school and add students in minutes. Invite teachers and configure your curriculum with our guided setup.",
+      "Register your riding school and add students in minutes. Invite teachers and configure your learning programme with our guided setup.",
     icon: Users,
   },
   {
     step: "02",
     title: "Learn",
     description:
-      "Students follow structured lessons across 15 pathways, from beginner groundwork to advanced dressage and jumping.",
+      "Students follow structured lessons across 15 pathways, from beginner groundwork to more advanced riding and horse-care topics.",
     icon: BookOpen,
   },
   {
     step: "03",
     title: "Progress",
     description:
-      "Track every milestone with detailed reports. Watch students advance through levels and celebrate their achievements.",
+      "Track learning milestones with progress records, competency assessment, assignments, and teacher feedback.",
     icon: TrendingUp,
   },
 ];
@@ -58,13 +57,13 @@ const features = [
     icon: BookOpen,
     title: "Structured Lessons",
     description:
-      "Expertly crafted lesson plans aligned with BHS and Pony Club standards, ensuring consistent quality.",
+      "Original EquiProfile lesson content organised around practical equestrian knowledge, clear objectives, safety guidance, and knowledge checks.",
   },
   {
     icon: GraduationCap,
     title: "Progressive Pathways",
     description:
-      "15 distinct learning pathways spanning 4 levels, guiding students from first steps to mastery.",
+      "15 learning pathways spanning 4 levels, supporting a clear progression through horse care, riding, welfare, stable management, and related skills.",
   },
   {
     icon: ClipboardCheck,
@@ -76,53 +75,50 @@ const features = [
     icon: BarChart3,
     title: "Progress Tracking",
     description:
-      "Visual dashboards showing student progression, skill mastery, and areas needing attention.",
+      "Dashboards for lesson progress, competency assessment, teacher feedback, and areas that may need more support.",
   },
   {
     icon: Settings,
-    title: "Teacher Tools",
+    title: "Coach & Teacher Tools",
     description:
-      "Powerful tools for lesson planning, student assessment, attendance tracking, and parent communication.",
+      "Tools for lesson planning, student assessment, scheduling, assignments, feedback, and learning oversight.",
   },
   {
     icon: Users,
-    title: "School Management",
+    title: "Academy Management",
     description:
-      "Manage students, instructors, schedules, and billing from one unified platform built for riding schools.",
+      "Manage students, instructors, learning activity, scheduling, and education workflows in one connected EquiProfile experience.",
   },
 ];
 
-const testimonials = [
+const audiences = [
   {
-    quote:
-      "EquiProfile School has completely transformed how we run our riding lessons. Students are more engaged and parents love the progress reports.",
-    name: "Sarah Thompson",
-    role: "Head Instructor, Meadow Vale Equestrian",
-    rating: 5,
+    title: "Students",
+    description:
+      "Follow structured pathways, open lessons, complete knowledge checks, review progress, and receive instructor feedback.",
+    icon: GraduationCap,
   },
   {
-    quote:
-      "The structured pathways gave our students clear goals. Lesson retention improved noticeably once students could see their own progress.",
-    name: "James Whitfield",
-    role: "Owner, Bridlepath Riding Academy",
-    rating: 5,
+    title: "Coaches & Teachers",
+    description:
+      "Plan learning, assign lessons, assess competencies, review progress, and support students with clear educational records.",
+    icon: ClipboardCheck,
   },
   {
-    quote:
-      "Finally, a platform that understands equestrian education. The teacher tools alone save me hours every week.",
-    name: "Emma Richardson",
-    role: "Instructor, Greenfield Stables",
-    rating: 5,
+    title: "Riding Schools & Centres",
+    description:
+      "Coordinate students, instructors, lesson activity, scheduling, curriculum delivery, and Academy oversight without replacing existing horse-management workflows.",
+    icon: Users,
   },
 ];
 
 const benefits = [
-  "Increase student retention with visible progress tracking",
-  "Save instructor time with automated lesson planning tools",
-  "Delight parents with detailed progress reports",
-  "Scale your school with structured, repeatable curricula",
-  "Meet BHS and Pony Club standards effortlessly",
-  "Reduce admin overhead with unified school management",
+  "Give students a visible, structured learning journey",
+  "Keep lesson content, assignments, feedback, and progress connected",
+  "Support instructors with reusable planning and assessment tools",
+  "Scale a riding school's learning programme with repeatable curricula",
+  "Use original EquiProfile educational material with explicit safety guidance",
+  "Reduce fragmented education admin with connected Academy workflows",
 ];
 
 export default function SchoolHome() {
@@ -148,7 +144,7 @@ export default function SchoolHome() {
             >
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium mb-6">
                 <GraduationCap className="w-4 h-4" />
-                Built for Riding Schools
+                EquiProfile Academy
               </span>
             </motion.div>
 
@@ -169,9 +165,10 @@ export default function SchoolHome() {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="text-lg sm:text-xl text-white/80 leading-relaxed mb-8 max-w-2xl"
             >
-              Structured learning paths and progressive curricula designed for
-              riding schools. Help your students advance from their first lesson
-              to confident horsemanship — all tracked, measured, and celebrated.
+              Structured equestrian learning for students, coaches, riding
+              schools, and equestrian centres. Connect lessons, progress,
+              competencies, assignments, feedback, and scheduling in one
+              EquiProfile experience.
             </motion.p>
 
             <motion.div
@@ -180,7 +177,7 @@ export default function SchoolHome() {
               transition={{ duration: 0.7, delay: 0.3 }}
               className="flex flex-wrap gap-4"
             >
-              <Link href="/contact">
+              <Link href="/academy/contact">
                 <Button
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white text-base px-8 py-6 rounded-xl shadow-lg shadow-[#2d6a4f]/30"
@@ -189,7 +186,7 @@ export default function SchoolHome() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="/features">
+              <Link href="/academy/features">
                 <Button
                   variant="ghost"
                   size="lg"
@@ -248,8 +245,9 @@ export default function SchoolHome() {
               How It Works
             </h2>
             <p className="text-[#1e293b]/60 max-w-2xl mx-auto text-lg">
-              Getting started is easy. Three simple steps to transform your
-              school's learning experience.
+              Build a connected learning journey while preserving the practical
+              routines and relationships of your real-world riding school or
+              equestrian centre.
             </p>
           </motion.div>
 
@@ -286,14 +284,14 @@ export default function SchoolHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div {...fadeUp} className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 rounded-full bg-[#3b82f6]/10 text-[#3b82f6] text-sm font-semibold mb-4">
-              Platform Features
+              Academy Features
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1e293b] mb-4">
-              Everything for Modern Equestrian Education
+              Everything for Connected Equestrian Education
             </h2>
             <p className="text-[#1e293b]/60 max-w-2xl mx-auto text-lg">
-              Built specifically for riding schools, our platform covers every
-              aspect of equestrian teaching and learning.
+              EquiProfile Academy connects structured learning with the people
+              and practical teaching workflows that support it.
             </p>
           </motion.div>
 
@@ -319,7 +317,7 @@ export default function SchoolHome() {
           </div>
 
           <motion.div {...fadeUp} className="text-center mt-12">
-            <Link href="/features">
+            <Link href="/academy/features">
               <Button
                 variant="outline"
                 size="lg"
@@ -333,52 +331,46 @@ export default function SchoolHome() {
         </div>
       </section>
 
-      {/* ───── Testimonials ───── */}
+      {/* ───── Connected Academy Roles ───── */}
       <section className="py-24 bg-gradient-to-br from-[#1e3a5f] to-[#1e4d8c]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div {...fadeUp} className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 text-white/90 text-sm font-semibold mb-4">
-              Social Proof
+              One Academy
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">
-              Loved by Schools Everywhere
+              Connected Experiences for Every Learning Role
             </h2>
             <p className="text-white/60 max-w-2xl mx-auto text-lg">
-              Hear from instructors and school owners who transformed their
-              teaching with EquiProfile School.
+              Students, coaches, and Academy operators work from the same
+              learning records while keeping role-appropriate access and tools.
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-            {testimonials.map((t, idx) => (
+            {audiences.map((audience, idx) => (
               <motion.div
-                key={t.name}
+                key={audience.title}
                 {...fadeUp}
                 transition={{ delay: idx * 0.12, duration: 0.5 }}
                 className="bg-white/[0.07] backdrop-blur-sm border border-white/10 rounded-2xl p-7"
               >
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 fill-[#f59e0b] text-[#f59e0b]"
-                    />
-                  ))}
+                <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center mb-5">
+                  <audience.icon className="w-5 h-5 text-emerald-300" />
                 </div>
-                <p className="text-white/80 leading-relaxed mb-6 italic">
-                  "{t.quote}"
+                <h3 className="text-white font-semibold text-lg mb-3">
+                  {audience.title}
+                </h3>
+                <p className="text-white/70 leading-relaxed text-sm">
+                  {audience.description}
                 </p>
-                <div>
-                  <p className="text-white font-semibold text-sm">{t.name}</p>
-                  <p className="text-white/50 text-sm">{t.role}</p>
-                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ───── School Benefits Split ───── */}
+      {/* ───── Academy Benefits Split ───── */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -389,16 +381,16 @@ export default function SchoolHome() {
               transition={{ duration: 0.6 }}
             >
               <span className="inline-block px-4 py-1.5 rounded-full bg-[#10b981]/10 text-[#10b981] text-sm font-semibold mb-4">
-                Why Choose Us
+                Why EquiProfile Academy
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1e293b] mb-6">
-                Built for Riding Schools,{" "}
-                <span className="text-[#2d6a4f]">Not Adapted</span>
+                Built Around Equestrian Learning,{" "}
+                <span className="text-[#2d6a4f]">Not Generic Courseware</span>
               </h2>
               <p className="text-[#1e293b]/60 text-lg mb-8 leading-relaxed">
-                Unlike generic learning platforms, EquiProfile was designed from
-                the ground up for equestrian education. Every feature, pathway,
-                and tool reflects the real needs of riding schools.
+                Academy sits inside the EquiProfile ecosystem so education can
+                connect naturally with equestrian people, horses, scheduling,
+                and management workflows without becoming a disconnected LMS.
               </p>
               <ul className="space-y-4 mb-8">
                 {benefits.map((benefit, idx) => (
@@ -413,7 +405,7 @@ export default function SchoolHome() {
                   </motion.li>
                 ))}
               </ul>
-              <Link href="/pricing">
+              <Link href="/academy/pricing">
                 <Button
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white rounded-xl px-8"
@@ -445,10 +437,10 @@ export default function SchoolHome() {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-[#1e293b]">
-                      Measurable
+                      Structured
                     </p>
                     <p className="text-xs text-[#1e293b]/50">
-                      Student Progress
+                      Learning Progress
                     </p>
                   </div>
                 </div>
@@ -463,23 +455,24 @@ export default function SchoolHome() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div {...fadeUp}>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">
-              Ready to Transform Your School?
+              Ready to Explore EquiProfile Academy?
             </h2>
             <p className="text-white/70 text-lg mb-8 max-w-2xl mx-auto">
-              Join riding schools already using EquiProfile to
-              deliver structured, trackable, and inspiring equestrian education.
+              See how structured lessons, progress, competencies, assignments,
+              feedback, and education management can work together for your
+              equestrian learning programme.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/contact">
+              <Link href="/academy/contact">
                 <Button
                   size="lg"
                   className="bg-white text-[#1e3a5f] hover:bg-white/90 text-base px-8 py-6 rounded-xl font-semibold shadow-lg"
                 >
-                  Book Your Free Demo
+                  Book Your Demo
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="/pricing">
+              <Link href="/academy/pricing">
                 <Button
                   variant="ghost"
                   size="lg"
