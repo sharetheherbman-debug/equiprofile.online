@@ -5,6 +5,14 @@ import path from "node:path";
 const readRepoFile = (relativePath: string) =>
   fs.readFileSync(path.resolve(process.cwd(), relativePath), "utf8");
 
+const marketingPages = [
+  "client/src/pages/school/Home.tsx",
+  "client/src/pages/school/Features.tsx",
+  "client/src/pages/school/Pricing.tsx",
+  "client/src/pages/school/About.tsx",
+  "client/src/pages/school/Contact.tsx",
+];
+
 describe("EquiProfile Academy route compatibility", () => {
   const routerSource = readRepoFile("client/school/src/SchoolApp.tsx");
 
@@ -64,5 +72,25 @@ describe("EquiProfile Academy public branding contract", () => {
     ]) {
       expect(navbar + footer).toContain(route);
     }
+  });
+
+  it.each(marketingPages)("does not present the old product name in %s", (file) => {
+    expect(readRepoFile(file)).not.toContain("EquiProfile School");
+  });
+
+  it.each(marketingPages)("does not claim BHS or Pony Club alignment in %s", (file) => {
+    expect(readRepoFile(file)).not.toMatch(/\bBHS\b|Pony Club/);
+  });
+
+  it.each(marketingPages)("does not retain the conflicting 14-day trial copy in %s", (file) => {
+    expect(readRepoFile(file)).not.toMatch(/14[- ]day/i);
+  });
+
+  it("derives public trial copy from the shared trial constant", () => {
+    const pricing = readRepoFile("client/src/pages/school/Pricing.tsx");
+    const contact = readRepoFile("client/src/pages/school/Contact.tsx");
+
+    expect(pricing).toContain("FREE_TRIAL_DAYS");
+    expect(contact).toContain("FREE_TRIAL_DAYS");
   });
 });
