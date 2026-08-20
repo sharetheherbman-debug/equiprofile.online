@@ -1,8 +1,9 @@
 /**
- * SchoolNavbar — Premium navigation for school.equiprofile.online
+ * SchoolNavbar — compatibility component for the EquiProfile Academy frontend.
  *
- * Shows: About · Features · Pricing · Contact | Login · Book Demo
- * Rich academic blue-green gradient background, aspirational feel.
+ * The component name/path stays stable to avoid unnecessary churn in imports,
+ * while all customer-facing navigation uses the Academy brand and canonical
+ * /academy routes.
  */
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
@@ -12,10 +13,10 @@ import { Menu, X, GraduationCap } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 const navLinks = [
-  { label: "About", path: "/about" },
-  { label: "Features", path: "/features" },
-  { label: "Pricing", path: "/pricing" },
-  { label: "Contact", path: "/contact" },
+  { label: "About", path: "/academy/about" },
+  { label: "Features", path: "/academy/features" },
+  { label: "Pricing", path: "/academy/pricing" },
+  { label: "Contact", path: "/academy/contact" },
 ];
 
 export function SchoolNavbar() {
@@ -43,7 +44,7 @@ export function SchoolNavbar() {
         <div className="flex items-center justify-between h-[72px]">
           {/* Logo */}
           <Link
-            href={isAuthenticated ? "/student-dashboard" : "/"}
+            href={isAuthenticated ? "/student-dashboard" : "/academy"}
             className="flex items-center gap-3 group"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2d6a4f] to-[#1e4d8c] flex items-center justify-center shadow-lg shadow-emerald-900/20">
@@ -54,7 +55,7 @@ export function SchoolNavbar() {
                 EquiProfile
               </span>
               <span className="text-[10px] font-medium text-emerald-300 tracking-[0.15em] uppercase mt-0.5">
-                School
+                Academy
               </span>
             </div>
           </Link>
@@ -76,7 +77,7 @@ export function SchoolNavbar() {
                   {link.label}
                   {isActive && (
                     <motion.div
-                      layoutId="school-nav-indicator"
+                      layoutId="academy-nav-indicator"
                       className="absolute bottom-0 left-3 right-3 h-[2px] bg-gradient-to-r from-emerald-400 to-[#3b82f6] rounded-full"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
@@ -108,7 +109,7 @@ export function SchoolNavbar() {
                     Log In
                   </Button>
                 </Link>
-                <Link href="/contact">
+                <Link href="/academy/contact">
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-[#2d6a4f] to-[#1e4d8c] hover:from-[#3a8d6b] hover:to-[#2563a8] text-white shadow-lg shadow-emerald-900/25 border-0"
@@ -135,7 +136,7 @@ export function SchoolNavbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            key="school-mobile"
+            key="academy-mobile"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -171,7 +172,7 @@ export function SchoolNavbar() {
                         Log In
                       </Button>
                     </Link>
-                    <Link href="/contact" onClick={() => setMobileOpen(false)}>
+                    <Link href="/academy/contact" onClick={() => setMobileOpen(false)}>
                       <Button className="w-full bg-gradient-to-r from-[#2d6a4f] to-[#1e4d8c] text-white">
                         Book Demo
                       </Button>
