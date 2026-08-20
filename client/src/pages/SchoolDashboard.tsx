@@ -1,8 +1,8 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 /**
- * SchoolDashboard — Dashboard for school owners to manage their organization.
- * View teachers, students, seat usage, invite members, manage roles.
- * Includes a multi-step onboarding wizard for new schools.
+ * SchoolDashboard — compatibility component for Academy owners.
+ * Internal school-named APIs and persisted role identifiers remain stable while
+ * customer-facing copy uses EquiProfile Academy terminology.
  */
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
@@ -112,15 +112,15 @@ function OnboardingWizard({
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#3a93b8] to-[#5b8def] flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#5b8def]/30">
             <Building2 className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">Welcome to School Management</h2>
+          <h2 className="text-2xl font-bold text-white mb-3">Welcome to EquiProfile Academy</h2>
           <p className="text-gray-400 mb-2 max-w-md mx-auto">
-            Set up your school or organisation in a few simple steps. You'll be able to manage teachers, students, and learning content all from one place.
+            Set up your Academy organisation in a few simple steps. You'll be able to manage teachers, students, and learning content all from one place.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-8 mb-8">
             {[
-              { icon: BookOpen, label: "95+ Lessons", desc: "Structured learning pathways" },
+              { icon: BookOpen, label: "15 Pathways", desc: "Structured equestrian learning" },
               { icon: Users, label: "Seat Management", desc: "Add teachers & students" },
-              { icon: GraduationCap, label: "Track Progress", desc: "Reports & analytics" },
+              { icon: GraduationCap, label: "Track Progress", desc: "Learning records & feedback" },
             ].map(({ icon: Icon, label, desc }) => (
               <div key={label} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center">
                 <Icon className="w-6 h-6 text-indigo-400 mx-auto mb-2" />
@@ -142,7 +142,7 @@ function OnboardingWizard({
       {step === "details" && (
         <div>
           <h2 className="text-xl font-bold text-white mb-1 text-center">Organisation Details</h2>
-          <p className="text-sm text-gray-400 mb-6 text-center">Tell us about your school</p>
+          <p className="text-sm text-gray-400 mb-6 text-center">Tell us about your equestrian organisation</p>
 
           <Card>
             <div className="space-y-4">
@@ -227,7 +227,7 @@ function OnboardingWizard({
         <div>
           <div className="text-center mb-6">
             <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
-            <h2 className="text-xl font-bold text-white mb-1">Organisation Created!</h2>
+            <h2 className="text-xl font-bold text-white mb-1">Academy Organisation Created!</h2>
             <p className="text-sm text-gray-400">Now invite your team. You can also do this later.</p>
           </div>
 
@@ -315,7 +315,7 @@ function OnboardingWizard({
           </div>
           <h2 className="text-2xl font-bold text-white mb-3">You're All Set!</h2>
           <p className="text-gray-400 mb-8 max-w-md mx-auto">
-            Your school is ready. You can manage members, track student progress, and assign
+            Your Academy organisation is ready. You can manage members, track student progress, and assign
             learning content from your dashboard.
           </p>
           <button
@@ -373,8 +373,8 @@ export default function SchoolDashboard() {
               <Building2 className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white">School Dashboard</h1>
-              <p className="text-xs text-gray-500">{org?.name ?? "Set up your school"}</p>
+              <h1 className="text-lg font-bold text-white">Academy Dashboard</h1>
+              <p className="text-xs text-gray-500">{org?.name ?? "Set up your Academy"}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -565,7 +565,7 @@ function MemberRow({ name, role, joinedAt, onRemove }: {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-white truncate">{name}</p>
         <p className="text-[10px] text-gray-500">
-          {role === "school_owner" ? "Owner" : role.charAt(0).toUpperCase() + role.slice(1)}
+          {role === "school_owner" ? "Academy Owner" : role.charAt(0).toUpperCase() + role.slice(1)}
           {joinedAt && <> · Joined {new Date(joinedAt).toLocaleDateString()}</>}
         </p>
       </div>
