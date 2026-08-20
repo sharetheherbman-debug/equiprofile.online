@@ -2,15 +2,15 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { SchoolLayout } from "@/components/school/SchoolLayout";
+import { FREE_TRIAL_DAYS } from "@shared/pricing";
 import { toast } from "sonner";
 import {
   Send,
   CheckCircle2,
   Mail,
-  Clock,
   Users,
   GraduationCap,
-  HeadphonesIcon,
+  Layers,
   Loader2,
 } from "lucide-react";
 
@@ -23,48 +23,27 @@ const fadeUp = {
 const benefits = [
   {
     icon: GraduationCap,
-    title: "Personalised Demo",
+    title: "Academy Walkthrough",
     description:
-      "We'll walk you through the platform tailored to your school's specific needs, size, and disciplines.",
-  },
-  {
-    icon: Clock,
-    title: "Free 14-Day Trial",
-    description:
-      "After your demo, start a full-access trial with no credit card required. Experience every feature first-hand.",
-  },
-  {
-    icon: HeadphonesIcon,
-    title: "Dedicated Support",
-    description:
-      "Get assigned a real equestrian education specialist who understands your school's challenges.",
+      "Discuss the student, coach, learning-pathway, progress, competency, assignment, and education-management foundations already in EquiProfile.",
   },
   {
     icon: Users,
-    title: "Onboarding Help",
+    title: "Organisation Fit",
     description:
-      "Our team helps you set up pathways, import students, and configure your school — at no extra cost.",
-  },
-];
-
-const contactDetails = [
-  {
-    icon: Mail,
-    label: "Email Us",
-    value: "schools@equiprofile.online",
-    href: "mailto:schools@equiprofile.online",
+      "Tell us about your riding school, equestrian centre, instructors, students, and learning programme so the conversation can focus on your real needs.",
   },
   {
-    icon: Clock,
-    label: "Response Time",
-    value: "Within 24 hours",
-    href: null,
+    icon: Layers,
+    title: "Connected EquiProfile Experience",
+    description:
+      "See how Academy is designed to reuse EquiProfile accounts, roles, data conventions, and management foundations rather than operate as a disconnected LMS.",
   },
   {
-    icon: Clock,
-    label: "Support Hours",
-    value: "Mon–Fri, 9am–5pm GMT",
-    href: null,
+    icon: CheckCircle2,
+    title: `${FREE_TRIAL_DAYS}-Day Trial Configuration`,
+    description:
+      `The current EquiProfile pricing source of truth defines a ${FREE_TRIAL_DAYS}-day free trial across plans. Current commercial terms can be confirmed during your enquiry.`,
   },
 ];
 
@@ -98,16 +77,16 @@ export default function SchoolContact() {
           schoolName: formData.schoolName,
           numberOfStudents: formData.numberOfStudents,
           message: formData.message,
-          subject: "School Demo Request",
+          subject: "EquiProfile Academy Demo Request",
+          // Keep the established backend source identifier for compatibility.
           source: "school",
         }),
       });
 
       if (!res.ok) throw new Error("Failed to send message");
 
-      toast.success("Demo request sent!", {
-        description:
-          "We'll be in touch within 24 hours to schedule your personalised demo.",
+      toast.success("Academy demo request sent", {
+        description: "We received your enquiry and can follow up using the email address you supplied.",
       });
 
       setFormData({
@@ -119,7 +98,7 @@ export default function SchoolContact() {
       });
     } catch {
       toast.error("Something went wrong", {
-        description: "Please try again or email us directly at schools@equiprofile.online.",
+        description: "Please try again or email schools@equiprofile.online.",
       });
     } finally {
       setSubmitting(false);
@@ -128,7 +107,6 @@ export default function SchoolContact() {
 
   return (
     <SchoolLayout>
-      {/* ───── Hero ───── */}
       <section className="relative bg-gradient-to-br from-[#1e3a5f] via-[#1e4d8c] to-[#2d6a4f] pt-28 pb-20 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div
@@ -148,7 +126,7 @@ export default function SchoolContact() {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium mb-6"
           >
             <Send className="w-4 h-4" />
-            Get in Touch
+            EquiProfile Academy
           </motion.span>
 
           <motion.h1
@@ -157,8 +135,8 @@ export default function SchoolContact() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
           >
-            Book a{" "}
-            <span className="text-[#10b981]">Demo</span>
+            Discuss the{" "}
+            <span className="text-[#10b981]">Academy</span>
           </motion.h1>
 
           <motion.p
@@ -167,37 +145,31 @@ export default function SchoolContact() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed"
           >
-            See how EquiProfile School can transform your equestrian education.
-            Fill in the form below and we'll arrange a personalised walkthrough.
+            Tell us about your equestrian organisation and what you need from a
+            connected learning platform. The form below sends a real enquiry
+            through the existing EquiProfile contact endpoint.
           </motion.p>
         </div>
       </section>
 
-      {/* ───── Form + Sidebar ───── */}
       <section className="py-24 bg-[#f0f4f8]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
-            {/* Form */}
-            <motion.div
-              {...fadeUp}
-              className="lg:col-span-3"
-            >
+            <motion.div {...fadeUp} className="lg:col-span-3">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
                 <h2 className="font-serif text-2xl font-bold text-[#1e293b] mb-2">
-                  Request Your Free Demo
+                  Request an Academy Demo
                 </h2>
                 <p className="text-[#1e293b]/60 text-sm mb-8">
-                  Tell us about your school and we'll tailor the demo to your
-                  needs. All fields are required.
+                  Tell us about your riding school or equestrian organisation so
+                  the discussion can focus on the right Academy workflows. All
+                  fields are required.
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label
-                        htmlFor="name"
-                        className="block text-sm font-medium text-[#1e293b] mb-2"
-                      >
+                      <label htmlFor="name" className="block text-sm font-medium text-[#1e293b] mb-2">
                         Your Name
                       </label>
                       <input
@@ -212,10 +184,7 @@ export default function SchoolContact() {
                       />
                     </div>
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-[#1e293b] mb-2"
-                      >
+                      <label htmlFor="email" className="block text-sm font-medium text-[#1e293b] mb-2">
                         Email Address
                       </label>
                       <input
@@ -233,11 +202,8 @@ export default function SchoolContact() {
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label
-                        htmlFor="schoolName"
-                        className="block text-sm font-medium text-[#1e293b] mb-2"
-                      >
-                        School Name
+                      <label htmlFor="schoolName" className="block text-sm font-medium text-[#1e293b] mb-2">
+                        Riding School / Organisation
                       </label>
                       <input
                         id="schoolName"
@@ -251,10 +217,7 @@ export default function SchoolContact() {
                       />
                     </div>
                     <div>
-                      <label
-                        htmlFor="numberOfStudents"
-                        className="block text-sm font-medium text-[#1e293b] mb-2"
-                      >
+                      <label htmlFor="numberOfStudents" className="block text-sm font-medium text-[#1e293b] mb-2">
                         Number of Students
                       </label>
                       <select
@@ -275,11 +238,8 @@ export default function SchoolContact() {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="message"
-                      className="block text-sm font-medium text-[#1e293b] mb-2"
-                    >
-                      Message
+                    <label htmlFor="message" className="block text-sm font-medium text-[#1e293b] mb-2">
+                      What would you like to see?
                     </label>
                     <textarea
                       id="message"
@@ -288,7 +248,7 @@ export default function SchoolContact() {
                       rows={5}
                       value={formData.message}
                       onChange={handleChange}
-                      placeholder="Tell us about your school, what disciplines you teach, and what you're looking for in a learning platform..."
+                      placeholder="Tell us about your students, coaches, current learning process, and the Academy workflows you want to explore..."
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-[#f0f4f8] text-[#1e293b] placeholder:text-[#1e293b]/30 focus:outline-none focus:ring-2 focus:ring-[#2d6a4f]/40 focus:border-[#2d6a4f] transition-colors text-sm resize-none"
                     />
                   </div>
@@ -307,7 +267,7 @@ export default function SchoolContact() {
                     ) : (
                       <>
                         <Send className="mr-2 w-5 h-5" />
-                        Send Demo Request
+                        Send Academy Enquiry
                       </>
                     )}
                   </Button>
@@ -315,7 +275,6 @@ export default function SchoolContact() {
               </div>
             </motion.div>
 
-            {/* Sidebar */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -323,10 +282,9 @@ export default function SchoolContact() {
               transition={{ duration: 0.6 }}
               className="lg:col-span-2 space-y-6"
             >
-              {/* Benefits */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-7">
                 <h3 className="font-serif text-lg font-bold text-[#1e293b] mb-6">
-                  What You'll Get
+                  What We Can Discuss
                 </h3>
                 <div className="space-y-5">
                   {benefits.map((benefit, idx) => (
@@ -352,48 +310,30 @@ export default function SchoolContact() {
                 </div>
               </div>
 
-              {/* Contact Details */}
               <div className="bg-gradient-to-br from-[#1e3a5f] to-[#1e4d8c] rounded-2xl p-7 text-white">
-                <h3 className="font-serif text-lg font-bold mb-6">
-                  Other Ways to Reach Us
+                <h3 className="font-serif text-lg font-bold mb-5">
+                  Email
                 </h3>
-                <div className="space-y-5">
-                  {contactDetails.map((detail) => (
-                    <div key={detail.label} className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                        <detail.icon className="w-5 h-5 text-[#10b981]" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-white/50 mb-0.5">
-                          {detail.label}
-                        </p>
-                        {detail.href ? (
-                          <a
-                            href={detail.href}
-                            className="text-sm font-medium text-white hover:text-[#10b981] transition-colors"
-                          >
-                            {detail.value}
-                          </a>
-                        ) : (
-                          <p className="text-sm font-medium text-white">
-                            {detail.value}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <a
+                  href="mailto:schools@equiprofile.online"
+                  className="flex items-center gap-3 text-sm font-medium text-white hover:text-[#10b981] transition-colors"
+                >
+                  <span className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <Mail className="w-5 h-5 text-[#10b981]" />
+                  </span>
+                  schools@equiprofile.online
+                </a>
               </div>
 
-              {/* Trust Badge */}
               <div className="bg-[#10b981]/5 border border-[#10b981]/20 rounded-2xl p-6 text-center">
                 <CheckCircle2 className="w-8 h-8 text-[#10b981] mx-auto mb-3" />
                 <p className="text-sm font-semibold text-[#1e293b] mb-1">
-                  No Obligation
+                  No Fake Demo State
                 </p>
                 <p className="text-xs text-[#1e293b]/60">
-                  Your demo is completely free with no commitment. We'll never
-                  pressure you into a plan.
+                  This form submits through the application's existing contact
+                  endpoint. The page does not display invented bookings,
+                  customers, response-time guarantees, or support commitments.
                 </p>
               </div>
             </motion.div>
