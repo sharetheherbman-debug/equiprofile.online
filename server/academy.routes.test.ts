@@ -94,3 +94,26 @@ describe("EquiProfile Academy public branding contract", () => {
     expect(contact).toContain("FREE_TRIAL_DAYS");
   });
 });
+
+describe("Academy owner compatibility contract", () => {
+  const ownerDashboard = readRepoFile("client/src/pages/SchoolDashboard.tsx");
+
+  it("presents the Academy product name to Academy owners", () => {
+    expect(ownerDashboard).toContain("Welcome to EquiProfile Academy");
+    expect(ownerDashboard).toContain("Academy Dashboard");
+    expect(ownerDashboard).toContain('"Academy Owner"');
+    expect(ownerDashboard).not.toContain("Welcome to School Management");
+    expect(ownerDashboard).not.toContain("School Dashboard");
+  });
+
+  it("preserves internal school API and role identifiers", () => {
+    expect(ownerDashboard).toContain("trpc.school.createOrganization");
+    expect(ownerDashboard).toContain("trpc.school.inviteMember");
+    expect(ownerDashboard).toContain('m.role === "school_owner"');
+  });
+
+  it("preserves real-world Riding School terminology as an organisation type", () => {
+    expect(ownerDashboard).toContain('label: "Riding School"');
+    expect(ownerDashboard).toContain('value: "riding_school"');
+  });
+});
