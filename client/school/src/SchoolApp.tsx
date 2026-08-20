@@ -20,7 +20,8 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { getUIVersion } from "@/config/uiVersion";
 
-// School Marketing Pages
+// Academy marketing pages. Internal filenames remain under pages/school for
+// backwards-compatible repository structure while the product is rebranded.
 import SchoolHome from "@/pages/school/Home";
 import SchoolFeatures from "@/pages/school/Features";
 import SchoolPricing from "@/pages/school/Pricing";
@@ -96,7 +97,6 @@ const SchoolDashboard = lazy(() => import("@/pages/SchoolDashboard"));
 const DashboardV2 = lazy(() => import("@/v2/pages/DashboardV2"));
 const StableDashboardV2 = lazy(() => import("@/v2/pages/StableDashboardV2"));
 
-// Minimal spinner shown while lazy chunks load (doesn't block FCP)
 function PageSpinner() {
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -112,11 +112,9 @@ function SchoolRouter() {
   const uiVersion = getUIVersion();
   const { viewMode, isAdmin } = useAdminViewMode();
 
-  // Version-aware dashboard selection
   const ActiveDashboard = uiVersion === "v2" ? DashboardV2 : Dashboard;
   const ActiveStableDashboard = uiVersion === "v2" ? StableDashboardV2 : StableDashboard;
 
-  // Admin view mode resolution
   const ResolvedDashboard = (() => {
     if (!isAdmin || !viewMode || viewMode === "admin" || viewMode === "pro") {
       return ActiveDashboard;
@@ -139,7 +137,21 @@ function SchoolRouter() {
       <main id="main-content">
         <Suspense fallback={<PageSpinner />}>
           <Switch>
-            {/* School Marketing Pages (Public) */}
+            {/* Academy canonical public routes */}
+            <Route path="/academy" component={SchoolHome} />
+            <Route path="/academy/features" component={SchoolFeatures} />
+            <Route path="/academy/pricing" component={SchoolPricing} />
+            <Route path="/academy/about" component={SchoolAbout} />
+            <Route path="/academy/contact" component={SchoolContact} />
+
+            {/* Legacy /school compatibility aliases */}
+            <Route path="/school" component={SchoolHome} />
+            <Route path="/school/features" component={SchoolFeatures} />
+            <Route path="/school/pricing" component={SchoolPricing} />
+            <Route path="/school/about" component={SchoolAbout} />
+            <Route path="/school/contact" component={SchoolContact} />
+
+            {/* Historical root routes remain compatible for existing links */}
             <Route path="/" component={SchoolHome} />
             <Route path="/features" component={SchoolFeatures} />
             <Route path="/pricing" component={SchoolPricing} />
@@ -177,7 +189,12 @@ function SchoolRouter() {
               </TeacherRoute>
             </Route>
 
-            {/* School Dashboard — school_owner plan users */}
+            {/* Academy dashboard canonical route + school compatibility route */}
+            <Route path="/academy-dashboard">
+              <ProtectedRoute>
+                <SchoolDashboard />
+              </ProtectedRoute>
+            </Route>
             <Route path="/school-dashboard">
               <ProtectedRoute>
                 <SchoolDashboard />
