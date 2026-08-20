@@ -19,14 +19,14 @@ This checklist is the acceptance contract for completing the existing School pro
 - [x] Public navbar uses Academy branding and canonical Academy paths.
 - [x] Public footer uses Academy branding and canonical Academy paths.
 - [x] Base HTML title/OG/Twitter/structured metadata use EquiProfile Academy.
-- [ ] All marketing-page product references audited/rebranded.
+- [x] Public Academy marketing pages audited/rebranded.
 - [ ] Onboarding product references audited/rebranded.
 - [ ] Student/teacher/owner dashboard product references audited/rebranded.
 - [ ] Transactional email product references audited/rebranded.
-- [ ] PWA/manifest/service-worker product references audited/rebranded.
-- [ ] Sitemap/SEO route inventory audited.
-- [ ] Management cross-links use Academy product name where appropriate.
-- [ ] Genuine English uses of “riding school” preserved where they describe a real-world organisation.
+- [x] Academy has dedicated PWA manifest/metadata without replacing the Management manifest.
+- [x] Academy has a canonical sitemap and shared robots metadata advertises both Management and Academy sitemaps.
+- [x] Management footer cross-link points to the canonical Academy route.
+- [x] Genuine English uses of “riding school” are preserved where they describe a real-world organisation.
 
 ## Curriculum and lesson engine
 
@@ -34,14 +34,14 @@ This checklist is the acceptance contract for completing the existing School pro
 - [x] Existing source curriculum identified and preserved.
 - [x] Existing pathway/unit/completion DB tables identified.
 - [x] Existing competency/teacher-assignment/review tables identified.
-- [ ] Machine-readable all-lesson coverage report generated.
+- [ ] Machine-readable all-lesson coverage report generated and reviewed.
 - [ ] Human-readable all-lesson coverage review completed.
-- [ ] Unique slugs validated for all pathways/lessons.
-- [ ] Every lesson references a valid pathway.
-- [ ] Every linked competency is validated.
-- [ ] Every knowledge check has valid answer indices and explanations.
+- [ ] Unique slugs validated for all pathways/lessons in CI.
+- [ ] Every lesson references a valid pathway in CI.
+- [ ] Every linked competency is validated against the competency catalogue.
+- [ ] Every knowledge check has valid answer indices and explanations in CI.
 - [ ] Placeholder/shallow content audit completed.
-- [ ] Unsupported BHS/Pony Club accreditation/standards claims corrected.
+- [ ] Unsupported BHS/Pony Club accreditation/standards claims corrected throughout source content and AI prompts.
 - [ ] Medical/veterinary safety language reviewed.
 - [ ] Idempotent source-curriculum import/upsert implemented.
 - [ ] Every published lesson is reachable through API and UI.
@@ -92,6 +92,7 @@ This checklist is the acceptance contract for completing the existing School pro
 - [x] General veterinary-diagnosis safety instruction exists.
 - [ ] Tutor receives trusted current lesson context.
 - [ ] Tutor receives pathway/competency context where authorised.
+- [ ] Unsupported accreditation/standards wording removed from the Tutor system prompt.
 - [ ] Emergency/health-risk boundary has dedicated tests.
 - [ ] Reading-level adaptation tested.
 - [ ] Guided questioning/quiz behaviour tested.
@@ -107,6 +108,7 @@ This checklist is the acceptance contract for completing the existing School pro
 ## Automated validation
 
 - [x] Academy canonical/legacy route regression test added.
+- [ ] Curriculum structural audit test added and executed successfully.
 - [ ] `npm run preflight` passes on branch head.
 - [ ] `npm run check` passes on branch head.
 - [ ] `npm test` passes on branch head.
