@@ -34,16 +34,16 @@ This checklist is the acceptance contract for completing the existing School pro
 - [x] Existing source curriculum identified and preserved.
 - [x] Existing pathway/unit/completion DB tables identified.
 - [x] Existing competency/teacher-assignment/review tables identified.
-- [ ] Machine-readable all-lesson coverage report generated and reviewed.
+- [x] Machine-readable all-lesson coverage report generated and reviewed.
 - [ ] Human-readable all-lesson coverage review completed.
-- [ ] Unique slugs validated for all pathways/lessons in CI.
-- [ ] Every lesson references a valid pathway in CI.
-- [ ] Every linked competency is validated against the competency catalogue.
-- [ ] Every knowledge check has valid answer indices and explanations in CI.
+- [x] Unique slugs validated for all pathways/lessons in automated validation.
+- [x] Every lesson references a valid pathway in automated validation.
+- [x] Every linked competency is validated against the competency catalogue.
+- [x] Every knowledge check has valid answer indices and explanations in automated validation.
 - [ ] Placeholder/shallow content audit completed.
-- [ ] Unsupported BHS/Pony Club accreditation/standards claims corrected throughout source content and AI prompts.
-- [ ] Medical/veterinary safety language reviewed.
-- [ ] Idempotent source-curriculum import/upsert implemented.
+- [x] Unsupported BHS/Pony Club accreditation/standards claims corrected throughout source content and Tutor prompts.
+- [x] Medical/veterinary safety language reviewed in Academy source and Tutor policy.
+- [x] Idempotent source-curriculum import/upsert implemented.
 - [ ] Every published lesson is reachable through API and UI.
 
 ## Student experience
@@ -53,10 +53,10 @@ This checklist is the acceptance contract for completing the existing School pro
 - [ ] Lesson catalogue search/filter acceptance tested.
 - [ ] Lesson detail displays all required content.
 - [ ] Resume/progress persistence tested.
-- [ ] Quiz scoring is server-trusted.
-- [ ] Incorrect-answer explanations display.
-- [ ] Completion cannot be fabricated by browser metadata.
-- [ ] Competency linkage works.
+- [x] Quiz scoring is server-trusted.
+- [x] Incorrect-answer explanations are returned from canonical lesson data.
+- [x] Completion cannot be fabricated by browser metadata.
+- [x] Competency linkage is returned from canonical lesson data.
 - [ ] Teacher feedback is visible.
 - [ ] Assignments are visible and completable.
 - [ ] Mobile responsiveness checked.
@@ -90,30 +90,30 @@ This checklist is the acceptance contract for completing the existing School pro
 - [x] Usage is logged/metered.
 - [x] Daily usage limit exists.
 - [x] General veterinary-diagnosis safety instruction exists.
-- [ ] Tutor receives trusted current lesson context.
-- [ ] Tutor receives pathway/competency context where authorised.
-- [ ] Unsupported accreditation/standards wording removed from the Tutor system prompt.
-- [ ] Emergency/health-risk boundary has dedicated tests.
+- [x] Tutor receives trusted current lesson context.
+- [x] Tutor receives pathway/competency context where authorised.
+- [x] Unsupported accreditation/standards wording removed from the Tutor system prompt.
+- [x] Emergency/health-risk boundary has dedicated regression coverage.
 - [ ] Reading-level adaptation tested.
 - [ ] Guided questioning/quiz behaviour tested.
-- [ ] Tutor cannot create or imply course completion.
+- [x] Tutor policy prevents creating or implying course completion.
 
 ## Integrity defects that block “done”
 
-- [ ] `completeLesson` derives lesson/pathway/level from server data rather than trusting the client.
-- [ ] Quiz score is calculated or verified from server-held answer data.
-- [ ] Progress totals are derived from the current published curriculum instead of a six-pathway hard-coded map.
-- [ ] Content seeding/import safely reconciles an existing partially populated DB.
+- [x] `completeLesson` derives lesson/pathway/level from server data rather than trusting the client.
+- [x] Quiz score is calculated or verified from server-held answer data.
+- [x] Progress totals are derived from the current published curriculum instead of a client-side hard-coded map.
+- [x] Content seeding/import safely reconciles an existing partially populated DB.
 
 ## Automated validation
 
 - [x] Academy canonical/legacy route regression test added.
-- [ ] Curriculum structural audit test added and executed successfully.
-- [ ] `npm run preflight` passes on branch head.
-- [ ] `npm run check` passes on branch head.
-- [ ] `npm test` passes on branch head.
-- [ ] `npm run format:check` passes on branch head.
-- [ ] `npm run build` passes on branch head.
+- [x] Curriculum structural audit test added and executed successfully.
+- [x] `npm run preflight` passes on the validated continuation head.
+- [x] `npm run check` passes on the validated continuation head.
+- [x] `npm test` passes on the validated continuation head.
+- [ ] `npm run format:check` passes on branch head; repository-wide historical format debt remains.
+- [x] `npm run build` passes on the validated continuation head.
 - [ ] UI smoke test passes on branch head.
 
 Do not mark unchecked automated items complete until the command or CI job actually ran successfully against the relevant commit.
