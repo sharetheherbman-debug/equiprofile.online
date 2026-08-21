@@ -160,7 +160,92 @@ async function startServer() {
     },
   });
 
-  // Stripe webhook - must be before body parser
+  // Store Stripe webhook — deliberately isolated from SaaS subscription billing.
+  // It remains inactive until STORE_STRIPE_WEBHOOK_SECRET is configured.
+  app.post(
+    "/api/webhooks/store-stripe",
+    express.raw({ type: "application/json" }),
+    async (req, res) => {
+      const stripe = getStripe();
+      const webhookSecret = process.env.STORE_STRIPE_WEBHOOK_SECRET;
+      if (!stripe || !webhookSecret) {
+        return res
+          .status(503)
+          .json({ error: "Store payment processing is not configured" });
+      }
+      const signature = req.headers["stripe-signature"];
+      if (!signature)
+        return res.status(400).json({ error: "Missing Stripe signature" });
+      let event: Stripe.Event;
+      try {
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          signature,
+          webhookSecret,
+        );
+      } catch (error: any) {
+        return res
+          .status(400)
+          .json({
+            error: `Store webhook signature verification failed: ${error.message}`,
+          });
+      }
+      const dbConn = await getDb();
+      if (!dbConn)
+        return res.status(503).json({ error: "Database unavailable" });
+      const existing = (
+        (await dbConn.execute(
+          sql`SELECT id FROM commercePaymentEvents WHERE provider = 'stripe' AND providerEventId = ${event.id} LIMIT 1`,
+        )) as any
+      )[0] as Array<{ id: number }>;
+      if (existing?.[0]) return res.json({ received: true, cached: true });
+      const object = event.data.object as
+        | Stripe.Checkout.Session
+        | Stripe.PaymentIntent
+        | Stripe.Charge;
+      const metadata = "metadata" in object ? object.metadata : null;
+      if (metadata?.commerceScope !== "store" || !metadata.orderId) {
+        await dbConn.execute(
+          sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'ignored', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, ignored: true });
+      }
+      const orderId = Number(metadata.orderId);
+      if (!Number.isInteger(orderId) || orderId <= 0)
+        return res.status(400).json({ error: "Invalid Store order metadata" });
+      const paymentReference =
+        "payment_intent" in object
+          ? String(object.payment_intent ?? "")
+          : "id" in object
+            ? object.id
+            : "";
+      await dbConn.execute(
+        sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, orderId, paymentIntentId, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, ${orderId}, ${paymentReference || null}, 'received', ${JSON.stringify(event.data.object)})`,
+      );
+      if (
+        event.type === "checkout.session.completed" &&
+        (object as Stripe.Checkout.Session).payment_status === "paid"
+      ) {
+        await dbConn.execute(
+          sql`UPDATE commerceOrders SET status = 'paid', storePaymentStatus = 'paid', storePaymentReference = ${paymentReference || null} WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+        );
+      } else if (event.type === "payment_intent.payment_failed") {
+        await dbConn.execute(
+          sql`UPDATE commerceOrders SET storePaymentStatus = 'failed' WHERE id = ${orderId} AND storePaymentStatus IN ('pending', 'not_configured')`,
+        );
+      } else if (event.type === "charge.refunded") {
+        await dbConn.execute(
+          sql`UPDATE commerceOrders SET storePaymentStatus = 'refunded' WHERE id = ${orderId} AND storePaymentStatus = 'paid'`,
+        );
+      }
+      await dbConn.execute(
+        sql`UPDATE commercePaymentEvents SET status = 'processed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
+      );
+      return res.json({ received: true });
+    },
+  );
+
+  // SaaS Stripe webhook - must be before body parser
   app.post(
     "/api/webhooks/stripe",
     express.raw({ type: "application/json" }),

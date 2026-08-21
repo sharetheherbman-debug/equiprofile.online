@@ -1,0 +1,29 @@
+import fs from "node:fs";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+
+const root = path.resolve(import.meta.dirname, "..");
+const bootstrap = fs.readFileSync(
+  path.join(root, "server/_core/index.ts"),
+  "utf8",
+);
+const migration = fs.readFileSync(
+  path.join(root, "drizzle/0024_commerce_payment_reconciliation.sql"),
+  "utf8",
+);
+
+describe("Store payment boundary", () => {
+  it("uses an isolated Store webhook and Store-specific secret", () => {
+    expect(bootstrap).toContain('"/api/webhooks/store-stripe"');
+    expect(bootstrap).toContain("STORE_STRIPE_WEBHOOK_SECRET");
+    expect(bootstrap).toContain('metadata?.commerceScope !== "store"');
+    expect(bootstrap).toContain("Store payment processing is not configured");
+  });
+
+  it("records provider events with replay protection before reconciliation", () => {
+    expect(migration).toContain("commercePaymentEvents_provider_event_unique");
+    expect(bootstrap).toContain("providerEventId = ${event.id}");
+    expect(bootstrap).toContain("cached: true");
+    expect(bootstrap).toContain("storePaymentStatus = 'paid'");
+  });
+});
