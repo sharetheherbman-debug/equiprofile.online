@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T14:27:56.875Z",
+  "generatedAt": "2026-08-21T14:30:18.240Z",
   "scope": "Per-lesson factual evidence mapping. SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW is intentionally unresolved until a reviewer records source-to-claim verification or rewrites the claim as a variable professional principle.",
   "summary": {
     "lessonsRegistered": 105,
@@ -4246,9 +4246,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": ["must", "12°C", "legal"],
+      "materialNumberOrRuleMentions": ["must", "rule", "required", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed generated task-duration, temperature and review-cadence prescriptions; the lesson now requires an individual-care, risk-based routine and authorised current variations record.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {

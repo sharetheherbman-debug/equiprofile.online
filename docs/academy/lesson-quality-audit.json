@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T14:28:04.749Z",
+  "generatedAt": "2026-08-21T14:30:26.344Z",
   "scope": "Structural completeness and lexical-similarity audit only. This report does not verify facts, safety, clinical advice, legal rules, numerical claims, or human editorial acceptance.",
   "standards": {
     "meaningfulWordBaseline": 500,
@@ -1771,7 +1771,7 @@
       "title": "Daily Stable Routines",
       "pathway": "Stable Management",
       "level": "developing",
-      "wordCount": 654,
+      "wordCount": 646,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,

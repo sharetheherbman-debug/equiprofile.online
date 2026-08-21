@@ -201,6 +201,8 @@ const changedLessons: Record<string, string> = {
     "Removed generic improvement timelines and milestone schedules; learners now use coach-agreed, welfare-aware goals and review points rather than universal calendar prescriptions.",
   "health-safety-in-the-yard":
     "Removed generated repair, inspection, drill and record-review timelines; the lesson now requires a risk-based procedure consistent with current legal, insurer, fire-authority and yard requirements.",
+  "daily-stable-routines":
+    "Removed generated task-duration, temperature and review-cadence prescriptions; the lesson now requires an individual-care, risk-based routine and authorised current variations record.",
 };
 
 const rows = LESSON_UNITS.map((lesson) => {
