@@ -169,6 +169,38 @@ const changedLessons: Record<string, string> = {
     "Removed unsourced cosmetic measurements and supplement-result timings; moved skin-condition content to observation, hygiene and veterinary escalation.",
   "risk-incident-awareness":
     "Removed the fixed risk-assessment review interval and directs learners to current employer, insurer and legal requirements when circumstances change.",
+  "horse-welfare-under-workload":
+    "Removed generic recovery thresholds, rest calendars, conditioning durations and age-band programmes; now uses individual baseline monitoring, qualified planning and veterinary escalation.",
+  "lameness-awareness":
+    "Removed learner-led lameness testing, grading, treatment directions and wait intervals; now teaches observation recording, stop-work and veterinary escalation.",
+  "bit-selection-basics":
+    "Removed generic centimetre and wrinkle fitting rules; directs learners to qualified fitting/oral-health assessment, manufacturer guidance and current discipline rules.",
+  "arena-etiquette":
+    "Replaced the universal-standard 20 m × 40 m wording with a small-arena example and requires the current organiser’s diagram for competition layouts.",
+  "basic-school-figures":
+    "Replaced universal arena-layout language with a 20 m-wide training example and current organiser-diagram guidance.",
+  "circles-and-school-figures":
+    "Corrected the international FEI Dressage arena reference to 20 m × 60 m and removed unsupported fixed school-figure prescriptions.",
+  "understanding-competition-types":
+    "Removed generic arena, pace, fault, refusal and elimination rules; requires the current organiser schedule and governing-body rules.",
+  "preparing-for-competition-day":
+    "Removed generic arrival and course-walk requirements; requires an event-specific travel, arrival and briefing plan.",
+  "dressage-test-riding":
+    "Removed generic introductory pace, arena and score-threshold rules; requires the current published test, schedule and approved arena diagram.",
+  "daily-health-check-and-vital-signs":
+    "Retained reviewed World Horse Welfare adult-at-rest TPR values while removing the fixed-duration and fixed-day health-check routine in favour of the individual written plan.",
+  "pasture-management-basics":
+    "Removed fixed sward heights, pasture percentages, grazing intervals, rotation counts and plant-removal instructions from both base and enhancement text; now requires current local and professional plans.",
+  "when-to-call-the-vet":
+    "Retained the reviewed adult-at-rest TPR reference while removing self-triage expectations and requiring prompt veterinary contact without delaying for extra observations.",
+  "emergency-first-aid-procedures":
+    "Replaced learner-led bleeding, colic and eye-management procedures with safe preparation, veterinary escalation and current yard emergency-procedure guidance.",
+  "feeding-for-workload":
+    "Removed generic workload bands, pre-exercise/recovery timing, feed-transition intervals, ration-template adjustments and supplement assumptions from both base and enhancement text; now uses factual records and qualified individual-plan review.",
+  "riding-assessment-and-self-coaching":
+    "Removed generic improvement timelines and milestone schedules; learners now use coach-agreed, welfare-aware goals and review points rather than universal calendar prescriptions.",
+  "health-safety-in-the-yard":
+    "Removed generated repair, inspection, drill and record-review timelines; the lesson now requires a risk-based procedure consistent with current legal, insurer, fire-authority and yard requirements.",
 };
 
 const rows = LESSON_UNITS.map((lesson) => {

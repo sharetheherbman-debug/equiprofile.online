@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T13:42:33.629Z",
+  "generatedAt": "2026-08-21T14:27:56.875Z",
   "scope": "Per-lesson factual evidence mapping. SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW is intentionally unresolved until a reviewer records source-to-claim verification or rewrites the claim as a variable professional principle.",
   "summary": {
     "lessonsRegistered": 105,
@@ -557,7 +557,8 @@
       "pathwaySlug": "rider-foundations",
       "level": "beginner",
       "claimTopics": [
-        "Transport, passports, export, ownership or current legal requirements"
+        "Transport, passports, export, ownership or current legal requirements",
+        "Competition and riding safety"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
@@ -578,12 +579,18 @@
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
           "checkedAt": "2026-08-21"
+        },
+        {
+          "organisation": "British Equestrian",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
+          "checkedAt": "2026-08-21"
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": ["20 m", "40 m", "rule"],
+      "materialNumberOrRuleMentions": ["20 m", "40 m", "rule", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Replaced the universal-standard 20 m × 40 m wording with a small-arena example and requires the current organiser’s diagram for competition layouts.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -605,21 +612,51 @@
       "title": "Basic School Figures",
       "pathwaySlug": "rider-foundations",
       "level": "developing",
-      "claimTopics": ["General descriptive educational content"],
-      "riskClass": "LOW_RISK_DESCRIPTIVE",
-      "sources": [],
+      "claimTopics": [
+        "Transport, passports, export, ownership or current legal requirements",
+        "Competition and riding safety"
+      ],
+      "riskClass": "HIGH_RISK",
+      "sources": [
+        {
+          "organisation": "Animal and Plant Health Agency / GOV.UK",
+          "title": "Export horses and ponies: special rules",
+          "url": "https://www.gov.uk/guidance/export-horses-and-ponies-special-rules",
+          "checkedAt": "2026-08-21"
+        },
+        {
+          "organisation": "World Horse Welfare",
+          "title": "Protection of equines during transport",
+          "url": "https://www.worldhorsewelfare.org/what-we-do/our-positions/protection-of-equines-during-transport",
+          "checkedAt": "2026-08-21"
+        },
+        {
+          "organisation": "GOV.UK",
+          "title": "Keeping horses",
+          "url": "https://www.gov.uk/keeping-horses",
+          "checkedAt": "2026-08-21"
+        },
+        {
+          "organisation": "British Equestrian",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
+          "checkedAt": "2026-08-21"
+        }
+      ],
       "sourceCheckDate": "2026-08-21",
       "materialNumberOrRuleMentions": [
         "20 m",
         "40 m",
         "must",
         "5 metres",
+        "legal",
         "20m",
         "40m",
-        "10 metres"
+        "10 metres",
+        "20 metres"
       ],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Replaced universal arena-layout language with a 20 m-wide training example and current organiser-diagram guidance.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -1234,18 +1271,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "60 bpm",
-        "48 hours",
-        "1–3 days",
-        "must",
-        "4–8 weeks",
-        "4–6 years",
-        "7–15 years",
-        "legal"
-      ],
+      "materialNumberOrRuleMentions": ["rule", "must", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed generic recovery thresholds, rest calendars, conditioning durations and age-band programmes; now uses individual baseline monitoring, qualified planning and veterinary escalation.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -1299,14 +1327,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "20–30 metres",
-        "15–20 metres",
-        "24–48 hours",
-        "legal"
-      ],
+      "materialNumberOrRuleMentions": ["must", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed learner-led lameness testing, grading, treatment directions and wait intervals; now teaches observation recording, stop-work and veterinary escalation.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -1573,15 +1596,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "must",
-        "0.5 cm",
-        "rule",
-        "2 cm",
-        "1 cm"
-      ],
+      "materialNumberOrRuleMentions": ["must"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed generic centimetre and wrinkle fitting rules; directs learners to qualified fitting/oral-health assessment, manufacturer guidance and current discipline rules.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -1723,7 +1740,8 @@
       "pathwaySlug": "developing-rider-skills",
       "level": "intermediate",
       "claimTopics": [
-        "Transport, passports, export, ownership or current legal requirements"
+        "Transport, passports, export, ownership or current legal requirements",
+        "Competition and riding safety"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
@@ -1744,20 +1762,18 @@
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
           "checkedAt": "2026-08-21"
+        },
+        {
+          "organisation": "British Equestrian",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
+          "checkedAt": "2026-08-21"
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "20 metres",
-        "40 metres",
-        "60 metres",
-        "2.5 metres",
-        "13 metres",
-        "must",
-        "5 metres"
-      ],
+      "materialNumberOrRuleMentions": ["20 m", "60 m", "40 m", "must", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Corrected the international FEI Dressage arena reference to 20 m × 60 m and removed unsupported fixed school-figure prescriptions.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -1985,6 +2001,7 @@
       "level": "advanced",
       "claimTopics": [
         "Transport, passports, export, ownership or current legal requirements",
+        "Welfare, ethics, management or end-of-life decision-making",
         "Competition and riding safety"
       ],
       "riskClass": "HIGH_RISK",
@@ -2015,14 +2032,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "must",
-        "8–12 weeks",
-        "2–4 weeks",
-        "legal"
-      ],
+      "materialNumberOrRuleMentions": ["must", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed generic improvement timelines and milestone schedules; learners now use coach-agreed, welfare-aware goals and review points rather than universal calendar prescriptions.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -2225,16 +2237,18 @@
       "sourceCheckDate": "2026-08-21",
       "materialNumberOrRuleMentions": [
         "37.5–38.5°C",
+        "required",
         "38.2°C",
         "36 bpm",
         "12 bpm",
         "legal",
         "36–42 bpm",
         "10–15 bpm",
-        "60–80 bpm"
+        "60–80 bpm",
+        "must"
       ],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Retained reviewed World Horse Welfare adult-at-rest TPR values while removing the fixed-duration and fixed-day health-check routine in favour of the individual written plan.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -2492,19 +2506,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "must",
-        "5 cm",
-        "5–10 cm",
-        "10–12 cm",
-        "7–14 days",
-        "10–28 days",
-        "6–8 cm",
-        "7–10 days",
-        "legal"
-      ],
+      "materialNumberOrRuleMentions": ["must", "rule", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed fixed sward heights, pasture percentages, grazing intervals, rotation counts and plant-removal instructions from both base and enhancement text; now requires current local and professional plans.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -2657,9 +2661,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": ["20m", "40m", "required", "legal"],
+      "materialNumberOrRuleMentions": ["required", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed generic arena, pace, fault, refusal and elimination rules; requires the current organiser schedule and governing-body rules.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -2713,15 +2717,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "2–3 hours",
-        "required",
-        "1 hour",
-        "must",
-        "legal"
-      ],
+      "materialNumberOrRuleMentions": ["must", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed generic arrival and course-walk requirements; requires an event-specific travel, arrival and briefing plan.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -2761,9 +2759,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": ["20m", "40m", "legal", "required"],
+      "materialNumberOrRuleMentions": ["20m", "legal", "required", "rule"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed generic introductory pace, arena and score-threshold rules; requires the current published test, schedule and approved arena diagram.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -3532,6 +3530,7 @@
         "Nutrition, hydration, condition, feeding or supplements",
         "Infectious disease, hygiene or biosecurity",
         "Transport, passports, export, ownership or current legal requirements",
+        "Welfare, ethics, management or end-of-life decision-making",
         "Competition and riding safety"
       ],
       "riskClass": "HIGH_RISK",
@@ -3580,15 +3579,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "required",
-        "1–3 hours",
-        "1–2 hours",
-        "7–14 days",
-        "legal"
-      ],
+      "materialNumberOrRuleMentions": ["must", "required", "rule", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed generic workload bands, pre-exercise/recovery timing, feed-transition intervals, ration-template adjustments and supplement assumptions from both base and enhancement text; now uses factual records and qualified individual-plan review.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -4134,7 +4127,7 @@
         "100-120 bpm"
       ],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Retained the reviewed adult-at-rest TPR reference while removing self-triage expectations and requiring prompt veterinary contact without delaying for extra observations.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -4146,6 +4139,7 @@
         "Veterinary health, vital signs, preventative health, hoof, dental or tack-fit care",
         "Nutrition, hydration, condition, feeding or supplements",
         "Transport, passports, export, ownership or current legal requirements",
+        "Welfare, ethics, management or end-of-life decision-making",
         "Competition and riding safety"
       ],
       "riskClass": "HIGH_RISK",
@@ -4188,9 +4182,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": ["legal"],
+      "materialNumberOrRuleMentions": ["must", "legal"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Replaced learner-led bleeding, colic and eye-management procedures with safe preparation, veterinary escalation and current yard emergency-procedure guidance.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {
@@ -4308,9 +4302,9 @@
         }
       ],
       "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": ["Legal", "24–48 hours", "must", "legal"],
+      "materialNumberOrRuleMentions": ["Legal", "required", "legal", "must"],
       "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
+      "lessonChangeMade": "Removed generated repair, inspection, drill and record-review timelines; the lesson now requires a risk-based procedure consistent with current legal, insurer, fire-authority and yard requirements.",
       "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
     },
     {

@@ -1713,7 +1713,7 @@ Good position is not something you achieve once and forget — it requires const
 
 ## Arena Markers
 
-A standard dressage arena (20 m × 40 m) is marked with letters placed at specific points around the arena. These letters are used to describe movements, positions and exercises. The letters in a standard arena are:
+A **20 m × 40 m small arena** is commonly used for introductory schooling and some national tests. Arena dimensions and letter layouts vary by test level, organiser and jurisdiction; always use the current schedule or organiser’s diagram for competition. In this small-arena example, the letters are:
 
 - **A** — The entrance end, centre of the short side
 - **C** — The far end, centre of the opposite short side
@@ -1967,7 +1967,7 @@ The quality of a transition depends on the preparation:
 
 ## The 20-Metre Circle
 
-The 20-metre circle is the most commonly ridden school figure and one of the first a rider learns. In a 20 m × 40 m arena, a 20-metre circle fits exactly across the width of the arena. Key circles are:
+The 20-metre circle is a common school figure and one of the first a rider learns. In any arena that is 20 m wide, including a 20 m × 40 m small arena, a 20-metre circle spans the arena’s width. Check the current arena diagram and test instructions before practising for a competition. Key circles are:
 
 - **At A or C** — The circle touches the short side at A or C, reaches E or B on the long side, and returns to A or C. It passes through the centre line at X.
 - **At B or E** — The circle touches the two long sides and crosses the centre line at two points.
@@ -2010,7 +2010,7 @@ The **three-quarter line** runs parallel to the long sides, approximately 5 metr
 
 School figures should be ridden with purpose and precision. A rider who rides accurate figures at walk demonstrates more skill than one who canters inaccurately around the arena.`,
     keyPoints: [
-      "A 20-metre circle fits exactly across the width of a standard 20 m × 40 m arena",
+      "In a 20 m-wide arena, a 20-metre circle spans the arena width; use the current organiser’s diagram for any competition layout",
       "On a circle: inside leg at the girth for bend, outside leg behind the girth to control the hindquarters",
       "The outside rein is the controlling rein — it limits bend and regulates speed",
       "When changing rein across the diagonal, change your rising trot diagonal as you cross",
@@ -2038,7 +2038,7 @@ School figures should be ridden with purpose and precision. A rider who rides ac
         ],
         correctIndex: 1,
         explanation:
-          "A 20-metre circle spans the full 20-metre width of a standard arena, touching each long side or the short side and the centre line.",
+          "In an arena that is 20 metres wide, a 20-metre circle spans that width. The exact markers and layout depend on the arena and current organiser instructions.",
       },
       {
         question:
@@ -3983,7 +3983,7 @@ A fit, well-prepared horse in moderate work should maintain a steady rhythm, res
 - **Loss of impulsion** — The horse becomes reluctant to move forward, needing increasing amounts of leg to maintain the pace.
 - **Leaning on the reins** — A tired horse may begin to lean on the rider's hands for support, indicating loss of self-carriage.
 - **Tail swishing and ear-pinning** — Irritability during work that was previously comfortable can indicate muscular discomfort.
-- **Delayed recovery** — After work, the heart rate should return to below 60 bpm within 10 minutes and to resting rate within 30 minutes. If it takes longer, the horse was worked beyond its fitness level.
+- **Recovery that is not returning toward the horse’s normal baseline** — Record the horse’s response to work and compare it with its known individual pattern. If breathing, demeanour, gait or recovery concerns persist, stop work and seek veterinary advice rather than relying on one generic cut-off.
 
 ## Overtraining
 
@@ -4001,36 +4001,29 @@ Overtraining is a significant welfare issue. A horse cannot tell you it needs a 
 
 ## Recovery and Rest
 
-Different levels of work require different recovery periods:
+Recovery needs depend on the individual horse, the work completed, fitness, age, previous condition, footing, travel, heat, hydration and veterinary advice. Build an individual plan with a qualified coach and, where health or conditioning is involved, a veterinary professional. Do not apply a generic calendar rule for rest after hacking, schooling, jumping or competition.
 
-- **Light hack or flatwork** (30–45 minutes, walk and trot) — The horse can work again the next day.
-- **Moderate schooling** (45–60 minutes, including canter, transitions, school figures) — One to two rest days per week.
-- **Intense schooling or competition** (hard collected work, jumping, cross-country) — At least 48 hours of reduced work or turnout between sessions.
-- **After a competition** — Allow 1–3 days of rest or light hacking, depending on the intensity. A three-day event horse may need a full week of walking and turnout.
-
-Rest does not necessarily mean confinement in a stable. Turnout in a field, light hacking or in-hand walking are all beneficial forms of active recovery.
+Rest does not automatically mean confinement in a stable. Discuss safe turnout, light activity or in-hand work with the people responsible for the horse, taking account of the horse’s condition and any veterinary restriction.
 
 ## Fitness and Conditioning
 
 A horse must be conditioned gradually for the work it is expected to do, just like a human athlete:
 
-1. **Base fitness** — Build cardiovascular fitness through steady hacking and trotting over 4–8 weeks.
-2. **Strengthening** — Introduce more demanding work (hill work, school figures, canter) gradually.
-3. **Skill work** — Add discipline-specific training (jumping, lateral work) once the base fitness is established.
-4. **Maintain and vary** — Avoid monotonous training. Vary the work to keep the horse mentally engaged and physically balanced.
+1. **Establish a baseline** — Discuss the horse’s current condition, history and intended work with qualified professionals.
+2. **Increase demands gradually** — Add duration, intensity, terrain or discipline-specific exercises one change at a time, observing the horse’s response.
+3. **Review continuously** — Adapt or stop the plan when the horse shows fatigue, discomfort, illness, altered movement or behavioural concern.
+4. **Vary responsibly** — Use appropriate variety and recovery rather than monotonous loading, while remaining within the horse’s current capacity.
 
-A horse that is brought into work after a period of rest (holiday, illness, time off) must be reintroduced to work slowly. Expecting a horse that has been off for six weeks to resume its previous workload immediately is a common cause of injury.
+A horse returning after time off, illness or injury needs an individual reconditioning plan. Do not resume a previous workload until a qualified professional has assessed readiness.
 
-## Age Considerations
+## Age and Individual Considerations
 
-- **Young horses** (4–6 years) — Are still physically developing. Work should be short, varied and not demanding. Jumping and collected work should be limited.
-- **Mature horses** (7–15 years) — Can handle a full training programme if fit and sound.
-- **Senior horses** (16+ years) — May need reduced workload, more warm-up time, and careful monitoring for arthritis and stiffness. Many older horses remain willing to work but need thoughtful management.`,
+Young, mature and older horses can have very different developmental, health and conditioning needs. Workload decisions must account for the individual horse’s maturity, soundness, health history, training, management and veterinary advice; chronological age alone does not prescribe a safe programme.`,
     keyPoints: [
       "Fatigue signs include stumbling, heavy breathing, loss of impulsion and breaking gait — stop and rest if you see these",
-      "A horse's heart rate should return to below 60 bpm within 10 minutes of stopping work",
+      "Compare recovery with the horse’s individual baseline and seek veterinary advice if breathing, gait, demeanour or recovery concerns persist",
       "Overtraining is cumulative — declining performance, weight loss and behavioural changes are warning signs",
-      "Build rest days into every training programme; intense work requires at least 48 hours recovery",
+      "Set recovery and workload with qualified professionals; do not use a generic rest calendar for every horse",
       "Condition horses gradually for the level of work expected, especially after time off",
     ],
     safetyNote:
@@ -4050,13 +4043,13 @@ A horse that is brought into work after a period of rest (holiday, illness, time
           "What is a key indicator that a horse has been worked beyond its fitness level?",
         options: [
           "The horse sweats during exercise",
-          "The heart rate does not return to below 60 bpm within 10 minutes of stopping",
+          "Recovery, breathing, gait or demeanour remains concerning when compared with the horse’s normal baseline",
           "The horse wants to canter",
           "The horse is hungry after exercise",
         ],
         correctIndex: 1,
         explanation:
-          "A horse's heart rate should recover to below 60 bpm within 10 minutes of stopping exercise. A delayed recovery indicates the work was too intense for the horse's current fitness level.",
+          "Use the horse’s own documented baseline and the full clinical picture rather than a single generic number. Stop work and seek veterinary advice when recovery, breathing, gait or demeanour remains concerning.",
       },
       {
         question: "What is overtraining?",
@@ -4072,21 +4065,21 @@ A horse that is brought into work after a period of rest (holiday, illness, time
       },
       {
         question:
-          "How should a horse be brought back into work after six weeks off?",
+          "How should a horse return to work after time off, illness or injury?",
         options: [
+          "Follow an individual reconditioning plan agreed with qualified professionals",
           "Resume the previous workload immediately",
-          "Start with intense work to build fitness quickly",
-          "Reintroduce work gradually, starting with walking and light trotting",
-          "Keep the horse in the stable and lunge it daily",
+          "Start intense work to build fitness quickly",
+          "Copy a generic programme without considering the horse’s history",
         ],
-        correctIndex: 2,
+        correctIndex: 0,
         explanation:
-          "After a period of rest, the horse will have lost fitness. Reintroduce work gradually over 4–8 weeks, starting with walking and light trotting, to avoid injury.",
+          "A return-to-work programme must reflect the individual horse’s condition, reason for time off and professional advice. Do not use a one-size-fits-all timeline.",
       },
     ],
     aiTutorPrompts: [
       "How can I tell if my horse is becoming fatigued during a schooling session?",
-      "Can you help me plan a gradual fitness programme for a horse coming back into work?",
+      "What information should I take to a qualified coach or veterinary professional when discussing a return-to-work plan?",
       "What are the signs of overtraining and how should I respond?",
     ],
     linkedCompetencies: ["welfare_awareness"],
@@ -4101,134 +4094,98 @@ A horse that is brought into work after a period of rest (holiday, illness, time
     category: "Horse Behaviour & Welfare",
     sortOrder: 6,
     objectives: [
-      "Explain how to trot a horse up for a basic lameness assessment",
-      "Describe the grading system for lameness",
-      "Identify the most common causes of lameness in horses",
-      "Understand when lameness requires veterinary intervention",
+      "Recognise observable changes in gait, stance or willingness to move",
+      "Explain why lameness assessment and grading are veterinary tasks",
+      "Identify when work must stop and veterinary advice is needed",
+      "Record useful observations without attempting to diagnose or treat lameness",
     ],
     content: `Lameness is the most common reason for loss of performance and time off work in horses. It is defined as any alteration in the horse's normal gait caused by pain or mechanical dysfunction. The ability to recognise lameness, grade its severity and know when to involve the vet is an important intermediate-level skill.
 
-## Trotting Up for Lameness Assessment
+## Observe, Record and Escalate
 
-A basic lameness assessment involves trotting the horse in hand on a firm, level surface in a straight line. This is often the first thing a vet will ask you to do.
+Lameness means a change from the horse’s normal way of moving, standing or willingness to move. It can arise from many different conditions, and observation alone cannot identify the cause. A learner’s role is to stop ridden or strenuous work, keep people safe and contact the responsible person and veterinary professional promptly.
 
-**Procedure:**
-1. Find a flat, firm surface — ideally concrete or tarmac, not deep footing.
-2. Use a bridle or headcollar with a lead rope. Hold the rope loosely so the horse can move its head freely — do not hold the head tightly, as this prevents the natural head-bob that reveals lameness.
-3. Walk the horse away from the observer for 20–30 metres, then trot back in a straight line.
-4. The observer watches from the front and the side, looking for:
-   - **Head nod** — The horse drops its head onto the sound foreleg and lifts it off the lame one.
-   - **Hip hike** — For hind limb lameness, the hip on the lame side rises higher than the other (the horse lifts the painful limb away from the ground more quickly).
-   - **Shortened stride** — The stride on the lame leg may be shorter.
-   - **Uneven foot placement** — The horse may land toe-first to protect a sore heel.
+Record what you observed without attempting to diagnose: when the change started; which activity was being done; whether movement, stance, behaviour, heat, swelling, wound or discharge was noticed; and whether the horse appears generally unwell. A veterinarian may ask for a controlled in-hand observation or other examination, but that should be performed only as they direct. Do not perform flexion tests, grade lameness, repeatedly circle or otherwise provoke movement in an effort to identify the cause.
 
-5. Repeat on both reins on a circle (15–20 metres) if requested, as some lameness is more visible on a circle.
-6. A flexion test may be performed by the vet — holding a joint flexed for 30–60 seconds, then trotting the horse immediately to see if the lameness worsens.
+## When to Seek Urgent Veterinary Advice
 
-## Grading Lameness
+Seek urgent veterinary advice if a horse is unwilling or unable to bear weight, shows a sudden or marked change in movement, has a wound, heat, swelling or discharge associated with the concern, or appears generally unwell. If you are uncertain, treat the situation as a welfare concern and contact a veterinary professional rather than waiting for a generic interval.
 
-The most commonly used system in the UK grades lameness from **0 to 10** (the American Association of Equine Practitioners scale uses 0–5):
+While awaiting advice, do not force the horse to walk, trot, lunge or continue ridden work. Follow the veterinary practice’s emergency instructions and the yard’s safe-management procedure. Do not act independently until a veterinary professional has provided direction.
 
-- **Grade 0** — Sound. No detectable lameness.
-- **Grade 1–2** — Subtle lameness. May only be visible under certain conditions (e.g., on a circle, after flexion, on hard ground).
-- **Grade 3–4** — Mild lameness. Visible at trot in a straight line. The head nod or hip hike is consistently present.
-- **Grade 5–6** — Moderate lameness. Obvious at trot. The horse may be reluctant to trot or may break gait.
-- **Grade 7–8** — Severe lameness. Visible at walk. The horse is clearly uncomfortable.
-- **Grade 9–10** — Non-weight-bearing. The horse cannot or will not place the leg on the ground.
+## Safe Observation Boundaries
 
-## Common Causes of Lameness
+A movement concern can be subtle, intermittent or obvious, but it is not made safer by repeated testing. Avoid the temptation to compare legs, manipulate joints, remove shoes, use force, or ask another person to reproduce the movement change. Those actions can increase discomfort, place people at risk and make it harder for the veterinary team to assess the original presentation. The responsible person should decide who handles the horse and how other horses, riders and members of the public are kept clear of the area.
 
-**Foot problems (the most common source of lameness):**
-- **Abscess** — A pocket of infection within the hoof causing sudden, severe lameness. Often non-weight-bearing.
-- **Bruised sole** — From walking on hard or stony ground.
-- **Laminitis** — Inflammation of the laminae, causing severe foot pain.
-- **Navicular syndrome** — Chronic heel pain, often causing bilateral (both front feet) low-grade lameness.
+If the horse must remain in a stable, field or other location while advice is obtained, use the current yard procedure for safe supervision, access and communication. Do not make confinement, turnout, bedding, transport or exercise changes based on a generic lesson. These decisions depend on the individual horse and the veterinary instruction received.
 
-**Lower leg problems:**
-- **Tendon injuries** — Strains of the superficial or deep digital flexor tendons, causing heat, swelling and lameness.
-- **Ligament injuries** — Particularly the suspensory ligament, which supports the fetlock.
-- **Splints** — Bony growths on the splint bones, common in young horses.
+## Preparing a Useful Handover
 
-**Upper leg and body problems:**
-- **Joint inflammation (arthritis)** — Particularly in the hock, fetlock and coffin joints.
-- **Muscle soreness** — From overwork, poor saddle fit or compensatory movement.
-- **Back pain** — Can cause hind limb gait abnormalities and resistance under saddle.
+A factual handover is more useful than a guessed diagnosis. Record when the concern was first noticed; what the horse was doing beforehand; whether the change was sudden or gradual; what was visibly different in movement, stance or behaviour; and whether there was any wound, heat, swelling, discharge or sign of general illness. State what has already been done only in factual terms, including that work was stopped and the responsible person was contacted.
 
-## When to Call the Vet
-
-- **Non-weight-bearing lameness** — Always call the vet urgently. This may indicate a fracture, severe abscess or tendon rupture.
-- **Sudden onset of severe lameness** — A horse that was sound and is suddenly very lame needs veterinary assessment.
-- **Heat, swelling or discharge in a limb** — Especially if accompanied by lameness.
-- **Lameness that does not improve within 24–48 hours** with rest.
-- **Any lameness in both front feet simultaneously** — May indicate laminitis.
-- **A lame horse that seems systemically unwell** (elevated temperature, reduced appetite, dullness).
-
-While waiting for the vet:
-- Do not force a lame horse to walk or trot
-- Confine the horse to a stable with deep bedding
-- Apply cold hosing to a swollen limb (10–15 minutes, 3–4 times daily) if no open wound is present
-- Do not administer painkillers without veterinary advice, as they can mask the severity of the problem and complicate diagnosis`,
+When the veterinary practice responds, follow its questions and instructions exactly. If the horse’s condition changes while waiting, update the practice promptly. After the situation is resolved, the responsible person can decide whether the written health record, risk assessment or management plan needs review. This is how a careful learner contributes to welfare without crossing into clinical assessment.`,
     keyPoints: [
-      "Trot the horse on a firm, level surface with a loose head to allow the natural head-bob to show",
-      "Foreleg lameness: the horse nods onto the sound leg and lifts its head off the painful leg",
-      "Hind limb lameness: the hip on the lame side hikes higher as the horse lifts the painful leg away faster",
-      "Foot problems are the single most common cause of lameness — always check the foot first",
-      "Non-weight-bearing lameness is always an emergency requiring immediate veterinary attention",
+      "A change in gait, stance or willingness to move is a welfare concern, not a learner diagnosis task",
+      "Record observations and contact the responsible person and veterinary professional promptly",
+      "Do not use a lameness grade, a generic wait interval or repeated movement tests to decide whether care is needed",
+      "Do not force a horse with a movement concern to continue work or testing",
+      "A horse unwilling or unable to bear weight, or showing marked sudden change, needs urgent veterinary advice",
     ],
     safetyNote:
-      "When trotting a horse up for lameness assessment, run alongside the horse at the shoulder — do not run in front of it. Keep the lead rope slack so the horse can move its head naturally. If the horse is very lame, do not force it to trot — this causes additional pain and risk of further injury. A severely lame horse that is panicking or in extreme pain should only be handled by experienced people.",
+      "Do not undertake a lameness examination or provoke movement without veterinary direction. Keep people safe, stop work and follow the yard’s emergency procedure while obtaining veterinary advice. A horse in severe pain or distress should be handled only by appropriate experienced people following professional direction.",
     practicalApplication:
-      "Practise trotting horses up in hand on a hard surface. Ask your instructor or vet to teach you what a head-nod looks like and how to spot hip hike. Learn to run your hands down each leg daily, feeling for heat, swelling or sensitivity. Check the feet for stones, cracks and shoe condition. If you notice anything unusual, report it before the horse is ridden. Early detection saves time, money and horse welfare.",
+      "With an instructor, practise completing a concise observation record for a horse that appears uncomfortable: activity, time, changes in movement or behaviour, and any visible concern. Report observations before the horse is ridden and ask a veterinary professional to explain the practice’s safe assessment and escalation process.",
     commonMistakes: [
-      "Holding the horse's head tightly when trotting up, which prevents the head-nod that reveals lameness",
-      "Trotting a horse on deep or uneven footing, which masks or exacerbates lameness",
-      "Ignoring subtle lameness and continuing to ride, risking further injury",
-      "Giving painkillers before the vet's assessment, masking the severity",
-      "Assuming lameness always comes from the leg when the foot is the most common source",
+      "Continuing to ride or test a horse with an observed movement concern",
+      "Trying to identify the cause by repeated trotting, circling or flexion tests without veterinary direction",
+      "Using a generic grading scale or wait interval instead of seeking appropriate advice",
+      "Acting independently before veterinary direction is provided",
+      "Assuming an observation establishes the cause of the problem",
     ],
     knowledgeCheck: [
       {
         question:
-          "When assessing foreleg lameness, what does the horse's head do?",
+          "What is the appropriate learner response to a new change in gait, stance or willingness to move?",
         options: [
-          "Drops onto the lame leg",
-          "Stays level throughout",
-          "Nods onto the sound leg and lifts off the lame leg",
-          "Turns toward the lame side",
+          "Stop ridden or strenuous work, record observations and seek appropriate veterinary advice",
+          "Repeat movement tests until the cause is clear",
+          "Continue work if the horse is willing",
+          "Independently manage the concern without professional direction",
         ],
-        correctIndex: 2,
+        correctIndex: 0,
         explanation:
-          "The horse lifts its head as the painful foreleg hits the ground (to reduce weight on it) and drops its head as the sound leg lands, creating a visible nodding motion.",
+          "Observation cannot establish the cause of lameness. Stop work, keep people safe, record what was observed and contact the responsible person and veterinary professional promptly.",
       },
       {
-        question: "What is the most common source of lameness in horses?",
+        question:
+          "Which information is useful to record before contacting a veterinary professional about a movement concern?",
         options: [
-          "Back problems",
-          "The foot",
-          "The stifle joint",
-          "Muscle injuries",
+          "When it started, the activity, observed changes and any visible heat, swelling, wound or discharge",
+          "A self-assigned lameness grade only",
+          "An independent management plan chosen by the learner",
+          "Only the horse’s competition record",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "The foot is the most common source of lameness. Abscesses, bruised soles, laminitis and navicular syndrome are all foot-related causes of lameness. 'No foot, no horse.'",
+          "A concise factual observation record helps the veterinary team assess urgency and decide what they need next. Do not turn observations into a diagnosis.",
       },
       {
-        question: "When should you always call the vet for lameness?",
+        question: "Which situation needs urgent veterinary advice?",
         options: [
-          "Only if the horse has been lame for more than a week",
-          "For non-weight-bearing lameness, sudden severe lameness, or lameness in both front feet",
-          "Only if there is visible blood",
-          "Only if the horse is a competition horse",
+          "A horse unwilling or unable to bear weight, or showing a marked sudden change in movement",
+          "Only a concern that lasts for a generic number of days",
+          "Only a concern in a competition horse",
+          "Only a concern with visible blood",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "Non-weight-bearing lameness, sudden severe lameness and lameness in both front feet (potential laminitis) are all situations requiring urgent veterinary attention.",
+          "A horse that cannot bear weight or has a marked sudden movement change needs urgent veterinary advice. If you are uncertain, treat the situation as a welfare concern and seek professional guidance.",
       },
     ],
     aiTutorPrompts: [
-      "Can you walk me through how to trot a horse up for a basic lameness assessment?",
-      "What are the most common causes of sudden lameness in horses?",
-      "How do I tell the difference between foreleg and hind limb lameness by watching the horse trot?",
+      "What observations should I record if a horse’s movement changes?",
+      "When should work stop and veterinary advice be sought for a movement concern?",
+      "Why should I not diagnose or perform movement tests without veterinary direction?",
     ],
     linkedCompetencies: ["welfare_awareness", "stable_checks"],
   },
@@ -4938,10 +4895,9 @@ Snaffle bits are the most commonly used family of bits and act primarily on the 
 
 ## Bit Sizing and Fitting
 
-A correctly fitted bit:
-- Extends approximately **0.5 cm beyond the lips on each side**. Too wide allows the bit to slide from side to side, catching the lip; too narrow pinches.
-- Creates **one to two wrinkles** at the corners of the mouth. No wrinkles means the bit is too low and may bang on the teeth; too many wrinkles mean it is too tight against the lips.
-- The mouthpiece thickness should suit the horse — a thicker mouthpiece spreads pressure over a larger area (generally milder), while a thinner mouthpiece concentrates pressure (potentially more precise but sharper).
+Bit fitting is individual to the horse’s mouth, dental status, bridle, discipline rules and way of going. There is no universal width extension or wrinkle count that proves a bit is suitable. A qualified instructor, bit fitter and appropriate equine dental professional should assess fit and comfort, using the manufacturer’s instructions and the current discipline rules where relevant.
+
+Do not infer that a thicker, thinner, stronger or more complex mouthpiece is automatically kinder or more suitable. The rider’s hands, the horse’s anatomy, health and training all matter.
 
 ## Signs the Bit Is Not Suitable
 
@@ -4958,14 +4914,14 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
       "The bit is only as kind or severe as the hands holding the reins — educated hands make any bit kinder",
       "Snaffle bits act on the bars, tongue and lips with no leverage action",
       "A French link distributes pressure more evenly than a single joint by eliminating the nutcracker action",
-      "A correctly fitted bit extends 0.5 cm beyond the lips on each side and creates one to two wrinkles",
-      "Signs of bit discomfort include head tossing, mouth opening, tongue displacement and resistance",
-      "Always rule out dental problems before changing the bit",
+      "A suitable bit fit is individual; do not use one generic width or wrinkle measurement as proof of comfort",
+      "Signs of possible bit discomfort include head tossing, mouth opening, tongue displacement and resistance",
+      "Ask qualified tack and dental professionals to assess fit and oral-health concerns before changing equipment",
     ],
     safetyNote:
       "Never change a horse's bit without consulting an experienced instructor. An inappropriate bit can cause pain, mouth injuries and dangerous behaviour. If you notice a horse showing signs of bit discomfort, report it immediately rather than continuing to ride. A horse in pain from its bit may become unpredictable, tossing its head, bolting or rearing. Always ensure the bit is checked for sharp edges, cracks or damage before fitting.",
     practicalApplication:
-      "Learn to identify the bits used on the horses you ride. Ask your instructor to explain why each horse wears a particular bit. Practise fitting a bit correctly, checking the width and height. When riding, focus on developing soft, following hands that maintain a consistent, gentle contact — this is far more important than the type of bit you use. Record any signs of bit discomfort in the horse and discuss with your instructor.",
+      "Learn to identify the bits used on the horses you ride. Ask your instructor why each horse wears a particular bit and how the responsible qualified professional checks its fit. Focus on soft, following hands and record any possible discomfort for discussion with the instructor, bit fitter and appropriate dental professional rather than changing equipment yourself.",
     commonMistakes: [
       "Blaming the bit when the real issue is rough or unsteady hands",
       "Choosing a stronger bit to solve a problem caused by poor riding rather than improving skill",
@@ -4989,16 +4945,16 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
       },
       {
         question:
-          "How much should a correctly fitted bit extend beyond the horse's lips on each side?",
+          "What is the safe approach to deciding whether a bit fits a particular horse?",
         options: [
-          "2 cm",
-          "1 cm",
-          "0.5 cm",
-          "It should not extend beyond the lips at all",
+          "Use a qualified fitting and oral-health assessment, manufacturer guidance and current discipline rules",
+          "Apply one generic width measurement to every horse",
+          "Count wrinkles only",
+          "Choose the strongest available bit",
         ],
-        correctIndex: 2,
+        correctIndex: 0,
         explanation:
-          "The bit should extend approximately 0.5 cm (half a centimetre) beyond the lips on each side. Too wide allows sliding and lip-catching; too narrow causes pinching.",
+          "No universal measurement proves a bit fits every horse. Suitability depends on the individual horse, equipment, health, riding and applicable rules.",
       },
       {
         question:
@@ -5011,12 +4967,12 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
         ],
         correctIndex: 1,
         explanation:
-          "Dental problems can cause symptoms identical to bit discomfort. Always have the horse's teeth checked by a qualified equine dentist before assuming the bit is the problem.",
+          "Oral-health concerns can contribute to apparent bit discomfort. Discuss them with the appropriate qualified equine dental and veterinary professionals before assuming the bit is the cause.",
       },
     ],
     aiTutorPrompts: [
       "Can you explain the differences between the main snaffle bit types?",
-      "How do I know if a bit is fitted correctly?",
+      "What information should a qualified professional consider when assessing bit fit and comfort?",
       "What signs should tell me that a horse is uncomfortable with its bit?",
     ],
     linkedCompetencies: ["tack_identification", "tacking_up_correctly"],
@@ -5523,17 +5479,13 @@ Practising steering exercises at walk before attempting them at trot allows the 
     ],
     content: `School figures are the geometric shapes and patterns ridden in a manège or arena. They are not merely exercises for the rider to follow; they are fundamental training tools that develop the horse's suppleness, straightness, balance, and obedience. Understanding the purpose behind each figure — and riding it with accuracy — is a mark of an educated rider and a well-schooled horse.
 
-The standard dressage arena measures 20 metres by 40 metres (or 20 metres by 60 metres for the large arena). The letters around the arena — A, K, E, H, C, M, B, F, and the centre line markers D, X, and G — provide reference points for planning and executing school figures. Every rider should memorise these letters and be able to navigate to any point in the arena confidently.
+Dressage arena layouts vary by level, organiser and jurisdiction. The FEI 2026 international specification is 20 m wide by 60 m long, while a 20 m × 40 m small arena is used in some introductory schooling and national tests. Use the current organiser’s approved diagram for any competition. Letters around an arena provide reference points for planning and executing school figures; learn the layout used for the arena in which you are riding.
 
 The 20-metre circle is the most basic circle and is ridden by touching the track at one end of the arena and passing through the centre point X. For example, a 20-metre circle at A would touch the track at A, pass through the centre line at X, touch the long side at E or B (depending on direction), and return to A. The shape should be truly round — not egg-shaped, diamond-shaped, or lopsided. Riding an accurate circle requires the rider to use all four aids: the inside leg on the girth to maintain bend and impulsion, the outside leg behind the girth to prevent the quarters from swinging out, the inside rein for flexion, and the outside rein to control the bend and the size of the circle.
 
-A 15-metre circle is smaller and more demanding. It is ridden within the arena without touching the opposite long side. For example, a 15-metre circle at E would loop inward from the track by approximately 2.5 metres on each side. The smaller radius requires more bend from the horse and greater balance from the rider. It is an excellent exercise for developing the horse's suppleness and engagement.
+Smaller circles are more demanding because they require more balance, bend and coordination. Practise them only with an instructor’s guidance, at a size appropriate to the horse, rider, arena and current test or exercise instructions.
 
-A 10-metre circle is used primarily in canter work and more advanced schooling. It requires a significant degree of collection and bend and should only be attempted when both horse and rider are sufficiently trained.
-
-Other important school figures include the half-circle and return to the track (sometimes called a demi-volte), the figure of eight, the serpentine, and the shallow loop. A serpentine consists of a series of equal-sized loops across the width of the arena, with each loop touching the long side. A three-loop serpentine in a 40-metre arena produces loops of approximately 13 metres each. When riding a serpentine, the rider must change the bend each time the centre line is crossed, which develops coordination and the horse's ability to change flexion smoothly.
-
-Shallow loops are ridden along the long side of the arena. A 5-metre loop, for instance, requires the horse to leave the track, loop inward by 5 metres, and return to the track. This exercise tests the rider's ability to maintain a consistent bend while keeping the horse balanced on a gentle curve.
+Other important school figures include the half-circle and return to the track (sometimes called a demi-volte), the figure of eight, the serpentine and the shallow loop. A serpentine consists of a series of balanced loops across the arena, with a smooth change of bend each time the centre line is crossed. A shallow loop leaves the track, follows a gentle inward curve and returns to the track. Use the current arena diagram and instructor direction to choose the size and placement of each figure.
 
 Straightness on the long sides and centre line is just as important as accuracy on curved lines. The horse should travel parallel to the sides of the arena, not drifting inward or outward. On the centre line, the horse should be perfectly straight, with the nose, shoulders, and hindquarters all aligned. Any deviation is immediately visible and is penalised in dressage tests.
 
@@ -5550,7 +5502,7 @@ Regular practice of school figures at walk, trot, and canter develops the rider'
     safetyNote:
       "When riding school figures in a shared arena, be aware of other riders' lines. Call out clearly when changing the rein or riding across the arena. Give way to riders on the outside track and adjust your figures to avoid collisions.",
     practicalApplication:
-      "Practise riding a 20-metre circle at E or B in trot. Use markers or cones to check accuracy — place them at the four key points of the circle. Once the 20-metre circle is consistent, try reducing to a 15-metre circle and note how the aids need to change. Finish with a three-loop serpentine, focusing on smooth changes of bend.",
+      "Practise a circle at the markers specified by your instructor or current arena diagram. Use markers or cones to check a consistent shape. When horse and rider are ready, practise a smaller figure or a serpentine under instruction, focusing on balance and smooth changes of bend rather than copying a fixed size from another arena.",
     commonMistakes: [
       "Riding egg-shaped or lopsided circles instead of truly round ones",
       "Losing rhythm or balance when riding smaller circles",
@@ -6261,13 +6213,9 @@ Effective goals follow the **SMART** framework:
 - **Measurable** — How will you know you have achieved it? "I will perform three balanced canter-to-trot transitions on each rein without the horse falling onto the forehand."
 - **Achievable** — Set goals that stretch you but are realistic given your current level and the horse's training.
 - **Relevant** — The goal should address a genuine weakness or support your broader riding ambitions.
-- **Time-bound** — "I will achieve this within four weeks" gives you a deadline to work towards.
+- **Time-aware** — Agree a realistic review point with your coach or responsible instructor, taking account of the horse, rider, welfare and access to suitable supervision.
 
-Break larger goals into smaller milestones. For example, if your goal is to ride a balanced medium trot, milestones might include:
-1. Week 1–2: Improve half-halts to prepare for the transition.
-2. Week 3–4: Ride three strides of lengthening on each diagonal.
-3. Week 5–6: Sustain a medium trot for the full diagonal.
-4. Week 7–8: Ride medium trot with a balanced transition back to working trot.
+Break larger goals into smaller, coach-agreed milestones. For a balanced medium trot, this might mean first checking that the horse and rider are ready for the work; then practising preparation under suitable supervision; then reviewing the quality of a brief attempt; and finally deciding with the coach whether the next progression is appropriate. Stop, simplify or seek advice if the horse becomes tense, uncomfortable or unbalanced.
 
 ## Creating Improvement Plans
 
@@ -6275,25 +6223,25 @@ An improvement plan brings goals and self-assessment together into a practical r
 
 **Structure of an improvement plan:**
 - **Current assessment** — Where are you now? (Use video and journal evidence.)
-- **Target** — Where do you want to be in 8–12 weeks?
-- **Weekly focus areas** — What will you work on each week?
+- **Target** — What improvement is appropriate for the horse and rider at this stage?
+- **Focus areas** — What coach-agreed skill or welfare observation will you work on next?
 - **Resources needed** — Do you need a coach session, a different horse, or specific equipment?
-- **Review points** — Schedule regular check-ins (every 2–4 weeks) to review progress and adjust the plan.
+- **Review points** — Agree review points with the coach and revise the plan when welfare, safety, progress or circumstances change.
 
-Share your improvement plan with your coach or a knowledgeable friend. External perspective helps keep your assessment honest and your goals realistic. Re-film yourself every few weeks and compare the footage to track genuine progress.
+Share the improvement plan with a qualified coach. External perspective helps keep assessment honest, welfare-aware and realistic. Re-film only when it is safe and useful, then review the footage against the coach-agreed focus rather than a generic schedule.
 
 Self-coaching is not a replacement for professional coaching — it is a complement. The most effective approach combines regular self-assessment with periodic lessons from a qualified coach who can identify issues you cannot see or feel yourself.`,
     keyPoints: [
-      "Video analysis provides objective evidence of your riding that feelings alone cannot",
-      "Use a structured self-assessment framework after every session: what went well, what to improve, horse feedback, next focus",
-      "Set SMART goals — specific, measurable, achievable, relevant, and time-bound",
-      "Break larger goals into weekly milestones to make progress manageable and trackable",
+      "Video analysis provides an objective record that can complement qualified coaching",
+      "Use a structured self-assessment framework after a suitable session: what went well, what to improve, horse feedback, next focus",
+      "Set goals that are specific, measurable, achievable, relevant and reviewed at a coach-agreed time",
+      "Break larger goals into coach-agreed milestones that can be revised for welfare, safety and progress",
       "Self-coaching complements professional coaching — it does not replace it",
     ],
     safetyNote:
       "When filming your riding, ensure the camera is positioned safely outside the arena and does not obstruct the horse's path. If you are riding alone to practise self-coaching, always tell someone where you are and when you expect to finish. Never attempt challenging exercises without supervision for the first time, regardless of your self-assessment confidence.",
     practicalApplication:
-      "Set up a phone or camera to record your next schooling session from the long side. Afterwards, watch the footage and complete the four-point self-assessment: what went well, what to improve, horse feedback, and next focus. Set one SMART goal based on your assessment and write an improvement plan for the next four weeks. Re-film yourself at the end of week four and compare the footage.",
+      "With a qualified coach’s agreement, record a suitable schooling session from a safe position. Review it using the four-point reflection: what went well, what to improve, horse feedback and next focus. Agree one appropriate goal and a review point with the coach; only re-film when it is safe and useful for that review.",
     commonMistakes: [
       "Only recording the good parts of a session rather than filming the entire ride for honest assessment",
       "Setting vague goals such as 'ride better' instead of specific, measurable targets",
@@ -6335,7 +6283,7 @@ Self-coaching is not a replacement for professional coaching — it is a complem
     aiTutorPrompts: [
       "Can you help me create a SMART goal for improving my canter transitions?",
       "What specific things should I look for when analysing a video of my trot work?",
-      "How do I write a four-week improvement plan for my flatwork?",
+      "How do I create a coach-agreed improvement plan that can be revised for welfare, safety and progress?",
     ],
     linkedCompetencies: ["rider_position", "welfare_awareness"],
   },
@@ -6734,7 +6682,7 @@ These figures represent resting values. Exercise, stress, pain, and hot weather 
 
 ## The Daily Health Check
 
-A basic daily health check takes five minutes and should be done every time you see the horse. Look at the horse from a distance first: is it standing normally? Is it eating? Is it interacting with other horses? Then approach and check:
+Follow the horse’s written daily-care and health-observation plan. Observe from a safe distance first: is the horse standing, eating and behaving as usual? Then, where you are trained and authorised to do so, complete the checks required by the yard procedure:
 
 - **Eyes**: bright, clear, no discharge
 - **Nostrils**: clean, no unusual discharge
@@ -6758,7 +6706,7 @@ Signs that something may be wrong include: dullness, loss of appetite, abnormal 
     safetyNote:
       "When taking a horse's temperature rectally, stand to the side of the hindquarters, not directly behind. Have someone hold the horse's head. Use a digital thermometer with a string attached so it cannot be lost inside the horse.",
     practicalApplication:
-      "Carry out a full daily health check on your horse or a yard horse. Record the TPR values. Repeat this for five consecutive days and note the horse's normal resting ranges. This gives you a personal baseline for that horse.",
+      "With a competent person, record calm-at-rest TPR and routine observations using the yard’s approved health record. Establish the individual baseline over repeated observations appropriate to the horse’s management plan, and report concerning changes through the yard’s veterinary-escalation procedure.",
     commonMistakes: [
       "Only checking the horse when something seems obviously wrong, rather than daily",
       "Not knowing normal TPR values and therefore not recognising abnormal readings",
@@ -6784,13 +6732,13 @@ Signs that something may be wrong include: dullness, loss of appetite, abnormal 
         ],
         correctIndex: 2,
         explanation:
-          "Horses commonly rest hind legs, but persistently resting a foreleg can indicate pain in that limb and should be investigated.",
+          "Horses commonly rest a hind leg. A persistent change in stance or comfort should be recorded and reported through the yard’s health procedure rather than self-diagnosed.",
       },
     ],
     aiTutorPrompts: [
       "How do I take a horse's pulse correctly?",
       "What are the early signs of colic I should watch for?",
-      "How does a horse's TPR change after exercise?",
+      "Why must calm-at-rest TPR values be interpreted against the individual horse’s baseline and the wider clinical picture?",
     ],
     linkedCompetencies: ["daily_health_check", "welfare_awareness"],
   },
@@ -7156,73 +7104,73 @@ A well-managed muck heap should be square-sided and compact, built up in layers.
 
 ## Daily Field Checks
 
-Every field containing horses should be checked daily. Walk the boundary and check: fencing is secure with no broken rails or loose wire, gates open and close properly, the water supply is clean and functioning, there are no foreign objects (litter, fallen branches, broken equipment), and the ground condition is not dangerously wet or rutted.
+Follow a written, risk-based field-inspection routine appropriate to the yard, weather, turnout pattern and known hazards. Check boundaries, gates, water, foreign objects and ground condition often enough to identify and address changes safely. Escalate fencing, water, ground or plant hazards through the responsible yard procedure.
 
 ## Pasture Quality
 
-Horse pasture should contain a mix of grasses suitable for horses — not the high-sugar ryegrass mixes used for cattle. Weeds should be controlled, and droppings should be picked up regularly (at least twice a week) to break the parasite lifecycle. Harrowing in warm, dry weather can help break up any remaining droppings and spread nutrients.
+Pasture suitability depends on the horse, soil, climate, forage analysis, grazing pressure, local plant risks and the individual nutrition plan. Manage weeds, droppings and ground condition through a written pasture and parasite-control plan agreed with appropriate veterinary, nutrition and land-management professionals. Do not rely on a universal droppings-removal or harrowing interval.
 
 ## Rotational Grazing
 
-Dividing fields into sections and rotating horses between them allows grass to recover, reduces parasite burden, and maintains pasture quality. Rest each section for four to six weeks before re-grazing. Cross-grazing with cattle or sheep can also help control parasites, as equine parasites do not survive in other livestock species.
+Dividing fields into sections can support grass recovery and pasture management, but the rotation pattern must be designed for the local soil, season, stocking, forage condition, parasite plan and individual horses. Discuss cross-grazing, harrowing and any parasite-control approach with qualified local professionals; do not assume a universal rest period or outcome.
 
 ## Poisonous Plants
 
-Common poisonous plants include ragwort (highly toxic to the liver), yew (rapidly fatal), privet, deadly nightshade, foxglove, and bracken. Ragwort is the most common threat and must be pulled by the roots and removed from the field — it becomes more palatable when wilted or dead. Regular field checks and prompt removal of poisonous plants are essential.
+Potentially harmful plants vary by region and season. Learn to identify local hazards using current official or qualified local guidance, and report any suspected plant hazard before horses can access it. Do not attempt removal, disposal or plant-risk assessment without the yard’s approved procedure and appropriate competent supervision.
 
 ## Seasonal Considerations
 
-In spring and summer, monitor grass growth to prevent overeating — particularly for good doers and laminitis-prone horses. Strip grazing or muzzles may be needed. In winter, provide hay if grass quality is poor and ensure the field does not become a mud bath — rotating shelter areas and using hard-standing around gateways helps.`,
+Seasonal grass growth, mud, forage availability and turnout management should be reviewed within each horse’s individual welfare, nutrition and veterinary plan. Discuss any restricted grazing, supplementary forage, muzzle use, hard-standing or field-layout change with the responsible professionals rather than applying a generic seasonal intervention.`,
     keyPoints: [
-      "Check fields daily for fencing, water, hazards, and poisonous plants",
-      "Pick up droppings at least twice a week to control parasites",
-      "Rotational grazing allows grass recovery and reduces worm burden",
-      "Ragwort is the most common poisonous plant threat — pull it by the root and remove it completely",
-      "Manage grass intake carefully for laminitis-prone horses, especially in spring and summer",
+      "Use the yard’s risk-based field-inspection routine to identify fencing, water, ground and plant hazards",
+      "Manage droppings, pasture condition and parasites through an individual written plan rather than a universal interval",
+      "Rotational grazing patterns must reflect local soil, season, stocking, forage condition and the parasite-control plan",
+      "Use current official or qualified local guidance to identify and manage plant hazards",
+      "Manage grass intake and seasonal turnout within each horse’s individual welfare, nutrition and veterinary plan",
     ],
     safetyNote:
-      "Always wear gloves when handling ragwort — the toxins can be absorbed through the skin. Never leave pulled ragwort in the field, even in bags, as horses may investigate and eat it.",
+      "Do not handle or remove a suspected hazardous plant unless the yard’s approved procedure, current local guidance and appropriate competent supervision are in place. Use the specified protective equipment and keep horses away from the area while the concern is managed.",
     practicalApplication:
       "Walk a field used for horses and conduct a full safety and maintenance check. Note any fencing issues, poisonous plants, water supply problems, or areas of poaching. Create an action list and address the most urgent items first.",
     commonMistakes: [
       "Not checking fields daily — hazards can appear overnight",
-      "Leaving droppings in the field, which allows parasite eggs to reinfect the pasture",
-      "Overgrazing without rotation, leading to bare, muddy fields",
-      "Spraying ragwort instead of pulling it — dead ragwort is still toxic and more palatable",
-      "Underestimating how quickly spring grass can trigger laminitis in susceptible horses",
+      "Using a generic droppings, pasture or parasite-control interval instead of the written local plan",
+      "Applying a rotation pattern without considering soil, season, stocking and forage condition",
+      "Trying to identify, remove or dispose of a hazardous plant without current local guidance and competent supervision",
+      "Changing grazing management for a susceptible horse without the individual welfare, nutrition and veterinary plan",
     ],
     knowledgeCheck: [
       {
         question:
-          "Why is ragwort still dangerous after it has been cut or wilted?",
+          "What should you do when you find a plant you suspect may be hazardous in a horse field?",
         options: [
-          "It grows back faster",
-          "It becomes more palatable and horses are more likely to eat it",
-          "It attracts more insects",
-          "It does not — it is safe once cut",
+          "Keep horses away from the area and report it through the yard’s approved procedure",
+          "Assume it is safe if you cannot identify it",
+          "Remove it without guidance or protective equipment",
+          "Wait for a fixed calendar interval before acting",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "Ragwort becomes sweeter and more palatable when wilted or dead, making horses more likely to eat it. The toxin remains active, so dead ragwort must be removed from the field.",
+          "Plant hazards vary by region and season. Keep horses away from a suspected concern and use current official or qualified local guidance with the yard’s approved procedure.",
       },
       {
         question:
-          "How often should droppings ideally be removed from horse pasture?",
+          "How should droppings, pasture condition and parasite risk be managed?",
         options: [
-          "Once a month",
-          "At least twice a week",
-          "Once a year",
+          "Through an individual written plan with appropriate professional guidance",
+          "Using one universal calendar interval at every yard",
           "Only before a competition",
+          "By waiting until horses show signs of illness",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "Removing droppings at least twice a week breaks the parasite lifecycle by removing eggs before they hatch and become infective larvae on the grass.",
+          "Pasture and parasite management depend on local conditions, horses, stocking and the professional control plan. Do not apply a generic interval as a universal rule.",
       },
     ],
     aiTutorPrompts: [
-      "How do I set up a rotational grazing system on a small yard?",
-      "What grasses are best for horse pasture?",
-      "How do I manage a field for a laminitis-prone pony in spring?",
+      "What information should a local land-management professional review when planning rotational grazing?",
+      "How can I obtain current local guidance about pasture species and potential plant hazards?",
+      "What should be included in the individual welfare, nutrition and veterinary plan for a horse with grazing sensitivities?",
     ],
     linkedCompetencies: ["stable_management", "welfare_awareness"],
   },
@@ -7418,11 +7366,11 @@ Create a seasonal maintenance calendar: spring — arena servicing, fencing chec
 
 ## Dressage
 
-Dressage tests are performed in a marked arena (20m × 40m for introductory levels). The rider performs a set sequence of movements (the test) from memory, judged on accuracy, rhythm, balance, and the horse's way of going. Introductory and preliminary tests involve walk and trot only, making them perfect for novice competitors. Each movement is marked out of 10.
+Dressage tests are performed in a marked arena. The permitted arena, movements, scoring and level requirements are set by the current organiser and governing-body rules. A beginner should choose an appropriate class with their instructor, read the published test and schedule, and follow the layout supplied for that event.
 
 ## Show Jumping
 
-Show jumping involves riding a course of coloured fences within a set time. Faults are given for knocking down a pole (4 faults) or refusing a fence (4 faults, with elimination after two refusals in most rules). Clear rounds mean no faults. Many shows offer "clear round" classes for novice riders where the focus is on completing the course rather than speed.
+Show jumping involves riding a course of coloured fences under a published class format. Penalties, time allowances, refusals, eliminations and clear-round conditions vary by organiser, level and current rules. Read the schedule and ask an instructor to help select an appropriate novice or clear-round class.
 
 ## Cross-Country
 
@@ -7436,8 +7384,8 @@ Showing classes judge the horse's conformation, way of going, and overall qualit
 
 Combined training (or hunter trials, one-day events) combines two or three disciplines. An unaffiliated one-day event might include a dressage test and a show-jumping round. Eventing at higher levels combines dressage, cross-country, and show jumping. Starting with combined training at intro level is an excellent way to gain all-round experience.`,
     keyPoints: [
-      "Dressage tests riding accuracy and the horse's way of going — introductory tests are walk and trot only",
-      "Show jumping tests the ability to clear fences within a time — clear round classes are ideal for beginners",
+      "Dressage tests assess accuracy and the horse’s way of going under the current published test and arena specification",
+      "Show jumping class rules, penalties and time conditions are event-specific; choose an appropriate class using the organiser’s current schedule",
       "Cross-country is exciting but demanding — build arena experience first",
       "Showing judges turnout and the horse's quality — it develops excellent presentation skills",
       "Combined training is a great way to experience multiple disciplines at a low level",
@@ -7465,15 +7413,20 @@ Combined training (or hunter trials, one-day events) combines two or three disci
         ],
         correctIndex: 2,
         explanation:
-          "Introductory tests require only walk and trot, making them ideal for novice riders and young horses gaining experience in a competitive environment.",
+          "Choose a class with your instructor using the current organiser’s schedule, published test and eligibility requirements. Beginner-friendly classes vary between organisers and jurisdictions.",
       },
       {
         question:
-          "How many faults are given for knocking down a show-jumping pole?",
-        options: ["1 fault", "4 faults", "8 faults", "Elimination"],
-        correctIndex: 1,
+          "Where should you confirm penalties, time conditions and elimination rules for a show-jumping class?",
+        options: [
+          "The organiser’s current schedule and governing-body rules for that class",
+          "A generic lesson from a different venue",
+          "Another competitor’s recollection",
+          "The colour of the fences",
+        ],
+        correctIndex: 0,
         explanation:
-          "A knocked pole incurs 4 faults in standard show-jumping rules. A clear round (no faults) is the goal.",
+          "Penalty, time and elimination rules vary by class, organiser, level and jurisdiction. Use the current published schedule and official rules for the class you enter.",
       },
     ],
     aiTutorPrompts: [
@@ -7504,7 +7457,7 @@ In the week before a competition: confirm your entry, check your horse's shoes a
 
 ## Competition Morning
 
-Allow much more time than you think you need. A realistic timeline for a morning competition: rise 2–3 hours before your first class, complete morning stable routine, groom the horse thoroughly, plait if required (dressage and showing), load the horse safely, travel with time to spare, arrive at least 1 hour before your first class.
+Build a competition-day timeline from the published start time, travel conditions, horse-care routine, organiser arrival instructions and the time needed to settle, prepare and warm up safely. Do not copy another rider’s arrival interval: late changes, venue procedures and the individual horse can alter the safe plan.
 
 ## Turnout
 
@@ -7512,7 +7465,7 @@ Presentation matters at every level. The horse should be clean, with mane and ta
 
 ## Walking the Course
 
-For show jumping and cross-country, always walk the course before riding it. Study each fence, plan your line of approach, check the ground conditions, and count strides between related fences. Walking the course is not optional — it is an essential part of competition preparation.
+Where the organiser allows and requires it, walk a jumping or cross-country course before riding. Study the published route, fences, ground and any briefing; ask a qualified instructor for help with planning. Follow event access restrictions and do not assume every class offers the same course-walk procedure.
 
 ## Managing Nerves
 
@@ -7540,13 +7493,13 @@ Competition nerves are normal and can actually improve performance at moderate l
         question: "When should you ideally arrive at a competition venue?",
         options: [
           "5 minutes before your class",
-          "At least 1 hour before your first class",
-          "The night before",
+          "At the time and by the process stated in the organiser’s current schedule",
+          "Only after the class has started",
           "It doesn't matter as long as you make your start time",
         ],
         correctIndex: 1,
         explanation:
-          "Arriving at least an hour early allows time to settle the horse, tack up, walk the course if applicable, warm up properly, and report to the secretary.",
+          "Arrival, check-in and warm-up arrangements are event-specific. Use the current organiser’s schedule, travel plan and horse-care needs to allow adequate safe preparation time.",
       },
       {
         question: "Why is walking a show-jumping course important?",
@@ -7558,7 +7511,7 @@ Competition nerves are normal and can actually improve performance at moderate l
         ],
         correctIndex: 1,
         explanation:
-          "Walking the course allows you to plan your approach to each fence, identify potential difficulties, count strides between related fences, and check the going.",
+          "Where the organiser permits a course walk, it helps the rider understand the route, fences and ground. Follow the event briefing and seek qualified instruction for any planning decision.",
       },
     ],
     aiTutorPrompts: [
@@ -7585,7 +7538,7 @@ Competition nerves are normal and can actually improve performance at moderate l
 
 ## Test Structure
 
-A dressage test is a set sequence of movements performed in a marked arena. The arena letters (A, K, E, H, C, M, B, F and additional letters in a long arena) mark specific points where movements begin and end. Introductory tests are performed in a 20m × 40m arena at walk and trot. Preliminary tests introduce canter. Each test is published in advance so you can learn it beforehand.
+A dressage test is a set sequence of movements performed in a marked arena. Arena letters mark points where movements begin and end, but the layout, movements, scoring and eligibility are defined by the current organiser and governing-body rules. Use the published test, schedule and approved arena diagram for the class you enter.
 
 ## Learning the Test
 
@@ -7601,7 +7554,7 @@ At introductory and preliminary levels, judges look for: correct rhythm (regular
 
 ## Making the Most of Your Score
 
-After the test, collect your score sheet. Read every comment — judges write helpful feedback on each movement. Use the feedback to identify what to work on in training. A score of 60% or above is considered a solid performance at introductory level.`,
+After the test, collect your score sheet where the event provides one. Read the feedback, discuss it with your instructor and use it to identify appropriate training priorities. Do not treat a generic percentage as a universal measure of success; marking, qualification and progression requirements are set by the current organiser and governing body.`,
     keyPoints: [
       "Dressage tests assess accuracy, rhythm, relaxation, contact, and the rider's effectiveness",
       "Learn tests by reading, visualising from above, walking on foot, and riding through",
@@ -7622,29 +7575,30 @@ After the test, collect your score sheet. Read every comment — judges write he
     ],
     knowledgeCheck: [
       {
-        question: "At introductory level dressage, which paces are required?",
+        question:
+          "Where should you confirm the permitted paces, movements, arena layout and eligibility for the dressage class you intend to enter?",
         options: [
-          "Walk and trot only",
-          "Walk, trot, and canter",
-          "Canter only",
-          "All paces plus lateral work",
+          "The current organiser’s schedule, published test and governing-body rules",
+          "A generic online example from another jurisdiction",
+          "A previous competitor’s score sheet",
+          "The colour of the arena markers",
         ],
         correctIndex: 0,
         explanation:
-          "Introductory tests require walk and trot only, making them accessible for novice riders and horses.",
+          "Dressage requirements vary by organiser, level and jurisdiction. Use the current published test, schedule and approved arena diagram for the class you enter.",
       },
       {
         question:
-          "What does a score of 60% typically indicate at introductory level?",
+          "How should you use a dressage score sheet or judge feedback after a test?",
         options: [
-          "A poor performance",
-          "A solid, competent performance",
-          "Near elimination",
-          "A perfect score",
+          "Identify appropriate training priorities with your instructor",
+          "Treat one generic percentage as a universal pass/fail rule",
+          "Ignore comments and repeat the same plan",
+          "Compare only the total score with an unrelated class",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "60% is considered a solid performance at introductory level. Scores above 65% are strong, and above 70% is excellent.",
+          "Where feedback is provided, review the movement comments with your instructor. Qualification, progression and scoring expectations are set by the current organiser and governing body.",
       },
     ],
     aiTutorPrompts: [
@@ -9782,72 +9736,74 @@ A dull coat, poor hoof quality, weight changes, lethargy, or behavioural changes
     category: "Nutrition & Feeding",
     sortOrder: 5,
     objectives: [
-      "Match feeding to different workloads",
-      "Adjust diets seasonally",
-      "Understand needs of veterans, youngstock, competition horses",
-      "Create a basic weekly feeding plan",
+      "Explain why workload, season and management need an individual nutrition review",
+      "Recognise observations that should be recorded for a qualified nutrition or veterinary professional",
+      "Understand that young, older, working and retired horses may have different individual needs",
+      "Use a written feeding record without independently prescribing a ration",
     ],
-    content: `Understanding how to adapt feeding to workload, season, and individual needs is essential.
+    content: `Feeding must reflect the individual horse’s body condition, forage, work, health, dental status, environment and current professional advice. A lesson cannot prescribe a ration, feeding interval, pre-exercise meal or supplement plan for every horse.
 
-## Workload Categories
+## Workload and Condition
 
-Light work (1-3 hrs/week): forage usually sufficient. Medium work (3-6 hrs/week): may need extra energy. Hard work (6+ hrs, competing): careful energy management needed.
+Record the horse’s actual work, behaviour, appetite, water intake, droppings and body-condition observations using the yard’s approved process. A change in perceived energy or condition may have many causes; discuss it with the responsible person and an appropriate qualified nutrition or veterinary professional before changing the diet.
 
-## Seasonal Adjustments
+## Seasonal and Management Changes
 
-In winter, increase forage for warmth. In summer, manage grazing time for good-doers.
+Grass availability, forage quality, weather, turnout, travel and stabling can all change the feeding plan. Any seasonal change should be planned gradually within the horse’s individual nutrition and veterinary guidance. Do not assume that a generic forage, concentrate, muzzle, supplement or grazing change is suitable.
 
-## Special Categories
+## Different Horses, Individual Plans
 
-Veterans may need softer feeds and higher protein. Youngstock need protein for growth. Competition horses need carefully timed energy.`,
+Young, older, working, retired and competition horses can have different requirements, but category alone does not determine a safe diet. Oral health, disease, growth, workload, forage analysis and management all need professional consideration. Keep accurate records and ask the qualified professional who knows the horse to explain the purpose of any approved change.`,
     keyPoints: [
-      "Light work usually needs forage only",
-      "Increase forage in winter for warmth",
-      "Veterans, youngstock, and competition horses have different needs",
-      "Base every plan on the individual horse",
-      "Electrolytes may be needed for hard work",
+      "Workload and condition observations should be recorded before any diet change is considered",
+      "Seasonal feeding changes belong in the individual nutrition and veterinary plan",
+      "Young, older, working and retired horses may have different needs, but category is not a ration",
+      "Base every feeding decision on the individual horse and qualified professional guidance",
+      "Do not introduce electrolytes, supplements or feed changes without an informed review",
     ],
     safetyNote:
-      "Over-feeding energy to a horse in light work can cause dangerous behavioural changes.",
+      "Do not independently increase, restrict or time feeds, supplements or electrolytes in response to workload. Record observations and seek qualified nutrition or veterinary guidance before changing the individual plan.",
     practicalApplication:
-      "Write a weekly feeding plan for a horse in medium work at your yard.",
+      "With the responsible person, practise completing a factual feeding and workload record for review by the qualified professional who manages the horse’s nutrition plan.",
     commonMistakes: [
-      "Feeding competition rations to horses in light work",
-      "Not increasing forage in cold weather",
-      "Ignoring seasonal grass changes",
-      "Feeding veterans the same as hard-working horses",
-      "Not reviewing and adjusting plans",
+      "Copying a ration or supplement plan from a horse with different needs",
+      "Changing feed because of one observation without reviewing the individual plan",
+      "Ignoring seasonal, forage or workload changes that should be recorded",
+      "Assuming a horse category determines its diet without professional assessment",
+      "Failing to record changes and seek qualified review",
     ],
     knowledgeCheck: [
       {
-        question: "Best way to increase calorie intake in winter?",
+        question:
+          "What is the appropriate response to a change in a horse’s workload, condition or forage availability?",
         options: [
-          "Double hard feed",
-          "Increase forage",
-          "Add sugar to water",
-          "Feed less frequently",
+          "Record the change and review the individual nutrition plan with qualified guidance",
+          "Copy a generic ration from another horse",
+          "Make a large unrecorded feed change immediately",
+          "Assume that season alone determines the diet",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "Forage provides sustained energy and generates heat through fermentation.",
+          "Dietary needs are individual. Record the relevant observations and obtain qualified nutrition or veterinary guidance before changing the plan.",
       },
       {
-        question: "Why do veterans often need different feeding?",
+        question:
+          "Why should feeding decisions for young, older or competition horses be individually reviewed?",
         options: [
-          "They're fussier",
-          "Reduced digestive efficiency and dental issues",
-          "They eat faster",
-          "They don't like hay",
+          "Category alone does not account for health, oral status, forage, workload and management",
+          "All horses in one category need the same ration",
+          "The highest-energy feed is always appropriate for working horses",
+          "Age or activity makes professional review unnecessary",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "Older horses often have dental issues and reduced digestive efficiency.",
+          "Age and activity can influence needs, but the individual horse’s health, forage, management and professional plan determine safe feeding decisions.",
       },
     ],
     aiTutorPrompts: [
-      "How do I create a feeding plan for a competition horse?",
-      "What should I feed a retired horse?",
-      "How do I know if the diet provides enough energy?",
+      "What observations should I record before asking for a qualified review of a competition horse’s nutrition plan?",
+      "What factors should a qualified professional consider for a retired horse’s feeding plan?",
+      "When should a perceived energy or condition change be reviewed by a nutrition or veterinary professional?",
     ],
     linkedCompetencies: ["nutrition_knowledge", "horse_care"],
   },
@@ -10582,14 +10538,14 @@ Commit to your plan once in the ring. Hesitation and last-minute changes are the
     objectives: [
       "Identify situations requiring immediate vet attention",
       "Know what info to have ready",
-      "Distinguish emergencies from non-urgent conditions",
+      "Recognise that uncertainty should be escalated to a veterinary professional rather than self-triaged",
       "Take and record vital signs accurately",
     ],
     content: `Knowing when to call the vet is critical. Delay in emergencies costs lives.
 
 ## Always Call Immediately For
 
-Colic (rolling, pawing, sweating, not eating), severe lameness, wounds near joints or tendons, difficulty breathing, eye injuries, choke.
+Potential emergencies include signs of colic, a marked movement change, a wound, difficulty breathing, an eye concern or choke. Contact the veterinary practice promptly and follow its emergency instructions; do not wait to classify the condition yourself.
 
 ## Information to Have Ready
 
@@ -10603,8 +10559,8 @@ For a healthy adult horse calmly at rest, World Horse Welfare lists temperature 
 
 If in doubt, call. A vet would rather have a false alarm than be called too late.`,
     keyPoints: [
-      "Colic, severe lameness, joint wounds, eye injuries are always emergencies",
-      "Have details and vital signs ready when calling",
+      "Signs of colic, marked movement change, wounds, breathing difficulty, eye concerns or choke need prompt veterinary contact and the practice’s instructions",
+      "Have safe observations and the horse’s individual baseline information ready where this does not delay the call",
       "Usual adult-at-rest reference: temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths/min; use the horse’s baseline and symptoms when speaking to the vet",
       "When in doubt, always call the vet",
       "Delay in emergencies can be fatal",
@@ -10612,11 +10568,11 @@ If in doubt, call. A vet would rather have a false alarm than be called too late
     safetyNote:
       "Keep your vet's emergency number saved in your phone and posted at the yard.",
     practicalApplication:
-      "Practise taking a horse's temperature, pulse, and respiration. Record results.",
+      "With a competent person, practise recording calm-at-rest observations using the approved yard procedure. Contact the veterinary practice first in an emergency; do not delay the call to collect extra information.",
     commonMistakes: [
       "Waiting to see if the horse improves",
       "Not knowing the emergency number",
-      "Failing to take vital signs before calling",
+      "Delaying a veterinary call in order to collect extra information",
       "Treating joint wounds without vet assessment",
       "Assuming colic will pass on its own",
     ],
@@ -10638,13 +10594,13 @@ If in doubt, call. A vet would rather have a false alarm than be called too late
         ],
         correctIndex: 2,
         explanation:
-          "Wounds near joints can allow infection into critical structures.",
+          "A wound near a joint or tendon needs prompt veterinary assessment. Contact the veterinary practice and follow its instructions rather than attempting to assess depth or manage it yourself.",
       },
     ],
     aiTutorPrompts: [
-      "How to take a horse's temperature?",
-      "What does colic look like?",
-      "How to know if a wound is serious?",
+      "What observations may be useful to the veterinary practice when it is safe to collect them?",
+      "What should I do if I observe possible colic signs?",
+      "Why should I contact the veterinary practice rather than self-triage a wound?",
     ],
     linkedCompetencies: ["health_awareness", "safety_awareness"],
   },
@@ -10657,75 +10613,73 @@ If in doubt, call. A vet would rather have a false alarm than be called too late
     category: "Horse Health & First Response",
     sortOrder: 6,
     objectives: [
-      "Apply emergency first aid for common injuries",
-      "Control bleeding effectively",
-      "Manage colic while awaiting the vet",
-      "Assemble an equine first aid kit",
+      "Recognise that emergency first response is preparation and prompt veterinary escalation, not diagnosis or treatment",
+      "Keep people safe while obtaining professional emergency instructions",
+      "Record only safe observations that may assist the veterinary practice",
+      "Check that the yard’s approved emergency supplies and contact details are accessible",
     ],
-    content: `Emergency first aid can save a horse's life while waiting for the vet.
+    content: `Emergency first response is about keeping people safe, contacting the veterinary practice promptly and following the instructions given for the individual horse and situation. It does not replace veterinary assessment, diagnosis or treatment.
 
-## Bleeding Control
+## Immediate Response
 
-Apply firm pressure with a clean pad. If blood soaks through, add another pad on top — do not remove the first one.
+If you observe serious bleeding, signs of colic, an eye concern, a wound, marked movement change, breathing difficulty or another urgent welfare concern, keep yourself safe, contact the veterinary practice and follow its emergency instructions. Do not delay the call to complete a generic checklist, and do not undertake clinical procedures unless specifically directed.
 
-## Colic First Aid
+## Safe Preparation
 
-Remove all food. Walk gently if rolling violently. Note vital signs and onset time. Do not give medication without vet guidance.
+Record the time, observed changes, relevant history and any information the veterinary practice requests, where doing so does not increase risk or delay contact. Keep the horse and people as safe as the circumstances allow, following the yard’s emergency procedure. Do not force movement, apply a generic protocol or act independently in a clinical emergency.
 
-## Eye Injuries
+## Emergency Supplies and Contacts
 
-Cover the eye with a damp clean pad. Keep the horse calm and in a dark stable.
-
-## First Aid Kit
-
-Wound cleanser, non-stick dressings, cotton wool, cohesive bandages, scissors, thermometer, clean towels, torch, vet's number, notepad.`,
+Know the location of the yard’s approved emergency supplies, the veterinary practice contact details and the current yard emergency procedure. The contents, checks and use of any kit must be set by the responsible professionals and reviewed when procedures change.`,
     keyPoints: [
-      "Apply firm pressure to bleeding — don't remove soaked dressings",
-      "For colic: remove food, walk gently, note vitals, call vet",
-      "Cover eye injuries with a damp pad",
-      "Maintain a fully stocked first aid kit",
-      "First aid supports — not replaces — vet treatment",
+      "Emergency first response is prompt veterinary escalation and safe preparation, not learner diagnosis or treatment",
+      "In a potential emergency, keep people safe and follow the veterinary practice’s instructions for the individual horse",
+      "Do not delay calling to complete a generic protocol or gather information",
+      "Know the location of approved emergency supplies, contacts and the current yard procedure",
+      "Emergency preparation supports — and never replaces — veterinary assessment",
     ],
     safetyNote:
-      "Your own safety comes first. Never put yourself at risk treating a panicking horse.",
+      "Your own safety comes first. Never put yourself at risk. Contact the veterinary practice promptly and follow the current yard emergency procedure; do not undertake clinical action without professional direction.",
     practicalApplication:
-      "Check the first aid kit at your yard. Ensure all items are present and in-date.",
+      "With the responsible person, locate the approved emergency supplies, veterinary contact details and current yard emergency procedure. Confirm who is authorised to review and replenish supplies.",
     commonMistakes: [
-      "Removing blood-soaked dressings",
-      "Giving pain medication during colic without vet advice",
-      "Not having a first aid kit",
-      "Panicking and not recording observations",
-      "Attempting complex wound treatment",
+      "Delaying veterinary contact while attempting a generic procedure",
+      "Acting independently in a clinical emergency",
+      "Not knowing the current yard emergency procedure or veterinary contact route",
+      "Putting yourself at risk around a distressed horse",
+      "Attempting to diagnose or manage a wound without professional direction",
     ],
     knowledgeCheck: [
       {
-        question: "What if a bandage becomes soaked with blood?",
+        question: "What is the first priority in a potential equine emergency?",
         options: [
-          "Remove it",
-          "Add another pad on top",
-          "Pour water on it",
-          "Leave uncovered",
+          "Keep people safe, contact the veterinary practice promptly and follow its instructions",
+          "Apply a generic clinical procedure before calling",
+          "Wait for a fixed interval to see whether it improves",
+          "Attempt to diagnose the cause from one observation",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "Adding another pad maintains pressure without disrupting clot formation.",
+          "Emergency first response is prompt professional escalation and safe preparation. The veterinary practice directs action for the individual horse and situation.",
       },
       {
-        question: "First action for colic symptoms?",
+        question:
+          "What should a learner do while waiting for emergency guidance?",
         options: [
-          "Give painkillers",
-          "Feed the horse",
-          "Remove all food and call the vet",
-          "Leave alone",
+          "Follow the yard emergency procedure and veterinary instructions without acting independently",
+          "Try several home procedures until one works",
+          "Force the horse to move for a clearer diagnosis",
+          "Delay contact while assembling a generic kit",
         ],
-        correctIndex: 2,
-        explanation: "Removing food prevents further gut complications.",
+        correctIndex: 0,
+        explanation:
+          "Keep people safe, avoid clinical action without direction and follow the current yard and veterinary emergency instructions.",
       },
     ],
     aiTutorPrompts: [
-      "What should be in a first aid kit?",
-      "How to apply a pressure bandage?",
-      "What to do while waiting for the vet during colic?",
+      "Where can I find the approved emergency supplies and veterinary contact route for this yard?",
+      "Why must emergency action follow the veterinary practice’s instructions for the individual horse?",
+      "What safe observations may I record while waiting for veterinary guidance?",
     ],
     linkedCompetencies: ["health_awareness", "safety_awareness"],
   },
