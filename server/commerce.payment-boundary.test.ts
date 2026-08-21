@@ -26,4 +26,15 @@ describe("Store payment boundary", () => {
     expect(bootstrap).toContain("cached: true");
     expect(bootstrap).toContain("storePaymentStatus = 'paid'");
   });
+
+  it("keeps Store Checkout disabled by default and marks any configured session as Store-scoped", () => {
+    const router = fs.readFileSync(
+      path.join(root, "server/commerceRouter.ts"),
+      "utf8",
+    );
+    expect(router).toContain('process.env.ENABLE_STORE_STRIPE === "true"');
+    expect(router).toContain("paymentConfigurationRequired: true");
+    expect(router).toContain("stripe.checkout.sessions.create");
+    expect(router).toContain('commerceScope: "store"');
+  });
 });

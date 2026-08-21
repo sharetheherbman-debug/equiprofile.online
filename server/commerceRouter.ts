@@ -9,6 +9,7 @@ import {
   router,
 } from "./_core/trpc";
 import { getDb } from "./db";
+import { getStripe } from "./stripe";
 import {
   calculateCartTotals,
   isSellableInventory,
@@ -280,11 +281,56 @@ export const commerceRouter = router({
         "checkout_prepared",
         totals,
       );
+      const storeStripeEnabled = process.env.ENABLE_STORE_STRIPE === "true";
+      const stripe = storeStripeEnabled ? getStripe() : null;
+      if (!stripe) {
+        return {
+          orderNumber,
+          totals,
+          idempotent: false,
+          paymentConfigurationRequired: true,
+          checkoutUrl: null,
+        };
+      }
+      const publicBaseUrl = (
+        process.env.STORE_PUBLIC_URL ?? "https://shop.equiprofile.online"
+      ).replace(/\/$/, "");
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        client_reference_id: String(order.id),
+        metadata: {
+          commerceScope: "store",
+          orderId: String(order.id),
+          orderNumber,
+        },
+        success_url: `${publicBaseUrl}/?store_checkout=success&order=${encodeURIComponent(orderNumber)}`,
+        cancel_url: `${publicBaseUrl}/?store_checkout=cancelled&order=${encodeURIComponent(orderNumber)}`,
+        line_items: rows.map((row: any) => ({
+          quantity: row.quantity,
+          price_data: {
+            currency: "gbp",
+            unit_amount: row.salePricePence ?? row.retailPricePence,
+            product_data: { name: `${row.productTitle} — ${row.variantTitle}` },
+          },
+        })),
+      });
+      await db.execute(
+        sql`UPDATE commerceOrders SET status = 'payment_pending', storePaymentStatus = 'pending', storePaymentReference = ${session.payment_intent ? String(session.payment_intent) : null} WHERE id = ${order.id}`,
+      );
+      await audit(
+        "system",
+        null,
+        "order",
+        String(order.id),
+        "store_checkout_session_created",
+        { stripeSessionId: session.id },
+      );
       return {
         orderNumber,
         totals,
         idempotent: false,
-        paymentConfigurationRequired: true,
+        paymentConfigurationRequired: false,
+        checkoutUrl: session.url,
       };
     }),
 
