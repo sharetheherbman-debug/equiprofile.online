@@ -46,10 +46,15 @@ export default function ShopApp() {
     onSuccess: () => cart.refetch(),
   });
   const checkout = trpc.commerce.checkout.useMutation({
-    onSuccess: (result) =>
+    onSuccess: (result) => {
+      if (result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl);
+        return;
+      }
       setCheckoutNotice(
         `Order ${result.orderNumber ?? result.order?.orderNumber} is prepared. Payment remains NOT CONFIGURED; no charge was made.`,
-      ),
+      );
+    },
   });
   const cartItems = cart.data ?? [];
   const cartCount = useMemo(
