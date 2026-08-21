@@ -35,6 +35,10 @@ const NON_EMPTY = /\S/;
 const PROHIBITED_ACCREDITATION_WORDING = /\b(BHS|Pony Club)\b/i;
 const PLACEHOLDER_WORDING =
   /\b(todo|tbd|placeholder|lorem ipsum|coming soon)\b/i;
+const MIN_CONTENT_CHARACTERS = 300;
+const MIN_OBJECTIVES = 2;
+const MIN_KEY_POINTS = 2;
+const MIN_KNOWLEDGE_CHECKS = 2;
 
 function duplicateValues(values: string[]): Set<string> {
   const seen = new Set<string>();
@@ -297,6 +301,23 @@ export function auditAcademyCurriculum(
         location,
         "Detailed lesson content is required.",
       );
+    } else if (lesson.content.trim().length < MIN_CONTENT_CHARACTERS) {
+      issue(
+        issues,
+        "warning",
+        "SHALLOW_CONTENT_REVIEW_REQUIRED",
+        location,
+        `Lesson content is shorter than the ${MIN_CONTENT_CHARACTERS}-character depth threshold.`,
+      );
+    }
+    if (lesson.objectives.length < MIN_OBJECTIVES) {
+      issue(
+        issues,
+        "warning",
+        "LIMITED_OBJECTIVES_REVIEW_REQUIRED",
+        location,
+        `Lesson has fewer than ${MIN_OBJECTIVES} learning objectives.`,
+      );
     }
     if (
       lesson.keyPoints.length === 0 ||
@@ -308,6 +329,14 @@ export function auditAcademyCurriculum(
         "INVALID_KEY_POINTS",
         location,
         "Lesson must contain non-empty key points.",
+      );
+    } else if (lesson.keyPoints.length < MIN_KEY_POINTS) {
+      issue(
+        issues,
+        "warning",
+        "LIMITED_KEY_POINTS_REVIEW_REQUIRED",
+        location,
+        `Lesson has fewer than ${MIN_KEY_POINTS} key points.`,
       );
     }
     if (!NON_EMPTY.test(lesson.safetyNote)) {
@@ -344,6 +373,14 @@ export function auditAcademyCurriculum(
         "MISSING_KNOWLEDGE_CHECK",
         location,
         "Lesson has no knowledge-check questions.",
+      );
+    } else if (lesson.knowledgeCheck.length < MIN_KNOWLEDGE_CHECKS) {
+      issue(
+        issues,
+        "warning",
+        "LIMITED_KNOWLEDGE_CHECK_REVIEW_REQUIRED",
+        location,
+        `Lesson has fewer than ${MIN_KNOWLEDGE_CHECKS} knowledge-check questions.`,
       );
     }
     if (lesson.aiTutorPrompts.length === 0) {

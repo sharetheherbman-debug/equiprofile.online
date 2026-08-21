@@ -77,4 +77,30 @@ describe("EquiProfile Academy curriculum integrity", () => {
       /Expected .* knowledge-check answers/,
     );
   });
+
+  it("flags shallow lesson records for content-depth review", () => {
+    const source = LESSON_UNITS.find((unit) => unit.knowledgeCheck.length > 0);
+    expect(source).toBeDefined();
+    if (!source) return;
+    const shallow = {
+      ...source,
+      content: "Too short",
+      objectives: ["One objective"],
+      keyPoints: ["One key point"],
+      knowledgeCheck: [source.knowledgeCheck[0]],
+    };
+    const audit = auditAcademyCurriculum(
+      LESSON_PATHWAYS,
+      [shallow],
+      "test-run",
+    );
+    expect(audit.issues.map((issue) => issue.code)).toEqual(
+      expect.arrayContaining([
+        "SHALLOW_CONTENT_REVIEW_REQUIRED",
+        "LIMITED_OBJECTIVES_REVIEW_REQUIRED",
+        "LIMITED_KEY_POINTS_REVIEW_REQUIRED",
+        "LIMITED_KNOWLEDGE_CHECK_REVIEW_REQUIRED",
+      ]),
+    );
+  });
 });
