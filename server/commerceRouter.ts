@@ -14,6 +14,13 @@ import {
   isSellableInventory,
   type CartPriceLine,
 } from "./commerce/domain";
+import {
+  enrichCandidateCopy,
+  isDuplicateCandidate,
+  normaliseSupplierCandidate,
+  priceCandidate,
+  scoreCandidate,
+} from "./commerce/productManager";
 
 type Rows<T> = [T[], unknown];
 const asRows = <T>(result: unknown) => (result as Rows<T>)[0];
@@ -528,6 +535,76 @@ export const commerceRouter = router({
         };
       },
     ),
+    proposeProduct: adminUnlockedProcedure
+      .input(z.object({ productId: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+        const source = asRows<any>(
+          await db.execute(sql`
+          SELECT p.id, p.title, p.description, p.brand, sp.supplierSku, sp.supplierCostPence,
+            si.availabilityStatus, si.sourceUpdatedAt
+          FROM commerceProducts p
+          JOIN commerceSupplierProducts sp ON sp.productId = p.id
+          LEFT JOIN commerceSupplierInventory si ON si.supplierProductId = sp.id
+          WHERE p.id = ${input.productId} LIMIT 1
+        `),
+        )[0];
+        if (!source)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Supplier-backed product candidate not found",
+          });
+        const candidate = normaliseSupplierCandidate({
+          supplierSku: source.supplierSku,
+          title: source.title,
+          factualDescription: source.description,
+          brand: source.brand,
+          supplierCostPence: source.supplierCostPence,
+          availabilityStatus: source.availabilityStatus ?? "unavailable",
+          sourceUpdatedAt: source.sourceUpdatedAt
+            ? new Date(source.sourceUpdatedAt)
+            : new Date(0),
+        });
+        const existing = asRows<any>(
+          await db.execute(
+            sql`SELECT supplierSku, ean, title FROM commerceSupplierProducts sp JOIN commerceProducts p ON p.id = sp.productId WHERE p.id != ${input.productId} LIMIT 500`,
+          ),
+        );
+        const duplicate = isDuplicateCandidate(candidate, existing);
+        const score = scoreCandidate(candidate, duplicate);
+        const pricing = priceCandidate(candidate, null, {
+          targetGrossMarginBasisPoints: 4000,
+          minimumGrossMarginBasisPoints: 2500,
+          minimumAbsoluteProfitPence: 300,
+          maxAutomaticMovementBasisPoints: 1000,
+        });
+        const enrichment = await enrichCandidateCopy(candidate);
+        await db.execute(
+          sql`INSERT INTO commerceProductManagerActions (productId, actionType, actorType, status, inputJson, outputJson) VALUES (${input.productId}, 'propose', 'ai', 'completed', ${JSON.stringify(candidate)}, ${JSON.stringify({ duplicate, score, pricing, enrichmentStatus: enrichment.status })})`,
+        );
+        await audit(
+          "ai",
+          ctx.user.id,
+          "product",
+          String(input.productId),
+          "proposal_generated",
+          {
+            duplicate,
+            score: score.total,
+            needsHumanReview: pricing.needsHumanReview,
+            enrichmentStatus: enrichment.status,
+          },
+        );
+        return {
+          candidate,
+          duplicate,
+          score,
+          pricing,
+          enrichment,
+          humanApprovalRequired: true,
+        };
+      }),
     approveProduct: adminUnlockedProcedure
       .input(
         z.object({
