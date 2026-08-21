@@ -127,7 +127,7 @@ export function auditAcademyCurriculum(
   const issues: CurriculumAuditIssue[] = [];
   const pathwaySlugs = new Set(pathways.map((pathway) => pathway.slug));
 
-  for (const duplicate of duplicateValues(pathways.map((pathway) => pathway.slug))) {
+  for (const duplicate of Array.from(duplicateValues(pathways.map((pathway) => pathway.slug)))) {
     issue(
       issues,
       "error",
@@ -137,7 +137,7 @@ export function auditAcademyCurriculum(
     );
   }
 
-  for (const duplicate of duplicateValues(lessons.map((lesson) => lesson.slug))) {
+  for (const duplicate of Array.from(duplicateValues(lessons.map((lesson) => lesson.slug)))) {
     issue(
       issues,
       "error",
@@ -147,9 +147,9 @@ export function auditAcademyCurriculum(
     );
   }
 
-  for (const duplicate of duplicateValues(
+  for (const duplicate of Array.from(duplicateValues(
     pathways.map((pathway) => String(pathway.sortOrder)),
-  )) {
+  ))) {
     issue(
       issues,
       "warning",

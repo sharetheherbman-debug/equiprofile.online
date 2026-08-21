@@ -77,7 +77,7 @@ function trigramSim(a: string, b: string): number {
   const ta = makeTrigs(a);
   const tb = makeTrigs(b);
   let intersect = 0;
-  for (const t of ta) {
+  for (const t of Array.from(ta)) {
     if (tb.has(t)) intersect++;
   }
   const denom = ta.size + tb.size;

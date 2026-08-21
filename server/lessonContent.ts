@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Lesson Content Data — complete educational content for the EquiProfile
-// structured learning engine. All content based on BHS / Pony Club standards.
+// structured learning engine. All material is original EquiProfile educational content.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface LessonPathwayData {
@@ -1281,7 +1281,7 @@ Always clip in a well-lit, dry area using sharp, well-maintained clippers. Clip 
       "Identify and manage common skin conditions affecting coat health",
       "Understand the role of nutrition and supplements in maintaining coat quality",
     ],
-    content: `Advanced grooming goes far beyond keeping a horse clean. It encompasses competition preparation, coat health management, and the specialist skills of trimming, plaiting, and quartering that present a horse to the highest standard. Whether you are preparing for a dressage test, a showing class, or a Pony Club inspection, the ability to turn a horse out immaculately demonstrates horsemanship, attention to detail, and pride in your animal.
+    content: `Advanced grooming goes far beyond keeping a horse clean. It encompasses competition preparation, coat health management, and the specialist skills of trimming, plaiting, and quartering that present a horse to the highest standard. Whether you are preparing for a dressage test, a showing class, or an organised yard assessment, the ability to turn a horse out immaculately demonstrates horsemanship, attention to detail, and pride in your animal.
 
 ## Competition Preparation Grooming
 
@@ -4319,9 +4319,9 @@ Regular, honest welfare assessment — ideally involving an objective third part
       "Regular welfare assessment prevents the gradual normalisation of poor welfare",
     ],
     safetyNote:
-      "Welfare decisions, particularly around euthanasia and retirement, should always involve veterinary advice. Do not make these decisions alone or under emotional pressure. If you have concerns about any horse's welfare — whether it is in your care or someone else's — speak to a vet, a welfare charity (such as the BHS, RSPCA or World Horse Welfare) or a trusted mentor. Reporting a welfare concern is not disloyalty; it is advocacy for an animal that cannot speak for itself.",
+      "Welfare decisions, particularly around euthanasia and retirement, should always involve veterinary advice. Do not make these decisions alone or under emotional pressure. If you have concerns about any horse's welfare — whether it is in your care or someone else's — speak to a vet, an appropriate welfare charity, your local authority, or a trusted mentor. Reporting a welfare concern is not disloyalty; it is advocacy for an animal that cannot speak for itself.",
     practicalApplication:
-      "Apply the Five Domains framework to a horse in your care. For each domain, assess whether the horse's needs are being met and whether there are opportunities to improve its experience. Discuss your assessment with your instructor or yard manager. If you observe a horse whose welfare may be compromised — anywhere, not just on your own yard — know the process for reporting concerns: contact the BHS, RSPCA or your local authority.",
+      "Apply the Five Domains framework to a horse in your care. For each domain, assess whether the horse's needs are being met and whether there are opportunities to improve its experience. Discuss your assessment with your instructor or yard manager. If you observe a horse whose welfare may be compromised — anywhere, not just on your own yard — know the process for reporting concerns: contact an appropriate welfare charity or your local authority.",
     commonMistakes: [
       "Confusing the absence of suffering with positive welfare — a horse can be free from pain but still have poor welfare if it lacks companionship, space or mental stimulation",
       "Allowing personal attachment to prevent a necessary euthanasia decision, prolonging suffering",
@@ -6092,7 +6092,7 @@ The key elements of collection are:
 - **Self-carriage** — The horse maintains its frame and balance without relying on the rider's hand for support. You can test self-carriage by momentarily softening the rein contact — a collected horse will maintain its outline.
 - **Throughness** (*Durchlässigkeit*) — This German training term refers to the horse being permeable to the aids, with energy flowing from the hindquarters through a supple back to a soft, accepting contact. A horse that is truly 'through' responds instantly and lightly to the rider's seat, leg, and hand.
 
-Achieving collection takes months of progressive training. It cannot be forced or faked by pulling the horse's head in with the reins. The BHS and classical training scales emphasise that collection is the final stage, built upon rhythm, suppleness, contact, impulsion, and straightness.
+Achieving collection takes months of progressive training. It cannot be forced or faked by pulling the horse's head in with the reins. A progressive training approach treats collection as a later-stage outcome built upon rhythm, suppleness, contact, impulsion, and straightness.
 
 ## Medium and Extended Gaits
 
@@ -6230,7 +6230,7 @@ Video is the single most powerful tool for self-assessment. What you feel in the
 - **Accuracy** — Are your circles round? Are your changes of rein through X? Do you ride into the corners?
 - **Rhythm and tempo** — Is the horse's rhythm consistent, or does it speed up and slow down?
 
-Compare your video with footage of riders you admire or training videos from BHS-approved coaches. Note the differences without being self-critical — the goal is objective assessment, not self-punishment.
+Compare your video with footage of riders you admire or demonstrations from suitably qualified coaches. Note the differences without being self-critical — the goal is objective assessment, not self-punishment.
 
 ## Objective Self-Assessment
 
@@ -6641,7 +6641,7 @@ A good jump is not about height — it is about quality. A good jump has a rhyth
   // ═══════════════════════════════════════════════════════════════════════════
 
   {
-    slug: "signs-of-good-health",
+    slug: "daily-health-check-and-vital-signs",
     pathwaySlug: "horse-health-first-response",
     title: "Recognising Signs of Good Health",
     level: "beginner",
@@ -7874,7 +7874,7 @@ Communication is at the heart of coaching. You must be able to convey informatio
 
 ## Qualities of a Good Coach
 
-The British Horse Society (BHS) and Pony Club both emphasise that a good coach is more than just a knowledgeable rider. Key qualities include:
+A good coach is more than a knowledgeable rider. Key qualities include:
 
 - **Patience** — Every rider learns at a different pace. Repeating exercises without frustration is vital.
 - **Empathy** — Understanding a nervous rider's feelings helps you support them rather than push them too fast.
@@ -8091,7 +8091,7 @@ Keep notes on each rider between sessions — what went well, what they struggle
 
 Beginner riders are often anxious and unsure of what to expect. A structured lesson provides a reassuring framework: the rider knows there is a beginning, a middle, and an end. Structure also helps you, as the coach, to track progress. If every session follows a logical format, you can see what the rider has mastered and what needs more work.
 
-The BHS and Pony Club both advocate a three-phase lesson structure: **warm-up, main work, and cool-down**. Each phase serves a specific purpose and should be planned in advance.
+A sound progressive lesson structure uses three phases: **warm-up, main work, and cool-down**. Each phase serves a specific purpose and should be planned in advance.
 
 ## The Warm-Up Phase (10–15 minutes)
 
@@ -8179,7 +8179,7 @@ This need not be elaborate — a few bullet points on a notepad are sufficient. 
         ],
         correctIndex: 1,
         explanation:
-          "The BHS and Pony Club both advocate a warm-up, main work, and cool-down structure. This ensures horse and rider are prepared, the learning objective is addressed, and the session ends calmly.",
+          "A warm-up, main work, and cool-down structure helps prepare horse and rider, address the learning objective, and end the session calmly.",
       },
       {
         question: "How many main objectives should a beginner lesson typically have?",
@@ -8380,13 +8380,13 @@ Anyone coaching children or vulnerable adults must have appropriate safeguarding
 
 ## Qualifications Pathway
 
-In the UK, the main coaching qualifications are through the British Horse Society (BHS): Level 1 Coach, Level 2 Coach, and upward. These qualifications cover riding ability, coaching skills, horse care knowledge, and safety. Continuing Professional Development (CPD) is required to maintain coaching status.`,
+In the UK, coaches should hold qualifications and insurance appropriate to the activity, setting, rider age, and level being taught. Before booking a coach, check their current training, safeguarding arrangements, first-aid provision, and professional indemnity cover.`,
     keyPoints: [
       "Coaching develops understanding; instructing tells — effective coaches use both approaches appropriately",
       "Key coaching qualities: clear communication, patience, observation, safety, empathy, and adaptability",
       "Coaches are responsible for safety, appropriate content, safeguarding, insurance, and professional development",
       "Safeguarding training and DBS checks are mandatory for coaching children and vulnerable adults",
-      "BHS coaching qualifications are the standard pathway in the UK — CPD is required to maintain status",
+      "Choose a coach with current qualifications, safeguarding arrangements, first-aid provision, and suitable insurance",
     ],
     safetyNote:
       "Never coach without appropriate insurance and qualifications. If you witness a safeguarding concern, follow your organisation's reporting procedures immediately. The safety of riders — especially children — is the absolute top priority.",

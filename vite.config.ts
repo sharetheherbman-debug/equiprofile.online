@@ -14,6 +14,11 @@
  *      Output: dist/public/school/
  *      Assets: dist/public/school/school-assets/          (URL: /school-assets/)
  *
+ *   3. Shop frontend        → shop.equiprofile.online
+ *      Entry:  client/shop/index.html
+ *      Output: dist/public/shop/
+ *      Assets: dist/public/shop/shop-assets/              (URL: /shop-assets/)
+ *
  * Asset namespacing guarantees zero cross-site collisions:
  *   - Management HTML references /management-assets/...
  *   - School HTML references /school-assets/...
@@ -28,6 +33,7 @@
  * Build target is selected by VITE_SITE env var:
  *   VITE_SITE=management  → builds management frontend only
  *   VITE_SITE=school      → builds school frontend only
+ *   VITE_SITE=shop        → builds Shop frontend only
  *   (no VITE_SITE)        → builds management (default, backward compat)
  *
  * The `npm run build` script builds BOTH by invoking Vite twice.
@@ -42,11 +48,13 @@ import { defineConfig, Plugin } from "vite";
 // Which frontend to build. Set via VITE_SITE env var.
 const SITE_TARGET = (process.env.VITE_SITE || "management") as
   | "management"
-  | "school";
+  | "school"
+  | "shop";
 
 const SITE_ROOTS: Record<string, string> = {
   management: path.resolve(import.meta.dirname, "client", "management"),
   school: path.resolve(import.meta.dirname, "client", "school"),
+  shop: path.resolve(import.meta.dirname, "client", "shop"),
 };
 
 const siteRoot = SITE_ROOTS[SITE_TARGET];

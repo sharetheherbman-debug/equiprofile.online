@@ -37,7 +37,11 @@ import {
   teacherResources,
   studentReports,
 } from "../drizzle/schema";
-import { LESSON_PATHWAYS, LESSON_UNITS } from "./lessonContent";
+import {
+  ensureAcademyCurriculum,
+  getPublishedLessonBySlug,
+  parseAcademyJson,
+} from "./academy/curriculumPipeline";
 
 /** Safely parse user preferences JSON. */
 function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
@@ -47,6 +51,17 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
   } catch {
     return {};
   }
+}
+
+const ACADEMY_LEVEL_ORDER = ["beginner", "developing", "intermediate", "advanced"] as const;
+type AcademyLevel = (typeof ACADEMY_LEVEL_ORDER)[number];
+
+function academyLevelCounts() {
+  return { beginner: 0, developing: 0, intermediate: 0, advanced: 0 } as Record<AcademyLevel, number>;
+}
+
+function uniqueCompletionSlugs(rows: Array<{ lessonSlug: string }>) {
+  return new Set(rows.map((row) => row.lessonSlug));
 }
 
 /**
@@ -1566,67 +1581,69 @@ export const studentRouter = router({
    *  Returns: unlockedLevel, completedByLevel counts, totalByLevel counts
    */
   getUnlockedLevel: studentProcedure.query(async ({ ctx }) => {
+    await ensureAcademyCurriculum();
     const dbConn = await getDb();
     if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
-    // Count total lessons per level from static content
-    const totalByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
-    for (const u of LESSON_UNITS) {
-      if (totalByLevel[u.level] !== undefined) totalByLevel[u.level]++;
+    const [publishedLessons, completionRows] = await Promise.all([
+      dbConn.select({
+        slug: lessonUnits.slug,
+        title: lessonUnits.title,
+        pathwaySlug: lessonUnits.pathwaySlug,
+        level: lessonUnits.level,
+        sortOrder: lessonUnits.sortOrder,
+      }).from(lessonUnits).where(eq(lessonUnits.isPublished, true)).orderBy(lessonUnits.sortOrder),
+      dbConn.select({ lessonSlug: lessonCompletion.lessonSlug })
+        .from(lessonCompletion)
+        .where(eq(lessonCompletion.studentUserId, ctx.user.id)),
+    ]);
+
+    const totalByLevel = academyLevelCounts();
+    for (const lesson of publishedLessons) {
+      if ((ACADEMY_LEVEL_ORDER as readonly string[]).includes(lesson.level)) {
+        totalByLevel[lesson.level as AcademyLevel] += 1;
+      }
     }
 
-    // Count completed lessons per level for this user
-    const completions = await dbConn.select({
-      level: lessonCompletion.level,
-    }).from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id));
-
-    const completedByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
-    for (const c of completions) {
-      if (completedByLevel[c.level] !== undefined) completedByLevel[c.level]++;
+    const completedSlugs = uniqueCompletionSlugs(completionRows);
+    const completedByLevel = academyLevelCounts();
+    for (const lesson of publishedLessons) {
+      if (completedSlugs.has(lesson.slug) && (ACADEMY_LEVEL_ORDER as readonly string[]).includes(lesson.level)) {
+        completedByLevel[lesson.level as AcademyLevel] += 1;
+      }
     }
 
-    // Determine highest unlocked level (60% threshold to unlock next)
-    const UNLOCK_THRESHOLD = 0.6;
-    const levels = ["beginner", "developing", "intermediate", "advanced"] as const;
-    let unlockedLevel: string = "beginner";
-
-    for (let i = 0; i < levels.length - 1; i++) {
-      const lev = levels[i];
-      const total = totalByLevel[lev] || 1;
-      const done = completedByLevel[lev] || 0;
-      if (done / total >= UNLOCK_THRESHOLD) {
-        unlockedLevel = levels[i + 1];
+    const unlockThreshold = 0.6;
+    let unlockedLevel: AcademyLevel = "beginner";
+    for (let index = 0; index < ACADEMY_LEVEL_ORDER.length - 1; index += 1) {
+      const level = ACADEMY_LEVEL_ORDER[index];
+      const total = totalByLevel[level] || 1;
+      if (completedByLevel[level] / total >= unlockThreshold) {
+        unlockedLevel = ACADEMY_LEVEL_ORDER[index + 1];
       } else {
         break;
       }
     }
 
-    // Find recommended next lesson (first incomplete lesson at current working level)
-    const allCompletions = await dbConn.select({ lessonSlug: lessonCompletion.lessonSlug })
-      .from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id));
-    const completedSlugs = new Set(allCompletions.map(c => c.lessonSlug));
-
-    // Working level = highest unlocked level where there are still incomplete lessons
     let workingLevel = unlockedLevel;
-    for (const lev of levels) {
-      const idx = levels.indexOf(lev);
-      if (idx > levels.indexOf(unlockedLevel as any)) break;
-      const levLessons = LESSON_UNITS.filter(u => u.level === lev);
-      const hasIncomplete = levLessons.some(u => !completedSlugs.has(u.slug));
-      if (hasIncomplete) { workingLevel = lev; break; }
+    for (const level of ACADEMY_LEVEL_ORDER) {
+      if (ACADEMY_LEVEL_ORDER.indexOf(level) > ACADEMY_LEVEL_ORDER.indexOf(unlockedLevel)) break;
+      if (publishedLessons.some((lesson) => lesson.level === level && !completedSlugs.has(lesson.slug))) {
+        workingLevel = level;
+        break;
+      }
     }
 
-    const nextLesson = LESSON_UNITS
-      .filter(u => u.level === workingLevel)
-      .sort((a, b) => a.sortOrder - b.sortOrder)
-      .find(u => !completedSlugs.has(u.slug));
+    const nextLesson = publishedLessons
+      .filter((lesson) => lesson.level === workingLevel && !completedSlugs.has(lesson.slug))
+      .sort((left, right) => left.sortOrder - right.sortOrder || left.slug.localeCompare(right.slug))[0];
 
     return {
       unlockedLevel,
       workingLevel,
       totalByLevel,
       completedByLevel,
-      recommendedNextLesson: nextLesson ? { slug: nextLesson.slug, title: nextLesson.title, pathwaySlug: nextLesson.pathwaySlug, level: nextLesson.level } : null,
+      recommendedNextLesson: nextLesson ?? null,
     };
   }),
 
@@ -1784,193 +1801,162 @@ export const studentRouter = router({
   // Lesson Engine — structured learning pathways
   // ─────────────────────────────────────────────────────────────────────────
 
-  /** List all lesson pathways (seeds DB on first call). */
+  /** List published Academy pathways after one safe source-curriculum reconciliation. */
   listLessonPathways: studentProcedure
     .query(async () => {
+      await ensureAcademyCurriculum();
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
 
-      // Seed pathways if table is empty
-      const existing = await dbConn.select({ id: lessonPathways.id }).from(lessonPathways).limit(1);
-      if (existing.length === 0) {
-        try {
-          await dbConn.insert(lessonPathways).values(
-            LESSON_PATHWAYS.map((p) => ({
-              slug: p.slug,
-              title: p.title,
-              description: p.description,
-              sortOrder: p.sortOrder,
-              iconName: p.iconName,
-              isPublished: true,
-            })),
-          );
-        } catch (seedErr) {
-          console.error("[lesson-seed] Failed to seed pathways:", seedErr);
-        }
-      }
-
-      const rows = await dbConn.select().from(lessonPathways).orderBy(lessonPathways.sortOrder);
-      return rows;
+      return dbConn
+        .select()
+        .from(lessonPathways)
+        .where(eq(lessonPathways.isPublished, true))
+        .orderBy(lessonPathways.sortOrder, lessonPathways.slug);
     }),
 
-  /** List lessons, optionally filtered by pathway and/or level. Seeds DB on first call. */
+  /** List published lessons with server-derived progression locking. */
   listLessons: studentProcedure
     .input(z.object({
       pathwaySlug: z.string().optional(),
       level: z.enum(["beginner", "developing", "intermediate", "advanced"]).optional(),
     }).optional())
     .query(async ({ ctx, input }) => {
+      await ensureAcademyCurriculum();
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
 
-      // Seed lessons if table is empty — use batched insert to avoid max_packet issues
-      const existing = await dbConn.select({ id: lessonUnits.id }).from(lessonUnits).limit(1);
-      if (existing.length === 0) {
-        const allValues = LESSON_UNITS.map((l) => ({
-          slug: l.slug,
-          pathwaySlug: l.pathwaySlug,
-          title: l.title,
-          level: l.level,
-          category: l.category,
-          sortOrder: l.sortOrder,
-          objectives: JSON.stringify(l.objectives),
-          content: l.content,
-          keyPoints: JSON.stringify(l.keyPoints),
-          safetyNote: l.safetyNote,
-          practicalApplication: l.practicalApplication,
-          commonMistakes: JSON.stringify(l.commonMistakes),
-          knowledgeCheck: JSON.stringify(l.knowledgeCheck),
-          aiTutorPrompts: JSON.stringify(l.aiTutorPrompts),
-          isPublished: true,
-        }));
+      const [allPublishedLessons, completionRows] = await Promise.all([
+        dbConn.select({
+          id: lessonUnits.id,
+          slug: lessonUnits.slug,
+          pathwaySlug: lessonUnits.pathwaySlug,
+          title: lessonUnits.title,
+          level: lessonUnits.level,
+          category: lessonUnits.category,
+          sortOrder: lessonUnits.sortOrder,
+          estimatedMinutes: lessonUnits.estimatedMinutes,
+        }).from(lessonUnits).where(eq(lessonUnits.isPublished, true)).orderBy(lessonUnits.pathwaySlug, lessonUnits.sortOrder, lessonUnits.slug),
+        dbConn.select({ lessonSlug: lessonCompletion.lessonSlug })
+          .from(lessonCompletion)
+          .where(eq(lessonCompletion.studentUserId, ctx.user.id)),
+      ]);
 
-        // Insert in batches of 10 to avoid MySQL max_allowed_packet issues
-        const BATCH_SIZE = 10;
-        for (let i = 0; i < allValues.length; i += BATCH_SIZE) {
-          const batch = allValues.slice(i, i + BATCH_SIZE);
-          try {
-            await dbConn.insert(lessonUnits).values(batch);
-          } catch (seedErr) {
-            console.error(`[lesson-seed] Failed to seed lessons batch ${i}-${i + batch.length}:`, seedErr);
-          }
-        }
+      const totalByLevel = academyLevelCounts();
+      const completedByLevel = academyLevelCounts();
+      const completedSlugs = uniqueCompletionSlugs(completionRows);
+      for (const lesson of allPublishedLessons) {
+        if (!(ACADEMY_LEVEL_ORDER as readonly string[]).includes(lesson.level)) continue;
+        const level = lesson.level as AcademyLevel;
+        totalByLevel[level] += 1;
+        if (completedSlugs.has(lesson.slug)) completedByLevel[level] += 1;
       }
 
-      // ── Progression gating: determine unlocked level for this student ──
-      const LEVEL_ORDER = ["beginner", "developing", "intermediate", "advanced"];
-      const UNLOCK_THRESHOLD = 0.6;
-      const totalByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
-      for (const u of LESSON_UNITS) {
-        if (totalByLevel[u.level] !== undefined) totalByLevel[u.level]++;
-      }
-      const completions = await dbConn.select({ level: lessonCompletion.level })
-        .from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id));
-      const completedByLevel: Record<string, number> = { beginner: 0, developing: 0, intermediate: 0, advanced: 0 };
-      for (const c of completions) {
-        if (completedByLevel[c.level] !== undefined) completedByLevel[c.level]++;
-      }
-      let unlockedIdx = 0; // beginner is always unlocked
-      for (let i = 0; i < LEVEL_ORDER.length - 1; i++) {
-        const lev = LEVEL_ORDER[i];
-        const total = totalByLevel[lev] || 1;
-        const done = completedByLevel[lev] || 0;
-        if (done / total >= UNLOCK_THRESHOLD) {
-          unlockedIdx = i + 1;
+      let unlockedIndex = 0;
+      for (let index = 0; index < ACADEMY_LEVEL_ORDER.length - 1; index += 1) {
+        const level = ACADEMY_LEVEL_ORDER[index];
+        if (completedByLevel[level] / (totalByLevel[level] || 1) >= 0.6) {
+          unlockedIndex = index + 1;
         } else {
           break;
         }
       }
 
-      const conditions = [];
-      if (input?.pathwaySlug) conditions.push(eq(lessonUnits.pathwaySlug, input.pathwaySlug));
-      if (input?.level) conditions.push(eq(lessonUnits.level, input.level));
-
-      const rows = conditions.length > 0
-        ? await dbConn.select().from(lessonUnits).where(and(...conditions)).orderBy(lessonUnits.sortOrder)
-        : await dbConn.select().from(lessonUnits).orderBy(lessonUnits.sortOrder);
-
-      // Return summary with locked state
-      return rows.map((r) => ({
-        id: r.id,
-        slug: r.slug,
-        pathwaySlug: r.pathwaySlug,
-        title: r.title,
-        level: r.level,
-        category: r.category,
-        sortOrder: r.sortOrder,
-        locked: LEVEL_ORDER.indexOf(r.level) > unlockedIdx,
-      }));
+      return allPublishedLessons
+        .filter((lesson) => !input?.pathwaySlug || lesson.pathwaySlug === input.pathwaySlug)
+        .filter((lesson) => !input?.level || lesson.level === input.level)
+        .map((lesson) => ({
+          ...lesson,
+          locked: ACADEMY_LEVEL_ORDER.indexOf(lesson.level as AcademyLevel) > unlockedIndex,
+        }));
     }),
 
-  /** Get full lesson content by slug. */
+  /** Get full content from the published, reconciled curriculum. */
   getLesson: studentProcedure
     .input(z.object({ slug: z.string().min(1).max(150) }))
     .query(async ({ input }) => {
-      const dbConn = await getDb();
-      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
-
-      const [row] = await dbConn.select().from(lessonUnits).where(eq(lessonUnits.slug, input.slug)).limit(1);
+      await ensureAcademyCurriculum();
+      const row = await getPublishedLessonBySlug(input.slug);
       if (!row) throw new TRPCError({ code: "NOT_FOUND", message: "Lesson not found" });
-
-      // Parse JSON fields
-      const parseJSON = (val: string | null) => {
-        if (val === null || val === undefined) return [];
-        try { return JSON.parse(val); } catch { return []; }
-      };
-
-      // Lookup static competency mapping from lesson content definitions
-      const staticUnit = LESSON_UNITS.find(u => u.slug === input.slug);
 
       return {
         ...row,
-        objectives: parseJSON(row.objectives),
-        keyPoints: parseJSON(row.keyPoints),
-        commonMistakes: parseJSON(row.commonMistakes),
-        knowledgeCheck: parseJSON(row.knowledgeCheck),
-        aiTutorPrompts: parseJSON(row.aiTutorPrompts),
-        linkedCompetencies: staticUnit?.linkedCompetencies ?? [],
+        objectives: parseAcademyJson<string[]>(row.objectives, []),
+        keyPoints: parseAcademyJson<string[]>(row.keyPoints, []),
+        commonMistakes: parseAcademyJson<string[]>(row.commonMistakes, []),
+        knowledgeCheck: parseAcademyJson<Array<{
+          question: string;
+          options: string[];
+          correctIndex: number;
+          explanation: string;
+        }>>(row.knowledgeCheck, []),
+        aiTutorPrompts: parseAcademyJson<string[]>(row.aiTutorPrompts, []),
+        linkedCompetencies: parseAcademyJson<string[]>(row.linkedCompetencies, []),
       };
     }),
 
-  /** Mark a lesson as complete, with optional quiz score. */
+  /**
+   * Complete a lesson with canonical server-resolved metadata and a server-scored
+   * knowledge check. Deprecated browser pathway, level, and score fields are
+   * accepted only for rollout compatibility and are never read.
+   */
   completeLesson: studentProcedure
     .input(z.object({
       lessonSlug: z.string().min(1).max(150),
-      pathwaySlug: z.string().min(1).max(100),
-      level: z.enum(["beginner", "developing", "intermediate", "advanced"]),
+      answers: z.array(z.number().int().min(0).max(20)).max(50).optional(),
+      pathwaySlug: z.string().min(1).max(100).optional(),
+      level: z.enum(["beginner", "developing", "intermediate", "advanced"]).optional(),
       score: z.number().min(0).max(100).optional(),
     }))
     .mutation(async ({ ctx, input }) => {
+      await ensureAcademyCurriculum();
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Database unavailable" });
 
-      // Check if already completed
+      const lesson = await getPublishedLessonBySlug(input.lessonSlug);
+      if (!lesson) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Published lesson not found" });
+      }
+
       const [existing] = await dbConn.select({ id: lessonCompletion.id })
         .from(lessonCompletion)
         .where(and(
           eq(lessonCompletion.studentUserId, ctx.user.id),
-          eq(lessonCompletion.lessonSlug, input.lessonSlug),
-        )).limit(1);
+          eq(lessonCompletion.lessonSlug, lesson.slug),
+        ))
+        .limit(1);
+      if (existing) return { success: true, alreadyCompleted: true };
 
-      if (existing) {
-        // Update score if provided
-        if (input.score !== undefined) {
-          await dbConn.update(lessonCompletion)
-            .set({ score: input.score })
-            .where(eq(lessonCompletion.id, existing.id));
+      const knowledgeCheck = parseAcademyJson<Array<{ correctIndex: number }>>(lesson.knowledgeCheck, []);
+      let score: number | null = null;
+      let quizCorrect: number | null = null;
+      let quizTotal: number | null = null;
+      if (knowledgeCheck.length > 0) {
+        if (!input.answers || input.answers.length !== knowledgeCheck.length) {
+          throw new TRPCError({
+            code: "PRECONDITION_FAILED",
+            message: "Submit one answer for each knowledge-check question before completing this lesson.",
+          });
         }
-        return { success: true, alreadyCompleted: true };
+        quizTotal = knowledgeCheck.length;
+        quizCorrect = knowledgeCheck.filter((question, index) => input.answers?.[index] === question.correctIndex).length;
+        score = Math.round((quizCorrect / quizTotal) * 100);
       }
 
+      const completionKey = `academy:${ctx.user.id}:${lesson.slug}`;
       await dbConn.insert(lessonCompletion).values({
         studentUserId: ctx.user.id,
-        lessonSlug: input.lessonSlug,
-        pathwaySlug: input.pathwaySlug,
-        level: input.level,
-        score: input.score ?? null,
-      });
+        lessonSlug: lesson.slug,
+        pathwaySlug: lesson.pathwaySlug,
+        level: lesson.level,
+        score,
+        completionKey,
+        curriculumVersion: lesson.curriculumVersion,
+        quizCorrect,
+        quizTotal,
+      }).onDuplicateKeyUpdate({ set: { completionKey } });
 
-      return { success: true, alreadyCompleted: false };
+      return { success: true, alreadyCompleted: false, score, quizCorrect, quizTotal };
     }),
 
   /** Get lesson completion progress for the current student. */
@@ -2075,22 +2061,23 @@ export const studentRouter = router({
       return { success: true };
     }),
 
-  /** Calculate intelligent progress across pathways, competencies, and skill areas. */
+  /** Calculate progress from the live, published Academy curriculum. */
   getProgressIntelligence: studentProcedure.query(async ({ ctx }) => {
+    await ensureAcademyCurriculum();
     const dbConn = await getDb();
     if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
-    const TOTAL_LESSONS_PER_PATHWAY: Record<string, number> = {
-      "horse-care-foundations": 7,
-      "rider-foundations": 7,
-      "stable-yard-safety": 6,
-      "horse-behaviour-welfare": 7,
-      "tack-equipment": 6,
-      "developing-rider-skills": 8,
-    };
-    const TOTAL_LESSONS = Object.values(TOTAL_LESSONS_PER_PATHWAY).reduce((a, b) => a + b, 0);
-
-    const [completions, competencies, skillProgress, reviews, assignments] = await Promise.all([
+    const [pathways, publishedLessons, completions, competencies, skillProgress, reviews, assignments] = await Promise.all([
+      dbConn.select({ slug: lessonPathways.slug, sortOrder: lessonPathways.sortOrder })
+        .from(lessonPathways)
+        .where(eq(lessonPathways.isPublished, true))
+        .orderBy(lessonPathways.sortOrder, lessonPathways.slug),
+      dbConn.select({
+        slug: lessonUnits.slug,
+        pathwaySlug: lessonUnits.pathwaySlug,
+        sortOrder: lessonUnits.sortOrder,
+        linkedCompetencies: lessonUnits.linkedCompetencies,
+      }).from(lessonUnits).where(eq(lessonUnits.isPublished, true)),
       dbConn.select().from(lessonCompletion).where(eq(lessonCompletion.studentUserId, ctx.user.id)),
       dbConn.select().from(studentCompetencies).where(eq(studentCompetencies.userId, ctx.user.id)),
       dbConn.select().from(studentProgress).where(eq(studentProgress.userId, ctx.user.id)),
@@ -2099,85 +2086,73 @@ export const studentRouter = router({
         .where(and(eq(teacherLessonAssignments.studentUserId, ctx.user.id), eq(teacherLessonAssignments.isActive, true))),
     ]);
 
-    // Pathway completion %
-    const completedByPathway = completions.reduce((acc, lc) => {
-      acc[lc.pathwaySlug] = (acc[lc.pathwaySlug] ?? 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const completedSlugs = uniqueCompletionSlugs(completions);
+    const lessonsByPathway = new Map<string, typeof publishedLessons>();
+    for (const lesson of publishedLessons) {
+      const current = lessonsByPathway.get(lesson.pathwaySlug) ?? [];
+      current.push(lesson);
+      lessonsByPathway.set(lesson.pathwaySlug, current);
+    }
 
-    const pathwayProgress = Object.entries(TOTAL_LESSONS_PER_PATHWAY).map(([slug, total]) => ({
-      slug,
-      completed: completedByPathway[slug] ?? 0,
-      total,
-      percent: Math.round(((completedByPathway[slug] ?? 0) / total) * 100),
-    }));
+    const pathwayProgress = pathways.map((pathway) => {
+      const lessons = lessonsByPathway.get(pathway.slug) ?? [];
+      const completed = lessons.filter((lesson) => completedSlugs.has(lesson.slug)).length;
+      const total = lessons.length;
+      return {
+        slug: pathway.slug,
+        completed,
+        total,
+        percent: total === 0 ? 0 : Math.round((completed / total) * 100),
+      };
+    });
+    const totalLessons = publishedLessons.length;
+    const completedLessons = publishedLessons.filter((lesson) => completedSlugs.has(lesson.slug)).length;
+    const overallLessonPercent = totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
 
-    const overallLessonPercent = Math.round((completions.length / TOTAL_LESSONS) * 100);
+    const publishedCompetencyKeys = new Set(
+      publishedLessons.flatMap((lesson) => parseAcademyJson<string[]>(lesson.linkedCompetencies, [])),
+    );
+    const achievedCompetencies = competencies.filter((competency) => competency.status === "achieved").length;
+    const needsSupportCompetencies = competencies.filter((competency) => competency.status === "needs_support").length;
+    const competencyTotal = publishedCompetencyKeys.size;
+    const competencyPercent = competencyTotal === 0 ? 0 : Math.round((achievedCompetencies / competencyTotal) * 100);
 
-    // Competency summary
-    const achievedCompetencies = competencies.filter(c => c.status === "achieved").length;
-    const needsSupportCompetencies = competencies.filter(c => c.status === "needs_support").length;
-    const REQUIRED_COMPETENCIES = 17; // defined competency count
-    const competencyPercent = Math.round((achievedCompetencies / REQUIRED_COMPETENCIES) * 100);
-
-    // Weak areas — skill areas with lowest XP
-    const sortedSkills = skillProgress.slice().sort((a, b) => a.xp - b.xp);
-    const weakAreas = sortedSkills.slice(0, 3).map(s => s.skillArea.replace(/_/g, " "));
-
-    // Category-based weak areas from competencies needing support
+    const sortedSkills = skillProgress.slice().sort((left, right) => left.xp - right.xp);
+    const weakAreas = sortedSkills.slice(0, 3).map((skill) => skill.skillArea.replace(/_/g, " "));
     const categoryWeakness: Record<string, number> = {};
-    for (const c of competencies) {
-      if (c.status === "needs_support") {
-        categoryWeakness[c.category] = (categoryWeakness[c.category] ?? 0) + 1;
+    for (const competency of competencies) {
+      if (competency.status === "needs_support") {
+        categoryWeakness[competency.category] = (categoryWeakness[competency.category] ?? 0) + 1;
       }
     }
     const weakCategories = Object.entries(categoryWeakness)
-      .sort((a, b) => b[1] - a[1])
+      .sort((left, right) => right[1] - left[1])
       .slice(0, 3)
-      .map(([cat]) => cat);
-
-    // Reviews with needs_improvement
+      .map(([category]) => category);
     const needsImprovementLessons = reviews
-      .filter(r => r.reviewStatus === "needs_improvement")
-      .map(r => r.lessonSlug);
+      .filter((review) => review.reviewStatus === "needs_improvement")
+      .map((review) => review.lessonSlug);
 
-    // Recommended next lesson — first uncompleted lesson in order
-    const completedSlugs = new Set(completions.map(c => c.lessonSlug));
-    const orderedPathways = [
-      "horse-care-foundations", "rider-foundations", "stable-yard-safety",
-      "horse-behaviour-welfare", "tack-equipment", "developing-rider-skills",
-    ];
-    let recommendedNextPathway: string | null = null;
-    for (const pw of orderedPathways) {
-      if ((completedByPathway[pw] ?? 0) < (TOTAL_LESSONS_PER_PATHWAY[pw] ?? 0)) {
-        recommendedNextPathway = pw;
-        break;
-      }
-    }
-
-    // Readiness status
+    const recommendedNextPathway = pathwayProgress.find((pathway) => pathway.completed < pathway.total)?.slug ?? null;
     let readinessStatus: "ready_for_next_level" | "needs_support" | "focus_on_safety" | "focus_on_riding" | "focus_on_care";
     if (needsSupportCompetencies > 2 || needsImprovementLessons.length > 3) {
       readinessStatus = "needs_support";
-    } else if (weakCategories.some(c => c.toLowerCase().includes("safety"))) {
+    } else if (weakCategories.some((category) => category.toLowerCase().includes("safety"))) {
       readinessStatus = "focus_on_safety";
-    } else if (weakCategories.some(c => c.toLowerCase().includes("riding") || c.toLowerCase().includes("rider"))) {
+    } else if (weakCategories.some((category) => category.toLowerCase().includes("riding") || category.toLowerCase().includes("rider"))) {
       readinessStatus = "focus_on_riding";
-    } else if (weakCategories.some(c => c.toLowerCase().includes("care") || c.toLowerCase().includes("handling"))) {
+    } else if (weakCategories.some((category) => category.toLowerCase().includes("care") || category.toLowerCase().includes("handling"))) {
       readinessStatus = "focus_on_care";
     } else {
       readinessStatus = overallLessonPercent >= 70 && competencyPercent >= 50 ? "ready_for_next_level" : "needs_support";
     }
-
-    // Unread reviews
-    const unreadReviews = reviews.filter(r => !r.isRead);
 
     return {
       overallLessonPercent,
       pathwayProgress,
       competencies: {
         achieved: achievedCompetencies,
-        total: REQUIRED_COMPETENCIES,
+        total: competencyTotal,
         percent: competencyPercent,
         needsSupport: needsSupportCompetencies,
       },
@@ -2186,7 +2161,7 @@ export const studentRouter = router({
       needsImprovementLessons,
       recommendedNextPathway,
       readinessStatus,
-      unreadReviewCount: unreadReviews.length,
+      unreadReviewCount: reviews.filter((review) => !review.isRead).length,
       assignedLessonsCount: assignments.length,
     };
   }),

@@ -1108,6 +1108,7 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       \`sortOrder\` int NOT NULL DEFAULT 0,
       \`iconName\` varchar(50),
       \`isPublished\` boolean NOT NULL DEFAULT true,
+      \`curriculumVersion\` varchar(40) NOT NULL DEFAULT '2026.1',
       \`createdAt\` timestamp NOT NULL DEFAULT (now()),
       CONSTRAINT \`lessonPathways_id\` PRIMARY KEY(\`id\`),
       UNIQUE KEY \`lessonPathways_slug\` (\`slug\`)
@@ -1128,6 +1129,10 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       \`commonMistakes\` text NOT NULL,
       \`knowledgeCheck\` text NOT NULL,
       \`aiTutorPrompts\` text NOT NULL,
+      \`linkedCompetencies\` text NOT NULL,
+      \`nextLessonSlug\` varchar(150),
+      \`estimatedMinutes\` int NOT NULL DEFAULT 15,
+      \`curriculumVersion\` varchar(40) NOT NULL DEFAULT '2026.1',
       \`isPublished\` boolean NOT NULL DEFAULT true,
       \`createdAt\` timestamp NOT NULL DEFAULT (now()),
       \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
@@ -1143,10 +1148,28 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       \`pathwaySlug\` varchar(100) NOT NULL,
       \`level\` varchar(30) NOT NULL,
       \`score\` int,
+      \`completionKey\` varchar(220),
+      \`curriculumVersion\` varchar(40),
+      \`quizCorrect\` int,
+      \`quizTotal\` int,
       \`completedAt\` timestamp NOT NULL DEFAULT (now()),
       CONSTRAINT \`lessonCompletion_id\` PRIMARY KEY(\`id\`),
+      UNIQUE KEY \`idx_lessonCompletion_completionKey\` (\`completionKey\`),
       KEY \`idx_lessonCompletion_studentUserId\` (\`studentUserId\`),
       KEY \`idx_lessonCompletion_lessonSlug\` (\`lessonSlug\`)
+    )`,
+    // Academy curriculum import audit (migration 0021)
+    `CREATE TABLE IF NOT EXISTS \`academyCurriculumSyncRuns\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`curriculumVersion\` varchar(40) NOT NULL,
+      \`pathwaysProcessed\` int NOT NULL DEFAULT 0,
+      \`lessonsProcessed\` int NOT NULL DEFAULT 0,
+      \`validationErrors\` int NOT NULL DEFAULT 0,
+      \`validationWarnings\` int NOT NULL DEFAULT 0,
+      \`summaryJson\` text NOT NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      CONSTRAINT \`academyCurriculumSyncRuns_id\` PRIMARY KEY(\`id\`),
+      KEY \`idx_academyCurriculumSyncRuns_createdAt\` (\`createdAt\`)
     )`,
     // Competency system + teacher lesson assignment + lesson reviews (migration 0018)
     `CREATE TABLE IF NOT EXISTS \`studentCompetencies\` (

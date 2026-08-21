@@ -92,6 +92,7 @@ import { detectDuplicatePeople, DUP_THRESHOLD } from "./_core/dupPersonDetection
 import { studentRouter } from "./studentRouter";
 import { teacherRouter } from "./teacherRouter";
 import { schoolRouter } from "./schoolRouter";
+import { commerceRouter } from "./commerceRouter";
 import {
   normalizeCountry,
   normalizeContactType,
@@ -313,6 +314,7 @@ export const appRouter = router({
   student: studentRouter,
   teacher: teacherRouter,
   school: schoolRouter,
+  commerce: commerceRouter,
 
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),

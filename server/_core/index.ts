@@ -55,6 +55,7 @@ async function startServer() {
         "https://equiprofile.online",
         "https://www.equiprofile.online",
         "https://school.equiprofile.online",
+        "https://shop.equiprofile.online",
       ];
 
   app.use(

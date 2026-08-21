@@ -6,13 +6,15 @@
  *     management-assets/     →  /management-assets/ URL namespace
  *   dist/public/school/      →  served on school.equiprofile.online
  *     school-assets/         →  /school-assets/ URL namespace
+ *   dist/public/shop/        →  served on shop.equiprofile.online
+ *     shop-assets/           →  /shop-assets/ URL namespace
  *
  * Each frontend has its own isolated asset directory.  URL namespaces never
  * overlap, so cross-site asset collisions are impossible — no merge step needed.
  *
  * Development:
  *   Uses Vite dev server for the site set by VITE_SITE env var
- *   (defaults to "management"). Switch with: VITE_SITE=school npm run dev
+ *   (defaults to "management"). Switch with: VITE_SITE=school npm run dev or VITE_SITE=shop npm run dev
  */
 import express, { type Express } from "express";
 import fs from "fs";
@@ -30,21 +32,20 @@ const SCHOOL_HOSTNAME_PATTERNS = [
   "school.localhost",
   "school.127.0.0.1",
 ];
+const SHOP_HOSTNAME_PATTERNS = [
+  "shop.equiprofile.online",
+  "shop.localhost",
+  "shop.127.0.0.1",
+];
 
 /**
  * Determine which frontend to serve based on the request hostname.
  * Returns "school" for school.equiprofile.online, "management" for everything else.
  */
-function getSiteModeFromRequest(hostname: string): "management" | "school" {
+function getSiteModeFromRequest(hostname: string): "management" | "school" | "shop" {
   const lower = hostname.toLowerCase().split(":")[0]; // strip port
-  if (
-    lower.startsWith("school.") ||
-    SCHOOL_HOSTNAME_PATTERNS.some(
-      (p) => lower === p || lower.startsWith(p + ":"),
-    )
-  ) {
-    return "school";
-  }
+  if (lower.startsWith("shop.") || SHOP_HOSTNAME_PATTERNS.some((p) => lower === p || lower.startsWith(p + ":"))) return "shop";
+  if (lower.startsWith("school.") || SCHOOL_HOSTNAME_PATTERNS.some((p) => lower === p || lower.startsWith(p + ":"))) return "school";
   return "management";
 }
 
@@ -117,11 +118,13 @@ export function serveStatic(app: Express) {
 
   const mgmtDist = path.resolve(baseDist, "management");
   const schoolDist = path.resolve(baseDist, "school");
+  const shopDist = path.resolve(baseDist, "shop");
 
   // Verify both frontend builds exist
   for (const [name, dir] of [
     ["management", mgmtDist],
     ["school", schoolDist],
+    ["shop", shopDist],
   ] as const) {
     if (!fs.existsSync(dir)) {
       console.warn(
@@ -170,7 +173,8 @@ export function serveStatic(app: Express) {
       res.setHeader("Service-Worker-Allowed", "/");
     } else if (
       filePath.includes("/management-assets/") ||
-      filePath.includes("/school-assets/")
+      filePath.includes("/school-assets/") ||
+      filePath.includes("/shop-assets/")
     ) {
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     }
@@ -193,6 +197,9 @@ export function serveStatic(app: Express) {
   );
   app.use(
     express.static(schoolDist, { index: false, setHeaders: setStaticHeaders }),
+  );
+  app.use(
+    express.static(shopDist, { index: false, setHeaders: setStaticHeaders }),
   );
 
   // Known scanner / exploit probe paths — 404 immediately
@@ -237,6 +244,7 @@ export function serveStatic(app: Express) {
     const isStaticFile =
       req.originalUrl.startsWith("/management-assets/") ||
       req.originalUrl.startsWith("/school-assets/") ||
+      req.originalUrl.startsWith("/shop-assets/") ||
       STATIC_FILE_EXTENSIONS.some((ext) => req.originalUrl.endsWith(ext));
     if (isStaticFile) {
       return res.status(404).send("Not Found");
@@ -244,7 +252,7 @@ export function serveStatic(app: Express) {
 
     // Determine which frontend to serve based on hostname
     const siteMode = getSiteModeFromRequest(req.hostname || "");
-    const siteDistPath = siteMode === "school" ? schoolDist : mgmtDist;
+    const siteDistPath = siteMode === "school" ? schoolDist : siteMode === "shop" ? shopDist : mgmtDist;
     const indexPath = path.resolve(siteDistPath, "index.html");
 
     // No-cache for HTML shell (users always get latest)

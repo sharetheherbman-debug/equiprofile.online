@@ -1853,7 +1853,7 @@ function TrainingTemplatesContent() {
                 onClick={() => {
                   setActiveCategory(cat.key);
                   // Auto-expand selected category
-                  setExpandedCategories((prev) => new Set([...prev, cat.key]));
+                  setExpandedCategories((prev) => new Set([...Array.from(prev), cat.key]));
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                   activeCategory === cat.key

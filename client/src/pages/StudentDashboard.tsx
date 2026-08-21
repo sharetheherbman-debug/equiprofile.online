@@ -1941,19 +1941,18 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
 
   const handleComplete = async () => {
     if (!lessonDetail) return;
-    let score: number | undefined;
-    if (quizMode && quizSubmitted && lessonDetail.knowledgeCheck) {
-      const checks = lessonDetail.knowledgeCheck as Array<{ correctIndex: number }>;
-      const correct = checks.filter((q, i) => quizAnswers[i] === q.correctIndex).length;
-      score = Math.round((correct / checks.length) * 100);
+    const knowledgeCheck = (lessonDetail.knowledgeCheck ?? []) as Array<{ correctIndex: number }>;
+    const answers = knowledgeCheck.map((_, index) => quizAnswers[index]);
+    if (knowledgeCheck.length > 0 && (!quizSubmitted || answers.some((answer) => answer === undefined))) {
+      return;
     }
     await completeMutation.mutateAsync({
       lessonSlug: lessonDetail.slug,
-      pathwaySlug: lessonDetail.pathwaySlug,
-      level: lessonDetail.level as any,
-      score,
+      ...(knowledgeCheck.length > 0 ? { answers: answers as number[] } : {}),
     });
     utils.student.getLessonProgress.invalidate();
+    utils.student.getUnlockedLevel.invalidate();
+    utils.student.getProgressIntelligence.invalidate();
   };
 
   const levelColors: Record<string, string> = {
@@ -2010,11 +2009,14 @@ function LessonsView({ onAskTutor }: { onAskTutor?: (question: string) => void }
               </div>
               <h2 className="text-xl font-bold text-gray-800">{lessonDetail.title}</h2>
             </div>
-            {!isCompleted && (
+            {!isCompleted && checks.length === 0 && (
               <button onClick={handleComplete} disabled={completeMutation.isPending}
                 className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#2e6da4] hover:bg-[#245a8a] transition-colors disabled:opacity-50">
                 {completeMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Mark Complete"}
               </button>
+            )}
+            {!isCompleted && checks.length > 0 && (
+              <p className="text-xs text-gray-500">Complete the knowledge check below to record this lesson.</p>
             )}
           </div>
         </div>

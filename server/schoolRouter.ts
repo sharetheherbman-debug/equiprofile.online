@@ -242,31 +242,44 @@ export const schoolRouter = router({
         throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Invite has expired" });
       }
 
-      // Add user as member
-      await dbConn.insert(organizationMembers).values({
-        organizationId: invite.organizationId,
-        userId: ctx.user.id,
-        role: invite.role,
-      });
+      // The invite token is not sufficient authorization on its own. The current
+      // verified account must match the invited address before any Academy role is granted.
+      const user = await db.getUserById(ctx.user.id);
+      if (!user?.email || user.email.trim().toLowerCase() !== invite.invitedEmail.trim().toLowerCase()) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Sign in with the email address that received this Academy invitation.",
+        });
+      }
 
-      // Mark invite as accepted
+      const [existingMember] = await dbConn.select({ id: organizationMembers.id })
+        .from(organizationMembers)
+        .where(and(
+          eq(organizationMembers.organizationId, invite.organizationId),
+          eq(organizationMembers.userId, ctx.user.id),
+        ))
+        .limit(1);
+      if (!existingMember) {
+        await dbConn.insert(organizationMembers).values({
+          organizationId: invite.organizationId,
+          userId: ctx.user.id,
+          role: invite.role,
+        });
+      }
+
+      // Mark invite as accepted only after membership succeeds.
       await dbConn.update(organizationInvites)
         .set({ acceptedAt: new Date() })
         .where(eq(organizationInvites.id, invite.id));
 
-      // Update user preferences with their role within the organization
-      const user = await db.getUserById(ctx.user.id);
-      if (user) {
-        const prefs = parseUserPrefs(user.preferences);
-        // Map org role to plan tier: teachers remain "teacher", students remain "student"
-        prefs.selectedExperience = invite.role;
-        prefs.organizationId = invite.organizationId;
-        // Only set planTier if the user doesn't already have one (preserves existing subscription)
-        if (!prefs.planTier) {
-          prefs.planTier = invite.role;
-        }
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
-      }
+      // Complete Academy activation without replacing an existing paid plan.
+      const prefs = parseUserPrefs(user.preferences);
+      prefs.selectedExperience = invite.role;
+      prefs.organizationId = invite.organizationId;
+      prefs.activationChecklist = { ...(prefs.activationChecklist ?? {}), choseExperience: true };
+      prefs.onboardingCompleted = true;
+      if (!prefs.planTier) prefs.planTier = invite.role;
+      await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
 
       return { organizationId: invite.organizationId, role: invite.role };
     }),

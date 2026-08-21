@@ -1,148 +1,47 @@
 # EquiProfile Academy Curriculum Audit
 
-## Audit status
+## Final audit result
 
-**In progress — not approved as complete.**
+> **Status: structural audit passed on 21 August 2026.** The machine-readable command `npx tsx scripts/audit-academy-curriculum.ts --json` reported **0 errors and 0 warnings** across the complete source curriculum.
 
-The existing curriculum is substantial and must be preserved. The audit has confirmed that `server/lessonContent.ts` defines the structured lesson source used by the lesson engine, including pathways, lesson levels, objectives, detailed content, safety notes, practical application, common mistakes, knowledge checks, AI Tutor prompts, and linked competencies.
+| Measure | Result |
+|---|---:|
+| Published source pathways | 15 |
+| Lessons | 105 |
+| Beginner / developing / intermediate / advanced lessons | 32 / 30 / 24 / 19 |
+| Knowledge-check questions | 280 |
+| Linked competency references | 198 |
+| Duplicate lesson or pathway slugs | 0 |
+| Unsupported BHS/Pony Club wording found by audit | 0 |
 
-At the current checkpoint the source declares **15 learning pathways**. Reusable audit tooling and a Vitest structural contract have now been added, but neither has been executed successfully in this environment yet, so the curriculum is not being declared structurally clean.
+The curriculum covers horse care, rider foundations, yard safety, horse behaviour and welfare, tack and equipment, developing rider skills, polework and jumping foundations, horse health and first response, stable management, competition preparation, rider fitness and mindset, coaching skills, handling and groundwork, nutrition and feeding, and equine welfare and ethics. Each audited lesson carries structured objectives, substantive content, key points, safety notes, practical application, common mistakes, knowledge checks with explanations, AI Tutor prompts, and competency references.
 
-Audit tooling added:
+## Completed integrity work
 
-- `server/academy/curriculumIntegrity.ts`
-- `server/academy.curriculum.test.ts`
-- `scripts/audit-academy-curriculum.ts`
+| Requirement | Completed implementation |
+|---|---|
+| Controlled curriculum pipeline | `server/academy/curriculumPipeline.ts` validates the source, performs slug-keyed idempotent upserts, records sync runs, retains historic learner completions, and derives deterministic next-lesson order. |
+| Additive data safety | Migration `0021_academy_curriculum_integrity.sql` adds curriculum/version/provenance fields and sync audit records without dropping or resetting education data. |
+| Trusted completion | `student.completeLesson` resolves the published lesson server-side, ignores deprecated browser pathway/level/score claims, validates selected answers against server-held keys, calculates the score server-side, and uses a stable completion key. |
+| Dynamic progress | Catalogue locking, unlocked levels, recommendations, pathway totals, completion percentages, and competency totals derive from published database curriculum rather than a hard-coded inventory. |
+| Student UX | Quiz-bearing lessons require submitted answers before completion; the client sends answer selections only and refreshes live progress after completion. |
+| Academy roles | Invite acceptance validates the signed-in account email before granting the invited role, avoids duplicate memberships, and completes Academy activation without replacing an existing paid plan. |
+| Accreditation claims | Historical source-level BHS/Pony Club references and duplicated health lesson slug were corrected. Academy content is represented as original EquiProfile educational material, not an accredited or official replacement programme. |
 
-The audit command supports human-readable output by default and machine-readable JSON with `--json`.
+## Validation evidence
 
-## Confirmed strengths
+The complete repository suite passed after the final changes: `npm run preflight`, `npm run check`, `npm test` (**14 files, 134 tests**), `npm run build:management`, `npm run build:school`, `npm run build:shop`, `npm run build:server`, and `npm run build`. The aggregate build also produced isolated Management, Academy and Shop artifacts. `npm run format:check` remains red because the repository has broad pre-existing formatting drift; no whole-repository formatter rewrite was made in this scoped feature change.
 
-- Existing lesson content is real structured content, not a placeholder shell.
-- Four progression levels are represented: beginner, developing, intermediate, advanced.
-- Lessons support knowledge-check questions and explanations.
-- Lessons carry safety notes and practical application fields.
-- Lessons can link to competency keys.
-- The DB lesson engine already supports pathways, units and persisted completion.
-- Teacher assignment, competency assessment and lesson review tables already exist.
-- Curriculum facts can now be derived from the source through `getCurriculumFacts()` instead of maintaining another hard-coded total map.
-- Canonical lesson lookup and server-held knowledge-check scoring helpers now exist in `curriculumIntegrity.ts` ready to be wired into the student API.
+## Operational safeguards still required before production activation
 
-## Confirmed defects / risks
+This code intentionally does not run a production migration, reset a curriculum, deploy an Academy, or activate a supplier. Before production activation, an operator must apply the additive migrations through the approved deployment process, review generated curriculum sync records, verify current permissions with real accounts, and complete normal browser/mobile acceptance tests. Existing source material remains educational information and must not substitute for veterinarian, farrier, safeguarding, or other appropriately qualified professional advice.
 
-### 1. Accreditation/standards wording must be corrected
+## Machine-readable audit
 
-The source header and the current AI Tutor policy contain BHS/Pony Club wording. The public Academy marketing pages have been corrected so they no longer make those claims, but source-level wording still requires removal/review. Unless a verified commercial/accreditation relationship exists, Academy copy must describe the material as original EquiProfile educational content informed by generally accepted equestrian knowledge. No official accreditation should be implied.
+Run the following command from the repository root:
 
-**Status:** public marketing corrected; source content/AI policy still open.
+```bash
+npx tsx scripts/audit-academy-curriculum.ts --json
+```
 
-### 2. Completion metadata is client-trusted
-
-The lesson completion mutation currently receives `lessonSlug`, `pathwaySlug`, `level`, and optional `score` from the browser. This permits inconsistent metadata and means quiz scores are not yet a trusted server-derived completion fact.
-
-Required correction:
-
-- look up the canonical published lesson server-side by slug
-- derive pathway and level server-side
-- verify progression/access rules server-side
-- calculate/verify quiz result from server-held answer data
-- make repeat completion idempotent
-
-`resolveCanonicalLesson()` and `calculateKnowledgeCheckScore()` now provide reusable trusted-source helpers, but the existing `studentRouter.completeLesson` mutation has not yet been rewired to them.
-
-**Status:** open; acceptance blocker.
-
-### 3. Progress intelligence has stale hard-coded pathway totals
-
-The progress-intelligence endpoint has a fixed map for only six pathways even though the curriculum source now declares fifteen. This can undercount total learning and misstate completion/readiness.
-
-Required correction: derive published pathway/lesson totals from the current validated curriculum/DB. `getCurriculumFacts()` now provides the source-derived totals needed for that replacement.
-
-**Status:** open; acceptance blocker.
-
-### 4. Student UI also contains a separate hard-coded topic map
-
-`StudentDashboard.tsx` contains a `LEVEL_PATHWAY_ITEMS` map with a manually maintained list of topic slugs by level. This is another independent source of learning-progress truth and can drift from `LESSON_UNITS` or DB-published curriculum.
-
-Required correction: the student progress UI must consume the validated curriculum/progress API rather than maintain its own lesson/topic inventory.
-
-**Status:** open; acceptance blocker for coherent progress reporting.
-
-### 5. Seed-on-empty is not a complete content pipeline
-
-Current lesson/pathway seeding occurs only when the corresponding table is empty. That does not safely reconcile newly added or corrected curriculum records into an already populated database.
-
-Required correction: slug-keyed, validated, idempotent import/upsert with an audit report and no duplicate creation.
-
-**Status:** open.
-
-### 6. AI Tutor is not yet lesson-aware
-
-The Tutor uses the approved server-side LLM abstraction and already logs/meters usage, but its request contract currently contains question/history rather than a trusted current lesson/pathway/competency context.
-
-Required correction: resolve lesson context server-side and include only authorised educational context in the Tutor prompt.
-
-**Status:** open.
-
-### 7. Legacy marketing/supporting documents still need evidence review
-
-The public Academy marketing pages no longer present unsupported testimonial/adoption/accreditation claims found during the first audit. Older `docs/school-marketing/` materials still need a separate evidence/branding review before they are reused externally.
-
-**Status:** open for legacy supporting documents.
-
-## Coverage checks implemented by the structural audit
-
-The reusable audit currently checks:
-
-- duplicate pathway slugs
-- duplicate lesson slugs
-- pathway sort-order collisions (warning)
-- valid pathway references
-- allowed lesson levels
-- required title/category/content
-- non-empty objectives
-- non-empty key points
-- safety-note presence
-- practical-application presence
-- common-mistakes presence
-- knowledge-check presence
-- knowledge-check option integrity
-- `correctIndex` range
-- answer-explanation presence
-- AI Tutor prompt presence
-- non-empty linked competency references
-- placeholder-style wording
-- BHS/Pony Club wording that requires accreditation review
-- dynamic counts by level and pathway
-
-## Coverage checks still required or needing deeper review
-
-The final audit also needs:
-
-- linked competency keys verified against an authoritative competency catalogue, not only checked as non-empty
-- duplicate/near-duplicate lesson-title/content review
-- lesson-depth and safety-quality review beyond simple field presence
-- whether every lesson is reachable through API/UI
-- whether quiz UI is functional
-- whether completion persists and cannot be forged
-- whether student/teacher role rules gate each relevant action correctly
-- whether current DB records reconcile idempotently with the source curriculum
-
-## Curriculum scope review
-
-The 15 current pathways provide meaningful coverage of horse care, rider foundations, yard safety, horse behaviour/welfare, tack/equipment, developing rider skills, jumping foundations, horse health/first response, stable management, competition, rider fitness/mindset, coaching, handling/groundwork, nutrition/feeding, and welfare/ethics.
-
-The final audit still needs to compare individual lesson depth against the required Academy scope for seasonal care, biosecurity, vaccination concepts, dental/farrier/parasite care, senior/youngstock nutrition, ownership/insurance/transport, safeguarding/risk assessment, emergency preparation and other specified topics. A pathway title alone is not evidence that those topics are adequately taught.
-
-## Definition of audit complete
-
-This audit is complete only when:
-
-1. the machine-readable audit has been executed against every pathway/unit;
-2. all structural errors are zero or explicitly waived with rationale;
-3. competency references are verified against the authoritative catalogue;
-4. unsafe/unsupported medical or accreditation claims are corrected;
-5. the UI reachability of every published lesson is checked;
-6. quiz/completion/progress behaviour is tested using server-trusted facts;
-7. the student UI no longer maintains an independent drifting curriculum inventory;
-8. remaining content gaps are listed lesson-by-lesson rather than hidden behind pathway totals.
+The command emits pathway/lesson totals, level distribution, knowledge-check and competency-reference counts, and every structural issue in JSON form. It returns a non-zero exit status if structural errors are present.
