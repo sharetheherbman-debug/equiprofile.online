@@ -33,7 +33,11 @@ export const DUP_THRESHOLD = 55;
 
 /** Lowercase, strip punctuation/symbols, collapse whitespace. */
 function normStr(s: string | null | undefined): string {
-  return (s ?? "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+  return (s ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /** Extract the domain part of an email address (already lower-cased). */
@@ -44,13 +48,24 @@ function emailDomain(email: string): string {
 
 /** Free/personal email providers — same domain across these does NOT imply same person. */
 const GENERIC_EMAIL_DOMAINS = new Set([
-  "gmail.com", "googlemail.com",
-  "yahoo.com", "yahoo.co.uk", "yahoo.co.in", "yahoo.com.au",
-  "hotmail.com", "hotmail.co.uk", "hotmail.fr",
-  "outlook.com", "outlook.co.uk",
-  "live.com", "live.co.uk",
-  "icloud.com", "me.com", "mac.com",
-  "protonmail.com", "pm.me",
+  "gmail.com",
+  "googlemail.com",
+  "yahoo.com",
+  "yahoo.co.uk",
+  "yahoo.co.in",
+  "yahoo.com.au",
+  "hotmail.com",
+  "hotmail.co.uk",
+  "hotmail.fr",
+  "outlook.com",
+  "outlook.co.uk",
+  "live.com",
+  "live.co.uk",
+  "icloud.com",
+  "me.com",
+  "mac.com",
+  "protonmail.com",
+  "pm.me",
   "mail.com",
   "aol.com",
   "msn.com",
@@ -124,10 +139,10 @@ export function detectDuplicatePeople(contacts: DupCandidate[]): DupResult[] {
 
   for (let i = 1; i < sorted.length; i++) {
     const a = sorted[i];
-    const normNameA    = normStr(a.name);
-    const normBizA     = normStr(a.businessName);
-    const domainA      = emailDomain(a.email);
-    const normRegionA  = normStr(a.region);
+    const normNameA = normStr(a.name);
+    const normBizA = normStr(a.businessName);
+    const domainA = emailDomain(a.email);
+    const normRegionA = normStr(a.region);
     const normCountryA = normStr(a.country);
 
     let bestScore = 0;
@@ -147,10 +162,10 @@ export function detectDuplicatePeople(contacts: DupCandidate[]): DupResult[] {
       const normNameB = normStr(b.name);
       if (normNameA && normNameB) {
         const nameSim = trigramSim(normNameA, normNameB);
-        if (nameSim >= 0.80) {
+        if (nameSim >= 0.8) {
           score += 40;
           reasons.push(`Similar name (${Math.round(nameSim * 100)}% match)`);
-        } else if (nameSim >= 0.60) {
+        } else if (nameSim >= 0.6) {
           score += 20;
           reasons.push(`Possible name match (${Math.round(nameSim * 100)}%)`);
         }
@@ -162,7 +177,9 @@ export function detectDuplicatePeople(contacts: DupCandidate[]): DupResult[] {
         const bizSim = trigramSim(normBizA, normBizB);
         if (bizSim >= 0.75) {
           score += 30;
-          reasons.push(`Similar business name (${Math.round(bizSim * 100)}% match)`);
+          reasons.push(
+            `Similar business name (${Math.round(bizSim * 100)}% match)`,
+          );
         }
       }
 

@@ -1306,8 +1306,10 @@ export const emailCampaignRecipients = mysqlTable("emailCampaignRecipients", {
   error: text("error"),
 });
 
-export type EmailCampaignRecipient = typeof emailCampaignRecipients.$inferSelect;
-export type InsertEmailCampaignRecipient = typeof emailCampaignRecipients.$inferInsert;
+export type EmailCampaignRecipient =
+  typeof emailCampaignRecipients.$inferSelect;
+export type InsertEmailCampaignRecipient =
+  typeof emailCampaignRecipients.$inferInsert;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Site analytics – lightweight page view / session tracking
@@ -1407,15 +1409,18 @@ export type InsertCampaignSequence = typeof campaignSequences.$inferInsert;
 // ─────────────────────────────────────────────────────────────────────────────
 // Campaign sequence recipients – tracks per-step delivery
 // ─────────────────────────────────────────────────────────────────────────────
-export const campaignSequenceRecipients = mysqlTable("campaignSequenceRecipients", {
-  id: int("id").autoincrement().primaryKey(),
-  sequenceId: int("sequenceId").notNull(),
-  campaignId: int("campaignId").notNull(),
-  email: varchar("email", { length: 320 }).notNull(),
-  status: varchar("status", { length: 30 }).default("pending").notNull(), // pending, sent, failed, skipped
-  sentAt: timestamp("sentAt"),
-  error: text("error"),
-});
+export const campaignSequenceRecipients = mysqlTable(
+  "campaignSequenceRecipients",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    sequenceId: int("sequenceId").notNull(),
+    campaignId: int("campaignId").notNull(),
+    email: varchar("email", { length: 320 }).notNull(),
+    status: varchar("status", { length: 30 }).default("pending").notNull(), // pending, sent, failed, skipped
+    sentAt: timestamp("sentAt"),
+    error: text("error"),
+  },
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Campaign send log — tracks daily send counts for rate limiting
@@ -1503,8 +1508,10 @@ export const studentHorseAssignments = mysqlTable("studentHorseAssignments", {
   assignedAt: timestamp("assignedAt").defaultNow().notNull(),
 });
 
-export type StudentHorseAssignment = typeof studentHorseAssignments.$inferSelect;
-export type InsertStudentHorseAssignment = typeof studentHorseAssignments.$inferInsert;
+export type StudentHorseAssignment =
+  typeof studentHorseAssignments.$inferSelect;
+export type InsertStudentHorseAssignment =
+  typeof studentHorseAssignments.$inferInsert;
 
 /**
  * Student tasks – daily/weekly care and learning tasks.
@@ -1535,7 +1542,9 @@ export const studentTrainingEntries = mysqlTable("studentTrainingEntries", {
   title: varchar("title", { length: 200 }).notNull(),
   sessionDate: date("sessionDate").notNull(),
   duration: int("duration"), // minutes
-  sessionType: varchar("sessionType", { length: 50 }).default("lesson").notNull(), // lesson, practice, groundwork, theory, other
+  sessionType: varchar("sessionType", { length: 50 })
+    .default("lesson")
+    .notNull(), // lesson, practice, groundwork, theory, other
   notes: text("notes"),
   wentWell: text("wentWell"),
   needsImprovement: text("needsImprovement"),
@@ -1545,7 +1554,8 @@ export const studentTrainingEntries = mysqlTable("studentTrainingEntries", {
 });
 
 export type StudentTrainingEntry = typeof studentTrainingEntries.$inferSelect;
-export type InsertStudentTrainingEntry = typeof studentTrainingEntries.$inferInsert;
+export type InsertStudentTrainingEntry =
+  typeof studentTrainingEntries.$inferInsert;
 
 /**
  * Student progress – tracks skill development over time.
@@ -1573,7 +1583,9 @@ export const studyTopics = mysqlTable("studyTopics", {
   title: varchar("title", { length: 200 }).notNull(),
   description: text("description"),
   category: varchar("category", { length: 80 }).notNull(), // riding, care, theory, safety
-  difficulty: varchar("difficulty", { length: 20 }).default("beginner").notNull(), // beginner, intermediate, advanced
+  difficulty: varchar("difficulty", { length: 20 })
+    .default("beginner")
+    .notNull(), // beginner, intermediate, advanced
   contentMd: text("contentMd"), // Markdown content (expandable later)
   sortOrder: int("sortOrder").default(0).notNull(),
   isPublished: boolean("isPublished").default(true).notNull(),
@@ -1644,7 +1656,7 @@ export const teacherAssignedTasks = mysqlTable("teacherAssignedTasks", {
   id: int("id").autoincrement().primaryKey(),
   teacherId: int("teacherId").notNull(),
   studentUserId: int("studentUserId"), // null = group assignment
-  groupId: int("groupId"),             // null = individual assignment
+  groupId: int("groupId"), // null = individual assignment
   title: varchar("title", { length: 200 }).notNull(),
   description: text("description"),
   category: varchar("category", { length: 50 }).default("care").notNull(),
@@ -1658,7 +1670,8 @@ export const teacherAssignedTasks = mysqlTable("teacherAssignedTasks", {
 });
 
 export type TeacherAssignedTask = typeof teacherAssignedTasks.$inferSelect;
-export type InsertTeacherAssignedTask = typeof teacherAssignedTasks.$inferInsert;
+export type InsertTeacherAssignedTask =
+  typeof teacherAssignedTasks.$inferInsert;
 
 /**
  * Teacher feedback on student training entries, tasks, or general progress.
@@ -1668,9 +1681,11 @@ export const teacherFeedback = mysqlTable("teacherFeedback", {
   teacherId: int("teacherId").notNull(),
   studentUserId: int("studentUserId").notNull(),
   entryType: varchar("entryType", { length: 50 }).notNull(), // training_entry, task, general, progress
-  entryId: int("entryId"),       // nullable — for general feedback
+  entryId: int("entryId"), // nullable — for general feedback
   comment: text("comment").notNull(),
-  feedbackType: varchar("feedbackType", { length: 30 }).default("general").notNull(), // good, needs_improvement, urgent, general
+  feedbackType: varchar("feedbackType", { length: 30 })
+    .default("general")
+    .notNull(), // good, needs_improvement, urgent, general
   isRead: boolean("isRead").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -1687,13 +1702,15 @@ export const learningPathwayProgress = mysqlTable("learningPathwayProgress", {
   id: int("id").autoincrement().primaryKey(),
   studentUserId: int("studentUserId").notNull(),
   pathwayLevel: varchar("pathwayLevel", { length: 30 }).notNull(), // beginner, developing, intermediate, advanced
-  itemType: varchar("itemType", { length: 30 }).notNull(),         // study_topic, scenario
+  itemType: varchar("itemType", { length: 30 }).notNull(), // study_topic, scenario
   itemSlug: varchar("itemSlug", { length: 100 }).notNull(),
   completedAt: timestamp("completedAt").defaultNow().notNull(),
 });
 
-export type LearningPathwayProgress = typeof learningPathwayProgress.$inferSelect;
-export type InsertLearningPathwayProgress = typeof learningPathwayProgress.$inferInsert;
+export type LearningPathwayProgress =
+  typeof learningPathwayProgress.$inferSelect;
+export type InsertLearningPathwayProgress =
+  typeof learningPathwayProgress.$inferInsert;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Lesson Engine — structured learning pathways with full educational content
@@ -1710,7 +1727,9 @@ export const lessonPathways = mysqlTable("lessonPathways", {
   sortOrder: int("sortOrder").default(0).notNull(),
   iconName: varchar("iconName", { length: 50 }),
   isPublished: boolean("isPublished").default(true).notNull(),
-  curriculumVersion: varchar("curriculumVersion", { length: 40 }).default("2026.1").notNull(),
+  curriculumVersion: varchar("curriculumVersion", { length: 40 })
+    .default("2026.1")
+    .notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -1740,7 +1759,9 @@ export const lessonUnits = mysqlTable("lessonUnits", {
   linkedCompetencies: text("linkedCompetencies").notNull(),
   nextLessonSlug: varchar("nextLessonSlug", { length: 150 }),
   estimatedMinutes: int("estimatedMinutes").default(15).notNull(),
-  curriculumVersion: varchar("curriculumVersion", { length: 40 }).default("2026.1").notNull(),
+  curriculumVersion: varchar("curriculumVersion", { length: 40 })
+    .default("2026.1")
+    .notNull(),
   isPublished: boolean("isPublished").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
@@ -1774,19 +1795,24 @@ export type InsertLessonCompletion = typeof lessonCompletion.$inferInsert;
  * Audit log for idempotent Academy source-curriculum imports. This records
  * content reconciliation only and never resets learner progress.
  */
-export const academyCurriculumSyncRuns = mysqlTable("academyCurriculumSyncRuns", {
-  id: int("id").autoincrement().primaryKey(),
-  curriculumVersion: varchar("curriculumVersion", { length: 40 }).notNull(),
-  pathwaysProcessed: int("pathwaysProcessed").default(0).notNull(),
-  lessonsProcessed: int("lessonsProcessed").default(0).notNull(),
-  validationErrors: int("validationErrors").default(0).notNull(),
-  validationWarnings: int("validationWarnings").default(0).notNull(),
-  summaryJson: text("summaryJson").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
+export const academyCurriculumSyncRuns = mysqlTable(
+  "academyCurriculumSyncRuns",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    curriculumVersion: varchar("curriculumVersion", { length: 40 }).notNull(),
+    pathwaysProcessed: int("pathwaysProcessed").default(0).notNull(),
+    lessonsProcessed: int("lessonsProcessed").default(0).notNull(),
+    validationErrors: int("validationErrors").default(0).notNull(),
+    validationWarnings: int("validationWarnings").default(0).notNull(),
+    summaryJson: text("summaryJson").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+);
 
-export type AcademyCurriculumSyncRun = typeof academyCurriculumSyncRuns.$inferSelect;
-export type InsertAcademyCurriculumSyncRun = typeof academyCurriculumSyncRuns.$inferInsert;
+export type AcademyCurriculumSyncRun =
+  typeof academyCurriculumSyncRuns.$inferSelect;
+export type InsertAcademyCurriculumSyncRun =
+  typeof academyCurriculumSyncRuns.$inferInsert;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Phase 2 — Competency System + Teacher Lesson Assignment + Lesson Reviews
@@ -1802,8 +1828,14 @@ export const studentCompetencies = mysqlTable("studentCompetencies", {
   competencyKey: varchar("competencyKey", { length: 100 }).notNull(),
   category: varchar("category", { length: 100 }).notNull(),
   level: varchar("level", { length: 30 }).default("beginner").notNull(),
-  status: mysqlEnum("status", ["not_assessed", "in_progress", "achieved", "needs_support"])
-    .default("not_assessed").notNull(),
+  status: mysqlEnum("status", [
+    "not_assessed",
+    "in_progress",
+    "achieved",
+    "needs_support",
+  ])
+    .default("not_assessed")
+    .notNull(),
   teacherComment: text("teacherComment"),
   signedOffBy: int("signedOffBy"),
   signedOffAt: timestamp("signedOffAt"),
@@ -1823,7 +1855,9 @@ export const teacherLessonAssignments = mysqlTable("teacherLessonAssignments", {
   teacherId: int("teacherId").notNull(),
   studentUserId: int("studentUserId"),
   groupId: int("groupId"),
-  assignmentType: mysqlEnum("assignmentType", ["lesson", "pathway"]).default("lesson").notNull(),
+  assignmentType: mysqlEnum("assignmentType", ["lesson", "pathway"])
+    .default("lesson")
+    .notNull(),
   lessonSlug: varchar("lessonSlug", { length: 150 }),
   pathwaySlug: varchar("pathwaySlug", { length: 100 }),
   dueDate: date("dueDate"),
@@ -1833,8 +1867,10 @@ export const teacherLessonAssignments = mysqlTable("teacherLessonAssignments", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
-export type TeacherLessonAssignment = typeof teacherLessonAssignments.$inferSelect;
-export type InsertTeacherLessonAssignment = typeof teacherLessonAssignments.$inferInsert;
+export type TeacherLessonAssignment =
+  typeof teacherLessonAssignments.$inferSelect;
+export type InsertTeacherLessonAssignment =
+  typeof teacherLessonAssignments.$inferInsert;
 
 /**
  * Lesson reviews — teacher review of a student's lesson completion, with
@@ -1847,7 +1883,8 @@ export const lessonReviews = mysqlTable("lessonReviews", {
   lessonSlug: varchar("lessonSlug", { length: 150 }).notNull(),
   lessonCompletionId: int("lessonCompletionId"),
   reviewStatus: mysqlEnum("reviewStatus", ["satisfactory", "needs_improvement"])
-    .default("satisfactory").notNull(),
+    .default("satisfactory")
+    .notNull(),
   feedback: text("feedback"),
   recommendedNextLesson: varchar("recommendedNextLesson", { length: 150 }),
   competencyKey: varchar("competencyKey", { length: 100 }),
@@ -2019,4 +2056,5 @@ export const teacherStudentMessages = mysqlTable("teacherStudentMessages", {
 });
 
 export type TeacherStudentMessage = typeof teacherStudentMessages.$inferSelect;
-export type InsertTeacherStudentMessage = typeof teacherStudentMessages.$inferInsert;
+export type InsertTeacherStudentMessage =
+  typeof teacherStudentMessages.$inferInsert;

@@ -33,7 +33,8 @@ export interface CurriculumAuditReport {
 
 const NON_EMPTY = /\S/;
 const PROHIBITED_ACCREDITATION_WORDING = /\b(BHS|Pony Club)\b/i;
-const PLACEHOLDER_WORDING = /\b(todo|tbd|placeholder|lorem ipsum|coming soon)\b/i;
+const PLACEHOLDER_WORDING =
+  /\b(todo|tbd|placeholder|lorem ipsum|coming soon)\b/i;
 
 function duplicateValues(values: string[]): Set<string> {
   const seen = new Set<string>();
@@ -127,7 +128,9 @@ export function auditAcademyCurriculum(
   const issues: CurriculumAuditIssue[] = [];
   const pathwaySlugs = new Set(pathways.map((pathway) => pathway.slug));
 
-  for (const duplicate of Array.from(duplicateValues(pathways.map((pathway) => pathway.slug)))) {
+  for (const duplicate of Array.from(
+    duplicateValues(pathways.map((pathway) => pathway.slug)),
+  )) {
     issue(
       issues,
       "error",
@@ -137,7 +140,9 @@ export function auditAcademyCurriculum(
     );
   }
 
-  for (const duplicate of Array.from(duplicateValues(lessons.map((lesson) => lesson.slug)))) {
+  for (const duplicate of Array.from(
+    duplicateValues(lessons.map((lesson) => lesson.slug)),
+  )) {
     issue(
       issues,
       "error",
@@ -147,9 +152,9 @@ export function auditAcademyCurriculum(
     );
   }
 
-  for (const duplicate of Array.from(duplicateValues(
-    pathways.map((pathway) => String(pathway.sortOrder)),
-  ))) {
+  for (const duplicate of Array.from(
+    duplicateValues(pathways.map((pathway) => String(pathway.sortOrder))),
+  )) {
     issue(
       issues,
       "warning",
@@ -162,10 +167,22 @@ export function auditAcademyCurriculum(
   for (const pathway of pathways) {
     const location = `pathway:${pathway.slug || "<missing>"}`;
     if (!NON_EMPTY.test(pathway.slug)) {
-      issue(issues, "error", "MISSING_PATHWAY_SLUG", location, "Pathway slug is required.");
+      issue(
+        issues,
+        "error",
+        "MISSING_PATHWAY_SLUG",
+        location,
+        "Pathway slug is required.",
+      );
     }
     if (!NON_EMPTY.test(pathway.title)) {
-      issue(issues, "error", "MISSING_PATHWAY_TITLE", location, "Pathway title is required.");
+      issue(
+        issues,
+        "error",
+        "MISSING_PATHWAY_TITLE",
+        location,
+        "Pathway title is required.",
+      );
     }
     if (!NON_EMPTY.test(pathway.description)) {
       issue(
@@ -185,7 +202,11 @@ export function auditAcademyCurriculum(
         "Pathway sort order must be a non-negative integer.",
       );
     }
-    if (PROHIBITED_ACCREDITATION_WORDING.test(`${pathway.title} ${pathway.description}`)) {
+    if (
+      PROHIBITED_ACCREDITATION_WORDING.test(
+        `${pathway.title} ${pathway.description}`,
+      )
+    ) {
       issue(
         issues,
         "warning",
@@ -203,7 +224,13 @@ export function auditAcademyCurriculum(
     const location = `lesson:${lesson.slug || "<missing>"}`;
 
     if (!NON_EMPTY.test(lesson.slug)) {
-      issue(issues, "error", "MISSING_LESSON_SLUG", location, "Lesson slug is required.");
+      issue(
+        issues,
+        "error",
+        "MISSING_LESSON_SLUG",
+        location,
+        "Lesson slug is required.",
+      );
     }
     if (!pathwaySlugs.has(lesson.pathwaySlug)) {
       issue(
@@ -224,10 +251,22 @@ export function auditAcademyCurriculum(
       );
     }
     if (!NON_EMPTY.test(lesson.title)) {
-      issue(issues, "error", "MISSING_TITLE", location, "Lesson title is required.");
+      issue(
+        issues,
+        "error",
+        "MISSING_TITLE",
+        location,
+        "Lesson title is required.",
+      );
     }
     if (!NON_EMPTY.test(lesson.category)) {
-      issue(issues, "error", "MISSING_CATEGORY", location, "Lesson category is required.");
+      issue(
+        issues,
+        "error",
+        "MISSING_CATEGORY",
+        location,
+        "Lesson category is required.",
+      );
     }
     if (!Number.isInteger(lesson.sortOrder) || lesson.sortOrder < 0) {
       issue(
@@ -238,7 +277,10 @@ export function auditAcademyCurriculum(
         "Lesson sort order must be a non-negative integer.",
       );
     }
-    if (lesson.objectives.length === 0 || lesson.objectives.some((value) => !NON_EMPTY.test(value))) {
+    if (
+      lesson.objectives.length === 0 ||
+      lesson.objectives.some((value) => !NON_EMPTY.test(value))
+    ) {
       issue(
         issues,
         "error",
@@ -248,9 +290,18 @@ export function auditAcademyCurriculum(
       );
     }
     if (!NON_EMPTY.test(lesson.content)) {
-      issue(issues, "error", "MISSING_CONTENT", location, "Detailed lesson content is required.");
+      issue(
+        issues,
+        "error",
+        "MISSING_CONTENT",
+        location,
+        "Detailed lesson content is required.",
+      );
     }
-    if (lesson.keyPoints.length === 0 || lesson.keyPoints.some((value) => !NON_EMPTY.test(value))) {
+    if (
+      lesson.keyPoints.length === 0 ||
+      lesson.keyPoints.some((value) => !NON_EMPTY.test(value))
+    ) {
       issue(
         issues,
         "error",
@@ -260,7 +311,13 @@ export function auditAcademyCurriculum(
       );
     }
     if (!NON_EMPTY.test(lesson.safetyNote)) {
-      issue(issues, "warning", "MISSING_SAFETY_NOTE", location, "Safety guidance is missing.");
+      issue(
+        issues,
+        "warning",
+        "MISSING_SAFETY_NOTE",
+        location,
+        "Safety guidance is missing.",
+      );
     }
     if (!NON_EMPTY.test(lesson.practicalApplication)) {
       issue(
@@ -342,7 +399,10 @@ export function auditAcademyCurriculum(
           "Knowledge-check question text is required.",
         );
       }
-      if (question.options.length < 2 || question.options.some((option) => !NON_EMPTY.test(option))) {
+      if (
+        question.options.length < 2 ||
+        question.options.some((option) => !NON_EMPTY.test(option))
+      ) {
         issue(
           issues,
           "error",
@@ -391,7 +451,9 @@ export function auditAcademyCurriculum(
 
   const facts = getCurriculumFacts(pathways, lessons);
   const errors = issues.filter((entry) => entry.severity === "error").length;
-  const warnings = issues.filter((entry) => entry.severity === "warning").length;
+  const warnings = issues.filter(
+    (entry) => entry.severity === "warning",
+  ).length;
 
   return {
     generatedAt,

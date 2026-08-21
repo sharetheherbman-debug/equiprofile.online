@@ -18,7 +18,9 @@ describe("EquiProfile Academy curriculum integrity", () => {
     expect(report.summary.pathways).toBe(15);
     expect(report.summary.lessons).toBe(LESSON_UNITS.length);
     expect(report.summary.knowledgeChecks).toBeGreaterThan(0);
-    expect(report.summary.errors, JSON.stringify(report.issues, null, 2)).toBe(0);
+    expect(report.summary.errors, JSON.stringify(report.issues, null, 2)).toBe(
+      0,
+    );
   });
 
   it("derives pathway and level totals from the live source curriculum", () => {
@@ -27,10 +29,16 @@ describe("EquiProfile Academy curriculum integrity", () => {
     expect(facts.orderedPathwaySlugs).toHaveLength(15);
     expect(facts.totalLessons).toBe(LESSON_UNITS.length);
     expect(
-      Object.values(facts.lessonsByPathway).reduce((sum, count) => sum + count, 0),
+      Object.values(facts.lessonsByPathway).reduce(
+        (sum, count) => sum + count,
+        0,
+      ),
     ).toBe(LESSON_UNITS.length);
     expect(
-      Object.values(facts.lessonsByLevel).reduce((sum, count) => sum + count, 0),
+      Object.values(facts.lessonsByLevel).reduce(
+        (sum, count) => sum + count,
+        0,
+      ),
     ).toBe(LESSON_UNITS.length);
   });
 
@@ -40,7 +48,9 @@ describe("EquiProfile Academy curriculum integrity", () => {
 
     const resolved = resolveCanonicalLesson(LESSON_UNITS, sourceLesson.slug);
     expect(resolved).toEqual(sourceLesson);
-    expect(resolveCanonicalLesson(LESSON_UNITS, "not-a-real-lesson")).toBeNull();
+    expect(
+      resolveCanonicalLesson(LESSON_UNITS, "not-a-real-lesson"),
+    ).toBeNull();
   });
 
   it("calculates knowledge-check scores from server-held answer keys", () => {
@@ -48,7 +58,9 @@ describe("EquiProfile Academy curriculum integrity", () => {
     expect(lesson).toBeDefined();
     if (!lesson) return;
 
-    const correctAnswers = lesson.knowledgeCheck.map((question) => question.correctIndex);
+    const correctAnswers = lesson.knowledgeCheck.map(
+      (question) => question.correctIndex,
+    );
     const result = calculateKnowledgeCheckScore(lesson, correctAnswers);
 
     expect(result.total).toBe(lesson.knowledgeCheck.length);

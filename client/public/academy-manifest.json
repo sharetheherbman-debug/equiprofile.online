@@ -77,21 +77,21 @@
       "short_name": "Academy",
       "description": "Open EquiProfile Academy",
       "url": "/academy",
-      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Student Dashboard",
       "short_name": "Student",
       "description": "Open the student learning dashboard",
       "url": "/student-dashboard",
-      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Teacher Dashboard",
       "short_name": "Teacher",
       "description": "Open the teacher dashboard",
       "url": "/teacher-dashboard",
-      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ],
   "screenshots": [],

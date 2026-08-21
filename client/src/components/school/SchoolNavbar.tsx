@@ -79,7 +79,11 @@ export function SchoolNavbar() {
                     <motion.div
                       layoutId="academy-nav-indicator"
                       className="absolute bottom-0 left-3 right-3 h-[2px] bg-gradient-to-r from-emerald-400 to-[#3b82f6] rounded-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
                     />
                   )}
                 </Link>
@@ -127,7 +131,11 @@ export function SchoolNavbar() {
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
           </button>
         </div>
       </div>
@@ -160,7 +168,10 @@ export function SchoolNavbar() {
               ))}
               <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-white/10">
                 {isAuthenticated ? (
-                  <Link href="/student-dashboard" onClick={() => setMobileOpen(false)}>
+                  <Link
+                    href="/student-dashboard"
+                    onClick={() => setMobileOpen(false)}
+                  >
                     <Button className="w-full bg-white/10 hover:bg-white/15 text-white border border-white/10">
                       Dashboard
                     </Button>
@@ -168,11 +179,17 @@ export function SchoolNavbar() {
                 ) : (
                   <>
                     <Link href="/login" onClick={() => setMobileOpen(false)}>
-                      <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+                      <Button
+                        variant="outline"
+                        className="w-full border-white/20 text-white hover:bg-white/10"
+                      >
                         Log In
                       </Button>
                     </Link>
-                    <Link href="/academy/contact" onClick={() => setMobileOpen(false)}>
+                    <Link
+                      href="/academy/contact"
+                      onClick={() => setMobileOpen(false)}
+                    >
                       <Button className="w-full bg-gradient-to-r from-[#2d6a4f] to-[#1e4d8c] text-white">
                         Book Demo
                       </Button>

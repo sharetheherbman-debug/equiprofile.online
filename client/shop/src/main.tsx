@@ -7,17 +7,24 @@ import "@/index.css";
 import ShopApp from "./ShopApp";
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 60_000, refetchOnWindowFocus: false } },
+  defaultOptions: {
+    queries: { staleTime: 60_000, refetchOnWindowFocus: false },
+  },
 });
 
 const client = trpc.createClient({
-  links: [httpBatchLink({
-    url: "/api/trpc",
-    transformer: superjson,
-    fetch(input, init) {
-      return globalThis.fetch(input, { ...(init ?? {}), credentials: "include" });
-    },
-  })],
+  links: [
+    httpBatchLink({
+      url: "/api/trpc",
+      transformer: superjson,
+      fetch(input, init) {
+        return globalThis.fetch(input, {
+          ...(init ?? {}),
+          credentials: "include",
+        });
+      },
+    }),
+  ],
 });
 
 createRoot(document.getElementById("root")!).render(

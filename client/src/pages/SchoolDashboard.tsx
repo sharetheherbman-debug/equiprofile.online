@@ -30,25 +30,33 @@ import {
 // ── Design tokens ────────────────────────────────────────────────────────────
 const CARD = "bg-[#111827] border border-white/[0.06] rounded-xl p-5";
 
-function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function Card({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <div className={`${CARD} ${className}`}>{children}</div>;
 }
 
 // ── Onboarding Wizard ────────────────────────────────────────────────────────
 type WizardStep = "welcome" | "details" | "invite" | "done";
 
-function OnboardingWizard({
-  onComplete,
-}: {
-  onComplete: () => void;
-}) {
+function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState<WizardStep>("welcome");
   const [orgName, setOrgName] = useState("");
   const [orgDesc, setOrgDesc] = useState("");
-  const [orgType, setOrgType] = useState<"riding_school" | "college" | "training_centre" | "other">("riding_school");
-  const [invites, setInvites] = useState<Array<{ email: string; role: "teacher" | "student" }>>([]);
+  const [orgType, setOrgType] = useState<
+    "riding_school" | "college" | "training_centre" | "other"
+  >("riding_school");
+  const [invites, setInvites] = useState<
+    Array<{ email: string; role: "teacher" | "student" }>
+  >([]);
   const [currentEmail, setCurrentEmail] = useState("");
-  const [currentRole, setCurrentRole] = useState<"teacher" | "student">("teacher");
+  const [currentRole, setCurrentRole] = useState<"teacher" | "student">(
+    "teacher",
+  );
   const [orgCreated, setOrgCreated] = useState(false);
 
   const createOrgMutation = trpc.school.createOrganization.useMutation({
@@ -74,7 +82,10 @@ function OnboardingWizard({
   const sendAllInvites = async () => {
     for (const invite of invites) {
       try {
-        await inviteMutation.mutateAsync({ email: invite.email, role: invite.role });
+        await inviteMutation.mutateAsync({
+          email: invite.email,
+          role: invite.role,
+        });
       } catch {
         // Continue with remaining invites
       }
@@ -100,7 +111,9 @@ function OnboardingWizard({
               {idx < stepIndex ? <Check className="w-4 h-4" /> : idx + 1}
             </div>
             {idx < 3 && (
-              <div className={`w-8 h-0.5 ${idx < stepIndex ? "bg-indigo-500" : "bg-white/[0.06]"}`} />
+              <div
+                className={`w-8 h-0.5 ${idx < stepIndex ? "bg-indigo-500" : "bg-white/[0.06]"}`}
+              />
             )}
           </div>
         ))}
@@ -112,17 +125,36 @@ function OnboardingWizard({
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#3a93b8] to-[#5b8def] flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#5b8def]/30">
             <Building2 className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">Welcome to EquiProfile Academy</h2>
+          <h2 className="text-2xl font-bold text-white mb-3">
+            Welcome to EquiProfile Academy
+          </h2>
           <p className="text-gray-400 mb-2 max-w-md mx-auto">
-            Set up your Academy organisation in a few simple steps. You'll be able to manage teachers, students, and learning content all from one place.
+            Set up your Academy organisation in a few simple steps. You'll be
+            able to manage teachers, students, and learning content all from one
+            place.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-8 mb-8">
             {[
-              { icon: BookOpen, label: "15 Pathways", desc: "Structured equestrian learning" },
-              { icon: Users, label: "Seat Management", desc: "Add teachers & students" },
-              { icon: GraduationCap, label: "Track Progress", desc: "Learning records & feedback" },
+              {
+                icon: BookOpen,
+                label: "15 Pathways",
+                desc: "Structured equestrian learning",
+              },
+              {
+                icon: Users,
+                label: "Seat Management",
+                desc: "Add teachers & students",
+              },
+              {
+                icon: GraduationCap,
+                label: "Track Progress",
+                desc: "Learning records & feedback",
+              },
             ].map(({ icon: Icon, label, desc }) => (
-              <div key={label} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center">
+              <div
+                key={label}
+                className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center"
+              >
                 <Icon className="w-6 h-6 text-indigo-400 mx-auto mb-2" />
                 <p className="text-xs font-semibold text-white">{label}</p>
                 <p className="text-[10px] text-gray-500">{desc}</p>
@@ -141,13 +173,19 @@ function OnboardingWizard({
       {/* Step: Details */}
       {step === "details" && (
         <div>
-          <h2 className="text-xl font-bold text-white mb-1 text-center">Organisation Details</h2>
-          <p className="text-sm text-gray-400 mb-6 text-center">Tell us about your equestrian organisation</p>
+          <h2 className="text-xl font-bold text-white mb-1 text-center">
+            Organisation Details
+          </h2>
+          <p className="text-sm text-gray-400 mb-6 text-center">
+            Tell us about your equestrian organisation
+          </p>
 
           <Card>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs text-gray-400 mb-1.5">Organisation Name *</label>
+                <label className="block text-xs text-gray-400 mb-1.5">
+                  Organisation Name *
+                </label>
                 <input
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
@@ -157,7 +195,9 @@ function OnboardingWizard({
               </div>
 
               <div>
-                <label className="block text-xs text-gray-400 mb-1.5">Type of Organisation</label>
+                <label className="block text-xs text-gray-400 mb-1.5">
+                  Type of Organisation
+                </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { value: "riding_school", label: "Riding School" },
@@ -182,7 +222,9 @@ function OnboardingWizard({
               </div>
 
               <div>
-                <label className="block text-xs text-gray-400 mb-1.5">Description (optional)</label>
+                <label className="block text-xs text-gray-400 mb-1.5">
+                  Description (optional)
+                </label>
                 <textarea
                   value={orgDesc}
                   onChange={(e) => setOrgDesc(e.target.value)}
@@ -194,7 +236,8 @@ function OnboardingWizard({
 
               {createOrgMutation.isError && (
                 <p className="text-xs text-red-400 flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" /> {createOrgMutation.error?.message || "Failed to create"}
+                  <AlertCircle className="w-3 h-3" />{" "}
+                  {createOrgMutation.error?.message || "Failed to create"}
                 </p>
               )}
 
@@ -206,14 +249,23 @@ function OnboardingWizard({
                   <ChevronLeft className="w-4 h-4 inline mr-1" /> Back
                 </button>
                 <button
-                  onClick={() => createOrgMutation.mutate({ name: orgName.trim(), description: orgDesc.trim() || undefined })}
+                  onClick={() =>
+                    createOrgMutation.mutate({
+                      name: orgName.trim(),
+                      description: orgDesc.trim() || undefined,
+                    })
+                  }
                   disabled={!orgName.trim() || createOrgMutation.isPending}
                   className="flex-1 px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-500 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                 >
                   {createOrgMutation.isPending ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Creating...</>
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Creating...
+                    </>
                   ) : (
-                    <>Create Organisation <ChevronRight className="w-4 h-4" /></>
+                    <>
+                      Create Organisation <ChevronRight className="w-4 h-4" />
+                    </>
                   )}
                 </button>
               </div>
@@ -227,8 +279,12 @@ function OnboardingWizard({
         <div>
           <div className="text-center mb-6">
             <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
-            <h2 className="text-xl font-bold text-white mb-1">Academy Organisation Created!</h2>
-            <p className="text-sm text-gray-400">Now invite your team. You can also do this later.</p>
+            <h2 className="text-xl font-bold text-white mb-1">
+              Academy Organisation Created!
+            </h2>
+            <p className="text-sm text-gray-400">
+              Now invite your team. You can also do this later.
+            </p>
           </div>
 
           <Card>
@@ -244,7 +300,9 @@ function OnboardingWizard({
                 />
                 <select
                   value={currentRole}
-                  onChange={(e) => setCurrentRole(e.target.value as "teacher" | "student")}
+                  onChange={(e) =>
+                    setCurrentRole(e.target.value as "teacher" | "student")
+                  }
                   className="bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500/40"
                 >
                   <option value="teacher">Teacher</option>
@@ -262,10 +320,15 @@ function OnboardingWizard({
               {invites.length > 0 && (
                 <div className="space-y-2">
                   {invites.map((invite) => (
-                    <div key={invite.email} className="flex items-center gap-3 py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                    <div
+                      key={invite.email}
+                      className="flex items-center gap-3 py-2 px-3 rounded-lg bg-white/[0.02] border border-white/[0.04]"
+                    >
                       <Mail className="w-4 h-4 text-gray-500 shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-white truncate">{invite.email}</p>
+                        <p className="text-sm text-white truncate">
+                          {invite.email}
+                        </p>
                       </div>
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-gray-400 capitalize">
                         {invite.role}
@@ -296,9 +359,15 @@ function OnboardingWizard({
                   className="flex-1 px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-500 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                 >
                   {inviteMutation.isPending ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Sending...
+                    </>
                   ) : (
-                    <>Send {invites.length} Invite{invites.length !== 1 ? "s" : ""} <ArrowRight className="w-4 h-4" /></>
+                    <>
+                      Send {invites.length} Invite
+                      {invites.length !== 1 ? "s" : ""}{" "}
+                      <ArrowRight className="w-4 h-4" />
+                    </>
                   )}
                 </button>
               </div>
@@ -313,10 +382,12 @@ function OnboardingWizard({
           <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="w-8 h-8 text-emerald-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">You're All Set!</h2>
+          <h2 className="text-2xl font-bold text-white mb-3">
+            You're All Set!
+          </h2>
           <p className="text-gray-400 mb-8 max-w-md mx-auto">
-            Your Academy organisation is ready. You can manage members, track student progress, and assign
-            learning content from your dashboard.
+            Your Academy organisation is ready. You can manage members, track
+            student progress, and assign learning content from your dashboard.
           </p>
           <button
             onClick={onComplete}
@@ -333,12 +404,22 @@ function OnboardingWizard({
 export default function SchoolDashboard() {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
-  const { data: stats, isLoading: statsLoading, refetch: refetchStats } = trpc.school.getStats.useQuery();
-  const { data: members, isLoading: membersLoading, refetch: refetchMembers } = trpc.school.listMembers.useQuery();
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    refetch: refetchStats,
+  } = trpc.school.getStats.useQuery();
+  const {
+    data: members,
+    isLoading: membersLoading,
+    refetch: refetchMembers,
+  } = trpc.school.listMembers.useQuery();
 
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<"teacher" | "student">("student");
+  const [inviteRole, setInviteRole] = useState<"teacher" | "student">(
+    "student",
+  );
 
   const inviteMutation = trpc.school.inviteMember.useMutation({
     onSuccess: () => {
@@ -348,7 +429,10 @@ export default function SchoolDashboard() {
     },
   });
   const removeMutation = trpc.school.removeMember.useMutation({
-    onSuccess: () => { refetchMembers(); refetchStats(); },
+    onSuccess: () => {
+      refetchMembers();
+      refetchStats();
+    },
   });
 
   if (statsLoading) {
@@ -360,7 +444,9 @@ export default function SchoolDashboard() {
   }
 
   const org = stats?.organization;
-  const teachers = (members ?? []).filter((m: any) => m.role === "teacher" || m.role === "school_owner");
+  const teachers = (members ?? []).filter(
+    (m: any) => m.role === "teacher" || m.role === "school_owner",
+  );
   const students = (members ?? []).filter((m: any) => m.role === "student");
 
   return (
@@ -373,8 +459,12 @@ export default function SchoolDashboard() {
               <Building2 className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white">Academy Dashboard</h1>
-              <p className="text-xs text-gray-500">{org?.name ?? "Set up your Academy"}</p>
+              <h1 className="text-lg font-bold text-white">
+                Academy Dashboard
+              </h1>
+              <p className="text-xs text-gray-500">
+                {org?.name ?? "Set up your Academy"}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -399,16 +489,33 @@ export default function SchoolDashboard() {
       <main className="max-w-6xl mx-auto px-6 py-8 space-y-6">
         {!org ? (
           // ── Onboarding Wizard ──────────────────────────────────────────
-          <OnboardingWizard onComplete={() => { refetchStats(); refetchMembers(); }} />
+          <OnboardingWizard
+            onComplete={() => {
+              refetchStats();
+              refetchMembers();
+            }}
+          />
         ) : (
           // ── Organization Dashboard ────────────────────────────────────
           <>
             {/* Stats row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard label="Plan" value={org.planTier.replace(/_/g, " ").toUpperCase()} />
-              <StatCard label="Teachers" value={`${stats?.teacherCount ?? 0} / ${org.maxTeachers}`} />
-              <StatCard label="Students" value={`${stats?.studentCount ?? 0} / ${org.maxStudents}`} />
-              <StatCard label="Pending Invites" value={String(stats?.pendingInviteCount ?? 0)} />
+              <StatCard
+                label="Plan"
+                value={org.planTier.replace(/_/g, " ").toUpperCase()}
+              />
+              <StatCard
+                label="Teachers"
+                value={`${stats?.teacherCount ?? 0} / ${org.maxTeachers}`}
+              />
+              <StatCard
+                label="Students"
+                value={`${stats?.studentCount ?? 0} / ${org.maxStudents}`}
+              />
+              <StatCard
+                label="Pending Invites"
+                value={String(stats?.pendingInviteCount ?? 0)}
+              />
             </div>
 
             {/* Invite button */}
@@ -430,7 +537,9 @@ export default function SchoolDashboard() {
               <Card>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs text-gray-400 mb-1">Email Address</label>
+                    <label className="block text-xs text-gray-400 mb-1">
+                      Email Address
+                    </label>
                     <input
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
@@ -440,7 +549,9 @@ export default function SchoolDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-400 mb-1">Role</label>
+                    <label className="block text-xs text-gray-400 mb-1">
+                      Role
+                    </label>
                     <select
                       value={inviteRole}
                       onChange={(e) => setInviteRole(e.target.value as any)}
@@ -454,7 +565,10 @@ export default function SchoolDashboard() {
                     <button
                       onClick={() => {
                         if (inviteEmail.trim()) {
-                          inviteMutation.mutate({ email: inviteEmail.trim(), role: inviteRole });
+                          inviteMutation.mutate({
+                            email: inviteEmail.trim(),
+                            role: inviteRole,
+                          });
                         }
                       }}
                       disabled={!inviteEmail.trim() || inviteMutation.isPending}
@@ -472,12 +586,14 @@ export default function SchoolDashboard() {
                   </div>
                   {inviteMutation.isSuccess && (
                     <p className="text-xs text-emerald-400 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Invite sent successfully!
+                      <CheckCircle2 className="w-3 h-3" /> Invite sent
+                      successfully!
                     </p>
                   )}
                   {inviteMutation.isError && (
                     <p className="text-xs text-red-400 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" /> {inviteMutation.error?.message || "Failed to send invite"}
+                      <AlertCircle className="w-3 h-3" />{" "}
+                      {inviteMutation.error?.message || "Failed to send invite"}
                     </p>
                   )}
                 </div>
@@ -493,7 +609,9 @@ export default function SchoolDashboard() {
               {membersLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin text-indigo-400 mx-auto" />
               ) : teachers.length === 0 ? (
-                <p className="text-xs text-gray-500 text-center py-4">No teachers yet. Invite one above.</p>
+                <p className="text-xs text-gray-500 text-center py-4">
+                  No teachers yet. Invite one above.
+                </p>
               ) : (
                 <div className="space-y-2">
                   {teachers.map((m: any) => (
@@ -502,7 +620,11 @@ export default function SchoolDashboard() {
                       name={m.userName ?? m.userEmail ?? "Unknown"}
                       role={m.role}
                       joinedAt={m.joinedAt}
-                      onRemove={m.role !== "school_owner" ? () => removeMutation.mutate({ memberId: m.id }) : undefined}
+                      onRemove={
+                        m.role !== "school_owner"
+                          ? () => removeMutation.mutate({ memberId: m.id })
+                          : undefined
+                      }
                     />
                   ))}
                 </div>
@@ -518,7 +640,9 @@ export default function SchoolDashboard() {
               {membersLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin text-indigo-400 mx-auto" />
               ) : students.length === 0 ? (
-                <p className="text-xs text-gray-500 text-center py-4">No students yet. Invite them above.</p>
+                <p className="text-xs text-gray-500 text-center py-4">
+                  No students yet. Invite them above.
+                </p>
               ) : (
                 <div className="space-y-2">
                   {students.map((m: any) => (
@@ -551,7 +675,12 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function MemberRow({ name, role, joinedAt, onRemove }: {
+function MemberRow({
+  name,
+  role,
+  joinedAt,
+  onRemove,
+}: {
   name: string;
   role: string;
   joinedAt: string | Date | null;
@@ -565,7 +694,9 @@ function MemberRow({ name, role, joinedAt, onRemove }: {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-white truncate">{name}</p>
         <p className="text-[10px] text-gray-500">
-          {role === "school_owner" ? "Academy Owner" : role.charAt(0).toUpperCase() + role.slice(1)}
+          {role === "school_owner"
+            ? "Academy Owner"
+            : role.charAt(0).toUpperCase() + role.slice(1)}
           {joinedAt && <> · Joined {new Date(joinedAt).toLocaleDateString()}</>}
         </p>
       </div>

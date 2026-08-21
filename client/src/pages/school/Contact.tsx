@@ -42,8 +42,7 @@ const benefits = [
   {
     icon: CheckCircle2,
     title: `${FREE_TRIAL_DAYS}-Day Trial Configuration`,
-    description:
-      `The current EquiProfile pricing source of truth defines a ${FREE_TRIAL_DAYS}-day free trial across plans. Current commercial terms can be confirmed during your enquiry.`,
+    description: `The current EquiProfile pricing source of truth defines a ${FREE_TRIAL_DAYS}-day free trial across plans. Current commercial terms can be confirmed during your enquiry.`,
   },
 ];
 
@@ -58,7 +57,9 @@ export default function SchoolContact() {
   const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -86,7 +87,8 @@ export default function SchoolContact() {
       if (!res.ok) throw new Error("Failed to send message");
 
       toast.success("Academy demo request sent", {
-        description: "We received your enquiry and can follow up using the email address you supplied.",
+        description:
+          "We received your enquiry and can follow up using the email address you supplied.",
       });
 
       setFormData({
@@ -135,8 +137,7 @@ export default function SchoolContact() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
           >
-            Discuss the{" "}
-            <span className="text-[#10b981]">Academy</span>
+            Discuss the <span className="text-[#10b981]">Academy</span>
           </motion.h1>
 
           <motion.p
@@ -169,7 +170,10 @@ export default function SchoolContact() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-[#1e293b] mb-2">
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-[#1e293b] mb-2"
+                      >
                         Your Name
                       </label>
                       <input
@@ -184,7 +188,10 @@ export default function SchoolContact() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-[#1e293b] mb-2">
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-[#1e293b] mb-2"
+                      >
                         Email Address
                       </label>
                       <input
@@ -202,7 +209,10 @@ export default function SchoolContact() {
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="schoolName" className="block text-sm font-medium text-[#1e293b] mb-2">
+                      <label
+                        htmlFor="schoolName"
+                        className="block text-sm font-medium text-[#1e293b] mb-2"
+                      >
                         Riding School / Organisation
                       </label>
                       <input
@@ -217,7 +227,10 @@ export default function SchoolContact() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="numberOfStudents" className="block text-sm font-medium text-[#1e293b] mb-2">
+                      <label
+                        htmlFor="numberOfStudents"
+                        className="block text-sm font-medium text-[#1e293b] mb-2"
+                      >
                         Number of Students
                       </label>
                       <select
@@ -238,7 +251,10 @@ export default function SchoolContact() {
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-[#1e293b] mb-2">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-[#1e293b] mb-2"
+                    >
                       What would you like to see?
                     </label>
                     <textarea
@@ -311,9 +327,7 @@ export default function SchoolContact() {
               </div>
 
               <div className="bg-gradient-to-br from-[#1e3a5f] to-[#1e4d8c] rounded-2xl p-7 text-white">
-                <h3 className="font-serif text-lg font-bold mb-5">
-                  Email
-                </h3>
+                <h3 className="font-serif text-lg font-bold mb-5">Email</h3>
                 <a
                   href="mailto:schools@equiprofile.online"
                   className="flex items-center gap-3 text-sm font-medium text-white hover:text-[#10b981] transition-colors"

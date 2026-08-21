@@ -43,17 +43,26 @@ export function SchoolFooter() {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/academy/features" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/academy/features"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Features
                 </Link>
               </li>
               <li>
-                <Link href="/academy/pricing" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/academy/pricing"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link href="/academy/contact" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/academy/contact"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Book a Demo
                 </Link>
               </li>
@@ -66,12 +75,18 @@ export function SchoolFooter() {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/academy/about" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/academy/about"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/academy/contact" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/academy/contact"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Contact
                 </Link>
               </li>
@@ -84,12 +99,18 @@ export function SchoolFooter() {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/privacy"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/terms"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Terms of Service
                 </Link>
               </li>
@@ -106,7 +127,8 @@ export function SchoolFooter() {
               rel="noopener noreferrer"
               className="hover:text-gray-300 transition-colors"
             >
-              Amarkt<span className="text-emerald-400 font-semibold">AI</span> Network
+              Amarkt<span className="text-emerald-400 font-semibold">AI</span>{" "}
+              Network
             </a>
           </p>
           <a

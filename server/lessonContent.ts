@@ -141,21 +141,24 @@ export const LESSON_PATHWAYS: LessonPathwayData[] = [
   {
     slug: "handling-groundwork",
     title: "Handling & Groundwork",
-    description: "Master the essential skills of handling horses safely on the ground, including leading, tying up, turning out, and lungeing techniques.",
+    description:
+      "Master the essential skills of handling horses safely on the ground, including leading, tying up, turning out, and lungeing techniques.",
     sortOrder: 13,
     iconName: "Hand",
   },
   {
     slug: "nutrition-feeding",
     title: "Nutrition & Feeding",
-    description: "Understand equine nutrition principles, feed types, feeding routines, and how to create balanced diets for different horses and workloads.",
+    description:
+      "Understand equine nutrition principles, feed types, feeding routines, and how to create balanced diets for different horses and workloads.",
     sortOrder: 14,
     iconName: "Apple",
   },
   {
     slug: "equine-welfare-ethics",
     title: "Equine Welfare & Ethics",
-    description: "Explore the ethical responsibilities of horse ownership and care, including the Five Freedoms, welfare legislation, and responsible horsemanship.",
+    description:
+      "Explore the ethical responsibilities of horse ownership and care, including the Five Freedoms, welfare legislation, and responsible horsemanship.",
     sortOrder: 15,
     iconName: "Heart",
   },
@@ -256,8 +259,7 @@ Knowing these terms allows you to communicate clearly with instructors, vets, an
           "The coronet band is the ring of soft tissue at the top of the hoof wall from which the hoof grows. Injury to the coronet band can cause permanent hoof defects.",
       },
       {
-        question:
-          "Where would you find the 'dock' on a horse?",
+        question: "Where would you find the 'dock' on a horse?",
         options: [
           "Under the chin",
           "At the point where the tail begins",
@@ -269,7 +271,8 @@ Knowing these terms allows you to communicate clearly with instructors, vets, an
           "The dock is the muscular root of the tail, where the tail hair grows from the end of the spine.",
       },
       {
-        question: "What term describes the soft, flexible end of a horse's nose including the nostrils and lips?",
+        question:
+          "What term describes the soft, flexible end of a horse's nose including the nostrils and lips?",
         options: ["The jowl", "The crest", "The muzzle", "The gullet"],
         correctIndex: 2,
         explanation:
@@ -362,7 +365,8 @@ Horses living out at grass should not be groomed as thoroughly as stabled horses
     ],
     knowledgeCheck: [
       {
-        question: "Which grooming tool should be used in circular motions on muscular areas to loosen mud?",
+        question:
+          "Which grooming tool should be used in circular motions on muscular areas to loosen mud?",
         options: [
           "The dandy brush",
           "The body brush",
@@ -386,7 +390,8 @@ Horses living out at grass should not be groomed as thoroughly as stabled horses
           "Always pick out from heel to toe to avoid pushing stones or debris into the sensitive frog and sulci of the hoof.",
       },
       {
-        question: "Why should a grass-kept horse not be groomed as thoroughly as a stabled horse?",
+        question:
+          "Why should a grass-kept horse not be groomed as thoroughly as a stabled horse?",
         options: [
           "They do not get as dirty",
           "Their natural coat oils provide waterproofing and insulation",
@@ -505,7 +510,8 @@ Regularly assess your horse's body condition using a scoring system (typically 0
     ],
     knowledgeCheck: [
       {
-        question: "What percentage of body weight should a horse receive in forage daily as a minimum?",
+        question:
+          "What percentage of body weight should a horse receive in forage daily as a minimum?",
         options: ["0.5%", "1.0%", "1.5%", "3.0%"],
         correctIndex: 2,
         explanation:
@@ -525,18 +531,14 @@ Regularly assess your horse's body condition using a scoring system (typically 0
       },
       {
         question: "Which of the following is a 'straight' feed?",
-        options: [
-          "A competition cube",
-          "A coarse mix",
-          "Oats",
-          "A balancer",
-        ],
+        options: ["A competition cube", "A coarse mix", "Oats", "A balancer"],
         correctIndex: 2,
         explanation:
           "Straights are single, unprocessed ingredients such as oats, barley or sugar beet pulp. They are not pre-balanced and require nutritional knowledge to feed correctly.",
       },
       {
-        question: "Why is it important to feed by weight rather than by volume?",
+        question:
+          "Why is it important to feed by weight rather than by volume?",
         options: [
           "Horses prefer weighed feeds",
           "Different feeds have different densities, so a scoop of oats weighs less than a scoop of cubes",
@@ -640,7 +642,8 @@ Horses lose electrolytes (sodium, chloride, potassium, calcium, magnesium) throu
     ],
     knowledgeCheck: [
       {
-        question: "How much water does an average 500 kg horse at rest typically drink per day?",
+        question:
+          "How much water does an average 500 kg horse at rest typically drink per day?",
         options: [
           "5–10 litres",
           "10–20 litres",
@@ -676,7 +679,8 @@ Horses lose electrolytes (sodium, chloride, potassium, calcium, magnesium) throu
           "When a horse is dehydrated, the body reabsorbs water from the large intestine, causing the gut contents to become dry and compacted, leading to impaction colic.",
       },
       {
-        question: "What is the ideal capillary refill time for a healthy horse?",
+        question:
+          "What is the ideal capillary refill time for a healthy horse?",
         options: [
           "Less than 2 seconds",
           "3–5 seconds",
@@ -795,7 +799,8 @@ Healthy horse droppings are formed into soft balls that break on hitting the gro
           "Good airflow is critical for respiratory health. Horses are very susceptible to airway disease caused by inhaling dust, mould spores and ammonia in poorly ventilated stables.",
       },
       {
-        question: "What might it indicate if a horse's water bucket is completely full in the morning?",
+        question:
+          "What might it indicate if a horse's water bucket is completely full in the morning?",
         options: [
           "The water was topped up overnight automatically",
           "The horse may not have been drinking, which could signal illness",
@@ -928,13 +933,9 @@ Check rugs at least twice daily for slipping, rubbing or damage. Repair or repla
           "A horse cannot remove its own rug. Over-rugging causes overheating, sweating, discomfort, skin irritation and weight issues. If in doubt, it is better to slightly under-rug.",
       },
       {
-        question: "Which plant is the most common cause of equine poisoning in the UK?",
-        options: [
-          "Buttercups",
-          "Ragwort",
-          "Clover",
-          "Dandelions",
-        ],
+        question:
+          "Which plant is the most common cause of equine poisoning in the UK?",
+        options: ["Buttercups", "Ragwort", "Clover", "Dandelions"],
         correctIndex: 1,
         explanation:
           "Ragwort is the most common cause of equine poisoning in the UK. It causes cumulative, irreversible liver damage and is particularly dangerous when dried in hay, as horses lose their ability to detect and avoid it.",
@@ -1236,7 +1237,8 @@ Always clip in a well-lit, dry area using sharp, well-maintained clippers. Clip 
           "Spring grass grows rapidly and contains high levels of fructans (sugars). For horses prone to laminitis — particularly native breeds, overweight horses, and those with EMS or PPID — this poses a serious risk. Grazing management is essential during spring.",
       },
       {
-        question: "Which clip type is most suitable for a horse in light to moderate work?",
+        question:
+          "Which clip type is most suitable for a horse in light to moderate work?",
         options: [
           "Full clip",
           "Hunter clip",
@@ -1388,7 +1390,8 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
           "Quartering is a rapid 10–15 minute grooming session designed to make the horse presentable before exercise or competition. It focuses on sponging the eyes, nostrils, and dock, picking out feet, and a light brush to remove surface dust.",
       },
       {
-        question: "Why is trimming a horse's whiskers now restricted or banned in many competitions?",
+        question:
+          "Why is trimming a horse's whiskers now restricted or banned in many competitions?",
         options: [
           "Whiskers grow back too quickly to be worth trimming",
           "Whiskers are a vital sensory organ (vibrissae) and their removal affects the horse's welfare",
@@ -1400,7 +1403,8 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
           "Whiskers (vibrissae) serve an important sensory function, helping the horse detect objects close to its muzzle. The FEI and many national governing bodies have banned their removal on welfare grounds.",
       },
       {
-        question: "Which nutrient is particularly associated with promoting a glossy coat?",
+        question:
+          "Which nutrient is particularly associated with promoting a glossy coat?",
         options: [
           "Vitamin C",
           "Calcium",
@@ -1419,7 +1423,6 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
     ],
     linkedCompetencies: ["grooming_safely", "welfare_awareness"],
   },
-
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PATHWAY 2 — Rider Foundations
@@ -1522,7 +1525,8 @@ This should only be taught under direct supervision.`,
     ],
     knowledgeCheck: [
       {
-        question: "Why should you use a mounting block rather than mounting from the ground?",
+        question:
+          "Why should you use a mounting block rather than mounting from the ground?",
         options: [
           "It is quicker",
           "It reduces strain on the horse's back and the saddle",
@@ -1800,7 +1804,8 @@ These conventions exist to prevent accidents. Horses are flight animals and can 
     ],
     knowledgeCheck: [
       {
-        question: "When two riders approach each other from opposite directions, how should they pass?",
+        question:
+          "When two riders approach each other from opposite directions, how should they pass?",
         options: [
           "Right hand to right hand",
           "Left hand to left hand",
@@ -1926,7 +1931,8 @@ The quality of a transition depends on the preparation:
           "The trot is a two-beat gait in which the horse moves its legs in diagonal pairs, with a moment of suspension between each beat.",
       },
       {
-        question: "What is the primary aid for asking a horse to move from walk to trot?",
+        question:
+          "What is the primary aid for asking a horse to move from walk to trot?",
         options: [
           "Pulling the reins forward",
           "Leaning forward",
@@ -1938,7 +1944,8 @@ The quality of a transition depends on the preparation:
           "The primary driving aid is a squeeze of both legs against the horse's sides just behind the girth. Voice and seat aids support the leg, but the leg is the main signal.",
       },
       {
-        question: "What should you do with your hands once the horse has responded to a downward transition aid?",
+        question:
+          "What should you do with your hands once the horse has responded to a downward transition aid?",
         options: [
           "Keep pulling to make sure the horse stays in walk",
           "Drop the reins completely",
@@ -2050,7 +2057,8 @@ School figures should be ridden with purpose and precision. A rider who rides ac
           "A 20-metre circle spans the full 20-metre width of a standard arena, touching each long side or the short side and the centre line.",
       },
       {
-        question: "Which rein controls the speed and limits the bend on a circle?",
+        question:
+          "Which rein controls the speed and limits the bend on a circle?",
         options: [
           "The inside rein",
           "The outside rein",
@@ -2062,7 +2070,8 @@ School figures should be ridden with purpose and precision. A rider who rides ac
           "The outside rein is the controlling rein. It limits the degree of bend, prevents the horse from falling out through the shoulder, and regulates the tempo.",
       },
       {
-        question: "What should you do with your rising trot when you change rein?",
+        question:
+          "What should you do with your rising trot when you change rein?",
         options: [
           "Continue on the same diagonal",
           "Change diagonal by sitting for two beats and rising on the other diagonal",
@@ -2081,7 +2090,6 @@ School figures should be ridden with purpose and precision. A rider who rides ac
     ],
     linkedCompetencies: ["control_at_walk", "balance_and_coordination"],
   },
-
 
   // ── Lesson 13 ─────────────────────────────────────────────────────────────
   {
@@ -2181,19 +2189,16 @@ A consistent warm-up and cool-down routine protects the horse's body, improves p
     ],
     knowledgeCheck: [
       {
-        question: "How long should the walk phase of a warm-up last as a minimum?",
-        options: [
-          "1 minute",
-          "2 minutes",
-          "5 minutes",
-          "15 minutes",
-        ],
+        question:
+          "How long should the walk phase of a warm-up last as a minimum?",
+        options: ["1 minute", "2 minutes", "5 minutes", "15 minutes"],
         correctIndex: 2,
         explanation:
           "The initial walk phase should last at least 5 minutes to allow blood flow to increase, joints to lubricate and the horse to settle mentally.",
       },
       {
-        question: "What is the purpose of walking on a long rein during the cool-down?",
+        question:
+          "What is the purpose of walking on a long rein during the cool-down?",
         options: [
           "To reward the horse for working hard",
           "To allow the heart rate to return to normal and flush waste products from the muscles",
@@ -2205,7 +2210,8 @@ A consistent warm-up and cool-down routine protects the horse's body, improves p
           "Walking on a long rein allows the heart rate to drop gradually, blood to flush lactic acid from the muscles, and the horse to stretch and relax, preventing stiffness.",
       },
       {
-        question: "What should you do if the horse feels unlevel during the warm-up?",
+        question:
+          "What should you do if the horse feels unlevel during the warm-up?",
         options: [
           "Push on — the horse will warm out of it",
           "Trot faster to loosen up the stiffness",
@@ -2315,7 +2321,8 @@ Before every ride, verify:
     ],
     knowledgeCheck: [
       {
-        question: "How much space should there be between the throatlash and the horse's jaw?",
+        question:
+          "How much space should there be between the throatlash and the horse's jaw?",
         options: [
           "Two fingers' width",
           "One finger's width",
@@ -2327,7 +2334,8 @@ Before every ride, verify:
           "The throatlash should be loose enough to fit a fist's width between the strap and the horse's jaw. This allows the horse to flex at the poll without restriction.",
       },
       {
-        question: "Why should the saddle be slid back into position rather than forward?",
+        question:
+          "Why should the saddle be slid back into position rather than forward?",
         options: [
           "Forward movement damages the saddle",
           "Sliding back ensures the hair lies flat underneath, preventing rubs",
@@ -2569,7 +2577,8 @@ Always have a **Plan B**. If the planned exercise is too difficult, have a simpl
     ],
     knowledgeCheck: [
       {
-        question: "What is the first step in teaching a foundational riding skill?",
+        question:
+          "What is the first step in teaching a foundational riding skill?",
         options: [
           "Tell the rider to copy what you do",
           "Decompose the skill into its component actions and sequence them logically",
@@ -2581,7 +2590,8 @@ Always have a **Plan B**. If the planned exercise is too difficult, have a simpl
           "Skill decomposition — breaking a complex movement into its individual parts, sequencing them, and identifying the desired feel — is essential before you can teach it clearly to someone else.",
       },
       {
-        question: "What is the most common root cause of a beginner rider gripping with their knees?",
+        question:
+          "What is the most common root cause of a beginner rider gripping with their knees?",
         options: [
           "They are deliberately trying to grip",
           "Their stirrups are too long",
@@ -2593,7 +2603,8 @@ Always have a **Plan B**. If the planned exercise is too difficult, have a simpl
           "Knee gripping is almost always a balance issue. The rider instinctively clamps on with the strongest part of their leg because they feel insecure. Addressing the underlying balance problem is more effective than simply telling them to relax their knee.",
       },
       {
-        question: "Why is imagery often more effective than direct instruction for correcting rider position?",
+        question:
+          "Why is imagery often more effective than direct instruction for correcting rider position?",
         options: [
           "Riders prefer creative language to technical terms",
           "Imagery bypasses conscious overthinking and speaks directly to the body's movement patterns",
@@ -2750,7 +2761,6 @@ Horses are extremely perceptive of human body language and emotional state. A ne
     linkedCompetencies: ["horse_behaviour_awareness", "yard_safety_awareness"],
   },
 
-
   // ── Lesson 16 ─────────────────────────────────────────────────────────────
   {
     slug: "leading-safely",
@@ -2846,7 +2856,8 @@ Leading to and from turnout is one of the highest-risk times on the yard:
           "Walking level with the horse's shoulder gives you the best control and visibility. You can see where you are going and the horse can see you.",
       },
       {
-        question: "When turning a horse while leading, which direction should the horse's head go?",
+        question:
+          "When turning a horse while leading, which direction should the horse's head go?",
         options: [
           "Toward you",
           "Away from you",
@@ -2858,7 +2869,8 @@ Leading to and from turnout is one of the highest-risk times on the yard:
           "The horse's head should be pushed away from you so the horse walks around you, keeping its body and feet out of your personal space.",
       },
       {
-        question: "What should you do if a horse bolts while you are leading it?",
+        question:
+          "What should you do if a horse bolts while you are leading it?",
         options: [
           "Hold on as tightly as possible",
           "Let go of the lead rope immediately",
@@ -3122,18 +3134,14 @@ A tidy yard is a safe yard. The discipline of putting things away, keeping paths
       },
       {
         question: "In a fire on the yard, who should be evacuated first?",
-        options: [
-          "Horses",
-          "Equipment and tack",
-          "People",
-          "Feed and hay",
-        ],
+        options: ["Horses", "Equipment and tack", "People", "Feed and hay"],
         correctIndex: 2,
         explanation:
           "People are always evacuated first. Horses are evacuated next, only if it is safe to do so. Equipment and property are never prioritised over life.",
       },
       {
-        question: "Why is rodent damage to electrical cables a concern on yards?",
+        question:
+          "Why is rodent damage to electrical cables a concern on yards?",
         options: [
           "It is unsightly",
           "Rodents may chew through insulation, exposing live wires and causing fire or electrocution",
@@ -3392,7 +3400,8 @@ The ability to think through these scenarios — identifying the hazard, assessi
           "Duty of care is a legal obligation, not just a moral one. Yard owners, instructors, staff and horse owners all have a duty to ensure the safety of others affected by their actions or omissions.",
       },
       {
-        question: "What is the most important precaution when working alone on a yard?",
+        question:
+          "What is the most important precaution when working alone on a yard?",
         options: [
           "Lock all the gates",
           "Work faster to finish quickly",
@@ -3404,7 +3413,8 @@ The ability to think through these scenarios — identifying the hazard, assessi
           "When working alone, someone must know where you are and when to expect you. If you are injured and cannot call for help, this check-in system is your safety net. Always carry a charged mobile phone.",
       },
       {
-        question: "How should a new horse be introduced to an existing herd in a field?",
+        question:
+          "How should a new horse be introduced to an existing herd in a field?",
         options: [
           "Turn it straight out and let them sort it out",
           "Introduce it gradually — first over a fence, then with supervised direct contact",
@@ -3423,7 +3433,6 @@ The ability to think through these scenarios — identifying the hazard, assessi
     ],
     linkedCompetencies: ["risk_awareness", "welfare_awareness"],
   },
-
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PATHWAY 4 — Horse Behaviour & Welfare
@@ -3519,7 +3528,8 @@ Understanding natural behaviour helps us make better management decisions:
     ],
     knowledgeCheck: [
       {
-        question: "Why do horses spook at sudden movements or unfamiliar objects?",
+        question:
+          "Why do horses spook at sudden movements or unfamiliar objects?",
         options: [
           "They are poorly trained",
           "They are being deliberately difficult",
@@ -3655,12 +3665,7 @@ While not every change in TPR requires an emergency call, the following signs wa
     knowledgeCheck: [
       {
         question: "What is the normal resting heart rate range for a horse?",
-        options: [
-          "10–20 bpm",
-          "28–44 bpm",
-          "60–80 bpm",
-          "80–120 bpm",
-        ],
+        options: ["10–20 bpm", "28–44 bpm", "60–80 bpm", "80–120 bpm"],
         correctIndex: 1,
         explanation:
           "A horse's normal resting heart rate is 28–44 beats per minute. A resting rate above 60 bpm (without recent exercise) is a cause for concern.",
@@ -3790,7 +3795,8 @@ Management strategies include:
     ],
     knowledgeCheck: [
       {
-        question: "What is the first step when introducing a new horse to a group?",
+        question:
+          "What is the first step when introducing a new horse to a group?",
         options: [
           "Turn it out directly with the group",
           "Keep it separate for a quarantine period and then introduce over a fence",
@@ -3802,7 +3808,8 @@ Management strategies include:
           "New horses should first be quarantined to check for infectious diseases, then introduced over a safe fence so horses can interact without physical contact before meeting face to face.",
       },
       {
-        question: "Why should hind shoes be removed before a field introduction?",
+        question:
+          "Why should hind shoes be removed before a field introduction?",
         options: [
           "To make the horses run slower",
           "To reduce the severity of kick injuries if the horses fight",
@@ -3967,7 +3974,6 @@ Dismissing behavioural changes as "attitude" or "laziness" without considering p
     linkedCompetencies: ["welfare_awareness", "horse_behaviour_awareness"],
   },
 
-
   // ── Lesson 25 ─────────────────────────────────────────────────────────────
   {
     slug: "horse-welfare-under-workload",
@@ -4058,7 +4064,8 @@ A horse that is brought into work after a period of rest (holiday, illness, time
     ],
     knowledgeCheck: [
       {
-        question: "What is a key indicator that a horse has been worked beyond its fitness level?",
+        question:
+          "What is a key indicator that a horse has been worked beyond its fitness level?",
         options: [
           "The horse sweats during exercise",
           "The heart rate does not return to below 60 bpm within 10 minutes of stopping",
@@ -4082,7 +4089,8 @@ A horse that is brought into work after a period of rest (holiday, illness, time
           "Overtraining is a cumulative condition resulting from excessive work without sufficient rest. It leads to declining performance, weight loss, susceptibility to illness and behavioural changes.",
       },
       {
-        question: "How should a horse be brought back into work after six weeks off?",
+        question:
+          "How should a horse be brought back into work after six weeks off?",
         options: [
           "Resume the previous workload immediately",
           "Start with intense work to build fitness quickly",
@@ -4198,7 +4206,8 @@ While waiting for the vet:
     ],
     knowledgeCheck: [
       {
-        question: "When assessing foreleg lameness, what does the horse's head do?",
+        question:
+          "When assessing foreleg lameness, what does the horse's head do?",
         options: [
           "Drops onto the lame leg",
           "Stays level throughout",
@@ -4331,7 +4340,8 @@ Regular, honest welfare assessment — ideally involving an objective third part
     ],
     knowledgeCheck: [
       {
-        question: "What is the main difference between the Five Freedoms and the Five Domains model?",
+        question:
+          "What is the main difference between the Five Freedoms and the Five Domains model?",
         options: [
           "The Five Domains apply only to competition horses",
           "The Five Freedoms focus on preventing suffering; the Five Domains also promote positive experiences",
@@ -4343,7 +4353,8 @@ Regular, honest welfare assessment — ideally involving an objective third part
           "The Five Freedoms aim to prevent suffering (freedom from hunger, pain, distress, etc.). The Five Domains model goes further by also considering positive mental states and quality of life, not just the absence of negative experiences.",
       },
       {
-        question: "When is euthanasia considered a compassionate welfare decision?",
+        question:
+          "When is euthanasia considered a compassionate welfare decision?",
         options: [
           "When the horse is old and no longer useful for riding",
           "When treatment costs exceed the horse's monetary value",
@@ -4355,7 +4366,8 @@ Regular, honest welfare assessment — ideally involving an objective third part
           "Euthanasia is a compassionate act when a horse's quality of life has deteriorated to the point where suffering outweighs any positive experiences and cannot be improved by treatment or management.",
       },
       {
-        question: "What does 'freedom to express normal behaviour' include for horses?",
+        question:
+          "What does 'freedom to express normal behaviour' include for horses?",
         options: [
           "Being able to canter at any time",
           "Sufficient space, facilities, and company of other horses",
@@ -4590,7 +4602,8 @@ A correctly fitted headcollar:
     ],
     knowledgeCheck: [
       {
-        question: "Why should you put the lead rope around the horse's neck before fitting the headcollar?",
+        question:
+          "Why should you put the lead rope around the horse's neck before fitting the headcollar?",
         options: [
           "To warm the horse's neck",
           "To provide temporary control so the horse cannot walk away",
@@ -4602,7 +4615,8 @@ A correctly fitted headcollar:
           "Looping the lead rope over the horse's neck gives you a degree of control while both hands are occupied fitting the headcollar. Without it, the horse can simply walk away.",
       },
       {
-        question: "Why must you never leave a headcollar on a horse in the field?",
+        question:
+          "Why must you never leave a headcollar on a horse in the field?",
         options: [
           "It gets dirty",
           "Other horses will chew it",
@@ -4614,7 +4628,8 @@ A correctly fitted headcollar:
           "A headcollar left on in the field can catch on fences, trees, water troughs or even the horse's own hind foot when scratching. Trapped horses can panic, sustain serious injuries or die.",
       },
       {
-        question: "How much clearance should there be between the noseband and the horse's face?",
+        question:
+          "How much clearance should there be between the noseband and the horse's face?",
         options: [
           "No gap — it should be snug",
           "One finger's width",
@@ -4633,7 +4648,6 @@ A correctly fitted headcollar:
     ],
     linkedCompetencies: ["tack_identification", "leading_safely"],
   },
-
 
   // ── Lesson 30 ─────────────────────────────────────────────────────────────
   {
@@ -4731,7 +4745,8 @@ A correctly fitted headcollar:
           "Tack cleaning is an opportunity to inspect every strap, buckle, stitch and fitting for wear and damage. Finding a problem during cleaning prevents a failure during riding.",
       },
       {
-        question: "What is the difference between saddle soap and leather conditioner?",
+        question:
+          "What is the difference between saddle soap and leather conditioner?",
         options: [
           "They are the same thing",
           "Saddle soap cleans and lightly protects; conditioner deeply nourishes the leather",
@@ -4848,7 +4863,8 @@ A qualified saddle fitter (look for Society of Master Saddlers or equivalent qua
     ],
     knowledgeCheck: [
       {
-        question: "How much wither clearance should there be with the rider mounted?",
+        question:
+          "How much wither clearance should there be with the rider mounted?",
         options: [
           "No clearance — the pommel should rest on the withers",
           "One finger",
@@ -4977,7 +4993,8 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
     ],
     knowledgeCheck: [
       {
-        question: "What is the 'nutcracker' action of a single-jointed snaffle?",
+        question:
+          "What is the 'nutcracker' action of a single-jointed snaffle?",
         options: [
           "The bit cracks nuts placed in the mouth",
           "The single joint collapses when both reins are used, squeezing the bars and potentially contacting the palate",
@@ -4989,7 +5006,8 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
           "When rein pressure is applied to a single-jointed bit, the joint collapses inward, creating a V-shape that squeezes the bars and may press upward against the palate. This is called the nutcracker action.",
       },
       {
-        question: "How much should a correctly fitted bit extend beyond the horse's lips on each side?",
+        question:
+          "How much should a correctly fitted bit extend beyond the horse's lips on each side?",
         options: [
           "2 cm",
           "1 cm",
@@ -5001,7 +5019,8 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
           "The bit should extend approximately 0.5 cm (half a centimetre) beyond the lips on each side. Too wide allows sliding and lip-catching; too narrow causes pinching.",
       },
       {
-        question: "What should you investigate before changing a horse's bit due to apparent discomfort?",
+        question:
+          "What should you investigate before changing a horse's bit due to apparent discomfort?",
         options: [
           "The horse's colour preferences",
           "Dental issues such as sharp edges, wolf teeth or mouth ulcers",
@@ -5143,7 +5162,8 @@ Equipment should never be used to mask a problem (e.g., using a stronger bit ins
           "Training aids encourage a posture but cannot replace correct muscular development. Over-reliance produces a horse that only works correctly when constrained, rather than one that has developed genuine self-carriage.",
       },
       {
-        question: "What is the risk of applying an exercise bandage too tightly?",
+        question:
+          "What is the risk of applying an exercise bandage too tightly?",
         options: [
           "The bandage will not stay on",
           "The horse's leg will sweat",
@@ -5226,7 +5246,8 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
     ],
     knowledgeCheck: [
       {
-        question: "What should a rider do immediately before asking for a walk to trot transition?",
+        question:
+          "What should a rider do immediately before asking for a walk to trot transition?",
         options: [
           "Lean forward to encourage the horse",
           "Apply a half-halt to prepare and rebalance the horse",
@@ -5238,7 +5259,8 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
           "A half-halt prepares the horse by rebalancing it and gaining its attention. This ensures the transition is smooth and the horse does not fall onto the forehand.",
       },
       {
-        question: "Where should the rider's legs be positioned when asking for a trot transition?",
+        question:
+          "Where should the rider's legs be positioned when asking for a trot transition?",
         options: [
           "Well behind the girth near the horse's flank",
           "On the girth",
@@ -5250,7 +5272,8 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
           "The rider's legs should close gently just behind the girth. This is the correct position for asking the horse to move forward into a new gait.",
       },
       {
-        question: "What is a common fault when transitioning from trot to walk?",
+        question:
+          "What is a common fault when transitioning from trot to walk?",
         options: [
           "Sitting too deep in the saddle",
           "Pulling sharply on the reins without using the seat",
@@ -5262,7 +5285,8 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
           "Pulling on the reins without engaging the seat and back causes the horse to hollow its back and raise its head. The downward transition should be ridden primarily from the seat.",
       },
       {
-        question: "Why is practising transitions at specific markers beneficial?",
+        question:
+          "Why is practising transitions at specific markers beneficial?",
         options: [
           "It makes the lesson shorter",
           "It develops accuracy, planning, and clear communication with the horse",
@@ -5333,12 +5357,7 @@ The quality of the trot is a direct reflection of the partnership between horse 
     knowledgeCheck: [
       {
         question: "How many beats does the trot have?",
-        options: [
-          "One beat",
-          "Two beats",
-          "Three beats",
-          "Four beats",
-        ],
+        options: ["One beat", "Two beats", "Three beats", "Four beats"],
         correctIndex: 1,
         explanation:
           "The trot is a two-beat diagonal gait. The horse's legs move in diagonal pairs with a moment of suspension between each step.",
@@ -5559,7 +5578,8 @@ Regular practice of school figures at walk, trot, and canter develops the rider'
     ],
     knowledgeCheck: [
       {
-        question: "What are the four key points of a 20-metre circle at A in a 20x40 arena?",
+        question:
+          "What are the four key points of a 20-metre circle at A in a 20x40 arena?",
         options: [
           "A, E or B, X, and C",
           "A, the centre line at X, the opposite long side at E or B, and back to A",
@@ -5571,7 +5591,8 @@ Regular practice of school figures at walk, trot, and canter develops the rider'
           "A 20-metre circle at A touches the track at A, passes through X on the centre line, touches the long side at E or B, and returns to A, creating a truly round shape.",
       },
       {
-        question: "How many loops does a standard three-loop serpentine have, and where does the bend change?",
+        question:
+          "How many loops does a standard three-loop serpentine have, and where does the bend change?",
         options: [
           "Three loops, with the bend changing at each long side",
           "Three loops, with the bend changing each time the centre line is crossed",
@@ -5701,7 +5722,8 @@ The independent seat is not achieved overnight. It is a gradual process that req
           "Gripping with the knee acts as a pivot point, lifting the seat out of the saddle and swinging the lower leg away from the horse's side. This reduces stability and makes it harder to apply effective leg aids.",
       },
       {
-        question: "What off-horse activity is particularly beneficial for developing rider balance?",
+        question:
+          "What off-horse activity is particularly beneficial for developing rider balance?",
         options: [
           "Running long distances",
           "Weightlifting with heavy weights",
@@ -5713,7 +5735,8 @@ The independent seat is not achieved overnight. It is a gradual process that req
           "Pilates and core stability exercises develop the suppleness, strength, and body awareness that directly transfer to the riding position. They specifically target the core muscles that stabilise the rider in the saddle.",
       },
       {
-        question: "What is the benefit of lunge lessons for developing an independent seat?",
+        question:
+          "What is the benefit of lunge lessons for developing an independent seat?",
         options: [
           "The rider can go faster on the lunge",
           "The rider can focus entirely on position without worrying about steering",
@@ -5822,7 +5845,8 @@ A responsible rider always prioritises the horse's welfare by allowing adequate 
           "The cool-down allows the horse's body to recover gradually. Without it, the horse risks muscle stiffness, tying-up, dehydration, and general discomfort.",
       },
       {
-        question: "What additional measure should be taken when cooling down in hot weather?",
+        question:
+          "What additional measure should be taken when cooling down in hot weather?",
         options: [
           "Put a heavy rug on the horse",
           "Allow the horse to drink as much water as it wants immediately",
@@ -5892,7 +5916,8 @@ Good preparation becomes second nature with practice, and it is a mark of a comm
     ],
     knowledgeCheck: [
       {
-        question: "How early should a rider aim to arrive before a lesson if they need to groom and tack up?",
+        question:
+          "How early should a rider aim to arrive before a lesson if they need to groom and tack up?",
         options: [
           "Five minutes before",
           "At least thirty minutes before",
@@ -5904,7 +5929,8 @@ Good preparation becomes second nature with practice, and it is a mark of a comm
           "Arriving at least thirty minutes before the lesson allows adequate time to groom the horse properly, tack up carefully, and perform all safety checks without rushing.",
       },
       {
-        question: "What should the rider check when picking out the horse's feet?",
+        question:
+          "What should the rider check when picking out the horse's feet?",
         options: [
           "Only whether the shoes are shiny",
           "Stones, signs of thrush, and the condition of the shoes",
@@ -6011,7 +6037,8 @@ Finally, reflection should be balanced. It is easy to focus only on what went wr
     ],
     knowledgeCheck: [
       {
-        question: "What is a useful framework for reflecting on a riding session?",
+        question:
+          "What is a useful framework for reflecting on a riding session?",
         options: [
           "Rate the session out of ten",
           "What went well? What was challenging? What will I focus on next time?",
@@ -6167,7 +6194,8 @@ This lesson provides the theoretical foundation — practical work on flying cha
           "True collection involves the horse engaging its hindquarters to carry more weight, lowering the croup, and lightening the forehand. It is generated from behind, not created by the rider's hands.",
       },
       {
-        question: "In a medium trot, what should remain the same as in working trot?",
+        question:
+          "In a medium trot, what should remain the same as in working trot?",
         options: [
           "The stride length",
           "The frame and outline",
@@ -6304,12 +6332,7 @@ Self-coaching is not a replacement for professional coaching — it is a complem
       },
       {
         question: "What does the 'M' in SMART goals stand for?",
-        options: [
-          "Motivated",
-          "Measurable",
-          "Mounted",
-          "Multiple",
-        ],
+        options: ["Motivated", "Measurable", "Mounted", "Multiple"],
         correctIndex: 1,
         explanation:
           "The 'M' stands for Measurable. A measurable goal has clear criteria for success, such as 'Perform three balanced transitions on each rein,' so you know when you have achieved it.",
@@ -6397,16 +6420,30 @@ Polework should be introduced gradually. Start with one pole, then add more as c
     ],
     knowledgeCheck: [
       {
-        question: "What is the most important thing to look at when riding over a ground pole?",
-        options: ["The pole itself", "Your horse's ears", "A point ahead beyond the pole", "The ground on the other side"],
+        question:
+          "What is the most important thing to look at when riding over a ground pole?",
+        options: [
+          "The pole itself",
+          "Your horse's ears",
+          "A point ahead beyond the pole",
+          "The ground on the other side",
+        ],
         correctIndex: 2,
-        explanation: "Looking ahead beyond the pole keeps your weight centred and allows you to plan your line. Looking down at the pole causes you to tip forward and unbalances the horse.",
+        explanation:
+          "Looking ahead beyond the pole keeps your weight centred and allows you to plan your line. Looking down at the pole causes you to tip forward and unbalances the horse.",
       },
       {
-        question: "What should happen to the rhythm when trotting over a single pole?",
-        options: ["The horse should speed up to jump it", "The rhythm should stay the same before, over, and after", "The horse should slow to walk", "You should post higher"],
+        question:
+          "What should happen to the rhythm when trotting over a single pole?",
+        options: [
+          "The horse should speed up to jump it",
+          "The rhythm should stay the same before, over, and after",
+          "The horse should slow to walk",
+          "You should post higher",
+        ],
         correctIndex: 1,
-        explanation: "The rhythm should remain consistent. The pole is simply part of the track — the horse should maintain its tempo without rushing or hesitating.",
+        explanation:
+          "The rhythm should remain consistent. The pole is simply part of the track — the horse should maintain its tempo without rushing or hesitating.",
       },
     ],
     aiTutorPrompts: [
@@ -6470,16 +6507,30 @@ Once the basic grid is comfortable, you can raise alternate poles onto small blo
     ],
     knowledgeCheck: [
       {
-        question: "What is the standard trot pole distance for an average 16hh horse?",
-        options: ["0.5 metres", "1.2 to 1.4 metres", "2.0 metres", "3.0 metres"],
+        question:
+          "What is the standard trot pole distance for an average 16hh horse?",
+        options: [
+          "0.5 metres",
+          "1.2 to 1.4 metres",
+          "2.0 metres",
+          "3.0 metres",
+        ],
         correctIndex: 1,
-        explanation: "The standard distance is 1.2–1.4 metres, which allows one trot stride between each pole for a horse of average size.",
+        explanation:
+          "The standard distance is 1.2–1.4 metres, which allows one trot stride between each pole for a horse of average size.",
       },
       {
-        question: "What should you do if your horse consistently clips the trot poles?",
-        options: ["Ride faster", "Shout at the horse", "Adjust the pole distances", "Remove the poles"],
+        question:
+          "What should you do if your horse consistently clips the trot poles?",
+        options: [
+          "Ride faster",
+          "Shout at the horse",
+          "Adjust the pole distances",
+          "Remove the poles",
+        ],
         correctIndex: 2,
-        explanation: "Clipping poles usually means the distances are wrong for that horse's stride. Adjust the spacing and observe whether the problem resolves.",
+        explanation:
+          "Clipping poles usually means the distances are wrong for that horse's stride. Adjust the spacing and observe whether the problem resolves.",
       },
     ],
     aiTutorPrompts: [
@@ -6543,16 +6594,29 @@ The jumping position can and should be practised without poles first. At halt, s
     ],
     knowledgeCheck: [
       {
-        question: "Where should the rider fold when adopting the jumping position?",
-        options: ["From the waist", "From the hip", "From the knee", "From the shoulders"],
+        question:
+          "Where should the rider fold when adopting the jumping position?",
+        options: [
+          "From the waist",
+          "From the hip",
+          "From the knee",
+          "From the shoulders",
+        ],
         correctIndex: 1,
-        explanation: "The rider folds from the hip joint, closing the angle between thigh and torso. Folding from the waist rounds the back, which is incorrect.",
+        explanation:
+          "The rider folds from the hip joint, closing the angle between thigh and torso. Folding from the waist rounds the back, which is incorrect.",
       },
       {
         question: "What is a 'crest release'?",
-        options: ["Dropping the reins completely", "Pushing hands forward along the horse's neck crest over a fence", "Gripping the mane", "Letting the horse slow down"],
+        options: [
+          "Dropping the reins completely",
+          "Pushing hands forward along the horse's neck crest over a fence",
+          "Gripping the mane",
+          "Letting the horse slow down",
+        ],
         correctIndex: 1,
-        explanation: "A crest release involves pushing the hands forward along the crest of the horse's neck to allow the head and neck to stretch over the fence without catching the mouth.",
+        explanation:
+          "A crest release involves pushing the hands forward along the crest of the horse's neck to allow the head and neck to stretch over the fence without catching the mouth.",
       },
     ],
     aiTutorPrompts: [
@@ -6617,15 +6681,28 @@ A good jump is not about height — it is about quality. A good jump has a rhyth
     knowledgeCheck: [
       {
         question: "Why are cross-rails ideal first fences for novice riders?",
-        options: ["They are very high", "The X shape guides the horse to jump centrally", "They are the hardest type", "They don't need a ground pole"],
+        options: [
+          "They are very high",
+          "The X shape guides the horse to jump centrally",
+          "They are the hardest type",
+          "They don't need a ground pole",
+        ],
         correctIndex: 1,
-        explanation: "The crossed poles create a low central point that naturally guides the horse to take off and land in the centre, building confidence and encouraging straightness.",
+        explanation:
+          "The crossed poles create a low central point that naturally guides the horse to take off and land in the centre, building confidence and encouraging straightness.",
       },
       {
-        question: "What should the rider do with their hands as the horse takes off?",
-        options: ["Pull back firmly", "Drop the reins", "Push forward along the crest", "Hold the pommel"],
+        question:
+          "What should the rider do with their hands as the horse takes off?",
+        options: [
+          "Pull back firmly",
+          "Drop the reins",
+          "Push forward along the crest",
+          "Hold the pommel",
+        ],
         correctIndex: 2,
-        explanation: "Pushing the hands forward along the crest (crest release) allows the horse to stretch its head and neck over the fence without being caught in the mouth.",
+        explanation:
+          "Pushing the hands forward along the crest (crest release) allows the horse to stretch its head and neck over the fence without being caught in the mouth.",
       },
     ],
     aiTutorPrompts: [
@@ -6633,7 +6710,11 @@ A good jump is not about height — it is about quality. A good jump has a rhyth
       "My horse runs out at fences — what should I do?",
       "How do I know when I'm ready to raise the fences?",
     ],
-    linkedCompetencies: ["jumping_foundations", "rider_position", "balance_and_rhythm"],
+    linkedCompetencies: [
+      "jumping_foundations",
+      "rider_position",
+      "balance_and_rhythm",
+    ],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -6708,13 +6789,20 @@ Signs that something may be wrong include: dullness, loss of appetite, abnormal 
         question: "What is the normal resting pulse rate for a horse?",
         options: ["10–15 bpm", "28–44 bpm", "60–80 bpm", "100+ bpm"],
         correctIndex: 1,
-        explanation: "The normal resting pulse for a horse is 28–44 beats per minute. Rates above this at rest may indicate pain, stress, or illness.",
+        explanation:
+          "The normal resting pulse for a horse is 28–44 beats per minute. Rates above this at rest may indicate pain, stress, or illness.",
       },
       {
         question: "Which is NOT a normal sign in a healthy horse at rest?",
-        options: ["Bright, alert expression", "Resting a hind leg occasionally", "Persistently resting a foreleg", "Clear, open eyes"],
+        options: [
+          "Bright, alert expression",
+          "Resting a hind leg occasionally",
+          "Persistently resting a foreleg",
+          "Clear, open eyes",
+        ],
         correctIndex: 2,
-        explanation: "Horses commonly rest hind legs, but persistently resting a foreleg can indicate pain in that limb and should be investigated.",
+        explanation:
+          "Horses commonly rest hind legs, but persistently resting a foreleg can indicate pain in that limb and should be investigated.",
       },
     ],
     aiTutorPrompts: [
@@ -6778,16 +6866,29 @@ Call the vet immediately for: any sign of colic, suspected laminitis, deep or jo
     ],
     knowledgeCheck: [
       {
-        question: "What is the most important first action if you suspect colic?",
-        options: ["Give the horse a feed to see if appetite returns", "Walk the horse briskly for an hour", "Remove food, keep the horse calm, and call the vet immediately", "Apply a poultice to the stomach area"],
+        question:
+          "What is the most important first action if you suspect colic?",
+        options: [
+          "Give the horse a feed to see if appetite returns",
+          "Walk the horse briskly for an hour",
+          "Remove food, keep the horse calm, and call the vet immediately",
+          "Apply a poultice to the stomach area",
+        ],
         correctIndex: 2,
-        explanation: "Colic is a potential emergency. Remove food to prevent further gut problems, keep the horse calm, and contact the vet immediately. Do not wait.",
+        explanation:
+          "Colic is a potential emergency. Remove food to prevent further gut problems, keep the horse calm, and contact the vet immediately. Do not wait.",
       },
       {
         question: "What is the classic stance of a horse with laminitis?",
-        options: ["Standing on three legs", "Leaning forward", "Rocking horse stance — leaning back to reduce weight on the front feet", "Lying flat on its side"],
+        options: [
+          "Standing on three legs",
+          "Leaning forward",
+          "Rocking horse stance — leaning back to reduce weight on the front feet",
+          "Lying flat on its side",
+        ],
         correctIndex: 2,
-        explanation: "The rocking horse stance — with hind legs pushed under the body and front legs stretched forward — is the classic sign of laminitic pain in the front feet.",
+        explanation:
+          "The rocking horse stance — with hind legs pushed under the body and front legs stretched forward — is the classic sign of laminitic pain in the front feet.",
       },
     ],
     aiTutorPrompts: [
@@ -6795,7 +6896,11 @@ Call the vet immediately for: any sign of colic, suspected laminitis, deep or jo
       "How can I prevent laminitis in a good doer on rich pasture?",
       "What should be in a basic equine first-aid kit?",
     ],
-    linkedCompetencies: ["daily_health_check", "first_aid_basics", "welfare_awareness"],
+    linkedCompetencies: [
+      "daily_health_check",
+      "first_aid_basics",
+      "welfare_awareness",
+    ],
   },
   {
     slug: "equine-first-aid-basics",
@@ -6848,15 +6953,27 @@ When waiting for the vet, keep the horse calm and contained. Do not feed a colic
     knowledgeCheck: [
       {
         question: "How long should you cold hose an area of swelling?",
-        options: ["2 minutes", "5 minutes", "15–20 minutes", "1 hour continuously"],
+        options: [
+          "2 minutes",
+          "5 minutes",
+          "15–20 minutes",
+          "1 hour continuously",
+        ],
         correctIndex: 2,
-        explanation: "Cold hosing is effective at 15–20 minutes per session. Shorter durations do not provide sufficient cooling to reduce inflammation.",
+        explanation:
+          "Cold hosing is effective at 15–20 minutes per session. Shorter durations do not provide sufficient cooling to reduce inflammation.",
       },
       {
         question: "What should you NOT use directly on an open wound?",
-        options: ["Saline solution", "Clean water", "Cotton wool fibres", "Non-stick dressing"],
+        options: [
+          "Saline solution",
+          "Clean water",
+          "Cotton wool fibres",
+          "Non-stick dressing",
+        ],
         correctIndex: 2,
-        explanation: "Cotton wool sheds fibres that can stick in a wound, causing infection and delayed healing. Use non-stick dressings or clean gauze instead.",
+        explanation:
+          "Cotton wool sheds fibres that can stick in a wound, causing infection and delayed healing. Use non-stick dressings or clean gauze instead.",
       },
     ],
     aiTutorPrompts: [
@@ -6921,16 +7038,30 @@ Every horse should have a health record that includes: vaccination dates and bat
     ],
     knowledgeCheck: [
       {
-        question: "Why are faecal egg counts (FEC) now preferred over routine worming schedules?",
-        options: ["They are cheaper", "They reduce chemical resistance by only treating horses that need it", "They are more convenient", "They eliminate the need for any worming"],
+        question:
+          "Why are faecal egg counts (FEC) now preferred over routine worming schedules?",
+        options: [
+          "They are cheaper",
+          "They reduce chemical resistance by only treating horses that need it",
+          "They are more convenient",
+          "They eliminate the need for any worming",
+        ],
         correctIndex: 1,
-        explanation: "Targeted worming based on FEC reduces unnecessary chemical use, slowing the development of wormer resistance — a serious problem in equine parasitology.",
+        explanation:
+          "Targeted worming based on FEC reduces unnecessary chemical use, slowing the development of wormer resistance — a serious problem in equine parasitology.",
       },
       {
-        question: "How often should a horse receive an equine influenza booster after the primary course?",
-        options: ["Every month", "Every 6 months for competition, annually otherwise", "Every 5 years", "Only once in its lifetime"],
+        question:
+          "How often should a horse receive an equine influenza booster after the primary course?",
+        options: [
+          "Every month",
+          "Every 6 months for competition, annually otherwise",
+          "Every 5 years",
+          "Only once in its lifetime",
+        ],
         correctIndex: 1,
-        explanation: "Annual boosters are the standard requirement, with 6-monthly boosters for horses competing under FEI or many national rules.",
+        explanation:
+          "Annual boosters are the standard requirement, with 6-monthly boosters for horses competing under FEI or many national rules.",
       },
     ],
     aiTutorPrompts: [
@@ -6938,7 +7069,11 @@ Every horse should have a health record that includes: vaccination dates and bat
       "What is encysted small redworm and why is it dangerous?",
       "How do I set up a targeted worming programme for my yard?",
     ],
-    linkedCompetencies: ["daily_health_check", "welfare_awareness", "record_keeping"],
+    linkedCompetencies: [
+      "daily_health_check",
+      "welfare_awareness",
+      "record_keeping",
+    ],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -7001,15 +7136,23 @@ A well-managed muck heap should be square-sided and compact, built up in layers.
     knowledgeCheck: [
       {
         question: "Why should bedding be banked up against the stable walls?",
-        options: ["To save bedding", "To make the stable look tidy", "To help prevent the horse getting cast", "To keep the walls clean"],
+        options: [
+          "To save bedding",
+          "To make the stable look tidy",
+          "To help prevent the horse getting cast",
+          "To keep the walls clean",
+        ],
         correctIndex: 2,
-        explanation: "Banking bedding against the walls creates a cushion that helps prevent the horse from getting stuck (cast) against the wall when it lies down or rolls.",
+        explanation:
+          "Banking bedding against the walls creates a cushion that helps prevent the horse from getting stuck (cast) against the wall when it lies down or rolls.",
       },
       {
-        question: "Which bedding type is best for a horse with a respiratory condition?",
+        question:
+          "Which bedding type is best for a horse with a respiratory condition?",
         options: ["Straw", "Dust-extracted shavings or paper", "Hay", "Sand"],
         correctIndex: 1,
-        explanation: "Dust-extracted shavings or paper bedding produce minimal dust, reducing airborne irritants for horses with respiratory conditions like COPD/RAO.",
+        explanation:
+          "Dust-extracted shavings or paper bedding produce minimal dust, reducing airborne irritants for horses with respiratory conditions like COPD/RAO.",
       },
     ],
     aiTutorPrompts: [
@@ -7073,16 +7216,30 @@ In spring and summer, monitor grass growth to prevent overeating — particularl
     ],
     knowledgeCheck: [
       {
-        question: "Why is ragwort still dangerous after it has been cut or wilted?",
-        options: ["It grows back faster", "It becomes more palatable and horses are more likely to eat it", "It attracts more insects", "It does not — it is safe once cut"],
+        question:
+          "Why is ragwort still dangerous after it has been cut or wilted?",
+        options: [
+          "It grows back faster",
+          "It becomes more palatable and horses are more likely to eat it",
+          "It attracts more insects",
+          "It does not — it is safe once cut",
+        ],
         correctIndex: 1,
-        explanation: "Ragwort becomes sweeter and more palatable when wilted or dead, making horses more likely to eat it. The toxin remains active, so dead ragwort must be removed from the field.",
+        explanation:
+          "Ragwort becomes sweeter and more palatable when wilted or dead, making horses more likely to eat it. The toxin remains active, so dead ragwort must be removed from the field.",
       },
       {
-        question: "How often should droppings ideally be removed from horse pasture?",
-        options: ["Once a month", "At least twice a week", "Once a year", "Only before a competition"],
+        question:
+          "How often should droppings ideally be removed from horse pasture?",
+        options: [
+          "Once a month",
+          "At least twice a week",
+          "Once a year",
+          "Only before a competition",
+        ],
         correctIndex: 1,
-        explanation: "Removing droppings at least twice a week breaks the parasite lifecycle by removing eggs before they hatch and become infective larvae on the grass.",
+        explanation:
+          "Removing droppings at least twice a week breaks the parasite lifecycle by removing eggs before they hatch and become infective larvae on the grass.",
       },
     ],
     aiTutorPrompts: [
@@ -7147,15 +7304,27 @@ A well-organised feed room has clearly labelled bins for each type of feed, a wr
     knowledgeCheck: [
       {
         question: "Why is a written feed chart important in the feed room?",
-        options: ["It looks professional", "It ensures every horse gets the correct feed, especially when different people are feeding", "It is a legal requirement", "It helps sell the horse"],
+        options: [
+          "It looks professional",
+          "It ensures every horse gets the correct feed, especially when different people are feeding",
+          "It is a legal requirement",
+          "It helps sell the horse",
+        ],
         correctIndex: 1,
-        explanation: "A written feed chart prevents feeding mistakes, especially when multiple carers are involved. The wrong feed can cause colic, weight gain, or nutritional imbalance.",
+        explanation:
+          "A written feed chart prevents feeding mistakes, especially when multiple carers are involved. The wrong feed can cause colic, weight gain, or nutritional imbalance.",
       },
       {
         question: "What should the last task of the day be on a yard?",
-        options: ["Sweep the yard", "A final check that all horses are settled, safe, and have water", "Lock the tack room", "Close the office"],
+        options: [
+          "Sweep the yard",
+          "A final check that all horses are settled, safe, and have water",
+          "Lock the tack room",
+          "Close the office",
+        ],
         correctIndex: 1,
-        explanation: "A final check ensures all horses are comfortable, have water, and are not showing signs of distress. Issues caught at night can be addressed before they worsen overnight.",
+        explanation:
+          "A final check ensures all horses are comfortable, have water, and are not showing signs of distress. Issues caught at night can be addressed before they worsen overnight.",
       },
     ],
     aiTutorPrompts: [
@@ -7220,15 +7389,27 @@ Create a seasonal maintenance calendar: spring — arena servicing, fencing chec
     knowledgeCheck: [
       {
         question: "How often should an arena surface typically be harrowed?",
-        options: ["Once a year", "At least weekly depending on usage", "Only when it rains", "Never — let it compact naturally"],
+        options: [
+          "Once a year",
+          "At least weekly depending on usage",
+          "Only when it rains",
+          "Never — let it compact naturally",
+        ],
         correctIndex: 1,
-        explanation: "Regular harrowing — typically weekly or more for busy arenas — prevents compaction, maintains an even surface, and ensures consistent footing for safe riding.",
+        explanation:
+          "Regular harrowing — typically weekly or more for busy arenas — prevents compaction, maintains an even surface, and ensures consistent footing for safe riding.",
       },
       {
         question: "Why is drainage important on an equestrian yard?",
-        options: ["It makes the yard look nicer", "It prevents mud, health conditions like mud fever, and hazardous working conditions", "It is only important for competition yards", "Drainage is not important for horse yards"],
+        options: [
+          "It makes the yard look nicer",
+          "It prevents mud, health conditions like mud fever, and hazardous working conditions",
+          "It is only important for competition yards",
+          "Drainage is not important for horse yards",
+        ],
         correctIndex: 1,
-        explanation: "Poor drainage creates mud that causes health problems (mud fever, thrush), makes areas dangerous to work in, and deteriorates the ground surface over time.",
+        explanation:
+          "Poor drainage creates mud that causes health problems (mud fever, thrush), makes areas dangerous to work in, and deteriorates the ground surface over time.",
       },
     ],
     aiTutorPrompts: [
@@ -7297,16 +7478,25 @@ Combined training (or hunter trials, one-day events) combines two or three disci
     ],
     knowledgeCheck: [
       {
-        question: "What level of dressage test is most suitable for a complete beginner?",
-        options: ["Grand Prix", "Medium", "Introductory (walk and trot)", "Advanced medium"],
+        question:
+          "What level of dressage test is most suitable for a complete beginner?",
+        options: [
+          "Grand Prix",
+          "Medium",
+          "Introductory (walk and trot)",
+          "Advanced medium",
+        ],
         correctIndex: 2,
-        explanation: "Introductory tests require only walk and trot, making them ideal for novice riders and young horses gaining experience in a competitive environment.",
+        explanation:
+          "Introductory tests require only walk and trot, making them ideal for novice riders and young horses gaining experience in a competitive environment.",
       },
       {
-        question: "How many faults are given for knocking down a show-jumping pole?",
+        question:
+          "How many faults are given for knocking down a show-jumping pole?",
         options: ["1 fault", "4 faults", "8 faults", "Elimination"],
         correctIndex: 1,
-        explanation: "A knocked pole incurs 4 faults in standard show-jumping rules. A clear round (no faults) is the goal.",
+        explanation:
+          "A knocked pole incurs 4 faults in standard show-jumping rules. A clear round (no faults) is the goal.",
       },
     ],
     aiTutorPrompts: [
@@ -7371,15 +7561,27 @@ Competition nerves are normal and can actually improve performance at moderate l
     knowledgeCheck: [
       {
         question: "When should you ideally arrive at a competition venue?",
-        options: ["5 minutes before your class", "At least 1 hour before your first class", "The night before", "It doesn't matter as long as you make your start time"],
+        options: [
+          "5 minutes before your class",
+          "At least 1 hour before your first class",
+          "The night before",
+          "It doesn't matter as long as you make your start time",
+        ],
         correctIndex: 1,
-        explanation: "Arriving at least an hour early allows time to settle the horse, tack up, walk the course if applicable, warm up properly, and report to the secretary.",
+        explanation:
+          "Arriving at least an hour early allows time to settle the horse, tack up, walk the course if applicable, warm up properly, and report to the secretary.",
       },
       {
         question: "Why is walking a show-jumping course important?",
-        options: ["To exercise before riding", "To study each fence, plan your line, and count strides", "It is not important", "To warm up the horse"],
+        options: [
+          "To exercise before riding",
+          "To study each fence, plan your line, and count strides",
+          "It is not important",
+          "To warm up the horse",
+        ],
         correctIndex: 1,
-        explanation: "Walking the course allows you to plan your approach to each fence, identify potential difficulties, count strides between related fences, and check the going.",
+        explanation:
+          "Walking the course allows you to plan your approach to each fence, identify potential difficulties, count strides between related fences, and check the going.",
       },
     ],
     aiTutorPrompts: [
@@ -7444,15 +7646,28 @@ After the test, collect your score sheet. Read every comment — judges write he
     knowledgeCheck: [
       {
         question: "At introductory level dressage, which paces are required?",
-        options: ["Walk and trot only", "Walk, trot, and canter", "Canter only", "All paces plus lateral work"],
+        options: [
+          "Walk and trot only",
+          "Walk, trot, and canter",
+          "Canter only",
+          "All paces plus lateral work",
+        ],
         correctIndex: 0,
-        explanation: "Introductory tests require walk and trot only, making them accessible for novice riders and horses.",
+        explanation:
+          "Introductory tests require walk and trot only, making them accessible for novice riders and horses.",
       },
       {
-        question: "What does a score of 60% typically indicate at introductory level?",
-        options: ["A poor performance", "A solid, competent performance", "Near elimination", "A perfect score"],
+        question:
+          "What does a score of 60% typically indicate at introductory level?",
+        options: [
+          "A poor performance",
+          "A solid, competent performance",
+          "Near elimination",
+          "A perfect score",
+        ],
         correctIndex: 1,
-        explanation: "60% is considered a solid performance at introductory level. Scores above 65% are strong, and above 70% is excellent.",
+        explanation:
+          "60% is considered a solid performance at introductory level. Scores above 65% are strong, and above 70% is excellent.",
       },
     ],
     aiTutorPrompts: [
@@ -7460,7 +7675,11 @@ After the test, collect your score sheet. Read every comment — judges write he
       "What do the dressage arena letters mean and where are they positioned?",
       "How can I improve my horse's transitions for better dressage scores?",
     ],
-    linkedCompetencies: ["competition_awareness", "riding_position", "balance_and_rhythm"],
+    linkedCompetencies: [
+      "competition_awareness",
+      "riding_position",
+      "balance_and_rhythm",
+    ],
   },
   {
     slug: "competition-etiquette-and-sportsmanship",
@@ -7516,16 +7735,30 @@ Regardless of results, the most important thing is that you and your horse retur
     ],
     knowledgeCheck: [
       {
-        question: "What should you call when approaching a practice fence in the warm-up arena?",
-        options: ["Nothing", "The horse's name", "'Fence!' clearly and in good time", "'Move!'"],
+        question:
+          "What should you call when approaching a practice fence in the warm-up arena?",
+        options: [
+          "Nothing",
+          "The horse's name",
+          "'Fence!' clearly and in good time",
+          "'Move!'",
+        ],
         correctIndex: 2,
-        explanation: "Calling 'fence' alerts other riders that you are committed to jumping and need a clear approach. It is essential for safety in a busy warm-up arena.",
+        explanation:
+          "Calling 'fence' alerts other riders that you are committed to jumping and need a clear approach. It is essential for safety in a busy warm-up arena.",
       },
       {
-        question: "What is the correct response if you disagree with a judge's score?",
-        options: ["Argue with the judge immediately", "Post a complaint on social media", "Use official channels to query the result respectfully", "Refuse to leave the arena"],
+        question:
+          "What is the correct response if you disagree with a judge's score?",
+        options: [
+          "Argue with the judge immediately",
+          "Post a complaint on social media",
+          "Use official channels to query the result respectfully",
+          "Refuse to leave the arena",
+        ],
         correctIndex: 2,
-        explanation: "Disagreements with judging should be handled through official channels — typically speaking to the show secretary or submitting a formal query. Public confrontation is unprofessional.",
+        explanation:
+          "Disagreements with judging should be handled through official channels — typically speaking to the show secretary or submitting a formal query. Public confrontation is unprofessional.",
       },
     ],
     aiTutorPrompts: [
@@ -7598,16 +7831,30 @@ You do not need a gym membership. A simple 15-minute routine three times a week 
     ],
     knowledgeCheck: [
       {
-        question: "Which fitness component is considered the rider's foundation?",
-        options: ["Arm strength", "Core strength", "Running speed", "Upper body power"],
+        question:
+          "Which fitness component is considered the rider's foundation?",
+        options: [
+          "Arm strength",
+          "Core strength",
+          "Running speed",
+          "Upper body power",
+        ],
         correctIndex: 1,
-        explanation: "Core strength — the muscles of the abdomen, lower back, and pelvis — is the foundation for a stable, effective riding position and independent aids.",
+        explanation:
+          "Core strength — the muscles of the abdomen, lower back, and pelvis — is the foundation for a stable, effective riding position and independent aids.",
       },
       {
-        question: "When is the best time to stretch for flexibility improvement?",
-        options: ["Before any warm-up", "After riding or exercise when muscles are warm", "Only on non-riding days", "Never — stretching is not important for riders"],
+        question:
+          "When is the best time to stretch for flexibility improvement?",
+        options: [
+          "Before any warm-up",
+          "After riding or exercise when muscles are warm",
+          "Only on non-riding days",
+          "Never — stretching is not important for riders",
+        ],
         correctIndex: 1,
-        explanation: "Stretching warm muscles (after riding or exercise) is safer and more effective than stretching cold. Post-ride stretching improves flexibility over time.",
+        explanation:
+          "Stretching warm muscles (after riding or exercise) is safer and more effective than stretching cold. Post-ride stretching improves flexibility over time.",
       },
     ],
     aiTutorPrompts: [
@@ -7672,15 +7919,28 @@ If anxiety around riding is significantly impacting your enjoyment, sleep, or da
     knowledgeCheck: [
       {
         question: "How does a rider's tension affect the horse?",
-        options: ["It has no effect", "The horse becomes more relaxed", "The horse picks up on the tension and may become tense or uncertain too", "The horse goes faster"],
+        options: [
+          "It has no effect",
+          "The horse becomes more relaxed",
+          "The horse picks up on the tension and may become tense or uncertain too",
+          "The horse goes faster",
+        ],
         correctIndex: 2,
-        explanation: "Horses are highly attuned to their rider's body language and tension. A tense rider transmits anxiety through muscle tension and unclear aids, causing the horse to become unsettled.",
+        explanation:
+          "Horses are highly attuned to their rider's body language and tension. A tense rider transmits anxiety through muscle tension and unclear aids, causing the horse to become unsettled.",
       },
       {
-        question: "What is the most effective strategy for rebuilding riding confidence?",
-        options: ["Force yourself to do the scary thing immediately", "Stop riding altogether", "Gradually re-expose yourself starting from a comfortable level", "Only ride in competitions"],
+        question:
+          "What is the most effective strategy for rebuilding riding confidence?",
+        options: [
+          "Force yourself to do the scary thing immediately",
+          "Stop riding altogether",
+          "Gradually re-expose yourself starting from a comfortable level",
+          "Only ride in competitions",
+        ],
         correctIndex: 2,
-        explanation: "Gradual, systematic re-exposure — starting from a level that feels manageable and building up — is the most effective way to rebuild confidence sustainably.",
+        explanation:
+          "Gradual, systematic re-exposure — starting from a level that feels manageable and building up — is the most effective way to rebuild confidence sustainably.",
       },
     ],
     aiTutorPrompts: [
@@ -7744,16 +8004,29 @@ Do not measure progress by how many planks you can do — measure it by how your
     ],
     knowledgeCheck: [
       {
-        question: "Which exercise specifically targets the ability to give independent aids?",
-        options: ["Squats", "Dead bug — extending opposite arm and leg while stabilising the core", "Running", "Bicep curls"],
+        question:
+          "Which exercise specifically targets the ability to give independent aids?",
+        options: [
+          "Squats",
+          "Dead bug — extending opposite arm and leg while stabilising the core",
+          "Running",
+          "Bicep curls",
+        ],
         correctIndex: 1,
-        explanation: "The dead bug teaches the body to move limbs independently while maintaining a stable core — exactly what a rider needs to give separate hand and leg aids without losing balance.",
+        explanation:
+          "The dead bug teaches the body to move limbs independently while maintaining a stable core — exactly what a rider needs to give separate hand and leg aids without losing balance.",
       },
       {
         question: "Why are hip flexor stretches important for riders?",
-        options: ["They make you run faster", "Tight hip flexors prevent a deep, effective seat in the saddle", "They strengthen the arms", "They are not important for riders"],
+        options: [
+          "They make you run faster",
+          "Tight hip flexors prevent a deep, effective seat in the saddle",
+          "They strengthen the arms",
+          "They are not important for riders",
+        ],
         correctIndex: 1,
-        explanation: "Tight hip flexors — common from sitting at desks — prevent the rider from dropping their weight into the saddle and achieving a deep, following seat.",
+        explanation:
+          "Tight hip flexors — common from sitting at desks — prevent the rider from dropping their weight into the saddle and achieving a deep, following seat.",
       },
     ],
     aiTutorPrompts: [
@@ -7818,15 +8091,27 @@ A growth mindset means believing that ability is developed through effort, pract
     knowledgeCheck: [
       {
         question: "What does the SMART goal framework stand for?",
-        options: ["Simple, Managed, Active, Reasonable, Tested", "Specific, Measurable, Achievable, Relevant, Time-bound", "Strong, Motivated, Athletic, Ready, Tough", "Set, Maintain, Assess, Review, Track"],
+        options: [
+          "Simple, Managed, Active, Reasonable, Tested",
+          "Specific, Measurable, Achievable, Relevant, Time-bound",
+          "Strong, Motivated, Athletic, Ready, Tough",
+          "Set, Maintain, Assess, Review, Track",
+        ],
         correctIndex: 1,
-        explanation: "SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound — this framework ensures goals are clear and actionable.",
+        explanation:
+          "SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound — this framework ensures goals are clear and actionable.",
       },
       {
         question: "Why is visualisation effective for riders?",
-        options: ["It is not effective", "It replaces the need for physical practice", "It activates the same neural pathways as physical practice", "It only works for professional riders"],
+        options: [
+          "It is not effective",
+          "It replaces the need for physical practice",
+          "It activates the same neural pathways as physical practice",
+          "It only works for professional riders",
+        ],
         correctIndex: 2,
-        explanation: "Research shows that mental rehearsal activates the same brain areas and neural pathways as physical practice, making it a powerful complement to training.",
+        explanation:
+          "Research shows that mental rehearsal activates the same brain areas and neural pathways as physical practice, making it a powerful complement to training.",
       },
     ],
     aiTutorPrompts: [
@@ -7912,7 +8197,8 @@ Understanding these fundamentals will give you the strongest possible foundation
     ],
     knowledgeCheck: [
       {
-        question: "What is the main difference between coaching and instructing?",
+        question:
+          "What is the main difference between coaching and instructing?",
         options: [
           "Coaching focuses on holistic development and understanding, while instructing is purely directive",
           "Instructing is more modern than coaching",
@@ -7924,7 +8210,8 @@ Understanding these fundamentals will give you the strongest possible foundation
           "Coaching encourages riders to understand the 'why' behind what they do and supports long-term development, whereas instructing is focused on telling riders what to do in the moment.",
       },
       {
-        question: "Which of the following is NOT a key quality of a good equestrian coach?",
+        question:
+          "Which of the following is NOT a key quality of a good equestrian coach?",
         options: [
           "Patience and empathy",
           "Willingness to push riders beyond their ability to accelerate progress",
@@ -8028,7 +8315,8 @@ Keep notes on each rider between sessions — what went well, what they struggle
     ],
     knowledgeCheck: [
       {
-        question: "Which approach is most effective for coaching young children?",
+        question:
+          "Which approach is most effective for coaching young children?",
         options: [
           "Long theoretical explanations before mounting",
           "Short, fun sessions with games and frequent praise",
@@ -8040,7 +8328,8 @@ Keep notes on each rider between sessions — what went well, what they struggle
           "Young children have short attention spans and respond best to fun, game-based sessions with plenty of positive reinforcement. This builds confidence and a love of riding.",
       },
       {
-        question: "What should you do if a rider is not responding to verbal instructions?",
+        question:
+          "What should you do if a rider is not responding to verbal instructions?",
         options: [
           "Repeat the same instruction more loudly",
           "Tell them they are not trying hard enough",
@@ -8170,7 +8459,8 @@ This need not be elaborate — a few bullet points on a notepad are sufficient. 
     ],
     knowledgeCheck: [
       {
-        question: "What is the recommended three-phase structure for a riding lesson?",
+        question:
+          "What is the recommended three-phase structure for a riding lesson?",
         options: [
           "Theory, practical, exam",
           "Warm-up, main work, cool-down",
@@ -8182,7 +8472,8 @@ This need not be elaborate — a few bullet points on a notepad are sufficient. 
           "A warm-up, main work, and cool-down structure helps prepare horse and rider, address the learning objective, and end the session calmly.",
       },
       {
-        question: "How many main objectives should a beginner lesson typically have?",
+        question:
+          "How many main objectives should a beginner lesson typically have?",
         options: [
           "As many as possible to maximise learning",
           "Three or four to cover a range of skills",
@@ -8194,7 +8485,8 @@ This need not be elaborate — a few bullet points on a notepad are sufficient. 
           "Setting one clear objective per session keeps the lesson focused and prevents information overload. All exercises in the main work phase should support this single goal.",
       },
       {
-        question: "What percentage of the lesson should the warm-up typically occupy?",
+        question:
+          "What percentage of the lesson should the warm-up typically occupy?",
         options: [
           "5% — just a quick walk around",
           "25–30% of the total session time",
@@ -8315,7 +8607,8 @@ Positive reinforcement means rewarding desired behaviour to encourage its repeti
           "The feedback sandwich structures feedback as: positive comment, correction or improvement area, then encouragement. This approach maintains confidence while still addressing areas for development.",
       },
       {
-        question: "Why should a coach address the root cause of a rider fault rather than just the symptom?",
+        question:
+          "Why should a coach address the root cause of a rider fault rather than just the symptom?",
         options: [
           "To impress the rider with technical knowledge",
           "Because fixing the underlying issue resolves the visible fault more effectively and permanently",
@@ -8401,16 +8694,29 @@ In the UK, coaches should hold qualifications and insurance appropriate to the a
     ],
     knowledgeCheck: [
       {
-        question: "What is the main difference between coaching and instructing?",
-        options: ["There is no difference", "Coaching develops understanding; instructing directs actions", "Instructing is better than coaching", "Coaching is only for advanced riders"],
+        question:
+          "What is the main difference between coaching and instructing?",
+        options: [
+          "There is no difference",
+          "Coaching develops understanding; instructing directs actions",
+          "Instructing is better than coaching",
+          "Coaching is only for advanced riders",
+        ],
         correctIndex: 1,
-        explanation: "Coaching aims to develop the learner's understanding and problem-solving ability, while instructing provides direct guidance. Both are needed at different times.",
+        explanation:
+          "Coaching aims to develop the learner's understanding and problem-solving ability, while instructing provides direct guidance. Both are needed at different times.",
       },
       {
         question: "What is mandatory when coaching children in the UK?",
-        options: ["A university degree", "DBS check and safeguarding training", "Olympic experience", "None of the above"],
+        options: [
+          "A university degree",
+          "DBS check and safeguarding training",
+          "Olympic experience",
+          "None of the above",
+        ],
         correctIndex: 1,
-        explanation: "DBS (Disclosure and Barring Service) checks and safeguarding training are mandatory for anyone working with children and vulnerable adults in the UK.",
+        explanation:
+          "DBS (Disclosure and Barring Service) checks and safeguarding training are mandatory for anyone working with children and vulnerable adults in the UK.",
       },
     ],
     aiTutorPrompts: [
@@ -8418,7 +8724,11 @@ In the UK, coaches should hold qualifications and insurance appropriate to the a
       "How do I adapt my coaching style for nervous riders?",
       "What should be in a coaching session plan?",
     ],
-    linkedCompetencies: ["coaching_skills", "welfare_awareness", "yard_safety_awareness"],
+    linkedCompetencies: [
+      "coaching_skills",
+      "welfare_awareness",
+      "yard_safety_awareness",
+    ],
   },
   {
     slug: "planning-effective-lessons",
@@ -8484,15 +8794,28 @@ In group lessons, plan exercises that can be differentiated. A polework exercise
     knowledgeCheck: [
       {
         question: "What must a good lesson objective be?",
-        options: ["Vague and aspirational", "Specific, observable, and achievable within one lesson", "Only about jumping", "The same for every rider"],
+        options: [
+          "Vague and aspirational",
+          "Specific, observable, and achievable within one lesson",
+          "Only about jumping",
+          "The same for every rider",
+        ],
         correctIndex: 1,
-        explanation: "Good objectives are specific (clear what is being worked on), observable (the coach can see it happening), and achievable within the lesson timeframe for that rider.",
+        explanation:
+          "Good objectives are specific (clear what is being worked on), observable (the coach can see it happening), and achievable within the lesson timeframe for that rider.",
       },
       {
-        question: "What should a coach do if a rider is struggling with the main exercise?",
-        options: ["Push through regardless", "End the lesson early", "Go back a step and rebuild", "Move to a completely different exercise"],
+        question:
+          "What should a coach do if a rider is struggling with the main exercise?",
+        options: [
+          "Push through regardless",
+          "End the lesson early",
+          "Go back a step and rebuild",
+          "Move to a completely different exercise",
+        ],
         correctIndex: 2,
-        explanation: "Going back to a step the rider can manage, then rebuilding progressively, is the most effective response. It maintains confidence while still working toward the objective.",
+        explanation:
+          "Going back to a step the rider can manage, then rebuilding progressively, is the most effective response. It maintains confidence while still working toward the objective.",
       },
     ],
     aiTutorPrompts: [
@@ -8562,15 +8885,27 @@ Your tone of voice carries as much meaning as your words. Calm, encouraging, and
     knowledgeCheck: [
       {
         question: "What is the 'feedback sandwich'?",
-        options: ["A snack break during lessons", "Praise, constructive improvement point, encouragement", "Three criticisms in a row", "Only positive feedback with no correction"],
+        options: [
+          "A snack break during lessons",
+          "Praise, constructive improvement point, encouragement",
+          "Three criticisms in a row",
+          "Only positive feedback with no correction",
+        ],
         correctIndex: 1,
-        explanation: "The feedback sandwich delivers constructive feedback within a supportive framework: genuine praise, one improvement point with a clear how-to, and an encouraging statement.",
+        explanation:
+          "The feedback sandwich delivers constructive feedback within a supportive framework: genuine praise, one improvement point with a clear how-to, and an encouraging statement.",
       },
       {
         question: "Why are open questions valuable in coaching?",
-        options: ["They test memory", "They develop the rider's thinking and understanding", "They save time", "They are not valuable"],
+        options: [
+          "They test memory",
+          "They develop the rider's thinking and understanding",
+          "They save time",
+          "They are not valuable",
+        ],
         correctIndex: 1,
-        explanation: "Open questions encourage riders to think, reflect, and develop understanding rather than just following instructions. This leads to deeper, more lasting learning.",
+        explanation:
+          "Open questions encourage riders to think, reflect, and develop understanding rather than just following instructions. This leads to deeper, more lasting learning.",
       },
     ],
     aiTutorPrompts: [
@@ -8634,16 +8969,30 @@ A rider is ready for the next level when they can perform current-level skills c
     ],
     knowledgeCheck: [
       {
-        question: "How should you manage a group of riders with different ability levels?",
-        options: ["Teach to the highest level and let others keep up", "Teach to the lowest level only", "Plan differentiated exercises where each rider works at their appropriate level", "Refuse to teach mixed groups"],
+        question:
+          "How should you manage a group of riders with different ability levels?",
+        options: [
+          "Teach to the highest level and let others keep up",
+          "Teach to the lowest level only",
+          "Plan differentiated exercises where each rider works at their appropriate level",
+          "Refuse to teach mixed groups",
+        ],
         correctIndex: 2,
-        explanation: "Differentiation allows every rider to work productively at their level. The same type of exercise (e.g., circles) can be adapted in size, pace, and complexity.",
+        explanation:
+          "Differentiation allows every rider to work productively at their level. The same type of exercise (e.g., circles) can be adapted in size, pace, and complexity.",
       },
       {
-        question: "How do you know when a rider is ready to progress to the next level?",
-        options: ["When they ask to", "When they can perform current-level skills consistently with confidence", "After a set number of lessons", "When their parents request it"],
+        question:
+          "How do you know when a rider is ready to progress to the next level?",
+        options: [
+          "When they ask to",
+          "When they can perform current-level skills consistently with confidence",
+          "After a set number of lessons",
+          "When their parents request it",
+        ],
         correctIndex: 1,
-        explanation: "Readiness is based on consistent, confident performance at the current level. Rushing progression leads to gaps in skills and loss of confidence.",
+        explanation:
+          "Readiness is based on consistent, confident performance at the current level. Rushing progression leads to gaps in skills and loss of confidence.",
       },
     ],
     aiTutorPrompts: [
@@ -8653,7 +9002,6 @@ A rider is ready for the next level when they can perform current-level skills c
     ],
     linkedCompetencies: ["coaching_skills", "welfare_awareness"],
   },
-
 
   // ═══════════════════════════════════════════════════════════════════════════
   // NEW LESSON UNITS — Handling & Groundwork, Nutrition & Feeding,
@@ -8697,8 +9045,10 @@ Never chase a horse — this confirms their fear response. Use a calm, patient a
       "Fit the headcollar correctly with the noseband over the muzzle first",
       "Never chase a horse that is difficult to catch",
     ],
-    safetyNote: "Never wrap a lead rope around your hand or fingers. If a horse pulls away unexpectedly, you could be dragged.",
-    practicalApplication: "Practise approaching and catching three different horses in the field. Note the differences in their responses.",
+    safetyNote:
+      "Never wrap a lead rope around your hand or fingers. If a horse pulls away unexpectedly, you could be dragged.",
+    practicalApplication:
+      "Practise approaching and catching three different horses in the field. Note the differences in their responses.",
     commonMistakes: [
       "Approaching from directly behind — this is a blind spot",
       "Making sudden movements or loud noises when approaching",
@@ -8708,16 +9058,30 @@ Never chase a horse — this confirms their fear response. Use a calm, patient a
     ],
     knowledgeCheck: [
       {
-        question: "From which direction should you approach a horse in the stable?",
-        options: ["Directly from behind", "From the front", "At the shoulder", "From the right side only"],
+        question:
+          "From which direction should you approach a horse in the stable?",
+        options: [
+          "Directly from behind",
+          "From the front",
+          "At the shoulder",
+          "From the right side only",
+        ],
         correctIndex: 2,
-        explanation: "Approaching at the shoulder allows the horse to see you clearly and is the safest position.",
+        explanation:
+          "Approaching at the shoulder allows the horse to see you clearly and is the safest position.",
       },
       {
-        question: "What should you do if a horse moves away from you in the field?",
-        options: ["Run after it", "Shout its name loudly", "Stop, turn slightly sideways, and wait", "Give up"],
+        question:
+          "What should you do if a horse moves away from you in the field?",
+        options: [
+          "Run after it",
+          "Shout its name loudly",
+          "Stop, turn slightly sideways, and wait",
+          "Give up",
+        ],
         correctIndex: 2,
-        explanation: "Stopping and turning sideways reduces pressure and shows non-threatening body language.",
+        explanation:
+          "Stopping and turning sideways reduces pressure and shows non-threatening body language.",
       },
     ],
     aiTutorPrompts: [
@@ -8765,8 +9129,10 @@ Say "whoa" clearly, slow your own pace, and apply gentle backward pressure on th
       "Open gates fully and maintain control when leading through",
       "Use voice commands and body language for transitions",
     ],
-    safetyNote: "Never wrap the lead rope around your hand. If the horse spooks, you could be dragged or injured.",
-    practicalApplication: "Practise leading a horse in walk, halting, and making three turns. Focus on keeping your position at the shoulder.",
+    safetyNote:
+      "Never wrap the lead rope around your hand. If the horse spooks, you could be dragged or injured.",
+    practicalApplication:
+      "Practise leading a horse in walk, halting, and making three turns. Focus on keeping your position at the shoulder.",
     commonMistakes: [
       "Walking too far ahead of the horse",
       "Looking back at the horse constantly",
@@ -8776,16 +9142,29 @@ Say "whoa" clearly, slow your own pace, and apply gentle backward pressure on th
     ],
     knowledgeCheck: [
       {
-        question: "When turning a horse while leading, which direction should you turn them?",
-        options: ["Towards you", "Away from you", "It doesn't matter", "Always to the left"],
+        question:
+          "When turning a horse while leading, which direction should you turn them?",
+        options: [
+          "Towards you",
+          "Away from you",
+          "It doesn't matter",
+          "Always to the left",
+        ],
         correctIndex: 1,
-        explanation: "Turning the horse away from you keeps you on the outside of the turn.",
+        explanation:
+          "Turning the horse away from you keeps you on the outside of the turn.",
       },
       {
         question: "Where should you hold the excess lead rope?",
-        options: ["Wrapped around your right hand", "Dragging on the ground", "Folded in your left hand", "Tied to the headcollar"],
+        options: [
+          "Wrapped around your right hand",
+          "Dragging on the ground",
+          "Folded in your left hand",
+          "Tied to the headcollar",
+        ],
         correctIndex: 2,
-        explanation: "The excess rope should be neatly folded in the left hand.",
+        explanation:
+          "The excess rope should be neatly folded in the left hand.",
       },
     ],
     aiTutorPrompts: [
@@ -8833,8 +9212,10 @@ Never punish a horse for pulling back. Use a longer rope initially and stand nea
       "Never leave a tied horse unattended for long periods",
       "Build confidence gradually with horses that pull back",
     ],
-    safetyNote: "Never tie a horse using the reins of a bridle. If the horse pulls back, it can injure its mouth.",
-    practicalApplication: "Practise tying a quick-release knot 10 times until you can do it smoothly.",
+    safetyNote:
+      "Never tie a horse using the reins of a bridle. If the horse pulls back, it can injure its mouth.",
+    practicalApplication:
+      "Practise tying a quick-release knot 10 times until you can do it smoothly.",
     commonMistakes: [
       "Using a dead knot",
       "Tying the rope too long",
@@ -8845,15 +9226,27 @@ Never punish a horse for pulling back. Use a longer rope initially and stand nea
     knowledgeCheck: [
       {
         question: "Why should you always use baler twine when tying a horse?",
-        options: ["It looks neater", "It acts as a breakpoint if the horse panics", "It's cheaper than rope", "It's tradition"],
+        options: [
+          "It looks neater",
+          "It acts as a breakpoint if the horse panics",
+          "It's cheaper than rope",
+          "It's tradition",
+        ],
         correctIndex: 1,
-        explanation: "Baler twine breaks under extreme force, preventing injury.",
+        explanation:
+          "Baler twine breaks under extreme force, preventing injury.",
       },
       {
         question: "What type of knot should you use?",
-        options: ["A reef knot", "A bowline", "A quick-release knot", "A double knot"],
+        options: [
+          "A reef knot",
+          "A bowline",
+          "A quick-release knot",
+          "A double knot",
+        ],
         correctIndex: 2,
-        explanation: "A quick-release knot can be undone instantly in emergencies.",
+        explanation:
+          "A quick-release knot can be undone instantly in emergencies.",
       },
     ],
     aiTutorPrompts: [
@@ -8901,8 +9294,10 @@ Begin in walk. Ask for trot with voice and a gentle lift of the whip. To stop, l
       "Use consistent voice commands",
       "Never wrap the lunge line around your hand",
     ],
-    safetyNote: "Never wrap the lunge line around your hand or wrist. Hold the line in controlled folds.",
-    practicalApplication: "Practise lungeing a calm horse in walk and trot on both reins for 10 minutes each side.",
+    safetyNote:
+      "Never wrap the lunge line around your hand or wrist. Hold the line in controlled folds.",
+    practicalApplication:
+      "Practise lungeing a calm horse in walk and trot on both reins for 10 minutes each side.",
     commonMistakes: [
       "Wrapping the lunge line around the hand",
       "Standing too close to the horse",
@@ -8919,7 +9314,12 @@ Begin in walk. Ask for trot with voice and a gentle lift of the whip. To stop, l
       },
       {
         question: "How should you hold the lunge line?",
-        options: ["Wrapped around your hand", "In controlled folds", "Dragging on the ground", "Tied to your belt"],
+        options: [
+          "Wrapped around your hand",
+          "In controlled folds",
+          "Dragging on the ground",
+          "Tied to your belt",
+        ],
         correctIndex: 1,
         explanation: "Controlled folds keep the line managed safely.",
       },
@@ -8969,8 +9369,10 @@ Start in an enclosed arena. Walk on straight lines first. Gradually introduce ge
       "Start with straight lines then simple turns",
       "Always work in an enclosed area",
     ],
-    safetyNote: "Long-reining requires experience. Work under supervision. A horse unaccustomed to reins around its hindquarters may kick.",
-    practicalApplication: "Under supervision, practise walking a trained horse in straight lines using long reins.",
+    safetyNote:
+      "Long-reining requires experience. Work under supervision. A horse unaccustomed to reins around its hindquarters may kick.",
+    practicalApplication:
+      "Under supervision, practise walking a trained horse in straight lines using long reins.",
     commonMistakes: [
       "Working a horse unfamiliar with reins around hindquarters",
       "Pulling on the reins instead of guiding",
@@ -8981,15 +9383,27 @@ Start in an enclosed arena. Walk on straight lines first. Gradually introduce ge
     knowledgeCheck: [
       {
         question: "What is the primary purpose of long-reining?",
-        options: ["To tire the horse", "To develop rein response and straightness from the ground", "To replace riding entirely", "To teach jumping"],
+        options: [
+          "To tire the horse",
+          "To develop rein response and straightness from the ground",
+          "To replace riding entirely",
+          "To teach jumping",
+        ],
         correctIndex: 1,
-        explanation: "Long-reining develops rein aids understanding and straightness without rider weight.",
+        explanation:
+          "Long-reining develops rein aids understanding and straightness without rider weight.",
       },
       {
         question: "Where should the long reins pass through?",
-        options: ["Through the horse's legs", "Through the stirrup irons or surcingle rings", "Over the horse's back loosely", "Through the noseband"],
+        options: [
+          "Through the horse's legs",
+          "Through the stirrup irons or surcingle rings",
+          "Over the horse's back loosely",
+          "Through the noseband",
+        ],
         correctIndex: 1,
-        explanation: "The reins pass through stirrups or surcingle rings for correct contact angle.",
+        explanation:
+          "The reins pass through stirrups or surcingle rings for correct contact angle.",
       },
     ],
     aiTutorPrompts: [
@@ -9037,8 +9451,10 @@ Groundwork is invaluable for horses returning from injury. Controlled in-hand wo
       "Groundwork is essential for rehabilitation",
       "Classical in-hand work develops self-carriage",
     ],
-    safetyNote: "Advanced groundwork requires an experienced handler and well-established basic groundwork.",
-    practicalApplication: "Under expert supervision, practise asking a schooled horse for three steps of shoulder-in from the ground.",
+    safetyNote:
+      "Advanced groundwork requires an experienced handler and well-established basic groundwork.",
+    practicalApplication:
+      "Under expert supervision, practise asking a schooled horse for three steps of shoulder-in from the ground.",
     commonMistakes: [
       "Attempting advanced exercises before basics are solid",
       "Over-using the whip",
@@ -9049,15 +9465,27 @@ Groundwork is invaluable for horses returning from injury. Controlled in-hand wo
     knowledgeCheck: [
       {
         question: "Why is groundwork valuable for rehabilitation?",
-        options: ["It's easier than riding", "It allows controlled exercise without rider weight", "It doesn't require equipment", "Horses prefer it"],
+        options: [
+          "It's easier than riding",
+          "It allows controlled exercise without rider weight",
+          "It doesn't require equipment",
+          "Horses prefer it",
+        ],
         correctIndex: 1,
-        explanation: "Groundwork allows targeted exercise without the strain of carrying a rider.",
+        explanation:
+          "Groundwork allows targeted exercise without the strain of carrying a rider.",
       },
       {
         question: "What is the foundation of classical in-hand work?",
-        options: ["Speed", "Jumping", "Developing collection and engagement of the hindquarters", "Lunging"],
+        options: [
+          "Speed",
+          "Jumping",
+          "Developing collection and engagement of the hindquarters",
+          "Lunging",
+        ],
         correctIndex: 2,
-        explanation: "Classical in-hand work focuses on engaging the hindquarters for balance and collection.",
+        explanation:
+          "Classical in-hand work focuses on engaging the hindquarters for balance and collection.",
       },
     ],
     aiTutorPrompts: [
@@ -9105,8 +9533,10 @@ Colic is the leading cause of equine death. Feed little and often, ensure consta
       "All feed changes over 7-14 days",
       "Constant forage access is essential",
     ],
-    safetyNote: "Colic is a veterinary emergency. If a horse shows signs of abdominal pain, call the vet immediately.",
-    practicalApplication: "Observe the feeding routine at your yard for one week. Note forage access and any feed changes.",
+    safetyNote:
+      "Colic is a veterinary emergency. If a horse shows signs of abdominal pain, call the vet immediately.",
+    practicalApplication:
+      "Observe the feeding routine at your yard for one week. Note forage access and any feed changes.",
     commonMistakes: [
       "Feeding large meals infrequently",
       "Making sudden feed changes",
@@ -9117,15 +9547,22 @@ Colic is the leading cause of equine death. Feed little and often, ensure consta
     knowledgeCheck: [
       {
         question: "Why must horses eat little and often?",
-        options: ["They are greedy", "Their stomach is small and produces acid continuously", "They prefer it", "It's cheaper"],
+        options: [
+          "They are greedy",
+          "Their stomach is small and produces acid continuously",
+          "They prefer it",
+          "It's cheaper",
+        ],
         correctIndex: 1,
-        explanation: "The horse's small stomach and continuous acid production require frequent small meals.",
+        explanation:
+          "The horse's small stomach and continuous acid production require frequent small meals.",
       },
       {
         question: "Over how many days should you introduce a new feed?",
         options: ["Immediately", "2-3 days", "7-14 days", "30 days"],
         correctIndex: 2,
-        explanation: "Feed changes should be gradual over 7-14 days for hindgut microbes to adapt.",
+        explanation:
+          "Feed changes should be gradual over 7-14 days for hindgut microbes to adapt.",
       },
     ],
     aiTutorPrompts: [
@@ -9173,8 +9610,10 @@ Always check feed for mould, dust, or unusual smells. Store in dry, rodent-proof
       "Always check feed quality",
       "Store feed properly",
     ],
-    safetyNote: "Dusty or mouldy hay causes serious respiratory conditions. Always inspect before feeding.",
-    practicalApplication: "Identify five different types of feed at your yard and categorise each.",
+    safetyNote:
+      "Dusty or mouldy hay causes serious respiratory conditions. Always inspect before feeding.",
+    practicalApplication:
+      "Identify five different types of feed at your yard and categorise each.",
     commonMistakes: [
       "Overfeeding concentrates",
       "Feeding dusty hay",
@@ -9191,9 +9630,15 @@ Always check feed for mould, dust, or unusual smells. Store in dry, rodent-proof
       },
       {
         question: "Why is chaff added to hard feed?",
-        options: ["Better taste", "Cheaper", "To slow eating and improve digestion", "To add colour"],
+        options: [
+          "Better taste",
+          "Cheaper",
+          "To slow eating and improve digestion",
+          "To add colour",
+        ],
         correctIndex: 2,
-        explanation: "Chaff encourages chewing and saliva production for better digestion.",
+        explanation:
+          "Chaff encourages chewing and saliva production for better digestion.",
       },
     ],
     aiTutorPrompts: [
@@ -9237,8 +9682,10 @@ Do not give a large feed immediately before or after exercise. Allow at least on
       "Keep to consistent feeding times",
       "Allow one hour between hard feed and exercise",
     ],
-    safetyNote: "Riding immediately after a large feed can cause discomfort or colic.",
-    practicalApplication: "Weigh out the feed for one horse using scales. Compare this to a level scoop.",
+    safetyNote:
+      "Riding immediately after a large feed can cause discomfort or colic.",
+    practicalApplication:
+      "Weigh out the feed for one horse using scales. Compare this to a level scoop.",
     commonMistakes: [
       "Feeding by scoop volume instead of weight",
       "Inconsistent feeding times",
@@ -9249,13 +9696,23 @@ Do not give a large feed immediately before or after exercise. Allow at least on
     knowledgeCheck: [
       {
         question: "Why should you weigh feed rather than use scoops?",
-        options: ["It's more traditional", "Different feeds weigh differently per scoop", "It's faster", "Horses prefer it"],
+        options: [
+          "It's more traditional",
+          "Different feeds weigh differently per scoop",
+          "It's faster",
+          "Horses prefer it",
+        ],
         correctIndex: 1,
         explanation: "A scoop of oats weighs differently to a scoop of cubes.",
       },
       {
         question: "How long between feeding hard feed and riding?",
-        options: ["No wait needed", "15 minutes", "At least one hour", "24 hours"],
+        options: [
+          "No wait needed",
+          "15 minutes",
+          "At least one hour",
+          "24 hours",
+        ],
         correctIndex: 2,
         explanation: "The horse needs blood supply to the gut for digestion.",
       },
@@ -9301,8 +9758,10 @@ A dull coat, poor hoof quality, weight changes, lethargy, or behavioural changes
       "Signs of poor nutrition include dull coat and weight changes",
       "Consult an equine nutritionist for complex needs",
     ],
-    safetyNote: "Overweight horses are at serious risk of laminitis. Monitor body condition closely.",
-    practicalApplication: "Condition score three horses at your yard using the 0-5 system.",
+    safetyNote:
+      "Overweight horses are at serious risk of laminitis. Monitor body condition closely.",
+    practicalApplication:
+      "Condition score three horses at your yard using the 0-5 system.",
     commonMistakes: [
       "Over-feeding treats without accounting for them",
       "Assuming thin horses always need more hard feed",
@@ -9319,9 +9778,15 @@ A dull coat, poor hoof quality, weight changes, lethargy, or behavioural changes
       },
       {
         question: "What can a dull coat indicate?",
-        options: ["Needs a bath", "Possible dietary imbalance", "The horse is cold", "Nothing"],
+        options: [
+          "Needs a bath",
+          "Possible dietary imbalance",
+          "The horse is cold",
+          "Nothing",
+        ],
         correctIndex: 1,
-        explanation: "A dull coat is often a first sign of nutritional deficiency.",
+        explanation:
+          "A dull coat is often a first sign of nutritional deficiency.",
       },
     ],
     aiTutorPrompts: [
@@ -9365,8 +9830,10 @@ Veterans may need softer feeds and higher protein. Youngstock need protein for g
       "Base every plan on the individual horse",
       "Electrolytes may be needed for hard work",
     ],
-    safetyNote: "Over-feeding energy to a horse in light work can cause dangerous behavioural changes.",
-    practicalApplication: "Write a weekly feeding plan for a horse in medium work at your yard.",
+    safetyNote:
+      "Over-feeding energy to a horse in light work can cause dangerous behavioural changes.",
+    practicalApplication:
+      "Write a weekly feeding plan for a horse in medium work at your yard.",
     commonMistakes: [
       "Feeding competition rations to horses in light work",
       "Not increasing forage in cold weather",
@@ -9377,15 +9844,27 @@ Veterans may need softer feeds and higher protein. Youngstock need protein for g
     knowledgeCheck: [
       {
         question: "Best way to increase calorie intake in winter?",
-        options: ["Double hard feed", "Increase forage", "Add sugar to water", "Feed less frequently"],
+        options: [
+          "Double hard feed",
+          "Increase forage",
+          "Add sugar to water",
+          "Feed less frequently",
+        ],
         correctIndex: 1,
-        explanation: "Forage provides sustained energy and generates heat through fermentation.",
+        explanation:
+          "Forage provides sustained energy and generates heat through fermentation.",
       },
       {
         question: "Why do veterans often need different feeding?",
-        options: ["They're fussier", "Reduced digestive efficiency and dental issues", "They eat faster", "They don't like hay"],
+        options: [
+          "They're fussier",
+          "Reduced digestive efficiency and dental issues",
+          "They eat faster",
+          "They don't like hay",
+        ],
         correctIndex: 1,
-        explanation: "Older horses often have dental issues and reduced digestive efficiency.",
+        explanation:
+          "Older horses often have dental issues and reduced digestive efficiency.",
       },
     ],
     aiTutorPrompts: [
@@ -9433,8 +9912,10 @@ Learn to read feed labels, understand guaranteed analysis, and consult independe
       "Read feed labels critically",
       "Consult independent equine nutritionists",
     ],
-    safetyNote: "Feeding inappropriate supplements can cause toxicity or imbalance.",
-    practicalApplication: "Read the labels of three different horse feeds. Compare protein, fibre, and energy content.",
+    safetyNote:
+      "Feeding inappropriate supplements can cause toxicity or imbalance.",
+    practicalApplication:
+      "Read the labels of three different horse feeds. Compare protein, fibre, and energy content.",
     commonMistakes: [
       "Adding multiple supplements without checking overlap",
       "Feeding high-sugar feeds to metabolic horses",
@@ -9445,15 +9926,27 @@ Learn to read feed labels, understand guaranteed analysis, and consult independe
     knowledgeCheck: [
       {
         question: "What dietary management for a horse with EMS?",
-        options: ["High-protein diet", "Low-sugar, low-starch diet with managed grazing", "Unlimited rich pasture", "Double the hard feed"],
+        options: [
+          "High-protein diet",
+          "Low-sugar, low-starch diet with managed grazing",
+          "Unlimited rich pasture",
+          "Double the hard feed",
+        ],
         correctIndex: 1,
-        explanation: "EMS horses are insulin resistant and need strict sugar/starch control.",
+        explanation:
+          "EMS horses are insulin resistant and need strict sugar/starch control.",
       },
       {
         question: "When are electrolyte supplements most needed?",
-        options: ["In winter", "During rest days", "During hard work or hot weather", "When the horse won't eat"],
+        options: [
+          "In winter",
+          "During rest days",
+          "During hard work or hot weather",
+          "When the horse won't eat",
+        ],
         correctIndex: 2,
-        explanation: "Electrolytes lost through sweat must be replaced during heavy sweating.",
+        explanation:
+          "Electrolytes lost through sweat must be replaced during heavy sweating.",
       },
     ],
     aiTutorPrompts: [
@@ -9497,8 +9990,10 @@ Welfare compromise can be subtle. A horse standing alone without shelter may app
       "Horses need social contact, space, shelter, and appropriate diet",
       "Ownership carries moral obligation",
     ],
-    safetyNote: "If you see a horse in clear distress, contact the RSPCA or World Horse Welfare.",
-    practicalApplication: "Assess a horse at your yard against all Five Freedoms. Identify improvement areas.",
+    safetyNote:
+      "If you see a horse in clear distress, contact the RSPCA or World Horse Welfare.",
+    practicalApplication:
+      "Assess a horse at your yard against all Five Freedoms. Identify improvement areas.",
     commonMistakes: [
       "Assuming welfare only concerns food and water",
       "Keeping horses isolated",
@@ -9509,15 +10004,26 @@ Welfare compromise can be subtle. A horse standing alone without shelter may app
     knowledgeCheck: [
       {
         question: "Which is NOT one of the Five Freedoms?",
-        options: ["Freedom from hunger", "Freedom to express normal behaviour", "Freedom to compete in shows", "Freedom from pain"],
+        options: [
+          "Freedom from hunger",
+          "Freedom to express normal behaviour",
+          "Freedom to compete in shows",
+          "Freedom from pain",
+        ],
         correctIndex: 2,
         explanation: "Competition is not a welfare right.",
       },
       {
         question: "A horse is kept alone. Which freedom is compromised?",
-        options: ["Freedom from hunger", "Freedom from fear", "Freedom to express normal behaviour", "Freedom from disease"],
+        options: [
+          "Freedom from hunger",
+          "Freedom from fear",
+          "Freedom to express normal behaviour",
+          "Freedom from disease",
+        ],
         correctIndex: 2,
-        explanation: "Horses are herd animals. Isolation prevents normal social behaviour.",
+        explanation:
+          "Horses are herd animals. Isolation prevents normal social behaviour.",
       },
     ],
     aiTutorPrompts: [
@@ -9566,7 +10072,8 @@ Sharing or loaning allows enjoyment without full financial commitment. Always us
       "Welfare must come before convenience",
     ],
     safetyNote: "Never take on a horse if you cannot provide for its needs.",
-    practicalApplication: "Calculate the estimated monthly and annual cost of keeping a horse at your yard.",
+    practicalApplication:
+      "Calculate the estimated monthly and annual cost of keeping a horse at your yard.",
     commonMistakes: [
       "Under-estimating costs",
       "Not considering long-term commitment",
@@ -9577,15 +10084,26 @@ Sharing or loaning allows enjoyment without full financial commitment. Always us
     knowledgeCheck: [
       {
         question: "How long can a horse typically live?",
-        options: ["10-15 years", "15-20 years", "25-30 years or more", "5-10 years"],
+        options: [
+          "10-15 years",
+          "15-20 years",
+          "25-30 years or more",
+          "5-10 years",
+        ],
         correctIndex: 2,
         explanation: "Horses commonly live 25-30 years.",
       },
       {
         question: "What is a responsible alternative to ownership?",
-        options: ["Abandoning when costs get high", "Sharing or loaning with a written agreement", "Selling every year", "Keeping without vet care to save money"],
+        options: [
+          "Abandoning when costs get high",
+          "Sharing or loaning with a written agreement",
+          "Selling every year",
+          "Keeping without vet care to save money",
+        ],
         correctIndex: 1,
-        explanation: "Sharing or loaning allows responsible enjoyment without full commitment.",
+        explanation:
+          "Sharing or loaning allows responsible enjoyment without full commitment.",
       },
     ],
     aiTutorPrompts: [
@@ -9633,8 +10151,10 @@ Under the Animal Welfare Act 2006, every owner has a legal duty of care. Reporti
       "Provide specific factual details",
       "Under the Animal Welfare Act 2006, owners have a legal duty of care",
     ],
-    safetyNote: "Do not confront a suspected abuser directly. Report to welfare organisations.",
-    practicalApplication: "Learn the contact details for your local equine welfare organisation.",
+    safetyNote:
+      "Do not confront a suspected abuser directly. Report to welfare organisations.",
+    practicalApplication:
+      "Learn the contact details for your local equine welfare organisation.",
     commonMistakes: [
       "Assuming someone else will report",
       "Not recognising subtle neglect",
@@ -9645,15 +10165,27 @@ Under the Animal Welfare Act 2006, every owner has a legal duty of care. Reporti
     knowledgeCheck: [
       {
         question: "What should you do if you suspect neglect?",
-        options: ["Ignore it", "Confront the owner aggressively", "Report to a welfare organisation with specific details", "Post on social media"],
+        options: [
+          "Ignore it",
+          "Confront the owner aggressively",
+          "Report to a welfare organisation with specific details",
+          "Post on social media",
+        ],
         correctIndex: 2,
-        explanation: "Reporting to a welfare organisation allows professional investigation.",
+        explanation:
+          "Reporting to a welfare organisation allows professional investigation.",
       },
       {
         question: "Which UK law requires a duty of care for horses?",
-        options: ["The Horse Act 1998", "The Animal Welfare Act 2006", "The Countryside Act 2000", "There is no such law"],
+        options: [
+          "The Horse Act 1998",
+          "The Animal Welfare Act 2006",
+          "The Countryside Act 2000",
+          "There is no such law",
+        ],
         correctIndex: 1,
-        explanation: "The Animal Welfare Act 2006 places a legal duty of care on animal owners.",
+        explanation:
+          "The Animal Welfare Act 2006 places a legal duty of care on animal owners.",
       },
     ],
     aiTutorPrompts: [
@@ -9697,8 +10229,10 @@ Local authorities and the RSPCA enforce the Act. Offences can result in fines, d
       "Offences can lead to fines, bans, or imprisonment",
       "Duty of care applies to anyone with a horse in their charge",
     ],
-    safetyNote: "Buying or selling a horse without a valid passport is illegal.",
-    practicalApplication: "Check the passport of a horse at your yard for microchip number and vaccination records.",
+    safetyNote:
+      "Buying or selling a horse without a valid passport is illegal.",
+    practicalApplication:
+      "Check the passport of a horse at your yard for microchip number and vaccination records.",
     commonMistakes: [
       "Assuming legislation only applies to owners",
       "Not keeping passports updated",
@@ -9709,15 +10243,26 @@ Local authorities and the RSPCA enforce the Act. Offences can result in fines, d
     knowledgeCheck: [
       {
         question: "What does the Animal Welfare Act 2006 require?",
-        options: ["Ride the horse regularly", "Meet five specific welfare needs", "Keep the horse in a stable", "Compete the horse"],
+        options: [
+          "Ride the horse regularly",
+          "Meet five specific welfare needs",
+          "Keep the horse in a stable",
+          "Compete the horse",
+        ],
         correctIndex: 1,
         explanation: "The Act requires five welfare needs to be met.",
       },
       {
         question: "Who has a duty of care under the Act?",
-        options: ["Only the registered owner", "Only vets", "Anyone responsible for an animal", "Only professional breeders"],
+        options: [
+          "Only the registered owner",
+          "Only vets",
+          "Anyone responsible for an animal",
+          "Only professional breeders",
+        ],
         correctIndex: 2,
-        explanation: "The duty applies to any person responsible for an animal.",
+        explanation:
+          "The duty applies to any person responsible for an animal.",
       },
     ],
     aiTutorPrompts: [
@@ -9765,8 +10310,10 @@ If a method causes fear, pain, or distress, it is not acceptable.`,
       "Good timing of pressure-release is foundational",
       "If a method causes fear, pain, or distress, it is not acceptable",
     ],
-    safetyNote: "A horse trained with fear-based methods can become unpredictable and dangerous.",
-    practicalApplication: "Watch a training session and identify which learning quadrants are being used.",
+    safetyNote:
+      "A horse trained with fear-based methods can become unpredictable and dangerous.",
+    practicalApplication:
+      "Watch a training session and identify which learning quadrants are being used.",
     commonMistakes: [
       "Using punishment because it appears to work quickly",
       "Poor timing of pressure-release",
@@ -9777,15 +10324,27 @@ If a method causes fear, pain, or distress, it is not acceptable.`,
     knowledgeCheck: [
       {
         question: "What is negative reinforcement?",
-        options: ["Punishing the horse", "Removing pressure when the horse responds correctly", "Ignoring the horse", "Using treats"],
+        options: [
+          "Punishing the horse",
+          "Removing pressure when the horse responds correctly",
+          "Ignoring the horse",
+          "Using treats",
+        ],
         correctIndex: 1,
-        explanation: "Removing an aversive stimulus when the horse responds correctly.",
+        explanation:
+          "Removing an aversive stimulus when the horse responds correctly.",
       },
       {
         question: "What might learned helplessness look like?",
-        options: ["Energetic responsive behaviour", "A shut-down horse that has stopped trying", "Excited bucking", "Curiosity"],
+        options: [
+          "Energetic responsive behaviour",
+          "A shut-down horse that has stopped trying",
+          "Excited bucking",
+          "Curiosity",
+        ],
         correctIndex: 1,
-        explanation: "Learned helplessness occurs when a horse gives up because nothing it does makes discomfort stop.",
+        explanation:
+          "Learned helplessness occurs when a horse gives up because nothing it does makes discomfort stop.",
       },
     ],
     aiTutorPrompts: [
@@ -9833,8 +10392,10 @@ When quality of life cannot be maintained, euthanasia is the kindest option. It 
       "Euthanasia is compassionate when quality of life fails",
       "These decisions should involve veterinary advice",
     ],
-    safetyNote: "Never delay euthanasia when a horse is clearly suffering. The horse's welfare comes before human emotion.",
-    practicalApplication: "Discuss with your vet what a quality-of-life assessment involves.",
+    safetyNote:
+      "Never delay euthanasia when a horse is clearly suffering. The horse's welfare comes before human emotion.",
+    practicalApplication:
+      "Discuss with your vet what a quality-of-life assessment involves.",
     commonMistakes: [
       "Delaying because of emotional attachment",
       "Rehoming without proper vetting",
@@ -9844,16 +10405,29 @@ When quality of life cannot be maintained, euthanasia is the kindest option. It 
     ],
     knowledgeCheck: [
       {
-        question: "What should be the primary consideration in end-of-life decisions?",
-        options: ["Owner's emotions", "Financial value", "The horse's quality of life", "What others think"],
+        question:
+          "What should be the primary consideration in end-of-life decisions?",
+        options: [
+          "Owner's emotions",
+          "Financial value",
+          "The horse's quality of life",
+          "What others think",
+        ],
         correctIndex: 2,
-        explanation: "Quality of life must always be the primary consideration.",
+        explanation:
+          "Quality of life must always be the primary consideration.",
       },
       {
         question: "What does responsible rehoming require?",
-        options: ["Selling to anyone", "Finding a home through a reputable organisation", "Abandoning in a field", "Giving away online"],
+        options: [
+          "Selling to anyone",
+          "Finding a home through a reputable organisation",
+          "Abandoning in a field",
+          "Giving away online",
+        ],
         correctIndex: 1,
-        explanation: "Reputable organisations vet new homes and monitor welfare.",
+        explanation:
+          "Reputable organisations vet new homes and monitor welfare.",
       },
     ],
     aiTutorPrompts: [
@@ -9901,8 +10475,10 @@ Grid work should be supervised. Horses must be warmed up. Use appropriate jump f
       "Accurate distances are critical for safety",
       "Supervision by a qualified instructor is essential",
     ],
-    safetyNote: "Incorrect distances can cause crashes or loss of confidence. Always measure carefully.",
-    practicalApplication: "Set up a simple placing pole to crossrail to bounce grid under instruction.",
+    safetyNote:
+      "Incorrect distances can cause crashes or loss of confidence. Always measure carefully.",
+    practicalApplication:
+      "Set up a simple placing pole to crossrail to bounce grid under instruction.",
     commonMistakes: [
       "Distances too tight or wide",
       "Making the grid too high too quickly",
@@ -9919,9 +10495,15 @@ Grid work should be supervised. Horses must be warmed up. Use appropriate jump f
       },
       {
         question: "Why build grids progressively?",
-        options: ["To save time", "To build confidence gradually", "It doesn't matter", "To confuse the horse"],
+        options: [
+          "To save time",
+          "To build confidence gradually",
+          "It doesn't matter",
+          "To confuse the horse",
+        ],
         correctIndex: 1,
-        explanation: "Progressive building allows confidence and balance to develop.",
+        explanation:
+          "Progressive building allows confidence and balance to develop.",
       },
     ],
     aiTutorPrompts: [
@@ -9969,8 +10551,10 @@ Commit to your plan once in the ring. Hesitation and last-minute changes are the
       "Commit to your plan in the ring",
       "Course walking improves with practice",
     ],
-    safetyNote: "Never jump a course at height without proper warm-up and equipment check.",
-    practicalApplication: "Walk a course, plan your route, count strides, then ride it and compare plan vs reality.",
+    safetyNote:
+      "Never jump a course at height without proper warm-up and equipment check.",
+    practicalApplication:
+      "Walk a course, plan your route, count strides, then ride it and compare plan vs reality.",
     commonMistakes: [
       "Not walking the course",
       "Walking a shortcut instead of the actual track",
@@ -9981,13 +10565,24 @@ Commit to your plan once in the ring. Hesitation and last-minute changes are the
     knowledgeCheck: [
       {
         question: "Why walk the exact track your horse will take?",
-        options: ["For exercise", "To count accurate strides and plan turns", "Because the judge watches", "It doesn't matter"],
+        options: [
+          "For exercise",
+          "To count accurate strides and plan turns",
+          "Because the judge watches",
+          "It doesn't matter",
+        ],
         correctIndex: 1,
-        explanation: "The exact track gives accurate stride counts and turn planning.",
+        explanation:
+          "The exact track gives accurate stride counts and turn planning.",
       },
       {
         question: "Most common cause of show jumping errors?",
-        options: ["Horse too tired", "Last-minute plan changes and hesitation", "Course too high", "Bad luck"],
+        options: [
+          "Horse too tired",
+          "Last-minute plan changes and hesitation",
+          "Course too high",
+          "Bad luck",
+        ],
         correctIndex: 1,
         explanation: "Hesitation disrupts rhythm and balance.",
       },
@@ -10037,8 +10632,10 @@ If in doubt, call. A vet would rather have a false alarm than be called too late
       "When in doubt, always call the vet",
       "Delay in emergencies can be fatal",
     ],
-    safetyNote: "Keep your vet's emergency number saved in your phone and posted at the yard.",
-    practicalApplication: "Practise taking a horse's temperature, pulse, and respiration. Record results.",
+    safetyNote:
+      "Keep your vet's emergency number saved in your phone and posted at the yard.",
+    practicalApplication:
+      "Practise taking a horse's temperature, pulse, and respiration. Record results.",
     commonMistakes: [
       "Waiting to see if the horse improves",
       "Not knowing the emergency number",
@@ -10051,13 +10648,20 @@ If in doubt, call. A vet would rather have a false alarm than be called too late
         question: "Normal resting heart rate for a horse?",
         options: ["10-20 bpm", "28-44 bpm", "60-80 bpm", "100-120 bpm"],
         correctIndex: 1,
-        explanation: "28-44 bpm is normal. Elevated rate suggests pain or illness.",
+        explanation:
+          "28-44 bpm is normal. Elevated rate suggests pain or illness.",
       },
       {
         question: "Which is always an emergency?",
-        options: ["Small scratch", "Mild dandruff", "A wound near a joint or tendon", "A loose shoe"],
+        options: [
+          "Small scratch",
+          "Mild dandruff",
+          "A wound near a joint or tendon",
+          "A loose shoe",
+        ],
         correctIndex: 2,
-        explanation: "Wounds near joints can allow infection into critical structures.",
+        explanation:
+          "Wounds near joints can allow infection into critical structures.",
       },
     ],
     aiTutorPrompts: [
@@ -10105,8 +10709,10 @@ Wound cleanser, non-stick dressings, cotton wool, cohesive bandages, scissors, t
       "Maintain a fully stocked first aid kit",
       "First aid supports — not replaces — vet treatment",
     ],
-    safetyNote: "Your own safety comes first. Never put yourself at risk treating a panicking horse.",
-    practicalApplication: "Check the first aid kit at your yard. Ensure all items are present and in-date.",
+    safetyNote:
+      "Your own safety comes first. Never put yourself at risk treating a panicking horse.",
+    practicalApplication:
+      "Check the first aid kit at your yard. Ensure all items are present and in-date.",
     commonMistakes: [
       "Removing blood-soaked dressings",
       "Giving pain medication during colic without vet advice",
@@ -10117,13 +10723,24 @@ Wound cleanser, non-stick dressings, cotton wool, cohesive bandages, scissors, t
     knowledgeCheck: [
       {
         question: "What if a bandage becomes soaked with blood?",
-        options: ["Remove it", "Add another pad on top", "Pour water on it", "Leave uncovered"],
+        options: [
+          "Remove it",
+          "Add another pad on top",
+          "Pour water on it",
+          "Leave uncovered",
+        ],
         correctIndex: 1,
-        explanation: "Adding another pad maintains pressure without disrupting clot formation.",
+        explanation:
+          "Adding another pad maintains pressure without disrupting clot formation.",
       },
       {
         question: "First action for colic symptoms?",
-        options: ["Give painkillers", "Feed the horse", "Remove all food and call the vet", "Leave alone"],
+        options: [
+          "Give painkillers",
+          "Feed the horse",
+          "Remove all food and call the vet",
+          "Leave alone",
+        ],
         correctIndex: 2,
         explanation: "Removing food prevents further gut complications.",
       },
@@ -10185,15 +10802,26 @@ Maintain a daily diary noting observations, vet visits, farrier dates, worming d
     knowledgeCheck: [
       {
         question: "Very first morning task?",
-        options: ["Mucking out", "Feeding", "Checking all horses are healthy and safe", "Tacking up"],
+        options: [
+          "Mucking out",
+          "Feeding",
+          "Checking all horses are healthy and safe",
+          "Tacking up",
+        ],
         correctIndex: 2,
         explanation: "A health check of every horse must come first.",
       },
       {
         question: "Why is a daily yard diary important?",
-        options: ["To impress visitors", "To track changes and maintain records", "It's not important", "To plan social events"],
+        options: [
+          "To impress visitors",
+          "To track changes and maintain records",
+          "It's not important",
+          "To plan social events",
+        ],
         correctIndex: 1,
-        explanation: "A diary tracks health changes and provides records for the vet.",
+        explanation:
+          "A diary tracks health changes and provides records for the vet.",
       },
     ],
     aiTutorPrompts: [
@@ -10241,8 +10869,10 @@ Under the Health and Safety at Work Act, yard owners have a duty of care to visi
       "Yard owners have legal safety responsibilities",
       "An evacuation plan must exist and be practised",
     ],
-    safetyNote: "Keep a headcollar and lead rope on every stable door at all times for fire evacuation.",
-    practicalApplication: "Walk around your yard and identify five potential hazards with control measures.",
+    safetyNote:
+      "Keep a headcollar and lead rope on every stable door at all times for fire evacuation.",
+    practicalApplication:
+      "Walk around your yard and identify five potential hazards with control measures.",
     commonMistakes: [
       "Storing hay adjacent to stables",
       "Not having fire extinguishers",
@@ -10253,13 +10883,23 @@ Under the Health and Safety at Work Act, yard owners have a duty of care to visi
     knowledgeCheck: [
       {
         question: "What should be on every stable door?",
-        options: ["A nameplate", "A headcollar and lead rope", "A mirror", "A bucket"],
+        options: [
+          "A nameplate",
+          "A headcollar and lead rope",
+          "A mirror",
+          "A bucket",
+        ],
         correctIndex: 1,
         explanation: "Headcollars allow fast evacuation in fire emergencies.",
       },
       {
         question: "Where should hay be stored?",
-        options: ["Inside the stables", "Away from stables and ignition sources", "In the tack room", "Outside uncovered"],
+        options: [
+          "Inside the stables",
+          "Away from stables and ignition sources",
+          "In the tack room",
+          "Outside uncovered",
+        ],
         correctIndex: 1,
         explanation: "Hay is highly flammable — store away from stables.",
       },
@@ -10309,8 +10949,10 @@ Maintain strong rhythmic canter. Sit up and look ahead. Ride positively — hesi
       "Maintain forward rhythm — hesitation causes refusals",
       "Horse fitness and rider confidence both critical",
     ],
-    safetyNote: "Never attempt cross-country without a properly fitted body protector.",
-    practicalApplication: "Walk a cross-country course and identify each fence type with approach plan.",
+    safetyNote:
+      "Never attempt cross-country without a properly fitted body protector.",
+    practicalApplication:
+      "Walk a cross-country course and identify each fence type with approach plan.",
     commonMistakes: [
       "Approaching too slowly",
       "Looking down at fences",
@@ -10321,15 +10963,26 @@ Maintain strong rhythmic canter. Sit up and look ahead. Ride positively — hesi
     knowledgeCheck: [
       {
         question: "Key difference between cross-country and show jumping?",
-        options: ["Cross-country fences are smaller", "Cross-country fences are solid and fixed", "No difference", "Show jumping is harder"],
+        options: [
+          "Cross-country fences are smaller",
+          "Cross-country fences are solid and fixed",
+          "No difference",
+          "Show jumping is harder",
+        ],
         correctIndex: 1,
         explanation: "Solid, fixed fences leave no margin for error.",
       },
       {
         question: "Compulsory cross-country safety equipment?",
-        options: ["Gloves only", "Body protector and certified helmet", "Knee pads", "Nothing specific"],
+        options: [
+          "Gloves only",
+          "Body protector and certified helmet",
+          "Knee pads",
+          "Nothing specific",
+        ],
         correctIndex: 1,
-        explanation: "Body protector and certified helmet are compulsory at all levels.",
+        explanation:
+          "Body protector and certified helmet are compulsory at all levels.",
       },
     ],
     aiTutorPrompts: [
@@ -10377,7 +11030,8 @@ Assess what went well and what needs improvement. Note specific exercises for ho
       "Be prepared for different horse behaviour",
       "Review every competition honestly",
     ],
-    safetyNote: "Always check your horse's soundness before loading for a competition.",
+    safetyNote:
+      "Always check your horse's soundness before loading for a competition.",
     practicalApplication: "Create a complete competition day checklist.",
     commonMistakes: [
       "Arriving late and rushing",
@@ -10389,13 +11043,23 @@ Assess what went well and what needs improvement. Note specific exercises for ho
     knowledgeCheck: [
       {
         question: "How to plan competition day timeline?",
-        options: ["Wing it", "Plan backwards from start time", "Arrive just before class", "Copy someone else"],
+        options: [
+          "Wing it",
+          "Plan backwards from start time",
+          "Arrive just before class",
+          "Copy someone else",
+        ],
         correctIndex: 1,
         explanation: "Planning backwards ensures enough time for every stage.",
       },
       {
         question: "What to do after a competition?",
-        options: ["Forget about it", "Review what went well and what to improve", "Only focus on what went wrong", "Immediately enter another"],
+        options: [
+          "Forget about it",
+          "Review what went well and what to improve",
+          "Only focus on what went wrong",
+          "Immediately enter another",
+        ],
         correctIndex: 1,
         explanation: "Balanced review helps learn from every experience.",
       },
@@ -10442,7 +11106,8 @@ Stretch daily for best results. Even 10 minutes a day makes a significant differ
       "Flexibility improves comfort and prevents injury",
     ],
     safetyNote: "Never stretch cold muscles aggressively. Warm up first.",
-    practicalApplication: "Create a 10-minute daily stretching routine for one week and note riding changes.",
+    practicalApplication:
+      "Create a 10-minute daily stretching routine for one week and note riding changes.",
     commonMistakes: [
       "Static stretching before riding without warmup",
       "Bouncing in stretches",
@@ -10453,7 +11118,12 @@ Stretch daily for best results. Even 10 minutes a day makes a significant differ
     knowledgeCheck: [
       {
         question: "What type of stretching before riding?",
-        options: ["Static held 60 seconds", "Dynamic like leg swings", "None", "Stretching while mounted"],
+        options: [
+          "Static held 60 seconds",
+          "Dynamic like leg swings",
+          "None",
+          "Stretching while mounted",
+        ],
         correctIndex: 1,
         explanation: "Dynamic stretches warm muscles with movement.",
       },
@@ -10461,7 +11131,8 @@ Stretch daily for best results. Even 10 minutes a day makes a significant differ
         question: "Most important flexibility area for riders?",
         options: ["Wrists", "Hips", "Ankles", "Neck"],
         correctIndex: 1,
-        explanation: "Hip flexibility directly affects seat, balance, and following the horse.",
+        explanation:
+          "Hip flexibility directly affects seat, balance, and following the horse.",
       },
     ],
     aiTutorPrompts: [
@@ -10509,8 +11180,10 @@ If anxiety severely impacts enjoyment, consider a sports psychologist or confide
       "Replace negative self-talk with positive statements",
       "Seek professional help if severely impacted",
     ],
-    safetyNote: "Never force yourself or allow others to force you into situations that feel dangerous.",
-    practicalApplication: "Write down your top three anxiety triggers with a small first step for each.",
+    safetyNote:
+      "Never force yourself or allow others to force you into situations that feel dangerous.",
+    practicalApplication:
+      "Write down your top three anxiety triggers with a small first step for each.",
     commonMistakes: [
       "Pushing through extreme fear",
       "Comparing to fearless riders",
@@ -10521,15 +11194,27 @@ If anxiety severely impacts enjoyment, consider a sports psychologist or confide
     knowledgeCheck: [
       {
         question: "Most effective approach to riding anxiety?",
-        options: ["Force the scariest thing first", "Gradual progressive exposure", "Ignore the fear", "Give up riding"],
+        options: [
+          "Force the scariest thing first",
+          "Gradual progressive exposure",
+          "Ignore the fear",
+          "Give up riding",
+        ],
         correctIndex: 1,
-        explanation: "Progressive exposure starting with safe activities builds lasting confidence.",
+        explanation:
+          "Progressive exposure starting with safe activities builds lasting confidence.",
       },
       {
         question: "Breathing technique for anxiety?",
-        options: ["Hold breath", "Breathe as fast as possible", "In for 4, hold for 4, out for 4", "Panting"],
+        options: [
+          "Hold breath",
+          "Breathe as fast as possible",
+          "In for 4, hold for 4, out for 4",
+          "Panting",
+        ],
         correctIndex: 2,
-        explanation: "Box breathing activates the parasympathetic nervous system.",
+        explanation:
+          "Box breathing activates the parasympathetic nervous system.",
       },
     ],
     aiTutorPrompts: [
@@ -10577,8 +11262,10 @@ Use professional communication channels. Do not share personal social media with
       "Record concerns factually",
       "Maintain professional boundaries",
     ],
-    safetyNote: "If a child tells you something concerning, listen calmly, reassure them, and report immediately. Never promise secrecy.",
-    practicalApplication: "Find out who the safeguarding officer is at your yard.",
+    safetyNote:
+      "If a child tells you something concerning, listen calmly, reassure them, and report immediately. Never promise secrecy.",
+    practicalApplication:
+      "Find out who the safeguarding officer is at your yard.",
     commonMistakes: [
       "Ignoring concerns because they seem minor",
       "Investigating yourself instead of reporting",
@@ -10589,15 +11276,26 @@ Use professional communication channels. Do not share personal social media with
     knowledgeCheck: [
       {
         question: "What to do if a child discloses something concerning?",
-        options: ["Promise secrecy", "Investigate yourself", "Listen, reassure, and report to safeguarding officer", "Ignore it"],
+        options: [
+          "Promise secrecy",
+          "Investigate yourself",
+          "Listen, reassure, and report to safeguarding officer",
+          "Ignore it",
+        ],
         correctIndex: 2,
         explanation: "Listen, reassure, report. Never promise secrecy.",
       },
       {
         question: "What does duty of care mean?",
-        options: ["Being friends with all riders", "Taking reasonable steps to ensure safety and wellbeing", "Winning competitions", "Providing free lessons"],
+        options: [
+          "Being friends with all riders",
+          "Taking reasonable steps to ensure safety and wellbeing",
+          "Winning competitions",
+          "Providing free lessons",
+        ],
         correctIndex: 1,
-        explanation: "Taking all reasonable steps to protect physical and emotional wellbeing.",
+        explanation:
+          "Taking all reasonable steps to protect physical and emotional wellbeing.",
       },
     ],
     aiTutorPrompts: [
@@ -10645,8 +11343,10 @@ Physically accessible, culturally welcoming, free from discrimination.`,
       "Para-equestrian offers competitive pathways",
       "An inclusive environment is welcoming and free from discrimination",
     ],
-    safetyNote: "When working with riders with specific needs, conduct thorough risk assessment. Additional helpers may be required.",
-    practicalApplication: "Plan a lesson for a fictional rider with a specific need.",
+    safetyNote:
+      "When working with riders with specific needs, conduct thorough risk assessment. Additional helpers may be required.",
+    practicalApplication:
+      "Plan a lesson for a fictional rider with a specific need.",
     commonMistakes: [
       "Assuming all people with a condition have the same needs",
       "Over-helping instead of allowing independence",
@@ -10657,15 +11357,27 @@ Physically accessible, culturally welcoming, free from discrimination.`,
     knowledgeCheck: [
       {
         question: "Core principle of inclusive coaching?",
-        options: ["Treating everyone exactly the same", "Adapting teaching to meet individual needs", "Only teaching riders without disabilities", "Lowering standards for everyone"],
+        options: [
+          "Treating everyone exactly the same",
+          "Adapting teaching to meet individual needs",
+          "Only teaching riders without disabilities",
+          "Lowering standards for everyone",
+        ],
         correctIndex: 1,
-        explanation: "Adapting methods ensures every rider can learn effectively.",
+        explanation:
+          "Adapting methods ensures every rider can learn effectively.",
       },
       {
         question: "UK organisation for working with disabled riders?",
-        options: ["The Jockey Club", "The BHA", "The Riding for the Disabled Association (RDA)", "The Kennel Club"],
+        options: [
+          "The Jockey Club",
+          "The BHA",
+          "The Riding for the Disabled Association (RDA)",
+          "The Kennel Club",
+        ],
         correctIndex: 2,
-        explanation: "The RDA provides training and standards for equestrian centres.",
+        explanation:
+          "The RDA provides training and standards for equestrian centres.",
       },
     ],
     aiTutorPrompts: [

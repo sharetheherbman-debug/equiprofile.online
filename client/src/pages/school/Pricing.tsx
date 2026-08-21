@@ -191,7 +191,9 @@ export default function SchoolPricing() {
                           : "bg-[#2d6a4f] hover:bg-[#236b45] text-white"
                       }`}
                     >
-                      {isEnterprise ? "Discuss Enterprise" : "Ask About This Plan"}
+                      {isEnterprise
+                        ? "Discuss Enterprise"
+                        : "Ask About This Plan"}
                       <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
                   </Link>
@@ -234,9 +236,9 @@ export default function SchoolPricing() {
 
           <p className="mt-8 text-sm text-[#1e293b]/50 text-center max-w-3xl mx-auto">
             Plan entitlements and commercial terms should be confirmed against
-            the active account configuration before purchase. This page does
-            not invent tier-specific capabilities that are not represented by
-            the current pricing source of truth.
+            the active account configuration before purchase. This page does not
+            invent tier-specific capabilities that are not represented by the
+            current pricing source of truth.
           </p>
         </div>
       </section>

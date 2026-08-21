@@ -12,7 +12,9 @@ if (wantsJson) {
   console.log(`Pathways: ${summary.pathways}`);
   console.log(`Lessons: ${summary.lessons}`);
   console.log(`Knowledge checks: ${summary.knowledgeChecks}`);
-  console.log(`Linked competency references: ${summary.linkedCompetencyReferences}`);
+  console.log(
+    `Linked competency references: ${summary.linkedCompetencyReferences}`,
+  );
   console.log(`Errors: ${summary.errors}`);
   console.log(`Warnings: ${summary.warnings}`);
   console.log("");

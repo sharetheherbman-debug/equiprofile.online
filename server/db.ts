@@ -1377,7 +1377,10 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       try {
         await db.execute(sql.raw(stmt));
       } catch (tableError) {
-        console.error(`[Database] Failed to create table '${tableName}':`, tableError);
+        console.error(
+          `[Database] Failed to create table '${tableName}':`,
+          tableError,
+        );
         throw tableError;
       }
     }
@@ -1419,7 +1422,10 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       try {
         await db.execute(sql.raw(stmt));
       } catch (colError) {
-        console.warn("[Database] Column migration failed (column may already exist):", colError);
+        console.warn(
+          "[Database] Column migration failed (column may already exist):",
+          colError,
+        );
       }
     }
     console.log("[Database] Column migrations applied");
@@ -1470,7 +1476,10 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       try {
         await db.execute(sql.raw(stmt));
       } catch (idxError) {
-        console.warn("[Database] Index migration warning (index may already exist):", idxError);
+        console.warn(
+          "[Database] Index migration warning (index may already exist):",
+          idxError,
+        );
       }
     }
     console.log("[Database] Index migrations applied");
@@ -1752,7 +1761,9 @@ export async function hardDeleteUser(id: number) {
   await db.delete(tags).where(eq(tags.userId, id));
   await db.delete(competitions).where(eq(competitions.userId, id));
   await db.delete(competitionResults).where(eq(competitionResults.userId, id));
-  await db.delete(trainingProgramTemplates).where(eq(trainingProgramTemplates.userId, id));
+  await db
+    .delete(trainingProgramTemplates)
+    .where(eq(trainingProgramTemplates.userId, id));
   await db.delete(trainingPrograms).where(eq(trainingPrograms.userId, id));
   await db.delete(reports).where(eq(reports.userId, id));
   await db.delete(reportSchedules).where(eq(reportSchedules.userId, id));
@@ -1765,10 +1776,15 @@ export async function hardDeleteUser(id: number) {
   await db.delete(webhooks).where(eq(webhooks.userId, id));
   await db.delete(accountFeatures).where(eq(accountFeatures.userId, id));
   await db.delete(adminSessions).where(eq(adminSessions.userId, id));
-  await db.delete(adminUnlockAttempts).where(eq(adminUnlockAttempts.userId, id));
+  await db
+    .delete(adminUnlockAttempts)
+    .where(eq(adminUnlockAttempts.userId, id));
   await db.delete(activityLogs).where(eq(activityLogs.userId, id));
   // Anonymise analytics rows rather than delete them (preserves visit counts)
-  await db.update(siteAnalytics).set({ userId: null }).where(eq(siteAnalytics.userId, id));
+  await db
+    .update(siteAnalytics)
+    .set({ userId: null })
+    .where(eq(siteAnalytics.userId, id));
   await db.delete(users).where(eq(users.id, id));
 }
 
@@ -1912,7 +1928,9 @@ export async function deleteHorseAndData(id: number, userId: number) {
   await db.delete(events).where(eq(events.horseId, id));
 
   // Finally, hard-delete the horse record
-  await db.delete(horses).where(and(eq(horses.id, id), eq(horses.userId, userId)));
+  await db
+    .delete(horses)
+    .where(and(eq(horses.id, id), eq(horses.userId, userId)));
 }
 
 // ============ HEALTH RECORD QUERIES ============
@@ -2436,7 +2454,9 @@ export async function getUserSegmentation() {
     let prefs: { freeAccess?: boolean } = {};
     try {
       prefs = u.preferences ? JSON.parse(u.preferences as string) : {};
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
 
     const status = u.subscriptionStatus;
 
@@ -3691,7 +3711,11 @@ export async function deleteTag(id: number, userId: number) {
 
 // ============ HORSE TAGS (many-to-many) ============
 
-export async function attachTagToHorse(horseId: number, tagId: number, userId: number) {
+export async function attachTagToHorse(
+  horseId: number,
+  tagId: number,
+  userId: number,
+) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
@@ -3702,13 +3726,23 @@ export async function attachTagToHorse(horseId: number, tagId: number, userId: n
     .onDuplicateKeyUpdate({ set: { horseId } }); // no-op update keeps the row
 }
 
-export async function detachTagFromHorse(horseId: number, tagId: number, userId: number) {
+export async function detachTagFromHorse(
+  horseId: number,
+  tagId: number,
+  userId: number,
+) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
   await db
     .delete(horseTags)
-    .where(and(eq(horseTags.horseId, horseId), eq(horseTags.tagId, tagId), eq(horseTags.userId, userId)));
+    .where(
+      and(
+        eq(horseTags.horseId, horseId),
+        eq(horseTags.tagId, tagId),
+        eq(horseTags.userId, userId),
+      ),
+    );
 }
 
 export async function getTagsByHorse(horseId: number, userId: number) {
@@ -3726,7 +3760,10 @@ export async function getTagsByHorse(horseId: number, userId: number) {
 }
 
 /** Return distinct horseIds that have a specific tag attached, for the user */
-export async function getHorseIdsByTag(tagId: number, userId: number): Promise<number[]> {
+export async function getHorseIdsByTag(
+  tagId: number,
+  userId: number,
+): Promise<number[]> {
   const db = await getDb();
   if (!db) return [];
 

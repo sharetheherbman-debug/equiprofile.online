@@ -42,10 +42,22 @@ const SHOP_HOSTNAME_PATTERNS = [
  * Determine which frontend to serve based on the request hostname.
  * Returns "school" for school.equiprofile.online, "management" for everything else.
  */
-function getSiteModeFromRequest(hostname: string): "management" | "school" | "shop" {
+function getSiteModeFromRequest(
+  hostname: string,
+): "management" | "school" | "shop" {
   const lower = hostname.toLowerCase().split(":")[0]; // strip port
-  if (lower.startsWith("shop.") || SHOP_HOSTNAME_PATTERNS.some((p) => lower === p || lower.startsWith(p + ":"))) return "shop";
-  if (lower.startsWith("school.") || SCHOOL_HOSTNAME_PATTERNS.some((p) => lower === p || lower.startsWith(p + ":"))) return "school";
+  if (
+    lower.startsWith("shop.") ||
+    SHOP_HOSTNAME_PATTERNS.some((p) => lower === p || lower.startsWith(p + ":"))
+  )
+    return "shop";
+  if (
+    lower.startsWith("school.") ||
+    SCHOOL_HOSTNAME_PATTERNS.some(
+      (p) => lower === p || lower.startsWith(p + ":"),
+    )
+  )
+    return "school";
   return "management";
 }
 
@@ -252,7 +264,12 @@ export function serveStatic(app: Express) {
 
     // Determine which frontend to serve based on hostname
     const siteMode = getSiteModeFromRequest(req.hostname || "");
-    const siteDistPath = siteMode === "school" ? schoolDist : siteMode === "shop" ? shopDist : mgmtDist;
+    const siteDistPath =
+      siteMode === "school"
+        ? schoolDist
+        : siteMode === "shop"
+          ? shopDist
+          : mgmtDist;
     const indexPath = path.resolve(siteDistPath, "index.html");
 
     // No-cache for HTML shell (users always get latest)

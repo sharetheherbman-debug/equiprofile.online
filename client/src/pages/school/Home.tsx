@@ -224,9 +224,7 @@ export default function SchoolHome() {
                   <p className="text-3xl sm:text-4xl font-bold text-[#1e3a5f] font-serif">
                     {stat.value}
                   </p>
-                  <p className="text-sm text-[#1e293b]/60 mt-1">
-                    {stat.label}
-                  </p>
+                  <p className="text-sm text-[#1e293b]/60 mt-1">{stat.label}</p>
                 </motion.div>
               ))}
             </div>

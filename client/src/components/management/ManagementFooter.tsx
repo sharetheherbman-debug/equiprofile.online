@@ -7,36 +7,40 @@ import { Link } from "wouter";
 import { Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function ManagementFooter({ hidePreFooterCta = false }: { hidePreFooterCta?: boolean }) {
+export function ManagementFooter({
+  hidePreFooterCta = false,
+}: {
+  hidePreFooterCta?: boolean;
+}) {
   return (
     <footer className="relative bg-[#0a1628] text-gray-300 overflow-hidden">
       {/* Pre-footer CTA strip — hidden on pages where the form/content IS the conversion action (e.g. Contact) */}
       {!hidePreFooterCta && (
-      <div className="relative border-b border-white/[0.06] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0e2040] via-[#142b52] to-[#0e2040]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_100%_at_50%_0%,_rgba(197,165,90,0.06)_0%,_transparent_100%)]" />
-        <div className="relative container mx-auto px-4 sm:px-6 py-10">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 max-w-4xl mx-auto text-center sm:text-left">
-            <div>
-              <p className="text-white font-bold text-lg font-serif">
-                Ready to get started?
-              </p>
-              <p className="text-white/40 text-sm mt-0.5">
-                7-day free trial · No credit card required
-              </p>
+        <div className="relative border-b border-white/[0.06] overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0e2040] via-[#142b52] to-[#0e2040]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_100%_at_50%_0%,_rgba(197,165,90,0.06)_0%,_transparent_100%)]" />
+          <div className="relative container mx-auto px-4 sm:px-6 py-10">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 max-w-4xl mx-auto text-center sm:text-left">
+              <div>
+                <p className="text-white font-bold text-lg font-serif">
+                  Ready to get started?
+                </p>
+                <p className="text-white/40 text-sm mt-0.5">
+                  7-day free trial · No credit card required
+                </p>
+              </div>
+              <Link href="/register">
+                <Button
+                  size="lg"
+                  className="bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] font-bold px-8 h-11 rounded-full shadow-lg shadow-[#c5a55a]/20 border-0 transition-all duration-200 hover:-translate-y-0.5 whitespace-nowrap flex-shrink-0"
+                >
+                  Start Free Trial
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
-            <Link href="/register">
-              <Button
-                size="lg"
-                className="bg-[#c5a55a] hover:bg-[#d4b468] text-[#0f1d2e] font-bold px-8 h-11 rounded-full shadow-lg shadow-[#c5a55a]/20 border-0 transition-all duration-200 hover:-translate-y-0.5 whitespace-nowrap flex-shrink-0"
-              >
-                Start Free Trial
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
           </div>
         </div>
-      </div>
       )}
 
       {/* Subtle top gradient line */}
@@ -49,7 +53,10 @@ export function ManagementFooter({ hidePreFooterCta = false }: { hidePreFooterCt
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-3 mb-5 group">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-3 mb-5 group"
+            >
               <img
                 src="/logo.png"
                 alt="EquiProfile"
@@ -62,9 +69,9 @@ export function ManagementFooter({ hidePreFooterCta = false }: { hidePreFooterCt
               </div>
             </Link>
             <p className="text-sm text-gray-500 leading-relaxed mb-5 max-w-xs">
-              Professional horse management platform. Health tracking,
-              training logs, nutrition plans, and complete stable operations
-              — all in one premium system.
+              Professional horse management platform. Health tracking, training
+              logs, nutrition plans, and complete stable operations — all in one
+              premium system.
             </p>
             <a
               href="mailto:hello@equiprofile.online"
@@ -81,17 +88,26 @@ export function ManagementFooter({ hidePreFooterCta = false }: { hidePreFooterCt
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/features" className="text-gray-500 hover:text-white transition-colors">
+                <Link
+                  href="/features"
+                  className="text-gray-500 hover:text-white transition-colors"
+                >
                   Features
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="text-gray-500 hover:text-white transition-colors">
+                <Link
+                  href="/pricing"
+                  className="text-gray-500 hover:text-white transition-colors"
+                >
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link href="/register" className="text-[#c5a55a]/80 hover:text-[#c5a55a] transition-colors font-medium">
+                <Link
+                  href="/register"
+                  className="text-[#c5a55a]/80 hover:text-[#c5a55a] transition-colors font-medium"
+                >
                   Start Free Trial
                 </Link>
               </li>
@@ -105,17 +121,26 @@ export function ManagementFooter({ hidePreFooterCta = false }: { hidePreFooterCt
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/about" className="text-gray-500 hover:text-white transition-colors">
+                <Link
+                  href="/about"
+                  className="text-gray-500 hover:text-white transition-colors"
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-500 hover:text-white transition-colors">
+                <Link
+                  href="/contact"
+                  className="text-gray-500 hover:text-white transition-colors"
+                >
                   Contact
                 </Link>
               </li>
               <li>
-                <a href="https://school.equiprofile.online/academy" className="text-gray-500 hover:text-white transition-colors">
+                <a
+                  href="https://school.equiprofile.online/academy"
+                  className="text-gray-500 hover:text-white transition-colors"
+                >
                   EquiProfile Academy
                 </a>
               </li>
@@ -129,12 +154,18 @@ export function ManagementFooter({ hidePreFooterCta = false }: { hidePreFooterCt
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/privacy" className="text-gray-500 hover:text-white transition-colors">
+                <Link
+                  href="/privacy"
+                  className="text-gray-500 hover:text-white transition-colors"
+                >
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-gray-500 hover:text-white transition-colors">
+                <Link
+                  href="/terms"
+                  className="text-gray-500 hover:text-white transition-colors"
+                >
                   Terms of Service
                 </Link>
               </li>
@@ -152,7 +183,8 @@ export function ManagementFooter({ hidePreFooterCta = false }: { hidePreFooterCt
               rel="noopener noreferrer"
               className="hover:text-gray-400 transition-colors"
             >
-              Amarkt<span className="text-[#4a9eca] font-semibold">AI</span> Network
+              Amarkt<span className="text-[#4a9eca] font-semibold">AI</span>{" "}
+              Network
             </a>
           </p>
         </div>

@@ -134,7 +134,9 @@ const sharedManualChunks = (id: string) => {
 
 const plugins = [react(), tailwindcss(), injectServiceWorkerVersion()];
 
-console.log(`\n🏗️  Building ${SITE_TARGET.toUpperCase()} frontend from ${siteRoot}\n`);
+console.log(
+  `\n🏗️  Building ${SITE_TARGET.toUpperCase()} frontend from ${siteRoot}\n`,
+);
 
 export default defineConfig({
   plugins,

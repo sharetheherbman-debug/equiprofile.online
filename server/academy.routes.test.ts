@@ -51,18 +51,28 @@ describe("EquiProfile Academy route compatibility", () => {
 
 describe("EquiProfile Academy public branding contract", () => {
   it("uses Academy branding in navigation, footer and document metadata", () => {
-    const navbar = readRepoFile("client/src/components/school/SchoolNavbar.tsx");
-    const footer = readRepoFile("client/src/components/school/SchoolFooter.tsx");
+    const navbar = readRepoFile(
+      "client/src/components/school/SchoolNavbar.tsx",
+    );
+    const footer = readRepoFile(
+      "client/src/components/school/SchoolFooter.tsx",
+    );
     const html = readRepoFile("client/school/index.html");
 
     expect(navbar).toContain("Academy");
     expect(footer).toContain("EquiProfile Academy");
-    expect(html).toContain("EquiProfile Academy — Premium Equestrian Learning Platform");
+    expect(html).toContain(
+      "EquiProfile Academy — Premium Equestrian Learning Platform",
+    );
   });
 
   it("uses Academy paths for customer-facing navigation", () => {
-    const navbar = readRepoFile("client/src/components/school/SchoolNavbar.tsx");
-    const footer = readRepoFile("client/src/components/school/SchoolFooter.tsx");
+    const navbar = readRepoFile(
+      "client/src/components/school/SchoolNavbar.tsx",
+    );
+    const footer = readRepoFile(
+      "client/src/components/school/SchoolFooter.tsx",
+    );
 
     for (const route of [
       "/academy/features",
@@ -74,17 +84,26 @@ describe("EquiProfile Academy public branding contract", () => {
     }
   });
 
-  it.each(marketingPages)("does not present the old product name in %s", (file) => {
-    expect(readRepoFile(file)).not.toContain("EquiProfile School");
-  });
+  it.each(marketingPages)(
+    "does not present the old product name in %s",
+    (file) => {
+      expect(readRepoFile(file)).not.toContain("EquiProfile School");
+    },
+  );
 
-  it.each(marketingPages)("does not claim BHS or Pony Club alignment in %s", (file) => {
-    expect(readRepoFile(file)).not.toMatch(/\bBHS\b|Pony Club/);
-  });
+  it.each(marketingPages)(
+    "does not claim BHS or Pony Club alignment in %s",
+    (file) => {
+      expect(readRepoFile(file)).not.toMatch(/\bBHS\b|Pony Club/);
+    },
+  );
 
-  it.each(marketingPages)("does not retain the conflicting 14-day trial copy in %s", (file) => {
-    expect(readRepoFile(file)).not.toMatch(/14[- ]day/i);
-  });
+  it.each(marketingPages)(
+    "does not retain the conflicting 14-day trial copy in %s",
+    (file) => {
+      expect(readRepoFile(file)).not.toMatch(/14[- ]day/i);
+    },
+  );
 
   it("derives public trial copy from the shared trial constant", () => {
     const pricing = readRepoFile("client/src/pages/school/Pricing.tsx");

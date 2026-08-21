@@ -6,7 +6,10 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { AdminViewProvider, useAdminViewMode } from "@/contexts/AdminViewContext";
+import {
+  AdminViewProvider,
+  useAdminViewMode,
+} from "@/contexts/AdminViewContext";
 import {
   SkipToContent,
   useKeyboardNavigation,
@@ -14,7 +17,12 @@ import {
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { useUpgradeModal } from "@/hooks/useUpgradeModal";
-import { ProtectedRoute, StableRoute, StudentRoute, TeacherRoute } from "@/components/ProtectedRoute";
+import {
+  ProtectedRoute,
+  StableRoute,
+  StudentRoute,
+  TeacherRoute,
+} from "@/components/ProtectedRoute";
 import { SalesChatWidget } from "@/components/SalesChatWidget";
 import { CookieConsent } from "@/components/CookieConsent";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
@@ -113,7 +121,8 @@ function SchoolRouter() {
   const { viewMode, isAdmin } = useAdminViewMode();
 
   const ActiveDashboard = uiVersion === "v2" ? DashboardV2 : Dashboard;
-  const ActiveStableDashboard = uiVersion === "v2" ? StableDashboardV2 : StableDashboard;
+  const ActiveStableDashboard =
+    uiVersion === "v2" ? StableDashboardV2 : StableDashboard;
 
   const ResolvedDashboard = (() => {
     if (!isAdmin || !viewMode || viewMode === "admin" || viewMode === "pro") {

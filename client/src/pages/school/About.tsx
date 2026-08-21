@@ -237,7 +237,8 @@ export default function SchoolAbout() {
             </h2>
             <p className="text-[#1e293b]/60 max-w-2xl mx-auto text-lg">
               Academy is being treated as a compatibility-safe completion of the
-              real application, not a new landing page laid over unfinished flows.
+              real application, not a new landing page laid over unfinished
+              flows.
             </p>
           </motion.div>
 

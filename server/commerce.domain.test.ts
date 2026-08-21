@@ -8,26 +8,37 @@ import {
 
 describe("commerce domain safeguards", () => {
   it("calculates trusted price and VAT only for fresh sellable inventory", () => {
-    const totals = calculateCartTotals([{
-      quantity: 2,
-      retailPricePence: 1500,
-      salePricePence: 1200,
-      vatRateBasisPoints: 2000,
-      availabilityStatus: "in_stock",
-      freshUntil: new Date(Date.now() + 60_000),
-    }]);
-    expect(totals).toEqual({ subtotalPence: 2400, vatPence: 480, shippingPence: 0, totalPence: 2880 });
+    const totals = calculateCartTotals([
+      {
+        quantity: 2,
+        retailPricePence: 1500,
+        salePricePence: 1200,
+        vatRateBasisPoints: 2000,
+        availabilityStatus: "in_stock",
+        freshUntil: new Date(Date.now() + 60_000),
+      },
+    ]);
+    expect(totals).toEqual({
+      subtotalPence: 2400,
+      vatPence: 480,
+      shippingPence: 0,
+      totalPence: 2880,
+    });
   });
 
   it("rejects stale or unavailable supplier inventory before checkout", () => {
-    expect(() => calculateCartTotals([{
-      quantity: 1,
-      retailPricePence: 1500,
-      salePricePence: null,
-      vatRateBasisPoints: 2000,
-      availabilityStatus: "stale",
-      freshUntil: new Date(Date.now() - 1),
-    }])).toThrow(/unavailable or has stale supplier stock/);
+    expect(() =>
+      calculateCartTotals([
+        {
+          quantity: 1,
+          retailPricePence: 1500,
+          salePricePence: null,
+          vatRateBasisPoints: 2000,
+          availabilityStatus: "stale",
+          freshUntil: new Date(Date.now() - 1),
+        },
+      ]),
+    ).toThrow(/unavailable or has stale supplier stock/);
   });
 
   it("enforces the order state machine and human approval boundaries", () => {

@@ -26,7 +26,9 @@ import {
 export default function Onboarding() {
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
-  const [selected, setSelected] = useState<"standard" | "stable" | "student" | null>(null);
+  const [selected, setSelected] = useState<
+    "standard" | "stable" | "student" | null
+  >(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -93,8 +95,8 @@ export default function Onboarding() {
           </h1>
           <p className="text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
             Choose the experience that best describes how you use EquiProfile.
-            Academy students can go directly into their learning dashboard.
-            You can change this later in Settings.
+            Academy students can go directly into their learning dashboard. You
+            can change this later in Settings.
           </p>
         </div>
 
@@ -122,8 +124,8 @@ export default function Onboarding() {
               Personal Equestrian
             </h2>
             <p className="text-slate-400 text-xs leading-relaxed">
-              For individual horse owners and riders. Manage your horses,
-              health records, training, nutrition, and more.
+              For individual horse owners and riders. Manage your horses, health
+              records, training, nutrition, and more.
             </p>
             <div className="mt-3 flex flex-wrap gap-1">
               {["My Horses", "Health", "Training", "Weather"].map((tag) => (
@@ -159,8 +161,8 @@ export default function Onboarding() {
               Stable Management
             </h2>
             <p className="text-slate-400 text-xs leading-relaxed">
-              For stable owners and yard managers. Full stable operations,
-              staff management, client portal, and lesson scheduling.
+              For stable owners and yard managers. Full stable operations, staff
+              management, client portal, and lesson scheduling.
             </p>
             <div className="mt-3 flex flex-wrap gap-1">
               {["Staff", "Clients", "Scheduling", "Operations"].map((tag) => (
@@ -197,7 +199,8 @@ export default function Onboarding() {
             </h2>
             <p className="text-slate-400 text-xs leading-relaxed">
               For learners using EquiProfile Academy. Open structured pathways,
-              lessons, assignments, progress, competencies, and instructor feedback.
+              lessons, assignments, progress, competencies, and instructor
+              feedback.
             </p>
             <div className="mt-3 flex flex-wrap gap-1">
               {["Pathways", "Lessons", "Progress", "Feedback"].map((tag) => (
@@ -213,8 +216,9 @@ export default function Onboarding() {
         </div>
 
         <p className="text-center text-xs text-slate-500 mb-6 max-w-2xl mx-auto">
-          Academy teachers and Academy owners should use the account or invitation
-          provided for their organisation; those privileged roles are not self-assigned here.
+          Academy teachers and Academy owners should use the account or
+          invitation provided for their organisation; those privileged roles are
+          not self-assigned here.
         </p>
 
         {/* Error */}
