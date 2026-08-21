@@ -1,4 +1,4 @@
-import { createHmac, randomUUID } from "node:crypto";
+import { createHmac, randomBytes } from "node:crypto";
 
 type ProductLine = "management" | "academy" | "shop";
 type ConsentState =
@@ -37,7 +37,20 @@ const EVENT_ALLOW_LIST: Record<
   ProductLine,
   Record<string, { entityType: string; payloadKeys: readonly string[] }>
 > = {
-  management: {},
+  management: {
+    management_registration_completed: {
+      entityType: "account_registration",
+      payloadKeys: ["registrationSurface", "planInterest"],
+    },
+    management_subscription_payment_recorded: {
+      entityType: "subscription_payment",
+      payloadKeys: ["planId", "currency", "purchaseState"],
+    },
+    management_plan_changed: {
+      entityType: "subscription",
+      payloadKeys: ["planId", "previousPlanId", "changeState"],
+    },
+  },
   academy: {
     academy_public_plans_viewed: {
       entityType: "plan_catalogue",
@@ -148,10 +161,33 @@ function validateEnvelope(envelope: MarketingEventEnvelope): string | null {
   return null;
 }
 
+function canonicalize(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonicalize).join(",")}]`;
+  const object = value as Record<string, unknown>;
+  return `{${Object.keys(object)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${canonicalize(object[key])}`)
+    .join(",")}}`;
+}
+
 function marketingConfig() {
+  const appUrl = (
+    process.env.MARKETING_APP_URL ?? "https://marketing.equiprofile.online"
+  ).replace(/\/$/, "");
+  const apiUrl = (
+    process.env.MARKETING_API_URL ?? `${appUrl}/api/v1`
+  ).replace(/\/$/, "");
   return {
-    endpoint: process.env.MARKETING_CONNECTOR_URL?.trim() ?? "",
-    signingSecret: process.env.MARKETING_CONNECTOR_SIGNING_SECRET ?? "",
+    apiUrl,
+    applicationId:
+      process.env.HOST_APP_ID?.trim() ||
+      process.env.EQUIPROFILE_APP_ID?.trim() ||
+      "equiprofile",
+    connectorKey:
+      process.env.HOST_APP_CONNECTOR_KEY ??
+      process.env.EQUIPROFILE_CONNECTOR_KEY ??
+      "",
     timeoutMs: Math.min(
       Math.max(Number(process.env.MARKETING_CONNECTOR_TIMEOUT_MS ?? 3000), 250),
       10_000,
@@ -159,10 +195,63 @@ function marketingConfig() {
   };
 }
 
+type ApplicationConversionPayload = {
+  event_id: string;
+  event_type: string;
+  occurred_at: string;
+  currency: "GBP";
+  consent_basis: "consent";
+  properties: Record<string, unknown>;
+};
+
+function toConversionPayload(
+  envelope: MarketingEventEnvelope,
+): ApplicationConversionPayload {
+  return {
+    event_id: envelope.idempotencyKey,
+    event_type: envelope.eventType,
+    occurred_at: envelope.timestamp,
+    currency: "GBP",
+    consent_basis: "consent",
+    properties: {
+      product_line: envelope.productLine,
+      entity_type: envelope.entityType,
+      entity_id: envelope.entityId,
+      public_url: envelope.publicUrl,
+      payload_version: envelope.payloadVersion,
+      ...envelope.payload,
+    },
+  };
+}
+
+function connectorHeaders(
+  body: unknown,
+  applicationId: string,
+  connectorKey: string,
+): { headers: Record<string, string>; nonce: string } {
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const nonce = randomBytes(24).toString("base64url");
+  const signature = createHmac("sha256", connectorKey)
+    .update(`${timestamp}\n${nonce}\n${canonicalize(body)}`, "utf8")
+    .digest("hex");
+  return {
+    nonce,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Application-Id": applicationId,
+      "X-Application-Key": connectorKey,
+      "X-Application-Timestamp": timestamp,
+      "X-Application-Nonce": nonce,
+      "X-Application-Signature": signature,
+    },
+  };
+}
+
 /**
- * Publish one consented, allow-listed Core event. This function never throws for
- * remote configuration or delivery errors: Core transactions must complete even
- * when the future standalone Marketing service is unavailable.
+ * Publish one consented, allow-listed Core conversion event using the standalone
+ * Marketing application's canonical Application Connector protocol. Remote
+ * configuration or delivery failures are contained so Core transactions never
+ * fail solely because Marketing is unavailable.
  */
 export async function publishMarketingEvent(
   envelope: MarketingEventEnvelope,
@@ -183,36 +272,38 @@ export async function publishMarketingEvent(
     };
   }
 
-  const { endpoint, signingSecret, timeoutMs } = marketingConfig();
-  if (!endpoint || !signingSecret || !validateHttpsUrl(endpoint)) {
+  const { apiUrl, applicationId, connectorKey, timeoutMs } = marketingConfig();
+  if (
+    !validateHttpsUrl(apiUrl) ||
+    !applicationId ||
+    connectorKey.length < 32
+  ) {
     return {
       delivered: false,
       reason: "DELIVERY_DISABLED",
       detail:
-        "Marketing connector endpoint or signing credential is not configured.",
+        "Marketing Application Connector URL, application ID or connector key is not configured securely.",
     };
   }
 
-  const nonce = randomUUID();
-  const body = JSON.stringify(envelope);
-  const signature = createHmac("sha256", signingSecret)
-    .update(`${envelope.timestamp}.${nonce}.${body}`)
-    .digest("hex");
+  const body = toConversionPayload(envelope);
+  const { headers, nonce } = connectorHeaders(
+    body,
+    applicationId,
+    connectorKey,
+  );
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-EquiProfile-Signature": `sha256=${signature}`,
-        "X-EquiProfile-Timestamp": envelope.timestamp,
-        "X-EquiProfile-Nonce": nonce,
-        "Idempotency-Key": envelope.idempotencyKey,
+    const response = await fetch(
+      `${apiUrl}/application-connectors/events/conversion`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+        signal: controller.signal,
       },
-      body,
-      signal: controller.signal,
-    });
+    );
     if (!response.ok) {
       return {
         delivered: false,
