@@ -2670,6 +2670,7 @@ function LessonsView({
   const [selectedPathway, setSelectedPathway] = useState<string | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [levelFilter, setLevelFilter] = useState<string>("all");
+  const [lessonSearch, setLessonSearch] = useState("");
   const [quizMode, setQuizMode] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
@@ -3121,7 +3122,14 @@ function LessonsView({
   }
 
   // ── Pathway list / lesson list ──
-  const filteredLessons = lessons ?? [];
+  const normalisedSearch = lessonSearch.trim().toLowerCase();
+  const filteredLessons = (lessons ?? []).filter(
+    (lesson) =>
+      !normalisedSearch ||
+      `${lesson.title} ${lesson.category}`
+        .toLowerCase()
+        .includes(normalisedSearch),
+  );
   const pathwayObj = pathways?.find((p) => p.slug === selectedPathway);
   const totalLessons = filteredLessons.length;
   const completedCount = filteredLessons.filter((l) =>
@@ -3177,6 +3185,16 @@ function LessonsView({
           </p>
         </div>
       )}
+
+      <label className="block">
+        <span className="sr-only">Search Academy lessons</span>
+        <input
+          value={lessonSearch}
+          onChange={(event) => setLessonSearch(event.target.value)}
+          placeholder="Search lessons by title or category"
+          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none focus:border-[#2e6da4]"
+        />
+      </label>
 
       {/* Level filter */}
       <div className="flex items-center gap-2 flex-wrap">
