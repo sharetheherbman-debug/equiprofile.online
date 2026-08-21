@@ -16,6 +16,7 @@ CREATE TABLE `commerceProductImages` (
   CONSTRAINT `fk_commerceProductImages_product` FOREIGN KEY (`productId`) REFERENCES `commerceProducts` (`id`),
   CONSTRAINT `fk_commerceProductImages_variant` FOREIGN KEY (`variantId`) REFERENCES `commerceProductVariants` (`id`)
 );
+--> statement-breakpoint
 
 CREATE TABLE `commerceProductAttributes` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -30,6 +31,7 @@ CREATE TABLE `commerceProductAttributes` (
   CONSTRAINT `fk_commerceProductAttributes_product` FOREIGN KEY (`productId`) REFERENCES `commerceProducts` (`id`),
   CONSTRAINT `fk_commerceProductAttributes_variant` FOREIGN KEY (`variantId`) REFERENCES `commerceProductVariants` (`id`)
 );
+--> statement-breakpoint
 
 CREATE TABLE `commercePriceHistory` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -45,6 +47,7 @@ CREATE TABLE `commercePriceHistory` (
   CONSTRAINT `fk_commercePriceHistory_product` FOREIGN KEY (`productId`) REFERENCES `commerceProducts` (`id`),
   CONSTRAINT `fk_commercePriceHistory_variant` FOREIGN KEY (`variantId`) REFERENCES `commerceProductVariants` (`id`)
 );
+--> statement-breakpoint
 
 CREATE TABLE `commerceAddresses` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -61,12 +64,14 @@ CREATE TABLE `commerceAddresses` (
   KEY `idx_commerceAddresses_user` (`userId`),
   CONSTRAINT `fk_commerceAddresses_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`)
 );
+--> statement-breakpoint
 
 ALTER TABLE `commerceOrders`
   ADD COLUMN `shippingAddressId` INT NULL,
   ADD COLUMN `billingAddressId` INT NULL,
   ADD CONSTRAINT `fk_commerceOrders_shippingAddress` FOREIGN KEY (`shippingAddressId`) REFERENCES `commerceAddresses` (`id`),
   ADD CONSTRAINT `fk_commerceOrders_billingAddress` FOREIGN KEY (`billingAddressId`) REFERENCES `commerceAddresses` (`id`);
+--> statement-breakpoint
 
 CREATE TABLE `commerceShipments` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -85,6 +90,7 @@ CREATE TABLE `commerceShipments` (
   CONSTRAINT `fk_commerceShipments_order` FOREIGN KEY (`orderId`) REFERENCES `commerceOrders` (`id`),
   CONSTRAINT `fk_commerceShipments_supplier` FOREIGN KEY (`supplierId`) REFERENCES `commerceSuppliers` (`id`)
 );
+--> statement-breakpoint
 
 CREATE TABLE `commerceShipmentItems` (
   `shipmentId` INT NOT NULL,
@@ -94,6 +100,7 @@ CREATE TABLE `commerceShipmentItems` (
   CONSTRAINT `fk_commerceShipmentItems_shipment` FOREIGN KEY (`shipmentId`) REFERENCES `commerceShipments` (`id`),
   CONSTRAINT `fk_commerceShipmentItems_orderItem` FOREIGN KEY (`orderItemId`) REFERENCES `commerceOrderItems` (`id`)
 );
+--> statement-breakpoint
 
 CREATE TABLE `commerceTrackingEvents` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -106,6 +113,7 @@ CREATE TABLE `commerceTrackingEvents` (
   KEY `idx_commerceTrackingEvents_shipment` (`shipmentId`, `eventAt`),
   CONSTRAINT `fk_commerceTrackingEvents_shipment` FOREIGN KEY (`shipmentId`) REFERENCES `commerceShipments` (`id`)
 );
+--> statement-breakpoint
 
 CREATE TABLE `commerceReturns` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -120,6 +128,7 @@ CREATE TABLE `commerceReturns` (
   CONSTRAINT `fk_commerceReturns_order` FOREIGN KEY (`orderId`) REFERENCES `commerceOrders` (`id`),
   CONSTRAINT `fk_commerceReturns_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`)
 );
+--> statement-breakpoint
 
 CREATE TABLE `commerceReturnItems` (
   `returnId` INT NOT NULL,
@@ -129,6 +138,7 @@ CREATE TABLE `commerceReturnItems` (
   CONSTRAINT `fk_commerceReturnItems_return` FOREIGN KEY (`returnId`) REFERENCES `commerceReturns` (`id`),
   CONSTRAINT `fk_commerceReturnItems_orderItem` FOREIGN KEY (`orderItemId`) REFERENCES `commerceOrderItems` (`id`)
 );
+--> statement-breakpoint
 
 CREATE TABLE `commerceRefunds` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -144,6 +154,7 @@ CREATE TABLE `commerceRefunds` (
   CONSTRAINT `fk_commerceRefunds_order` FOREIGN KEY (`orderId`) REFERENCES `commerceOrders` (`id`),
   CONSTRAINT `fk_commerceRefunds_return` FOREIGN KEY (`returnId`) REFERENCES `commerceReturns` (`id`)
 );
+--> statement-breakpoint
 
 CREATE TABLE `commerceProductManagerActions` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -159,17 +170,28 @@ CREATE TABLE `commerceProductManagerActions` (
   CONSTRAINT `fk_commerceProductManagerActions_product` FOREIGN KEY (`productId`) REFERENCES `commerceProducts` (`id`),
   CONSTRAINT `fk_commerceProductManagerActions_source` FOREIGN KEY (`supplierSourceId`) REFERENCES `commerceSupplierSources` (`id`)
 );
+--> statement-breakpoint
 
 -- Foreign keys for the 0022 core graph. Applied here to preserve a separate,
 -- reviewable integrity migration; no existing table or data is removed.
 ALTER TABLE `commerceSupplierSources` ADD CONSTRAINT `fk_commerceSupplierSources_supplier` FOREIGN KEY (`supplierId`) REFERENCES `commerceSuppliers` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceSupplierSyncRuns` ADD CONSTRAINT `fk_commerceSupplierSyncRuns_source` FOREIGN KEY (`supplierSourceId`) REFERENCES `commerceSupplierSources` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceProductVariants` ADD CONSTRAINT `fk_commerceProductVariants_product` FOREIGN KEY (`productId`) REFERENCES `commerceProducts` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceProductCategories` ADD CONSTRAINT `fk_commerceProductCategories_product` FOREIGN KEY (`productId`) REFERENCES `commerceProducts` (`id`), ADD CONSTRAINT `fk_commerceProductCategories_category` FOREIGN KEY (`categoryId`) REFERENCES `commerceCategories` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceSupplierProducts` ADD CONSTRAINT `fk_commerceSupplierProducts_supplier` FOREIGN KEY (`supplierId`) REFERENCES `commerceSuppliers` (`id`), ADD CONSTRAINT `fk_commerceSupplierProducts_product` FOREIGN KEY (`productId`) REFERENCES `commerceProducts` (`id`), ADD CONSTRAINT `fk_commerceSupplierProducts_variant` FOREIGN KEY (`variantId`) REFERENCES `commerceProductVariants` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceSupplierInventory` ADD CONSTRAINT `fk_commerceSupplierInventory_supplierProduct` FOREIGN KEY (`supplierProductId`) REFERENCES `commerceSupplierProducts` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceCarts` ADD CONSTRAINT `fk_commerceCarts_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceCartItems` ADD CONSTRAINT `fk_commerceCartItems_cart` FOREIGN KEY (`cartId`) REFERENCES `commerceCarts` (`id`), ADD CONSTRAINT `fk_commerceCartItems_variant` FOREIGN KEY (`variantId`) REFERENCES `commerceProductVariants` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceOrders` ADD CONSTRAINT `fk_commerceOrders_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceOrderItems` ADD CONSTRAINT `fk_commerceOrderItems_order` FOREIGN KEY (`orderId`) REFERENCES `commerceOrders` (`id`), ADD CONSTRAINT `fk_commerceOrderItems_variant` FOREIGN KEY (`variantId`) REFERENCES `commerceProductVariants` (`id`), ADD CONSTRAINT `fk_commerceOrderItems_supplier` FOREIGN KEY (`supplierId`) REFERENCES `commerceSuppliers` (`id`);
+--> statement-breakpoint
 ALTER TABLE `commerceProductApprovals` ADD CONSTRAINT `fk_commerceProductApprovals_product` FOREIGN KEY (`productId`) REFERENCES `commerceProducts` (`id`);

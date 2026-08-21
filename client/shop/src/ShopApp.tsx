@@ -87,8 +87,8 @@ export default function ShopApp() {
         (variant: any) => variant.id === selectedVariantId,
       ) ?? product.variants[0];
     return (
-      <main className="min-h-screen bg-stone-50 text-slate-900">
-        <header className="border-b border-stone-200 bg-white">
+      <main className="min-h-screen bg-[#f7f5f0] text-[#0f1d2e]">
+        <header className="border-b border-[#e8d08a]/35 bg-white">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
             <button
               onClick={() => {
@@ -105,7 +105,7 @@ export default function ShopApp() {
           </div>
         </header>
         <section className="mx-auto grid max-w-6xl gap-10 px-5 py-10 md:grid-cols-2">
-          <div className="flex min-h-80 items-center justify-center rounded-2xl bg-stone-200 text-center text-sm text-stone-500">
+          <div className="flex min-h-80 items-center justify-center rounded-2xl bg-[#ece7d8] text-center text-sm text-stone-500">
             {product.images?.[0] ? (
               <img
                 src={product.images[0].storageUrl}
@@ -117,7 +117,7 @@ export default function ShopApp() {
             )}
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#2e6da4]">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#c5a55a]">
               {product.brand ?? "Equestrian essential"}
             </p>
             <h1 className="mt-2 font-serif text-4xl font-semibold">
@@ -141,7 +141,7 @@ export default function ShopApp() {
                   <button
                     key={variant.id}
                     onClick={() => setSelectedVariantId(variant.id)}
-                    className={`rounded-lg border px-3 py-2 text-sm ${chosen?.id === variant.id ? "border-[#2e6da4] bg-blue-50" : "border-stone-200 bg-white"}`}
+                    className={`rounded-full border px-3 py-2 text-sm ${chosen?.id === variant.id ? "border-[#c5a55a] bg-[#f8f2df]" : "border-[#e8d08a]/35 bg-white"}`}
                   >
                     {variant.title} · {variant.sku}
                   </button>
@@ -158,7 +158,7 @@ export default function ShopApp() {
                       product.retailPricePence,
                   )}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-300">
                   Availability is revalidated by the server when added to cart.
                 </p>
               </div>
@@ -167,7 +167,7 @@ export default function ShopApp() {
                 onClick={() =>
                   chosen && add.mutate({ variantId: chosen.id, quantity: 1 })
                 }
-                className="rounded-lg bg-[#2e6da4] px-5 py-3 text-sm font-semibold text-white disabled:bg-slate-300"
+                className="rounded-full bg-[#c5a55a] px-5 py-3 text-sm font-semibold text-[#0f1d2e] shadow-lg shadow-[#c5a55a]/25 disabled:bg-slate-300"
               >
                 {add.isPending ? "Adding…" : "Add to cart"}
               </button>
@@ -182,11 +182,11 @@ export default function ShopApp() {
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 text-slate-900">
-      <header className="sticky top-0 z-10 border-b border-stone-200 bg-white">
+    <main className="min-h-screen bg-[#f7f5f0] text-[#0f1d2e]">
+      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0f1d2e]/95 text-white backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-4">
           <a href="/" className="font-serif text-xl font-semibold">
-            EquiProfile <span className="text-[#2e6da4]">Equestrian Store</span>
+            EquiProfile <span className="text-[#e8d08a]">Equestrian Store</span>
           </a>
           <div className="flex items-center gap-4">
             <button
@@ -194,7 +194,7 @@ export default function ShopApp() {
                 window.location.hash = "admin";
                 setIsAdmin(true);
               }}
-              className="text-xs text-slate-500"
+              className="text-xs text-slate-300"
             >
               Admin
             </button>
@@ -207,10 +207,10 @@ export default function ShopApp() {
           </div>
         </div>
       </header>
-      <section className="border-b border-stone-200 bg-[#0f2e40] text-white">
+      <section className="border-b border-[#e8d08a]/35 bg-[#0f1d2e] text-white relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-5 py-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-200">
-            Equestrian essentials, responsibly introduced
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#e8d08a]">
+            EquiProfile · Governed commerce
           </p>
           <h1 className="mt-3 max-w-3xl font-serif text-4xl font-semibold md:text-6xl">
             A governed Store, built for clear provenance and honest
@@ -221,16 +221,16 @@ export default function ShopApp() {
               event.preventDefault();
               setSubmittedQuery(query);
             }}
-            className="mt-8 flex max-w-xl overflow-hidden rounded-xl bg-white p-1"
+            className="mt-8 flex max-w-xl overflow-hidden rounded-full bg-white p-1 shadow-xl shadow-black/10"
           >
             <input
               aria-label="Search catalogue"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search products or brands"
-              className="min-w-0 flex-1 bg-transparent px-4 py-3 text-slate-900 outline-none"
+              className="min-w-0 flex-1 bg-transparent px-4 py-3 text-[#0f1d2e] outline-none"
             />
-            <button className="rounded-lg bg-[#2e6da4] px-5 text-sm font-semibold">
+            <button className="rounded-full bg-[#c5a55a] px-5 text-sm font-semibold text-[#0f1d2e]">
               <Search className="inline h-4 w-4" /> Search
             </button>
           </form>
@@ -240,7 +240,7 @@ export default function ShopApp() {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setCategory(undefined)}
-            className={`rounded-full px-4 py-2 text-sm ${!category ? "bg-[#2e6da4] text-white" : "border bg-white"}`}
+            className={`rounded-full px-4 py-2 text-sm ${!category ? "bg-[#c5a55a] text-white" : "border bg-white"}`}
           >
             All products
           </button>
@@ -248,7 +248,7 @@ export default function ShopApp() {
             <button
               key={item.slug}
               onClick={() => setCategory(item.slug)}
-              className={`rounded-full px-4 py-2 text-sm ${category === item.slug ? "bg-[#2e6da4] text-white" : "border bg-white"}`}
+              className={`rounded-full px-4 py-2 text-sm ${category === item.slug ? "bg-[#c5a55a] text-white" : "border bg-white"}`}
             >
               {item.name}
             </button>
@@ -256,12 +256,12 @@ export default function ShopApp() {
         </div>
         <div className="mt-10 flex items-end justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#2e6da4]">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#c5a55a]">
               Catalogue
             </p>
             <h2 className="mt-2 font-serif text-3xl">Available products</h2>
           </div>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-300">
             Prices and stock are verified server-side.
           </p>
         </div>
@@ -277,7 +277,7 @@ export default function ShopApp() {
                 <div className="flex h-36 items-center justify-center rounded-xl bg-stone-100 text-xs text-stone-500">
                   Licensed imagery only
                 </div>
-                <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-[#2e6da4]">
+                <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-[#c5a55a]">
                   {product.brand ?? "Equestrian essential"}
                 </p>
                 <h3 className="mt-1 text-lg font-semibold">{product.title}</h3>
@@ -288,13 +288,13 @@ export default function ShopApp() {
                   <span className="font-semibold">
                     {money(product.salePricePence ?? product.retailPricePence)}
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-slate-300">
                     {product.availabilityStatus.replace(/_/g, " ")}
                   </span>
                 </div>
                 <button
                   onClick={() => setSelectedSlug(product.slug)}
-                  className="mt-5 w-full rounded-lg border border-[#2e6da4] px-4 py-2 text-sm font-medium text-[#2e6da4]"
+                  className="mt-5 w-full rounded-lg border border-[#c5a55a] px-4 py-2 text-sm font-medium text-[#c5a55a]"
                 >
                   View product
                 </button>
@@ -315,7 +315,7 @@ export default function ShopApp() {
         )}
         <section
           id="cart"
-          className="mt-14 rounded-2xl bg-white p-6 ring-1 ring-stone-200"
+          className="mt-14 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-[#e8d08a]/35"
         >
           <h2 className="font-serif text-2xl">Your cart</h2>
           {cartItems.length ? (
@@ -327,7 +327,7 @@ export default function ShopApp() {
                 >
                   <div>
                     <p className="font-medium">{item.productTitle}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-300">
                       {item.variantTitle} · {item.sku}
                     </p>
                   </div>
@@ -369,7 +369,7 @@ export default function ShopApp() {
                 <span>Subtotal</span>
                 <span className="font-semibold">{money(cartSubtotal)}</span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-300">
                 VAT, shipping and the final total are revalidated at checkout.
                 No supplier delivery promise is shown until a configured profile
                 exists.
@@ -379,7 +379,7 @@ export default function ShopApp() {
                 onClick={() =>
                   checkout.mutate({ idempotencyKey: crypto.randomUUID() })
                 }
-                className="mt-3 rounded-lg bg-[#2e6da4] px-4 py-2 text-sm font-semibold text-white disabled:bg-slate-300"
+                className="mt-3 rounded-full bg-[#c5a55a] px-4 py-2 text-sm font-semibold text-[#0f1d2e] shadow-lg shadow-[#c5a55a]/25 disabled:bg-slate-300"
               >
                 {checkout.isPending ? "Preparing…" : "Prepare checkout"}
               </button>
@@ -395,18 +395,18 @@ export default function ShopApp() {
           )}
         </section>
       </section>
-      <footer className="mt-14 bg-[#0f2e40] text-slate-200">
+      <footer className="mt-14 bg-[#0f1d2e] text-slate-200">
         <div className="mx-auto grid max-w-7xl gap-6 px-5 py-10 md:grid-cols-3">
           <p className="flex gap-3 text-sm">
-            <ShieldCheck className="h-5 w-5 shrink-0 text-sky-200" />
+            <ShieldCheck className="h-5 w-5 shrink-0 text-[#e8d08a]" />
             No browser-supplied prices, payments, or stock decisions.
           </p>
           <p className="flex gap-3 text-sm">
-            <Truck className="h-5 w-5 shrink-0 text-sky-200" />
+            <Truck className="h-5 w-5 shrink-0 text-[#e8d08a]" />
             No delivery promises until a supplier confirms fulfilment data.
           </p>
           <p className="flex gap-3 text-sm">
-            <Heart className="h-5 w-5 shrink-0 text-sky-200" />
+            <Heart className="h-5 w-5 shrink-0 text-[#e8d08a]" />
             Academy education and commercial recommendations remain separate.
           </p>
         </div>

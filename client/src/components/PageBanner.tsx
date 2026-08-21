@@ -24,7 +24,7 @@ interface PageBannerProps {
  * PageBanner is intentionally used by:
  *   - client/src/pages/TermsPage.tsx
  *   - client/src/pages/PrivacyPage.tsx
- *   - client/src/pages/Schools.tsx
+ *   - client/src/pages/Academies.tsx
  *
  * Features:
  * - Responsive design with proper image scaling

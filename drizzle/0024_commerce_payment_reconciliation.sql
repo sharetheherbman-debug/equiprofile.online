@@ -14,6 +14,7 @@ CREATE TABLE `commercePaymentEvents` (
   KEY `idx_commercePaymentEvents_order` (`orderId`, `createdAt`),
   CONSTRAINT `fk_commercePaymentEvents_order` FOREIGN KEY (`orderId`) REFERENCES `commerceOrders` (`id`)
 );
+--> statement-breakpoint
 
 ALTER TABLE `commerceOrders`
   ADD COLUMN `storePaymentStatus` ENUM('not_configured','pending','paid','failed','refunded','partially_refunded') NOT NULL DEFAULT 'not_configured',

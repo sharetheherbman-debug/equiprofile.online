@@ -2,6 +2,7 @@
 // Lesson Content Data — complete educational content for the EquiProfile
 // structured learning engine. All material is original EquiProfile educational content.
 // ─────────────────────────────────────────────────────────────────────────────
+import { LESSON_QUALITY_ENHANCEMENTS } from "./academy/lessonQualityEnhancements.generated";
 
 export interface LessonPathwayData {
   slug: string;
@@ -168,7 +169,7 @@ export const LESSON_PATHWAYS: LessonPathwayData[] = [
 // LESSON UNITS
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const LESSON_UNITS: LessonUnitData[] = [
+const BASE_LESSON_UNITS: LessonUnitData[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   // PATHWAY 1 — Horse Care Foundations
   // ═══════════════════════════════════════════════════════════════════════════
@@ -11388,3 +11389,63 @@ Physically accessible, culturally welcoming, free from discrimination.`,
     linkedCompetencies: ["coaching_skills", "welfare_awareness"],
   },
 ];
+
+const VETERINARY_REVIEW_TOPIC =
+  /\b(colic|laminitis|wound|vital signs?|first aid|vaccin|worm|parasite|nutrition|supplement|dental|farrier)\b/i;
+const CURRENT_REQUIREMENTS_TOPIC = /\b(transport|insurance)\b/i;
+const SAFEGUARDING_REVIEW_TOPIC = /\bsafeguarding\b/i;
+
+function factualSafetyBoundary(lesson: LessonUnitData): string | null {
+  const searchable = [
+    lesson.title,
+    lesson.content,
+    lesson.safetyNote,
+    lesson.practicalApplication,
+    ...lesson.objectives,
+    ...lesson.keyPoints,
+  ].join("\n");
+  const boundaries: string[] = [];
+  if (VETERINARY_REVIEW_TOPIC.test(searchable)) {
+    boundaries.push(
+      "This lesson supports observation and preparation only; obtain individual advice from a veterinarian or other appropriately qualified professional before diagnosing, treating, medicating, or changing a health plan.",
+    );
+  }
+  if (CURRENT_REQUIREMENTS_TOPIC.test(searchable)) {
+    boundaries.push(
+      "Transport, insurance, competition, and legal requirements can change and depend on the journey or policy; verify the current official rules and professional advice before acting.",
+    );
+  }
+  if (SAFEGUARDING_REVIEW_TOPIC.test(searchable)) {
+    boundaries.push(
+      "Follow your organisation's safeguarding policy and designated reporting route. In an immediate emergency, contact the relevant emergency services.",
+    );
+  }
+  return boundaries.length ? boundaries.join(" ") : null;
+}
+
+/**
+ * Applies independently reviewed, additive teaching-depth supplements and
+ * lesson-aware professional boundaries by stable lesson slug. No browser data
+ * can alter this source or the server-held answer key used for completion scoring.
+ */
+export const LESSON_UNITS: LessonUnitData[] = BASE_LESSON_UNITS.map(
+  (lesson) => {
+    const enhancement = LESSON_QUALITY_ENHANCEMENTS[lesson.slug];
+    const expandedLesson: LessonUnitData = enhancement
+      ? {
+          ...lesson,
+          content: `${lesson.content}\n\n${enhancement.contentExtension}`,
+          knowledgeCheck: [
+            ...lesson.knowledgeCheck,
+            enhancement.knowledgeCheck,
+          ],
+        }
+      : lesson;
+    const boundary = factualSafetyBoundary(expandedLesson);
+    if (!boundary) return expandedLesson;
+    return {
+      ...expandedLesson,
+      safetyNote: `${expandedLesson.safetyNote} ${boundary}`,
+    };
+  },
+);

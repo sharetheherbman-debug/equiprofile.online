@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `commerceSuppliers` (
   `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceSupplierSources` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -25,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `commerceSupplierSources` (
   `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `idx_commerceSupplierSources_supplierId` (`supplierId`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceSupplierSyncRuns` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -38,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `commerceSupplierSyncRuns` (
   `completedAt` TIMESTAMP NULL,
   KEY `idx_commerceSupplierSyncRuns_source` (`supplierSourceId`, `startedAt`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceCategories` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `commerceCategories` (
   `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `idx_commerceCategories_parent` (`parentId`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceProducts` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -72,6 +76,7 @@ CREATE TABLE IF NOT EXISTS `commerceProducts` (
   KEY `idx_commerceProducts_status` (`status`, `developmentOnly`),
   KEY `idx_commerceProducts_availability` (`availabilityStatus`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceProductVariants` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -87,6 +92,7 @@ CREATE TABLE IF NOT EXISTS `commerceProductVariants` (
   `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `idx_commerceProductVariants_product` (`productId`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceProductCategories` (
   `productId` INT NOT NULL,
@@ -94,6 +100,7 @@ CREATE TABLE IF NOT EXISTS `commerceProductCategories` (
   PRIMARY KEY (`productId`, `categoryId`),
   KEY `idx_commerceProductCategories_category` (`categoryId`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceSupplierProducts` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -111,6 +118,7 @@ CREATE TABLE IF NOT EXISTS `commerceSupplierProducts` (
   UNIQUE KEY `commerceSupplierProducts_supplier_sku` (`supplierId`, `supplierSku`),
   KEY `idx_commerceSupplierProducts_product` (`productId`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceSupplierInventory` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -122,6 +130,7 @@ CREATE TABLE IF NOT EXISTS `commerceSupplierInventory` (
   `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceCarts` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -134,6 +143,7 @@ CREATE TABLE IF NOT EXISTS `commerceCarts` (
   UNIQUE KEY `commerceCarts_user_active` (`userId`, `activeCartKey`),
   KEY `idx_commerceCarts_user` (`userId`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceCartItems` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -144,6 +154,7 @@ CREATE TABLE IF NOT EXISTS `commerceCartItems` (
   `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `commerceCartItems_cart_variant` (`cartId`, `variantId`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceOrders` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -162,6 +173,7 @@ CREATE TABLE IF NOT EXISTS `commerceOrders` (
   KEY `idx_commerceOrders_user` (`userId`, `createdAt`),
   KEY `idx_commerceOrders_status` (`status`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceOrderItems` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -176,6 +188,7 @@ CREATE TABLE IF NOT EXISTS `commerceOrderItems` (
   `fulfilmentStatus` ENUM('pending','acknowledged','processing','dispatched','delivered','cancelled') NOT NULL DEFAULT 'pending',
   KEY `idx_commerceOrderItems_order` (`orderId`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceProductApprovals` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -188,6 +201,7 @@ CREATE TABLE IF NOT EXISTS `commerceProductApprovals` (
   `reviewedAt` TIMESTAMP NULL,
   KEY `idx_commerceProductApprovals_product` (`productId`, `status`)
 );
+--> statement-breakpoint
 
 CREATE TABLE IF NOT EXISTS `commerceAuditLog` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,

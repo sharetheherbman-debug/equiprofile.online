@@ -1,0 +1,956 @@
+{
+  "generatedAt": "2026-08-21T10:00:50.934Z",
+  "summary": {
+    "lessonsReviewed": 105,
+    "highRiskLessons": 43,
+    "passed": 105,
+    "failed": 0
+  },
+  "lessons": [
+    {
+      "slug": "parts-of-the-horse",
+      "title": "Parts of the Horse",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "grooming-basics",
+      "title": "Grooming Basics",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "feeding-basics",
+      "title": "Feeding Basics",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "water-requirements",
+      "title": "Water Requirements",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "stable-checks",
+      "title": "Daily Stable Checks",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "turnout-and-rugs",
+      "title": "Turnout & Rugging",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "hoof-care-awareness",
+      "title": "Hoof Care Awareness",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "seasonal-horse-care",
+      "title": "Seasonal Horse Care",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "advanced-grooming-and-coat-management",
+      "title": "Advanced Grooming & Coat Management",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "mounting-dismounting",
+      "title": "Mounting & Dismounting",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "rider-position-basics",
+      "title": "Rider Position Basics",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "arena-etiquette",
+      "title": "Arena Etiquette",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "walk-trot-transitions",
+      "title": "Walk to Trot Transitions",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "basic-school-figures",
+      "title": "Basic School Figures",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "warmup-cooldown",
+      "title": "Warm-Up & Cool-Down Routines",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "lesson-preparation",
+      "title": "Lesson Preparation",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "advanced-rider-position-analysis",
+      "title": "Advanced Rider Position Analysis",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "teaching-the-foundations",
+      "title": "Teaching the Foundations",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "safe-approach-handling",
+      "title": "Safe Approach & Handling",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "leading-safely",
+      "title": "Leading Safely",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "tying-up-correctly",
+      "title": "Tying Up Correctly",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "yard-hazard-awareness",
+      "title": "Yard Hazard Awareness",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "risk-incident-awareness",
+      "title": "Risk & Incident Awareness",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "advanced-safety-awareness",
+      "title": "Advanced Safety Awareness",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "understanding-horse-behaviour",
+      "title": "Understanding Horse Behaviour",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "signs-of-good-health",
+      "title": "Signs of Good Health",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "behaviour-around-other-horses",
+      "title": "Behaviour Around Other Horses",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "recognising-pain-discomfort",
+      "title": "Recognising Pain & Discomfort",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "horse-welfare-under-workload",
+      "title": "Horse Welfare Under Workload",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "lameness-awareness",
+      "title": "Lameness Awareness",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "welfare-based-decision-making",
+      "title": "Welfare-Based Decision Making",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "basic-tack-identification",
+      "title": "Basic Tack Identification",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "putting-on-a-headcollar",
+      "title": "Putting On a Headcollar",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "tack-care-cleaning",
+      "title": "Tack Care & Cleaning",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "fitting-a-saddle",
+      "title": "Fitting a Saddle",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "bit-selection-basics",
+      "title": "Bit Selection Basics",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "advanced-equipment-awareness",
+      "title": "Advanced Equipment Awareness",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "walk-trot-transitions-developing",
+      "title": "Walk to Trot Transitions",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "trot-rhythm-and-balance",
+      "title": "Trot Rhythm and Balance",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "steering-and-accuracy",
+      "title": "Steering and Accuracy",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "circles-and-school-figures",
+      "title": "Circles and School Figures",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "rider-balance-independent-seat",
+      "title": "Rider Balance and Independent Seat",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "warmup-cooldown-basics",
+      "title": "Warm-Up and Cool-Down Basics",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "preparing-for-a-lesson",
+      "title": "Preparing for a Lesson",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "reflecting-on-performance",
+      "title": "Reflecting on Performance and Improvement",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "advanced-flatwork-and-collection",
+      "title": "Advanced Flatwork & Collection",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "riding-assessment-and-self-coaching",
+      "title": "Riding Assessment & Self-Coaching",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "introduction-to-polework",
+      "title": "Introduction to Polework",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "trot-pole-distances-and-grids",
+      "title": "Trot Pole Distances & Simple Grids",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "introduction-to-jumping-position",
+      "title": "The Jumping Position",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "first-crossrail-fences",
+      "title": "Riding Your First Cross-Rail Fences",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "daily-health-check-and-vital-signs",
+      "title": "Recognising Signs of Good Health",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "common-equine-ailments",
+      "title": "Common Equine Ailments",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "equine-first-aid-basics",
+      "title": "Equine First Aid Basics",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "vaccination-and-worming-schedules",
+      "title": "Vaccination & Worming Programmes",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "mucking-out-and-bedding",
+      "title": "Mucking Out & Bedding Management",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "pasture-management-basics",
+      "title": "Pasture Management Basics",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "stable-routines-and-record-keeping",
+      "title": "Stable Routines & Record Keeping",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "yard-maintenance-and-facilities",
+      "title": "Yard Maintenance & Facility Care",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "understanding-competition-types",
+      "title": "Understanding Competition Types",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "preparing-for-competition-day",
+      "title": "Preparing for Competition Day",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "dressage-test-riding",
+      "title": "Riding a Dressage Test",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "competition-etiquette-and-sportsmanship",
+      "title": "Competition Etiquette & Sportsmanship",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "why-rider-fitness-matters",
+      "title": "Why Rider Fitness Matters",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "building-riding-confidence",
+      "title": "Building Riding Confidence",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "core-exercises-for-riders",
+      "title": "Core Exercises for Riders",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "mental-skills-for-performance",
+      "title": "Mental Skills for Riding Performance",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "introduction-to-coaching-concepts",
+      "title": "Introduction to Coaching Concepts",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "understanding-your-learners",
+      "title": "Understanding Your Learners",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "structuring-a-beginner-lesson",
+      "title": "Structuring a Beginner Lesson",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "effective-demonstrations-and-feedback",
+      "title": "Effective Demonstrations & Feedback",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "foundations-of-equestrian-coaching",
+      "title": "Foundations of Equestrian Coaching",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "planning-effective-lessons",
+      "title": "Planning Effective Lessons",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "communication-and-feedback-skills",
+      "title": "Communication & Feedback Skills",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "managing-groups-and-progression",
+      "title": "Managing Groups & Rider Progression",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "safe-approach-and-catching",
+      "title": "Safe Approach & Catching",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "leading-and-turning",
+      "title": "Leading & Turning Correctly",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "tying-up-safely",
+      "title": "Tying Up Safely",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "lungeing-basics",
+      "title": "Lungeing Basics",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "long-reining-introduction",
+      "title": "Long-Reining Introduction",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "advanced-groundwork-exercises",
+      "title": "Advanced Groundwork Exercises",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "understanding-equine-digestion",
+      "title": "Understanding Equine Digestion",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "types-of-feed",
+      "title": "Types of Feed",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "feeding-routines-and-rules",
+      "title": "Feeding Routines & Rules",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "balancing-a-diet",
+      "title": "Balancing a Diet",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "feeding-for-workload",
+      "title": "Feeding for Workload & Condition",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "supplements-and-special-diets",
+      "title": "Supplements & Special Diets",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "five-freedoms-of-animal-welfare",
+      "title": "Five Freedoms of Animal Welfare",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "responsible-horse-ownership",
+      "title": "Responsible Horse Ownership",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "recognising-neglect-and-abuse",
+      "title": "Recognising Neglect & Abuse",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "welfare-legislation-uk",
+      "title": "Welfare Legislation (UK)",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "ethical-training-methods",
+      "title": "Ethical Training Methods",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "end-of-life-decisions",
+      "title": "End of Life Decisions & Retirement",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "grid-work-and-related-distances",
+      "title": "Grid Work & Related Distances",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "course-awareness-and-planning",
+      "title": "Course Awareness & Planning",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "when-to-call-the-vet",
+      "title": "When to Call the Vet",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "emergency-first-aid-procedures",
+      "title": "Emergency First Aid Procedures",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "daily-stable-routines",
+      "title": "Daily Stable Routines",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "health-safety-in-the-yard",
+      "title": "Health & Safety in the Yard",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "cross-country-fundamentals",
+      "title": "Cross-Country Fundamentals",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "competition-day-management",
+      "title": "Competition Day Management",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "stretching-for-riders",
+      "title": "Stretching for Riders",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "overcoming-fear-and-anxiety",
+      "title": "Overcoming Fear & Anxiety in Riding",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "safeguarding-and-duty-of-care",
+      "title": "Safeguarding & Duty of Care",
+      "highRisk": true,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    },
+    {
+      "slug": "inclusive-coaching-adaptive-riding",
+      "title": "Inclusive Coaching & Adaptive Riding",
+      "highRisk": false,
+      "safetyBoundary": "PASS",
+      "factualBoundary": "PASS",
+      "status": "PASS",
+      "notes": "Reviewed against source-register safety and factual controls."
+    }
+  ]
+}

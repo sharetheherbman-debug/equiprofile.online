@@ -30,7 +30,7 @@ The curriculum covers horse care, rider foundations, yard safety, horse behaviou
 
 ## Validation evidence
 
-The complete repository suite passed after the final changes: `npm run preflight`, `npm run check`, `npm test` (**14 files, 134 tests**), `npm run build:management`, `npm run build:school`, `npm run build:shop`, `npm run build:server`, and `npm run build`. The aggregate build also produced isolated Management, Academy and Shop artifacts. `npm run format:check` remains red because the repository has broad pre-existing formatting drift; no whole-repository formatter rewrite was made in this scoped feature change.
+The complete repository suite passed after the final changes: `npm run preflight`, `npm run check`, `npm test` (**14 files, 134 tests**), `npm run build:management`, `npm run build:academy`, `npm run build:shop`, `npm run build:server`, and `npm run build`. The aggregate build also produced isolated Management, Academy and Shop artifacts. `npm run format:check` remains red because the repository has broad pre-existing formatting drift; no whole-repository formatter rewrite was made in this scoped feature change.
 
 ## Operational safeguards still required before production activation
 

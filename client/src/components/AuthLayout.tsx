@@ -6,7 +6,7 @@
  * - Minimal dark footer
  * - No marketing navigation links (keeps auth pages focused)
  *
- * Used by both management and school frontends — the auth experience is
+ * Used by both management and Academy frontends — the auth experience is
  * shared and site-neutral by design (users authenticate into one account,
  * then see the appropriate dashboard based on their role).
  */
@@ -59,7 +59,10 @@ function AuthFooter() {
             Terms
           </Link>
           {" · "}
-          <Link href="/privacy" className="hover:text-gray-300 transition-colors">
+          <Link
+            href="/privacy"
+            className="hover:text-gray-300 transition-colors"
+          >
             Privacy
           </Link>
         </p>

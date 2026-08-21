@@ -2,19 +2,19 @@
 
 ## Status
 
-This document describes the safe migration of the existing EquiProfile School product to the customer-facing **EquiProfile Academy** brand. It is deliberately compatibility-first: the existing education application, authentication, roles, lesson engine, databases, and `school`-named build internals remain in place unless a later reviewed migration proves a rename is safe.
+This document describes the controlled migration of the former education product to canonical **EquiProfile Academy** terminology. It is deliberately compatibility-first: the canonical Academy modules, routing, build artifacts, and customer-facing terminology now use Academy names; only expressly documented route and persisted-data compatibility values remain.
 
 ## Existing architecture reused
 
 EquiProfile is a two-frontend application sharing one backend and shared client code:
 
 - Management frontend: `client/management/`
-- Education frontend: `client/school/`
+- Education frontend: `client/academy/`
 - Shared UI/pages/hooks: `client/src/`
 - Shared server/API/auth: `server/`
 - Drizzle schema and migrations: `drizzle/`
 
-The education frontend currently builds using the internal `VITE_SITE=school` target and is served for the school hostname. Those identifiers are implementation details and are not being destructively renamed during the Academy rebrand.
+The education frontend builds using the canonical `VITE_SITE=academy` target and is served from the Academy hostname. LEGACY_COMPAT_ONLY school host and route handling is isolated to explicitly labelled compatibility boundaries.
 
 ## Branding boundary
 
@@ -24,14 +24,11 @@ Customer-facing product name:
 
 Legacy/internal compatibility names that may remain during this phase:
 
-- `client/school/`
-- `SchoolApp`
-- `SchoolNavbar`, `SchoolFooter`, `SchoolLayout`
-- `SchoolDashboard`
-- `school_owner` and other stable persisted identifiers
-- the current school-hostname deployment target
+- `school_owner`, `school_10`, `school_20`, `school_50`, and `school_enterprise` historical stored values
+- the LEGACY_COMPAT_ONLY `/school*` route family and school hostname
+- the LEGACY_COMPAT_ONLY `school` tRPC namespace for existing integrations
 
-A later infrastructure/domain migration may rename those internals, but it must be a separate compatibility-reviewed change.
+No canonical frontend, router, build, or public module retains a pre-Academy implementation identifier.
 
 ## Route contract
 
@@ -77,24 +74,17 @@ The target pipeline is:
 
 `source curriculum -> validation -> idempotent import/seed -> DB records -> API -> browser`
 
-The current seed-on-empty behaviour is not yet sufficient for partially populated or evolving production datasets. It must be replaced or wrapped with an idempotent, slug-keyed import/upsert process before Academy content is considered complete.
+The idempotent, versioned curriculum pipeline validates source data, upserts lessons by stable slug, reconciles retired source lessons without deleting learner history, and records sync audit data before serving Academy content.
 
 ## AI Tutor
 
 The existing AI Tutor already uses the server-side AI abstraction and records usage. It must continue to do so. Browser API keys or a second direct provider integration are prohibited.
 
-Outstanding Academy requirements:
-
-- accept/resolve current lesson context
-- accept/resolve pathway and competency context
-- derive trusted lesson facts server-side
-- retain veterinary/emergency safety boundaries
-- avoid implying accreditation
-- never create or infer lesson completion from AI conversation
+The Academy Tutor resolves trusted lesson, pathway, competency, and learner-level context server-side. It retains veterinary/emergency escalation boundaries, makes no unsupported accreditation claim, and cannot create or infer lesson completion or competency sign-off.
 
 ## Completion integrity
 
-`completeLesson` currently accepts lesson metadata and optional score from the client. Before Academy completion can be trusted, the server must resolve the canonical lesson from its own data and derive pathway/level from that record. Quiz scores must be computed or verified against server-held answer data rather than trusted from the browser.
+`completeLesson` resolves the canonical lesson and answer key server-side, derives pathway/level from the trusted record, scores submitted knowledge checks on the server, and records completion provenance idempotently.
 
 ## Progress intelligence
 

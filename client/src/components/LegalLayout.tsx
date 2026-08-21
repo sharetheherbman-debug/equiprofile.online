@@ -5,7 +5,7 @@
  * - Minimal dark header with EquiProfile logo + Home link
  * - Minimal dark footer with copyright
  *
- * Used by both management and school frontends — legal pages share
+ * Used by both management and Academy frontends — legal pages share
  * the same content and layout regardless of which site serves them.
  */
 import { ReactNode } from "react";
@@ -49,7 +49,10 @@ function LegalFooter() {
             Terms
           </Link>
           {" · "}
-          <Link href="/privacy" className="hover:text-gray-300 transition-colors">
+          <Link
+            href="/privacy"
+            className="hover:text-gray-300 transition-colors"
+          >
             Privacy
           </Link>
         </p>

@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `marketingContacts` (
   KEY `idx_mc_status` (`status`),
   KEY `idx_mc_unsub_token` (`unsubscribeToken`)
 );
+--> statement-breakpoint
 
 -- Global email unsubscribe / suppression list
 CREATE TABLE IF NOT EXISTS `emailUnsubscribes` (
@@ -28,6 +29,7 @@ CREATE TABLE IF NOT EXISTS `emailUnsubscribes` (
   UNIQUE KEY `idx_unsub_email` (`email`),
   KEY `idx_unsub_token` (`token`)
 );
+--> statement-breakpoint
 
 -- Campaign sequences (drip steps)
 CREATE TABLE IF NOT EXISTS `campaignSequences` (
@@ -45,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `campaignSequences` (
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `idx_seq_campaign` (`campaignId`)
 );
+--> statement-breakpoint
 
 -- Campaign sequence recipients
 CREATE TABLE IF NOT EXISTS `campaignSequenceRecipients` (

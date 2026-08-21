@@ -121,7 +121,9 @@ export function startReminderScheduler() {
       const TRIAL_REMINDER_LOOKAHEAD_DAYS = 3;
       if (now.getUTCHours() === 9) {
         try {
-          const trialUsers = await db.getTrialsEndingSoon(TRIAL_REMINDER_LOOKAHEAD_DAYS);
+          const trialUsers = await db.getTrialsEndingSoon(
+            TRIAL_REMINDER_LOOKAHEAD_DAYS,
+          );
           const emailModule = await import("./email");
 
           for (const user of trialUsers) {
@@ -194,7 +196,9 @@ export function startReminderScheduler() {
 
       // ── Check global daily caps before doing any work ──
       const [outreachResult] = await dbConn
-        .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+        .select({
+          total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)`,
+        })
         .from(campaignSendLog)
         .where(eq(campaignSendLog.sendDate, today));
       const outreachSentToday = Number(outreachResult?.total ?? 0);
@@ -202,10 +206,12 @@ export function startReminderScheduler() {
       const [followupCountResult] = await dbConn
         .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
         .from(campaignSequenceRecipients)
-        .where(and(
-          eq(campaignSequenceRecipients.status, "sent"),
-          sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
-        ));
+        .where(
+          and(
+            eq(campaignSequenceRecipients.status, "sent"),
+            sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+          ),
+        );
       const followupSentToday = Number(followupCountResult?.total ?? 0);
       let globalTotalSentToday = outreachSentToday + followupSentToday;
 
@@ -232,13 +238,17 @@ export function startReminderScheduler() {
         return;
       }
 
-      console.log(`[CampaignFollowUp] Found ${dueSteps.length} due follow-up step(s)`);
+      console.log(
+        `[CampaignFollowUp] Found ${dueSteps.length} due follow-up step(s)`,
+      );
 
       // Build global suppression set (once for all steps)
       const suppressions = await dbConn
         .select({ email: emailUnsubscribes.email })
         .from(emailUnsubscribes);
-      const suppressedSet = new Set(suppressions.map((s) => s.email.toLowerCase()));
+      const suppressedSet = new Set(
+        suppressions.map((s) => s.email.toLowerCase()),
+      );
 
       const mcBounced = await dbConn
         .select({ email: marketingContacts.email })
@@ -256,7 +266,9 @@ export function startReminderScheduler() {
       for (const step of dueSteps) {
         // Respect global cap: stop processing further steps if cap is hit
         if (globalTotalSentToday >= TOTAL_MAILBOX_DAILY_CAP) {
-          console.log(`[CampaignFollowUp] Total mailbox cap reached mid-run — deferring remaining steps`);
+          console.log(
+            `[CampaignFollowUp] Total mailbox cap reached mid-run — deferring remaining steps`,
+          );
           break;
         }
 
@@ -278,7 +290,9 @@ export function startReminderScheduler() {
             .select({ email: campaignSequenceRecipients.email })
             .from(campaignSequenceRecipients)
             .where(eq(campaignSequenceRecipients.sequenceId, step.id));
-          const alreadyProcessedSet = new Set(alreadyProcessed.map(r => r.email.toLowerCase()));
+          const alreadyProcessedSet = new Set(
+            alreadyProcessed.map((r) => r.email.toLowerCase()),
+          );
 
           // Get original recipients who were successfully sent the initial campaign
           const recipients = await dbConn
@@ -322,7 +336,9 @@ export function startReminderScheduler() {
               const [mc] = await dbConn
                 .select()
                 .from(marketingContacts)
-                .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
+                .where(
+                  eq(marketingContacts.email, recipient.email.toLowerCase()),
+                );
               const unsubToken = mc?.unsubscribeToken || "";
               const unsubLink = unsubToken
                 ? `${BASE_URL}/unsubscribe?token=${unsubToken}`
@@ -330,11 +346,18 @@ export function startReminderScheduler() {
 
               // Simple merge field replacement for follow-up body
               let html = step.htmlBody || "";
-              html = html.replace(/\{\{firstName\}\}/g, recipient.name?.split(" ")[0] || "");
+              html = html.replace(
+                /\{\{firstName\}\}/g,
+                recipient.name?.split(" ")[0] || "",
+              );
               html = html.replace(/\{\{email\}\}/g, recipient.email);
               html = html.replace(/\{\{unsubscribeLink\}\}/g, unsubLink);
 
-              await sendEmail(recipient.email, step.subject || "Follow-up", html);
+              await sendEmail(
+                recipient.email,
+                step.subject || "Follow-up",
+                html,
+              );
 
               await dbConn.insert(campaignSequenceRecipients).values({
                 sequenceId: step.id,
@@ -422,28 +445,36 @@ export function startReminderScheduler() {
 
       // ── Check global daily caps ──
       const [outreachResult] = await dbConn
-        .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+        .select({
+          total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)`,
+        })
         .from(campaignSendLog)
         .where(eq(campaignSendLog.sendDate, today));
       const outreachSentToday = Number(outreachResult?.total ?? 0);
 
       if (outreachSentToday >= NEW_OUTREACH_DAILY_CAP) {
-        console.log(`[CampaignOutreach] New outreach cap (${NEW_OUTREACH_DAILY_CAP}) reached — skipping window`);
+        console.log(
+          `[CampaignOutreach] New outreach cap (${NEW_OUTREACH_DAILY_CAP}) reached — skipping window`,
+        );
         return;
       }
 
       const [followupResult] = await dbConn
         .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
         .from(campaignSequenceRecipients)
-        .where(and(
-          eq(campaignSequenceRecipients.status, "sent"),
-          sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
-        ));
+        .where(
+          and(
+            eq(campaignSequenceRecipients.status, "sent"),
+            sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+          ),
+        );
       const followupSentToday = Number(followupResult?.total ?? 0);
       const totalSentToday = outreachSentToday + followupSentToday;
 
       if (totalSentToday >= TOTAL_MAILBOX_DAILY_CAP) {
-        console.log(`[CampaignOutreach] Total mailbox cap (${TOTAL_MAILBOX_DAILY_CAP}) reached — skipping window`);
+        console.log(
+          `[CampaignOutreach] Total mailbox cap (${TOTAL_MAILBOX_DAILY_CAP}) reached — skipping window`,
+        );
         return;
       }
 
@@ -454,7 +485,9 @@ export function startReminderScheduler() {
         .where(eq(emailCampaigns.status, "paused"));
 
       if (pausedCampaigns.length === 0) {
-        console.log("[CampaignOutreach] No paused campaigns — nothing to process");
+        console.log(
+          "[CampaignOutreach] No paused campaigns — nothing to process",
+        );
         return;
       }
 
@@ -462,15 +495,19 @@ export function startReminderScheduler() {
       const suppressions = await dbConn
         .select({ email: emailUnsubscribes.email })
         .from(emailUnsubscribes);
-      const suppressedSet = new Set(suppressions.map((s) => s.email.toLowerCase()));
+      const suppressedSet = new Set(
+        suppressions.map((s) => s.email.toLowerCase()),
+      );
 
       const mcBounced = await dbConn
         .select({ email: marketingContacts.email })
         .from(marketingContacts)
-        .where(or(
-          eq(marketingContacts.status, "unsubscribed"),
-          eq(marketingContacts.status, "bounced"),
-        ));
+        .where(
+          or(
+            eq(marketingContacts.status, "unsubscribed"),
+            eq(marketingContacts.status, "bounced"),
+          ),
+        );
       for (const b of mcBounced) suppressedSet.add(b.email.toLowerCase());
 
       const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
@@ -479,7 +516,11 @@ export function startReminderScheduler() {
 
       // Local helpers (arrow functions — avoid strict-mode function-in-block restriction)
       const fmtDateGB = (d: Date = new Date()): string =>
-        d.toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
+        d.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        });
       const firstNameOf = (name: string | null | undefined): string => {
         if (!name) return "";
         return name.split(/\s+/)[0].replace(/[^a-zA-Z'-]/g, "") || "";
@@ -489,11 +530,16 @@ export function startReminderScheduler() {
 
       for (const campaign of pausedCampaigns) {
         if (windowSentTotal >= NEW_OUTREACH_PER_WINDOW) break;
-        if (outreachSentToday + windowSentTotal >= NEW_OUTREACH_DAILY_CAP) break;
+        if (outreachSentToday + windowSentTotal >= NEW_OUTREACH_DAILY_CAP)
+          break;
         if (totalSentToday + windowSentTotal >= TOTAL_MAILBOX_DAILY_CAP) break;
 
         // ── Rebuild eligible recipient list for this campaign ──
-        type Recipient = { email: string; name: string | null; unsubscribeToken?: string };
+        type Recipient = {
+          email: string;
+          name: string | null;
+          unsubscribeToken?: string;
+        };
         let allRecipients: Recipient[] = [];
 
         if (campaign.segment === "leads") {
@@ -502,12 +548,19 @@ export function startReminderScheduler() {
         } else if (campaign.segment === "marketing") {
           const conditions = [eq(marketingContacts.status, "active")];
           if (campaign.targetCountry) {
-            conditions.push(eq(marketingContacts.country, campaign.targetCountry));
+            conditions.push(
+              eq(marketingContacts.country, campaign.targetCountry),
+            );
           }
           if (campaign.targetType) {
-            conditions.push(eq(marketingContacts.contactType, campaign.targetType));
+            conditions.push(
+              eq(marketingContacts.contactType, campaign.targetType),
+            );
           }
-          const contacts = await dbConn.select().from(marketingContacts).where(and(...conditions));
+          const contacts = await dbConn
+            .select()
+            .from(marketingContacts)
+            .where(and(...conditions));
           allRecipients = contacts.map((c) => ({
             email: c.email,
             name: c.name,
@@ -516,9 +569,15 @@ export function startReminderScheduler() {
         } else {
           let condition;
           if (campaign.segment === "trial") {
-            condition = and(eq(users.subscriptionStatus, "trial"), eq(users.isActive, true));
+            condition = and(
+              eq(users.subscriptionStatus, "trial"),
+              eq(users.isActive, true),
+            );
           } else if (campaign.segment === "paid") {
-            condition = and(eq(users.subscriptionStatus, "active"), eq(users.isActive, true));
+            condition = and(
+              eq(users.subscriptionStatus, "active"),
+              eq(users.isActive, true),
+            );
           } else {
             condition = eq(users.isActive, true);
           }
@@ -536,14 +595,18 @@ export function startReminderScheduler() {
         const alreadySent = await dbConn
           .select({ email: emailCampaignRecipients.email })
           .from(emailCampaignRecipients)
-          .where(and(
-            eq(emailCampaignRecipients.campaignId, campaign.id),
-            or(
-              eq(emailCampaignRecipients.status, "sent"),
-              eq(emailCampaignRecipients.status, "skipped"),
+          .where(
+            and(
+              eq(emailCampaignRecipients.campaignId, campaign.id),
+              or(
+                eq(emailCampaignRecipients.status, "sent"),
+                eq(emailCampaignRecipients.status, "skipped"),
+              ),
             ),
-          ));
-        const alreadySentSet = new Set(alreadySent.map((r) => r.email.toLowerCase()));
+          );
+        const alreadySentSet = new Set(
+          alreadySent.map((r) => r.email.toLowerCase()),
+        );
 
         const seen = new Set<string>();
         const eligibleRecipients = allRecipients.filter((r) => {
@@ -560,14 +623,18 @@ export function startReminderScheduler() {
             .update(emailCampaigns)
             .set({ status: "sent", sentAt: new Date() })
             .where(eq(emailCampaigns.id, campaign.id));
-          console.log(`[CampaignOutreach] Campaign ${campaign.id} fully sent — marking as sent`);
+          console.log(
+            `[CampaignOutreach] Campaign ${campaign.id} fully sent — marking as sent`,
+          );
           continue;
         }
 
         // ── Determine how many to send this window ──
         const windowRemaining = NEW_OUTREACH_PER_WINDOW - windowSentTotal;
-        const outreachRemaining = NEW_OUTREACH_DAILY_CAP - (outreachSentToday + windowSentTotal);
-        const globalRemaining = TOTAL_MAILBOX_DAILY_CAP - (totalSentToday + windowSentTotal);
+        const outreachRemaining =
+          NEW_OUTREACH_DAILY_CAP - (outreachSentToday + windowSentTotal);
+        const globalRemaining =
+          TOTAL_MAILBOX_DAILY_CAP - (totalSentToday + windowSentTotal);
         const sendBatch = eligibleRecipients.slice(
           0,
           Math.min(windowRemaining, outreachRemaining, globalRemaining),
@@ -581,10 +648,12 @@ export function startReminderScheduler() {
         const [todayLog] = await dbConn
           .select({ sendCount: campaignSendLog.sendCount })
           .from(campaignSendLog)
-          .where(and(
-            eq(campaignSendLog.campaignId, campaign.id),
-            eq(campaignSendLog.sendDate, today),
-          ));
+          .where(
+            and(
+              eq(campaignSendLog.campaignId, campaign.id),
+              eq(campaignSendLog.sendDate, today),
+            ),
+          );
         const alreadySentTodayCount = todayLog?.sendCount || 0;
 
         for (const recipient of sendBatch) {
@@ -594,7 +663,9 @@ export function startReminderScheduler() {
               const [mc] = await dbConn
                 .select()
                 .from(marketingContacts)
-                .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
+                .where(
+                  eq(marketingContacts.email, recipient.email.toLowerCase()),
+                );
               unsubToken = mc?.unsubscribeToken || "";
             }
             const unsubLink = unsubToken
@@ -608,7 +679,12 @@ export function startReminderScheduler() {
               unsubscribeLink: unsubLink,
             });
 
-            await sendCampaignEmail(recipient.email, campaign.subject, html, unsubLink);
+            await sendCampaignEmail(
+              recipient.email,
+              campaign.subject,
+              html,
+              unsubLink,
+            );
 
             await dbConn.insert(emailCampaignRecipients).values({
               campaignId: campaign.id,
@@ -621,7 +697,8 @@ export function startReminderScheduler() {
             windowSentTotal++;
 
             // Update lastContactedAt
-            await dbConn.update(marketingContacts)
+            await dbConn
+              .update(marketingContacts)
               .set({ lastContactedAt: new Date() })
               .where(eq(marketingContacts.email, recipient.email.toLowerCase()))
               .catch(() => {});
@@ -640,12 +717,15 @@ export function startReminderScheduler() {
         // ── Update campaign send log ──
         if (sentCount > 0) {
           if (todayLog) {
-            await dbConn.update(campaignSendLog)
+            await dbConn
+              .update(campaignSendLog)
               .set({ sendCount: alreadySentTodayCount + sentCount })
-              .where(and(
-                eq(campaignSendLog.campaignId, campaign.id),
-                eq(campaignSendLog.sendDate, today),
-              ));
+              .where(
+                and(
+                  eq(campaignSendLog.campaignId, campaign.id),
+                  eq(campaignSendLog.sendDate, today),
+                ),
+              );
           } else {
             await dbConn.insert(campaignSendLog).values({
               campaignId: campaign.id,
@@ -659,7 +739,8 @@ export function startReminderScheduler() {
         const updatedSentCount = (campaign.sentCount || 0) + sentCount;
         const updatedFailedCount = (campaign.failedCount || 0) + failedCount;
         // After this batch, recheck if fully sent
-        const remainingAfterBatch = eligibleRecipients.length - sendBatch.length;
+        const remainingAfterBatch =
+          eligibleRecipients.length - sendBatch.length;
         const newStatus = remainingAfterBatch <= 0 ? "sent" : "paused";
 
         await dbConn
@@ -680,9 +761,14 @@ export function startReminderScheduler() {
         );
       }
 
-      console.log(`[CampaignOutreach] Window ${windowLabel} complete — total sent this window: ${windowSentTotal}`);
+      console.log(
+        `[CampaignOutreach] Window ${windowLabel} complete — total sent this window: ${windowSentTotal}`,
+      );
     } catch (error) {
-      console.error(`[CampaignOutreach] Error in window ${windowLabel}:`, error);
+      console.error(
+        `[CampaignOutreach] Error in window ${windowLabel}:`,
+        error,
+      );
     }
   }
 
@@ -692,11 +778,17 @@ export function startReminderScheduler() {
     const label = w.label;
     cron.schedule(cronExpr, () => {
       processOutreachWindow(label).catch((err) =>
-        console.error(`[CampaignOutreach] Unhandled error in window ${label}:`, err),
+        console.error(
+          `[CampaignOutreach] Unhandled error in window ${label}:`,
+          err,
+        ),
       );
     });
   }
-  console.log("[CampaignOutreach] Scheduled 5 automated outreach windows:", SEND_WINDOWS.map(w => w.label).join(", "));
+  console.log(
+    "[CampaignOutreach] Scheduled 5 automated outreach windows:",
+    SEND_WINDOWS.map((w) => w.label).join(", "),
+  );
 
   // ── Campaign Reply Fetcher ────────────────────────────────────────────────
   // Polls the sending mailbox for incoming replies every 15 minutes during
@@ -712,7 +804,9 @@ export function startReminderScheduler() {
       )
       .catch((err) => console.error("[CampaignReplies] Error:", err));
   });
-  console.log("[CampaignReplies] Reply poller scheduled (every 15 min, weekdays 08:00–19:00 UTC)");
+  console.log(
+    "[CampaignReplies] Reply poller scheduled (every 15 min, weekdays 08:00–19:00 UTC)",
+  );
 
   // ── Duplicate-Person Scan ─────────────────────────────────────────────────
   // Runs at 07:00 UTC on weekdays, 30 minutes BEFORE the autopilot run so that
@@ -723,34 +817,49 @@ export function startReminderScheduler() {
     console.log("[DupScan] Running daily duplicate-person scan...");
     try {
       const dbConn = await db.getDb();
-      if (!dbConn) { console.log("[DupScan] No DB — skipping"); return; }
+      if (!dbConn) {
+        console.log("[DupScan] No DB — skipping");
+        return;
+      }
 
       const { eq: _eq } = await import("drizzle-orm");
       const { marketingContacts: _mc } = await import("../../drizzle/schema");
-      const { detectDuplicatePeople: _detect } = await import("./dupPersonDetection");
+      const { detectDuplicatePeople: _detect } =
+        await import("./dupPersonDetection");
 
-      const contacts = await dbConn.select({
-        id: _mc.id,
-        email: _mc.email,
-        name: _mc.name,
-        businessName: _mc.businessName,
-        country: _mc.country,
-        region: _mc.region,
-        contactType: _mc.contactType,
-        suspectedDuplicateOf: _mc.suspectedDuplicateOf,
-      }).from(_mc).where(_eq(_mc.status, "active"));
+      const contacts = await dbConn
+        .select({
+          id: _mc.id,
+          email: _mc.email,
+          name: _mc.name,
+          businessName: _mc.businessName,
+          country: _mc.country,
+          region: _mc.region,
+          contactType: _mc.contactType,
+          suspectedDuplicateOf: _mc.suspectedDuplicateOf,
+        })
+        .from(_mc)
+        .where(_eq(_mc.status, "active"));
 
       const results = _detect(contacts);
-      const alreadyFlagged = new Set(contacts.filter(c => c.suspectedDuplicateOf != null).map(c => c.id));
+      const alreadyFlagged = new Set(
+        contacts.filter((c) => c.suspectedDuplicateOf != null).map((c) => c.id),
+      );
       let newlyFlagged = 0;
       for (const r of results) {
         if (alreadyFlagged.has(r.contactId)) continue;
-        await dbConn.update(_mc)
-          .set({ suspectedDuplicateOf: r.suspectedDuplicateOf, dupRiskScore: r.riskScore })
+        await dbConn
+          .update(_mc)
+          .set({
+            suspectedDuplicateOf: r.suspectedDuplicateOf,
+            dupRiskScore: r.riskScore,
+          })
           .where(_eq(_mc.id, r.contactId));
         newlyFlagged++;
       }
-      console.log(`[DupScan] Complete — scanned ${contacts.length}, newly flagged ${newlyFlagged}`);
+      console.log(
+        `[DupScan] Complete — scanned ${contacts.length}, newly flagged ${newlyFlagged}`,
+      );
     } catch (err) {
       console.error("[DupScan] Error:", err);
     }
@@ -773,22 +882,42 @@ export function startReminderScheduler() {
         return;
       }
 
-      const { eq: _eq, inArray: _inArray, sql: _drizzleSql } = await import("drizzle-orm");
+      const {
+        eq: _eq,
+        inArray: _inArray,
+        sql: _drizzleSql,
+      } = await import("drizzle-orm");
       const {
         marketingContacts: _mc,
         emailCampaignRecipients: _ecr,
         emailCampaigns: _ec,
         emailUnsubscribes: _eu,
       } = await import("../../drizzle/schema");
-      const { CAMPAIGN_TEMPLATES: _templates } = await import("./emailTemplates");
+      const { CAMPAIGN_TEMPLATES: _templates } =
+        await import("./emailTemplates");
 
-      const ACADEMY_TYPES = new Set(["school", "college", "academy", "student", "teacher", "instructor"]);
+      const ACADEMY_TYPES = new Set([
+        "school", // LEGACY_DATABASE_COMPAT_ONLY: historical contact category.
+        "college",
+        "academy",
+        "student",
+        "teacher",
+        "instructor",
+      ]); // LEGACY_DATABASE_COMPAT_ONLY: historical contact categories.
 
-      const allContacts = await dbConn.select().from(_mc).where(_eq(_mc.status, "active"));
+      const allContacts = await dbConn
+        .select()
+        .from(_mc)
+        .where(_eq(_mc.status, "active"));
       const suppressed = await dbConn.select({ email: _eu.email }).from(_eu);
-      const suppressedSet = new Set(suppressed.map((s) => s.email.toLowerCase()));
+      const suppressedSet = new Set(
+        suppressed.map((s) => s.email.toLowerCase()),
+      );
 
-      const sentRows = await dbConn.select({ email: _ecr.email }).from(_ecr).where(_eq(_ecr.status, "sent"));
+      const sentRows = await dbConn
+        .select({ email: _ecr.email })
+        .from(_ecr)
+        .where(_eq(_ecr.status, "sent"));
       const sentSet = new Set(sentRows.map((r) => r.email.toLowerCase()));
 
       const autopilotCampaigns = await dbConn
@@ -799,7 +928,10 @@ export function startReminderScheduler() {
 
       const enrolledSet = new Set<string>();
       if (apIds.length > 0) {
-        const enrolledRows = await dbConn.select({ email: _ecr.email }).from(_ecr).where(_inArray(_ecr.campaignId, apIds));
+        const enrolledRows = await dbConn
+          .select({ email: _ecr.email })
+          .from(_ecr)
+          .where(_inArray(_ecr.campaignId, apIds));
         for (const r of enrolledRows) enrolledSet.add(r.email.toLowerCase());
       }
 
@@ -809,14 +941,24 @@ export function startReminderScheduler() {
       for (const c of allContacts) {
         const email = c.email?.toLowerCase();
         if (!email || !email.includes("@")) continue;
-        if (suppressedSet.has(email) || sentSet.has(email) || enrolledSet.has(email)) continue;
+        if (
+          suppressedSet.has(email) ||
+          sentSet.has(email) ||
+          enrolledSet.has(email)
+        )
+          continue;
         // Skip contacts flagged as suspected duplicates — admin must clear flag
         if (c.suspectedDuplicateOf != null) continue;
-        (ACADEMY_TYPES.has(c.contactType || "") ? academy : management).push({ email, name: c.name });
+        (ACADEMY_TYPES.has(c.contactType || "") ? academy : management).push({
+          email,
+          name: c.name,
+        });
       }
 
       if (management.length === 0 && academy.length === 0) {
-        console.log("[CampaignAutopilot] No unenrolled contacts — nothing to do");
+        console.log(
+          "[CampaignAutopilot] No unenrolled contacts — nothing to do",
+        );
         return;
       }
 
@@ -828,7 +970,8 @@ export function startReminderScheduler() {
         if (mgmtTpl) {
           const ins = await dbConn.insert(_ec).values({
             name: `Autopilot — Management (${today})`,
-            subject: "The professional platform built for equestrian businesses",
+            subject:
+              "The professional platform built for equestrian businesses",
             htmlBody: mgmtTpl.getHtml(),
             templateId: "mgmt-intro",
             segment: "marketing",
@@ -848,12 +991,19 @@ export function startReminderScheduler() {
           });
           const campId = Number(ins[0].insertId);
           if (academy.length > 0) {
-            const vals = academy.map((c) => ({ campaignId: campId, email: c.email, name: c.name, status: "skipped" as const }));
+            const vals = academy.map((c) => ({
+              campaignId: campId,
+              email: c.email,
+              name: c.name,
+              status: "skipped" as const,
+            }));
             for (let i = 0; i < vals.length; i += 500) {
               await dbConn.insert(_ecr).values(vals.slice(i, i + 500));
             }
           }
-          console.log(`[CampaignAutopilot] Management campaign ${campId} created — ${management.length} contacts enrolled`);
+          console.log(
+            `[CampaignAutopilot] Management campaign ${campId} created — ${management.length} contacts enrolled`,
+          );
         }
       }
 
@@ -862,7 +1012,8 @@ export function startReminderScheduler() {
         if (acaTpl) {
           const ins = await dbConn.insert(_ec).values({
             name: `Autopilot — Academy (${today})`,
-            subject: "A structured learning platform designed for equestrian schools",
+            subject:
+              "A structured learning platform designed for equestrian schools",
             htmlBody: acaTpl.getHtml(),
             templateId: "academy-intro",
             segment: "marketing",
@@ -882,19 +1033,28 @@ export function startReminderScheduler() {
           });
           const campId = Number(ins[0].insertId);
           if (management.length > 0) {
-            const vals = management.map((c) => ({ campaignId: campId, email: c.email, name: c.name, status: "skipped" as const }));
+            const vals = management.map((c) => ({
+              campaignId: campId,
+              email: c.email,
+              name: c.name,
+              status: "skipped" as const,
+            }));
             for (let i = 0; i < vals.length; i += 500) {
               await dbConn.insert(_ecr).values(vals.slice(i, i + 500));
             }
           }
-          console.log(`[CampaignAutopilot] Academy campaign ${campId} created — ${academy.length} contacts enrolled`);
+          console.log(
+            `[CampaignAutopilot] Academy campaign ${campId} created — ${academy.length} contacts enrolled`,
+          );
         }
       }
     } catch (err) {
       console.error("[CampaignAutopilot] Error:", err);
     }
   });
-  console.log("[CampaignAutopilot] Daily autopilot scheduled (07:30 UTC weekdays)");
+  console.log(
+    "[CampaignAutopilot] Daily autopilot scheduled (07:30 UTC weekdays)",
+  );
 
   isRunning = true;
   console.log("[Reminders] Scheduler started successfully");

@@ -546,13 +546,13 @@ export const commerceRouter = router({
       if (!db) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
       return asRows(
         await db.execute(sql`
-          SELECT s.id, s.slug, s.name, s.status, s.fulfilmentModel, s.imageRightsStatus,
+          SELECT s.id, s.slug, s.name, s.status, s.onboardingStatus, s.fulfilmentModel, s.imageRightsStatus,
             MAX(sr.completedAt) AS lastSyncAt,
             SUM(CASE WHEN sr.status = 'failed' THEN 1 ELSE 0 END) AS syncErrorCount
           FROM commerceSuppliers s
           LEFT JOIN commerceSupplierSources ss ON ss.supplierId = s.id
           LEFT JOIN commerceSupplierSyncRuns sr ON sr.supplierSourceId = ss.id
-          GROUP BY s.id, s.slug, s.name, s.status, s.fulfilmentModel, s.imageRightsStatus
+          GROUP BY s.id, s.slug, s.name, s.status, s.onboardingStatus, s.fulfilmentModel, s.imageRightsStatus
           ORDER BY s.createdAt DESC
         `),
       );

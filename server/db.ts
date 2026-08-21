@@ -1226,7 +1226,7 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       KEY \`idx_lessonReviews_lessonSlug\` (\`lessonSlug\`)
     )`,
 
-    // ── Organization / School System tables ─────────────────────────────
+    // ── Organization / Academy System tables ─────────────────────────────
     `CREATE TABLE IF NOT EXISTS \`organizations\` (
       \`id\` int AUTO_INCREMENT NOT NULL,
       \`ownerId\` int NOT NULL,

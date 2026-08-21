@@ -1275,7 +1275,7 @@ export const emailCampaigns = mysqlTable("emailCampaigns", {
   segment: varchar("segment", { length: 50 }).notNull(), // 'leads','trial','paid','all','marketing'
   customFilter: text("customFilter"), // JSON filter criteria for custom segments
   targetCountry: varchar("targetCountry", { length: 100 }), // UK, Ireland, USA, etc.
-  targetType: varchar("targetType", { length: 100 }), // school, stable, etc.
+  targetType: varchar("targetType", { length: 100 }), // LEGACY_DATABASE_COMPAT_ONLY: historical school, stable, etc.
   dailyLimit: int("dailyLimit").default(50).notNull(),
   sentToday: int("sentToday").default(0).notNull(),
   lastSendDate: varchar("lastSendDate", { length: 10 }), // YYYY-MM-DD
@@ -1341,7 +1341,7 @@ export const marketingContacts = mysqlTable("marketingContacts", {
   email: varchar("email", { length: 320 }).notNull(),
   name: varchar("name", { length: 200 }),
   businessName: varchar("businessName", { length: 300 }),
-  contactType: varchar("contactType", { length: 50 }).default("individual"), // individual, riding_school, stable, school, college, academy, venue, federation, governance, health_vet, elite_luxury, racing, breeding
+  contactType: varchar("contactType", { length: 50 }).default("individual"), // LEGACY_DATABASE_COMPAT_ONLY: historical organization taxonomy includes riding_school and school.
   source: varchar("source", { length: 100 }).default("manual"), // manual, csv_import, xlsx_import, website, referral
   tags: text("tags"), // JSON array of tag strings
   region: varchar("region", { length: 100 }),
@@ -1495,13 +1495,13 @@ export type InsertVirtualHorse = typeof virtualHorses.$inferInsert;
 
 /**
  * Student horse assignments – links a student to a REAL horse (from the
- * existing horses table) via a school/stable.
+ * existing horses table) via an Academy or stable.
  */
 export const studentHorseAssignments = mysqlTable("studentHorseAssignments", {
   id: int("id").autoincrement().primaryKey(),
   studentUserId: int("studentUserId").notNull(),
   horseId: int("horseId").notNull(),
-  assignedBy: int("assignedBy"), // userId of the trainer/school admin
+  assignedBy: int("assignedBy"), // userId of the trainer/Academy admin
   stableId: int("stableId"), // optional – if assigned through a stable
   notes: text("notes"),
   isActive: boolean("isActive").default(true).notNull(),
@@ -1615,7 +1615,7 @@ export type AiTutorSession = typeof aiTutorSessions.$inferSelect;
 export type InsertAiTutorSession = typeof aiTutorSessions.$inferInsert;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Phase 3 — School / Teacher system
+// Phase 3 — Academy / Teacher system
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -1897,7 +1897,7 @@ export type LessonReview = typeof lessonReviews.$inferSelect;
 export type InsertLessonReview = typeof lessonReviews.$inferInsert;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// School / Organisation System
+// Academy / Organisation System
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -1939,7 +1939,7 @@ export type InsertOrganizationMember = typeof organizationMembers.$inferInsert;
 
 /**
  * Organization invites — email-based invite tokens for teachers and students
- * to join a school.
+ * to join an Academy.
  */
 export const organizationInvites = mysqlTable("organizationInvites", {
   id: int("id").autoincrement().primaryKey(),

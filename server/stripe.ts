@@ -131,9 +131,9 @@ export const PRICING_PLANS = {
       "WhatsApp support",
     ],
   },
-  // School plans — price IDs set via environment variables
+  // Academy plans — historical environment variable names remain compatible.
   school_10: {
-    name: "School (10 Students)",
+    name: "Academy (10 Students)",
     students: 10,
     monthly: {
       priceId: process.env.STRIPE_SCHOOL_10_MONTHLY_PRICE_ID || "",
@@ -149,7 +149,7 @@ export const PRICING_PLANS = {
     },
   },
   school_20: {
-    name: "School (20 Students)",
+    name: "Academy (20 Students)",
     students: 20,
     monthly: {
       priceId: process.env.STRIPE_SCHOOL_20_MONTHLY_PRICE_ID || "",
@@ -165,7 +165,7 @@ export const PRICING_PLANS = {
     },
   },
   school_50: {
-    name: "School (50 Students)",
+    name: "Academy (50 Students)",
     students: 50,
     monthly: {
       priceId: process.env.STRIPE_SCHOOL_50_MONTHLY_PRICE_ID || "",

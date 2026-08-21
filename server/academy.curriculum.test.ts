@@ -7,6 +7,13 @@ import {
   resolveCanonicalLesson,
 } from "./academy/curriculumIntegrity";
 
+const meaningfulWordCount = (value: string) =>
+  value.match(/[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*/g)?.length ?? 0;
+const highRiskTopic =
+  /\b(colic|laminitis|wound|vital signs?|first aid|vaccin|worm|parasite|nutrition|supplement|dental|farrier|transport|insurance|safeguarding)\b/i;
+const professionalBoundary =
+  /\b(vet(?:erinarian|erinary)?|qualified professional|farrier|dental (?:technician|professional)|SQP|RAMA|official rules|insurer|safeguarding lead|designated reporting route|emergency services)\b/i;
+
 describe("EquiProfile Academy curriculum integrity", () => {
   it("audits every current pathway and lesson without structural errors", () => {
     const report = auditAcademyCurriculum(
@@ -76,6 +83,30 @@ describe("EquiProfile Academy curriculum integrity", () => {
     expect(() => calculateKnowledgeCheckScore(lesson, [])).toThrow(
       /Expected .* knowledge-check answers/,
     );
+  });
+
+  it("keeps every production lesson at the strengthened depth and assessment baseline", () => {
+    expect(LESSON_UNITS).toHaveLength(105);
+    for (const lesson of LESSON_UNITS) {
+      expect(
+        meaningfulWordCount(lesson.content),
+        `${lesson.slug} must retain meaningful teaching depth`,
+      ).toBeGreaterThanOrEqual(500);
+      expect(
+        lesson.knowledgeCheck.length,
+        `${lesson.slug} must retain at least three knowledge checks`,
+      ).toBeGreaterThanOrEqual(3);
+      expect(
+        [lesson.title, lesson.content, lesson.safetyNote].join("\n"),
+        `${lesson.slug} must not imply external accreditation`,
+      ).not.toMatch(/\b(BHS|Pony Club)\b/i);
+      if (highRiskTopic.test([lesson.title, lesson.content].join("\n"))) {
+        expect(
+          lesson.safetyNote,
+          `${lesson.slug} must retain its professional escalation boundary`,
+        ).toMatch(professionalBoundary);
+      }
+    }
   });
 
   it("flags shallow lesson records for content-depth review", () => {

@@ -2977,7 +2977,7 @@ export const studentRouter = router({
       if (!(await isAIConfigured())) {
         return {
           answer:
-            "⚠️ The AI Tutor is not yet configured. Please ask your school or check back later.",
+            "⚠️ The AI Tutor is not yet configured. Please ask your Academy or check back later.",
           tier: "unavailable" as const,
           modelUsed: "none",
         };

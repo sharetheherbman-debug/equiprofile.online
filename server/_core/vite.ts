@@ -4,8 +4,9 @@
  * Production:
  *   dist/public/management/  →  served on equiprofile.online
  *     management-assets/     →  /management-assets/ URL namespace
- *   dist/public/school/      →  served on school.equiprofile.online
- *     school-assets/         →  /school-assets/ URL namespace
+ *   dist/public/academy/     →  served on academy.equiprofile.online
+ *     academy-assets/        →  /academy-assets/ URL namespace
+ *   school.equiprofile.online remains a LEGACY_COMPAT_ONLY hostname alias.
  *   dist/public/shop/        →  served on shop.equiprofile.online
  *     shop-assets/           →  /shop-assets/ URL namespace
  *
@@ -14,7 +15,7 @@
  *
  * Development:
  *   Uses Vite dev server for the site set by VITE_SITE env var
- *   (defaults to "management"). Switch with: VITE_SITE=school npm run dev or VITE_SITE=shop npm run dev
+ *   (defaults to "management"). Switch with: VITE_SITE=academy npm run dev or VITE_SITE=shop npm run dev
  */
 import express, { type Express } from "express";
 import fs from "fs";
@@ -26,8 +27,12 @@ import viteConfig from "../../vite.config";
 
 // ── Hostname detection ─────────────────────────────────────────────────────
 
-/** Patterns that identify the school subdomain */
-const SCHOOL_HOSTNAME_PATTERNS = [
+/** Patterns that identify the canonical Academy host or legacy compatibility host. */
+const ACADEMY_HOSTNAME_PATTERNS = [
+  "academy.equiprofile.online",
+  "academy.localhost",
+  "academy.127.0.0.1",
+  // LEGACY_COMPAT_ONLY: retained while existing school host traffic migrates.
   "school.equiprofile.online",
   "school.localhost",
   "school.127.0.0.1",
@@ -40,11 +45,11 @@ const SHOP_HOSTNAME_PATTERNS = [
 
 /**
  * Determine which frontend to serve based on the request hostname.
- * Returns "school" for school.equiprofile.online, "management" for everything else.
+ * Returns canonical "academy" for Academy and LEGACY_COMPAT_ONLY school hostnames.
  */
 function getSiteModeFromRequest(
   hostname: string,
-): "management" | "school" | "shop" {
+): "management" | "academy" | "shop" {
   const lower = hostname.toLowerCase().split(":")[0]; // strip port
   if (
     lower.startsWith("shop.") ||
@@ -52,12 +57,12 @@ function getSiteModeFromRequest(
   )
     return "shop";
   if (
-    lower.startsWith("school.") ||
-    SCHOOL_HOSTNAME_PATTERNS.some(
+    lower.startsWith("school.") || // LEGACY_COMPAT_ONLY hostname prefix
+    ACADEMY_HOSTNAME_PATTERNS.some(
       (p) => lower === p || lower.startsWith(p + ":"),
     )
   )
-    return "school";
+    return "academy";
   return "management";
 }
 
@@ -129,13 +134,13 @@ export function serveStatic(app: Express) {
       : path.resolve(import.meta.dirname, "public");
 
   const mgmtDist = path.resolve(baseDist, "management");
-  const schoolDist = path.resolve(baseDist, "school");
+  const academyDist = path.resolve(baseDist, "academy");
   const shopDist = path.resolve(baseDist, "shop");
 
   // Verify both frontend builds exist
   for (const [name, dir] of [
     ["management", mgmtDist],
-    ["school", schoolDist],
+    ["academy", academyDist],
     ["shop", shopDist],
   ] as const) {
     if (!fs.existsSync(dir)) {
@@ -185,7 +190,7 @@ export function serveStatic(app: Express) {
       res.setHeader("Service-Worker-Allowed", "/");
     } else if (
       filePath.includes("/management-assets/") ||
-      filePath.includes("/school-assets/") ||
+      filePath.includes("/academy-assets/") ||
       filePath.includes("/shop-assets/")
     ) {
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
@@ -202,13 +207,13 @@ export function serveStatic(app: Express) {
 
   // Serve static assets from BOTH frontend builds.
   // Assets live in distinct URL namespaces (/management-assets/ and
-  // /school-assets/) so express.static serving from both dirs is safe —
+  // /academy-assets/) so express.static serving from both dirs is safe —
   // the paths are orthogonal and cannot collide.
   app.use(
     express.static(mgmtDist, { index: false, setHeaders: setStaticHeaders }),
   );
   app.use(
-    express.static(schoolDist, { index: false, setHeaders: setStaticHeaders }),
+    express.static(academyDist, { index: false, setHeaders: setStaticHeaders }),
   );
   app.use(
     express.static(shopDist, { index: false, setHeaders: setStaticHeaders }),
@@ -255,7 +260,7 @@ export function serveStatic(app: Express) {
     // Don't serve index.html for real asset requests
     const isStaticFile =
       req.originalUrl.startsWith("/management-assets/") ||
-      req.originalUrl.startsWith("/school-assets/") ||
+      req.originalUrl.startsWith("/academy-assets/") ||
       req.originalUrl.startsWith("/shop-assets/") ||
       STATIC_FILE_EXTENSIONS.some((ext) => req.originalUrl.endsWith(ext));
     if (isStaticFile) {
@@ -265,8 +270,8 @@ export function serveStatic(app: Express) {
     // Determine which frontend to serve based on hostname
     const siteMode = getSiteModeFromRequest(req.hostname || "");
     const siteDistPath =
-      siteMode === "school"
-        ? schoolDist
+      siteMode === "academy"
+        ? academyDist
         : siteMode === "shop"
           ? shopDist
           : mgmtDist;

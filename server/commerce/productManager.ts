@@ -118,7 +118,61 @@ export function priceCandidate(
   );
 }
 
-export async function enrichCandidateCopy(candidate: SupplierCandidate) {
+export type EnrichmentResult =
+  | {
+      status: "not_configured" | "unavailable";
+      proposal: null;
+      reason?: string;
+    }
+  | {
+      status: "completed";
+      proposal: Record<string, unknown>;
+    };
+
+/**
+ * The enrichment is a non-authoritative drafting aid. A malformed model reply
+ * must never block a governed proposal workflow, publish a product, or turn
+ * unavailable supplier data into a customer-facing claim.
+ */
+export function parseEnrichmentProposal(response: unknown): EnrichmentResult {
+  const content =
+    response && typeof response === "object"
+      ? (
+          response as {
+            choices?: Array<{ message?: { content?: unknown } }>;
+          }
+        ).choices?.[0]?.message?.content
+      : undefined;
+
+  if (typeof content !== "string" || content.trim().length === 0) {
+    return {
+      status: "unavailable",
+      proposal: null,
+      reason: "The AI provider returned no usable structured copy.",
+    };
+  }
+
+  try {
+    const proposal: unknown = JSON.parse(content);
+    if (!proposal || typeof proposal !== "object" || Array.isArray(proposal)) {
+      throw new Error("Structured copy was not an object.");
+    }
+    return {
+      status: "completed",
+      proposal: proposal as Record<string, unknown>,
+    };
+  } catch {
+    return {
+      status: "unavailable",
+      proposal: null,
+      reason: "The AI provider returned malformed structured copy.",
+    };
+  }
+}
+
+export async function enrichCandidateCopy(
+  candidate: SupplierCandidate,
+): Promise<EnrichmentResult> {
   if (!(await isAIConfigured()))
     return { status: "not_configured" as const, proposal: null };
   const factual = JSON.stringify({
@@ -127,51 +181,59 @@ export async function enrichCandidateCopy(candidate: SupplierCandidate) {
     factualDescription: candidate.factualDescription,
     categoryHint: candidate.categoryHint,
   });
-  const response = await invokeLLM({
-    maxTokens: 700,
-    messages: [
-      {
-        role: "system",
-        content:
-          "You create concise original ecommerce marketing copy. Use only supplied factual data. Do not invent specifications, materials, certifications, health claims, delivery promises, or safety claims. Return strict JSON.",
-      },
-      {
-        role: "user",
-        content: `Create a title recommendation, description, three feature bullets, SEO title, SEO description, tags, and category suggestion from this supplier fact record: ${factual}`,
-      },
-    ],
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: "commerce_copy",
-        strict: true,
-        schema: {
-          type: "object",
-          properties: {
-            title: { type: "string" },
-            description: { type: "string" },
-            features: { type: "array", items: { type: "string" } },
-            seoTitle: { type: "string" },
-            seoDescription: { type: "string" },
-            tags: { type: "array", items: { type: "string" } },
-            categorySuggestion: { type: "string" },
+  try {
+    const response = await invokeLLM({
+      maxTokens: 700,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You create concise original ecommerce marketing copy. Use only supplied factual data. Do not invent specifications, materials, certifications, health claims, delivery promises, or safety claims. Return strict JSON.",
+        },
+        {
+          role: "user",
+          content: `Create a title recommendation, description, three feature bullets, SEO title, SEO description, tags, and category suggestion from this supplier fact record: ${factual}`,
+        },
+      ],
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: "commerce_copy",
+          strict: true,
+          schema: {
+            type: "object",
+            properties: {
+              title: { type: "string" },
+              description: { type: "string" },
+              features: { type: "array", items: { type: "string" } },
+              seoTitle: { type: "string" },
+              seoDescription: { type: "string" },
+              tags: { type: "array", items: { type: "string" } },
+              categorySuggestion: { type: "string" },
+            },
+            required: [
+              "title",
+              "description",
+              "features",
+              "seoTitle",
+              "seoDescription",
+              "tags",
+              "categorySuggestion",
+            ],
+            additionalProperties: false,
           },
-          required: [
-            "title",
-            "description",
-            "features",
-            "seoTitle",
-            "seoDescription",
-            "tags",
-            "categorySuggestion",
-          ],
-          additionalProperties: false,
         },
       },
-    },
-  });
-  return {
-    status: "completed" as const,
-    proposal: JSON.parse(String(response.choices[0]?.message?.content ?? "{}")),
-  };
+    });
+    return parseEnrichmentProposal(response);
+  } catch (error) {
+    return {
+      status: "unavailable",
+      proposal: null,
+      reason:
+        error instanceof Error
+          ? `AI enrichment was unavailable: ${error.message}`
+          : "AI enrichment was unavailable.",
+    };
+  }
 }

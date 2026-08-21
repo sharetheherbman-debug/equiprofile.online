@@ -13,7 +13,6 @@ import {
   ClipboardList,
   TrendingUp,
   CheckCircle2,
-  School,
   Sparkles,
   ArrowRight,
   Monitor,
@@ -94,7 +93,7 @@ const schoolBenefits = [
       "Generate data-driven reports for parents, inspectors, and accreditation bodies. Evidence progress with real activity logs, not just notes.",
   },
   {
-    title: "Flexible School Pricing",
+    title: "Flexible Academy Pricing",
     description:
       "Tiered plans from £49/month for up to 10 students, scaling to £199/month for 50. All plans include a 7-day free trial.",
   },
@@ -106,10 +105,7 @@ export default function Students() {
       {/* Hero */}
       <section className="bg-[#f8f6f3] pt-28 pb-20">
         <div className="container mx-auto px-4">
-          <motion.div
-            className="max-w-3xl mx-auto text-center"
-            {...fadeUp}
-          >
+          <motion.div className="max-w-3xl mx-auto text-center" {...fadeUp}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2e6da4]/10 border border-[#2e6da4]/20 mb-6">
               <GraduationCap className="w-5 h-5 text-[#2e6da4]" />
               <span className="text-sm font-medium text-[#2e6da4]">
@@ -189,8 +185,8 @@ export default function Students() {
               Everything You Need to Learn
             </h2>
             <p className="text-lg text-[#1a3a5c]/60 max-w-2xl mx-auto">
-              A complete learning platform designed to teach through doing
-              — from first-time handlers to competition-level riders
+              A complete learning platform designed to teach through doing —
+              from first-time handlers to competition-level riders
             </p>
           </motion.div>
 
@@ -261,7 +257,10 @@ export default function Students() {
                   "Learn at your own pace, risk-free",
                   "Master fundamentals before the real thing",
                 ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2.5 text-sm text-[#1a3a5c]/70">
+                  <li
+                    key={i}
+                    className="flex items-center gap-2.5 text-sm text-[#1a3a5c]/70"
+                  >
                     <CheckCircle2 className="w-4 h-4 text-[#3a9d8f] shrink-0" />
                     {item}
                   </li>
@@ -277,10 +276,10 @@ export default function Students() {
                 Work with a Real Horse
               </h3>
               <p className="text-[#1a3a5c]/60 leading-relaxed mb-5">
-                At a riding school or training yard? Your instructor assigns
-                you a real horse to manage through EquiProfile. Log feeds,
-                record health checks, and track genuine progress — building
-                verifiable experience.
+                At a riding school or training yard? Your instructor assigns you
+                a real horse to manage through EquiProfile. Log feeds, record
+                health checks, and track genuine progress — building verifiable
+                experience.
               </p>
               <ul className="space-y-3">
                 {[
@@ -288,7 +287,10 @@ export default function Students() {
                   "Instructor-assigned and supervised",
                   "Build a verified experience portfolio",
                 ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2.5 text-sm text-[#1a3a5c]/70">
+                  <li
+                    key={i}
+                    className="flex items-center gap-2.5 text-sm text-[#1a3a5c]/70"
+                  >
                     <CheckCircle2 className="w-4 h-4 text-[#3a9d8f] shrink-0" />
                     {item}
                   </li>
@@ -327,7 +329,7 @@ export default function Students() {
                     "Study equine theory, practise care routines, track your riding hours, and build a portfolio that proves what you can actually do. From Pony Club to BHS Stage exams, stay organised and motivated.",
                 },
                 {
-                  icon: School,
+                  icon: GraduationCap,
                   title: "Riding Schools & Colleges",
                   description:
                     "Give every student a structured, measurable learning path. Assign horses, set tasks aligned to your syllabus, and generate evidence-based progress reports your inspectors will value.",
@@ -359,7 +361,7 @@ export default function Students() {
         </div>
       </section>
 
-      {/* School Benefits */}
+      {/* Academy Benefits */}
       <section className="bg-white py-20">
         <div className="container mx-auto px-4">
           <motion.div
@@ -372,7 +374,7 @@ export default function Students() {
               <div className="grid md:grid-cols-2 gap-10 items-start">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 mb-5">
-                    <School className="w-4 h-4 text-[#4a9eca]" />
+                    <GraduationCap className="w-4 h-4 text-[#4a9eca]" />
                     <span className="text-xs font-medium text-[#4a9eca] uppercase tracking-wider">
                       For Riding Schools
                     </span>
@@ -383,20 +385,20 @@ export default function Students() {
                   <p className="text-white/70 leading-relaxed mb-4">
                     Replace paper worksheets and informal assessments with a
                     professional digital learning platform your students will
-                    actually want to use — and your inspectors will be
-                    impressed by.
+                    actually want to use — and your inspectors will be impressed
+                    by.
                   </p>
                   <p className="text-white/70 leading-relaxed mb-6">
                     Individual student plans start at{" "}
                     <span className="text-white font-semibold">£8/month</span>.
-                    School plans from{" "}
+                    Academy plans from{" "}
                     <span className="text-white font-semibold">£49/month</span>{" "}
                     for up to 10 students.
                   </p>
-                  <Link href="/pricing?type=school">
+                  <Link href="/pricing?type=academy">
                     <Button className="bg-white text-[#1a3a5c] hover:bg-white/90 px-6 py-3 rounded-lg group font-semibold">
-                      <School className="w-4 h-4 mr-2" />
-                      View School Pricing
+                      <GraduationCap className="w-4 h-4 mr-2" />
+                      View Academy Pricing
                       <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
@@ -444,8 +446,8 @@ export default function Students() {
               tools to become all three.
             </p>
             <p className="text-[#1a3a5c]/50 mb-8 max-w-xl mx-auto">
-              Start your free 7-day trial today. Just £8/month after that —
-              less than a single riding lesson.
+              Start your free 7-day trial today. Just £8/month after that — less
+              than a single riding lesson.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/register?plan=student">

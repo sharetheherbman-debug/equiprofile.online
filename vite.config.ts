@@ -9,10 +9,11 @@
  *      Output: dist/public/management/
  *      Assets: dist/public/management/management-assets/  (URL: /management-assets/)
  *
- *   2. School frontend      → school.equiprofile.online
- *      Entry:  client/school/index.html
- *      Output: dist/public/school/
- *      Assets: dist/public/school/school-assets/          (URL: /school-assets/)
+ *   2. Academy frontend     → academy.equiprofile.online
+ *      school.equiprofile.online remains a LEGACY_COMPAT_ONLY hostname alias.
+ *      Entry:  client/academy/index.html
+ *      Output: dist/public/academy/
+ *      Assets: dist/public/academy/academy-assets/          (URL: /academy-assets/)
  *
  *   3. Shop frontend        → shop.equiprofile.online
  *      Entry:  client/shop/index.html
@@ -21,7 +22,7 @@
  *
  * Asset namespacing guarantees zero cross-site collisions:
  *   - Management HTML references /management-assets/...
- *   - School HTML references /school-assets/...
+ *   - Academy HTML references /academy-assets/...
  *   - The two namespaces never overlap, even for shared dependency chunks.
  *   - No post-build merge step required or used.
  *
@@ -32,11 +33,11 @@
  *
  * Build target is selected by VITE_SITE env var:
  *   VITE_SITE=management  → builds management frontend only
- *   VITE_SITE=school      → builds school frontend only
+ *   VITE_SITE=academy      → builds Academy frontend only
  *   VITE_SITE=shop        → builds Shop frontend only
  *   (no VITE_SITE)        → builds management (default, backward compat)
  *
- * The `npm run build` script builds BOTH by invoking Vite twice.
+ * The `npm run build` script builds all three isolated frontend targets.
  */
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -48,12 +49,12 @@ import { defineConfig, Plugin } from "vite";
 // Which frontend to build. Set via VITE_SITE env var.
 const SITE_TARGET = (process.env.VITE_SITE || "management") as
   | "management"
-  | "school"
+  | "academy"
   | "shop";
 
 const SITE_ROOTS: Record<string, string> = {
   management: path.resolve(import.meta.dirname, "client", "management"),
-  school: path.resolve(import.meta.dirname, "client", "school"),
+  academy: path.resolve(import.meta.dirname, "client", "academy"),
   shop: path.resolve(import.meta.dirname, "client", "shop"),
 };
 
@@ -152,8 +153,8 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist", "public", SITE_TARGET),
     // Each frontend gets its own asset directory name so their URL paths never
-    // overlap.  Management HTML references /management-assets/..., school HTML
-    // references /school-assets/...  This eliminates any possibility of cross-
+    // overlap.  Management HTML references /management-assets/..., Academy HTML
+    // references /academy-assets/...  This eliminates any possibility of cross-
     // site asset collisions without requiring a post-build merge step.
     assetsDir: `${SITE_TARGET}-assets`,
     emptyOutDir: true,

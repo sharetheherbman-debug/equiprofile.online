@@ -47,13 +47,26 @@ async function startServer() {
   console.log("✅ Trust proxy enabled for reverse proxy support");
 
   // CORS configuration
+  const localAcceptanceOrigins =
+    process.env.NODE_ENV === "production"
+      ? []
+      : [
+          "http://localhost:3001",
+          "http://127.0.0.1:3001",
+          "http://academy.localhost:3001",
+          "http://shop.localhost:3001",
+          "http://academy.localhost:3002",
+        ];
   const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(",")
     : [
         "http://localhost:3000",
         "http://localhost:5173",
+        ...localAcceptanceOrigins,
         "https://equiprofile.online",
         "https://www.equiprofile.online",
+        "https://academy.equiprofile.online",
+        // LEGACY_COMPAT_ONLY: existing Academy links may still use school host.
         "https://school.equiprofile.online",
         "https://shop.equiprofile.online",
       ];
@@ -827,7 +840,7 @@ async function startServer() {
 
   // Favicon handler - serve favicon.svg as favicon.ico with correct headers (rate limited)
   // Production: dist/index.js lives in dist/, so import.meta.dirname = dist/
-  // Vite copies client/public/* into EACH frontend build dir (management/ and school/).
+  // Vite copies client/public/* into EACH frontend build dir (management/ and academy/).
   // Both contain the same favicon, so we resolve from management/ as the canonical copy.
   app.get("/favicon.ico", healthLimiter, (req, res) => {
     const faviconPath =
@@ -920,11 +933,11 @@ async function startServer() {
         return res.status(400).json({ error: "Message too long" });
       }
 
-      // Source tagging — differentiate management vs school enquiries
-      const contactSource = source === "school" ? "school" : "management";
+      // Source tagging — differentiate management vs Academy enquiries
+      const contactSource = source === "academy" ? "academy" : "management";
       const subjectPrefix =
-        contactSource === "school"
-          ? "[School Enquiry] "
+        contactSource === "academy"
+          ? "[Academy Enquiry] "
           : "[Management Enquiry] ";
       const taggedSubject = subjectPrefix + subject;
 

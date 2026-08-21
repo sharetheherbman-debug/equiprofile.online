@@ -2,15 +2,15 @@
 
 /* ── Tailwind v4 source scanning ──────────────────────────────────────────────
    @tailwindcss/vite auto-detects source files using the Vite `root` directory.
-   Because each frontend sets root: "client/management" (or "client/school"),
+   Because each frontend sets root: "client/management" (or "client/academy"),
    Tailwind would only scan that subdirectory and miss all shared components in
    client/src/.  These @source directives explicitly include every directory
    that contains Tailwind class names so the CSS bundle is complete.
 */
-@source ".";                  /* client/src/         — shared components, pages, hooks */
-@source "../management";      /* client/management/  — ManagementApp.tsx and management entry */
-@source "../school";          /* client/school/      — SchoolApp.tsx and school entry */
-@source "../../shared";       /* shared/             — shared types and constants */
+@source "."; /* client/src/         — shared components, pages, hooks */
+@source "../management"; /* client/management/  — ManagementApp.tsx and management entry */
+@source "../academy"; /* client/academy/     — AcademyApp.tsx and Academy entry */
+@source "../../shared"; /* shared/             — shared types and constants */
 
 @import "tw-animate-css";
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap");
@@ -69,7 +69,7 @@
      updates ALL management dark sections, hero overlays and CTA sections
      site-wide — avoiding scattered inline hex values in each component.
   ──────────────────────────────────────────────────────────────────────── */
-  /** Primary dark — aligned with the school/academy site */
+  /** Primary dark — aligned with the Academy site */
   --ep-dark-bg: #1e3a5f;
   /** Deep dark — CTA gradient start / hero overlay base */
   --ep-dark-bg-deep: #0f2238;
@@ -255,20 +255,11 @@
 
   /* Modern decorative elements — warm premium gradients */
   .hero-gradient {
-    background: linear-gradient(
-      135deg,
-      #1a3a5c 0%,
-      #2e6da4 50%,
-      #1a3a5c 100%
-    );
+    background: linear-gradient(135deg, #1a3a5c 0%, #2e6da4 50%, #1a3a5c 100%);
   }
 
   .text-gradient {
-    background: linear-gradient(
-      135deg,
-      #2e6da4 0%,
-      #3a9d8f 100%
-    );
+    background: linear-gradient(135deg, #2e6da4 0%, #3a9d8f 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -291,11 +282,13 @@
   }
 
   /* Hides scrollbar visually while keeping scroll functionality */
-  .scrollbar-hide, .no-scrollbar {
-    -ms-overflow-style: none;  /* IE / Edge */
-    scrollbar-width: none;     /* Firefox */
+  .scrollbar-hide,
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE / Edge */
+    scrollbar-width: none; /* Firefox */
   }
-  .scrollbar-hide::-webkit-scrollbar, .no-scrollbar::-webkit-scrollbar {
+  .scrollbar-hide::-webkit-scrollbar,
+  .no-scrollbar::-webkit-scrollbar {
     display: none; /* Chrome / Safari */
   }
 
@@ -726,20 +719,35 @@
 */
 @media print {
   /* Reset colours to plain white/black so the page renders cleanly */
-  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body { background: #fff !important; color: #000 !important; }
-  @page { margin: 15mm; }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  @page {
+    margin: 15mm;
+  }
 
   /* Hide sidebar, mobile nav, trial banners, toast overlays */
   [data-slot="sidebar-wrapper"] > [data-slot="sidebar"],
   [data-sidebar="sidebar"],
   nav[aria-label="Mobile navigation"],
   [data-radix-toast-viewport],
-  .print\:hidden { display: none !important; }
+  .print\:hidden {
+    display: none !important;
+  }
 
   /* Let the main content area take full width */
-  [data-slot="sidebar-wrapper"] { display: block !important; }
-  main { padding: 0 !important; overflow: visible !important; }
+  [data-slot="sidebar-wrapper"] {
+    display: block !important;
+  }
+  main {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
 
   /* Passport card */
   .medical-passport {

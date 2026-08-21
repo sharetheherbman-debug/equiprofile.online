@@ -26,7 +26,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
   const [notice, setNotice] = useState<string | null>(null);
   if (dashboard.error)
     return (
-      <main className="min-h-screen bg-stone-50 p-6 text-slate-900">
+      <main className="min-h-screen bg-[#f7f5f0] p-6 text-[#0f1d2e]">
         <button
           onClick={onBack}
           className="inline-flex items-center gap-2 text-sm"
@@ -34,7 +34,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
           <ArrowLeft className="h-4 w-4" /> Store
         </button>
         <section className="mx-auto mt-12 max-w-xl rounded-2xl border bg-white p-8">
-          <ShieldCheck className="h-8 w-8 text-[#2e6da4]" />
+          <ShieldCheck className="h-8 w-8 text-[#c5a55a]" />
           <h1 className="mt-4 font-serif text-3xl">
             Commerce administration is restricted
           </h1>
@@ -44,7 +44,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
     );
   const metric = dashboard.data as any;
   return (
-    <main className="min-h-screen bg-stone-50 p-6 text-slate-900">
+    <main className="min-h-screen bg-[#f7f5f0] p-6 text-[#0f1d2e]">
       <div className="mx-auto max-w-6xl">
         <button
           onClick={onBack}
@@ -52,7 +52,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
         >
           <ArrowLeft className="h-4 w-4" /> Store
         </button>
-        <p className="mt-8 text-xs font-semibold uppercase tracking-widest text-[#2e6da4]">
+        <p className="mt-8 text-xs font-semibold uppercase tracking-widest text-[#c5a55a]">
           Governed operations
         </p>
         <h1 className="mt-2 font-serif text-4xl">Commerce Admin</h1>
@@ -61,20 +61,20 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
         ) : (
           <>
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+              <article className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#e8d08a]/35">
                 <p className="text-sm text-slate-500">Paid revenue</p>
                 <p className="mt-2 text-2xl font-semibold">
                   £
                   {(Number(metric?.realisedRevenuePence ?? 0) / 100).toFixed(2)}
                 </p>
               </article>
-              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+              <article className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#e8d08a]/35">
                 <p className="text-sm text-slate-500">Orders</p>
                 <p className="mt-2 text-2xl font-semibold">
                   {metric?.orderCount ?? 0}
                 </p>
               </article>
-              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+              <article className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#e8d08a]/35">
                 <p className="text-sm text-slate-500">Pending orders</p>
                 <p className="mt-2 text-2xl font-semibold">
                   {metric?.pendingOrderCount ?? 0}
@@ -82,7 +82,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
               </article>
             </div>
             <section className="mt-8 grid gap-4 lg:grid-cols-2">
-              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+              <article className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#e8d08a]/35">
                 <h2 className="font-serif text-xl">Products and approvals</h2>
                 <p className="mt-1 text-xs text-slate-500">
                   Public visibility still requires a recorded approval and
@@ -92,7 +92,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                   {(products.data ?? []).slice(0, 6).map((product: any) => (
                     <div
                       key={product.id}
-                      className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+                      className="flex items-center justify-between gap-3 border-b border-[#e8d08a]/20 pb-2"
                     >
                       <span className="min-w-0 truncate font-medium">
                         {product.title}
@@ -111,7 +111,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                     )}
                 </div>
               </article>
-              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+              <article className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#e8d08a]/35">
                 <h2 className="font-serif text-xl">Supplier readiness</h2>
                 <p className="mt-1 text-xs text-slate-500">
                   No supplier becomes sellable from this screen.
@@ -120,13 +120,20 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                   {(suppliers.data ?? []).slice(0, 6).map((supplier: any) => (
                     <div
                       key={supplier.id}
-                      className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+                      className="flex items-center justify-between gap-3 border-b border-[#e8d08a]/20 pb-2"
                     >
                       <span className="min-w-0 truncate font-medium">
                         {supplier.name}
                       </span>
-                      <span className="shrink-0 text-xs text-slate-500">
-                        {supplier.status} · rights {supplier.imageRightsStatus}
+                      <span className="shrink-0 text-right text-xs text-slate-500">
+                        <span className="block">
+                          {supplier.status} · rights{" "}
+                          {supplier.imageRightsStatus}
+                        </span>
+                        <span className="block">
+                          onboarding{" "}
+                          {supplier.onboardingStatus ?? "not_started"}
+                        </span>
                       </span>
                     </div>
                   ))}
@@ -136,13 +143,13 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                     )}
                 </div>
               </article>
-              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+              <article className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#e8d08a]/35">
                 <h2 className="font-serif text-xl">Orders</h2>
                 <div className="mt-3 space-y-2 text-sm">
                   {(orders.data ?? []).slice(0, 6).map((order: any) => (
                     <div
                       key={order.id}
-                      className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+                      className="flex items-center justify-between gap-3 border-b border-[#e8d08a]/20 pb-2"
                     >
                       <span className="font-medium">{order.orderNumber}</span>
                       <span className="shrink-0 text-xs text-slate-500">
@@ -155,13 +162,13 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                   )}
                 </div>
               </article>
-              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+              <article className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#e8d08a]/35">
                 <h2 className="font-serif text-xl">Returns</h2>
                 <div className="mt-3 space-y-2 text-sm">
                   {(returns.data ?? []).slice(0, 6).map((request: any) => (
                     <div
                       key={request.id}
-                      className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+                      className="flex items-center justify-between gap-3 border-b border-[#e8d08a]/20 pb-2"
                     >
                       <span className="font-medium">{request.orderNumber}</span>
                       <span className="shrink-0 text-xs text-slate-500">
@@ -175,7 +182,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                 </div>
               </article>
             </section>
-            <section className="mt-8 rounded-2xl bg-white p-6 ring-1 ring-stone-200">
+            <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-[#e8d08a]/35">
               <h2 className="font-serif text-2xl">AI Product Manager queue</h2>
               <p className="mt-2 text-sm text-slate-600">
                 Supplier state:{" "}
@@ -195,7 +202,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                     },
                   })
                 }
-                className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#2e6da4] px-4 py-2 text-sm font-semibold text-white disabled:bg-slate-300"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#c5a55a] px-4 py-2 text-sm font-semibold text-[#0f1d2e] shadow-lg shadow-[#c5a55a]/25 disabled:bg-slate-300"
               >
                 <Database className="h-4 w-4" />{" "}
                 {synthetic.isPending
@@ -206,7 +213,7 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                 <button
                   disabled={proposal.isPending}
                   onClick={() => proposal.mutate({ productId: candidateId })}
-                  className="ml-3 mt-5 rounded-lg border border-[#2e6da4] px-4 py-2 text-sm font-semibold text-[#2e6da4] disabled:opacity-50"
+                  className="ml-3 mt-5 rounded-lg border border-[#c5a55a] px-4 py-2 text-sm font-semibold text-[#c5a55a] disabled:opacity-50"
                 >
                   {proposal.isPending
                     ? "Preparing proposal…"
@@ -214,10 +221,10 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                 </button>
               )}
               {notice && (
-                <p className="mt-3 text-sm text-emerald-700">{notice}</p>
+                <p className="mt-3 text-sm text-[#8a6a25]">{notice}</p>
               )}
               {proposal.data && (
-                <div className="mt-4 rounded-lg bg-stone-50 p-4 text-sm">
+                <div className="mt-4 rounded-lg bg-[#f7f5f0] p-4 text-sm">
                   <p>
                     <strong>Score:</strong> {proposal.data.score.total}/100
                   </p>

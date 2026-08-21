@@ -99,7 +99,7 @@ import {
 } from "./_core/dupPersonDetection";
 import { studentRouter } from "./studentRouter";
 import { teacherRouter } from "./teacherRouter";
-import { schoolRouter } from "./schoolRouter";
+import { academyRouter } from "./academyRouter";
 import { commerceRouter } from "./commerceRouter";
 import {
   normalizeCountry,
@@ -348,7 +348,9 @@ export const appRouter = router({
   system: systemRouter,
   student: studentRouter,
   teacher: teacherRouter,
-  school: schoolRouter,
+  academy: academyRouter,
+  // LEGACY_COMPAT_ONLY: retains existing client integrations while they migrate.
+  school: academyRouter,
   commerce: commerceRouter,
 
   auth: router({
@@ -4756,9 +4758,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         alreadySentEmails.map((r) => r.email.toLowerCase()),
       );
 
-      // Types that map to academy/school family
+      // Legacy data values that map to the Academy family
       const academyTypes = new Set([
-        "school",
+        "school", // LEGACY_DATABASE_COMPAT_ONLY: historical contact type.
         "college",
         "academy",
         "student",
@@ -4817,7 +4819,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
      *   campaign email are eligible.
      * - Management contacts → enrolled into a Management Autopilot campaign
      *   using the mgmt-intro template.
-     * - Academy contacts (school/college/academy/student/teacher/instructor)
+     * - Academy contacts (LEGACY_DATABASE_COMPAT_ONLY historical organisation values map to Academy offerings)
      *   → enrolled into an Academy Autopilot campaign using the academy-intro
      *   template.
      * - For each campaign, contacts from the OTHER family are pre-marked as
@@ -4833,7 +4835,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
       // Academy family types (same set used by getCampaignAssignmentPreview)
       const ACADEMY_TYPES = new Set([
-        "school",
+        "school", // LEGACY_DATABASE_COMPAT_ONLY: historical contact type.
         "college",
         "academy",
         "student",

@@ -119,7 +119,7 @@ const FEEDBACK_STYLES: Record<
   string,
   { label: string; color: string; bg: string }
 > = {
-  good: { label: "Good Work", color: "#10b981", bg: "rgba(16,185,129,0.08)" },
+  good: { label: "Good Work", color: "#c5a55a", bg: "rgba(16,185,129,0.08)" },
   needs_improvement: {
     label: "Needs Improvement",
     color: "#f59e0b",
@@ -372,8 +372,8 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
       ? Math.round(skills.reduce((s, p) => s + p.level, 0) / skills.length)
       : 0;
 
-  // Detect student mode: school-led if has assigned lessons, else independent
-  const isSchoolLed = (assignedLessons ?? []).length > 0;
+  // Detect student mode: Academy-led if has assigned lessons, else independent
+  const isAcademyLed = (assignedLessons ?? []).length > 0;
 
   // Find in-progress lesson: completed at least one lesson in a pathway, and that pathway has more
   const completedSlugsSet = new Set(
@@ -396,27 +396,27 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
     <div className="space-y-6">
       {/* Student mode banner */}
       <div
-        className={`rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 ${isSchoolLed ? "bg-blue-50 border border-[#2e6da4]/20" : "bg-emerald-50 border border-emerald-200"}`}
+        className={`rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 ${isAcademyLed ? "bg-blue-50 border border-[#2e6da4]/20" : "bg-amber-50 border border-amber-200"}`}
       >
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <div
-            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isSchoolLed ? "bg-blue-100" : "bg-emerald-100"}`}
+            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isAcademyLed ? "bg-blue-100" : "bg-amber-100"}`}
           >
-            {isSchoolLed ? (
+            {isAcademyLed ? (
               <GraduationCap className="w-4 h-4 text-[#2e6da4]" />
             ) : (
-              <Route className="w-4 h-4 text-emerald-600" />
+              <Route className="w-4 h-4 text-amber-600" />
             )}
           </div>
           <div className="min-w-0">
             <p
               className="text-xs font-semibold"
-              style={{ color: isSchoolLed ? "#4a9eca" : "#34d399" }}
+              style={{ color: isAcademyLed ? "#4a9eca" : "#e8d08a" }}
             >
-              {isSchoolLed ? "School-Led Learning" : "Independent Learning"}
+              {isAcademyLed ? "Academy-Led Learning" : "Independent Learning"}
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
-              {isSchoolLed
+              {isAcademyLed
                 ? "Your teacher has assigned lessons and tasks for you."
                 : "Explore pathways at your own pace — no teacher required."}
             </p>
@@ -430,18 +430,18 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
             Open Assignment
           </button>
         )}
-        {!isSchoolLed && inProgressPathway && (
+        {!isAcademyLed && inProgressPathway && (
           <button
             onClick={() => onNavigate("learning-path")}
-            className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-emerald-700 hover:bg-emerald-600 transition-colors"
+            className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-amber-700 hover:bg-amber-600 transition-colors"
           >
             Continue
           </button>
         )}
-        {!isSchoolLed && !inProgressPathway && (
+        {!isAcademyLed && !inProgressPathway && (
           <button
             onClick={() => onNavigate("learning-path")}
-            className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-emerald-700 hover:bg-emerald-600 transition-colors"
+            className="shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium text-white bg-amber-700 hover:bg-amber-600 transition-colors"
           >
             Start Learning
           </button>
@@ -467,7 +467,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
             icon: TrendingUp,
             label: "This Week",
             value: `${weekSessions} sessions`,
-            color: "#10b981",
+            color: "#c5a55a",
           },
           {
             icon: Trophy,
@@ -531,7 +531,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
                     style={{
                       width: `${weekPct}%`,
                       background:
-                        weeklyDone >= weeklyGoal ? "#10b981" : "#2e6da4",
+                        weeklyDone >= weeklyGoal ? "#c5a55a" : "#2e6da4",
                     }}
                   />
                 </div>
@@ -561,13 +561,13 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
 
       {/* Continue Learning / Recommended Next — from real progression data */}
       {unlockData?.recommendedNextLesson && (
-        <div className="rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-emerald-50 border border-emerald-200">
+        <div className="rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-amber-50 border border-amber-200">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-50 shrink-0">
-              <Lightbulb className="w-5 h-5 text-emerald-600" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 shrink-0">
+              <Lightbulb className="w-5 h-5 text-amber-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-emerald-600">
+              <p className="text-xs font-semibold text-amber-600">
                 Recommended Next Lesson
               </p>
               <p className="text-sm text-gray-800 mt-0.5 truncate">
@@ -584,7 +584,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
           </div>
           <button
             onClick={() => onNavigate("learning-path")}
-            className="shrink-0 text-xs px-4 py-2 rounded-lg font-medium text-white bg-emerald-700 hover:bg-emerald-600 transition-colors"
+            className="shrink-0 text-xs px-4 py-2 rounded-lg font-medium text-white bg-amber-700 hover:bg-amber-600 transition-colors"
           >
             Continue Learning
           </button>
@@ -699,7 +699,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
                   )}
                   <div className="flex justify-between">
                     <span className="text-xs text-gray-500">Overall Score</span>
-                    <span className="text-sm text-emerald-600">
+                    <span className="text-sm text-amber-600">
                       {vHorse.overallScore}/100
                     </span>
                   </div>
@@ -713,16 +713,18 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
           </button>
 
           {/* Assigned Horse Card */}
-          <div className="rounded-xl border p-6 bg-gradient-to-br from-emerald-500/15 to-teal-500/15 border-emerald-200">
+          <div className="rounded-xl border p-6 bg-gradient-to-br from-amber-500/15 to-teal-500/15 border-amber-200">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-emerald-50">
-                <Heart className="w-5 h-5 text-emerald-600" />
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-amber-50">
+                <Heart className="w-5 h-5 text-amber-600" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-gray-800">
                   Your Assigned Horse
                 </h3>
-                <p className="text-xs text-gray-500">Assigned by your school</p>
+                <p className="text-xs text-gray-500">
+                  Assigned by your Academy
+                </p>
               </div>
             </div>
             {aHorse ? (
@@ -744,7 +746,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
               </div>
             ) : (
               <p className="text-sm text-gray-500 mt-1">
-                No horse assigned yet. Your school or stable can assign one.
+                No horse assigned yet. Your Academy or stable can assign one.
               </p>
             )}
           </div>
@@ -776,12 +778,12 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
                   <div
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${
                       task.isCompleted
-                        ? "bg-emerald-50 border-emerald-500"
+                        ? "bg-amber-50 border-amber-500"
                         : "border-gray-600"
                     }`}
                   >
                     {task.isCompleted && (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-amber-600" />
                     )}
                   </div>
                   <span
@@ -792,7 +794,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       task.isCompleted
-                        ? "bg-emerald-50 text-emerald-600"
+                        ? "bg-amber-50 text-amber-600"
                         : "bg-blue-50 text-[#2e6da4]"
                     }`}
                   >
@@ -829,7 +831,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
               icon: Zap,
               label: "Practice",
               desc: "Scenarios, training log, and daily care",
-              color: "#10b981",
+              color: "#c5a55a",
               view: "practice" as ActiveView,
             },
             {
@@ -992,7 +994,7 @@ function VirtualHorseView() {
   const scores = [
     { label: "Feeding", value: vHorse.feedingScore, color: "#f59e0b" },
     { label: "Grooming", value: vHorse.groomingScore, color: "#a78bfa" },
-    { label: "Exercise", value: vHorse.exerciseScore, color: "#10b981" },
+    { label: "Exercise", value: vHorse.exerciseScore, color: "#c5a55a" },
     { label: "Health", value: vHorse.healthScore, color: "#ef4444" },
   ];
 
@@ -1012,7 +1014,7 @@ function VirtualHorseView() {
             </p>
           </div>
           <div className="ml-auto text-right">
-            <p className="text-2xl font-bold text-emerald-600">
+            <p className="text-2xl font-bold text-amber-600">
               {vHorse.overallScore}
             </p>
             <p className="text-xs text-gray-500">Overall Score</p>
@@ -1044,7 +1046,7 @@ function VirtualHorseView() {
             <p className="text-sm font-medium text-gray-800 flex items-center gap-2">
               <Flame className="w-4 h-4 text-amber-600" /> Daily Care Tasks
               {taskEngineStatus?.enabled && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-semibold">
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 font-semibold">
                   ON
                 </span>
               )}
@@ -1059,7 +1061,7 @@ function VirtualHorseView() {
             onClick={() => toggleEngineMut.mutate()}
             disabled={toggleEngineMut.isPending}
             className={`relative shrink-0 w-11 h-6 rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
-              taskEngineStatus?.enabled ? "bg-emerald-500" : "bg-gray-300"
+              taskEngineStatus?.enabled ? "bg-amber-500" : "bg-gray-300"
             }`}
             aria-label="Toggle daily task engine"
           >
@@ -1078,7 +1080,7 @@ function VirtualHorseView() {
           )}
         {taskEngineStatus?.enabled &&
           (generateTasksMut.data?.generated ?? 0) > 0 && (
-            <p className="text-xs text-emerald-600 mt-2 text-center">
+            <p className="text-xs text-amber-600 mt-2 text-center">
               ✓ {generateTasksMut.data?.generated} daily tasks added to your
               task list.
             </p>
@@ -1233,7 +1235,7 @@ function TasksView() {
               >
                 <button
                   onClick={() => completeMut.mutate({ id: task.id })}
-                  className="w-6 h-6 rounded-full border-2 border-gray-600 hover:border-emerald-500 flex items-center justify-center shrink-0 transition-colors"
+                  className="w-6 h-6 rounded-full border-2 border-gray-600 hover:border-amber-500 flex items-center justify-center shrink-0 transition-colors"
                 />
                 <span className="text-sm text-gray-600 flex-1">
                   {task.title}
@@ -1261,7 +1263,7 @@ function TasksView() {
       {/* Completed */}
       {completed.length > 0 && (
         <SCard>
-          <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-amber-600 mb-3">
             Completed ({completed.length})
           </p>
           <div className="space-y-2">
@@ -1272,9 +1274,9 @@ function TasksView() {
               >
                 <button
                   onClick={() => uncompleteMut.mutate({ id: task.id })}
-                  className="w-6 h-6 rounded-full border-2 bg-emerald-50 border-emerald-500 flex items-center justify-center shrink-0"
+                  className="w-6 h-6 rounded-full border-2 bg-amber-50 border-amber-500 flex items-center justify-center shrink-0"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <CheckCircle2 className="w-4 h-4 text-amber-600" />
                 </button>
                 <span className="text-sm text-gray-500 line-through flex-1">
                   {task.title}
@@ -1551,7 +1553,7 @@ function TrainingView() {
                   </div>
                 </div>
                 {entry.wentWell && (
-                  <p className="text-xs text-emerald-600 mb-1">
+                  <p className="text-xs text-amber-600 mb-1">
                     ✓ {entry.wentWell}
                   </p>
                 )}
@@ -1574,7 +1576,7 @@ function TrainingView() {
 
 // ─── Study Hub View ───────────────────────────────────────────
 const LEVEL_COLORS: Record<string, string> = {
-  beginner: "#10b981",
+  beginner: "#c5a55a",
   developing: "#2e6da4",
   intermediate: "#f59e0b",
   advanced: "#ef4444",
@@ -1582,7 +1584,7 @@ const LEVEL_COLORS: Record<string, string> = {
 
 const CAT_COLORS: Record<string, string> = {
   riding: "#2e6da4",
-  care: "#10b981",
+  care: "#c5a55a",
   theory: "#f59e0b",
   safety: "#ef4444",
 };
@@ -1953,7 +1955,7 @@ const LEARNER_LEVELS = [
     id: "beginner",
     label: "Beginner",
     description: "Learning the basics of horse care and riding",
-    color: "#10b981",
+    color: "#c5a55a",
   },
   {
     id: "developing",
@@ -1997,7 +1999,7 @@ function ProgressView() {
   const skillColors: Record<string, string> = {
     riding_position: "#2e6da4",
     aids_control: "#8b5cf6",
-    grooming: "#10b981",
+    grooming: "#c5a55a",
     feeding: "#f59e0b",
     tack: "#ec4899",
     safety: "#ef4444",
@@ -2012,7 +2014,7 @@ function ProgressView() {
     LEARNER_LEVELS.find((l) => l.id === levelData?.level) ?? LEARNER_LEVELS[0];
 
   const readinessColors: Record<string, string> = {
-    ready_for_next_level: "#10b981",
+    ready_for_next_level: "#c5a55a",
     needs_support: "#f59e0b",
     focus_on_safety: "#ef4444",
     focus_on_riding: "#2e6da4",
@@ -2029,7 +2031,7 @@ function ProgressView() {
   const competencyStatusColors: Record<string, string> = {
     not_assessed: "#6b7280",
     in_progress: "#2e6da4",
-    achieved: "#10b981",
+    achieved: "#c5a55a",
     needs_support: "#f59e0b",
   };
 
@@ -2211,7 +2213,7 @@ function ProgressView() {
                   className="h-full rounded-full transition-all duration-500"
                   style={{
                     width: `${pw.percent}%`,
-                    backgroundColor: pw.percent >= 100 ? "#10b981" : "#2e6da4",
+                    backgroundColor: pw.percent >= 100 ? "#c5a55a" : "#2e6da4",
                   }}
                 />
               </div>
@@ -2276,7 +2278,7 @@ function ProgressView() {
           </div>
           <div className="mt-3 pt-3 border-t border-gray-200 flex items-center gap-4">
             <div className="text-center">
-              <p className="text-lg font-bold text-emerald-600">
+              <p className="text-lg font-bold text-amber-600">
                 {competencies.filter((c) => c.status === "achieved").length}
               </p>
               <p className="text-[10px] text-gray-500">Achieved</p>
@@ -2314,7 +2316,7 @@ function ProgressView() {
               >
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.reviewStatus === "satisfactory" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}
+                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.reviewStatus === "satisfactory" ? "bg-amber-50 text-amber-600" : "bg-amber-50 text-amber-600"}`}
                   >
                     {r.reviewStatus === "satisfactory"
                       ? "Satisfactory"
@@ -2349,7 +2351,7 @@ function ProgressView() {
 
 // ─── Scenario Training View ───────────────────────────────────
 const LEVEL_DISPLAY: Record<string, { label: string; color: string }> = {
-  beginner: { label: "Beginner", color: "#10b981" },
+  beginner: { label: "Beginner", color: "#c5a55a" },
   developing: { label: "Developing", color: "#2e6da4" },
   intermediate: { label: "Intermediate", color: "#f59e0b" },
   advanced: { label: "Advanced", color: "#ef4444" },
@@ -2470,9 +2472,9 @@ function ScenarioCard({
 
           if (isRevealed) {
             if (isCorrectAnswer) {
-              borderColor = "#10b981";
-              bgColor = "#ecfdf5"; // emerald-50
-              textColor = "text-emerald-700";
+              borderColor = "#c5a55a";
+              bgColor = "#f8f2df"; // amber-50
+              textColor = "text-amber-700";
             } else if (isSelected && !isCorrectAnswer) {
               borderColor = "#ef4444";
               bgColor = "#fef2f2"; // red-50
@@ -2499,7 +2501,7 @@ function ScenarioCard({
                     borderColor,
                     color: isRevealed
                       ? isCorrectAnswer
-                        ? "#10b981"
+                        ? "#c5a55a"
                         : isSelected
                           ? "#ef4444"
                           : "transparent"
@@ -2510,7 +2512,7 @@ function ScenarioCard({
                 </span>
                 <span>{choice.text}</span>
                 {isRevealed && isCorrectAnswer && (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 ml-auto mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 ml-auto mt-0.5" />
                 )}
                 {isRevealed && isSelected && !isCorrectAnswer && (
                   <XCircle className="w-4 h-4 text-red-400 shrink-0 ml-auto mt-0.5" />
@@ -2526,12 +2528,12 @@ function ScenarioCard({
         <div className="rounded-lg border border-gray-200 bg-blue-50 p-4 space-y-3">
           <div className="flex items-center gap-2">
             {result.isCorrect ? (
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-amber-600 shrink-0" />
             ) : (
               <XCircle className="w-5 h-5 text-red-400 shrink-0" />
             )}
             <p
-              className={`text-sm font-semibold ${result.isCorrect ? "text-emerald-600" : "text-red-500"}`}
+              className={`text-sm font-semibold ${result.isCorrect ? "text-amber-600" : "text-red-500"}`}
             >
               {result.isCorrect ? "Correct!" : "Not quite right."}
             </p>
@@ -2581,7 +2583,7 @@ function ScenarioTrainingView() {
         <SectionHeading icon={Zap} title="Today's Practice" />
         <div className="flex items-center gap-3">
           {completedIds.size > 0 && (
-            <span className="text-xs text-emerald-600 flex items-center gap-1">
+            <span className="text-xs text-amber-600 flex items-center gap-1">
               <Flame className="w-3 h-3" />
               {completedIds.size} of {scenarios.length} answered
             </span>
@@ -2728,7 +2730,7 @@ function LessonsView({
   };
 
   const levelColors: Record<string, string> = {
-    beginner: "bg-emerald-50 text-emerald-600",
+    beginner: "bg-amber-50 text-amber-600",
     developing: "bg-blue-500/20 text-blue-400",
     intermediate: "bg-amber-50 text-amber-600",
     advanced: "bg-rose-500/20 text-rose-600",
@@ -2799,7 +2801,7 @@ function LessonsView({
                   ~15 min
                 </span>
                 {isCompleted && (
-                  <span className="text-xs text-emerald-600 flex items-center gap-1">
+                  <span className="text-xs text-amber-600 flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3" /> Completed
                   </span>
                 )}
@@ -2851,15 +2853,15 @@ function LessonsView({
 
         {/* Competency mapping — "This lesson helps you achieve" */}
         {linkedCompetencies.length > 0 && (
-          <div className="rounded-xl p-4 border bg-emerald-50 border-emerald-200">
-            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-2 flex items-center gap-2">
+          <div className="rounded-xl p-4 border bg-amber-50 border-amber-200">
+            <p className="text-xs font-semibold uppercase tracking-wider text-amber-600 mb-2 flex items-center gap-2">
               <Award className="w-3.5 h-3.5" /> This lesson helps you achieve
             </p>
             <div className="flex flex-wrap gap-2">
               {linkedCompetencies.map((key) => (
                 <span
                   key={key}
-                  className="text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium capitalize"
+                  className="text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-medium capitalize"
                 >
                   {key.replace(/_/g, " ")}
                 </span>
@@ -2878,7 +2880,7 @@ function LessonsView({
         {/* Key points */}
         {keyPoints.length > 0 && (
           <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
-            <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-amber-600 uppercase tracking-wider mb-3 flex items-center gap-2">
               <Star className="w-4 h-4" /> Key Points
             </h3>
             <ul className="space-y-2">
@@ -2887,7 +2889,7 @@ function LessonsView({
                   key={i}
                   className="text-sm text-gray-600 flex items-start gap-2"
                 >
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600 mt-1 shrink-0" />{" "}
+                  <CheckCircle2 className="w-3 h-3 text-amber-600 mt-1 shrink-0" />{" "}
                   {kp}
                 </li>
               ))}
@@ -2978,7 +2980,7 @@ function LessonsView({
                             }
                             className={`text-left text-sm px-3 py-2 rounded-lg border transition-colors ${
                               isCorrect
-                                ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                                ? "border-amber-500 bg-amber-50 text-amber-700"
                                 : isWrong
                                   ? "border-rose-500 bg-rose-50 text-rose-600"
                                   : selected
@@ -3021,7 +3023,7 @@ function LessonsView({
                       <button
                         onClick={handleComplete}
                         disabled={completeMutation.isPending}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-500 transition-colors disabled:opacity-50"
+                        className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-amber-600 hover:bg-amber-500 transition-colors disabled:opacity-50"
                       >
                         {completeMutation.isPending
                           ? "Saving..."
@@ -3102,7 +3104,7 @@ function LessonsView({
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform shrink-0" />
               </button>
             ) : isCompleted ? (
-              <div className="ml-auto px-4 py-2.5 rounded-xl text-xs text-emerald-600 font-medium flex items-center gap-2 bg-emerald-50 border border-emerald-200">
+              <div className="ml-auto px-4 py-2.5 rounded-xl text-xs text-amber-600 font-medium flex items-center gap-2 bg-amber-50 border border-amber-200">
                 <CheckCircle2 className="w-4 h-4" /> Pathway Complete
               </div>
             ) : null}
@@ -3158,13 +3160,13 @@ function LessonsView({
               <span className="text-xs text-gray-500">
                 {totalLessons} lessons
               </span>
-              <span className="text-xs text-emerald-600">
+              <span className="text-xs text-amber-600">
                 {completedCount} completed
               </span>
               {totalLessons > 0 && (
                 <div className="flex-1 max-w-[200px] h-1.5 bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-emerald-500 rounded-full transition-all"
+                    className="h-full bg-amber-500 rounded-full transition-all"
                     style={{
                       width: `${(completedCount / totalLessons) * 100}%`,
                     }}
@@ -3238,7 +3240,7 @@ function LessonsView({
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${a.assignmentType === "lesson" ? "bg-blue-50 text-[#2e6da4]" : "bg-emerald-50 text-emerald-600"}`}
+                        className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${a.assignmentType === "lesson" ? "bg-blue-50 text-[#2e6da4]" : "bg-amber-50 text-amber-600"}`}
                       >
                         {a.assignmentType === "lesson" ? "Lesson" : "Pathway"}
                       </span>
@@ -3246,7 +3248,7 @@ function LessonsView({
                         {a.lessonTitle ?? a.lessonSlug ?? a.pathwaySlug}
                       </span>
                       {a.isCompleted && (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                       )}
                     </div>
                     {a.dueDate && (
@@ -3348,12 +3350,12 @@ function LessonsView({
                           {estTime}
                         </span>
                         <span className="text-xs text-gray-400">·</span>
-                        <span className="text-xs text-emerald-600">
+                        <span className="text-xs text-amber-600">
                           {pwCompleted} done
                         </span>
                         <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden min-w-[40px]">
                           <div
-                            className="h-full bg-emerald-500 rounded-full"
+                            className="h-full bg-amber-500 rounded-full"
                             style={{
                               width: `${(pwCompleted / pwLessons.length) * 100}%`,
                             }}
@@ -3405,14 +3407,14 @@ function LessonsView({
                       isLocked
                         ? "bg-gray-100"
                         : isComplete
-                          ? "bg-emerald-50"
+                          ? "bg-amber-50"
                           : "bg-white"
                     }`}
                   >
                     {isLocked ? (
                       <Lock className="w-4 h-4 text-gray-400" />
                     ) : isComplete ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-amber-600" />
                     ) : (
                       <span className="text-xs text-gray-500 font-mono">
                         {idx + 1}
@@ -3584,7 +3586,7 @@ function AssignmentsView() {
               <div className="space-y-2">
                 {unreadReviews.map((r) => {
                   const statusColors: Record<string, string> = {
-                    approved: "#10b981",
+                    approved: "#c5a55a",
                     needs_improvement: "#f59e0b",
                     needs_support: "#ef4444",
                   };
@@ -3755,7 +3757,7 @@ function AssignmentsView() {
           {/* Completed section */}
           {(completedTasks.length > 0 || completedLessons.length > 0) && (
             <section>
-              <h3 className="text-sm font-semibold text-emerald-600 flex items-center gap-2 mb-3">
+              <h3 className="text-sm font-semibold text-amber-600 flex items-center gap-2 mb-3">
                 <CheckCircle2 className="w-4 h-4" />
                 Completed ({completedTasks.length + completedLessons.length})
               </h3>
@@ -3766,11 +3768,11 @@ function AssignmentsView() {
                       key={l.id}
                       className="flex items-center gap-3 p-2 rounded-lg"
                     >
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
                       <span className="text-xs text-gray-500 line-through">
                         {l.lessonTitle || l.lessonSlug?.replace(/-/g, " ")}
                       </span>
-                      <span className="text-[10px] text-emerald-600/70 ml-auto shrink-0">
+                      <span className="text-[10px] text-amber-600/70 ml-auto shrink-0">
                         Lesson
                       </span>
                     </div>
@@ -3780,11 +3782,11 @@ function AssignmentsView() {
                       key={t.id}
                       className="flex items-center gap-3 p-2 rounded-lg"
                     >
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
                       <span className="text-xs text-gray-500 line-through">
                         {t.title}
                       </span>
-                      <span className="text-[10px] text-emerald-600/70 ml-auto shrink-0">
+                      <span className="text-[10px] text-amber-600/70 ml-auto shrink-0">
                         Task
                       </span>
                     </div>

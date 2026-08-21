@@ -6,7 +6,7 @@
 # Also injects meta tag into each frontend HTML shell:
 #
 #   dist/public/management/index.html  (equiprofile.online)
-#   dist/public/school/index.html      (school.equiprofile.online)
+#   dist/public/academy/index.html      (school.equiprofile.online)
 #   dist/public/shop/index.html        (shop.equiprofile.online)
 #
 # The old path dist/public/index.html does NOT exist in this architecture.
@@ -63,7 +63,7 @@ inject_meta() {
 }
 
 inject_meta "dist/public/management/index.html" "management"
-inject_meta "dist/public/school/index.html"     "school"
+inject_meta "dist/public/academy/index.html"     "academy"
 inject_meta "dist/public/shop/index.html"       "shop"
 
 echo "✓ Build fingerprinting complete"

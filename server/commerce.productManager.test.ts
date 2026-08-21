@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   isDuplicateCandidate,
   normaliseSupplierCandidate,
+  parseEnrichmentProposal,
   priceCandidate,
   scoreCandidate,
   type SupplierCandidate,
@@ -53,5 +54,25 @@ describe("governed Product Manager", () => {
       maxAutomaticMovementBasisPoints: 1000,
     });
     expect(proposal.needsHumanReview).toBe(true);
+  });
+
+  it("fails closed when optional AI enrichment is empty or malformed", () => {
+    expect(parseEnrichmentProposal({ choices: [] })).toMatchObject({
+      status: "unavailable",
+      proposal: null,
+    });
+    expect(
+      parseEnrichmentProposal({
+        choices: [{ message: { content: "not valid JSON" } }],
+      }),
+    ).toMatchObject({ status: "unavailable", proposal: null });
+    expect(
+      parseEnrichmentProposal({
+        choices: [{ message: { content: '{"title":"Draft"}' } }],
+      }),
+    ).toMatchObject({
+      status: "completed",
+      proposal: { title: "Draft" },
+    });
   });
 });

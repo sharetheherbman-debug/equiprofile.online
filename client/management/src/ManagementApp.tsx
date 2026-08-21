@@ -6,7 +6,10 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { AdminViewProvider, useAdminViewMode } from "@/contexts/AdminViewContext";
+import {
+  AdminViewProvider,
+  useAdminViewMode,
+} from "@/contexts/AdminViewContext";
 import {
   SkipToContent,
   useKeyboardNavigation,
@@ -66,6 +69,12 @@ const ClientPortal = lazy(() => import("@/pages/ClientPortal"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const BillingPage = lazy(() => import("@/pages/BillingPage"));
 
+// Academy role dashboards — canonical authenticated product routes.
+const StudentDashboard = lazy(() => import("@/pages/StudentDashboard"));
+const TeacherDashboard = lazy(() => import("@/pages/TeacherDashboard"));
+const AcademyDashboard = lazy(() => import("@/pages/AcademyDashboard"));
+const AcademyInviteAccept = lazy(() => import("@/pages/AcademyInviteAccept"));
+
 // Additional Health & Management Pages
 const Appointments = lazy(() => import("@/pages/Appointments"));
 const NutritionLogs = lazy(() => import("@/pages/NutritionLogs"));
@@ -112,7 +121,8 @@ function ManagementRouter() {
 
   // Version-aware dashboard selection — VITE_UI_VERSION=v2 (set at deploy time)
   const ActiveDashboard = uiVersion === "v2" ? DashboardV2 : Dashboard;
-  const ActiveStableDashboard = uiVersion === "v2" ? StableDashboardV2 : StableDashboard;
+  const ActiveStableDashboard =
+    uiVersion === "v2" ? StableDashboardV2 : StableDashboard;
 
   // Admin view mode resolution — when an admin is in "View As" mode,
   // /dashboard renders the appropriate simulated dashboard
@@ -166,6 +176,28 @@ function ManagementRouter() {
             <Route path="/dashboard">
               <ProtectedRoute>
                 <ResolvedDashboard />
+              </ProtectedRoute>
+            </Route>
+
+            {/* Academy invitation acceptance keeps the invite token through
+                login; the server validates the account-email match. */}
+            <Route path="/academy-invite" component={AcademyInviteAccept} />
+
+            {/* Academy role dashboards — role validation remains inside the
+                page-level Academy contracts; routes require authentication. */}
+            <Route path="/student-dashboard">
+              <ProtectedRoute>
+                <StudentDashboard />
+              </ProtectedRoute>
+            </Route>
+            <Route path="/teacher-dashboard">
+              <ProtectedRoute>
+                <TeacherDashboard />
+              </ProtectedRoute>
+            </Route>
+            <Route path="/academy-dashboard">
+              <ProtectedRoute>
+                <AcademyDashboard />
               </ProtectedRoute>
             </Route>
 
