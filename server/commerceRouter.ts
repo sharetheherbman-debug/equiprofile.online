@@ -525,6 +525,56 @@ export const commerceRouter = router({
         note: "All values derive from persisted Commerce records; no supplier is active.",
       };
     }),
+    products: adminUnlockedProcedure
+      .input(z.object({ status: z.string().max(40).optional() }).optional())
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+        return asRows(
+          await db.execute(sql`
+            SELECT p.id, p.slug, p.title, p.status, p.developmentOnly, p.availabilityStatus, p.retailPricePence, p.salePricePence, p.imageRightsStatus, p.createdAt,
+              pa.status AS approvalStatus, pa.reason AS approvalReason
+            FROM commerceProducts p
+            LEFT JOIN commerceProductApprovals pa ON pa.productId = p.id AND pa.id = (SELECT MAX(id) FROM commerceProductApprovals WHERE productId = p.id)
+            WHERE (${input?.status ?? ""} = '' OR p.status = ${input?.status ?? ""})
+            ORDER BY p.createdAt DESC LIMIT 200
+          `),
+        );
+      }),
+    suppliers: adminUnlockedProcedure.query(async () => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      return asRows(
+        await db.execute(sql`
+          SELECT s.id, s.slug, s.name, s.status, s.fulfilmentModel, s.imageRightsStatus,
+            MAX(sr.completedAt) AS lastSyncAt,
+            SUM(CASE WHEN sr.status = 'failed' THEN 1 ELSE 0 END) AS syncErrorCount
+          FROM commerceSuppliers s
+          LEFT JOIN commerceSupplierSources ss ON ss.supplierId = s.id
+          LEFT JOIN commerceSupplierSyncRuns sr ON sr.supplierSourceId = ss.id
+          GROUP BY s.id, s.slug, s.name, s.status, s.fulfilmentModel, s.imageRightsStatus
+          ORDER BY s.createdAt DESC
+        `),
+      );
+    }),
+    orders: adminUnlockedProcedure.query(async () => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      return asRows(
+        await db.execute(
+          sql`SELECT id, orderNumber, userId, status, storePaymentStatus, totalPence, currency, createdAt FROM commerceOrders ORDER BY createdAt DESC LIMIT 200`,
+        ),
+      );
+    }),
+    returns: adminUnlockedProcedure.query(async () => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      return asRows(
+        await db.execute(
+          sql`SELECT r.id, r.orderId, r.userId, r.status, r.reason, r.requestedAt, o.orderNumber FROM commerceReturns r JOIN commerceOrders o ON o.id = r.orderId ORDER BY r.requestedAt DESC LIMIT 200`,
+        ),
+      );
+    }),
     createSyntheticCandidate: adminUnlockedProcedure.mutation(
       async ({ ctx }) => {
         if (process.env.NODE_ENV === "production")

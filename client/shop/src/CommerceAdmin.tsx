@@ -10,6 +10,18 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
     onSuccess: () => dashboard.refetch(),
   });
   const proposal = trpc.commerce.admin.proposeProduct.useMutation();
+  const products = trpc.commerce.admin.products.useQuery(undefined, {
+    retry: false,
+  });
+  const suppliers = trpc.commerce.admin.suppliers.useQuery(undefined, {
+    retry: false,
+  });
+  const orders = trpc.commerce.admin.orders.useQuery(undefined, {
+    retry: false,
+  });
+  const returns = trpc.commerce.admin.returns.useQuery(undefined, {
+    retry: false,
+  });
   const [candidateId, setCandidateId] = useState<number | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   if (dashboard.error)
@@ -69,6 +81,100 @@ export default function CommerceAdmin({ onBack }: { onBack: () => void }) {
                 </p>
               </article>
             </div>
+            <section className="mt-8 grid gap-4 lg:grid-cols-2">
+              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+                <h2 className="font-serif text-xl">Products and approvals</h2>
+                <p className="mt-1 text-xs text-slate-500">
+                  Public visibility still requires a recorded approval and
+                  rights review.
+                </p>
+                <div className="mt-3 space-y-2 text-sm">
+                  {(products.data ?? []).slice(0, 6).map((product: any) => (
+                    <div
+                      key={product.id}
+                      className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+                    >
+                      <span className="min-w-0 truncate font-medium">
+                        {product.title}
+                      </span>
+                      <span className="shrink-0 text-xs text-slate-500">
+                        {product.status} ·{" "}
+                        {product.approvalStatus ?? "no approval"}
+                      </span>
+                    </div>
+                  ))}
+                  {!products.isLoading &&
+                    (products.data ?? []).length === 0 && (
+                      <p className="text-slate-500">
+                        No persisted Commerce products.
+                      </p>
+                    )}
+                </div>
+              </article>
+              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+                <h2 className="font-serif text-xl">Supplier readiness</h2>
+                <p className="mt-1 text-xs text-slate-500">
+                  No supplier becomes sellable from this screen.
+                </p>
+                <div className="mt-3 space-y-2 text-sm">
+                  {(suppliers.data ?? []).slice(0, 6).map((supplier: any) => (
+                    <div
+                      key={supplier.id}
+                      className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+                    >
+                      <span className="min-w-0 truncate font-medium">
+                        {supplier.name}
+                      </span>
+                      <span className="shrink-0 text-xs text-slate-500">
+                        {supplier.status} · rights {supplier.imageRightsStatus}
+                      </span>
+                    </div>
+                  ))}
+                  {!suppliers.isLoading &&
+                    (suppliers.data ?? []).length === 0 && (
+                      <p className="text-slate-500">No configured suppliers.</p>
+                    )}
+                </div>
+              </article>
+              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+                <h2 className="font-serif text-xl">Orders</h2>
+                <div className="mt-3 space-y-2 text-sm">
+                  {(orders.data ?? []).slice(0, 6).map((order: any) => (
+                    <div
+                      key={order.id}
+                      className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+                    >
+                      <span className="font-medium">{order.orderNumber}</span>
+                      <span className="shrink-0 text-xs text-slate-500">
+                        {order.status} · {order.storePaymentStatus}
+                      </span>
+                    </div>
+                  ))}
+                  {!orders.isLoading && (orders.data ?? []).length === 0 && (
+                    <p className="text-slate-500">No Store orders.</p>
+                  )}
+                </div>
+              </article>
+              <article className="rounded-2xl bg-white p-5 ring-1 ring-stone-200">
+                <h2 className="font-serif text-xl">Returns</h2>
+                <div className="mt-3 space-y-2 text-sm">
+                  {(returns.data ?? []).slice(0, 6).map((request: any) => (
+                    <div
+                      key={request.id}
+                      className="flex items-center justify-between gap-3 border-b border-stone-100 pb-2"
+                    >
+                      <span className="font-medium">{request.orderNumber}</span>
+                      <span className="shrink-0 text-xs text-slate-500">
+                        {request.status}
+                      </span>
+                    </div>
+                  ))}
+                  {!returns.isLoading && (returns.data ?? []).length === 0 && (
+                    <p className="text-slate-500">No return requests.</p>
+                  )}
+                </div>
+              </article>
+            </section>
             <section className="mt-8 rounded-2xl bg-white p-6 ring-1 ring-stone-200">
               <h2 className="font-serif text-2xl">AI Product Manager queue</h2>
               <p className="mt-2 text-sm text-slate-600">
