@@ -543,7 +543,7 @@ export const appRouter = router({
           return {
             role: "assistant" as const,
             content:
-              "⚠️ AI assistant is not yet configured. Please set OPENAI_API_KEY in the server environment to enable AI features.",
+              "⚠️ AI assistant is not yet configured. Configure the server-side Core AI endpoint, credential and model before enabling AI features.",
           };
         }
 
@@ -3825,12 +3825,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // Optional features
         {
-          name: "OPENAI_API_KEY",
+          name: "CORE_AI_CONFIGURATION",
           status: aiConfigured,
           critical: false,
           conditional: false,
           description:
-            "OpenAI API key — enables AI chat assistant and weather analysis",
+            "Provider-neutral Core AI endpoint, credential and model — enables server-side AI features",
         },
         {
           name: "SMTP_HOST",

@@ -20,12 +20,27 @@ import { nanoid } from "nanoid";
 import Stripe from "stripe";
 import * as db from "../db";
 import { getDb } from "../db";
-import { contactSubmissions, users } from "../../drizzle/schema";
+import { contactSubmissions, organizations, users } from "../../drizzle/schema";
 import { sql, eq } from "drizzle-orm";
-import { getStripe, validatePricingConfig, PRICING_PLANS } from "../stripe";
+import {
+  getStoreStripe,
+  getStripe,
+  validatePricingConfig,
+  PRICING_PLANS,
+} from "../stripe";
 import * as email from "./email";
 import { ENV } from "./env";
 import { getRuntimeConfig } from "../dynamicConfig";
+import {
+  isStoreScopedMetadata,
+  reconcilePaidStoreCheckout,
+  reconcileStoreRefund,
+} from "../commerce/paymentReconciliation";
+import {
+  academySubscriptionStatus,
+  getAcademyStripe,
+  isAcademyScopedMetadata,
+} from "../academy/billing";
 import { resolve } from "path";
 import path from "path";
 import fs from "fs";
@@ -179,7 +194,7 @@ async function startServer() {
     "/api/webhooks/store-stripe",
     express.raw({ type: "application/json" }),
     async (req, res) => {
-      const stripe = getStripe();
+      const stripe = getStoreStripe();
       const webhookSecret = process.env.STORE_STRIPE_WEBHOOK_SECRET;
       if (!stripe || !webhookSecret) {
         return res
@@ -215,15 +230,30 @@ async function startServer() {
         | Stripe.PaymentIntent
         | Stripe.Charge;
       const metadata = "metadata" in object ? object.metadata : null;
-      if (metadata?.commerceScope !== "store" || !metadata.orderId) {
+      if (!isStoreScopedMetadata(metadata)) {
         await dbConn.execute(
           sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'ignored', ${JSON.stringify(event.data.object)})`,
         );
         return res.json({ received: true, ignored: true });
       }
       const orderId = Number(metadata.orderId);
-      if (!Number.isInteger(orderId) || orderId <= 0)
-        return res.status(400).json({ error: "Invalid Store order metadata" });
+      const order = (
+        (await dbConn.execute(
+          sql`SELECT id, totalPence, currency, status, storePaymentStatus FROM commerceOrders WHERE id = ${orderId} LIMIT 1`,
+        )) as any
+      )[0] as Array<{
+        id: number;
+        totalPence: number;
+        currency: string;
+        status: string;
+        storePaymentStatus: string;
+      }>;
+      if (!order[0]) {
+        await dbConn.execute(
+          sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'failed', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, rejected: true });
+      }
       const paymentReference =
         "payment_intent" in object
           ? String(object.payment_intent ?? "")
@@ -233,24 +263,164 @@ async function startServer() {
       await dbConn.execute(
         sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, orderId, paymentIntentId, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, ${orderId}, ${paymentReference || null}, 'received', ${JSON.stringify(event.data.object)})`,
       );
-      if (
-        event.type === "checkout.session.completed" &&
-        (object as Stripe.Checkout.Session).payment_status === "paid"
-      ) {
-        await dbConn.execute(
-          sql`UPDATE commerceOrders SET status = 'paid', storePaymentStatus = 'paid', storePaymentReference = ${paymentReference || null} WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
-        );
+
+      let reconciliationFailure: string | null = null;
+      if (event.type === "checkout.session.completed") {
+        const session = object as Stripe.Checkout.Session;
+        const decision = reconcilePaidStoreCheckout({
+          order: order[0],
+          amountTotal: session.amount_total,
+          currency: session.currency,
+          paymentStatus: session.payment_status,
+        });
+        if (!decision.accepted) reconciliationFailure = decision.reason;
+        else {
+          await dbConn.execute(
+            sql`UPDATE commerceOrders SET status = 'paid', storePaymentStatus = 'paid', storePaymentReference = ${paymentReference || null} WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+          );
+        }
       } else if (event.type === "payment_intent.payment_failed") {
         await dbConn.execute(
-          sql`UPDATE commerceOrders SET storePaymentStatus = 'failed' WHERE id = ${orderId} AND storePaymentStatus IN ('pending', 'not_configured')`,
+          sql`UPDATE commerceOrders SET status = 'payment_failed', storePaymentStatus = 'failed' WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+        );
+      } else if (event.type === "checkout.session.expired") {
+        await dbConn.execute(
+          sql`UPDATE commerceOrders SET status = 'cancelled', storePaymentStatus = 'failed' WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
         );
       } else if (event.type === "charge.refunded") {
+        const charge = object as Stripe.Charge;
+        const decision = reconcileStoreRefund({
+          order: order[0],
+          amountRefunded: charge.amount_refunded,
+          currency: charge.currency,
+        });
+        if (!decision.accepted) reconciliationFailure = decision.reason;
+        else {
+          const nextOrderStatus = decision.paymentStatus;
+          await dbConn.execute(
+            sql`UPDATE commerceOrders SET status = ${nextOrderStatus}, storePaymentStatus = ${decision.paymentStatus} WHERE id = ${orderId} AND status IN ('paid', 'acknowledged', 'processing', 'partially_fulfilled', 'fulfilled', 'dispatched', 'delivered', 'returned', 'partially_refunded')`,
+          );
+        }
+      }
+      if (reconciliationFailure) {
         await dbConn.execute(
-          sql`UPDATE commerceOrders SET storePaymentStatus = 'refunded' WHERE id = ${orderId} AND storePaymentStatus = 'paid'`,
+          sql`UPDATE commercePaymentEvents SET status = 'failed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
         );
+        return res.json({ received: true, rejected: true });
       }
       await dbConn.execute(
         sql`UPDATE commercePaymentEvents SET status = 'processed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
+      );
+      return res.json({ received: true });
+    },
+  );
+
+  // Academy Stripe TEST webhook — isolated from SaaS subscriptions and Store payments.
+  app.post(
+    "/api/webhooks/academy-stripe",
+    express.raw({ type: "application/json" }),
+    async (req, res) => {
+      const stripe = getAcademyStripe();
+      const webhookSecret = process.env.ACADEMY_STRIPE_WEBHOOK_SECRET;
+      if (
+        !stripe ||
+        !webhookSecret ||
+        process.env.ACADEMY_STRIPE_TEST_MODE !== "true"
+      ) {
+        return res
+          .status(503)
+          .json({ error: "Academy TEST payment processing is not configured" });
+      }
+      const signature = req.headers["stripe-signature"];
+      if (!signature)
+        return res.status(400).json({ error: "Missing Stripe signature" });
+      let event: Stripe.Event;
+      try {
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          signature,
+          webhookSecret,
+        );
+      } catch (error: any) {
+        return res.status(400).json({
+          error: `Academy webhook signature verification failed: ${error.message}`,
+        });
+      }
+      const dbConn = await getDb();
+      if (!dbConn)
+        return res.status(503).json({ error: "Database unavailable" });
+      const existing = (
+        (await dbConn.execute(
+          sql`SELECT id FROM academyBillingEvents WHERE provider = 'stripe' AND providerEventId = ${event.id} LIMIT 1`,
+        )) as any
+      )[0] as Array<{ id: number }>;
+      if (existing?.[0]) return res.json({ received: true, cached: true });
+
+      const object = event.data.object as
+        | Stripe.Checkout.Session
+        | Stripe.Subscription;
+      const metadata = "metadata" in object ? object.metadata : null;
+      if (!isAcademyScopedMetadata(metadata)) {
+        await dbConn.execute(
+          sql`INSERT INTO academyBillingEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'ignored', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, ignored: true });
+      }
+      const organizationId = Number(metadata.organizationId);
+      const [organization] = await dbConn
+        .select({ id: organizations.id })
+        .from(organizations)
+        .where(eq(organizations.id, organizationId))
+        .limit(1);
+      if (!organization) {
+        await dbConn.execute(
+          sql`INSERT INTO academyBillingEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'failed', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, rejected: true });
+      }
+      await dbConn.execute(
+        sql`INSERT INTO academyBillingEvents (provider, providerEventId, eventType, organizationId, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, ${organizationId}, 'received', ${JSON.stringify(event.data.object)})`,
+      );
+
+      if (event.type === "checkout.session.completed") {
+        const session = object as Stripe.Checkout.Session;
+        await dbConn
+          .update(organizations)
+          .set({
+            academyBillingStatus: "checkout_pending",
+            academyStripeCustomerId: session.customer
+              ? String(session.customer)
+              : null,
+            academyStripeSubscriptionId: session.subscription
+              ? String(session.subscription)
+              : null,
+            academyStripeCheckoutSessionId: session.id,
+          })
+          .where(eq(organizations.id, organizationId));
+      } else if (
+        event.type === "customer.subscription.created" ||
+        event.type === "customer.subscription.updated" ||
+        event.type === "customer.subscription.deleted"
+      ) {
+        const subscription = object as Stripe.Subscription;
+        const status = academySubscriptionStatus(subscription.status);
+        const currentPeriodEnd = subscription.items.data[0]?.current_period_end;
+        const currentPeriodEndsAt = currentPeriodEnd
+          ? new Date(currentPeriodEnd * 1000)
+          : null;
+        await dbConn
+          .update(organizations)
+          .set({
+            academyBillingStatus: status,
+            academyStripeCustomerId: String(subscription.customer),
+            academyStripeSubscriptionId: subscription.id,
+            academyBillingPriceId: subscription.items.data[0]?.price.id ?? null,
+            academyBillingCurrentPeriodEndsAt: currentPeriodEndsAt,
+          })
+          .where(eq(organizations.id, organizationId));
+      }
+      await dbConn.execute(
+        sql`UPDATE academyBillingEvents SET status = 'processed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
       );
       return res.json({ received: true });
     },
@@ -640,8 +810,11 @@ async function startServer() {
         ENV.enableStripe &&
         !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
       const uploadsReady = true; // Local disk storage is always available on VPS
-      const aiOpenAI = !!process.env.OPENAI_API_KEY;
-      const aiHuggingFace = !!process.env.HUGGINGFACE_API_KEY;
+      const coreAiConfigured = !!(
+        process.env.CORE_AI_API_KEY &&
+        process.env.CORE_AI_BASE_URL &&
+        process.env.CORE_AI_MODEL
+      );
 
       res.json({
         db: true, // If we got here the server started successfully
@@ -649,9 +822,8 @@ async function startServer() {
         stripe: stripeReady,
         uploads: uploadsReady,
         ai: {
-          openai: aiOpenAI,
-          huggingface: aiHuggingFace,
-          anyConfigured: aiOpenAI || aiHuggingFace,
+          core: coreAiConfigured,
+          anyConfigured: coreAiConfigured,
         },
         weather: true, // Open-Meteo needs no key
         adminPasswordSet: !!process.env.ADMIN_UNLOCK_PASSWORD,
@@ -693,8 +865,11 @@ async function startServer() {
       const stripePublicKey = !!(
         process.env.VITE_STRIPE_PUBLIC_KEY || process.env.STRIPE_PUBLIC_KEY
       );
-      const aiOpenAI = !!process.env.OPENAI_API_KEY;
-      const aiHuggingFace = !!process.env.HUGGINGFACE_API_KEY;
+      const coreAiConfigured = !!(
+        process.env.CORE_AI_API_KEY &&
+        process.env.CORE_AI_BASE_URL &&
+        process.env.CORE_AI_MODEL
+      );
       const weatherKey = !!process.env.WEATHER_API_KEY;
       const adminPasswordSet = !!process.env.ADMIN_UNLOCK_PASSWORD;
       const jwtSet = !!process.env.JWT_SECRET;
@@ -743,12 +918,11 @@ async function startServer() {
                 : "Set STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, VITE_STRIPE_PUBLIC_KEY to enable billing",
           },
           ai: {
-            status: toStatus(aiOpenAI || aiHuggingFace, true),
-            ok: aiOpenAI || aiHuggingFace,
-            message:
-              aiOpenAI || aiHuggingFace
-                ? "AI configured"
-                : "Set OPENAI_API_KEY or HUGGINGFACE_API_KEY to enable AI features",
+            status: toStatus(coreAiConfigured, true),
+            ok: coreAiConfigured,
+            message: coreAiConfigured
+              ? "Core AI configured"
+              : "Set CORE_AI_BASE_URL, CORE_AI_API_KEY and CORE_AI_MODEL to enable AI features",
           },
           weather: {
             status: "green",

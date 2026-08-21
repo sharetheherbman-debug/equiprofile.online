@@ -25,6 +25,7 @@ import {
   Settings,
   LogOut,
   Check,
+  RefreshCw,
 } from "lucide-react";
 
 // ── Design tokens ────────────────────────────────────────────────────────────
@@ -414,6 +415,8 @@ export default function AcademyDashboard() {
     isLoading: membersLoading,
     refetch: refetchMembers,
   } = trpc.academy.listMembers.useQuery();
+  const { data: pendingInvites, refetch: refetchInvites } =
+    trpc.academy.listInvites.useQuery();
 
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -424,8 +427,13 @@ export default function AcademyDashboard() {
   const inviteMutation = trpc.academy.inviteMember.useMutation({
     onSuccess: () => {
       setInviteEmail("");
-      setShowInvite(false);
       refetchStats();
+      refetchInvites();
+    },
+  });
+  const resendMutation = trpc.academy.resendInvite.useMutation({
+    onSuccess: () => {
+      refetchInvites();
     },
   });
   const removeMutation = trpc.academy.removeMember.useMutation({
@@ -585,9 +593,19 @@ export default function AcademyDashboard() {
                     </button>
                   </div>
                   {inviteMutation.isSuccess && (
-                    <p className="text-xs text-amber-400 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Invite sent
-                      successfully!
+                    <p
+                      className={`text-xs flex items-center gap-1 ${
+                        inviteMutation.data.deliveryStatus === "DELIVERED"
+                          ? "text-emerald-400"
+                          : "text-amber-400"
+                      }`}
+                    >
+                      {inviteMutation.data.deliveryStatus === "DELIVERED" ? (
+                        <CheckCircle2 className="w-3 h-3" />
+                      ) : (
+                        <AlertCircle className="w-3 h-3" />
+                      )}
+                      {inviteMutation.data.deliveryMessage}
                     </p>
                   )}
                   {inviteMutation.isError && (
@@ -599,6 +617,77 @@ export default function AcademyDashboard() {
                 </div>
               </Card>
             )}
+
+            {/* Invitation delivery status */}
+            <Card>
+              <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                <Mail className="w-4 h-4 text-indigo-400" />
+                Invitations
+              </h3>
+              {(pendingInvites ?? []).filter(
+                (invite: any) => !invite.acceptedAt,
+              ).length === 0 ? (
+                <p className="text-sm text-gray-400">No active invitations.</p>
+              ) : (
+                <div className="space-y-2">
+                  {(pendingInvites ?? [])
+                    .filter((invite: any) => !invite.acceptedAt)
+                    .map((invite: any) => {
+                      const delivered = invite.deliveryStatus === "DELIVERED";
+                      return (
+                        <div
+                          key={invite.id}
+                          className="flex flex-col gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
+                        >
+                          <div>
+                            <p className="text-sm text-white">
+                              {invite.invitedEmail}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {invite.role} ·{" "}
+                              {delivered
+                                ? "Email delivered"
+                                : "Delivery needs attention"}{" "}
+                              · {invite.deliveryAttemptCount} attempt
+                              {invite.deliveryAttemptCount === 1 ? "" : "s"}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              resendMutation.mutate({ inviteId: invite.id })
+                            }
+                            disabled={resendMutation.isPending}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-indigo-400/30 px-3 py-1.5 text-xs font-medium text-indigo-300 transition-colors hover:bg-indigo-500/10 disabled:opacity-50"
+                          >
+                            <RefreshCw
+                              className={`h-3.5 w-3.5 ${resendMutation.isPending ? "animate-spin" : ""}`}
+                            />
+                            Resend
+                          </button>
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+              {resendMutation.isSuccess && (
+                <p
+                  className={`mt-3 text-xs ${
+                    resendMutation.data.deliveryStatus === "DELIVERED"
+                      ? "text-emerald-400"
+                      : "text-amber-400"
+                  }`}
+                >
+                  {resendMutation.data.deliveryMessage}
+                </p>
+              )}
+              {resendMutation.isError && (
+                <p className="mt-3 text-xs text-red-400">
+                  {resendMutation.error.message ||
+                    "Unable to resend this invitation."}
+                </p>
+              )}
+            </Card>
 
             {/* Teachers list */}
             <Card>

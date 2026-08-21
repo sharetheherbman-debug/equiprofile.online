@@ -1,5 +1,6 @@
 {
-  "generatedAt": "2026-08-21T11:13:53.261Z",
+  "generatedAt": "2026-08-21T13:44:45.454Z",
+  "scope": "Structural completeness and lexical-similarity audit only. This report does not verify facts, safety, clinical advice, legal rules, numerical claims, or human editorial acceptance.",
   "standards": {
     "meaningfulWordBaseline": 500,
     "objectives": 3,
@@ -10,13 +11,13 @@
     "duplicateJaccardThreshold": 0.92
   },
   "summary": {
-    "lessonsReviewed": 105,
-    "lessonsProductionReady": 105,
+    "lessonsAssessed": 105,
+    "lessonsStructurallyReady": 105,
     "placeholderLessons": 0,
     "shallowLessons": 0,
-    "semanticDuplicates": 0,
-    "unresolvedSafetyIssues": 0,
-    "unresolvedFactualIssues": 0
+    "similarityReviewRequired": 0,
+    "safetyEvidence": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+    "factualEvidence": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT"
   },
   "lessons": [
     {
@@ -31,11 +32,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "grooming-basics",
@@ -49,137 +50,137 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "feeding-basics",
       "title": "Feeding Basics",
       "pathway": "Horse Care Foundations",
       "level": "beginner",
-      "wordCount": 762,
+      "wordCount": 753,
       "objectivesCount": 4,
       "keyPointsCount": 6,
       "knowledgeCheckCount": 4,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "water-requirements",
       "title": "Water Requirements",
       "pathway": "Horse Care Foundations",
       "level": "beginner",
-      "wordCount": 761,
+      "wordCount": 638,
       "objectivesCount": 4,
       "keyPointsCount": 5,
-      "knowledgeCheckCount": 4,
+      "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "stable-checks",
       "title": "Daily Stable Checks",
       "pathway": "Horse Care Foundations",
       "level": "beginner",
-      "wordCount": 765,
+      "wordCount": 823,
       "objectivesCount": 4,
       "keyPointsCount": 6,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "turnout-and-rugs",
       "title": "Turnout & Rugging",
       "pathway": "Horse Care Foundations",
       "level": "developing",
-      "wordCount": 755,
+      "wordCount": 797,
       "objectivesCount": 5,
       "keyPointsCount": 6,
       "knowledgeCheckCount": 4,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "hoof-care-awareness",
       "title": "Hoof Care Awareness",
       "pathway": "Horse Care Foundations",
       "level": "developing",
-      "wordCount": 814,
+      "wordCount": 878,
       "objectivesCount": 4,
       "keyPointsCount": 6,
       "knowledgeCheckCount": 4,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "seasonal-horse-care",
       "title": "Seasonal Horse Care",
       "pathway": "Horse Care Foundations",
       "level": "intermediate",
-      "wordCount": 870,
+      "wordCount": 882,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "advanced-grooming-and-coat-management",
       "title": "Advanced Grooming & Coat Management",
       "pathway": "Horse Care Foundations",
       "level": "advanced",
-      "wordCount": 995,
+      "wordCount": 1022,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "mounting-dismounting",
@@ -193,11 +194,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "rider-position-basics",
@@ -211,11 +212,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "arena-etiquette",
@@ -229,11 +230,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "walk-trot-transitions",
@@ -247,11 +248,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "basic-school-figures",
@@ -265,11 +266,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "warmup-cooldown",
@@ -283,11 +284,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "lesson-preparation",
@@ -301,11 +302,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "advanced-rider-position-analysis",
@@ -319,11 +320,11 @@
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "teaching-the-foundations",
@@ -337,29 +338,29 @@
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "safe-approach-handling",
       "title": "Safe Approach & Handling",
       "pathway": "Stable & Yard Safety",
       "level": "beginner",
-      "wordCount": 737,
+      "wordCount": 736,
       "objectivesCount": 4,
       "keyPointsCount": 6,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "leading-safely",
@@ -373,29 +374,29 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "tying-up-correctly",
       "title": "Tying Up Correctly",
       "pathway": "Stable & Yard Safety",
       "level": "beginner",
-      "wordCount": 696,
+      "wordCount": 700,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "yard-hazard-awareness",
@@ -409,29 +410,29 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "risk-incident-awareness",
       "title": "Risk & Incident Awareness",
       "pathway": "Stable & Yard Safety",
       "level": "intermediate",
-      "wordCount": 679,
+      "wordCount": 694,
       "objectivesCount": 4,
       "keyPointsCount": 6,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "advanced-safety-awareness",
@@ -445,11 +446,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "understanding-horse-behaviour",
@@ -463,29 +464,29 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "signs-of-good-health",
       "title": "Signs of Good Health",
       "pathway": "Horse Behaviour & Welfare",
       "level": "beginner",
-      "wordCount": 762,
+      "wordCount": 740,
       "objectivesCount": 4,
       "keyPointsCount": 6,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "behaviour-around-other-horses",
@@ -499,11 +500,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "recognising-pain-discomfort",
@@ -517,11 +518,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "horse-welfare-under-workload",
@@ -535,11 +536,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "lameness-awareness",
@@ -553,11 +554,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "welfare-based-decision-making",
@@ -571,11 +572,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "basic-tack-identification",
@@ -589,11 +590,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "putting-on-a-headcollar",
@@ -607,11 +608,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "tack-care-cleaning",
@@ -625,11 +626,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "fitting-a-saddle",
@@ -643,11 +644,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "bit-selection-basics",
@@ -661,11 +662,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "advanced-equipment-awareness",
@@ -679,11 +680,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "walk-trot-transitions-developing",
@@ -697,11 +698,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "trot-rhythm-and-balance",
@@ -715,11 +716,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "steering-and-accuracy",
@@ -733,11 +734,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "circles-and-school-figures",
@@ -751,11 +752,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "rider-balance-independent-seat",
@@ -769,11 +770,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "warmup-cooldown-basics",
@@ -787,11 +788,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "preparing-for-a-lesson",
@@ -805,11 +806,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "reflecting-on-performance",
@@ -823,11 +824,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "advanced-flatwork-and-collection",
@@ -841,11 +842,11 @@
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "riding-assessment-and-self-coaching",
@@ -859,29 +860,29 @@
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "introduction-to-polework",
       "title": "Introduction to Polework",
       "pathway": "Polework & Jump Foundations",
       "level": "beginner",
-      "wordCount": 961,
+      "wordCount": 968,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "trot-pole-distances-and-grids",
@@ -895,65 +896,65 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "introduction-to-jumping-position",
       "title": "The Jumping Position",
       "pathway": "Polework & Jump Foundations",
       "level": "developing",
-      "wordCount": 913,
+      "wordCount": 942,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "first-crossrail-fences",
       "title": "Riding Your First Cross-Rail Fences",
       "pathway": "Polework & Jump Foundations",
       "level": "intermediate",
-      "wordCount": 825,
+      "wordCount": 895,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 3,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "daily-health-check-and-vital-signs",
       "title": "Recognising Signs of Good Health",
       "pathway": "Horse Health & First Response",
       "level": "beginner",
-      "wordCount": 828,
+      "wordCount": 840,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "common-equine-ailments",
@@ -967,11 +968,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 3,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "equine-first-aid-basics",
@@ -985,29 +986,29 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "vaccination-and-worming-schedules",
       "title": "Vaccination & Worming Programmes",
       "pathway": "Horse Health & First Response",
       "level": "intermediate",
-      "wordCount": 831,
+      "wordCount": 921,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 3,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "mucking-out-and-bedding",
@@ -1021,11 +1022,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "pasture-management-basics",
@@ -1039,11 +1040,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "stable-routines-and-record-keeping",
@@ -1057,11 +1058,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "yard-maintenance-and-facilities",
@@ -1075,11 +1076,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "understanding-competition-types",
@@ -1093,11 +1094,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "preparing-for-competition-day",
@@ -1111,11 +1112,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "dressage-test-riding",
@@ -1129,11 +1130,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 3,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "competition-etiquette-and-sportsmanship",
@@ -1147,11 +1148,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "why-rider-fitness-matters",
@@ -1165,11 +1166,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "building-riding-confidence",
@@ -1183,11 +1184,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "core-exercises-for-riders",
@@ -1201,11 +1202,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "mental-skills-for-performance",
@@ -1219,11 +1220,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "introduction-to-coaching-concepts",
@@ -1237,11 +1238,11 @@
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "understanding-your-learners",
@@ -1255,11 +1256,11 @@
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "structuring-a-beginner-lesson",
@@ -1273,11 +1274,11 @@
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "effective-demonstrations-and-feedback",
@@ -1291,11 +1292,11 @@
       "commonMistakesCount": 3,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "foundations-of-equestrian-coaching",
@@ -1309,11 +1310,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 3,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "planning-effective-lessons",
@@ -1327,11 +1328,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "communication-and-feedback-skills",
@@ -1345,11 +1346,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "managing-groups-and-progression",
@@ -1363,11 +1364,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "safe-approach-and-catching",
@@ -1381,11 +1382,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "leading-and-turning",
@@ -1399,11 +1400,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "tying-up-safely",
@@ -1417,11 +1418,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "lungeing-basics",
@@ -1435,11 +1436,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "long-reining-introduction",
@@ -1453,11 +1454,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "advanced-groundwork-exercises",
@@ -1471,11 +1472,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "understanding-equine-digestion",
@@ -1489,11 +1490,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "types-of-feed",
@@ -1507,11 +1508,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "feeding-routines-and-rules",
@@ -1525,11 +1526,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "balancing-a-diet",
@@ -1543,11 +1544,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "feeding-for-workload",
@@ -1561,11 +1562,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "supplements-and-special-diets",
@@ -1579,11 +1580,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "five-freedoms-of-animal-welfare",
@@ -1597,11 +1598,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "responsible-horse-ownership",
@@ -1615,11 +1616,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "recognising-neglect-and-abuse",
@@ -1633,11 +1634,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "welfare-legislation-uk",
@@ -1651,11 +1652,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "ethical-training-methods",
@@ -1669,11 +1670,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "end-of-life-decisions",
@@ -1687,11 +1688,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "grid-work-and-related-distances",
@@ -1705,11 +1706,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "course-awareness-and-planning",
@@ -1723,29 +1724,29 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "when-to-call-the-vet",
       "title": "When to Call the Vet",
       "pathway": "Horse Health & First Response",
       "level": "developing",
-      "wordCount": 733,
+      "wordCount": 764,
       "objectivesCount": 4,
       "keyPointsCount": 5,
       "knowledgeCheckCount": 3,
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "emergency-first-aid-procedures",
@@ -1759,11 +1760,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "daily-stable-routines",
@@ -1777,11 +1778,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "health-safety-in-the-yard",
@@ -1795,11 +1796,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "cross-country-fundamentals",
@@ -1813,11 +1814,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "competition-day-management",
@@ -1831,11 +1832,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "stretching-for-riders",
@@ -1849,11 +1850,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 1,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "overcoming-fear-and-anxiety",
@@ -1867,11 +1868,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "NOT_APPLICABLE",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "safeguarding-and-duty-of-care",
@@ -1885,11 +1886,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     },
     {
       "slug": "inclusive-coaching-adaptive-riding",
@@ -1903,11 +1904,11 @@
       "commonMistakesCount": 5,
       "aiTutorPromptCount": 3,
       "competencyRefs": 2,
-      "safetyReviewed": "PASS",
-      "factReviewed": "PASS",
-      "duplicateContentReview": "PASS",
-      "qualityStatus": "PRODUCTION_READY",
-      "notes": "Reviewed against Academy production-quality defaults."
+      "safetyEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "factualEvidenceStatus": "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+      "duplicateSimilarityStatus": "NO_SIMILARITY_FLAG",
+      "structuralStatus": "STRUCTURALLY_READY",
+      "notes": "Observable structural thresholds met; factual and safety evidence are tracked separately."
     }
   ]
 }

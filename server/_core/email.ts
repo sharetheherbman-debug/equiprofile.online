@@ -83,7 +83,57 @@ export async function sendEmail(
     console.log(`[Email] Sent "${subject}" to ${to}`);
   } catch (error) {
     console.error(`[Email] Failed to send "${subject}" to ${to}:`, error);
-    // Don't throw - email failures should not break app flow
+    // Existing non-critical callers retain their historical non-throwing contract.
+  }
+}
+
+export type TransactionalEmailDeliveryResult =
+  | { delivered: true; providerMessageId: string | null }
+  | {
+      delivered: false;
+      reason: "SMTP_NOT_CONFIGURED" | "SMTP_SEND_FAILED";
+      error: string;
+    };
+
+function deliveryErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.replace(/[\r\n]+/g, " ").slice(0, 500);
+}
+
+/**
+ * Transactional delivery contract for workflows that must surface an explicit
+ * owner-visible result. It intentionally does not throw or log sensitive
+ * content; the caller records a bounded status against its own domain entity.
+ */
+export async function sendTransactionalEmailWithResult(
+  to: string,
+  subject: string,
+  html: string,
+  text?: string,
+): Promise<TransactionalEmailDeliveryResult> {
+  const transporter = await getTransporter();
+  if (!transporter) {
+    return {
+      delivered: false,
+      reason: "SMTP_NOT_CONFIGURED",
+      error: "SMTP is not configured; no invitation email was sent.",
+    };
+  }
+  try {
+    const info = await transporter.sendMail({
+      from: await getSmtpFrom(),
+      to,
+      subject,
+      html,
+      text: text || stripHtml(html),
+    });
+    return { delivered: true, providerMessageId: info.messageId ?? null };
+  } catch (error) {
+    return {
+      delivered: false,
+      reason: "SMTP_SEND_FAILED",
+      error: deliveryErrorMessage(error),
+    };
   }
 }
 
@@ -101,7 +151,7 @@ export async function sendCampaignEmail(
   await sendEmail(to, subject, html, text, {
     "List-Unsubscribe": `<${unsubscribeUrl}>`,
     "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-    "Precedence": "bulk",
+    Precedence: "bulk",
   });
 }
 
@@ -165,7 +215,6 @@ function ctaBtn(text: string, url: string): string {
 </table>`;
 }
 
-
 export async function sendWelcomeEmail(user: User): Promise<void> {
   if (!user.email) {
     console.warn("[Email] Cannot send welcome email - user has no email");
@@ -188,8 +237,19 @@ export async function sendWelcomeEmail(user: User): Promise<void> {
     <div style="background:#f0f4ff;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #dde3f8;">
       <p style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1a2340;">Your ${trialDays}-Day Free Trial includes:</p>
       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-        ${["Health records &amp; vaccination tracking", "Training session management", "Feeding schedules &amp; nutrition plans", "Calendar &amp; event reminders", "AI-powered weather analysis", "Secure document storage"].map(f =>
-          `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+        ${[
+          "Health records &amp; vaccination tracking",
+          "Training session management",
+          "Feeding schedules &amp; nutrition plans",
+          "Calendar &amp; event reminders",
+          "AI-powered weather analysis",
+          "Secure document storage",
+        ]
+          .map(
+            (f) =>
+              `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`,
+          )
+          .join("")}
       </table>
     </div>
     ${ctaBtn("Go to Dashboard →", `${BASE_URL}/dashboard`)}
@@ -260,14 +320,25 @@ export async function sendTrialReminderEmail(
   const html = brandedEmail(`
     <h1 style="margin:0 0 8px;font-size:22px;color:${daysLeft === 0 ? "#dc2626" : "#1a2340"};font-weight:700;">${urgency}</h1>
     <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">Hi ${user.name || "there"},</p>
-    ${daysLeft > 0
-      ? `<p style="margin:0 0 20px;font-size:15px;color:#374151;">Your free trial ends in <strong>${daysLeft} day${daysLeft === 1 ? "" : "s"}</strong>. Upgrade now to keep access to all your data and features.</p>`
-      : `<p style="margin:0 0 20px;font-size:15px;color:#374151;">Your free trial has ended. Subscribe to restore full access.</p>`}
+    ${
+      daysLeft > 0
+        ? `<p style="margin:0 0 20px;font-size:15px;color:#374151;">Your free trial ends in <strong>${daysLeft} day${daysLeft === 1 ? "" : "s"}</strong>. Upgrade now to keep access to all your data and features.</p>`
+        : `<p style="margin:0 0 20px;font-size:15px;color:#374151;">Your free trial has ended. Subscribe to restore full access.</p>`
+    }
     <div style="background:#fff7ed;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #fed7aa;">
       <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#92400e;">Don't lose access to:</p>
       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-        ${["Horse profiles &amp; health records", "Training logs &amp; progress tracking", "Document storage &amp; reminders", "Calendar &amp; event management"].map(f =>
-          `<tr><td style="padding:4px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+        ${[
+          "Horse profiles &amp; health records",
+          "Training logs &amp; progress tracking",
+          "Document storage &amp; reminders",
+          "Calendar &amp; event management",
+        ]
+          .map(
+            (f) =>
+              `<tr><td style="padding:4px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`,
+          )
+          .join("")}
       </table>
     </div>
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;">
@@ -305,7 +376,10 @@ export async function sendPaymentSuccessEmail(
   if (!user.email) return;
 
   const planName = plan === "yearly" ? "Yearly" : "Monthly";
-  const amount = plan === "yearly" ? `${DEFAULT_PRICING.individual.yearly.display}/year` : `${DEFAULT_PRICING.individual.monthly.display}/month`;
+  const amount =
+    plan === "yearly"
+      ? `${DEFAULT_PRICING.individual.yearly.display}/year`
+      : `${DEFAULT_PRICING.individual.monthly.display}/month`;
 
   const subject = "Payment successful - Welcome to EquiProfile Premium! 🎉";
   const html = brandedEmail(`
@@ -324,8 +398,20 @@ export async function sendPaymentSuccessEmail(
     </div>
     <p style="margin:0 0 12px;font-size:14px;color:#374151;">You now have full access to all premium features:</p>
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;">
-      ${["Unlimited horse profiles", "Complete health record tracking", "Training session management", "Document storage (up to 5GB)", "Advanced analytics &amp; reports", "Calendar &amp; reminders", "Priority support"].map(f =>
-        `<tr><td style="padding:4px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+      ${[
+        "Unlimited horse profiles",
+        "Complete health record tracking",
+        "Training session management",
+        "Document storage (up to 5GB)",
+        "Advanced analytics &amp; reports",
+        "Calendar &amp; reminders",
+        "Priority support",
+      ]
+        .map(
+          (f) =>
+            `<tr><td style="padding:4px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`,
+        )
+        .join("")}
     </table>
     ${ctaBtn("Go to Dashboard →", `${process.env.BASE_URL || "https://equiprofile.online"}/dashboard`)}
     <p style="font-size:13px;color:#94a3b8;text-align:center;margin:8px 0 0;">
@@ -376,9 +462,7 @@ export async function sendRenewalReceiptEmail(
 /**
  * Send payment failed / overdue notification email
  */
-export async function sendPaymentFailedEmail(
-  user: User,
-): Promise<void> {
+export async function sendPaymentFailedEmail(user: User): Promise<void> {
   if (!user.email) return;
 
   const subject = "⚠️ EquiProfile – Payment failed";
@@ -390,8 +474,16 @@ export async function sendPaymentFailedEmail(
     <div style="background:#fef2f2;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #fca5a5;">
       <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#991b1b;">What happens next?</p>
       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-        ${["We'll retry your payment automatically in a few days", "You can update your payment method in billing settings", "If payment remains outstanding, your access may be limited"].map(f =>
-          `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#8226;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+        ${[
+          "We'll retry your payment automatically in a few days",
+          "You can update your payment method in billing settings",
+          "If payment remains outstanding, your access may be limited",
+        ]
+          .map(
+            (f) =>
+              `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#8226;&nbsp;&nbsp;${f}</td></tr>`,
+          )
+          .join("")}
       </table>
     </div>
     ${ctaBtn("Update Payment Method →", `${process.env.BASE_URL || "https://equiprofile.online"}/billing`)}
@@ -404,9 +496,7 @@ export async function sendPaymentFailedEmail(
 /**
  * Send cancellation confirmation email
  */
-export async function sendCancellationEmail(
-  user: User,
-): Promise<void> {
+export async function sendCancellationEmail(user: User): Promise<void> {
   if (!user.email) return;
 
   const subject = "EquiProfile – Subscription cancelled";
@@ -418,8 +508,16 @@ export async function sendCancellationEmail(
     <div style="background:#f8fafc;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #e2e8f0;">
       <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#1a2340;">What happens now:</p>
       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-        ${["Your data will be retained for 30 days", "You can resubscribe at any time to restore full access", "Your horse profiles and records remain safe"].map(f =>
-          `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#8226;&nbsp;&nbsp;${f}</td></tr>`).join("")}
+        ${[
+          "Your data will be retained for 30 days",
+          "You can resubscribe at any time to restore full access",
+          "Your horse profiles and records remain safe",
+        ]
+          .map(
+            (f) =>
+              `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#8226;&nbsp;&nbsp;${f}</td></tr>`,
+          )
+          .join("")}
       </table>
     </div>
     ${ctaBtn("Resubscribe →", `${process.env.BASE_URL || "https://equiprofile.online"}/billing`)}
@@ -651,6 +749,60 @@ export async function verifySmtpConfig(): Promise<void> {
       `   Check SMTP_HOST (${process.env.SMTP_HOST ?? "smtp.gmail.com"}), port, credentials, and firewall rules.`,
     );
   }
+}
+
+/**
+ * Send stable team invite email
+ */
+export type AcademyInviteEmailInput = {
+  recipientEmail: string;
+  inviterName: string;
+  organizationName: string;
+  role: "teacher" | "student";
+  token: string;
+  expiresAt: Date;
+};
+
+/**
+ * Send a canonical Academy invitation and return delivery state to the caller.
+ * The invitation token is present only in the recipient link and is never
+ * included in logs, delivery errors, or owner-facing status text.
+ */
+export async function sendAcademyInviteEmail(
+  input: AcademyInviteEmailInput,
+): Promise<TransactionalEmailDeliveryResult> {
+  const academyBaseUrl = (
+    process.env.ACADEMY_BASE_URL || "https://academy.equiprofile.online"
+  ).replace(/\/$/, "");
+  const inviteUrl = `${academyBaseUrl}/academy-invite?token=${encodeURIComponent(input.token)}`;
+  const roleLabel = input.role === "teacher" ? "Teacher" : "Student";
+  const safeInviterName = sanitizeHtml(input.inviterName || "An Academy owner");
+  const safeOrganizationName = sanitizeHtml(input.organizationName);
+  const expiry = new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(input.expiresAt);
+  const subject = `Invitation to join ${input.organizationName} on EquiProfile Academy`;
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">You’re invited to EquiProfile Academy</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      <strong>${safeInviterName}</strong> has invited you to join <strong>${safeOrganizationName}</strong> as a <strong>${roleLabel}</strong>.
+    </p>
+    ${ctaBtn("Accept Academy invitation", inviteUrl)}
+    <p style="margin:0 0 16px;font-size:14px;color:#374151;line-height:1.6;">
+      Sign in or create an EquiProfile account using this email address to accept. The invitation expires on <strong>${expiry} UTC</strong>.
+    </p>
+    <p style="font-size:13px;color:#94a3b8;margin:0 0 8px;">Button not working? Copy and paste this link:</p>
+    <p style="font-size:12px;color:#4f5fd6;word-break:break-all;margin:0 0 16px;">${inviteUrl}</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">If you did not expect this invitation, you can ignore this email.</p>
+  `);
+  return sendTransactionalEmailWithResult(
+    input.recipientEmail,
+    subject,
+    html,
+    `You have been invited by ${input.inviterName || "an Academy owner"} to join ${input.organizationName} as a ${roleLabel}. Accept the invitation: ${inviteUrl}`,
+  );
 }
 
 /**

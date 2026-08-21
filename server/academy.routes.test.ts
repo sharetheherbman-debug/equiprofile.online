@@ -136,3 +136,98 @@ describe("Academy owner compatibility contract", () => {
     expect(ownerDashboard).toContain('value: "riding_school"');
   });
 });
+
+describe("Academy TEST billing contract", () => {
+  const academyRouter = readRepoFile("server/academyRouter.ts");
+  const bootstrap = readRepoFile("server/_core/index.ts");
+  const academyBilling = readRepoFile("server/academy/billing.ts");
+  const migration = readRepoFile("drizzle/0030_academy_billing_test_mode.sql");
+
+  it("uses owner-authorized server-priced TEST checkout and a billing portal", () => {
+    expect(academyRouter).toContain(
+      "createBillingCheckout: academyOwnerProcedure",
+    );
+    expect(academyRouter).toContain("academyBillingConfig(");
+    expect(academyRouter).toContain("getAcademyStripe()");
+    expect(academyRouter).toContain('mode: "subscription"');
+    expect(academyRouter).toContain("subscription_data: { metadata }");
+    expect(academyRouter).toContain(
+      "createBillingPortal: academyOwnerProcedure",
+    );
+    expect(academyRouter).not.toContain("STORE_STRIPE_SECRET_KEY");
+  });
+
+  it("keeps Academy TEST webhook processing isolated, signed and replay-protected", () => {
+    expect(bootstrap).toContain('"/api/webhooks/academy-stripe"');
+    expect(bootstrap).toContain("ACADEMY_STRIPE_WEBHOOK_SECRET");
+    expect(bootstrap).toContain("isAcademyScopedMetadata(metadata)");
+    expect(bootstrap).toContain("academyBillingEvents");
+    expect(bootstrap).toContain("cached: true");
+    expect(bootstrap).toContain("stripe.webhooks.constructEvent");
+    expect(migration).toContain("academyBillingEvents_provider_event_unique");
+    expect(academyBilling).toContain(
+      'environment.ACADEMY_STRIPE_TEST_MODE !== "true"',
+    );
+  });
+});
+
+describe("Academy invitation delivery contract", () => {
+  const router = readRepoFile("server/academyRouter.ts");
+  const email = readRepoFile("server/_core/email.ts");
+  const schema = readRepoFile("drizzle/schema.ts");
+
+  it("persists a truthful delivery state and provides a retryable owner workflow", () => {
+    expect(router).toContain("sendAcademyInviteEmail");
+    expect(router).toContain(
+      'deliveryStatus: delivery.delivered ? "DELIVERED" : "FAILED"',
+    );
+    expect(router).toContain("resendInvite: academyOwnerProcedure");
+    expect(router).toContain("reusedActiveInvite");
+    expect(router).not.toContain("TODO: Send invite email via SMTP");
+    expect(schema).toContain('deliveryStatus: varchar("deliveryStatus"');
+    expect(schema).toContain('lastDeliveryError: varchar("lastDeliveryError"');
+  });
+
+  it("uses a canonical Academy invitation link and explicit SMTP failure result", () => {
+    expect(email).toContain("sendAcademyInviteEmail");
+    expect(email).toContain("ACADEMY_BASE_URL");
+    expect(email).toContain("https://academy.equiprofile.online");
+    expect(email).toContain("SMTP_NOT_CONFIGURED");
+    expect(email).toContain("SMTP_SEND_FAILED");
+  });
+
+  it("does not include invitation tokens in the owner pending-invite list", () => {
+    const listInvitesSection = router.slice(
+      router.indexOf("listInvites: academyOwnerProcedure"),
+      router.indexOf("resendInvite: academyOwnerProcedure"),
+    );
+    expect(listInvitesSection).not.toContain(
+      "token: organizationInvites.token",
+    );
+  });
+});
+
+describe("Academy canonical public-domain and PWA contract", () => {
+  const academyHtml = readRepoFile("client/academy/index.html");
+  const academyManifest = readRepoFile("client/public/academy-manifest.json");
+  const academySitemap = readRepoFile("client/public/academy-sitemap.xml");
+  const robots = readRepoFile("client/public/robots.txt");
+
+  it("uses academy.equiprofile.online for canonical, social and structured metadata", () => {
+    expect(academyHtml).toContain("https://academy.equiprofile.online/academy");
+    expect(academyHtml).not.toContain("https://school.equiprofile.online");
+    expect(academySitemap).toContain(
+      "https://academy.equiprofile.online/academy",
+    );
+    expect(academySitemap).not.toContain("https://school.equiprofile.online");
+    expect(robots).toContain(
+      "https://academy.equiprofile.online/academy-sitemap.xml",
+    );
+  });
+
+  it("uses the navy Academy PWA theme instead of stale green residue", () => {
+    expect(academyManifest).toContain('"theme_color": "#0f1d2e"');
+    expect(academyManifest).toContain('"background_color": "#0f1d2e"');
+    expect(academyHtml).toContain('name="theme-color" content="#0f1d2e"');
+  });
+});

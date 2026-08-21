@@ -9,4 +9,4 @@ Disallow: /admin/
 Sitemap: https://equiprofile.online/sitemap.xml
 
 # Academy sitemap
-Sitemap: https://school.equiprofile.online/academy-sitemap.xml
+Sitemap: https://academy.equiprofile.online/academy-sitemap.xml

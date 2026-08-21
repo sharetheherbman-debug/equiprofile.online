@@ -215,7 +215,9 @@ export const ENV = {
   adminUnlockPassword: process.env.ADMIN_UNLOCK_PASSWORD ?? "",
   // Primary admin email — if set, this user is automatically granted the admin role on
   // first login/registration. Remove or leave blank to disable automatic admin promotion.
-  primaryAdminEmail: (process.env.PRIMARY_ADMIN_EMAIL ?? "").toLowerCase().trim(),
+  primaryAdminEmail: (process.env.PRIMARY_ADMIN_EMAIL ?? "")
+    .toLowerCase()
+    .trim(),
 
   // Security
   baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
@@ -232,10 +234,9 @@ export const ENV = {
   awsRegion: process.env.AWS_REGION ?? "eu-west-2",
   awsS3Bucket: process.env.AWS_S3_BUCKET ?? "",
 
-  // OpenAI
-  openaiApiKey: process.env.OPENAI_API_KEY ?? "",
-  // AI model — used by resolveModel() in llm.ts.
-  // Override via OPENAI_MODEL env var or the "ai_model" DB siteSettings key.
-  // Default: gpt-4o-mini
-  openaiModel: process.env.OPENAI_MODEL ?? "",
+  // Provider-neutral Core AI. Configure a compatible server-side Core/GenX endpoint
+  // explicitly; there is intentionally no implicit vendor key, endpoint or model.
+  coreAiApiKey: process.env.CORE_AI_API_KEY ?? "",
+  coreAiBaseUrl: process.env.CORE_AI_BASE_URL ?? "",
+  coreAiModel: process.env.CORE_AI_MODEL ?? "",
 };

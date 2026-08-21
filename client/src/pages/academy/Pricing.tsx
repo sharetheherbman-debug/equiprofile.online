@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AcademyLayout } from "@/components/academy/AcademyLayout";
 import { FREE_TRIAL_DAYS, SCHOOL_PRICING } from "@shared/pricing";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 import {
   ArrowRight,
   Building2,
@@ -12,6 +15,7 @@ import {
   Crown,
   GraduationCap,
   Users,
+  Loader2,
 } from "lucide-react";
 
 const fadeUp = {
@@ -46,7 +50,48 @@ const includedFoundations = [
 
 export default function AcademyPricing() {
   const [annual, setAnnual] = useState(false);
+  const { user } = useAuth();
   const tiers = SCHOOL_PRICING.tiers;
+  const createCheckout = trpc.academy.createBillingCheckout.useMutation({
+    onError: (error) => {
+      toast.error("Academy TEST checkout is unavailable", {
+        description: error.message,
+      });
+    },
+  });
+
+  useEffect(() => {
+    const parameters = new URLSearchParams(window.location.search);
+    if (parameters.get("academy_billing") === "success") {
+      toast.success("Academy TEST checkout completed", {
+        description:
+          "Subscription activation is confirmed only after the Academy billing webhook processes the Stripe TEST event.",
+      });
+      window.history.replaceState({}, "", "/academy/pricing");
+    } else if (parameters.get("academy_billing") === "cancelled") {
+      toast.message(
+        "Academy TEST checkout was cancelled. No live charge was made.",
+      );
+      window.history.replaceState({}, "", "/academy/pricing");
+    }
+  }, []);
+
+  const startCheckout = (
+    planTier: (typeof SCHOOL_PRICING.tiers)[number]["id"],
+  ) => {
+    if (!user) {
+      toast.error("Sign in as an Academy Owner to start TEST checkout.");
+      return;
+    }
+    createCheckout.mutate(
+      { planTier, interval: annual ? "yearly" : "monthly" },
+      {
+        onSuccess: ({ checkoutUrl }) => {
+          window.location.assign(checkoutUrl);
+        },
+      },
+    );
+  };
 
   return (
     <AcademyLayout>
@@ -183,20 +228,25 @@ export default function AcademyPricing() {
                     {tierDescriptions[idx]}
                   </p>
 
-                  <Link href="/academy/contact">
-                    <Button
-                      className={`w-full rounded-xl ${
-                        isEnterprise
-                          ? "bg-[#163563] hover:bg-[#1a3d6e] text-white"
-                          : "bg-[#c5a55a] hover:bg-[#a8873d] text-white"
-                      }`}
-                    >
-                      {isEnterprise
-                        ? "Discuss Enterprise"
-                        : "Ask About This Plan"}
-                      <ArrowRight className="ml-2 w-4 h-4" />
-                    </Button>
-                  </Link>
+                  <Button
+                    type="button"
+                    onClick={() => startCheckout(tier.id)}
+                    disabled={createCheckout.isPending}
+                    className={`w-full rounded-xl ${
+                      isEnterprise
+                        ? "bg-[#163563] hover:bg-[#1a3d6e] text-white"
+                        : "bg-[#c5a55a] hover:bg-[#a8873d] text-white"
+                    }`}
+                  >
+                    {createCheckout.isPending ? (
+                      <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                    ) : (
+                      <ArrowRight className="mr-2 w-4 h-4" />
+                    )}
+                    {isEnterprise
+                      ? "Start Enterprise TEST Checkout"
+                      : "Start TEST Checkout"}
+                  </Button>
                 </motion.div>
               );
             })}
@@ -235,10 +285,11 @@ export default function AcademyPricing() {
           </div>
 
           <p className="mt-8 text-sm text-[#1e293b]/50 text-center max-w-3xl mx-auto">
-            Plan entitlements and commercial terms should be confirmed against
-            the active account configuration before purchase. This page does not
-            invent tier-specific capabilities that are not represented by the
-            current pricing source of truth.
+            Academy checkout is currently available only through an Academy
+            Owner account using Stripe TEST mode. No live payment is created by
+            this environment. Plan entitlements and commercial terms should be
+            confirmed against the active account configuration before any future
+            live-billing release.
           </p>
         </div>
       </section>

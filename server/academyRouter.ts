@@ -14,6 +14,13 @@ import {
 } from "../drizzle/schema";
 import { nanoid } from "nanoid";
 import { FREE_TRIAL_DAYS, INVITE_EXPIRY_DAYS } from "@shared/pricing";
+import { sendAcademyInviteEmail } from "./_core/email";
+import {
+  academyBillingConfig,
+  getAcademyStripe,
+  type AcademyBillingInterval,
+  type AcademyPlanTier,
+} from "./academy/billing";
 
 /** Safely parse user preferences JSON. */
 function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
@@ -148,6 +155,196 @@ export const academyRouter = router({
     return null;
   }),
 
+  /** Academy billing remains a Stripe TEST-mode-only, owner-authorized product flow. */
+  billingStatus: academyOwnerProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+    const [org] = await dbConn
+      .select({
+        id: organizations.id,
+        planTier: organizations.planTier,
+        academyBillingStatus: organizations.academyBillingStatus,
+        academyBillingInterval: organizations.academyBillingInterval,
+        academyBillingPriceId: organizations.academyBillingPriceId,
+        academyBillingCurrentPeriodEndsAt:
+          organizations.academyBillingCurrentPeriodEndsAt,
+      })
+      .from(organizations)
+      .where(eq(organizations.ownerId, ctx.user.id))
+      .limit(1);
+    if (!org)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Organization not found.",
+      });
+    return {
+      ...org,
+      testModeOnly: true,
+      billingConfigured: academyBillingConfig(
+        process.env,
+        org.planTier as AcademyPlanTier,
+        (org.academyBillingInterval ?? "monthly") as AcademyBillingInterval,
+      ).configured,
+    };
+  }),
+
+  createBillingCheckout: academyOwnerProcedure
+    .input(
+      z.object({
+        planTier: z.enum([
+          "school_10",
+          "school_20",
+          "school_50",
+          "school_enterprise",
+        ]),
+        interval: z.enum(["monthly", "yearly"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const configuration = academyBillingConfig(
+        process.env,
+        input.planTier,
+        input.interval,
+      );
+      const stripe = getAcademyStripe();
+      if (!configuration.configured || !stripe) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: configuration.configured
+            ? "Academy Stripe TEST checkout is unavailable."
+            : configuration.reason,
+        });
+      }
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      const [org] = await dbConn
+        .select()
+        .from(organizations)
+        .where(eq(organizations.ownerId, ctx.user.id))
+        .limit(1);
+      if (!org)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found.",
+        });
+      if (
+        org.academyBillingStatus === "active" &&
+        org.academyStripeSubscriptionId
+      ) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message:
+            "An Academy subscription is already active. Use the billing portal to manage it.",
+        });
+      }
+      const [owner] = await dbConn
+        .select({ email: users.email })
+        .from(users)
+        .where(eq(users.id, ctx.user.id))
+        .limit(1);
+      const publicBaseUrl = (
+        process.env.ACADEMY_PUBLIC_URL ?? "https://academy.equiprofile.online"
+      ).replace(/\/$/, "");
+      let parsedPublicUrl: URL;
+      try {
+        parsedPublicUrl = new URL(publicBaseUrl);
+      } catch {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "ACADEMY_PUBLIC_URL must be a valid absolute URL.",
+        });
+      }
+      const localHttp =
+        process.env.NODE_ENV !== "production" &&
+        parsedPublicUrl.protocol === "http:" &&
+        ["localhost", "127.0.0.1"].includes(parsedPublicUrl.hostname);
+      if (parsedPublicUrl.protocol !== "https:" && !localHttp) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message:
+            "ACADEMY_PUBLIC_URL must use HTTPS outside local development.",
+        });
+      }
+      const metadata = {
+        academyScope: "academy",
+        organizationId: String(org.id),
+        planTier: input.planTier,
+        interval: input.interval,
+      };
+      const session = await stripe.checkout.sessions.create({
+        mode: "subscription",
+        client_reference_id: String(org.id),
+        customer: org.academyStripeCustomerId ?? undefined,
+        customer_email: org.academyStripeCustomerId
+          ? undefined
+          : (owner?.email ?? undefined),
+        metadata,
+        subscription_data: { metadata },
+        line_items: [{ price: configuration.priceId, quantity: 1 }],
+        success_url: `${publicBaseUrl}/academy-dashboard?academy_billing=success`,
+        cancel_url: `${publicBaseUrl}/academy/pricing?academy_billing=cancelled`,
+      });
+      if (!session.url) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Stripe TEST checkout did not return a redirect URL.",
+        });
+      }
+      await dbConn
+        .update(organizations)
+        .set({
+          planTier: input.planTier,
+          academyBillingStatus: "checkout_pending",
+          academyBillingInterval: input.interval,
+          academyBillingPriceId: configuration.priceId,
+          academyStripeCheckoutSessionId: session.id,
+        })
+        .where(
+          and(
+            eq(organizations.id, org.id),
+            eq(organizations.ownerId, ctx.user.id),
+          ),
+        );
+      return { checkoutUrl: session.url, testModeOnly: true };
+    }),
+
+  createBillingPortal: academyOwnerProcedure.mutation(async ({ ctx }) => {
+    const stripe = getAcademyStripe();
+    if (!stripe) {
+      throw new TRPCError({
+        code: "PRECONDITION_FAILED",
+        message: "Academy Stripe TEST billing portal is unavailable.",
+      });
+    }
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+    const [org] = await dbConn
+      .select({
+        academyStripeCustomerId: organizations.academyStripeCustomerId,
+      })
+      .from(organizations)
+      .where(eq(organizations.ownerId, ctx.user.id))
+      .limit(1);
+    if (!org?.academyStripeCustomerId) {
+      throw new TRPCError({
+        code: "PRECONDITION_FAILED",
+        message:
+          "Complete Academy TEST checkout before opening the billing portal.",
+      });
+    }
+    const publicBaseUrl = (
+      process.env.ACADEMY_PUBLIC_URL ?? "https://academy.equiprofile.online"
+    ).replace(/\/$/, "");
+    const configurationId =
+      process.env.ACADEMY_STRIPE_BILLING_PORTAL_CONFIGURATION_ID?.trim();
+    const portal = await stripe.billingPortal.sessions.create({
+      customer: org.academyStripeCustomerId,
+      return_url: `${publicBaseUrl}/academy-dashboard`,
+      ...(configurationId ? { configuration: configurationId } : {}),
+    });
+    return { portalUrl: portal.url, testModeOnly: true };
+  }),
+
   /** List members of the user's organization. */
   listMembers: academyOwnerProcedure.query(async ({ ctx }) => {
     const dbConn = await getDb();
@@ -231,19 +428,70 @@ export const academyRouter = router({
         });
       }
 
-      const token = nanoid(32);
-      await dbConn.insert(organizationInvites).values({
-        organizationId: org.id,
-        invitedEmail: input.email,
+      const invitedEmail = input.email.trim().toLowerCase();
+      const [existingInvite] = await dbConn
+        .select()
+        .from(organizationInvites)
+        .where(
+          and(
+            eq(organizationInvites.organizationId, org.id),
+            eq(organizationInvites.invitedEmail, invitedEmail),
+            eq(organizationInvites.role, input.role),
+            sql`${organizationInvites.acceptedAt} IS NULL`,
+            sql`${organizationInvites.expiresAt} > NOW()`,
+          ),
+        )
+        .orderBy(desc(organizationInvites.createdAt))
+        .limit(1);
+
+      const expiresAt =
+        existingInvite?.expiresAt ??
+        new Date(Date.now() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+      const token = existingInvite?.token ?? nanoid(32);
+      const inviteId =
+        existingInvite?.id ??
+        (
+          await dbConn.insert(organizationInvites).values({
+            organizationId: org.id,
+            invitedEmail,
+            role: input.role,
+            token,
+            expiresAt,
+          })
+        )[0].insertId;
+
+      const delivery = await sendAcademyInviteEmail({
+        recipientEmail: invitedEmail,
+        inviterName: ctx.user.name ?? "An Academy owner",
+        organizationName: org.name,
         role: input.role,
         token,
-        expiresAt: new Date(
-          Date.now() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000,
-        ),
+        expiresAt,
       });
+      const nextAttemptCount = (existingInvite?.deliveryAttemptCount ?? 0) + 1;
+      await dbConn
+        .update(organizationInvites)
+        .set({
+          deliveryStatus: delivery.delivered ? "DELIVERED" : "FAILED",
+          deliveryAttemptCount: nextAttemptCount,
+          lastDeliveryAttemptAt: new Date(),
+          deliveredAt: delivery.delivered
+            ? new Date()
+            : (existingInvite?.deliveredAt ?? null),
+          lastDeliveryError: delivery.delivered ? null : delivery.error,
+        })
+        .where(eq(organizationInvites.id, Number(inviteId)));
 
-      // TODO: Send invite email via SMTP
-      return { token, email: input.email, role: input.role };
+      return {
+        inviteId: Number(inviteId),
+        email: invitedEmail,
+        role: input.role,
+        deliveryStatus: delivery.delivered ? "DELIVERED" : "FAILED",
+        deliveryMessage: delivery.delivered
+          ? "Invitation email sent."
+          : "Invitation was saved, but email delivery failed. Review SMTP settings and resend from the pending-invites list.",
+        reusedActiveInvite: Boolean(existingInvite),
+      };
     }),
 
   /** List pending invites for the organization. */
@@ -259,11 +507,91 @@ export const academyRouter = router({
     if (!org) throw new TRPCError({ code: "NOT_FOUND" });
 
     return dbConn
-      .select()
+      .select({
+        id: organizationInvites.id,
+        invitedEmail: organizationInvites.invitedEmail,
+        role: organizationInvites.role,
+        expiresAt: organizationInvites.expiresAt,
+        acceptedAt: organizationInvites.acceptedAt,
+        deliveryStatus: organizationInvites.deliveryStatus,
+        deliveryAttemptCount: organizationInvites.deliveryAttemptCount,
+        lastDeliveryAttemptAt: organizationInvites.lastDeliveryAttemptAt,
+        deliveredAt: organizationInvites.deliveredAt,
+        lastDeliveryError: organizationInvites.lastDeliveryError,
+        createdAt: organizationInvites.createdAt,
+      })
       .from(organizationInvites)
       .where(eq(organizationInvites.organizationId, org.id))
       .orderBy(desc(organizationInvites.createdAt));
   }),
+
+  /** Resend an unaccepted, unexpired invitation and persist the delivery result. */
+  resendInvite: academyOwnerProcedure
+    .input(z.object({ inviteId: z.number().int().positive() }))
+    .mutation(async ({ ctx, input }) => {
+      const dbConn = await getDb();
+      if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      const [org] = await dbConn
+        .select()
+        .from(organizations)
+        .where(eq(organizations.ownerId, ctx.user.id))
+        .limit(1);
+      if (!org) throw new TRPCError({ code: "NOT_FOUND" });
+      const [invite] = await dbConn
+        .select()
+        .from(organizationInvites)
+        .where(
+          and(
+            eq(organizationInvites.id, input.inviteId),
+            eq(organizationInvites.organizationId, org.id),
+          ),
+        )
+        .limit(1);
+      if (!invite) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Invitation not found.",
+        });
+      }
+      if (invite.acceptedAt) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "Accepted invitations cannot be resent.",
+        });
+      }
+      if (new Date(invite.expiresAt) <= new Date()) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message:
+            "This invitation has expired. Create a new invitation instead.",
+        });
+      }
+      const delivery = await sendAcademyInviteEmail({
+        recipientEmail: invite.invitedEmail,
+        inviterName: ctx.user.name ?? "An Academy owner",
+        organizationName: org.name,
+        role: invite.role as "teacher" | "student",
+        token: invite.token,
+        expiresAt: invite.expiresAt,
+      });
+      await dbConn
+        .update(organizationInvites)
+        .set({
+          deliveryStatus: delivery.delivered ? "DELIVERED" : "FAILED",
+          deliveryAttemptCount: invite.deliveryAttemptCount + 1,
+          lastDeliveryAttemptAt: new Date(),
+          deliveredAt: delivery.delivered ? new Date() : invite.deliveredAt,
+          lastDeliveryError: delivery.delivered ? null : delivery.error,
+        })
+        .where(eq(organizationInvites.id, invite.id));
+      return {
+        inviteId: invite.id,
+        deliveryStatus: delivery.delivered ? "DELIVERED" : "FAILED",
+        deliveryMessage: delivery.delivered
+          ? "Invitation email sent."
+          : "Email delivery failed. Check SMTP settings and retry when the mail service is available.",
+      };
+    }),
 
   /** Accept an organization invite (called by the invited user). */
   acceptInvite: protectedProcedure

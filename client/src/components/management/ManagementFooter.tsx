@@ -138,7 +138,7 @@ export function ManagementFooter({
               </li>
               <li>
                 <a
-                  href="https://school.equiprofile.online/academy"
+                  href="https://academy.equiprofile.online/academy"
                   className="text-gray-500 hover:text-white transition-colors"
                 >
                   EquiProfile Academy

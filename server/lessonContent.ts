@@ -438,15 +438,15 @@ Horses living out at grass should not be groomed as thoroughly as stabled horses
       "List the golden rules of feeding",
       "Understand how a horse's digestive system influences feeding management",
     ],
-    content: `Correct feeding is essential for maintaining a horse's health, energy, temperament and body condition. The horse evolved as a trickle-feeder, spending up to 18 hours a day grazing. Their digestive system is designed for a continuous intake of small amounts of high-fibre food. Understanding this fundamental fact underpins every feeding decision you will make.
+    content: `Correct feeding supports a horse’s health, energy, behaviour and body condition. World Horse Welfare describes horses as predominantly grazing animals designed to eat small amounts frequently, with forage-based diets for approximately 16–18 hours a day. Feeding decisions must still be individual: age, body condition, dental health, medical history, pasture, climate and workload all matter.
 
 ## The Digestive System in Brief
 
-The horse has a relatively small stomach for its body size — approximately the size of a rugby ball in a 500 kg horse. This means the stomach can only process small amounts of food at a time and should never be overloaded. Food passes through the stomach quickly and into the small intestine, where sugars, starches, proteins, fats and some vitamins are absorbed. It then enters the **hindgut** (caecum and large colon), where billions of microorganisms ferment fibre and extract energy from it. This microbial population is delicate and takes time to adjust to dietary changes — which is why sudden feed changes can cause colic or laminitis.
+The horse’s digestive system is adapted to frequent forage intake rather than large, infrequent meals. Feed passes through the stomach and small intestine before reaching the **hindgut** (caecum and large colon), where microorganisms ferment fibre. Sudden dietary change can disrupt this system. Learners should not calculate or alter a ration alone; follow the written feed plan and ask the yard manager, vet or qualified nutrition adviser before changing it.
 
 ## Fibre First
 
-The single most important principle in equine nutrition is **fibre first**. Forage — hay, haylage or grass — should always make up the bulk of the diet. As a general guideline, a horse needs a minimum of 1.5% to 2% of its body weight in dry matter forage per day. For a 500 kg horse, that is approximately 7.5 to 10 kg of hay daily.
+The core principle in equine nutrition is **fibre first**. Forage — grass, hay, haylage and suitable fibre feeds — forms the basis of the diet, supports chewing and provides fibre for hindgut function. The British Horse Society states that a daily ration should be no less than 1.5% of bodyweight and notes that the appropriate amount and calorie density depend on the individual horse. Use an accurate weight estimate, monitor body condition and follow the plan set with a vet or nutrition professional rather than copying another horse’s quantity.
 
 Forage provides:
 - A constant supply of fibre for the hindgut microbes
@@ -476,27 +476,27 @@ Forage provides:
 
 These rules have been taught in equestrian education for generations and are based on the horse's digestive physiology:
 
-1. **Feed little and often** — Mimics natural grazing and prevents stomach overload.
-2. **Feed plenty of forage** — At least 1.5% of body weight in forage daily.
-3. **Make changes gradually** — Any alteration to the diet should be introduced over 7 to 14 days to allow the hindgut microbes to adapt.
-4. **Feed according to work done** — A horse in light work needs far less concentrate feed than one in hard work. Overfeeding causes obesity, excitability and metabolic problems.
-5. **Feed at the same times each day** — Horses are creatures of routine and become stressed if meal times are unpredictable.
-6. **Do not ride immediately after a full feed** — Allow at least one hour after a concentrate feed before exercise. A full stomach restricts the lungs and diverts blood to digestion.
-7. **Always provide access to clean, fresh water** — Water is essential for digestion; dehydration increases the risk of impaction colic.
-8. **Feed good-quality, clean feed** — Never feed mouldy, dusty or contaminated hay or feed. Mould spores cause respiratory disease.
-9. **Feed by weight, not volume** — A scoop of oats weighs differently to a scoop of cubes. Always weigh feed to ensure accuracy.
-10. **Treat each horse as an individual** — Age, breed, temperament, workload, health status and body condition all influence dietary requirements.
+1. **Feed little and often** — This reflects the horse’s natural feeding pattern.
+2. **Make suitable forage the foundation** — Provide forage and foraging opportunities in the way set out in the individual horse’s plan.
+3. **Make changes gradually** — The British Horse Society advises introducing feed changes gradually, ideally over 10–14 days; ask a professional to set a different plan if the horse’s health requires it.
+4. **Feed according to body condition and workload** — Review weight and condition regularly. More energy-dense feed is not automatically the right response to low energy or workload change.
+5. **Keep a consistent routine** — Record any changes and make sure every carer follows the written plan.
+6. **Plan exercise and meals safely** — Follow the yard, veterinary or nutrition guidance about timing exercise around meals; do not improvise a fast-work routine after a large meal.
+7. **Provide a constant supply of clean, fresh water** — Check access, cleanliness and intake, especially when grazing is restricted or forage is conserved.
+8. **Use hygienic feed and utensils** — Do not feed mouldy or contaminated forage; clean containers and prevent cross-contamination.
+9. **Use the written feed plan and accurate measuring method it specifies** — Never guess quantities or substitute products.
+10. **Treat each horse as an individual** — Age, breed, temperament, workload, health status, weight and body condition all influence nutritional requirements.
 
 ## Body Condition Scoring
 
-Regularly assess your horse's body condition using a scoring system (typically 0 to 5 in the UK). Feel over the ribs, crest, shoulder, back and hindquarters. A score of 2.5 to 3 is ideal for most horses. Adjust feed and forage quantities accordingly.`,
+Regularly assess body condition using the recognised system and method agreed by the yard, vet or nutrition professional. Observe the ribs, crest, shoulder, back and hindquarters consistently, record the trend, and ask for professional advice before changing a ration in response to a score.`,
     keyPoints: [
-      "Fibre (forage) must always form the foundation of a horse's diet — minimum 1.5% of body weight daily",
-      "The horse's small stomach means it must be fed little and often",
-      "Changes to the diet must be introduced gradually over 7–14 days to protect the hindgut microbiome",
-      "Feed according to the work the horse is doing — overfeeding causes obesity, excitability and metabolic disease",
-      "Always feed by weight, not by volume, as different feeds have different densities",
-      "Never feed mouldy or dusty forage — it can cause serious respiratory illness",
+      "Forage forms the foundation of the diet; use the individual written plan and monitor condition rather than copying another horse’s ration",
+      "Horses are adapted to frequent, forage-based feeding and benefit from suitable foraging opportunities",
+      "The British Horse Society advises gradual feed changes, ideally over 10–14 days, unless a professional sets a different health plan",
+      "Review workload, weight and condition with a qualified adviser before changing energy-dense feed",
+      "Follow the written plan’s quantity and measuring instructions; do not guess or substitute feed",
+      "Clean, hygienic forage, water and utensils are part of safe feeding management",
     ],
     safetyNote:
       "Never enter a stable or field with a bucket of feed if multiple horses are loose together — this can trigger aggression and kicking. Always feed horses in separate areas or tie them up to prevent resource guarding. Store feed securely in vermin-proof bins, as a horse that breaks into a feed room and gorges on concentrates is at high risk of colic and laminitis, both of which can be fatal.",
@@ -512,11 +512,16 @@ Regularly assess your horse's body condition using a scoring system (typically 0
     knowledgeCheck: [
       {
         question:
-          "What percentage of body weight should a horse receive in forage daily as a minimum?",
-        options: ["0.5%", "1.0%", "1.5%", "3.0%"],
+          "What is the safest response when you think a horse’s forage ration needs changing?",
+        options: [
+          "Copy the quantity fed to the nearest horse",
+          "Remove forage immediately so the horse eats less",
+          "Record the concern and ask the yard manager, vet or qualified nutrition adviser to review the individual plan",
+          "Add concentrate feed without changing the written chart",
+        ],
         correctIndex: 2,
         explanation:
-          "A horse should receive a minimum of 1.5% of its body weight in dry matter forage each day. For a 500 kg horse, that is at least 7.5 kg of hay.",
+          "Rations depend on the individual horse’s weight, condition, health, workload and forage. World Horse Welfare and the British Horse Society both emphasise individual needs and condition monitoring rather than using another horse’s quantity as a prescription.",
       },
       {
         question: "Why must dietary changes be introduced gradually?",
@@ -528,7 +533,7 @@ Regularly assess your horse's body condition using a scoring system (typically 0
         ],
         correctIndex: 1,
         explanation:
-          "The billions of microorganisms in the hindgut that ferment fibre need 7–14 days to adjust to changes in diet. Sudden changes can cause colic or laminitis.",
+          "Diet changes should be gradual because the hindgut microbial population needs time to adapt. The British Horse Society advises changes ideally over 10–14 days; use professional advice where a horse’s health needs a different plan.",
       },
       {
         question: "Which of the following is a 'straight' feed?",
@@ -554,7 +559,7 @@ Regularly assess your horse's body condition using a scoring system (typically 0
     aiTutorPrompts: [
       "Can you explain the golden rules of feeding and why each one matters?",
       "What would happen if I suddenly changed my horse's feed without a transition period?",
-      "Help me plan a basic diet for a 500 kg horse in light work.",
+      "What information should a vet or qualified nutrition adviser review before changing a horse’s diet?",
     ],
     linkedCompetencies: ["feeding_awareness"],
   },
@@ -568,35 +573,34 @@ Regularly assess your horse's body condition using a scoring system (typically 0
     category: "Horse Care Foundations",
     sortOrder: 4,
     objectives: [
-      "State the approximate daily water intake for a horse at rest and in work",
+      "Explain why water intake and access must be monitored for the individual horse",
       "Explain why clean water access is critical for digestive health",
-      "Identify signs of dehydration in a horse",
+      "Recognise potentially concerning changes in drinking or wellbeing and escalate them safely",
       "Describe best practice for providing water in the stable and field",
     ],
-    content: `Water is the single most important nutrient in a horse's diet. A horse can survive for weeks without food but only a few days without water. Adequate hydration is essential for digestion, temperature regulation, joint lubrication, nutrient transport and waste removal. Understanding water requirements and knowing how to check for dehydration are core skills for every horse carer.
+    content: `Water is essential to digestion, temperature regulation, transport of nutrients and waste removal. World Horse Welfare and the British Horse Society both state that horses need a constant supply of clean, fresh water. The amount an individual horse drinks varies with body size, forage and grass intake, weather, work, lactation, health and travel. The learner’s role is to make sure water is accessible and clean, notice a meaningful change from that horse’s normal intake or behaviour, and report it promptly.
 
-## How Much Water Does a Horse Need?
+## Monitoring water access and intake
 
-A horse at rest in a temperate climate typically drinks between **25 and 55 litres of water per day**, depending on its size, diet and the ambient temperature. Several factors increase water demand:
+Do not use a generic litre figure to decide whether a horse is adequately hydrated. Instead, check the specific horse’s normal pattern and the written care plan. Water demand may change with:
 
-- **Exercise** — A horse in moderate to hard work may drink 50 to 80 litres per day due to fluid loss through sweat.
-- **Hot weather** — High temperatures increase sweating and respiratory water loss.
-- **Lactation** — A broodmare producing milk can require up to 75 litres daily.
-- **Dry forage diet** — Hay contains around 10–15% moisture, compared to grass at 60–80%. Horses on a hay-only diet need to drink more to compensate.
-- **Haylage** — Contains more moisture than hay, so horses eating haylage may drink slightly less.
+- **Exercise, sweating and hot weather** — monitor access and recovery closely under the yard’s exercise and veterinary plan.
+- **Forage and grazing** — grass and conserved forage provide different amounts of moisture; World Horse Welfare specifically notes closer water-intake monitoring where grazing is restricted or conserved forage is fed.
+- **Lactation, illness, travel and medication** — these situations need an individual plan from the responsible professional.
+- **Environment and group access** — a trough or bucket must be accessible, clean and large enough for every horse in the group to drink safely.
 
 ## Why Water Matters for Digestion
 
 The horse's large intestine acts as a reservoir of water. If the horse becomes dehydrated, water is reabsorbed from the gut contents, causing them to become dry and compacted. This is a major cause of **impaction colic**, a painful and potentially life-threatening condition. Consistent access to clean water is one of the simplest ways to reduce the risk of colic.
 
-Water also plays a vital role in saliva production. Horses produce up to 40 litres of saliva per day when eating forage. Saliva buffers stomach acid and protects the stomach lining from ulceration. Without adequate water, saliva production drops, increasing the risk of **gastric ulcers**.
+Water also supports saliva production and normal digestive function. A carer should not diagnose the cause of a change in drinking, gut function or appetite; record the observation and follow the yard’s veterinary-escalation procedure.
 
 ## Providing Water in the Stable
 
 In the stable, water can be provided via:
 
-- **Buckets** — Sturdy rubber or plastic buckets placed on the floor or in bucket holders. Buckets allow you to monitor intake accurately. They should be scrubbed and refilled with fresh water at least twice daily. Position buckets away from the hay net to prevent contamination with hay seeds.
-- **Automatic drinkers** — Convenient as they refill automatically, but they make it impossible to monitor how much the horse is drinking. Check daily that the drinker is working, clean and not blocked. Some horses are reluctant to use unfamiliar automatic drinkers.
+- **Buckets** — Use sturdy containers positioned and secured so they are safe for the horse and accessible for cleaning. Buckets can help carers observe changes in intake. Clean and refresh them as the written yard routine requires.
+- **Automatic drinkers** — These require regular checking to confirm they are clean, working and not blocked. Because individual intake can be harder to observe, record concerns and use the yard’s monitoring method. Some horses may need time and supervision when introduced to an unfamiliar system.
 
 Whichever method is used, water should be **clean, fresh and available at all times**. Horses are naturally cautious drinkers and may refuse water that smells or tastes different from what they are used to.
 
@@ -604,36 +608,27 @@ Whichever method is used, water should be **clean, fresh and available at all ti
 
 In the field, water sources include:
 
-- **Troughs** — Self-filling troughs connected to mains water are ideal. Check daily that the ballcock is working and the water level is adequate. In winter, break any ice at least twice daily — a horse cannot drink through ice. Clean troughs regularly to prevent algae build-up.
-- **Natural water sources** — Streams or ponds can provide water, but only if the water is clean, the bed is firm (not boggy), the access is safe, and there is no risk of contamination from run-off, chemicals or stagnant water. Many yards prefer purpose-built troughs for reliability.
+- **Troughs** — Check that the source is functioning, the water remains clean and every horse can access it safely. In freezing conditions, use the yard’s safe winter-water procedure so ice does not prevent access. Clean troughs regularly and maintain the system.
+- **Natural water sources** — The British Horse Society cautions that streams, rivers and ponds can present contamination, drying, sand-ingestion and unsafe-access risks. Assess these risks with a competent person and provide a safe alternative where necessary.
 
-## Signs of Dehydration
+## When to escalate a concern
 
-Knowing how to recognise dehydration is critical:
+A change in drinking, appetite, demeanour, urine, gums, comfort or gut signs can be clinically important, but no single lay observation confirms dehydration or identifies its cause. Do not force water, diagnose dehydration from one test, or use an unapproved supplement. Record what you observed, make clean water available, contact the instructor or yard manager, and seek veterinary advice promptly if the horse is unwell, does not drink, shows colic signs or the responsible person is concerned.
 
-1. **Skin pinch test (skin turgor)** — Pinch a fold of skin on the horse's neck or shoulder. In a well-hydrated horse, the skin snaps back within 1–2 seconds. If it stays tented for longer, the horse may be dehydrated.
-2. **Capillary refill time** — Press a fingertip firmly on the horse's gum above the teeth, then release. The area will blanch white; it should return to pink within 2 seconds. A delay indicates dehydration or poor circulation.
-3. **Dry or tacky gums** — Well-hydrated gums feel moist and slippery. Dry or sticky gums suggest dehydration.
-4. **Reduced appetite or dullness** — A dehydrated horse may lose interest in food and appear lethargic.
-5. **Dark, concentrated urine** — Normal horse urine ranges from pale yellow to amber, but very dark or scanty urine may suggest insufficient water intake.
-6. **Sunken eyes** — In severe dehydration, the eyes may appear recessed in the sockets.
+## Electrolytes and supplements
 
-If you suspect dehydration, offer water immediately, contact your instructor or yard manager, and if the horse does not drink or shows signs of colic, call the vet.
-
-## Electrolytes
-
-Horses lose electrolytes (sodium, chloride, potassium, calcium, magnesium) through sweat. After heavy exercise or prolonged sweating, electrolyte supplementation may be needed to encourage drinking and restore mineral balance. Electrolytes should always be offered alongside plain water — never as the only water source — so the horse can choose.`,
+Sweating and work can change electrolyte needs. Only use an electrolyte or other supplement under the individual horse’s veterinary, nutrition or written yard plan. Plain clean water must remain available; a supplement must not become the only drinking option.`,
     keyPoints: [
-      "A horse at rest needs 25–55 litres of water per day; working horses may need up to 80 litres",
-      "Dehydration is a leading cause of impaction colic — always ensure constant water access",
-      "The skin pinch test and capillary refill time are practical dehydration checks",
-      "Automatic drinkers must be checked daily; they prevent you from monitoring intake",
-      "In winter, break ice on troughs at least twice daily — horses cannot drink through ice",
+      "Provide a constant supply of clean, fresh water and check that every horse can access it safely",
+      "Monitor the individual horse’s usual intake, behaviour and written care plan rather than using a generic litre target",
+      "Report a meaningful change in drinking or signs of illness; do not self-diagnose dehydration from one observation",
+      "Buckets, drinkers and troughs must be clean, functioning and checked according to the yard routine",
+      "Use the yard’s safe winter-water procedure so freezing conditions do not prevent access",
     ],
     safetyNote:
-      "When breaking ice on water troughs, use a purpose-built tool and take care on slippery ground. Never use boiling water or salt to melt ice in drinking troughs, as residues can be harmful. If a horse has not been drinking for several hours and appears dull or uncomfortable, treat this as an urgent situation and seek veterinary advice, as dehydration can lead rapidly to impaction colic.",
+      "Follow the yard’s safe winter-water procedure and take care on slippery ground. Do not add unapproved substances to drinking water. If water access is interrupted, a horse’s drinking pattern changes or the horse seems unwell, make clean water available, tell the responsible person and seek veterinary advice according to the yard’s escalation procedure.",
     practicalApplication:
-      "Every morning and evening, check all water sources. In stables, scrub and refill water buckets and ensure automatic drinkers are functioning. In fields, check trough levels and water cleanliness. After exercise, offer water in small amounts and monitor the horse's drinking. Learn to perform the skin pinch test and capillary refill check as part of your daily routine — these take seconds and can save a horse's life.",
+      "Check water sources according to the written yard routine. In stables, confirm buckets or drinkers are clean and functioning. In fields, confirm troughs are clean, working and accessible. After exercise, follow the individual recovery and hydration plan, record any concern about access, intake, appetite, comfort or behaviour, and report it through the yard’s escalation procedure rather than relying on one lay test.",
     commonMistakes: [
       "Assuming a horse will drink when it is thirsty — some horses are reluctant drinkers, especially in new environments",
       "Not cleaning water buckets or troughs regularly, allowing algae and bacteria to build up",
@@ -644,28 +639,29 @@ Horses lose electrolytes (sodium, chloride, potassium, calcium, magnesium) throu
     knowledgeCheck: [
       {
         question:
-          "How much water does an average 500 kg horse at rest typically drink per day?",
+          "What is the most reliable daily approach to water management?",
         options: [
-          "5–10 litres",
-          "10–20 litres",
-          "25–55 litres",
-          "100–120 litres",
-        ],
-        correctIndex: 2,
-        explanation:
-          "An average horse at rest in a temperate climate drinks approximately 25–55 litres of water per day, depending on diet, weather and individual variation.",
-      },
-      {
-        question: "What does a slow skin pinch test result indicate?",
-        options: [
-          "The horse is overweight",
-          "The horse may be dehydrated",
-          "The horse has a skin condition",
-          "The horse is cold",
+          "Use one litre target for every horse",
+          "Ensure constant clean-water access, observe the individual horse’s normal pattern and report a meaningful change",
+          "Offer water only after exercise",
+          "Assume a horse will drink enough without checking the supply",
         ],
         correctIndex: 1,
         explanation:
-          "If the skin takes longer than 2 seconds to flatten after being pinched, the horse may be dehydrated. This test checks skin turgor, which decreases with dehydration.",
+          "Water intake varies with the individual horse, diet, weather, work and health. World Horse Welfare and the British Horse Society emphasise constant clean-water access and individual monitoring rather than one universal daily volume.",
+      },
+      {
+        question:
+          "What should you do if a horse’s drinking pattern changes and it also seems unwell?",
+        options: [
+          "Diagnose dehydration from one home test",
+          "Withhold water until the next feed",
+          "Record the observations, ensure clean water is available and follow the yard’s veterinary-escalation procedure",
+          "Give an electrolyte without checking the plan",
+        ],
+        correctIndex: 2,
+        explanation:
+          "A drinking change can have different causes. The safe action is to record it, keep water accessible and obtain appropriate responsible-person or veterinary advice rather than self-diagnosing or improvising treatment.",
       },
       {
         question: "Why is dehydration a risk factor for colic?",
@@ -679,23 +675,10 @@ Horses lose electrolytes (sodium, chloride, potassium, calcium, magnesium) throu
         explanation:
           "When a horse is dehydrated, the body reabsorbs water from the large intestine, causing the gut contents to become dry and compacted, leading to impaction colic.",
       },
-      {
-        question:
-          "What is the ideal capillary refill time for a healthy horse?",
-        options: [
-          "Less than 2 seconds",
-          "3–5 seconds",
-          "5–8 seconds",
-          "It varies too much to be useful",
-        ],
-        correctIndex: 0,
-        explanation:
-          "In a healthy, well-hydrated horse, the gum colour should return to pink within 2 seconds after being pressed. A delay suggests dehydration or circulatory compromise.",
-      },
     ],
     aiTutorPrompts: [
-      "Can you explain how to perform a skin pinch test and capillary refill time check?",
-      "What factors increase a horse's daily water requirement?",
+      "What observations should I record if a horse’s drinking pattern changes?",
+      "Why can a horse’s water needs vary between days?",
       "How should I manage water provision differently in winter versus summer?",
     ],
     linkedCompetencies: ["feeding_awareness"],
@@ -728,7 +711,7 @@ When you arrive at the yard, the first priority is to check on every horse. Befo
 Once you have confirmed all horses are well, the morning routine typically follows this order:
 
 1. **Check water** — Refill or scrub and replace water buckets. Check automatic drinkers are working.
-2. **Check rugs** — If the horse is wearing a rug, ensure it has not slipped, twisted or rubbed. Adjust or change as needed for the day's weather.
+2. **Check rugs** — If the horse is wearing a rug, check for slipping, twisting, rubbing, heat or damage. Follow the individual written rugging plan and report a concern rather than making a generic weather-based change.
 3. **Hay** — Provide fresh hay or haylage. Remove any leftover, soiled forage from the previous day.
 4. **Mucking out** — Remove all droppings and wet bedding from the stable. This keeps the environment hygienic, reduces ammonia levels that damage the horse's respiratory system, and allows you to check the droppings for abnormalities (loose, very hard, mucus-covered or discoloured droppings can all indicate health issues).
 5. **Bed down** — Replace clean bedding. The bed should be deep enough to cushion the horse when it lies down, banked up at the walls to prevent the horse getting cast (stuck against the wall when lying down).
@@ -744,7 +727,7 @@ The evening check mirrors the morning, with some additions:
 2. **Check water and hay** — Refill water, provide hay for the night.
 3. **Skip out** — Remove droppings and any wet patches. A full muck-out may not be needed if done thoroughly in the morning, but the bed must be tidy and comfortable.
 4. **Evening feed** — Deliver according to the feed chart.
-5. **Rug up** — Put on the appropriate night rug if needed.
+5. **Rug check** — Follow the individual written rugging plan if a night rug is used, and report a comfort or fit concern.
 6. **Final health check** — Look at each horse one last time: are they eating, drinking, moving comfortably? Are there any signs of distress?
 7. **Secure the yard** — Check that stable doors are properly bolted (top and bottom bolts), lights are off or on a timer, taps are turned off, and the yard is tidy. Remove any hazards.
 
@@ -752,9 +735,9 @@ The evening check mirrors the morning, with some additions:
 
 The stable itself must be safe and suitable:
 
-- **Ventilation** — Good airflow is essential to prevent respiratory disease. The top stable door should always be open. Ridge vents and louvred windows help, but avoid draughts at horse height.
-- **Light** — Horses benefit from natural light. Dark, enclosed stables increase stress.
-- **Size** — A stable should be at least 3.6 m × 3.6 m (12 ft × 12 ft) for a horse; larger for bigger breeds.
+- **Ventilation** — Good airflow and dust/ammonia control are essential. Use the yard’s ventilation and stable-door procedure, taking account of the horse, weather, safe supervision and avoidance of draughts at horse height.
+- **Light** — Horses benefit from a suitable, safe environment with appropriate light and observation.
+- **Size and layout** — The stable must provide safe, suitable space for the individual horse to stand, lie down, turn, eat, drink and be managed without unnecessary injury or distress. Confirm the applicable welfare-code, planning and yard requirements rather than applying one lesson measurement to every horse.
 - **Bedding** — Should be deep, clean and absorbent. Common types include straw, shavings, paper and rubber matting with a shavings top layer.
 - **Sharp edges or protrusions** — Check for exposed nails, broken fittings, or sharp edges on automatic drinkers or hay racks.
 - **Drainage** — The floor should slope slightly towards a drain to prevent urine pooling.
@@ -765,13 +748,13 @@ Healthy horse droppings are formed into soft balls that break on hitting the gro
 - Very loose or watery droppings (may indicate infection, stress or dietary issues)
 - Very hard, dry balls (possible dehydration or insufficient forage)
 - Mucus-covered droppings (may indicate irritation in the gut)
-- Worms visible in droppings (immediate worming advice needed)
+- Worms visible in droppings (record the observation and seek veterinary/SQP/RAMA advice; do not select medicine from a generic rule)
 - Reduced or absent droppings (may be an early sign of colic)`,
     keyPoints: [
       "Always check every horse first thing in the morning before starting other tasks",
       "Mucking out daily reduces ammonia levels and protects the horse's respiratory system",
       "Check droppings for consistency, colour and quantity — they reveal digestive health",
-      "Good ventilation is essential; the top stable door should always remain open",
+      "Good ventilation, low dust and ammonia control are essential; follow the yard’s safe ventilation procedure for the individual stable",
       "The evening check should include a final visual assessment of every horse before leaving the yard",
       "Banks of bedding around stable walls help prevent the horse from becoming cast",
     ],
@@ -797,7 +780,7 @@ Healthy horse droppings are formed into soft balls that break on hitting the gro
         ],
         correctIndex: 1,
         explanation:
-          "Good airflow is critical for respiratory health. Horses are very susceptible to airway disease caused by inhaling dust, mould spores and ammonia in poorly ventilated stables.",
+          "Good airflow, low dust and ammonia control support respiratory health. Follow the yard’s safe ventilation procedure rather than relying on one fixed door position in every condition.",
       },
       {
         question:
@@ -875,8 +858,8 @@ Horses have evolved excellent thermoregulation. A healthy, unclipped horse with 
 
 ### Types of Rugs
 
-- **Turnout rug** — Waterproof, breathable outer layer with varying levels of fill (insulation). Available in lightweight (0 g fill — just waterproof), medium-weight (150–250 g) and heavyweight (300–400 g). Used in the field to keep rain and wind off.
-- **Stable rug** — Not waterproof. Provides warmth in the stable. Available in various weights.
+- **Turnout rug** — A waterproof, breathable outer layer with an insulation level selected for the individual horse and conditions. It is used in the field only when the horse’s competent carer has decided it is appropriate.
+- **Stable rug** — A non-waterproof rug used indoors when the individual horse’s management plan calls for it. It must not be substituted for a turnout rug in wet weather.
 - **Cooler/fleece rug** — A moisture-wicking rug used to dry a wet or sweating horse. Place over the horse after exercise to draw moisture away from the coat.
 - **Fly rug** — A lightweight mesh rug used in summer to protect from flies and UV rays. Some include a neck cover and belly flap.
 - **Exercise sheet** — A rug worn over the hindquarters during ridden exercise in cold weather, especially on clipped horses.
@@ -884,12 +867,13 @@ Horses have evolved excellent thermoregulation. A healthy, unclipped horse with 
 ### When to Rug
 
 There is no single answer, as it depends on:
-- Whether the horse is clipped (clipped horses lose their natural insulation and usually need a rug)
-- The horse's age, health and body condition
-- Weather conditions (temperature, wind, rain)
-- Whether the horse has access to shelter
+- Whether and how the horse is clipped
+- The horse’s age, health, coat, body condition and previous rugging response
+- Weather conditions, including wind, rain, temperature and rapid changes
+- Access to effective shelter and the horse’s turnout/work plan
+- Observed comfort: sweating, shivering, altered behaviour, rubbing or a changed body temperature should be reported rather than managed by guessing
 
-**Over-rugging is a common problem**. A horse that is too warm cannot remove its own rug. Over-rugging causes sweating, discomfort, skin issues and weight problems. If in doubt, it is better to under-rug slightly, as a horse can keep warm through movement, but cannot cool itself when over-rugged.
+**Over-rugging is a welfare risk** because a horse cannot remove its own rug. Under-rugging can also be harmful for some individuals. Do not use a generic temperature chart or rug-fill weight as a prescription. Follow the individual horse’s written plan and seek advice from the yard manager, vet or other competent professional if the decision is unclear.
 
 ### Fitting a Rug
 
@@ -900,19 +884,19 @@ A well-fitting rug should:
 - Have leg straps (on turnout rugs) that loop through each other and sit around the inner thigh without rubbing
 - Cover the whole body without pulling at the shoulders or riding back
 
-Check rugs at least twice daily for slipping, rubbing or damage. Repair or replace damaged rugs promptly — a torn turnout rug will let in rain and make the horse colder and wetter than wearing no rug at all.`,
+Check rugs at the frequency set in the written care plan and whenever conditions or the horse’s behaviour change. Remove, repair or replace a damaged rug promptly and report rubbing, slipping, heat, sweating or a change in comfort.`,
     keyPoints: [
       "Turnout provides essential physical exercise, mental stimulation and socialisation for horses",
       "Check fields regularly for poisonous plants, especially ragwort, yew and sycamore seeds",
       "Over-rugging is a common welfare issue — horses can generate warmth through movement but cannot cool themselves under an excessive rug",
-      "A clipped horse needs a rug to replace the insulation lost through clipping",
-      "Turnout rugs must be waterproof and breathable; stable rugs provide warmth but are not waterproof",
-      "Check rug fit at least twice daily for slipping, rubbing or damage",
+      "Clipping can change rugging needs, but the decision must account for the individual horse, weather, shelter, health and observed comfort",
+      "A turnout rug is intended for field conditions; a stable rug is not a waterproof replacement",
+      "Check rug fit and condition under the written care plan and whenever the horse or conditions change",
     ],
     safetyNote:
       "When turning horses out together, introduce new horses gradually under supervision to avoid aggressive encounters. Always lead a horse to and from the field in a headcollar with a lead rope — never by the rug or mane. When removing rugs in the field, be aware that the horse may become excited and try to move away. Release the horse only once you are safely positioned and the field gate is securely fastened.",
     practicalApplication:
-      "Each morning, assess the weather forecast and the horse's condition to decide whether a rug change is needed. Keep a rugging chart on the yard that guides staff on which rug to use at different temperature ranges for each horse. When collecting droppings from the field, take the opportunity to walk the fence line and check for hazards, broken rails or poisonous plants. Log any concerns in the yard diary and report them to the manager.",
+      "Follow each horse’s written turnout and rugging plan. Check the horse’s comfort, rug fit and field conditions, then report any change rather than selecting a rug from a generic temperature chart. When collecting droppings from the field, also walk the fence line, check for hazards, broken rails or poisonous plants, record concerns and report them to the manager.",
     commonMistakes: [
       "Over-rugging horses that still have a full winter coat, causing them to sweat and lose condition",
       "Not checking rug fit regularly, leading to rubs on the shoulders, withers and chest",
@@ -931,7 +915,7 @@ Check rugs at least twice daily for slipping, rubbing or damage. Repair or repla
         ],
         correctIndex: 1,
         explanation:
-          "A horse cannot remove its own rug. Over-rugging causes overheating, sweating, discomfort, skin irritation and weight issues. If in doubt, it is better to slightly under-rug.",
+          "A horse cannot remove its own rug. Over-rugging can cause overheating, sweating, discomfort and skin irritation. Rugging decisions must follow the individual horse’s plan rather than a generic rule.",
       },
       {
         question:
@@ -967,9 +951,9 @@ Check rugs at least twice daily for slipping, rubbing or damage. Repair or repla
       },
     ],
     aiTutorPrompts: [
-      "How do I decide which rug my horse needs based on the weather and whether it is clipped?",
+      "What observations should I record before asking a competent person to review a horse’s rugging plan?",
       "What poisonous plants should I look for when checking a horse's field?",
-      "Can you explain the different types of turnout rug and when to use each weight?",
+      "Why is a generic rug-fill or temperature chart not enough to make a safe rugging decision?",
     ],
     linkedCompetencies: ["stable_checks", "welfare_awareness"],
   },
@@ -985,7 +969,7 @@ Check rugs at least twice daily for slipping, rubbing or damage. Repair or repla
     objectives: [
       "Describe the basic external and internal structure of the hoof",
       "Demonstrate how to safely pick out a horse's feet",
-      "Explain the farrier's role and the typical shoeing cycle",
+      "Explain the farrier's role and why hoof-care intervals must be set for the individual horse",
       "Identify common hoof problems and when to seek professional help",
     ],
     content: `"No foot, no horse" is one of the oldest and most important sayings in horsemanship. The health of the hoof directly determines the horse's soundness, comfort and ability to work. Every person who handles horses must understand basic hoof anatomy, be able to pick out feet safely and recognise when something is wrong.
@@ -994,7 +978,7 @@ Check rugs at least twice daily for slipping, rubbing or damage. Repair or repla
 
 The hoof is a complex structure made primarily of **keratin** — the same protein that forms human fingernails, but much thicker and stronger.
 
-- **Hoof wall** — The hard, visible outer shell. It grows downward from the **coronet band** at a rate of approximately 6–10 mm per month. The wall bears the horse's weight and, in a shod horse, is where the nails are driven. It has no nerve endings or blood supply, which is why the farrier can trim and nail into it without causing pain.
+- **Hoof wall** — The hard, visible outer shell. It grows downward from the **coronet band**. Growth, wear and trimming needs vary between horses, work, footing, season and health. In a shod horse, the wall is where a qualified farrier places nails; learners should not attempt trimming or shoeing.
 - **Sole** — The concave underside of the hoof, providing protection to the internal structures. It should be slightly concave (arched inward), not flat. A flat sole provides less shock absorption and increases the risk of bruising.
 - **Frog** — The triangular, rubbery structure on the underside of the hoof. It acts as a shock absorber, aids blood circulation through the foot (the "frog pump"), and provides grip on the ground. The frog should be firm but slightly yielding, with a central groove (cleft) that should be clean and dry.
 - **Bars** — The inward folds of the hoof wall at the heel, which provide structural support.
@@ -1012,7 +996,7 @@ Beneath the hoof capsule are vital living structures:
 
 ## Picking Out Feet
 
-Picking out feet should be done at least twice daily — before and after exercise. The procedure:
+Picking out feet is part of daily hoof care and may also be appropriate before or after exercise, provided the horse can be handled safely and the yard’s competent person has shown the learner the procedure. The procedure:
 
 1. Stand beside the horse's shoulder (for a front foot) or hip (for a hind foot), facing the tail.
 2. Run your nearest hand down the leg from the shoulder or hip to the fetlock.
@@ -1030,7 +1014,7 @@ Picking out feet should be done at least twice daily — before and after exerci
 
 ## The Farrier and Shoeing Cycle
 
-A farrier should visit every **4 to 8 weeks**, whether the horse is shod or unshod. Even barefoot horses need regular trimming to maintain correct hoof balance and prevent cracks or flares.
+World Horse Welfare advises that hooves should be trimmed and/or shod by a **qualified, registered farrier on average every 6–8 weeks**, while noting that some horses need more regular care. The individual interval depends on the horse’s hoof growth, conformation, health, work, footing and whether remedial support is needed. Keep the farrier’s recommended appointment schedule in the horse’s record; do not apply an interval from a lesson as a universal rule.
 
 During a farrier visit, the farrier will:
 - Remove the old shoes (if shod)
@@ -1038,20 +1022,20 @@ During a farrier visit, the farrier will:
 - Rebalance the foot
 - Fit new or reset shoes, ensuring correct fit
 
-Shoes protect the hoof from excessive wear on hard surfaces and can be modified for therapeutic or performance purposes. Types include plain steel shoes, aluminium racing plates, heart-bar shoes (for laminitis support), and remedial shoes for specific conditions.
+Shoeing and trimming decisions are individual professional decisions. A farrier may discuss protection, traction, wear, conformation or a veterinary-led therapeutic plan, but the learner’s role is to maintain daily observation, report changes and follow the plan set by the horse’s farrier and veterinary team.
 
 ## Common Hoof Problems
 
 - **Thrush** — Bacterial infection of the frog. Prevention: keep stables clean and dry, pick out feet regularly.
 - **Laminitis** — Inflammation of the sensitive laminae. Causes include overfeeding, obesity, hormonal disorders (Cushing's disease, EMS), and excessive concussion. Signs: rocking back on the heels, reluctance to walk, heat in the hoof, bounding digital pulse. This is a veterinary emergency.
-- **Abscess** — A pocket of infection within the hoof causing sudden, severe lameness. The horse may be non-weight-bearing on the affected leg. Treatment involves poulticing to draw the abscess to the surface.
-- **Cracked hooves** — Can result from poor hoof balance, dry conditions, or nutrient deficiency. Regular farrier visits and hoof oil or conditioner can help.
-- **Lost shoe** — If a horse loses a shoe, call the farrier promptly. Do not ride the horse on hard ground on the unshod foot.`,
+- **Possible abscess or sudden severe lameness** — A horse may become acutely lame or unwilling to bear weight. Stop work, keep handling safe and seek prompt veterinary/farrier advice rather than attempting invasive treatment.
+- **Cracks or abnormal wear** — Report cracks, chips, flares or a changed hoof shape to the farrier. Do not self-diagnose the cause or use a product as a substitute for assessment.
+- **Lost or loose shoe** — Inform the yard manager and contact the farrier promptly. Follow their advice about turnout, protection and whether the horse should be worked.`,
     keyPoints: [
-      "The hoof grows from the coronet band at roughly 6–10 mm per month",
-      "The frog acts as a shock absorber and aids blood circulation through the foot",
-      "Always pick out hooves from heel to toe, twice daily at minimum",
-      "The farrier should visit every 4–8 weeks for trimming or reshoeing",
+      "Hoof growth, wear and trimming needs vary; a learner should observe and report rather than attempt trimming or shoeing",
+      "The frog contributes to the foot’s function and should be checked as part of safe daily hoof care",
+      "Use the safe picking-out procedure shown by a competent person and stop if the horse becomes unsafe to handle",
+      "World Horse Welfare gives an average qualified-farrier interval of 6–8 weeks, while some horses need more frequent individual care",
       "Laminitis is a veterinary emergency — signs include heat in the hoof, reluctance to walk and rocking back on the heels",
       "Thrush is prevented by clean, dry conditions and regular hoof picking",
     ],
@@ -1080,16 +1064,16 @@ Shoes protect the hoof from excessive wear on hard surfaces and can be modified 
           "The frog is a vital structure that absorbs concussion, provides grip and helps pump blood through the foot via the digital cushion above it.",
       },
       {
-        question: "How often should a farrier visit?",
+        question: "Which statement best reflects routine farrier planning?",
         options: [
-          "Every 12 weeks",
-          "Once a year",
-          "Every 4 to 8 weeks",
-          "Only when a shoe is lost",
+          "Every horse must follow the same four-week interval",
+          "Only shod horses need professional hoof care",
+          "World Horse Welfare gives an average 6–8-week interval, but the qualified farrier sets the individual horse’s schedule",
+          "Wait until a shoe is lost before arranging a visit",
         ],
         correctIndex: 2,
         explanation:
-          "Whether shod or barefoot, horses need farrier attention every 4–8 weeks to maintain hoof balance, trim excess growth and check for problems.",
+          "World Horse Welfare advises qualified, registered farrier trimming and/or shoeing on average every 6–8 weeks, with some horses needing more regular care. Follow the individual professional plan.",
       },
       {
         question: "What are the signs of laminitis?",
@@ -1144,7 +1128,7 @@ Shoes protect the hoof from excessive wear on hard surfaces and can be modified 
 Summer brings warmth, longer days, and increased fly activity. While many horses thrive in summer, the season presents its own management challenges.
 
 **Heat management** is a priority. Horses regulate their body temperature primarily through sweating, but in extreme heat or humidity, they can overheat. Key measures include:
-- Providing constant access to fresh, clean water. Horses may drink 40–50 litres per day in hot weather — significantly more if working.
+- Providing constant access to fresh, clean water. Monitor the individual horse’s normal intake, access and behaviour closely in hot weather or after work; water needs vary with the horse, forage, workload, climate and health.
 - Offering shade in the field, whether natural (trees and hedgerows) or man-made (field shelters).
 - Avoiding hard work during the hottest part of the day. Ride early in the morning or in the evening.
 - Hosing down the horse after exercise, particularly the large blood vessels on the inside of the hind legs, to aid cooling.
@@ -1317,7 +1301,7 @@ Trimming neatens the horse's appearance and is expected in most competitive disc
 
 **Fetlocks and heels:** Remove excess feather from the fetlock area using scissors or clippers, following the line of the tendon. For native breeds shown in their natural state, this trimming is not appropriate — feather is part of breed character.
 
-**Bridle path:** A small section of mane behind the ears may be clipped to allow the headpiece of the bridle to sit neatly. Clip approximately 2–5 cm (1–2 inches) depending on the discipline.
+**Bridle path:** Some disciplines or yards choose to tidy a small section of mane behind the ears so a headpiece sits neatly. This is a cosmetic decision, not a universal requirement; use the current discipline rules and the horse’s comfort as the guide.
 
 **Whiskers:** Note that trimming or removing a horse's whiskers (vibrissae) is banned under FEI rules and many national governing body regulations, as whiskers serve a sensory function. Always check current regulations before trimming.
 
@@ -1337,7 +1321,7 @@ Plaiting (braiding) the mane and tail is a skill that improves with practice. It
 
 ## Quartering
 
-Quartering is a quick, efficient grooming session performed before exercise or competition. It takes 10–15 minutes and focuses on:
+Quartering is a short, efficient grooming session performed before exercise or competition. Its purpose is a safe, calm tidy-up and observation check; its duration depends on the horse, conditions and task.
 - Sponging the eyes, nostrils, and dock.
 - Picking out the feet.
 - Brushing over the coat with a body brush to remove surface dust and stable stains without removing the natural oils.
@@ -1350,28 +1334,27 @@ Quartering is not a full groom — it is a rapid tidy-up that ensures the horse 
 
 A healthy coat starts from the inside. Nutrition plays a vital role:
 - **Omega-3 and omega-6 fatty acids** (found in linseed, fish oil, and specific supplements) promote a glossy coat and healthy skin.
-- **Biotin** supports hoof and coat quality, though results take 6–9 months to become visible.
+- **Supplements** should only be considered after reviewing the horse’s whole diet and health needs with a vet or qualified nutrition adviser. Do not promise a cosmetic outcome or use one product as a substitute for assessment.
 - **Zinc and copper** are essential trace minerals for skin health and pigmentation.
 - A balanced diet with adequate protein provides the building blocks for hair growth.
 
 **Common skin conditions:**
-- **Rain scald** (*Dermatophilus congolensis*) — Caused by prolonged wet conditions. Presents as raised, crusty scabs along the back and quarters. Treatment involves keeping the area clean and dry, gently removing scabs (soak first), and applying antiseptic wash.
-- **Sweet itch** — An allergic reaction to *Culicoides* midge bites. Causes intense itching, hair loss, and thickened skin, particularly along the mane and tail. Management includes fly rugs, insect repellent, and avoiding turnout at dawn and dusk.
-- **Ringworm** — A highly contagious fungal infection presenting as circular patches of hair loss with grey, scaly skin. Requires veterinary treatment and strict biosecurity (isolate the horse, disinfect all equipment).
+- **Possible rain scald, sweet itch, ringworm or other skin problem** — Crusts, hair loss, itching, circular lesions or skin change can have different causes. Record what you observe, use clean separate equipment where infection is a concern, follow the yard’s hygiene procedure and seek veterinary advice. Do not diagnose, remove scabs, isolate or apply treatment solely from this lesson.
+- **Skin and coat changes** — A changed coat, hair loss, soreness or persistent itching should be reported promptly so the responsible professional can decide the appropriate examination, biosecurity and treatment plan.
 - **Mud fever** — Bacterial infection of the lower legs caused by wet, muddy conditions. Prevention and management were covered in the seasonal care lesson.
 
 Always consult a vet if you are unsure about a skin condition. Early treatment prevents spread and long-term damage to the coat.`,
     keyPoints: [
       "Competition preparation begins days before the event — bathing, trimming, and plaiting cannot be rushed",
-      "Quartering is a quick pre-exercise groom focusing on eyes, nostrils, dock, feet, and a light brush over",
+      "Quartering is a short pre-exercise groom focused on safe observation, eyes, nostrils, dock, feet and a light brush over",
       "Whisker trimming is banned under FEI and many national rules — always check current regulations",
-      "Coat health is supported by omega fatty acids, biotin, zinc, copper, and a balanced diet",
-      "Skin conditions such as rain scald, sweet itch, and ringworm require prompt identification and appropriate treatment",
+      "Coat condition should be considered through the whole diet and health history with qualified nutrition or veterinary advice before adding a supplement",
+      "Skin or coat changes require prompt observation, hygienic equipment practices and veterinary advice rather than self-diagnosis or treatment",
     ],
     safetyNote:
-      "When using electric clippers for trimming, always use a residual current device (RCD) and ensure the horse is calm and securely tied. Keep clippers well-maintained and sharp — blunt blades pull the hair and cause distress. When plaiting, do not pull the mane too tightly, as this can cause discomfort and head-shaking. If you discover ringworm, isolate the horse immediately and disinfect all grooming equipment, rugs, and tack that have been in contact with the affected animal.",
+      "When using electric clippers, follow the yard’s electrical-safety procedure and ensure the horse is calm and safely managed by a competent person. Keep clippers maintained so they do not pull hair. When plaiting, avoid pulling the mane too tightly. If you observe a possible infectious skin condition, stop sharing equipment, record the concern and follow the yard’s veterinary and biosecurity procedure rather than diagnosing or initiating treatment alone.",
     practicalApplication:
-      "Practise your plaiting technique on a willing horse during a quiet yard session. Time yourself and aim to produce seven even, secure plaits within 30 minutes. Create a competition preparation timeline for an event three days away, listing every grooming task with the day and time it should be completed. Assess your horse's coat condition and research whether a dietary supplement might improve it — discuss with your vet or a qualified equine nutritionist before making changes.",
+      "Practise plaiting only on a willing horse under competent supervision. Create a competition-preparation timeline using the current organiser rules, the horse’s comfort and the available preparation time. If you are concerned about coat condition or considering a supplement, discuss the complete diet and health history with a vet or qualified equine nutrition adviser before making changes.",
     commonMistakes: [
       "Leaving competition grooming until the morning of the event, resulting in a rushed and untidy turnout",
       "Trimming whiskers without checking current regulations, risking elimination from competition",
@@ -1388,7 +1371,7 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
         ],
         correctIndex: 1,
         explanation:
-          "Quartering is a rapid 10–15 minute grooming session designed to make the horse presentable before exercise or competition. It focuses on sponging the eyes, nostrils, and dock, picking out feet, and a light brush to remove surface dust.",
+          "Quartering is a short grooming and observation session before exercise or competition. It focuses on eyes, nostrils, dock, feet and a light brush to remove surface dust without replacing a full health check.",
       },
       {
         question:
@@ -1419,7 +1402,7 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
     ],
     aiTutorPrompts: [
       "Can you walk me through how to plait a mane for a dressage competition step by step?",
-      "What is the best approach to treating rain scald on a horse that lives out?",
+      "What observations and hygiene steps should I take before seeking advice about a possible skin condition?",
       "How do I assess whether my horse's diet is supporting good coat and skin health?",
     ],
     linkedCompetencies: ["grooming_safely", "welfare_awareness"],
@@ -2643,20 +2626,20 @@ Always have a **Plan B**. If the planned exercise is too difficult, have a simpl
       "Demonstrate safe positioning when working around a horse",
       "Understand why horses may react defensively and how to prevent it",
     ],
-    content: `Horses are large, powerful flight animals. An average riding horse weighs around 500 kg and can react with incredible speed when startled. The majority of accidents around horses happen on the ground, not while riding. Learning to approach, handle and work around horses safely is therefore one of the most important skills in equestrianism. This lesson covers the principles of safe approach and handling.
+    content: `Horses are large, powerful flight animals and can react with great speed when startled. The majority of accidents around horses happen on the ground, not while riding. Learning to approach, handle and work around horses safely is therefore one of the most important skills in equestrianism. This lesson covers the principles of safe approach and handling.
 
 ## Understanding the Horse's Perspective
 
 Horses are **prey animals** with a highly developed flight response. Their survival instincts tell them to flee first and investigate later. Key points:
 
-- **Vision** — Horses have almost 360-degree vision, but they have blind spots directly in front of their forehead and directly behind their tail. Never approach from these blind spots, as the horse cannot see you and may react with fear.
+- **Vision** — Horses have side vision but may not see a person directly in front of the forehead or directly behind the tail. Do not surprise a horse from an area where it may not see you; use voice, safe visibility and a competent person’s handling procedure.
 - **Hearing** — Horses have excellent hearing and are sensitive to sudden or loud noises. Always speak to a horse before approaching so it knows you are there.
 - **Sensitivity** — Horses can feel a fly landing on their skin. They are extremely responsive to touch, which means rough or sudden handling can provoke a defensive reaction (kicking, biting, barging).
 
 ## How to Approach Safely
 
 1. **Speak first** — Call the horse's name or speak in a calm, low voice as you approach. This alerts the horse to your presence.
-2. **Approach the shoulder** — Walk toward the horse's shoulder at an angle (roughly 45 degrees from the front). This places you in the horse's field of vision without being directly in front (blind spot) or directly behind (kick zone).
+2. **Approach the shoulder** — Move calmly toward the shoulder on a visible diagonal, without stepping into the horse’s direct front or directly behind it. A competent instructor should show the learner the position appropriate to that horse and setting.
 3. **Extend your hand** — Allow the horse to see and smell your hand. Let the horse come to you rather than grabbing at it.
 4. **Move calmly** — No sudden movements, no running, no shouting. Fast or erratic behaviour triggers the flight response.
 5. **Read the horse** — Before touching, observe the horse's body language. Ears forward usually indicates curiosity or friendliness. Ears flat back indicates aggression or irritation. A raised head, wide eyes and flared nostrils indicate fear or alarm.
@@ -2666,7 +2649,7 @@ Horses are **prey animals** with a highly developed flight response. Their survi
 When working around a horse on the ground:
 
 - **Stand to the side**, never directly in front or behind.
-- When moving around the hindquarters, either stay very close to the horse (so a kick pushes you away rather than striking at full force) and keep a hand on the horse's body so it knows where you are, or walk well out of kicking range (at least 3 metres behind).
+- Avoid moving directly behind the hindquarters. If it is necessary to change sides, follow the yard’s taught route with the horse under suitable control, maintain awareness of its body language and preserve an escape route. Ask for help rather than attempting this alone with an unfamiliar, unsettled or reactive horse.
 - When working on the near side, position your feet so you can step away quickly.
 - **Never kneel or sit beside a horse** — always bend from the waist so you can move away quickly.
 - **Never wrap lead ropes, lunge lines or reins around your hand or body** — if the horse pulls away, you will be dragged.
@@ -2699,10 +2682,10 @@ Approaching a horse in the field requires patience:
 Horses are extremely perceptive of human body language and emotional state. A nervous handler creates a nervous horse. Develop calm confidence through practice and knowledge. If you are unsure about handling a particular horse, ask for help — there is no shame in admitting uncertainty, and it is far safer than pretending confidence you do not have.`,
     keyPoints: [
       "Always speak to a horse before approaching — never surprise it",
-      "Approach at the shoulder from a 45-degree angle, within the horse's field of vision",
+      "Approach calmly toward the visible shoulder area using the supervised position taught for that horse and setting",
       "Never stand directly behind a horse or in its forehead blind spot",
       "Never wrap ropes, reins or lines around your hand — you risk being dragged",
-      "When passing behind a horse, stay either very close with a hand on its body, or well clear (3+ metres)",
+      "Avoid moving directly behind the hindquarters; use the yard’s taught route, preserve an escape path and ask for help with an unfamiliar or unsettled horse",
       "Horses read human body language — calm, confident handling produces calm, confident horses",
     ],
     safetyNote:
@@ -2727,7 +2710,7 @@ Horses are extremely perceptive of human body language and emotional state. A ne
         ],
         correctIndex: 1,
         explanation:
-          "Horses have almost 360-degree vision but cannot see directly in front of their forehead or directly behind their tail. Approaching from these areas can startle the horse.",
+          "A horse may not see a person directly in front of its forehead or directly behind its tail. Approaching from these areas can startle the horse, so use voice, safe visibility and the handling route taught by a competent person.",
       },
       {
         question: "Why should you never wrap a lead rope around your hand?",
@@ -2745,13 +2728,13 @@ Horses are extremely perceptive of human body language and emotional state. A ne
         question: "What is the safest way to move past a horse's hindquarters?",
         options: [
           "Run past quickly",
-          "Walk slowly about 1 metre behind",
-          "Stay very close with a hand on the horse's body, or walk well clear at 3+ metres",
+          "Walk directly behind while looking at the ground",
+          "Avoid the hindquarters, follow the supervised route taught at the yard and ask for help if the horse is unfamiliar or unsettled",
           "Crawl underneath the horse",
         ],
         correctIndex: 2,
         explanation:
-          "Stay either very close to the horse (so a kick pushes you away rather than striking at full force) with your hand on its body so it knows where you are, or walk well out of kicking range at least 3 metres behind.",
+          "Directly behind the hindquarters is a higher-risk area. Use the yard’s supervised handling procedure, observe the horse and preserve an escape route rather than relying on a universal distance rule.",
       },
     ],
     aiTutorPrompts: [
@@ -2925,7 +2908,7 @@ The **quick-release knot** (also called a "slip knot" or "safety knot") is the o
 
 - **Tie to a fixed, solid tie ring** that is bolted to a wall or post. The ring should be at approximately the horse's **eye height or above** — never below chest height, as a low tie point increases the risk of the horse getting a leg over the rope.
 - **Use a loop of baler twine** tied to the ring, and tie the lead rope to the twine. The baler twine acts as a breakaway — if the horse panics and pulls back with its full weight, the twine breaks before the horse injures itself. This is much safer than tying directly to a solid metal ring, which will not give at all.
-- **Tie the rope short enough** that the horse cannot get a leg over it, but long enough to allow the horse to hold its head at a natural height. Approximately 60–75 cm of rope between the headcollar and the tie point is a good guide.
+- **Set the rope length with a competent person** so the individual horse can stand naturally but cannot step over, become entangled in or pull against excess rope. Attachment height, rope length, horse size, equipment and setting all affect the safe setup; check it continuously rather than copying a single measurement.
 - **Never tie to a moveable object** — a gate, a jump wing, a wheelbarrow, or a loose rail. If the horse pulls back, the object will follow, terrifying the horse further and causing chaos.
 - **Never tie to a bridle.** Tie only to a headcollar and lead rope. A bridle is not designed to withstand the force of a pulling horse and the bit can injure the horse's mouth.
 
@@ -3188,7 +3171,7 @@ A risk assessment is a systematic process of identifying hazards, evaluating the
 2. **Decide who might be harmed and how** — Consider all the people who use the yard: staff, riders, children, visitors, farriers, vets. How might each person be affected by each hazard?
 3. **Evaluate the risk and decide on precautions** — For each hazard, consider: How likely is it to cause harm? How severe could the harm be? What can be done to reduce the risk? Precautions might include fixing broken fencing, providing training, requiring hard hats in certain areas, or banning unsupervised access.
 4. **Record your findings and implement them** — Write the assessment down. Assign responsibility for each action and set deadlines.
-5. **Review and update regularly** — Risk assessments are living documents. Review them whenever the situation changes (new horses arrive, a building is modified, staff change) and at least annually.
+5. **Review and update when needed** — Risk assessments are living documents. Review them whenever the situation changes (for example, new horses, modified buildings, changed work or staffing) and follow the current employer, insurer and legal review requirements rather than relying on a lesson interval.
 
 ## Types of Hazards in an Equestrian Setting
 
@@ -3284,13 +3267,13 @@ Risk assessment and incident reporting work best when everyone on the yard takes
         question: "How often should risk assessments be reviewed?",
         options: [
           "Only when an accident occurs",
-          "Every 5 years",
-          "Whenever circumstances change, and at least annually",
+          "At a fixed interval regardless of whether circumstances change",
+          "Whenever circumstances change and in accordance with the current employer, insurer and legal requirements",
           "They only need to be done once",
         ],
         correctIndex: 2,
         explanation:
-          "Risk assessments should be reviewed whenever the situation changes (new horses, new staff, building modifications) and at least once a year as a minimum, to ensure they remain relevant and effective.",
+          "Risk assessments should be reviewed whenever circumstances change and according to current employer, insurer and legal requirements. A fixed lesson timetable must not replace an active review of the actual risk.",
       },
     ],
     aiTutorPrompts: [
@@ -3583,7 +3566,7 @@ Understanding natural behaviour helps us make better management decisions:
     category: "Horse Behaviour & Welfare",
     sortOrder: 2,
     objectives: [
-      "List the normal ranges for temperature, pulse and respiration in horses",
+      "Use the World Horse Welfare adult-at-rest TPR reference alongside each horse’s individual baseline",
       "Describe what a healthy horse looks and behaves like",
       "Explain how to take a horse's temperature, pulse and respiration rate",
       "Recognise early signs that a horse may be unwell",
@@ -3599,7 +3582,7 @@ A healthy horse should display the following characteristics:
 - **Good coat condition** — The coat should be smooth, shiny and lie flat (in an unclipped horse in summer). A dull, staring (standing up) coat can indicate illness, worm burden or poor nutrition.
 - **Good body condition** — Neither too thin nor too fat. You should be able to feel (but not see) the ribs. The spine, hip bones and shoulder blades should not be prominently visible.
 - **Normal appetite** — The horse should eat its forage and hard feed readily. Loss of appetite is often one of the first signs of illness.
-- **Normal droppings** — Soft balls that break on impact, greenish-brown in colour, with a mild smell. Produced 6–10 times per day.
+- **Normal droppings** — Observe the horse’s normal pattern, consistency and appearance. A material change in droppings, appetite or behaviour should be recorded and reported through the yard’s health procedure.
 - **Normal urine** — Pale yellow to amber, produced several times a day. Should not be dark, bloody or excessively cloudy.
 - **Active and interested** — A healthy horse is alert to its surroundings, interested in other horses and its environment, and moves willingly.
 - **Even weight-bearing** — Standing squarely on all four legs, with weight distributed evenly. Resting a hind leg occasionally is normal; pointing a foreleg (stretching it forward) is not.
@@ -3611,23 +3594,22 @@ A healthy horse should display the following characteristics:
 Knowing a horse's TPR is essential for assessing health. You should learn each horse's individual resting TPR, as there is natural variation between animals.
 
 ### Temperature
-- **Normal range:** 37.0°C to 38.5°C (average 38°C)
-- **How to take:** Use a digital thermometer. Apply a small amount of lubricant. Stand to the side of the horse (never directly behind). Gently insert the thermometer into the rectum, angled slightly toward the gut wall, and hold it there until it beeps (usually 60 seconds). Clean and disinfect the thermometer after each use.
-- **Elevated temperature** (above 38.5°C) may indicate infection, pain or heat stress.
+- **World Horse Welfare adult-at-rest reference:** 37.5°C to 38.5°C for a healthy adult horse calmly at rest.
+- **How to take:** Only take a temperature if you have been shown the safe technique by a competent person. Use a suitable digital thermometer, stand to the side rather than directly behind, and stop if the horse becomes unsafe to handle. Clean equipment according to the yard procedure.
+- **Interpretation:** A reading must be considered with the individual horse’s usual baseline, recent exercise, weather, behaviour and other signs. Report a concerning change rather than self-diagnosing the cause.
 
 ### Pulse (Heart Rate)
-- **Normal resting range:** 28 to 44 beats per minute (bpm)
-- **How to take:** The easiest place to feel the pulse is the **facial artery**, which runs under the jaw where it crosses the mandible (jawbone). Place two or three fingers gently against the artery and count the beats for 15 seconds, then multiply by 4. You can also use a stethoscope placed behind the left elbow.
-- **Elevated pulse** at rest may indicate pain, fever, dehydration, shock or excitement. A resting heart rate above 60 bpm in a horse that has not been exercised is cause for concern.
+- **World Horse Welfare adult-at-rest reference:** 36 to 42 beats per minute for a healthy adult horse calmly at rest.
+- **How to take:** The **facial artery** runs under the jaw where it crosses the mandible. A competent person can show the learner how to locate it and obtain a reliable reading without restricting the horse’s movement.
+- **Interpretation:** A material change from the individual baseline, especially with illness signs, needs responsible-person or veterinary advice.
 
 ### Respiration (Breathing Rate)
-- **Normal resting range:** 8 to 16 breaths per minute
-- **How to take:** Watch the horse's flanks or nostrils. One rise and fall of the flank equals one breath. Count for 30 seconds and multiply by 2. Alternatively, hold a hand in front of the nostril and feel each exhalation.
-- **Elevated breathing** at rest may indicate pain, respiratory disease, heat stress or anxiety. Laboured breathing, coughing or noisy breathing are all abnormal.
+- **World Horse Welfare adult-at-rest reference:** 8 to 12 breaths per minute for a healthy adult horse calmly at rest.
+- **How to take:** Observe the horse at rest from a safe position and follow the competent person’s method for recording a reliable rate.
+- **Interpretation:** Laboured, noisy or unusually rapid breathing at rest requires prompt escalation; do not rely on a number alone.
 
-### Capillary Refill Time (CRT)
-- **Normal:** Less than 2 seconds
-- **How to check:** Press a thumb firmly on the horse's gum (above the front teeth) for 2 seconds. Release and count how long it takes for the colour to return from white to pink. A delay indicates dehydration, shock or circulatory compromise.
+### Mucous membranes and circulation observations
+- A change in gum appearance, behaviour, appetite, comfort or breathing can be relevant, but a learner should not use one home observation to diagnose dehydration, shock or circulation problems. Record what is seen and follow the yard’s veterinary-escalation procedure.
 
 ### Gut Sounds
 - Listen to the horse's flank with your ear or a stethoscope. You should hear regular gurgling and rumbling sounds, indicating healthy gut motility. **Absent gut sounds** can indicate a serious problem, such as colic.
@@ -3635,9 +3617,8 @@ Knowing a horse's TPR is essential for assessing health. You should learn each h
 ## When to Call the Vet
 
 While not every change in TPR requires an emergency call, the following signs warrant immediate veterinary attention:
-- Temperature above 39°C or below 36.5°C
-- Resting heart rate above 60 bpm (without recent exercise)
-- Laboured or very rapid breathing at rest
+- A persistent material departure from the horse’s known calm-at-rest baseline, especially alongside illness signs
+- Laboured or unusually rapid breathing at rest
 - Absent gut sounds
 - Signs of colic (rolling, pawing, looking at flanks, sweating without exercise)
 - Severe lameness (non-weight-bearing)
@@ -3645,10 +3626,10 @@ While not every change in TPR requires an emergency call, the following signs wa
 - Difficulty breathing, coughing repeatedly or nasal discharge that is thick or discoloured
 - Sudden loss of appetite or refusal to drink`,
     keyPoints: [
-      "Normal temperature: 37.0–38.5°C; normal pulse: 28–44 bpm; normal respiration: 8–16 breaths per minute",
+      "For a healthy adult horse calmly at rest, World Horse Welfare lists temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths per minute; record the individual horse’s baseline and seek veterinary advice for concerning changes.",
       "A bright eye, shiny coat, good appetite and normal droppings are key indicators of good health",
       "The pulse is most easily felt at the facial artery under the jawbone",
-      "Capillary refill time should be less than 2 seconds — a delay indicates a problem",
+      "Record concerning changes in gums, appetite, comfort or breathing and follow the yard’s veterinary-escalation procedure rather than diagnosing from a single test",
       "Absent gut sounds can indicate colic and require urgent veterinary attention",
       "Learn each horse's individual resting TPR, as normal ranges vary between animals",
     ],
@@ -3666,10 +3647,10 @@ While not every change in TPR requires an emergency call, the following signs wa
     knowledgeCheck: [
       {
         question: "What is the normal resting heart rate range for a horse?",
-        options: ["10–20 bpm", "28–44 bpm", "60–80 bpm", "80–120 bpm"],
+        options: ["10–20 bpm", "36–42 bpm", "60–80 bpm", "80–120 bpm"],
         correctIndex: 1,
         explanation:
-          "A horse's normal resting heart rate is 28–44 beats per minute. A resting rate above 60 bpm (without recent exercise) is a cause for concern.",
+          "World Horse Welfare lists 36–42 beats per minute as the usual pulse range for a healthy adult horse calmly at rest. Use the individual horse’s recorded baseline and the wider clinical picture; seek veterinary advice for a concerning change.",
       },
       {
         question: "Where is the easiest place to feel a horse's pulse?",
@@ -6746,8 +6727,8 @@ A healthy horse is bright, alert, and interested in its surroundings. Its eyes a
 Every horse owner and carer should know the normal vital signs — collectively known as TPR:
 
 - **Temperature**: 37.5–38.5°C (99.5–101.3°F), taken rectally with a digital thermometer
-- **Pulse**: 28–44 beats per minute at rest, taken at the facial artery under the jaw
-- **Respiration**: 8–16 breaths per minute at rest, counted by watching the flank rise and fall
+- **Pulse**: 36–42 beats per minute for a healthy adult horse calmly at rest, taken at the facial artery under the jaw
+- **Respiration**: 8–12 breaths per minute for a healthy adult horse calmly at rest, counted by watching the flank rise and fall
 
 These figures represent resting values. Exercise, stress, pain, and hot weather all increase them. Know what is normal for your horse so you can recognise deviations.
 
@@ -6769,7 +6750,7 @@ A basic daily health check takes five minutes and should be done every time you 
 Signs that something may be wrong include: dullness, loss of appetite, abnormal droppings, nasal discharge, coughing, lameness, heat or swelling in the legs, excessive sweating, rolling repeatedly (colic warning), and reluctance to move. Any significant change from normal should be reported immediately.`,
     keyPoints: [
       "A healthy horse is bright, alert, and interested with clear eyes and a smooth coat",
-      "Normal TPR: temperature 37.5–38.5°C, pulse 28–44 bpm, respiration 8–16 breaths/min",
+      "World Horse Welfare’s usual adult-at-rest TPR reference: temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths/min; record an individual baseline.",
       "Daily health checks should cover eyes, nostrils, legs, feet, body, droppings, water, and appetite",
       "Know what is normal for your individual horse so you can spot deviations quickly",
       "Report any significant change from normal to the yard manager or vet immediately",
@@ -6788,10 +6769,10 @@ Signs that something may be wrong include: dullness, loss of appetite, abnormal 
     knowledgeCheck: [
       {
         question: "What is the normal resting pulse rate for a horse?",
-        options: ["10–15 bpm", "28–44 bpm", "60–80 bpm", "100+ bpm"],
+        options: ["10–15 bpm", "36–42 bpm", "60–80 bpm", "100+ bpm"],
         correctIndex: 1,
         explanation:
-          "The normal resting pulse for a horse is 28–44 beats per minute. Rates above this at rest may indicate pain, stress, or illness.",
+          "World Horse Welfare lists 36–42 beats per minute as the usual pulse range for a healthy adult horse calmly at rest. Interpret a reading in context and seek advice for a concerning departure from that horse’s known baseline.",
       },
       {
         question: "Which is NOT a normal sign in a healthy horse at rest?",
@@ -6993,49 +6974,44 @@ When waiting for the vet, keep the horse calm and contained. Do not feed a colic
     sortOrder: 4,
     objectives: [
       "Understand why vaccination and worming are essential for horse health",
-      "Know the standard vaccination schedule for influenza and tetanus",
+      "Understand why vaccination timing must follow a current veterinary plan and relevant governing-body rules",
       "Understand targeted worming programmes based on faecal egg counts",
       "Keep accurate health records including vaccination and worming dates",
     ],
-    content: `Vaccinations and worming are two cornerstones of preventive health care for horses. Correct programmes protect not only the individual horse but also every horse it comes into contact with. Many yards and all competitions require up-to-date vaccination records.
+    content: `Vaccination and parasite control are parts of preventive health care. A programme must protect the individual horse while also accounting for its age, health, history, location, travel and contact with other horses. The correct plan is set and reviewed with the veterinary team and, where relevant, against the current rules of the event organiser or governing body.
 
-## Equine Vaccinations
+## Vaccination plans
 
-The two core vaccinations for horses in the UK and Ireland are **equine influenza** and **tetanus**.
+Equine influenza and tetanus are commonly included in a horse’s preventive-health plan. The Royal Veterinary College notes that vaccine protocols differ by vaccine and that competition requirements can differ from a general health plan. Do not use an old calendar, a lesson handout or another horse’s record to decide whether an injection is due. Instead, take the passport and the complete vaccination history to the veterinary team, confirm the current product instructions and check the rules that apply to any planned competition or travel.
 
-**Equine influenza** is a highly contagious respiratory disease. The vaccination protocol is: first vaccination, followed by a second vaccination 21–92 days later, then a third booster 150–215 days after the second. Annual boosters are required thereafter. Competition horses under FEI rules need a booster within 6 months plus 21 days of competing. Failure to keep vaccinations current means starting the primary course again.
+If a record is missing, late or unclear, do not guess at the next dose. Tell the vet exactly what is known, including the date, product and batch number of the last recorded injection, then follow the plan they set. This protects the horse and avoids presenting a competition-specific requirement as a universal rule.
 
-**Tetanus** is caused by bacteria found in soil and is almost always fatal in horses. The initial course is two injections 4–6 weeks apart, followed by a booster at 12 months, then every 2 years thereafter. Many vets administer a combined flu/tetanus vaccine to simplify the schedule.
+## Evidence-led parasite control
 
-## Modern Worming Approaches
+World Horse Welfare advises that worm-control decisions should be based on appropriate testing and a bespoke plan developed with a vet or SQP/RAMA. A faecal egg count, saliva test or blood test may be relevant depending on the parasite question and time of year, but no single test answers every question. Collect and label samples as instructed by the laboratory, record results, and ask the professional adviser to explain what the result does and does not show before using any medicine.
 
-Traditional worming — giving a chemical wormer every 6–8 weeks regardless — has led to widespread resistance. Modern best practice uses a **targeted worming programme** based on faecal egg counts (FEC). A small dung sample is tested in a laboratory, and wormer is only given if the egg count exceeds a threshold (typically 200 eggs per gram).
+Practical pasture measures matter as well: remove droppings, avoid unnecessary sharing of contaminated equipment, review grazing pressure and keep a clear record of new arrivals, test results and treatments. Do not select, dose or repeat a wormer solely from a fixed calendar or a generic internet threshold.
 
-Strategic treatments at specific times of year are still recommended:
-- **Spring/summer**: treat based on FEC for redworm (cyathostomins)
-- **Late autumn**: treat for encysted small redworm (moxidectin)
-- **Winter**: consider tapeworm treatment (praziquantel or pyrantel double dose)
+## Record keeping and escalation
 
-## Record Keeping
-
-Every horse should have a health record that includes: vaccination dates and batch numbers, worming dates and products used, FEC results, dental visits, farrier visits, and any illness or injury. This information is invaluable for the vet and is required for competition passports.`,
+Keep a health record for each horse with passport/ID details, vaccination dates, product and batch information, laboratory reports, veterinary advice, treatment authorisation and any adverse observations. Before an event or journey, check the current organiser, governing-body and official requirements directly. If the horse is unwell, has a suspected infectious disease or there is uncertainty about a health record, follow veterinary advice before mixing, travelling or competing.`,
     keyPoints: [
-      "Equine influenza and tetanus are the core vaccinations — tetanus is almost always fatal without vaccination",
-      "Flu vaccinations must follow strict timing intervals; competition rules require 6-monthly boosters",
-      "Modern worming uses faecal egg counts (FEC) rather than routine chemical worming to reduce resistance",
-      "Strategic seasonal treatments for encysted redworm and tapeworm remain important",
-      "Accurate health records including dates, products, and results are essential for every horse",
+      "Use a current veterinary preventive-health plan and check the applicable event or governing-body rules before travel or competition",
+      "Do not infer a vaccination due date from a generic timetable, an old record or another horse’s programme",
+      "World Horse Welfare advises bespoke parasite control using appropriate testing and a vet or SQP/RAMA plan",
+      "Pasture management, test records and careful sample handling support evidence-led parasite control",
+      "Accurate health records should include vaccination, product, batch, test-result and professional-advice details",
     ],
     safetyNote:
       "Only administer wormers that are appropriate for your horse's weight — overdosing and underdosing both cause problems. If in doubt, weigh the horse with a weigh tape and consult your vet. Never give medication to a horse you are not authorised to treat.",
     practicalApplication:
       "Review your horse's vaccination record and check whether boosters are due. If your yard uses a targeted worming programme, find out when the next faecal egg count is scheduled and ensure your horse is included.",
     commonMistakes: [
-      "Letting vaccination intervals lapse, requiring the primary course to be restarted",
-      "Worming on a rigid calendar without faecal egg count testing, which promotes resistance",
-      "Not recording worming products and dates, making it impossible to track what has been given",
-      "Assuming a horse in a field alone does not need worming — larvae persist in pasture for months",
-      "Forgetting tapeworm treatment, which is not always detected by standard FEC",
+      "Using a generic timetable instead of confirming the individual horse’s current veterinary and competition plan",
+      "Treating or repeating medicine without appropriate testing and professional advice",
+      "Not recording vaccination product, batch, test result and treatment advice",
+      "Assuming an isolated horse needs no parasite-risk assessment",
+      "Treating a laboratory result as a complete diagnosis rather than discussing its limits with the adviser",
     ],
     knowledgeCheck: [
       {
@@ -7053,22 +7029,22 @@ Every horse should have a health record that includes: vaccination dates and bat
       },
       {
         question:
-          "How often should a horse receive an equine influenza booster after the primary course?",
+          "What is the safest way to confirm whether a horse is currently eligible to travel or compete after a vaccination history concern?",
         options: [
-          "Every month",
-          "Every 6 months for competition, annually otherwise",
-          "Every 5 years",
-          "Only once in its lifetime",
+          "Use the timetable from another horse’s passport",
+          "Ask the vet to review the complete record and check the current organiser or governing-body requirements",
+          "Assume one missed date is harmless if the horse looks well",
+          "Give a medicine dose without professional advice",
         ],
         correctIndex: 1,
         explanation:
-          "Annual boosters are the standard requirement, with 6-monthly boosters for horses competing under FEI or many national rules.",
+          "Vaccination products, veterinary plans and competition requirements can differ. The correct route is a veterinary review of the record plus the current organiser or governing-body requirements, not a generic schedule.",
       },
     ],
     aiTutorPrompts: [
-      "Can you explain the equine influenza vaccination schedule step by step?",
-      "What is encysted small redworm and why is it dangerous?",
-      "How do I set up a targeted worming programme for my yard?",
+      "What information should I give my vet when a vaccination record is unclear?",
+      "What can a parasite test tell me, and what are its limits?",
+      "How do I work with a vet or SQP/RAMA on a targeted parasite-control plan for my yard?",
     ],
     linkedCompetencies: [
       "daily_health_check",
@@ -10621,7 +10597,7 @@ Your name, location, horse age and breed, observations, vital signs, and any fir
 
 ## Vital Signs
 
-Normal ranges: Temperature 37.0-38.5 C, Pulse 28-44 bpm, Respiration 8-16 breaths/min.
+For a healthy adult horse calmly at rest, World Horse Welfare lists temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths/min. Record the individual horse’s baseline and tell the veterinary team about concerning changes alongside the horse’s symptoms.
 
 ## The Golden Rule
 
@@ -10629,7 +10605,7 @@ If in doubt, call. A vet would rather have a false alarm than be called too late
     keyPoints: [
       "Colic, severe lameness, joint wounds, eye injuries are always emergencies",
       "Have details and vital signs ready when calling",
-      "Normal vitals: Temp 37-38.5, Pulse 28-44, Resp 8-16",
+      "Usual adult-at-rest reference: temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths/min; use the horse’s baseline and symptoms when speaking to the vet",
       "When in doubt, always call the vet",
       "Delay in emergencies can be fatal",
     ],
@@ -10647,10 +10623,10 @@ If in doubt, call. A vet would rather have a false alarm than be called too late
     knowledgeCheck: [
       {
         question: "Normal resting heart rate for a horse?",
-        options: ["10-20 bpm", "28-44 bpm", "60-80 bpm", "100-120 bpm"],
+        options: ["10-20 bpm", "36-42 bpm", "60-80 bpm", "100-120 bpm"],
         correctIndex: 1,
         explanation:
-          "28-44 bpm is normal. Elevated rate suggests pain or illness.",
+          "World Horse Welfare lists 36–42 bpm as the usual pulse range for a healthy adult horse calmly at rest. A concerning change from the individual baseline, particularly with symptoms, should be discussed with a vet.",
       },
       {
         question: "Which is always an emergency?",
@@ -11392,7 +11368,8 @@ Physically accessible, culturally welcoming, free from discrimination.`,
 
 const VETERINARY_REVIEW_TOPIC =
   /\b(colic|laminitis|wound|vital signs?|first aid|vaccin|worm|parasite|nutrition|supplement|dental|farrier)\b/i;
-const CURRENT_REQUIREMENTS_TOPIC = /\b(transport|insurance)\b/i;
+const CURRENT_REQUIREMENTS_TOPIC =
+  /\b(transport|insurance|competition|legal|legislation|passport)\b/i;
 const SAFEGUARDING_REVIEW_TOPIC = /\bsafeguarding\b/i;
 
 function factualSafetyBoundary(lesson: LessonUnitData): string | null {
@@ -11403,6 +11380,13 @@ function factualSafetyBoundary(lesson: LessonUnitData): string | null {
     lesson.practicalApplication,
     ...lesson.objectives,
     ...lesson.keyPoints,
+    ...lesson.commonMistakes,
+    ...lesson.knowledgeCheck.flatMap((question) => [
+      question.question,
+      ...question.options,
+      question.explanation,
+    ]),
+    ...lesson.aiTutorPrompts,
   ].join("\n");
   const boundaries: string[] = [];
   if (VETERINARY_REVIEW_TOPIC.test(searchable)) {
@@ -11412,7 +11396,7 @@ function factualSafetyBoundary(lesson: LessonUnitData): string | null {
   }
   if (CURRENT_REQUIREMENTS_TOPIC.test(searchable)) {
     boundaries.push(
-      "Transport, insurance, competition, and legal requirements can change and depend on the journey or policy; verify the current official rules and professional advice before acting.",
+      "Transport, insurance, competition and legal requirements can change and depend on the activity, journey, policy and jurisdiction; verify the current official rules, organiser requirements and professional advice before acting.",
     );
   }
   if (SAFEGUARDING_REVIEW_TOPIC.test(searchable)) {

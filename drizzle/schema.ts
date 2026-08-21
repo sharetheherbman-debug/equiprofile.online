@@ -1915,6 +1915,21 @@ export const organizations = mysqlTable("organizations", {
   maxTeachers: int("maxTeachers").notNull().default(3),
   isActive: boolean("isActive").default(true).notNull(),
   trialEndsAt: timestamp("trialEndsAt"),
+  academyBillingStatus: varchar("academyBillingStatus", { length: 32 })
+    .notNull()
+    .default("not_configured"),
+  academyBillingInterval: varchar("academyBillingInterval", { length: 16 }),
+  academyBillingPriceId: varchar("academyBillingPriceId", { length: 255 }),
+  academyStripeCustomerId: varchar("academyStripeCustomerId", { length: 255 }),
+  academyStripeSubscriptionId: varchar("academyStripeSubscriptionId", {
+    length: 255,
+  }),
+  academyStripeCheckoutSessionId: varchar("academyStripeCheckoutSessionId", {
+    length: 255,
+  }),
+  academyBillingCurrentPeriodEndsAt: timestamp(
+    "academyBillingCurrentPeriodEndsAt",
+  ),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -1949,6 +1964,15 @@ export const organizationInvites = mysqlTable("organizationInvites", {
   token: varchar("token", { length: 64 }).notNull().unique(),
   expiresAt: timestamp("expiresAt").notNull(),
   acceptedAt: timestamp("acceptedAt"),
+  /** PENDING | DELIVERED | FAILED; invite acceptance is a separate state. */
+  deliveryStatus: varchar("deliveryStatus", { length: 32 })
+    .notNull()
+    .default("PENDING"),
+  deliveryAttemptCount: int("deliveryAttemptCount").notNull().default(0),
+  lastDeliveryAttemptAt: timestamp("lastDeliveryAttemptAt"),
+  deliveredAt: timestamp("deliveredAt"),
+  /** Sanitised and bounded failure text; never store an invitation token. */
+  lastDeliveryError: varchar("lastDeliveryError", { length: 500 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

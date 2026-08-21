@@ -16,7 +16,8 @@ describe("Store payment boundary", () => {
   it("uses an isolated Store webhook and Store-specific secret", () => {
     expect(bootstrap).toContain('"/api/webhooks/store-stripe"');
     expect(bootstrap).toContain("STORE_STRIPE_WEBHOOK_SECRET");
-    expect(bootstrap).toContain('metadata?.commerceScope !== "store"');
+    expect(bootstrap).toContain("isStoreScopedMetadata(metadata)");
+    expect(bootstrap).toContain("getStoreStripe()");
     expect(bootstrap).toContain("Store payment processing is not configured");
   });
 
@@ -24,7 +25,12 @@ describe("Store payment boundary", () => {
     expect(migration).toContain("commercePaymentEvents_provider_event_unique");
     expect(bootstrap).toContain("providerEventId = ${event.id}");
     expect(bootstrap).toContain("cached: true");
+    expect(bootstrap).toContain("reconcilePaidStoreCheckout");
+    expect(bootstrap).toContain("reconcileStoreRefund");
     expect(bootstrap).toContain("storePaymentStatus = 'paid'");
+    expect(bootstrap).toContain(
+      "storePaymentStatus = ${decision.paymentStatus}",
+    );
   });
 
   it("keeps Store Checkout disabled by default and marks any configured session as Store-scoped", () => {
@@ -33,6 +39,7 @@ describe("Store payment boundary", () => {
       "utf8",
     );
     expect(router).toContain('process.env.ENABLE_STORE_STRIPE === "true"');
+    expect(router).toContain("getStoreStripe()");
     expect(router).toContain("paymentConfigurationRequired: true");
     expect(router).toContain("stripe.checkout.sessions.create");
     expect(router).toContain('commerceScope: "store"');

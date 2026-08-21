@@ -5,8 +5,8 @@
   "start_url": "/academy",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#1e3a5f",
-  "theme_color": "#2d6a4f",
+  "background_color": "#0f1d2e",
+  "theme_color": "#0f1d2e",
   "orientation": "portrait-primary",
   "icons": [
     {

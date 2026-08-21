@@ -8,27 +8,10 @@ const MIN_KEY_POINTS = 4;
 const MIN_QUESTIONS = 3;
 const MIN_COMMON_MISTAKES = 2;
 const MIN_TUTOR_PROMPTS = 2;
-const HIGH_RISK_TERMS = [
-  "first response",
-  "emergency",
-  "vital sign",
-  "colic",
-  "laminitis",
-  "wound",
-  "infectious",
-  "biosecurity",
-  "vaccin",
-  "parasite",
-  "worm",
-  "nutrition",
-  "supplement",
-  "transport",
-  "safeguard",
-  "insurance",
-  "farrier",
-  "dental",
-];
 const PLACEHOLDER = /\b(todo|tbd|placeholder|lorem ipsum|coming soon)\b/i;
+
+type DuplicateSimilarityStatus = "NO_SIMILARITY_FLAG" | "REVIEW_REQUIRED";
+type StructuralStatus = "STRUCTURALLY_READY" | "REQUIRES_EXPANSION";
 
 type LessonQualityRow = {
   slug: string;
@@ -42,10 +25,10 @@ type LessonQualityRow = {
   commonMistakesCount: number;
   aiTutorPromptCount: number;
   competencyRefs: number;
-  safetyReviewed: "PASS";
-  factReviewed: "PASS" | "NOT_APPLICABLE";
-  duplicateContentReview: "PASS";
-  qualityStatus: "PRODUCTION_READY" | "REQUIRES_EXPANSION";
+  safetyEvidenceStatus: "NOT_ASSESSED_BY_STRUCTURAL_AUDIT";
+  factualEvidenceStatus: "NOT_ASSESSED_BY_STRUCTURAL_AUDIT";
+  duplicateSimilarityStatus: DuplicateSimilarityStatus;
+  structuralStatus: StructuralStatus;
   notes: string;
 };
 
@@ -65,28 +48,26 @@ function wordCount(value: string): number {
 }
 
 function tokenSet(value: string): Set<string> {
+  const ignored = new Set([
+    "with",
+    "that",
+    "this",
+    "from",
+    "your",
+    "horse",
+    "lesson",
+    "will",
+    "when",
+    "have",
+    "their",
+    "they",
+    "about",
+  ]);
   return new Set(
     plainText(value)
       .toLowerCase()
       .match(/[a-z]{4,}/g)
-      ?.filter(
-        (token) =>
-          !new Set([
-            "with",
-            "that",
-            "this",
-            "from",
-            "your",
-            "horse",
-            "lesson",
-            "will",
-            "when",
-            "have",
-            "their",
-            "they",
-            "about",
-          ]).has(token),
-      ) ?? [],
+      ?.filter((token) => !ignored.has(token)) ?? [],
   );
 }
 
@@ -118,18 +99,22 @@ const tokenSets = new Map(
 const rows: LessonQualityRow[] = LESSON_UNITS.map((lesson) => {
   const notes: string[] = [];
   const words = wordCount(lesson.content);
-  if (words < MIN_WORDS)
+  if (words < MIN_WORDS) {
     notes.push(`content below ${MIN_WORDS} meaningful-word baseline`);
+  }
   if (lesson.objectives.length < MIN_OBJECTIVES)
     notes.push("fewer than 3 objectives");
   if (lesson.keyPoints.length < MIN_KEY_POINTS)
     notes.push("fewer than 4 key points");
-  if (lesson.knowledgeCheck.length < MIN_QUESTIONS)
+  if (lesson.knowledgeCheck.length < MIN_QUESTIONS) {
     notes.push("fewer than 3 knowledge checks");
-  if (lesson.commonMistakes.length < MIN_COMMON_MISTAKES)
+  }
+  if (lesson.commonMistakes.length < MIN_COMMON_MISTAKES) {
     notes.push("fewer than 2 common mistakes");
-  if (lesson.aiTutorPrompts.length < MIN_TUTOR_PROMPTS)
+  }
+  if (lesson.aiTutorPrompts.length < MIN_TUTOR_PROMPTS) {
     notes.push("fewer than 2 Tutor prompts");
+  }
   if (
     PLACEHOLDER.test(
       [lesson.content, ...lesson.objectives, ...lesson.keyPoints].join("\n"),
@@ -140,19 +125,12 @@ const rows: LessonQualityRow[] = LESSON_UNITS.map((lesson) => {
 
   const currentTokens = tokenSets.get(lesson.slug) ?? new Set<string>();
   const possibleDuplicate = [...tokenSets.entries()].some(
-    ([otherSlug, otherTokens]) => {
-      if (otherSlug === lesson.slug) return false;
-      return jaccard(currentTokens, otherTokens) >= 0.92;
-    },
+    ([otherSlug, otherTokens]) =>
+      otherSlug !== lesson.slug && jaccard(currentTokens, otherTokens) >= 0.92,
   );
   if (possibleDuplicate)
     notes.push("semantic similarity threshold requires review");
 
-  const highRisk = HIGH_RISK_TERMS.some((term) =>
-    `${lesson.title}\n${lesson.content}\n${lesson.safetyNote}`
-      .toLowerCase()
-      .includes(term),
-  );
   return {
     slug: lesson.slug,
     title: lesson.title,
@@ -165,20 +143,24 @@ const rows: LessonQualityRow[] = LESSON_UNITS.map((lesson) => {
     commonMistakesCount: lesson.commonMistakes.length,
     aiTutorPromptCount: lesson.aiTutorPrompts.length,
     competencyRefs: lesson.linkedCompetencies.length,
-    safetyReviewed: "PASS",
-    factReviewed: highRisk ? "PASS" : "NOT_APPLICABLE",
-    duplicateContentReview: possibleDuplicate ? "PASS" : "PASS",
-    qualityStatus:
-      notes.length === 0 ? "PRODUCTION_READY" : "REQUIRES_EXPANSION",
+    safetyEvidenceStatus: "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+    factualEvidenceStatus: "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+    duplicateSimilarityStatus: possibleDuplicate
+      ? "REVIEW_REQUIRED"
+      : "NO_SIMILARITY_FLAG",
+    structuralStatus:
+      notes.length === 0 ? "STRUCTURALLY_READY" : "REQUIRES_EXPANSION",
     notes:
       notes.length === 0
-        ? "Reviewed against Academy production-quality defaults."
+        ? "Observable structural thresholds met; factual and safety evidence are tracked separately."
         : notes.join("; "),
   };
 });
 
 const report = {
   generatedAt: new Date().toISOString(),
+  scope:
+    "Structural completeness and lexical-similarity audit only. This report does not verify facts, safety, clinical advice, legal rules, numerical claims, or human editorial acceptance.",
   standards: {
     meaningfulWordBaseline: MIN_WORDS,
     objectives: MIN_OBJECTIVES,
@@ -189,49 +171,48 @@ const report = {
     duplicateJaccardThreshold: 0.92,
   },
   summary: {
-    lessonsReviewed: rows.length,
-    lessonsProductionReady: rows.filter(
-      (row) => row.qualityStatus === "PRODUCTION_READY",
+    lessonsAssessed: rows.length,
+    lessonsStructurallyReady: rows.filter(
+      (row) => row.structuralStatus === "STRUCTURALLY_READY",
     ).length,
     placeholderLessons: rows.filter((row) => row.notes.includes("placeholder"))
       .length,
     shallowLessons: rows.filter((row) => row.wordCount < MIN_WORDS).length,
-    semanticDuplicates: rows.filter((row) =>
-      row.notes.includes("semantic similarity"),
+    similarityReviewRequired: rows.filter(
+      (row) => row.duplicateSimilarityStatus === "REVIEW_REQUIRED",
     ).length,
-    unresolvedSafetyIssues: 0,
-    unresolvedFactualIssues: 0,
+    safetyEvidence: "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
+    factualEvidence: "NOT_ASSESSED_BY_STRUCTURAL_AUDIT",
   },
   lessons: rows,
 };
 
 function renderMarkdown() {
   const lines = [
-    "# EquiProfile Academy Lesson Quality Audit",
+    "# EquiProfile Academy Lesson Structural Quality Audit",
     "",
-    "This generated audit assesses every lesson against the Academy production defaults: meaningful teaching depth, objectives, key points, knowledge checks, common mistakes, Tutor prompts, safety review, factual-review scope, and duplicate-content risk. A focused shorter lesson would require a documented pedagogical exception; none is used to bypass the default gate.",
+    "> This generated report verifies observable lesson structure only. It does **not** establish factual correctness, safety approval, clinical or legal accuracy, accreditation, or human editorial acceptance. Those matters require the separate lesson evidence register and documented review.",
     "",
     "## Summary",
     "",
-    `| Metric | Result |`,
-    `|---|---:|`,
-    `| Lessons reviewed | ${report.summary.lessonsReviewed} / ${rows.length} |`,
-    `| Lessons production-ready | ${report.summary.lessonsProductionReady} / ${rows.length} |`,
+    "| Metric | Result |",
+    "|---|---:|",
+    `| Lessons structurally assessed | ${report.summary.lessonsAssessed} / ${rows.length} |`,
+    `| Lessons structurally ready | ${report.summary.lessonsStructurallyReady} / ${rows.length} |`,
     `| Placeholder lessons | ${report.summary.placeholderLessons} |`,
     `| Shallow lessons | ${report.summary.shallowLessons} |`,
-    `| Semantic duplicates | ${report.summary.semanticDuplicates} |`,
-    `| Unresolved safety issues | ${report.summary.unresolvedSafetyIssues} |`,
-    `| Unresolved factual issues | ${report.summary.unresolvedFactualIssues} |`,
+    `| Similarity reviews required | ${report.summary.similarityReviewRequired} |`,
+    `| Safety evidence | ${report.summary.safetyEvidence} |`,
+    `| Factual evidence | ${report.summary.factualEvidence} |`,
     "",
-    "## Lesson-by-lesson record",
+    "## Lesson-by-lesson structural record",
     "",
-    "| Slug | Title | Pathway | Level | Words | Objectives | Key points | Checks | Competencies | Safety | Facts | Duplicate review | Status | Notes |",
-    "|---|---|---|---|---:|---:|---:|---:|---:|---|---|---|---|---|",
+    "| Slug | Title | Pathway | Level | Words | Objectives | Key points | Checks | Common mistakes | Tutor prompts | Competencies | Safety evidence | Factual evidence | Duplicate status | Structural status | Notes |",
+    "|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|---|---|---|",
     ...rows.map(
       (row) =>
-        `| ${row.slug} | ${row.title.replace(/\|/g, "/")} | ${row.pathway.replace(/\|/g, "/")} | ${row.level} | ${row.wordCount} | ${row.objectivesCount} | ${row.keyPointsCount} | ${row.knowledgeCheckCount} | ${row.competencyRefs} | ${row.safetyReviewed} | ${row.factReviewed} | ${row.duplicateContentReview} | ${row.qualityStatus} | ${row.notes.replace(/\|/g, "/")} |`,
+        `| ${row.slug} | ${row.title.replace(/\|/g, "/")} | ${row.pathway.replace(/\|/g, "/")} | ${row.level} | ${row.wordCount} | ${row.objectivesCount} | ${row.keyPointsCount} | ${row.knowledgeCheckCount} | ${row.commonMistakesCount} | ${row.aiTutorPromptCount} | ${row.competencyRefs} | ${row.safetyEvidenceStatus} | ${row.factualEvidenceStatus} | ${row.duplicateSimilarityStatus} | ${row.structuralStatus} | ${row.notes.replace(/\|/g, "/")} |`,
     ),
-    "",
   ];
   return `${lines.join("\n")}\n`;
 }
@@ -252,10 +233,10 @@ if (process.argv.includes("--write")) {
 if (process.argv.includes("--json")) {
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 } else {
-  console.log("EquiProfile Academy lesson quality audit");
+  console.log("EquiProfile Academy lesson structural quality audit");
   console.log(JSON.stringify(report.summary, null, 2));
 }
 
-if (report.summary.lessonsProductionReady !== LESSON_UNITS.length) {
+if (report.summary.lessonsStructurallyReady !== LESSON_UNITS.length) {
   process.exitCode = 1;
 }

@@ -217,62 +217,50 @@ const normalizeToolChoice = (
 };
 
 const resolveApiUrl = async (): Promise<string | null> => {
-  // Allow overriding the base URL via DB config or env (for custom OpenAI-compatible endpoints)
-  const customUrl =
-    process.env.OPENAI_BASE_URL ||
-    (await getRuntimeConfig("openai_base_url", "OPENAI_BASE_URL"));
-  const base =
-    customUrl && customUrl.trim().length > 0
-      ? customUrl.trim().replace(/\/$/, "")
-      : "https://api.openai.com/v1";
-  return `${base}/chat/completions`;
+  const configuredBaseUrl =
+    ENV.coreAiBaseUrl ||
+    (await getRuntimeConfig("core_ai_base_url", "CORE_AI_BASE_URL"));
+  if (!configuredBaseUrl?.trim()) return null;
+  return `${configuredBaseUrl.trim().replace(/\/$/, "")}/chat/completions`;
 };
 
 /**
- * Resolve the AI model name with explicit precedence:
- *   1. DB siteSettings key "ai_model"
- *   2. OPENAI_MODEL env var  (getRuntimeConfig checks env first, then DB)
- *   3. Safe OpenAI default: gpt-4o-mini
- *
- * This is the single source of truth for model selection.
- * Never falls back to any Gemini model.
+ * Resolve a model only from the approved provider-neutral Core AI contract.
+ * There is intentionally no vendor or model fallback: production Tutor traffic
+ * must be routed through the configured Core/GenX provider.
  */
 const resolveModel = async (): Promise<string> => {
-  // getRuntimeConfig("ai_model", "OPENAI_MODEL") checks OPENAI_MODEL env var
-  // first; if not set, reads the "ai_model" key from the siteSettings DB table.
-  const dbModel = await getRuntimeConfig("ai_model", "OPENAI_MODEL");
-  if (dbModel && dbModel.trim().length > 0) {
-    return dbModel.trim();
+  const configuredModel =
+    ENV.coreAiModel ||
+    (await getRuntimeConfig("core_ai_model", "CORE_AI_MODEL"));
+  if (!configuredModel?.trim()) {
+    throw new Error("Core AI service is not configured (model missing)");
   }
-  return "gpt-4o-mini";
+  return configuredModel.trim();
 };
 
 const assertApiKey = async (): Promise<string> => {
   const key =
-    ENV.openaiApiKey ||
-    (await getRuntimeConfig("openai_api_key", "OPENAI_API_KEY"));
+    ENV.coreAiApiKey ||
+    (await getRuntimeConfig("core_ai_api_key", "CORE_AI_API_KEY"));
   if (!key) {
-    throw new Error("AI service is not configured (API key missing)");
+    throw new Error("Core AI service is not configured (credential missing)");
   }
   return key;
 };
 
 /**
- * Check whether the AI service is configured (key present).
- * Checks environment variables first, then database settings.
- * Use this before calling invokeLLM to provide a graceful fallback.
+ * Check whether the provider-neutral Core AI service is fully configured.
+ * Academy Tutor callers use this to show a graceful unavailable state rather
+ * than attempting direct browser or vendor-specific calls.
  */
 export async function isAIConfigured(): Promise<boolean> {
-  if (ENV.openaiApiKey || process.env.HUGGINGFACE_API_KEY) {
-    return true;
-  }
-  const dbOpenAi = await getRuntimeConfig("openai_api_key", "OPENAI_API_KEY");
-  if (dbOpenAi) return true;
-  const dbHf = await getRuntimeConfig(
-    "huggingface_api_key",
-    "HUGGINGFACE_API_KEY",
-  );
-  return !!dbHf;
+  const [apiKey, baseUrl, model] = await Promise.all([
+    assertApiKey().catch(() => ""),
+    resolveApiUrl(),
+    resolveModel().catch(() => ""),
+  ]);
+  return Boolean(apiKey && baseUrl && model);
 }
 
 const normalizeResponseFormat = ({
