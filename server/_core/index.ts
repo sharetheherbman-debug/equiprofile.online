@@ -184,11 +184,9 @@ async function startServer() {
           webhookSecret,
         );
       } catch (error: any) {
-        return res
-          .status(400)
-          .json({
-            error: `Store webhook signature verification failed: ${error.message}`,
-          });
+        return res.status(400).json({
+          error: `Store webhook signature verification failed: ${error.message}`,
+        });
       }
       const dbConn = await getDb();
       if (!dbConn)

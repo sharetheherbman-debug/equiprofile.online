@@ -2,16 +2,16 @@
 
 ## Implemented software evidence
 
-| Capability | Evidence | Status |
-|---|---|---|
-| Isolated Shop frontend | `client/shop`, dedicated Vite target, hostname and asset namespace | Implemented |
-| Catalogue and product detail | Public API excludes development/archived/unpublished products; product detail exposes active variants and licensed images only | Implemented |
-| Persistent cart | Authenticated cart API, customer-scoped item mutation, server eligibility validation | Implemented |
-| Trusted totals | Checkout recalculates persisted price, VAT and freshness; client totals are informational only | Implemented |
-| Customer lifecycle | Address, customer order detail, shipment visibility and return-request API contracts | Implemented pending migration |
-| Payment boundary | Checkout-pending order and idempotency contract; no fake charge or success | Implemented; Store Stripe `NOT CONFIGURED` |
-| Governance | Human approval gate, Product Manager service, source provenance, audit records and development-only synthetic supplier | Implemented |
-| Admin | API-backed metrics and restricted administration screen | Implemented |
+| Capability                   | Evidence                                                                                                                       | Status                                     |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| Isolated Shop frontend       | `client/shop`, dedicated Vite target, hostname and asset namespace                                                             | Implemented                                |
+| Catalogue and product detail | Public API excludes development/archived/unpublished products; product detail exposes active variants and licensed images only | Implemented                                |
+| Persistent cart              | Authenticated cart API, customer-scoped item mutation, server eligibility validation                                           | Implemented                                |
+| Trusted totals               | Checkout recalculates persisted price, VAT and freshness; client totals are informational only                                 | Implemented                                |
+| Customer lifecycle           | Address, customer order detail, shipment visibility and return-request API contracts                                           | Implemented pending migration              |
+| Payment boundary             | Checkout-pending order and idempotency contract; no fake charge or success                                                     | Implemented; Store Stripe `NOT CONFIGURED` |
+| Governance                   | Human approval gate, Product Manager service, source provenance, audit records and development-only synthetic supplier         | Implemented                                |
+| Admin                        | API-backed metrics and restricted administration screen                                                                        | Implemented                                |
 
 ## Deliberately blocked until external setup
 

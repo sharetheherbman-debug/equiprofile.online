@@ -6,14 +6,14 @@ The Store is a third isolated frontend within the existing EquiProfile applicati
 
 `0022_commerce_foundation.sql` remains unchanged as the original draft-branch foundation. `0023_commerce_lifecycle_integrity.sql` is a separate, additive continuation migration. This preserves reviewable history while adding customer addresses, licensed product images, factual attributes, price history, shipments, shipment items, tracking events, returns, return items, refunds, Product Manager actions, and foreign-key constraints. Neither migration has been applied to production.
 
-| Domain | Core records |
-|---|---|
-| Catalogue | suppliers, sources, sync runs, categories, products, variants, product categories, images, attributes, price history |
-| Supply and stock | supplier products, inventory freshness, supplier delivery model |
-| Customer | carts, cart items, addresses, orders, order items |
-| Fulfilment | shipments, shipment items, tracking events |
-| Aftercare | returns, return items, refunds |
-| Governance | product approvals, Product Manager actions, generic audit log |
+| Domain           | Core records                                                                                                         |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Catalogue        | suppliers, sources, sync runs, categories, products, variants, product categories, images, attributes, price history |
+| Supply and stock | supplier products, inventory freshness, supplier delivery model                                                      |
+| Customer         | carts, cart items, addresses, orders, order items                                                                    |
+| Fulfilment       | shipments, shipment items, tracking events                                                                           |
+| Aftercare        | returns, return items, refunds                                                                                       |
+| Governance       | product approvals, Product Manager actions, generic audit log                                                        |
 
 ## Security model
 

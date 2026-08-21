@@ -1,11 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { isDuplicateCandidate, normaliseSupplierCandidate, priceCandidate, scoreCandidate, type SupplierCandidate } from "./commerce/productManager";
+import {
+  isDuplicateCandidate,
+  normaliseSupplierCandidate,
+  priceCandidate,
+  scoreCandidate,
+  type SupplierCandidate,
+} from "./commerce/productManager";
 
 const candidate: SupplierCandidate = {
   supplierSku: " dev-01 ",
   ean: "50 123-456",
   title: "  Equine   grooming kit ",
-  factualDescription: "A synthetic development record with no customer-facing factual claim.",
+  factualDescription:
+    "A synthetic development record with no customer-facing factual claim.",
   brand: " Development ",
   supplierCostPence: 1000,
   rrpPence: 1800,
@@ -19,8 +26,16 @@ describe("governed Product Manager", () => {
     const normalised = normaliseSupplierCandidate(candidate);
     expect(normalised.supplierSku).toBe("DEV-01");
     expect(normalised.ean).toBe("50123456");
-    expect(isDuplicateCandidate(candidate, [{ supplierSku: "DEV-01", ean: null, title: "other" }])).toBe(true);
-    expect(isDuplicateCandidate(candidate, [{ supplierSku: "different", ean: "50123456", title: "other" }])).toBe(true);
+    expect(
+      isDuplicateCandidate(candidate, [
+        { supplierSku: "DEV-01", ean: null, title: "other" },
+      ]),
+    ).toBe(true);
+    expect(
+      isDuplicateCandidate(candidate, [
+        { supplierSku: "different", ean: "50123456", title: "other" },
+      ]),
+    ).toBe(true);
   });
 
   it("scores source freshness and duplicate risk without auto-publication", () => {
@@ -31,7 +46,12 @@ describe("governed Product Manager", () => {
   });
 
   it("requires review for an abnormal price movement", () => {
-    const proposal = priceCandidate(candidate, 1100, { targetGrossMarginBasisPoints: 4000, minimumGrossMarginBasisPoints: 2500, minimumAbsoluteProfitPence: 300, maxAutomaticMovementBasisPoints: 1000 });
+    const proposal = priceCandidate(candidate, 1100, {
+      targetGrossMarginBasisPoints: 4000,
+      minimumGrossMarginBasisPoints: 2500,
+      minimumAbsoluteProfitPence: 300,
+      maxAutomaticMovementBasisPoints: 1000,
+    });
     expect(proposal.needsHumanReview).toBe(true);
   });
 });
