@@ -589,7 +589,7 @@ export const commerceRouter = router({
         const source = asRows<any>(
           await db.execute(sql`
           SELECT p.id, p.title, p.description, p.brand, sp.supplierSku, sp.supplierCostPence,
-            si.availabilityStatus, si.sourceUpdatedAt
+            si.availabilityStatus, sp.sourceUpdatedAt
           FROM commerceProducts p
           JOIN commerceSupplierProducts sp ON sp.productId = p.id
           LEFT JOIN commerceSupplierInventory si ON si.supplierProductId = sp.id
@@ -614,7 +614,7 @@ export const commerceRouter = router({
         });
         const existing = asRows<any>(
           await db.execute(
-            sql`SELECT supplierSku, ean, title FROM commerceSupplierProducts sp JOIN commerceProducts p ON p.id = sp.productId WHERE p.id != ${input.productId} LIMIT 500`,
+            sql`SELECT supplierSku, NULL AS ean, title FROM commerceSupplierProducts sp JOIN commerceProducts p ON p.id = sp.productId WHERE p.id != ${input.productId} LIMIT 500`,
           ),
         );
         const duplicate = isDuplicateCandidate(candidate, existing);
