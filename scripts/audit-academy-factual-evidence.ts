@@ -29,6 +29,13 @@ const register = JSON.parse(fs.readFileSync(registerPath, "utf8")) as {
     whatWasVerified: string;
     lessonChangeMade: string;
     reviewStatus: string;
+    reviewDecision: null | {
+      reviewedAt: string;
+      reviewedBy: string;
+      sourceUrl: string;
+      claimReviewed: string;
+      outcome: "ACCEPTED" | "REWRITTEN_AS_PRINCIPLE";
+    };
   }>;
 };
 
@@ -60,6 +67,34 @@ for (const row of register.lessons) {
   ) {
     issues.push(`${row.lessonSlug}: incomplete source record`);
   }
+  if (row.reviewStatus === "CLAIM_REVIEWED_AND_ACCEPTED") {
+    const decision = row.reviewDecision;
+    if (!decision) {
+      issues.push(`${row.lessonSlug}: accepted status missing review decision`);
+    } else {
+      if (!decision.reviewedAt || !decision.reviewedBy) {
+        issues.push(
+          `${row.lessonSlug}: accepted decision missing reviewer metadata`,
+        );
+      }
+      if (!decision.sourceUrl?.startsWith("https://")) {
+        issues.push(
+          `${row.lessonSlug}: accepted decision missing valid source URL`,
+        );
+      }
+      if (!decision.claimReviewed?.trim()) {
+        issues.push(
+          `${row.lessonSlug}: accepted decision missing specific claim scope`,
+        );
+      }
+      if (
+        decision.outcome !== "ACCEPTED" &&
+        decision.outcome !== "REWRITTEN_AS_PRINCIPLE"
+      ) {
+        issues.push(`${row.lessonSlug}: accepted decision has invalid outcome`);
+      }
+    }
+  }
 }
 
 const statusCounts = Object.fromEntries(
@@ -76,10 +111,15 @@ const unresolved = register.lessons.filter(
 const report = {
   generatedAt: new Date().toISOString(),
   scope:
-    "Evidence-register completeness audit. It does not fact-check content or convert source mapping into factual acceptance.",
+    "Evidence-register completeness audit. A factual acceptance is recognised only for a row with an explicit source-to-claim reviewer decision; broad topic mapping remains unresolved.",
   lessonsRegistered: register.lessons.length,
   statusCounts,
   unresolvedSpecificClaimReviews: unresolved.length,
+  factuallyAccepted: register.lessons.filter(
+    (row) =>
+      row.reviewStatus === "NOT_MATERIAL_FACT_CHECK_REQUIRED" ||
+      row.reviewStatus === "CLAIM_REVIEWED_AND_ACCEPTED",
+  ).length,
   registerIssues: issues,
 };
 

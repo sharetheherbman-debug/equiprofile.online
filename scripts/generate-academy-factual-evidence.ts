@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { LESSON_UNITS } from "../server/lessonContent";
+import { REVIEWED_LESSON_CLAIMS } from "./academy-factual-review-decisions";
 
 type Source = {
   organisation: string;
@@ -12,7 +13,8 @@ type Source = {
 type RiskClass = "LOW_RISK_DESCRIPTIVE" | "HIGH_RISK";
 type ReviewStatus =
   | "NOT_MATERIAL_FACT_CHECK_REQUIRED"
-  | "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW";
+  | "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW"
+  | "CLAIM_REVIEWED_AND_ACCEPTED";
 
 const REVIEW_DATE = "2026-08-21";
 const SOURCES = {
@@ -32,6 +34,30 @@ const SOURCES = {
     organisation: "World Horse Welfare",
     title: "Preparing for an emergency – equine first aid",
     url: "https://www.worldhorsewelfare.org/advice/welfare-wednesdays/preparing-for-an-emergency-equine-first-aid",
+    checkedAt: REVIEW_DATE,
+  },
+  feeding: {
+    organisation: "World Horse Welfare",
+    title: "Feeding horses",
+    url: "https://www.worldhorsewelfare.org/advice/feeding-horses",
+    checkedAt: REVIEW_DATE,
+  },
+  bhsFeeding: {
+    organisation: "British Horse Society",
+    title: "Feeding horses",
+    url: "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/feeding-horses/",
+    checkedAt: REVIEW_DATE,
+  },
+  bhsPasture: {
+    organisation: "British Horse Society",
+    title: "Pasture management",
+    url: "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/pasture-management/",
+    checkedAt: REVIEW_DATE,
+  },
+  feiDressage: {
+    organisation: "Fédération Equestre Internationale",
+    title: "FEI Dressage Rules 2026",
+    url: "https://inside.fei.org/sites/default/files/FEI_Dressage_Rules_2026_Clean_Version_6.pdf",
     checkedAt: REVIEW_DATE,
   },
   welfare: {
@@ -118,7 +144,7 @@ const TOPIC_RULES: Array<{
 ];
 
 const MATERIAL_NUMBER_OR_RULE =
-  /\b\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?\s*(?:m|metres?|cm|mm|kg|g|ml|litres?|bpm|°c|degrees?|hours?|days?|weeks?|months?|years?|strides?|percent|%)\b|\b(?:must|required|legal|law|rule)\b/gi;
+  /\b\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?\s*(?:m|metres?|cm|mm|kg|g|ml|litres?|bpm|°c|degrees?|hours?|minutes?|mins?|seconds?|secs?|days?|weeks?|months?|years?|strides?|steps?|times?|repetitions?|reps?|holes?|fingers?|horse.lengths?|beats?|percent|%)\b|\b(?:must|required|legal|law|rule)\b/gi;
 
 function fullText(lesson: (typeof LESSON_UNITS)[number]): string {
   return [
@@ -203,6 +229,24 @@ const changedLessons: Record<string, string> = {
     "Removed generated repair, inspection, drill and record-review timelines; the lesson now requires a risk-based procedure consistent with current legal, insurer, fire-authority and yard requirements.",
   "daily-stable-routines":
     "Removed generated task-duration, temperature and review-cadence prescriptions; the lesson now requires an individual-care, risk-based routine and authorised current variations record.",
+  "equine-first-aid-basics":
+    "Replaced fixed cold-hosing and learner-led wound-treatment directions with a first-response scope of scene safety, factual observation, prompt veterinary contact and current professional instruction.",
+  "understanding-equine-digestion":
+    "Removed the universal dietary-transition calendar and categorical colic ranking; the lesson now requires an individual feeding plan, factual records and prompt veterinary escalation for concerns.",
+  "feeding-routines-and-rules":
+    "Removed generic pre- and post-exercise intervals and transition timing; feeding and work planning now follows the documented individual plan and current professional advice.",
+  "responsible-horse-ownership":
+    "Removed universal lifespan and routine-service calendar claims; ownership is now presented as a long-term, welfare-led responsibility with horse-specific professional care and contingency planning.",
+  "end-of-life-decisions":
+    "Removed fixed quality-of-life review cadence and trend windows; the lesson requires a documented veterinary-led review process and current individual welfare plan.",
+  "cross-country-fundamentals":
+    "Removed generic warm-up durations, transition counts and stride-distance decision rules; course preparation and safety choices now require a qualified coach, current course conditions and event procedure.",
+  "competition-etiquette-and-sportsmanship":
+    "Removed generic warm-up observation and SMART-practice measurements; competition reflection and preparation now use the current organiser procedure and coach-agreed context.",
+  "mental-skills-for-performance":
+    "Removed generic arena-size, visualisation-duration and breathing-count prescriptions; goals and mental preparation are now individual, coach-aware and welfare-sensitive.",
+  "competition-day-management":
+    "Removed generic arrival buffers, schedule cut-offs, breathing counts and post-event practice calendars; preparation now follows current organiser, coach and horse-specific plans.",
 };
 
 const rows = LESSON_UNITS.map((lesson) => {
@@ -221,8 +265,22 @@ const rows = LESSON_UNITS.map((lesson) => {
         .map((source) => [source.url, source]),
     ).values(),
   ];
-  const reviewStatus: ReviewStatus =
-    riskClass === "LOW_RISK_DESCRIPTIVE" && materialClaims.length === 0
+  const reviewDecision = REVIEWED_LESSON_CLAIMS[lesson.slug];
+  const decisionSource = reviewDecision
+    ? Object.values(SOURCES).find(
+        (source) => source.url === reviewDecision.sourceUrl,
+      )
+    : undefined;
+  const reviewedSourceRows = decisionSource
+    ? [
+        ...new Map(
+          [...sourceRows, decisionSource].map((source) => [source.url, source]),
+        ).values(),
+      ]
+    : sourceRows;
+  const reviewStatus: ReviewStatus = reviewDecision
+    ? "CLAIM_REVIEWED_AND_ACCEPTED"
+    : riskClass === "LOW_RISK_DESCRIPTIVE" && materialClaims.length === 0
       ? "NOT_MATERIAL_FACT_CHECK_REQUIRED"
       : "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW";
   return {
@@ -235,15 +293,17 @@ const rows = LESSON_UNITS.map((lesson) => {
         ? topicMatches.map((rule) => rule.topic)
         : ["General descriptive educational content"],
     riskClass,
-    sources: sourceRows,
+    sources: reviewedSourceRows,
     sourceCheckDate: REVIEW_DATE,
     materialNumberOrRuleMentions: [...new Set(materialClaims)],
-    whatWasVerified:
-      "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
+    whatWasVerified: reviewDecision
+      ? `${reviewDecision.outcome}: ${reviewDecision.claimReviewed}`
+      : "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
     lessonChangeMade:
       changedLessons[lesson.slug] ??
       "No source-text change is recorded by this mapping step.",
     reviewStatus,
+    reviewDecision: reviewDecision ?? null,
   };
 });
 
@@ -259,6 +319,9 @@ const report = {
     sourceMappedRequiresSpecificClaimReview: rows.filter(
       (row) =>
         row.reviewStatus === "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
+    ).length,
+    claimReviewedAndAccepted: rows.filter(
+      (row) => row.reviewStatus === "CLAIM_REVIEWED_AND_ACCEPTED",
     ).length,
   },
   lessons: rows,
