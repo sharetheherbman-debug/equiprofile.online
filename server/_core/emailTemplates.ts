@@ -249,7 +249,8 @@ ${headerBlock()}
 // ─────────────────────────────────────────────────────────────────────────────
 
 function template3_stableManagement(): string {
-  return wrapEmail(`
+  return wrapEmail(
+    `
 ${headerBlock("linear-gradient(135deg, #065f46 0%, #10b981 100%)")}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
@@ -284,7 +285,9 @@ ${headerBlock("linear-gradient(135deg, #065f46 0%, #10b981 100%)")}
     <p style="margin:4px 0 0;font-size:12px;color:#6b7280;">— Verified Stable Owner</p>
   </div>
 </td></tr>
-`, "#f0fdf4");
+`,
+    "#f0fdf4",
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -320,14 +323,14 @@ ${headerBlock("#0f2e6b")}
 // Template registry & merge-field processing
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ── SCHOOL CAMPAIGN TEMPLATE FUNCTIONS ─────────────────────────────────────
+// ── ACADEMY CAMPAIGN TEMPLATE FUNCTIONS ─────────────────────────────────────
 
-function schoolTemplate1_introduction(): string {
+function academyTemplate1_introduction(): string {
   return wrapEmail(`
 ${headerBlock("linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)")}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    Introducing EquiProfile to Your School 🎓
+    Introducing EquiProfile Academy 🎓
   </h1>
   <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
     Hi {{firstName}},
@@ -336,13 +339,13 @@ ${headerBlock("linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)")}
     We're excited to introduce <strong style="color:#1e293b;">EquiProfile</strong> — a digital learning and management platform designed specifically for equestrian education.
   </p>
   <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    EquiProfile helps riding schools deliver structured learning, track student progression, manage assignments, and communicate with parents — all from one platform.
+    EquiProfile Academy helps equestrian education providers deliver structured learning, track student progression, manage assignments, and communicate with parents — all from one platform.
   </p>
 </td></tr>
 <tr><td style="padding:0 40px;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
     <tr><td style="padding:24px;background:#f5f3ff;">
-      <h2 style="margin:0 0 16px;font-size:18px;color:#4f46e5;">What EquiProfile Offers Schools</h2>
+      <h2 style="margin:0 0 16px;font-size:18px;color:#4f46e5;">What EquiProfile Academy Offers</h2>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr><td style="padding:6px 0;font-size:14px;color:#334155;">✅ Structured learning pathways (Beginner → Advanced)</td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#334155;">✅ Daily practice scenarios matched to student level</td></tr>
@@ -359,7 +362,7 @@ ${headerBlock("linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)")}
 `);
 }
 
-function schoolTemplate2_partnershipPitch(): string {
+function academyTemplate2_partnershipPitch(): string {
   return wrapEmail(`
 ${headerBlock("linear-gradient(135deg, #059669 0%, #10b981 100%)")}
 <tr><td style="padding:40px 40px 0;">
@@ -381,7 +384,7 @@ ${headerBlock("linear-gradient(135deg, #059669 0%, #10b981 100%)")}
     <tr><td style="padding:24px;background:#ecfdf5;">
       <h2 style="margin:0 0 16px;font-size:18px;color:#059669;">Partnership Benefits</h2>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🏫 Professional digital learning platform for your school</td></tr>
+        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">🏫 Professional digital learning platform for your Academy</td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📊 Real-time progress tracking and reporting</td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#334155;">👨‍🏫 Teacher tools for assignments and feedback</td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#334155;">📱 Mobile-friendly for students and parents</td></tr>
@@ -396,7 +399,7 @@ ${headerBlock("linear-gradient(135deg, #059669 0%, #10b981 100%)")}
 `);
 }
 
-function schoolTemplate4_teacherOnboarding(): string {
+function academyTemplate4_teacherOnboarding(): string {
   return wrapEmail(`
 ${headerBlock("linear-gradient(135deg, #d97706 0%, #f59e0b 100%)")}
 <tr><td style="padding:40px 40px 0;">
@@ -431,7 +434,7 @@ ${headerBlock("linear-gradient(135deg, #d97706 0%, #f59e0b 100%)")}
 `);
 }
 
-function schoolTemplate6_trialInvitation(): string {
+function academyTemplate6_trialInvitation(): string {
   return wrapEmail(`
 ${headerBlock("linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)")}
 <tr><td style="padding:40px 40px 0;">
@@ -442,10 +445,10 @@ ${headerBlock("linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)")}
     Hi {{firstName}},
   </p>
   <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.6;">
-    We'd like to invite your school to try EquiProfile completely free for 7 days. No credit card required, no obligations — just a full-featured trial of everything we offer.
+    We'd like to invite your Academy to try EquiProfile completely free for 7 days. No credit card required, no obligations — just a full-featured trial of everything we offer.
   </p>
   <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    Set up your school, add students, assign lessons, and see real progress tracking in action.
+    Set up your Academy, add students, assign lessons, and see real progress tracking in action.
   </p>
 </td></tr>
 <tr><td style="padding:0 40px;">
@@ -469,12 +472,12 @@ ${headerBlock("linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)")}
 `);
 }
 
-function schoolTemplate10_followUpConversion(): string {
+function academyTemplate10_followUpConversion(): string {
   return wrapEmail(`
 ${headerBlock("linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)")}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
-    Ready to Transform Your School? ✨
+    Ready to Transform Your Academy? ✨
   </h1>
   <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
     Hi {{firstName}},
@@ -483,7 +486,7 @@ ${headerBlock("linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)")}
     We hope you've had a chance to explore what EquiProfile can do for your riding school. Whether you've tried the free trial or are still considering it, we wanted to follow up and answer any questions you might have.
   </p>
   <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.6;">
-    Schools that partner with EquiProfile see measurable improvements in student engagement, parent satisfaction, and teaching efficiency.
+    Academies that partner with EquiProfile see measurable improvements in student engagement, parent satisfaction, and teaching efficiency.
   </p>
 </td></tr>
 <tr><td style="padding:0 40px;">
@@ -495,7 +498,7 @@ ${headerBlock("linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)")}
         <tr><td style="padding:6px 0;font-size:14px;color:#334155;">✅ Daily practice scenarios for every student</td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#334155;">✅ AI tutor for instant, safe learning support</td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#334155;">✅ Teacher assignment and feedback tools</td></tr>
-        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">✅ Progress reports and school-wide analytics</td></tr>
+        <tr><td style="padding:6px 0;font-size:14px;color:#334155;">✅ Progress reports and Academy-wide analytics</td></tr>
         <tr><td style="padding:6px 0;font-size:14px;color:#334155;">✅ Messaging between teachers, students, and parents</td></tr>
       </table>
     </td></tr>
@@ -518,7 +521,7 @@ export interface CampaignTemplate {
   name: string;
   description: string;
   previewColor: string;
-  /** management = stable/yard/owner campaigns; academy_school = education/riding-school campaigns */
+  /* management = stable/yard/owner campaigns; `academy_school` is a LEGACY_DATABASE_COMPAT_ONLY education-category value. */
   category: "management" | "academy_school";
   getHtml: () => string;
   /**
@@ -535,7 +538,7 @@ export interface CampaignTemplate {
 export const CAMPAIGN_DAILY_TOTAL_LIMIT = 40;
 /** Maximum new outreach sends per day across all management campaigns. */
 export const CAMPAIGN_DAILY_MANAGEMENT_LIMIT = 25;
-/** Maximum academy/school-type sends per day. */
+/** Maximum Academy-type sends per day. */
 export const CAMPAIGN_DAILY_ACADEMY_LIMIT = 15;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -579,7 +582,8 @@ ${headerBlock("linear-gradient(135deg, #92400e 0%, #d97706 100%)")}
 }
 
 function academyTemplate3_seasonalEnrolment(): string {
-  return wrapEmail(`
+  return wrapEmail(
+    `
 ${headerBlock("linear-gradient(135deg, #134e4a 0%, #0f766e 100%)")}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 8px;font-size:26px;color:#1e293b;font-weight:700;">
@@ -619,7 +623,9 @@ ${headerBlock("linear-gradient(135deg, #134e4a 0%, #0f766e 100%)")}
     <p style="margin:4px 0 0;font-size:12px;color:#6b7280;">— Academy Principal</p>
   </div>
 </td></tr>
-`, "#f0fdfa");
+`,
+    "#f0fdfa",
+  );
 }
 
 export const CAMPAIGN_TEMPLATES: CampaignTemplate[] = [
@@ -627,10 +633,12 @@ export const CAMPAIGN_TEMPLATES: CampaignTemplate[] = [
   {
     id: "mgmt-intro",
     name: "Management — Intro",
-    description: "First outreach to stables, yards, and owners. Introduces EquiProfile with a clear value proposition and a low-friction CTA.",
+    description:
+      "First outreach to stables, yards, and owners. Introduces EquiProfile with a clear value proposition and a low-friction CTA.",
     previewColor: "#2e6da4",
     category: "management",
-    getHtml: () => wrapEmail(`
+    getHtml: () =>
+      wrapEmail(`
 ${headerBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">The professional platform built for equestrian businesses</h1>
@@ -654,10 +662,12 @@ ${bulletRow("<strong>Secure, shareable records</strong> — export medical passp
   {
     id: "mgmt-value",
     name: "Management — Value",
-    description: "Second outreach highlighting specific time-saving value for yard/stable managers. Concrete benefits, no fluff.",
+    description:
+      "Second outreach highlighting specific time-saving value for yard/stable managers. Concrete benefits, no fluff.",
     previewColor: "#2e6da4",
     category: "management",
-    getHtml: () => wrapEmail(`
+    getHtml: () =>
+      wrapEmail(`
 ${headerBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">How much time does admin actually cost you?</h1>
@@ -683,10 +693,12 @@ ${bulletRow("Full audit trail — every treatment, every note, timestamped")}
   {
     id: "mgmt-proof",
     name: "Management — Proof",
-    description: "Third outreach with social proof and trust signals for equestrian management. Builds confidence before final push.",
+    description:
+      "Third outreach with social proof and trust signals for equestrian management. Builds confidence before final push.",
     previewColor: "#2e6da4",
     category: "management",
-    getHtml: () => wrapEmail(`
+    getHtml: () =>
+      wrapEmail(`
 ${headerBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">Used by equestrian businesses across the UK &amp; Ireland</h1>
@@ -714,10 +726,12 @@ ${bulletRow("Flat-rate pricing — no per-horse fees")}
   {
     id: "mgmt-nudge",
     name: "Management — Final Nudge",
-    description: "Final outreach email for management leads. Direct, respectful, low-pressure. Clear close.",
+    description:
+      "Final outreach email for management leads. Direct, respectful, low-pressure. Clear close.",
     previewColor: "#2e6da4",
     category: "management",
-    getHtml: () => wrapEmail(`
+    getHtml: () =>
+      wrapEmail(`
 ${headerBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">Last note — just in case the timing is right now</h1>
@@ -744,16 +758,18 @@ ${bulletRow("No credit card required")}
   {
     id: "academy-intro",
     name: "Academy — Intro",
-    description: "First outreach to riding schools, colleges, and academies. Introduces the academic/student platform.",
+    description:
+      "First outreach to equestrian education providers. Introduces the academic/student platform.",
     previewColor: "#163563",
     category: "academy_school",
-    getHtml: () => wrapEmail(`
+    getHtml: () =>
+      wrapEmail(`
 ${academyHeaderBlock()}
 <tr><td style="padding:40px 40px 0;">
-  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">A structured learning platform designed for equestrian schools</h1>
+  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">A structured learning platform for equestrian education providers</h1>
   <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Hi {{firstName}},</p>
   <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Teaching equestrian skills is complex. Tracking student progression, managing lesson content, and keeping parents informed shouldn't be.</p>
-  <p style="margin:0 0 24px;font-size:15px;color:#475569;line-height:1.7;">EquiProfile Academy gives your school a professional, structured digital platform — built specifically for equestrian education.</p>
+  <p style="margin:0 0 24px;font-size:15px;color:#475569;line-height:1.7;">EquiProfile Academy gives your Academy a professional, structured digital platform — built specifically for equestrian education.</p>
   <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:0 0 28px;">
 ${bulletRow("<strong>Structured lesson pathways</strong> — from beginner to advanced rider", "#163563")}
 ${bulletRow("<strong>Student progress tracking</strong> — measurable, reportable", "#163563")}
@@ -770,24 +786,26 @@ ${bulletRow("<strong>Parent visibility</strong> — progress updates without adm
   {
     id: "academy-value",
     name: "Academy — Value",
-    description: "Second outreach for academies/schools. Concrete time-saving and professional benefits for instructors and managers.",
+    description:
+      "Second outreach for Academy organisations. Concrete time-saving and professional benefits for instructors and managers.",
     previewColor: "#163563",
     category: "academy_school",
-    getHtml: () => wrapEmail(`
+    getHtml: () =>
+      wrapEmail(`
 ${academyHeaderBlock()}
 <tr><td style="padding:40px 40px 0;">
-  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">What does your school gain from going digital?</h1>
+  <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">What does your Academy gain from going digital?</h1>
   <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Hi {{firstName}},</p>
   <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.7;">Paper lesson plans, scattered progress notes, and manual parent updates take hours every week. EquiProfile Academy consolidates all of it — so your instructors can focus on teaching.</p>
   <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:0 0 24px;">
 ${bulletRow("Instructors spend less time on admin, more time teaching", "#163563")}
 ${bulletRow("Students learn faster with structured, trackable pathways", "#163563")}
 ${bulletRow("Parents stay informed without constant phone calls", "#163563")}
-${bulletRow("School leadership sees real data — enrolment, progression, retention", "#163563")}
+${bulletRow("Academy leadership sees real data — enrolment, progression, retention", "#163563")}
   </table>
   <div style="background:#eff6ff;border-left:4px solid #163563;padding:16px 20px;border-radius:0 8px 8px 0;margin:0 0 28px;">
     <p style="margin:0;font-size:14px;color:#1e40af;font-weight:600;line-height:1.5;">"Our admin time dropped significantly in the first term."</p>
-    <p style="margin:4px 0 0;font-size:12px;color:#64748b;">— School Principal, UK</p>
+    <p style="margin:4px 0 0;font-size:12px;color:#64748b;">— Academy Principal, UK</p>
   </div>
 </td></tr>
 <tr><td style="padding:0 40px 40px;text-align:center;">
@@ -798,10 +816,12 @@ ${bulletRow("School leadership sees real data — enrolment, progression, retent
   {
     id: "academy-proof",
     name: "Academy — Proof",
-    description: "Third outreach with trust signals and proof for academy/school decision-makers.",
+    description:
+      "Third outreach with trust signals and proof for Academy decision-makers.",
     previewColor: "#163563",
     category: "academy_school",
-    getHtml: () => wrapEmail(`
+    getHtml: () =>
+      wrapEmail(`
 ${academyHeaderBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">Trusted by riding schools across the UK &amp; Ireland</h1>
@@ -829,16 +849,18 @@ ${bulletRow("Flat pricing — no per-student fees", "#163563")}
   {
     id: "academy-nudge",
     name: "Academy — Final Nudge",
-    description: "Final outreach email for academy/school leads. Respectful close with a clear, low-pressure CTA.",
+    description:
+      "Final outreach email for Academy leads. Respectful close with a clear, low-pressure CTA.",
     previewColor: "#163563",
     category: "academy_school",
-    getHtml: () => wrapEmail(`
+    getHtml: () =>
+      wrapEmail(`
 ${academyHeaderBlock()}
 <tr><td style="padding:40px 40px 0;">
   <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0c1e3c;line-height:1.3;">One last note — if the timing is finally right</h1>
   <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Hi {{firstName}},</p>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.7;">I won't keep emailing. But if you've been putting off modernising your school's administration — this is the simplest way to start.</p>
-  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.7;">A free 7-day trial gives you full access. You'll know within a day whether it fits how your school works.</p>
+  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.7;">I won't keep emailing. But if you've been putting off modernising your Academy's administration — this is the simplest way to start.</p>
+  <p style="margin:0 0 20px;font-size:15px;color:#475569;line-height:1.7;">A free 7-day trial gives you full access. You'll know within a day whether it fits how your Academy works.</p>
   <div style="background:#eff6ff;border-radius:10px;padding:20px 24px;margin:0 0 28px;">
     <p style="margin:0;font-size:14px;font-weight:600;color:#0c1e3c;">What's included in the trial:</p>
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-top:10px;">
@@ -872,7 +894,8 @@ ${bulletRow("No credit card required", "#163563")}
   {
     id: "health-tracking",
     name: "Health Tracking Spotlight",
-    description: "Feature spotlight on health records — vaccinations, dental, farrier, deworming, and vet notes. Strong trial CTA.",
+    description:
+      "Feature spotlight on health records — vaccinations, dental, farrier, deworming, and vet notes. Strong trial CTA.",
     previewColor: "#2e6da4",
     category: "management",
     isAdvanced: true,
@@ -881,7 +904,8 @@ ${bulletRow("No credit card required", "#163563")}
   {
     id: "training-performance",
     name: "Training & Performance",
-    description: "Feature spotlight on training logs, session tracking, performance monitoring, and AI insights.",
+    description:
+      "Feature spotlight on training logs, session tracking, performance monitoring, and AI insights.",
     previewColor: "#2e6da4",
     category: "management",
     isAdvanced: true,
@@ -890,63 +914,70 @@ ${bulletRow("No credit card required", "#163563")}
   {
     id: "stable-management",
     name: "Stable Management Spotlight",
-    description: "Feature spotlight for yard owners — multi-horse management, staff, client portal, yard calendar.",
+    description:
+      "Feature spotlight for yard owners — multi-horse management, staff, client portal, yard calendar.",
     previewColor: "#10b981",
     category: "management",
     isAdvanced: true,
     getHtml: template3_stableManagement,
   },
 
-  // ── Advanced / Spotlight Templates (academy_school) ──────────────────────
+  // ── Advanced / Spotlight Templates (Academy; legacy category value retained) ──────────────────────
   {
-    id: "school-introduction",
-    name: "School Introduction",
-    description: "First outreach to riding schools — structured learning, progression tracking, teacher tools.",
+    id: "academy-introduction",
+    name: "Academy Introduction",
+    description:
+      "First outreach to riding schools — structured learning, progression tracking, teacher tools.",
     previewColor: "#4f46e5",
     category: "academy_school",
     isAdvanced: true,
-    getHtml: schoolTemplate1_introduction,
+    getHtml: academyTemplate1_introduction,
   },
   {
-    id: "school-partnership",
+    id: "academy-partnership",
     name: "Riding School Partnership Pitch",
-    description: "Partnership proposal for riding schools — professional digital infrastructure, measurable outcomes.",
+    description:
+      "Partnership proposal for riding schools — professional digital infrastructure, measurable outcomes.",
     previewColor: "#4f46e5",
     category: "academy_school",
     isAdvanced: true,
-    getHtml: schoolTemplate2_partnershipPitch,
+    getHtml: academyTemplate2_partnershipPitch,
   },
   {
-    id: "school-teacher-outreach",
+    id: "academy-teacher-outreach",
     name: "Instructor & Teacher Outreach",
-    description: "Targeted email for instructors and teachers — lesson planning tools, student progress, assessment features.",
+    description:
+      "Targeted email for instructors and teachers — lesson planning tools, student progress, assessment features.",
     previewColor: "#4f46e5",
     category: "academy_school",
     isAdvanced: true,
-    getHtml: schoolTemplate4_teacherOnboarding,
+    getHtml: academyTemplate4_teacherOnboarding,
   },
   {
-    id: "school-trial-invite",
-    name: "School Trial Invitation",
-    description: "Low-friction 7-day trial invitation for riding schools and equestrian colleges.",
+    id: "academy-trial-invite",
+    name: "Academy Trial Invitation",
+    description:
+      "Low-friction 7-day trial invitation for riding schools and equestrian colleges.",
     previewColor: "#4f46e5",
     category: "academy_school",
     isAdvanced: true,
-    getHtml: schoolTemplate6_trialInvitation,
+    getHtml: academyTemplate6_trialInvitation,
   },
   {
-    id: "school-conversion",
-    name: "School Follow-Up & Conversion",
-    description: "Re-engagement and conversion email for school decision-makers who haven't yet started a trial.",
+    id: "academy-conversion",
+    name: "Academy Follow-Up & Conversion",
+    description:
+      "Re-engagement and conversion email for Academy decision-makers who haven't yet started a trial.",
     previewColor: "#4f46e5",
     category: "academy_school",
     isAdvanced: true,
-    getHtml: schoolTemplate10_followUpConversion,
+    getHtml: academyTemplate10_followUpConversion,
   },
   {
     id: "academy-competition",
     name: "Competition Season Prep",
-    description: "Seasonal urgency email around competition season — training logs, performance tracking, event scheduling.",
+    description:
+      "Seasonal urgency email around competition season — training logs, performance tracking, event scheduling.",
     previewColor: "#163563",
     category: "academy_school",
     isAdvanced: true,
@@ -955,7 +986,8 @@ ${bulletRow("No credit card required", "#163563")}
   {
     id: "academy-seasonal",
     name: "Academy Seasonal Enrolment Drive",
-    description: "Term-time seasonal enrolment email — 40% admin savings metric, free migration, no per-student fees.",
+    description:
+      "Term-time seasonal enrolment email — 40% admin savings metric, free migration, no per-student fees.",
     previewColor: "#163563",
     category: "academy_school",
     isAdvanced: true,
@@ -1000,10 +1032,7 @@ export function applyMergeFields(
 
   let result = html;
   for (const [key, value] of Object.entries(safeFields)) {
-    result = result.replace(
-      new RegExp(`\\{\\{${key}\\}\\}`, "g"),
-      value,
-    );
+    result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
   }
   return result;
 }
@@ -1042,7 +1071,8 @@ export interface CampaignSequenceTemplate {
 const campaign1_individualOwners: CampaignSequenceTemplate = {
   id: "individual-owners",
   name: "Individual Horse Owners",
-  description: "4-step sequence targeting individual owners. Focus: organisation, reminders, health tracking.",
+  description:
+    "4-step sequence targeting individual owners. Focus: organisation, reminders, health tracking.",
   targetAudience: "individual",
   steps: [
     {
@@ -1114,7 +1144,8 @@ If it's not for you, no worries at all. But if you've been meaning to get more o
 const campaign2_ridingSchools: CampaignSequenceTemplate = {
   id: "riding-schools",
   name: "Riding Schools",
-  description: "4-step sequence for riding schools. Focus: scheduling, efficiency, professionalism.",
+  description:
+    "4-step sequence for riding schools. Focus: scheduling, efficiency, professionalism.",
   targetAudience: "riding_school",
   steps: [
     {
@@ -1150,7 +1181,8 @@ Spend less time on paperwork. More time with the horses.`,
     {
       stepNumber: 3,
       delayDays: 6,
-      subject: "Professional records make a professional school",
+      subject:
+        "Professional records make a professional equestrian organisation",
       tone: "professionalism",
       body: `Hi {{firstName}},
 
@@ -1162,12 +1194,12 @@ EquiProfile gives you that professional edge:
 • Training progress tracking
 • Client-facing reports
 
-It's the system your school deserves.`,
+It's the system your organisation deserves.`,
     },
     {
       stepNumber: 4,
       delayDays: 10,
-      subject: "Ready to streamline your school?",
+      subject: "Ready to streamline your organisation?",
       tone: "follow-up",
       body: `Hi {{firstName}},
 
@@ -1185,7 +1217,8 @@ If you have questions, just reply to this email — we're happy to help.`,
 const campaign3_stables: CampaignSequenceTemplate = {
   id: "stables-yards",
   name: "Stables & Professional Yards",
-  description: "4-step sequence for livery yards and professional stables. Focus: structured management, team coordination.",
+  description:
+    "4-step sequence for livery yards and professional stables. Focus: structured management, team coordination.",
   targetAudience: "stable",
   steps: [
     {
@@ -1256,7 +1289,8 @@ If you'd like a quick walkthrough, just reply — we're happy to help.`,
 const campaign4_students: CampaignSequenceTemplate = {
   id: "students",
   name: "Riding Students & Learners",
-  description: "4-step sequence for riding students. Focus: progress tracking, lesson organisation, skill development.",
+  description:
+    "4-step sequence for riding students. Focus: progress tracking, lesson organisation, skill development.",
   targetAudience: "student",
   steps: [
     {
@@ -1328,7 +1362,8 @@ No credit card needed. No commitment. Just a smarter way to grow as a rider.`,
 const campaign5_teachers: CampaignSequenceTemplate = {
   id: "teachers",
   name: "Riding Instructors & Coaches",
-  description: "4-step sequence for riding instructors. Focus: student management, lesson planning, professional development tracking.",
+  description:
+    "4-step sequence for riding instructors. Focus: student management, lesson planning, professional development tracking.",
   targetAudience: "teacher",
   steps: [
     {
@@ -1417,7 +1452,10 @@ export function buildSequenceStepHtml(body: string): string {
         const items = lines
           .map((l) => l.trim())
           .filter((l) => l.startsWith("•"))
-          .map((l) => `<li style="padding:2px 0;font-size:14px;color:#334155;">${l.replace("•", "").trim()}</li>`)
+          .map(
+            (l) =>
+              `<li style="padding:2px 0;font-size:14px;color:#334155;">${l.replace("•", "").trim()}</li>`,
+          )
           .join("");
         const intro = lines.find((l) => !l.trim().startsWith("•"));
         return `${intro ? `<p style="margin:0 0 8px;font-size:15px;color:#475569;line-height:1.6;">${intro}</p>` : ""}

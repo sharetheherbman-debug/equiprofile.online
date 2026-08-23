@@ -55,11 +55,36 @@ function AnimatedSection({
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-const platformStats: { icon: LucideIcon; value: string; label: string; sub: string }[] = [
-  { icon: HeartPulse, value: "10+", label: "Health Modules", sub: "vet, farrier, dental & more" },
-  { icon: ShieldCheck, value: "100%", label: "Encrypted", sub: "end-to-end data security" },
-  { icon: MapPin, value: "1–50+", label: "Horses", sub: "solo owner to full yard" },
-  { icon: Zap, value: "7-Day", label: "Free Trial", sub: "no credit card required" },
+const platformStats: {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+  sub: string;
+}[] = [
+  {
+    icon: HeartPulse,
+    value: "10+",
+    label: "Health Modules",
+    sub: "vet, farrier, dental & more",
+  },
+  {
+    icon: ShieldCheck,
+    value: "100%",
+    label: "Encrypted",
+    sub: "end-to-end data security",
+  },
+  {
+    icon: MapPin,
+    value: "1–50+",
+    label: "Horses",
+    sub: "solo owner to full yard",
+  },
+  {
+    icon: Zap,
+    value: "7-Day",
+    label: "Free Trial",
+    sub: "no credit card required",
+  },
 ];
 
 const features = [
@@ -146,7 +171,6 @@ export default function Home() {
   return (
     <ManagementLayout hidePreFooterCta>
       <div className="min-h-screen">
-
         {/*
           ======================== HERO ========================
           NOTE: The Home page intentionally keeps its own full-screen hero.
@@ -165,7 +189,7 @@ export default function Home() {
             alt="Professional equine management — stables and horses"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          {/* Deep layered overlay — school-aligned dark palette */}
+          {/* Deep layered overlay — Academy-aligned dark palette */}
           <div className="mgmt-hero-overlay" />
 
           {/* Subtle decorative accent */}
@@ -248,7 +272,10 @@ export default function Home() {
                 { icon: Zap, text: "No credit card required" },
                 { icon: MapPin, text: "Built by riders, for riders" },
               ].map(({ icon: Icon, text }) => (
-                <span key={text} className="flex items-center gap-1.5 text-xs text-white/45 font-medium tracking-wide">
+                <span
+                  key={text}
+                  className="flex items-center gap-1.5 text-xs text-white/45 font-medium tracking-wide"
+                >
                   <Icon className="w-3 h-3 text-[#c5a55a]/70" />
                   {text}
                 </span>
@@ -276,14 +303,17 @@ export default function Home() {
                     <p className="text-3xl md:text-4xl font-bold font-serif bg-gradient-to-r from-[#c5a55a] to-[#e8d08a] bg-clip-text text-transparent leading-none">
                       {s.value}
                     </p>
-                    <p className="text-white/80 font-semibold mt-2 text-sm md:text-base">{s.label}</p>
-                    <p className="text-white/30 text-[11px] mt-1 tracking-wide">{s.sub}</p>
+                    <p className="text-white/80 font-semibold mt-2 text-sm md:text-base">
+                      {s.label}
+                    </p>
+                    <p className="text-white/30 text-[11px] mt-1 tracking-wide">
+                      {s.sub}
+                    </p>
                   </div>
                 </AnimatedSection>
               ))}
             </div>
           </div>
-
         </section>
 
         {/* ==================== FEATURES GRID ==================== */}
@@ -299,7 +329,8 @@ export default function Home() {
                 <span className="text-[#1a7a6d]">nothing you don't</span>
               </h2>
               <p className="mt-5 text-[#0f1d2e]/55 text-lg max-w-xl mx-auto">
-                Purpose-built modules designed by equestrians, for equestrians — covering every aspect of modern horse management.
+                Purpose-built modules designed by equestrians, for equestrians —
+                covering every aspect of modern horse management.
               </p>
             </AnimatedSection>
 
@@ -315,13 +346,17 @@ export default function Home() {
                       className={`h-1 w-full bg-gradient-to-r ${f.gradient} opacity-80 group-hover:opacity-100 transition-opacity`}
                     />
                     <div className="p-8">
-                      <div className={`relative inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${f.gradient} text-white mb-6 shadow-lg group-hover:scale-105 transition-transform duration-300`}>
+                      <div
+                        className={`relative inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${f.gradient} text-white mb-6 shadow-lg group-hover:scale-105 transition-transform duration-300`}
+                      >
                         <f.icon className="w-6 h-6" />
                       </div>
                       <h3 className="text-xl font-bold font-serif text-[#0f1d2e] mb-3">
                         {f.title}
                       </h3>
-                      <p className="text-[#0f1d2e]/55 leading-relaxed text-[15px]">{f.desc}</p>
+                      <p className="text-[#0f1d2e]/55 leading-relaxed text-[15px]">
+                        {f.desc}
+                      </p>
                     </div>
                   </div>
                 </AnimatedSection>
@@ -358,7 +393,9 @@ export default function Home() {
                   <div className="absolute inset-0 ring-1 ring-inset ring-white/8 rounded-2xl pointer-events-none" />
                   {/* Corner accent */}
                   <div className="absolute top-4 right-4 bg-[#c5a55a]/90 backdrop-blur-sm rounded-lg px-3 py-1.5">
-                    <span className="text-[11px] font-bold text-[#0f1d2e] tracking-wider uppercase">Made for Yards</span>
+                    <span className="text-[11px] font-bold text-[#0f1d2e] tracking-wider uppercase">
+                      Made for Yards
+                    </span>
                   </div>
                 </div>
               </AnimatedSection>
@@ -380,7 +417,10 @@ export default function Home() {
                 </p>
                 <ul className="mt-8 space-y-3.5">
                   {whyPoints.map((item) => (
-                    <li key={item} className="flex items-start gap-3.5 text-white/70">
+                    <li
+                      key={item}
+                      className="flex items-start gap-3.5 text-white/70"
+                    >
                       <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-[#1a7a6d]/25 border border-[#1a7a6d]/60 flex items-center justify-center">
                         <Check className="w-3 h-3 text-[#4eca9d]" />
                       </span>
@@ -396,7 +436,10 @@ export default function Home() {
                     </Button>
                   </Link>
                   <Link href="/features">
-                    <Button variant="outline" className="border-white/20 text-white hover:bg-white/8 rounded-full px-7">
+                    <Button
+                      variant="outline"
+                      className="border-white/20 text-white hover:bg-white/8 rounded-full px-7"
+                    >
                       All Features
                     </Button>
                   </Link>
@@ -420,14 +463,16 @@ export default function Home() {
                 Built for the people of the yard
               </h2>
               <p className="mt-4 text-[#0f1d2e]/50 text-lg">
-                Representative feedback from equestrian professionals across the UK.
+                Representative feedback from equestrian professionals across the
+                UK.
               </p>
             </AnimatedSection>
 
             <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
               {testimonials.map((t, i) => (
                 <AnimatedSection key={t.name} delay={i * 0.1}>
-                  <div className="relative bg-white rounded-2xl p-8 border border-[#0f1d2e]/5 h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:shadow-[#2e6da4]/8 hover:-translate-y-2 group"
+                  <div
+                    className="relative bg-white rounded-2xl p-8 border border-[#0f1d2e]/5 h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:shadow-[#2e6da4]/8 hover:-translate-y-2 group"
                     style={{ boxShadow: "0 2px 16px -4px rgba(15,29,46,0.07)" }}
                   >
                     {/* Gold top accent line */}
@@ -440,7 +485,10 @@ export default function Home() {
 
                     <div className="flex gap-0.5 mb-4 mt-2">
                       {Array.from({ length: 5 }).map((_, si) => (
-                        <Star key={si} className="w-3.5 h-3.5 fill-[#c5a55a] text-[#c5a55a]" />
+                        <Star
+                          key={si}
+                          className="w-3.5 h-3.5 fill-[#c5a55a] text-[#c5a55a]"
+                        />
                       ))}
                     </div>
                     <p className="text-[#0f1d2e]/65 leading-relaxed flex-1 text-[15px]">
@@ -453,8 +501,12 @@ export default function Home() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-semibold text-[#0f1d2e] text-sm">{t.name}</p>
-                        <p className="text-xs text-[#0f1d2e]/40 mt-0.5">{t.role}</p>
+                        <p className="font-semibold text-[#0f1d2e] text-sm">
+                          {t.name}
+                        </p>
+                        <p className="text-xs text-[#0f1d2e]/40 mt-0.5">
+                          {t.role}
+                        </p>
                       </div>
                     </div>
                   </div>

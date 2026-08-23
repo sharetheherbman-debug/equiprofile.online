@@ -5,19 +5,30 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Loader2, ChevronRight, Home, Building2, Check } from "lucide-react";
+import {
+  Loader2,
+  ChevronRight,
+  Home,
+  Building2,
+  GraduationCap,
+  Check,
+} from "lucide-react";
 
 /**
  * Post-registration experience selection page.
  *
- * Shown to new users after registration so they can choose between
- * the Standard (personal equestrian) and Stable (stable management) experience.
- * Sets planTier via user.setExperience and routes to the correct dashboard.
+ * Shown to new users after registration so they can choose the EquiProfile
+ * experience that matches their role. The backend already supports
+ * standard/stable/student via user.setExperience; this UI must expose the same
+ * compatibility contract. Teacher and Academy-owner roles are not self-granted
+ * here — those remain controlled by invitation/account provisioning.
  */
 export default function Onboarding() {
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
-  const [selected, setSelected] = useState<"standard" | "stable" | null>(null);
+  const [selected, setSelected] = useState<
+    "standard" | "stable" | "student" | null
+  >(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -46,10 +57,12 @@ export default function Onboarding() {
     setError("");
     try {
       await setExperience.mutateAsync({ experience: selected });
-      // Invalidate auth cache so planTier is fresh
+      // Invalidate auth cache so planTier is fresh.
       await utils.auth.me.invalidate();
       if (selected === "stable") {
         window.location.href = "/stable-setup";
+      } else if (selected === "student") {
+        window.location.href = "/student-dashboard";
       } else {
         window.location.href = "/dashboard";
       }
@@ -70,7 +83,7 @@ export default function Onboarding() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-3xl relative"
+        className="w-full max-w-5xl relative"
       >
         {/* Header */}
         <div className="text-center mb-10">
@@ -80,14 +93,15 @@ export default function Onboarding() {
           <h1 className="text-2xl sm:text-3xl font-bold text-white font-serif mb-2">
             Welcome, {firstName}!
           </h1>
-          <p className="text-slate-400 text-sm sm:text-base max-w-sm mx-auto">
+          <p className="text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
             Choose the experience that best describes how you use EquiProfile.
-            You can change this later in Settings.
+            Academy students can go directly into their learning dashboard. You
+            can change this later in Settings.
           </p>
         </div>
 
         {/* Choice cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {/* Standard */}
           <button
             type="button"
@@ -110,8 +124,8 @@ export default function Onboarding() {
               Personal Equestrian
             </h2>
             <p className="text-slate-400 text-xs leading-relaxed">
-              For individual horse owners and riders. Manage your horses,
-              health records, training, nutrition, and more.
+              For individual horse owners and riders. Manage your horses, health
+              records, training, nutrition, and more.
             </p>
             <div className="mt-3 flex flex-wrap gap-1">
               {["My Horses", "Health", "Training", "Weather"].map((tag) => (
@@ -147,8 +161,8 @@ export default function Onboarding() {
               Stable Management
             </h2>
             <p className="text-slate-400 text-xs leading-relaxed">
-              For stable owners and yard managers. Full stable operations,
-              staff management, client portal, and lesson scheduling.
+              For stable owners and yard managers. Full stable operations, staff
+              management, client portal, and lesson scheduling.
             </p>
             <div className="mt-3 flex flex-wrap gap-1">
               {["Staff", "Clients", "Scheduling", "Operations"].map((tag) => (
@@ -161,7 +175,51 @@ export default function Onboarding() {
               ))}
             </div>
           </button>
+
+          {/* Academy Student */}
+          <button
+            type="button"
+            onClick={() => setSelected("student")}
+            className={`relative group text-left rounded-2xl border-2 p-5 transition-all duration-200 focus:outline-none ${
+              selected === "student"
+                ? "border-emerald-500 bg-emerald-500/10 shadow-lg shadow-emerald-500/20"
+                : "border-white/10 bg-white/5 hover:border-emerald-500/50 hover:bg-white/8"
+            }`}
+          >
+            {selected === "student" && (
+              <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                <Check className="w-3 h-3 text-white" />
+              </div>
+            )}
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-3 shadow-sm">
+              <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="font-semibold text-white text-sm mb-1">
+              Academy Student
+            </h2>
+            <p className="text-slate-400 text-xs leading-relaxed">
+              For learners using EquiProfile Academy. Open structured pathways,
+              lessons, assignments, progress, competencies, and instructor
+              feedback.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-1">
+              {["Pathways", "Lessons", "Progress", "Feedback"].map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </button>
         </div>
+
+        <p className="text-center text-xs text-slate-500 mb-6 max-w-2xl mx-auto">
+          Academy teachers and Academy owners should use the account or
+          invitation provided for their organisation; those privileged roles are
+          not self-assigned here.
+        </p>
 
         {/* Error */}
         {error && (

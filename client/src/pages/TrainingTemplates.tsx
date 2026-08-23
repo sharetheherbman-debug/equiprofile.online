@@ -1255,69 +1255,272 @@ const PREDESIGNED_TEMPLATES = [
         {
           week: 1,
           focus: "Fitness and base work",
-          warmup: "10 min walk on a loose rein. 5 min rising trot both reins before any schooling.",
-          main_work: "40–45 min combination of arena work and hacking. Maintain forward rhythm. No collection this week — focus on relaxation and rhythm only.",
-          cooldown: "10 min walk on a long rein. Check legs for heat or swelling after every session.",
-          safety_notes: "Do not peak too early. Week 1 is about building confidence and rhythmic fitness, not perfection.",
+          warmup:
+            "10 min walk on a loose rein. 5 min rising trot both reins before any schooling.",
+          main_work:
+            "40–45 min combination of arena work and hacking. Maintain forward rhythm. No collection this week — focus on relaxation and rhythm only.",
+          cooldown:
+            "10 min walk on a long rein. Check legs for heat or swelling after every session.",
+          safety_notes:
+            "Do not peak too early. Week 1 is about building confidence and rhythmic fitness, not perfection.",
           sessions: [
-            { day: "Monday", type: "flatwork", duration: 40, description: "Rhythmic flatwork — walk, trot, canter on both reins. No collection. Focus on forward, relaxed paces.", intensity: "moderate" },
-            { day: "Tuesday", type: "hack", duration: 45, description: "Conditioning hack — walk and trot with 2× 5-min canter on good ground", intensity: "moderate" },
-            { day: "Wednesday", type: "rest", duration: 0, description: "Rest day — active turnout preferred", intensity: "none" },
-            { day: "Thursday", type: "flatwork", duration: 45, description: "Transitions and suppleness. 20m circles, serpentines, medium trot. Monitor straightness.", intensity: "moderate" },
-            { day: "Friday", type: "hack", duration: 30, description: "Short relaxing hack — mental break from arena", intensity: "low" },
-            { day: "Saturday", type: "flatwork", duration: 50, description: "Full schooling session — practice competition movements. Note areas needing improvement.", intensity: "moderate" },
-            { day: "Sunday", type: "rest", duration: 0, description: "Rest day", intensity: "none" },
+            {
+              day: "Monday",
+              type: "flatwork",
+              duration: 40,
+              description:
+                "Rhythmic flatwork — walk, trot, canter on both reins. No collection. Focus on forward, relaxed paces.",
+              intensity: "moderate",
+            },
+            {
+              day: "Tuesday",
+              type: "hack",
+              duration: 45,
+              description:
+                "Conditioning hack — walk and trot with 2× 5-min canter on good ground",
+              intensity: "moderate",
+            },
+            {
+              day: "Wednesday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day — active turnout preferred",
+              intensity: "none",
+            },
+            {
+              day: "Thursday",
+              type: "flatwork",
+              duration: 45,
+              description:
+                "Transitions and suppleness. 20m circles, serpentines, medium trot. Monitor straightness.",
+              intensity: "moderate",
+            },
+            {
+              day: "Friday",
+              type: "hack",
+              duration: 30,
+              description: "Short relaxing hack — mental break from arena",
+              intensity: "low",
+            },
+            {
+              day: "Saturday",
+              type: "flatwork",
+              duration: 50,
+              description:
+                "Full schooling session — practice competition movements. Note areas needing improvement.",
+              intensity: "moderate",
+            },
+            {
+              day: "Sunday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day",
+              intensity: "none",
+            },
           ],
         },
         {
           week: 2,
           focus: "Accuracy and refinement",
-          warmup: "10 min walk. 5 min rising trot. Add lateral warm-up: leg yield in walk both directions.",
-          main_work: "Focus on the specific movements required for your competition test. Ride each movement 3–5 times, rewarding accuracy and relaxation. Introduce collection work.",
-          cooldown: "10 min walk. Stretch long and low in trot for 3 min before final walk.",
-          safety_notes: "Do not drill movements to exhaustion. If horse becomes tense, ride forwards and return to basics. Tense schooling creates tension on competition day.",
+          warmup:
+            "10 min walk. 5 min rising trot. Add lateral warm-up: leg yield in walk both directions.",
+          main_work:
+            "Focus on the specific movements required for your competition test. Ride each movement 3–5 times, rewarding accuracy and relaxation. Introduce collection work.",
+          cooldown:
+            "10 min walk. Stretch long and low in trot for 3 min before final walk.",
+          safety_notes:
+            "Do not drill movements to exhaustion. If horse becomes tense, ride forwards and return to basics. Tense schooling creates tension on competition day.",
           sessions: [
-            { day: "Monday", type: "flatwork", duration: 45, description: "Lateral work: leg yield, shoulder-in, haunches-in. Focus on consistent bend and engagement.", intensity: "moderate" },
-            { day: "Tuesday", type: "hack", duration: 40, description: "Conditioning hack. Include 3× 5-min canter sets. Check respiration and recovery time.", intensity: "moderate" },
-            { day: "Wednesday", type: "rest", duration: 0, description: "Rest day — turnout", intensity: "none" },
-            { day: "Thursday", type: "flatwork", duration: 50, description: "Competition test walkthrough. Ride full test twice at reduced energy. Mark transitions precisely.", intensity: "moderate" },
-            { day: "Friday", type: "flatwork", duration: 35, description: "Light flatwork — keep horse fresh. Canter transitions only. No drilling.", intensity: "low-moderate" },
-            { day: "Saturday", type: "flatwork", duration: 50, description: "Mock competition warmup: 10 min warm-up, then ride test as if at the show.", intensity: "moderate" },
-            { day: "Sunday", type: "rest", duration: 0, description: "Full rest — long turnout", intensity: "none" },
+            {
+              day: "Monday",
+              type: "flatwork",
+              duration: 45,
+              description:
+                "Lateral work: leg yield, shoulder-in, haunches-in. Focus on consistent bend and engagement.",
+              intensity: "moderate",
+            },
+            {
+              day: "Tuesday",
+              type: "hack",
+              duration: 40,
+              description:
+                "Conditioning hack. Include 3× 5-min canter sets. Check respiration and recovery time.",
+              intensity: "moderate",
+            },
+            {
+              day: "Wednesday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day — turnout",
+              intensity: "none",
+            },
+            {
+              day: "Thursday",
+              type: "flatwork",
+              duration: 50,
+              description:
+                "Competition test walkthrough. Ride full test twice at reduced energy. Mark transitions precisely.",
+              intensity: "moderate",
+            },
+            {
+              day: "Friday",
+              type: "flatwork",
+              duration: 35,
+              description:
+                "Light flatwork — keep horse fresh. Canter transitions only. No drilling.",
+              intensity: "low-moderate",
+            },
+            {
+              day: "Saturday",
+              type: "flatwork",
+              duration: 50,
+              description:
+                "Mock competition warmup: 10 min warm-up, then ride test as if at the show.",
+              intensity: "moderate",
+            },
+            {
+              day: "Sunday",
+              type: "rest",
+              duration: 0,
+              description: "Full rest — long turnout",
+              intensity: "none",
+            },
           ],
         },
         {
           week: 3,
           focus: "Sharpening and confidence",
-          warmup: "10 min walk. 5 min trot. Brief lateral walk work. Quick canter on both reins before schooling.",
-          main_work: "Focus sessions on the 2–3 weakest movements from your test. Do NOT over-school strong movements. Introduce some work outside the arena to maintain mental freshness.",
-          cooldown: "10 min long-rein walk. Cold hose or ice legs if working hard. Check temperature and soundness.",
-          safety_notes: "This week is about quality, not quantity. One good repetition outweighs 10 mediocre ones. Stop while the horse is still willing.",
+          warmup:
+            "10 min walk. 5 min trot. Brief lateral walk work. Quick canter on both reins before schooling.",
+          main_work:
+            "Focus sessions on the 2–3 weakest movements from your test. Do NOT over-school strong movements. Introduce some work outside the arena to maintain mental freshness.",
+          cooldown:
+            "10 min long-rein walk. Cold hose or ice legs if working hard. Check temperature and soundness.",
+          safety_notes:
+            "This week is about quality, not quantity. One good repetition outweighs 10 mediocre ones. Stop while the horse is still willing.",
           sessions: [
-            { day: "Monday", type: "flatwork", duration: 40, description: "Work on your 2 weakest movements. Short focused session — end as soon as quality is achieved.", intensity: "moderate" },
-            { day: "Tuesday", type: "hack", duration: 45, description: "Countryside hack — allow horse to relax, switch off, and enjoy the outing", intensity: "low-moderate" },
-            { day: "Wednesday", type: "rest", duration: 0, description: "Rest day", intensity: "none" },
-            { day: "Thursday", type: "flatwork", duration: 45, description: "Final practice run of full test. Ride confidently and positively. Praise generously.", intensity: "moderate" },
-            { day: "Friday", type: "hack", duration: 30, description: "Short relaxing hack or light arena walk. Keep horse happy and fresh.", intensity: "low" },
-            { day: "Saturday", type: "flatwork", duration: 35, description: "Very light flatwork — just enough to keep muscles warm. Finish early.", intensity: "low-moderate" },
-            { day: "Sunday", type: "rest", duration: 0, description: "Rest day before competition week", intensity: "none" },
+            {
+              day: "Monday",
+              type: "flatwork",
+              duration: 40,
+              description:
+                "Work on your 2 weakest movements. Short focused session — end as soon as quality is achieved.",
+              intensity: "moderate",
+            },
+            {
+              day: "Tuesday",
+              type: "hack",
+              duration: 45,
+              description:
+                "Countryside hack — allow horse to relax, switch off, and enjoy the outing",
+              intensity: "low-moderate",
+            },
+            {
+              day: "Wednesday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day",
+              intensity: "none",
+            },
+            {
+              day: "Thursday",
+              type: "flatwork",
+              duration: 45,
+              description:
+                "Final practice run of full test. Ride confidently and positively. Praise generously.",
+              intensity: "moderate",
+            },
+            {
+              day: "Friday",
+              type: "hack",
+              duration: 30,
+              description:
+                "Short relaxing hack or light arena walk. Keep horse happy and fresh.",
+              intensity: "low",
+            },
+            {
+              day: "Saturday",
+              type: "flatwork",
+              duration: 35,
+              description:
+                "Very light flatwork — just enough to keep muscles warm. Finish early.",
+              intensity: "low-moderate",
+            },
+            {
+              day: "Sunday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day before competition week",
+              intensity: "none",
+            },
           ],
         },
         {
           week: 4,
           focus: "Competition week — freshness and focus",
-          warmup: "Keep warmup short. 10 min walk, 10 min trot/canter, no prolonged collection work. Horse should arrive in the ring FRESH.",
-          main_work: "Minimal schooling. Maintain routine but do not fatigue. Trust your preparation — this week is about confidence, not corrections.",
-          cooldown: "Cold hose, stretch, and check legs and shoes post-competition.",
-          safety_notes: "On competition day: arrive early, walk the venue calmly, allow horse to settle before warming up. Eat and hydrate yourself — a tired rider produces a tense horse.",
+          warmup:
+            "Keep warmup short. 10 min walk, 10 min trot/canter, no prolonged collection work. Horse should arrive in the ring FRESH.",
+          main_work:
+            "Minimal schooling. Maintain routine but do not fatigue. Trust your preparation — this week is about confidence, not corrections.",
+          cooldown:
+            "Cold hose, stretch, and check legs and shoes post-competition.",
+          safety_notes:
+            "On competition day: arrive early, walk the venue calmly, allow horse to settle before warming up. Eat and hydrate yourself — a tired rider produces a tense horse.",
           sessions: [
-            { day: "Monday", type: "flatwork", duration: 35, description: "Light ride — loose, forward, no collection. Keep horse mentally fresh.", intensity: "low-moderate" },
-            { day: "Tuesday", type: "hack", duration: 30, description: "Short relaxing hack. Let horse enjoy being out.", intensity: "low" },
-            { day: "Wednesday", type: "rest", duration: 0, description: "Rest day — preparation and tack check", intensity: "none" },
-            { day: "Thursday", type: "flatwork", duration: 25, description: "Very light ride — test your warmup routine. 15 min max of active work.", intensity: "low" },
-            { day: "Friday", type: "rest", duration: 0, description: "Travel day or pre-competition rest. Check horse overnight.", intensity: "none" },
-            { day: "Saturday", type: "flatwork", duration: 0, description: "COMPETITION DAY — Trust your preparation. Warm up calmly. Ride forward and positive.", intensity: "none" },
-            { day: "Sunday", type: "rest", duration: 0, description: "Post-competition rest. Cold hose legs. Assess soundness. Celebrate your results!", intensity: "none" },
+            {
+              day: "Monday",
+              type: "flatwork",
+              duration: 35,
+              description:
+                "Light ride — loose, forward, no collection. Keep horse mentally fresh.",
+              intensity: "low-moderate",
+            },
+            {
+              day: "Tuesday",
+              type: "hack",
+              duration: 30,
+              description: "Short relaxing hack. Let horse enjoy being out.",
+              intensity: "low",
+            },
+            {
+              day: "Wednesday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day — preparation and tack check",
+              intensity: "none",
+            },
+            {
+              day: "Thursday",
+              type: "flatwork",
+              duration: 25,
+              description:
+                "Very light ride — test your warmup routine. 15 min max of active work.",
+              intensity: "low",
+            },
+            {
+              day: "Friday",
+              type: "rest",
+              duration: 0,
+              description:
+                "Travel day or pre-competition rest. Check horse overnight.",
+              intensity: "none",
+            },
+            {
+              day: "Saturday",
+              type: "flatwork",
+              duration: 0,
+              description:
+                "COMPETITION DAY — Trust your preparation. Warm up calmly. Ride forward and positive.",
+              intensity: "none",
+            },
+            {
+              day: "Sunday",
+              type: "rest",
+              duration: 0,
+              description:
+                "Post-competition rest. Cold hose legs. Assess soundness. Celebrate your results!",
+              intensity: "none",
+            },
           ],
         },
       ],
@@ -1340,52 +1543,206 @@ const PREDESIGNED_TEMPLATES = [
         {
           week: 1,
           focus: "Building engagement and preparing for collection",
-          warmup: "15 min progressive warmup: walk on long rein → working walk → rising trot both reins → sitting trot → canter transitions. Lateral warm-up: leg yield in walk, then trot.",
-          main_work: "Establish correct contact and rhythm before any collection. Use transitions (walk–trot, trot–canter, canter–walk) to activate hindquarters. Introduce shoulder-in to develop engagement. 30 min active work maximum.",
-          cooldown: "5–10 min long-and-low trot stretch, then free walk on a long rein. Always allow the horse to decompress.",
-          safety_notes: "Collection must come from the hindquarters pushing through, not the front end being held back. If resistance is felt, ride forward first, then rebalance. Never use force.",
+          warmup:
+            "15 min progressive warmup: walk on long rein → working walk → rising trot both reins → sitting trot → canter transitions. Lateral warm-up: leg yield in walk, then trot.",
+          main_work:
+            "Establish correct contact and rhythm before any collection. Use transitions (walk–trot, trot–canter, canter–walk) to activate hindquarters. Introduce shoulder-in to develop engagement. 30 min active work maximum.",
+          cooldown:
+            "5–10 min long-and-low trot stretch, then free walk on a long rein. Always allow the horse to decompress.",
+          safety_notes:
+            "Collection must come from the hindquarters pushing through, not the front end being held back. If resistance is felt, ride forward first, then rebalance. Never use force.",
           sessions: [
-            { day: "Monday", type: "flatwork", duration: 50, description: "Warm-up + trot and canter transitions. Shoulder-in in trot both reins. 15 min. Finish with stretch.", intensity: "moderate" },
-            { day: "Tuesday", type: "hack", duration: 40, description: "Relaxing hack — allow horse to stretch and recover mentally", intensity: "low" },
-            { day: "Wednesday", type: "rest", duration: 0, description: "Rest day — turnout", intensity: "none" },
-            { day: "Thursday", type: "flatwork", duration: 55, description: "Shoulder-in to travers progression in trot. Counter-canter introduction on large loop. Reward consistency.", intensity: "moderate-high" },
-            { day: "Friday", type: "flatwork", duration: 40, description: "Light collection work. Walk pirouette preparation: turn on haunches 180°. Trot half-pass introduction (5m displacement).", intensity: "moderate" },
-            { day: "Saturday", type: "hack", duration: 30, description: "Light hack or short ride outside arena — mental rest", intensity: "low" },
-            { day: "Sunday", type: "rest", duration: 0, description: "Rest day", intensity: "none" },
+            {
+              day: "Monday",
+              type: "flatwork",
+              duration: 50,
+              description:
+                "Warm-up + trot and canter transitions. Shoulder-in in trot both reins. 15 min. Finish with stretch.",
+              intensity: "moderate",
+            },
+            {
+              day: "Tuesday",
+              type: "hack",
+              duration: 40,
+              description:
+                "Relaxing hack — allow horse to stretch and recover mentally",
+              intensity: "low",
+            },
+            {
+              day: "Wednesday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day — turnout",
+              intensity: "none",
+            },
+            {
+              day: "Thursday",
+              type: "flatwork",
+              duration: 55,
+              description:
+                "Shoulder-in to travers progression in trot. Counter-canter introduction on large loop. Reward consistency.",
+              intensity: "moderate-high",
+            },
+            {
+              day: "Friday",
+              type: "flatwork",
+              duration: 40,
+              description:
+                "Light collection work. Walk pirouette preparation: turn on haunches 180°. Trot half-pass introduction (5m displacement).",
+              intensity: "moderate",
+            },
+            {
+              day: "Saturday",
+              type: "hack",
+              duration: 30,
+              description:
+                "Light hack or short ride outside arena — mental rest",
+              intensity: "low",
+            },
+            {
+              day: "Sunday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day",
+              intensity: "none",
+            },
           ],
         },
         {
           week: 2,
           focus: "Developing the lateral movements",
-          warmup: "12 min warmup. Include rein-back after square halt — this activates the hindquarters effectively before collection work.",
-          main_work: "Introduce half-pass properly: begin from shoulder-in in trot, then ask horse to cross and move diagonally while maintaining bend. 3–4 repetitions each rein, keep steps clean. Counter-canter: extend to full 20m loop counter-canter maintaining bend.",
-          cooldown: "Always finish with free walk and long-rein trot stretch. Praise and release after every correct response.",
-          safety_notes: "Half-pass requires the horse to be supple through the body. Do not attempt without established shoulder-in. If horse falls off the track or loses rhythm, ride forward and reset.",
+          warmup:
+            "12 min warmup. Include rein-back after square halt — this activates the hindquarters effectively before collection work.",
+          main_work:
+            "Introduce half-pass properly: begin from shoulder-in in trot, then ask horse to cross and move diagonally while maintaining bend. 3–4 repetitions each rein, keep steps clean. Counter-canter: extend to full 20m loop counter-canter maintaining bend.",
+          cooldown:
+            "Always finish with free walk and long-rein trot stretch. Praise and release after every correct response.",
+          safety_notes:
+            "Half-pass requires the horse to be supple through the body. Do not attempt without established shoulder-in. If horse falls off the track or loses rhythm, ride forward and reset.",
           sessions: [
-            { day: "Monday", type: "flatwork", duration: 55, description: "Half-pass development in trot. Start in shoulder-in, ask for diagonal crossing. 3 reps each rein. Quality over quantity.", intensity: "moderate-high" },
-            { day: "Tuesday", type: "hack", duration: 40, description: "Conditioning hack. Trot and canter work to maintain fitness.", intensity: "moderate" },
-            { day: "Wednesday", type: "rest", duration: 0, description: "Rest day", intensity: "none" },
-            { day: "Thursday", type: "flatwork", duration: 55, description: "Counter-canter on full 20m loop. Travers in trot 10m circle. Introduce collected trot — 3 strides of collection, release.", intensity: "moderate-high" },
-            { day: "Friday", type: "flatwork", duration: 40, description: "Consolidation session — revisit week 1 movements. Check shoulder-in quality. Half-pass review.", intensity: "moderate" },
-            { day: "Saturday", type: "groundwork", duration: 25, description: "In-hand lateral work — shoulder-in, travers, and rein-back from the ground", intensity: "low" },
-            { day: "Sunday", type: "rest", duration: 0, description: "Rest day — long turnout", intensity: "none" },
+            {
+              day: "Monday",
+              type: "flatwork",
+              duration: 55,
+              description:
+                "Half-pass development in trot. Start in shoulder-in, ask for diagonal crossing. 3 reps each rein. Quality over quantity.",
+              intensity: "moderate-high",
+            },
+            {
+              day: "Tuesday",
+              type: "hack",
+              duration: 40,
+              description:
+                "Conditioning hack. Trot and canter work to maintain fitness.",
+              intensity: "moderate",
+            },
+            {
+              day: "Wednesday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day",
+              intensity: "none",
+            },
+            {
+              day: "Thursday",
+              type: "flatwork",
+              duration: 55,
+              description:
+                "Counter-canter on full 20m loop. Travers in trot 10m circle. Introduce collected trot — 3 strides of collection, release.",
+              intensity: "moderate-high",
+            },
+            {
+              day: "Friday",
+              type: "flatwork",
+              duration: 40,
+              description:
+                "Consolidation session — revisit week 1 movements. Check shoulder-in quality. Half-pass review.",
+              intensity: "moderate",
+            },
+            {
+              day: "Saturday",
+              type: "groundwork",
+              duration: 25,
+              description:
+                "In-hand lateral work — shoulder-in, travers, and rein-back from the ground",
+              intensity: "low",
+            },
+            {
+              day: "Sunday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day — long turnout",
+              intensity: "none",
+            },
           ],
         },
         {
           week: 3,
           focus: "Consolidation and self-carriage",
-          warmup: "12–15 min full warm-up. Include rein-back, leg yield, and a few shoulder-in steps before collected work begins.",
-          main_work: "Focus on self-carriage: horse maintains balance and rhythm WITHOUT constant rider support. Test by briefly releasing leg and hand — horse should stay in balance for 3+ strides. Half-pass in both trot and canter. Extended paces from collection — contrast is key.",
-          cooldown: "Always decompress: long-rein trot, free walk, allow back muscles to release.",
-          safety_notes: "Self-carriage takes months to develop. Do not rush. End every session on a positive moment — a correct half-pass, a balanced canter transition, or a clean rein-back.",
+          warmup:
+            "12–15 min full warm-up. Include rein-back, leg yield, and a few shoulder-in steps before collected work begins.",
+          main_work:
+            "Focus on self-carriage: horse maintains balance and rhythm WITHOUT constant rider support. Test by briefly releasing leg and hand — horse should stay in balance for 3+ strides. Half-pass in both trot and canter. Extended paces from collection — contrast is key.",
+          cooldown:
+            "Always decompress: long-rein trot, free walk, allow back muscles to release.",
+          safety_notes:
+            "Self-carriage takes months to develop. Do not rush. End every session on a positive moment — a correct half-pass, a balanced canter transition, or a clean rein-back.",
           sessions: [
-            { day: "Monday", type: "flatwork", duration: 55, description: "Self-carriage tests in trot and canter. Half-pass both reins. Medium trot from collection. Finish: extended walk.", intensity: "moderate-high" },
-            { day: "Tuesday", type: "hack", duration: 45, description: "Varied terrain hack — hills to build hindquarter strength naturally", intensity: "moderate" },
-            { day: "Wednesday", type: "rest", duration: 0, description: "Rest day", intensity: "none" },
-            { day: "Thursday", type: "flatwork", duration: 60, description: "Full dressage session: test sequence movements. Half-pass, counter-canter, collected and extended paces. 45 min active work.", intensity: "high" },
-            { day: "Friday", type: "flatwork", duration: 35, description: "Short session — consolidate, don't introduce new work. Finish on a strong note.", intensity: "moderate" },
-            { day: "Saturday", type: "rest", duration: 0, description: "Rest or very light walk — allow horse to recover from week's hard work", intensity: "low" },
-            { day: "Sunday", type: "rest", duration: 0, description: "Full rest day — evaluate progress and plan next training block", intensity: "none" },
+            {
+              day: "Monday",
+              type: "flatwork",
+              duration: 55,
+              description:
+                "Self-carriage tests in trot and canter. Half-pass both reins. Medium trot from collection. Finish: extended walk.",
+              intensity: "moderate-high",
+            },
+            {
+              day: "Tuesday",
+              type: "hack",
+              duration: 45,
+              description:
+                "Varied terrain hack — hills to build hindquarter strength naturally",
+              intensity: "moderate",
+            },
+            {
+              day: "Wednesday",
+              type: "rest",
+              duration: 0,
+              description: "Rest day",
+              intensity: "none",
+            },
+            {
+              day: "Thursday",
+              type: "flatwork",
+              duration: 60,
+              description:
+                "Full dressage session: test sequence movements. Half-pass, counter-canter, collected and extended paces. 45 min active work.",
+              intensity: "high",
+            },
+            {
+              day: "Friday",
+              type: "flatwork",
+              duration: 35,
+              description:
+                "Short session — consolidate, don't introduce new work. Finish on a strong note.",
+              intensity: "moderate",
+            },
+            {
+              day: "Saturday",
+              type: "rest",
+              duration: 0,
+              description:
+                "Rest or very light walk — allow horse to recover from week's hard work",
+              intensity: "low",
+            },
+            {
+              day: "Sunday",
+              type: "rest",
+              duration: 0,
+              description:
+                "Full rest day — evaluate progress and plan next training block",
+              intensity: "none",
+            },
           ],
         },
       ],
@@ -1799,8 +2156,12 @@ function TrainingTemplatesContent() {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <div className="w-1 h-5 rounded-full bg-gradient-to-b from-primary to-primary/40" />
-          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Predesigned Templates</h2>
-          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1 hidden sm:inline">— Professional training programs ready to use</span>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+            Predesigned Templates
+          </h2>
+          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1 hidden sm:inline">
+            — Professional training programs ready to use
+          </span>
         </div>
 
         {/* Search + category filter row */}
@@ -1837,209 +2198,285 @@ function TrainingTemplatesContent() {
             >
               All
             </button>
-          {[
-            { key: "foundation", label: "Foundation" },
-            { key: "fitness", label: "Fitness" },
-            { key: "rehabilitation", label: "Rehab" },
-            { key: "development", label: "Development" },
-            { key: "warmup", label: "Warm-Up" },
-            { key: "recovery", label: "Recovery" },
-          ].map((cat) => {
-            const count = PREDESIGNED_TEMPLATES.filter((t) => t.category === cat.key).length;
-            if (count === 0) return null;
-            return (
-              <button
-                key={cat.key}
-                onClick={() => {
-                  setActiveCategory(cat.key);
-                  // Auto-expand selected category
-                  setExpandedCategories((prev) => new Set([...prev, cat.key]));
-                }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
-                  activeCategory === cat.key
-                    ? "bg-primary text-white border-primary shadow-sm"
-                    : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:text-primary"
-                }`}
-              >
-                {cat.label}
-                <span className={`ml-1.5 text-[10px] ${activeCategory === cat.key ? "text-white/75" : "text-gray-500 dark:text-gray-400"}`}>{count}</span>
-              </button>
-            );
-          })}
+            {[
+              { key: "foundation", label: "Foundation" },
+              { key: "fitness", label: "Fitness" },
+              { key: "rehabilitation", label: "Rehab" },
+              { key: "development", label: "Development" },
+              { key: "warmup", label: "Warm-Up" },
+              { key: "recovery", label: "Recovery" },
+            ].map((cat) => {
+              const count = PREDESIGNED_TEMPLATES.filter(
+                (t) => t.category === cat.key,
+              ).length;
+              if (count === 0) return null;
+              return (
+                <button
+                  key={cat.key}
+                  onClick={() => {
+                    setActiveCategory(cat.key);
+                    // Auto-expand selected category
+                    setExpandedCategories(
+                      (prev) => new Set([...Array.from(prev), cat.key]),
+                    );
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                    activeCategory === cat.key
+                      ? "bg-primary text-white border-primary shadow-sm"
+                      : "bg-white dark:bg-[#1a2435] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-primary/50 hover:text-primary"
+                  }`}
+                >
+                  {cat.label}
+                  <span
+                    className={`ml-1.5 text-[10px] ${activeCategory === cat.key ? "text-white/75" : "text-gray-500 dark:text-gray-400"}`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Search results — flat list when searching */}
-        {templateSearch.trim() ? (
-          (() => {
-            const q = templateSearch.toLowerCase();
-            const matched = PREDESIGNED_TEMPLATES.filter(
-              (t) =>
-                t.name.toLowerCase().includes(q) ||
-                t.description.toLowerCase().includes(q) ||
-                t.discipline.toLowerCase().includes(q) ||
-                t.level.toLowerCase().includes(q) ||
-                (t.goals || "").toLowerCase().includes(q),
-            );
-            if (matched.length === 0) {
-              return (
-                <div className="text-center py-8 text-sm text-gray-500 dark:text-gray-400">
-                  No templates found for "{templateSearch}".{" "}
-                  <button onClick={() => setTemplateSearch("")} className="text-primary underline underline-offset-2">Clear search</button>
-                </div>
+        {templateSearch.trim()
+          ? (() => {
+              const q = templateSearch.toLowerCase();
+              const matched = PREDESIGNED_TEMPLATES.filter(
+                (t) =>
+                  t.name.toLowerCase().includes(q) ||
+                  t.description.toLowerCase().includes(q) ||
+                  t.discipline.toLowerCase().includes(q) ||
+                  t.level.toLowerCase().includes(q) ||
+                  (t.goals || "").toLowerCase().includes(q),
               );
-            }
-            return (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {matched.map((predesigned) => (
-                  <Card
-                    key={predesigned.id}
-                    className="bg-white dark:bg-[#1a2435] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                        {predesigned.name}
-                      </CardTitle>
-                      <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        {predesigned.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex flex-wrap gap-1.5">
-                          {predesigned.discipline && (
-                            <Badge variant="outline" className={`text-xs ${getDisciplineBadgeClass(predesigned.discipline)}`}>
-                              {predesigned.discipline}
-                            </Badge>
-                          )}
-                          {predesigned.level && (
-                            <Badge variant="outline" className="text-xs">
-                              {predesigned.level}
-                            </Badge>
-                          )}
-                          <Badge variant="outline" className="text-xs">
-                            {predesigned.duration} wks
-                          </Badge>
-                        </div>
-                        <Button
-                          size="sm"
-                          className="w-full rounded-lg text-xs"
-                          onClick={() => handleAddPredesignedTemplate(predesigned)}
-                          disabled={usePredesignedMutation.isPending}
-                        >
-                          <Play className="w-3 h-3 mr-1.5" />
-                          Use Template
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            );
-          })()
-        ) : (
-          [{ key: "foundation", label: "Foundation Training", desc: "Core flatwork, schooling, and groundwork sessions" },
-          { key: "fitness", label: "Fitness & Conditioning", desc: "Build strength, stamina, and athletic performance" },
-          { key: "rehabilitation", label: "Rehabilitation & Confidence", desc: "Recovery programmes and confidence rebuilding" },
-          { key: "development", label: "Young Horse Development", desc: "Structured programmes for young or green horses" },
-          { key: "warmup", label: "Warm-Up & Cool-Down", desc: "Structured warm-up and cool-down routines" },
-          { key: "recovery", label: "Recovery & Rest", desc: "Active recovery and rest day planning" },
-        ].filter((group) => activeCategory === null || group.key === activeCategory).map((group) => {
-          const groupTemplates = PREDESIGNED_TEMPLATES.filter((t) => t.category === group.key);
-          if (groupTemplates.length === 0) return null;
-          const isOpen = expandedCategories.has(group.key);
-          return (
-            <Collapsible key={group.key} open={isOpen} onOpenChange={() => toggleCategory(group.key)}>
-              <CollapsibleTrigger asChild>
-                <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2435] hover:bg-gray-50 dark:hover:bg-[#1e2940] transition-colors shadow-sm group">
-                  {isOpen
-                    ? <ChevronDown className="w-4 h-4 text-primary shrink-0" />
-                    : <ChevronRight className="w-4 h-4 text-gray-400 shrink-0 group-hover:text-primary transition-colors" />
-                  }
-                  <div className="flex-1 flex items-baseline gap-2 text-left">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{group.label}</span>
-                    <span className="text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">{group.desc}</span>
+              if (matched.length === 0) {
+                return (
+                  <div className="text-center py-8 text-sm text-gray-500 dark:text-gray-400">
+                    No templates found for "{templateSearch}".{" "}
+                    <button
+                      onClick={() => setTemplateSearch("")}
+                      className="text-primary underline underline-offset-2"
+                    >
+                      Clear search
+                    </button>
                   </div>
-                  <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 shrink-0">
-                    {groupTemplates.length}
-                  </Badge>
-                </button>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pt-3 pb-1 px-1">
-                  {groupTemplates.map((predesigned) => (
+                );
+              }
+              return (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {matched.map((predesigned) => (
                     <Card
                       key={predesigned.id}
                       className="bg-white dark:bg-[#1a2435] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
                     >
                       <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                              <Sparkles className="w-4 h-4 text-primary" />
-                              {predesigned.name}
-                            </CardTitle>
-                            <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                              {predesigned.description}
-                            </CardDescription>
-                          </div>
-                        </div>
+                        <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-primary" />
+                          {predesigned.name}
+                        </CardTitle>
+                        <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                          {predesigned.description}
+                        </CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-3">
                           <div className="flex flex-wrap gap-1.5">
                             {predesigned.discipline && (
-                              <Badge variant="outline" className={`text-xs ${getDisciplineBadgeClass(predesigned.discipline)}`}>
+                              <Badge
+                                variant="outline"
+                                className={`text-xs ${getDisciplineBadgeClass(predesigned.discipline)}`}
+                              >
                                 {predesigned.discipline}
                               </Badge>
                             )}
                             {predesigned.level && (
-                              <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
+                              <Badge variant="outline" className="text-xs">
                                 {predesigned.level}
                               </Badge>
                             )}
-                            {predesigned.duration && (
-                              <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
-                                {predesigned.duration} weeks
-                              </Badge>
-                            )}
+                            <Badge variant="outline" className="text-xs">
+                              {predesigned.duration} wks
+                            </Badge>
                           </div>
-
-                          {predesigned.goals && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
-                              {predesigned.goals}
-                            </p>
-                          )}
-
                           <Button
                             size="sm"
-                            variant="default"
-                            onClick={() => handleAddPredesignedTemplate(predesigned)}
+                            className="w-full rounded-lg text-xs"
+                            onClick={() =>
+                              handleAddPredesignedTemplate(predesigned)
+                            }
                             disabled={usePredesignedMutation.isPending}
-                            className="w-full rounded-lg"
                           >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Use This Template
+                            <Play className="w-3 h-3 mr-1.5" />
+                            Use Template
                           </Button>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
-          );
-        })
-        )}
+              );
+            })()
+          : [
+              {
+                key: "foundation",
+                label: "Foundation Training",
+                desc: "Core flatwork, schooling, and groundwork sessions",
+              },
+              {
+                key: "fitness",
+                label: "Fitness & Conditioning",
+                desc: "Build strength, stamina, and athletic performance",
+              },
+              {
+                key: "rehabilitation",
+                label: "Rehabilitation & Confidence",
+                desc: "Recovery programmes and confidence rebuilding",
+              },
+              {
+                key: "development",
+                label: "Young Horse Development",
+                desc: "Structured programmes for young or green horses",
+              },
+              {
+                key: "warmup",
+                label: "Warm-Up & Cool-Down",
+                desc: "Structured warm-up and cool-down routines",
+              },
+              {
+                key: "recovery",
+                label: "Recovery & Rest",
+                desc: "Active recovery and rest day planning",
+              },
+            ]
+              .filter(
+                (group) =>
+                  activeCategory === null || group.key === activeCategory,
+              )
+              .map((group) => {
+                const groupTemplates = PREDESIGNED_TEMPLATES.filter(
+                  (t) => t.category === group.key,
+                );
+                if (groupTemplates.length === 0) return null;
+                const isOpen = expandedCategories.has(group.key);
+                return (
+                  <Collapsible
+                    key={group.key}
+                    open={isOpen}
+                    onOpenChange={() => toggleCategory(group.key)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2435] hover:bg-gray-50 dark:hover:bg-[#1e2940] transition-colors shadow-sm group">
+                        {isOpen ? (
+                          <ChevronDown className="w-4 h-4 text-primary shrink-0" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-gray-400 shrink-0 group-hover:text-primary transition-colors" />
+                        )}
+                        <div className="flex-1 flex items-baseline gap-2 text-left">
+                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            {group.label}
+                          </span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">
+                            {group.desc}
+                          </span>
+                        </div>
+                        <Badge
+                          variant="secondary"
+                          className="text-xs bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 shrink-0"
+                        >
+                          {groupTemplates.length}
+                        </Badge>
+                      </button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pt-3 pb-1 px-1">
+                        {groupTemplates.map((predesigned) => (
+                          <Card
+                            key={predesigned.id}
+                            className="bg-white dark:bg-[#1a2435] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+                          >
+                            <CardHeader className="pb-3">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <CardTitle className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-primary" />
+                                    {predesigned.name}
+                                  </CardTitle>
+                                  <CardDescription className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    {predesigned.description}
+                                  </CardDescription>
+                                </div>
+                              </div>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-3">
+                                <div className="flex flex-wrap gap-1.5">
+                                  {predesigned.discipline && (
+                                    <Badge
+                                      variant="outline"
+                                      className={`text-xs ${getDisciplineBadgeClass(predesigned.discipline)}`}
+                                    >
+                                      {predesigned.discipline}
+                                    </Badge>
+                                  )}
+                                  {predesigned.level && (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+                                    >
+                                      {predesigned.level}
+                                    </Badge>
+                                  )}
+                                  {predesigned.duration && (
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+                                    >
+                                      {predesigned.duration} weeks
+                                    </Badge>
+                                  )}
+                                </div>
+
+                                {predesigned.goals && (
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                                    {predesigned.goals}
+                                  </p>
+                                )}
+
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  onClick={() =>
+                                    handleAddPredesignedTemplate(predesigned)
+                                  }
+                                  disabled={usePredesignedMutation.isPending}
+                                  className="w-full rounded-lg"
+                                >
+                                  <Plus className="w-3 h-3 mr-1" />
+                                  Use This Template
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              })}
       </div>
       {/* User Templates Section */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-4">
           <div className="w-1 h-5 rounded-full bg-gradient-to-b from-primary to-primary/40" />
-          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Your Templates</h2>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+            Your Templates
+          </h2>
           {templates && templates.length > 0 && (
-            <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+            <Badge
+              variant="secondary"
+              className="text-xs bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+            >
               {templates.length}
             </Badge>
           )}
@@ -2059,9 +2496,7 @@ function TrainingTemplatesContent() {
                 Create your first custom training template or use one of the
                 predesigned templates above.
               </p>
-              <Button
-                onClick={() => setIsCreateOpen(true)}
-              >
+              <Button onClick={() => setIsCreateOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Create Template
               </Button>
@@ -2086,12 +2521,18 @@ function TrainingTemplatesContent() {
                         </CardDescription>
                       </div>
                       {template.isPublic ? (
-                        <Badge variant="secondary" className="ml-2 bg-blue-50 text-primary border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700">
+                        <Badge
+                          variant="secondary"
+                          className="ml-2 bg-blue-50 text-primary border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700"
+                        >
                           <Globe className="w-3 h-3 mr-1" />
                           Public
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="ml-2 bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
+                        <Badge
+                          variant="outline"
+                          className="ml-2 bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+                        >
                           <Lock className="w-3 h-3 mr-1" />
                           Private
                         </Badge>
@@ -2102,13 +2543,28 @@ function TrainingTemplatesContent() {
                     <div className="space-y-3">
                       <div className="flex flex-wrap gap-2">
                         {template.discipline && (
-                          <Badge variant="outline" className={getDisciplineBadgeClass(template.discipline)}>{template.discipline}</Badge>
+                          <Badge
+                            variant="outline"
+                            className={getDisciplineBadgeClass(
+                              template.discipline,
+                            )}
+                          >
+                            {template.discipline}
+                          </Badge>
                         )}
                         {template.level && (
-                          <Badge variant="outline" className="bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">{template.level}</Badge>
+                          <Badge
+                            variant="outline"
+                            className="bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+                          >
+                            {template.level}
+                          </Badge>
                         )}
                         {template.duration && (
-                          <Badge variant="outline" className="bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
+                          <Badge
+                            variant="outline"
+                            className="bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+                          >
                             {template.duration} weeks
                           </Badge>
                         )}
@@ -2287,7 +2743,11 @@ function TrainingTemplatesContent() {
             >
               Cancel
             </Button>
-            <Button onClick={handleEdit} disabled={updateMutation.isPending} className="rounded-lg">
+            <Button
+              onClick={handleEdit}
+              disabled={updateMutation.isPending}
+              className="rounded-lg"
+            >
               {updateMutation.isPending ? "Updating..." : "Update Template"}
             </Button>
           </DialogFooter>
@@ -2351,7 +2811,11 @@ function TrainingTemplatesContent() {
             >
               Cancel
             </Button>
-            <Button onClick={handleApply} disabled={applyMutation.isPending} className="rounded-lg">
+            <Button
+              onClick={handleApply}
+              disabled={applyMutation.isPending}
+              className="rounded-lg"
+            >
               {applyMutation.isPending ? "Applying..." : "Apply Template"}
             </Button>
           </DialogFooter>

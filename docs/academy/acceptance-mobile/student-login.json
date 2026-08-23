@@ -1,0 +1,16 @@
+{
+  "status": 200,
+  "body": {
+    "success": true,
+    "planTier": null,
+    "freeAccess": false,
+    "bothDashboardsUnlocked": false,
+    "needsOnboarding": true,
+    "user": {
+      "id": 4,
+      "name": "Disposable Academy Student",
+      "email": "student.acceptance@equiprofile.local",
+      "role": "user"
+    }
+  }
+}

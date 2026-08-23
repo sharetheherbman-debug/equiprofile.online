@@ -22,7 +22,6 @@ import {
   Crown,
   Building2,
   GraduationCap,
-  School,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DEFAULT_PRICING, penceToGBP } from "@shared/pricing";
@@ -46,14 +45,14 @@ export default function BillingPage() {
   const { data: subscriptionStatus, refetch: refetchStatus } =
     trpc.billing.getStatus.useQuery();
 
-  // Check if the user belongs to a school organization (student/teacher under a school)
-  const { data: orgData } = trpc.school.getMyOrganization.useQuery(undefined, {
+  // Check whether the user belongs to an Academy organization (student/teacher under an Academy)
+  const { data: orgData } = trpc.academy.getMyOrganization.useQuery(undefined, {
     enabled: !!user,
     staleTime: 5 * 60 * 1000,
     retry: false,
   });
-  const isSchoolLinked = !!orgData && orgData.myRole !== "school_owner";
-  const schoolOrgName = orgData?.name;
+  const isAcademyLinked = !!orgData && orgData.myRole !== "school_owner";
+  const academyOrgName = orgData?.name;
 
   const createCheckout = trpc.billing.createCheckout.useMutation({
     onError: (error) => {
@@ -71,8 +70,7 @@ export default function BillingPage() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("success") === "true") {
       toast.success("Subscription activated!", {
-        description:
-          "Welcome to EquiProfile. Your subscription is now active.",
+        description: "Welcome to EquiProfile. Your subscription is now active.",
       });
       // Refetch subscription status to reflect the new state
       refetchStatus();
@@ -149,13 +147,15 @@ export default function BillingPage() {
   const isCurrentPlan = (plan: string) => {
     if (!subscriptionStatus) return false;
     // planTier is included in the response from billing.getStatus (tRPC inferred type)
-    const planTier = (subscriptionStatus as { planTier?: string }).planTier ?? "pro";
+    const planTier =
+      (subscriptionStatus as { planTier?: string }).planTier ?? "pro";
     if (plan === "trial") return subscriptionStatus.status === "trial";
     if (plan === "student") return planTier === "student";
     if (plan === "pro")
       return (
         planTier === "pro" &&
-        (subscriptionStatus.plan === "monthly" || subscriptionStatus.plan === "yearly")
+        (subscriptionStatus.plan === "monthly" ||
+          subscriptionStatus.plan === "yearly")
       );
     if (plan === "stable")
       return (
@@ -237,23 +237,27 @@ export default function BillingPage() {
             </Alert>
           )}
 
-          {/* School-managed subscription notice */}
-          {isSchoolLinked && (
+          {/* GraduationCap-managed subscription notice */}
+          {isAcademyLinked && (
             <Card className="mb-8 border-[#2e86ab]/30 bg-[#2e86ab]/5">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <School className="w-5 h-5 text-[#2e86ab]" />
-                  School-Managed Subscription
+                  <GraduationCap className="w-5 h-5 text-[#2e86ab]" />
+                  Academy-Managed Subscription
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
                   Your account is managed by{" "}
-                  <strong className="text-foreground">{schoolOrgName || "your school"}</strong>.
-                  Your subscription, billing, and seat allocation are handled by your school administrator.
+                  <strong className="text-foreground">
+                    {academyOrgName || "your Academy"}
+                  </strong>
+                  . Your subscription, billing, and seat allocation are handled
+                  by your Academy administrator.
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  If you have questions about your access or plan, please contact your school administrator directly.
+                  If you have questions about your access or plan, please
+                  contact your Academy administrator directly.
                 </p>
               </CardContent>
             </Card>
@@ -356,11 +360,13 @@ export default function BillingPage() {
             </CardContent>
           </Card>
 
-          {/* Billing Period Toggle — hidden for school-linked users */}
-          {!isSubscriptionActive && !isSchoolLinked && (
+          {/* Billing Period Toggle — hidden for Academy-linked users */}
+          {!isSubscriptionActive && !isAcademyLinked && (
             <>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold">Choose Your Plan</h2>
+                <h2 className="text-xl sm:text-2xl font-bold">
+                  Choose Your Plan
+                </h2>
                 <div className="inline-flex items-center gap-2 bg-muted rounded-full p-1 self-start sm:self-auto">
                   <button
                     onClick={() => setBillingPeriod("monthly")}
@@ -390,7 +396,9 @@ export default function BillingPage() {
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 max-w-6xl mx-auto">
                 {/* Free Trial */}
-                <Card className={`border-2 flex flex-col ${isCurrentPlan("trial") ? "border-primary" : "border-muted"}`}>
+                <Card
+                  className={`border-2 flex flex-col ${isCurrentPlan("trial") ? "border-primary" : "border-muted"}`}
+                >
                   <CardHeader>
                     <div className="flex items-center gap-2 mb-1">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center">
@@ -425,7 +433,11 @@ export default function BillingPage() {
                       ))}
                     </ul>
                     {isCurrentPlan("trial") ? (
-                      <Button variant="secondary" className="w-full mt-auto" disabled>
+                      <Button
+                        variant="secondary"
+                        className="w-full mt-auto"
+                        disabled
+                      >
                         <Check className="w-4 h-4 mr-2" />
                         Current Plan
                       </Button>
@@ -442,7 +454,9 @@ export default function BillingPage() {
                 </Card>
 
                 {/* Student Plan */}
-                <Card className={`border-2 flex flex-col ${isCurrentPlan("student") ? "border-primary" : "border-muted"}`}>
+                <Card
+                  className={`border-2 flex flex-col ${isCurrentPlan("student") ? "border-primary" : "border-muted"}`}
+                >
                   <CardHeader>
                     <div className="flex items-center gap-2 mb-1">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center">
@@ -457,20 +471,27 @@ export default function BillingPage() {
                         )}
                       </CardTitle>
                     </div>
-                    <CardDescription>
-                      For equestrian learners
-                    </CardDescription>
+                    <CardDescription>For equestrian learners</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-col flex-1">
                     <div className="mb-5">
                       <div className="text-3xl font-bold">
-                        £{billingPeriod === "monthly" ? penceToGBP(DEFAULT_PRICING.student.monthly.amount) : penceToGBP(DEFAULT_PRICING.student.yearly.amount)}
+                        £
+                        {billingPeriod === "monthly"
+                          ? penceToGBP(DEFAULT_PRICING.student.monthly.amount)
+                          : penceToGBP(DEFAULT_PRICING.student.yearly.amount)}
                       </div>
                       <div className="text-muted-foreground text-sm">
                         per {billingPeriod === "monthly" ? "month" : "year"}
                         {billingPeriod === "yearly" && (
                           <span className="ml-2 text-xs text-green-600">
-                            (£{(DEFAULT_PRICING.student.yearly.amount / 100 / 12).toFixed(2)}/mo)
+                            (£
+                            {(
+                              DEFAULT_PRICING.student.yearly.amount /
+                              100 /
+                              12
+                            ).toFixed(2)}
+                            /mo)
                           </span>
                         )}
                       </div>
@@ -484,7 +505,11 @@ export default function BillingPage() {
                       ))}
                     </ul>
                     {isCurrentPlan("student") ? (
-                      <Button variant="secondary" className="w-full mt-auto" disabled>
+                      <Button
+                        variant="secondary"
+                        className="w-full mt-auto"
+                        disabled
+                      >
                         <Check className="w-4 h-4 mr-2" />
                         Current Plan
                       </Button>
@@ -492,7 +517,7 @@ export default function BillingPage() {
                       <Button
                         variant="outline"
                         className="w-full mt-auto"
-                        onClick={() => window.location.href = "/students"}
+                        onClick={() => (window.location.href = "/students")}
                       >
                         Learn More
                       </Button>
@@ -632,7 +657,11 @@ export default function BillingPage() {
                       ))}
                     </ul>
                     {isCurrentPlan("stable") ? (
-                      <Button variant="secondary" className="w-full mt-auto" disabled>
+                      <Button
+                        variant="secondary"
+                        className="w-full mt-auto"
+                        disabled
+                      >
                         <Check className="w-4 h-4 mr-2" />
                         Current Plan
                       </Button>

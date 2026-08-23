@@ -16,10 +16,14 @@ CREATE TABLE IF NOT EXISTS `studentCompetencies` (
   `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+--> statement-breakpoint
 
 CREATE INDEX idx_studentCompetencies_userId ON `studentCompetencies`(`userId`);
+--> statement-breakpoint
 CREATE INDEX idx_studentCompetencies_status ON `studentCompetencies`(`status`);
+--> statement-breakpoint
 CREATE UNIQUE INDEX idx_studentCompetencies_unique ON `studentCompetencies`(`userId`, `competencyKey`);
+--> statement-breakpoint
 
 -- Teacher lesson assignments
 CREATE TABLE IF NOT EXISTS `teacherLessonAssignments` (
@@ -36,10 +40,14 @@ CREATE TABLE IF NOT EXISTS `teacherLessonAssignments` (
   `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+--> statement-breakpoint
 
 CREATE INDEX idx_teacherLessonAssignments_teacherId ON `teacherLessonAssignments`(`teacherId`);
+--> statement-breakpoint
 CREATE INDEX idx_teacherLessonAssignments_studentUserId ON `teacherLessonAssignments`(`studentUserId`);
+--> statement-breakpoint
 CREATE INDEX idx_teacherLessonAssignments_groupId ON `teacherLessonAssignments`(`groupId`);
+--> statement-breakpoint
 
 -- Lesson reviews (teacher feedback on completed lessons)
 CREATE TABLE IF NOT EXISTS `lessonReviews` (
@@ -56,7 +64,10 @@ CREATE TABLE IF NOT EXISTS `lessonReviews` (
   `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+--> statement-breakpoint
 
 CREATE INDEX idx_lessonReviews_teacherId ON `lessonReviews`(`teacherId`);
+--> statement-breakpoint
 CREATE INDEX idx_lessonReviews_studentUserId ON `lessonReviews`(`studentUserId`);
+--> statement-breakpoint
 CREATE INDEX idx_lessonReviews_lessonSlug ON `lessonReviews`(`lessonSlug`);

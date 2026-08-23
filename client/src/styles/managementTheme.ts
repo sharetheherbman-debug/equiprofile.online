@@ -33,7 +33,7 @@ import type { CSSProperties } from "react";
 
 // ── Colour hex values ────────────────────────────────────────────────────────
 
-/** Primary dark section background — aligned with the school/academy site */
+/** Primary dark section background — aligned with the Academy site */
 export const EP_DARK = "#1e3a5f";
 /** Deep dark used as the start of CTA gradients and hero overlays */
 export const EP_DARK_DEEP = "#0f2238";

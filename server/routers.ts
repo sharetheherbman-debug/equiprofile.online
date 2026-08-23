@@ -86,12 +86,21 @@ import {
   buildSequenceStepHtml,
   applyMergeFields,
 } from "./_core/emailTemplates";
-import { sendEmail, sendCampaignEmail, sendStableInviteEmail, sendCompensationEmail } from "./_core/email";
+import {
+  sendEmail,
+  sendCampaignEmail,
+  sendStableInviteEmail,
+  sendCompensationEmail,
+} from "./_core/email";
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
-import { detectDuplicatePeople, DUP_THRESHOLD } from "./_core/dupPersonDetection";
+import {
+  detectDuplicatePeople,
+  DUP_THRESHOLD,
+} from "./_core/dupPersonDetection";
 import { studentRouter } from "./studentRouter";
 import { teacherRouter } from "./teacherRouter";
-import { schoolRouter } from "./schoolRouter";
+import { academyRouter } from "./academyRouter";
+import { commerceRouter } from "./commerceRouter";
 import {
   normalizeCountry,
   normalizeContactType,
@@ -184,7 +193,8 @@ const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
       // Free access period has ended — block access
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "Your complimentary access period has ended. Please subscribe to continue.",
+        message:
+          "Your complimentary access period has ended. Please subscribe to continue.",
       });
     }
   }
@@ -223,8 +233,21 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
   }
 }
 
-type PlanTier = "free" | "student" | "teacher" | "pro" | "stable" | "school_owner";
-const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "teacher", "pro", "stable", "school_owner"];
+type PlanTier =
+  | "free"
+  | "student"
+  | "teacher"
+  | "pro"
+  | "stable"
+  | "school_owner";
+const VALID_PLAN_TIERS: readonly PlanTier[] = [
+  "free",
+  "student",
+  "teacher",
+  "pro",
+  "stable",
+  "school_owner",
+];
 
 /**
  * Extract and validate planTier from parsed preferences.
@@ -233,7 +256,10 @@ const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "teacher", "pr
  */
 function parsePlanTier(prefs: Record<string, unknown>): PlanTier {
   const raw = prefs.planTier;
-  if (typeof raw === "string" && (VALID_PLAN_TIERS as readonly string[]).includes(raw)) {
+  if (
+    typeof raw === "string" &&
+    (VALID_PLAN_TIERS as readonly string[]).includes(raw)
+  ) {
     return raw as PlanTier;
   }
   return "pro";
@@ -297,7 +323,17 @@ const MAX_WEEKS_TO_SCHEDULE = 4;
 const DEFAULT_SESSION_DURATION_MINUTES = 30;
 
 // Session type mapping: template type → trainingSessions sessionType
-function mapTemplateSessionType(type: string): "flatwork" | "jumping" | "hacking" | "lunging" | "groundwork" | "competition" | "lesson" | "other" {
+function mapTemplateSessionType(
+  type: string,
+):
+  | "flatwork"
+  | "jumping"
+  | "hacking"
+  | "lunging"
+  | "groundwork"
+  | "competition"
+  | "lesson"
+  | "other" {
   const lowerType = type.toLowerCase();
   if (lowerType === "flatwork") return "flatwork";
   if (lowerType === "jumping") return "jumping";
@@ -312,7 +348,10 @@ export const appRouter = router({
   system: systemRouter,
   student: studentRouter,
   teacher: teacherRouter,
-  school: schoolRouter,
+  academy: academyRouter,
+  // LEGACY_COMPAT_ONLY: retains existing client integrations while they migrate.
+  school: academyRouter,
+  commerce: commerceRouter,
 
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
@@ -366,7 +405,9 @@ export const appRouter = router({
     submitPassword: protectedProcedure
       .input(z.object({ password: z.string() }))
       .mutation(async ({ ctx, input }) => {
-        const isPrimaryAdmin = ENV.primaryAdminEmail ? ctx.user.email === ENV.primaryAdminEmail : false;
+        const isPrimaryAdmin = ENV.primaryAdminEmail
+          ? ctx.user.email === ENV.primaryAdminEmail
+          : false;
         const adminPassword = process.env.ADMIN_UNLOCK_PASSWORD;
 
         if (!adminPassword) {
@@ -502,7 +543,7 @@ export const appRouter = router({
           return {
             role: "assistant" as const,
             content:
-              "⚠️ AI assistant is not yet configured. Please set OPENAI_API_KEY in the server environment to enable AI features.",
+              "⚠️ AI assistant is not yet configured. Configure the server-side Core AI endpoint, credential and model before enabling AI features.",
           };
         }
 
@@ -587,7 +628,16 @@ export const appRouter = router({
     createCheckout: protectedProcedure
       .input(
         z.object({
-          plan: z.enum(["student", "pro", "stable", "school_10", "school_20", "school_50"]).default("pro"),
+          plan: z
+            .enum([
+              "student",
+              "pro",
+              "stable",
+              "school_10",
+              "school_20",
+              "school_50",
+            ])
+            .default("pro"),
           interval: z.enum(["monthly", "yearly"]).default("monthly"),
         }),
       )
@@ -605,7 +655,8 @@ export const appRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
         }
 
-        const planConfig = PRICING_PLANS[input.plan as keyof typeof PRICING_PLANS];
+        const planConfig =
+          PRICING_PLANS[input.plan as keyof typeof PRICING_PLANS];
         if (!planConfig || !("monthly" in planConfig)) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -614,7 +665,10 @@ export const appRouter = router({
         }
 
         // The "monthly" in planConfig check above guarantees planConfig has monthly/yearly
-        const billingConfig = planConfig as { monthly: { priceId: string }; yearly: { priceId: string } };
+        const billingConfig = planConfig as {
+          monthly: { priceId: string };
+          yearly: { priceId: string };
+        };
         const priceId =
           input.interval === "yearly"
             ? billingConfig.yearly.priceId
@@ -767,7 +821,9 @@ export const appRouter = router({
             action: "profile_updated",
             entityType: "user",
             entityId: ctx.user.id,
-            details: JSON.stringify({ updatedFields: Object.keys(profileFields) }),
+            details: JSON.stringify({
+              updatedFields: Object.keys(profileFields),
+            }),
           });
         } catch {
           // Activity logging failure must not block the profile update response
@@ -798,7 +854,9 @@ export const appRouter = router({
           ...existing,
           notifications: { ...existing.notifications, ...toggles },
           // Store WhatsApp phone at top level of prefs (not nested in notifications)
-          ...(whatsappPhone !== undefined ? { whatsappPhone: whatsappPhone || null } : {}),
+          ...(whatsappPhone !== undefined
+            ? { whatsappPhone: whatsappPhone || null }
+            : {}),
         };
         await db.updateUser(ctx.user.id, {
           preferences: JSON.stringify(updated),
@@ -872,7 +930,8 @@ export const appRouter = router({
       return {
         completed: prefs.onboardingCompleted === true,
         skipped: prefs.onboardingSkipped === true,
-        step: typeof prefs.onboardingStep === "number" ? prefs.onboardingStep : 1,
+        step:
+          typeof prefs.onboardingStep === "number" ? prefs.onboardingStep : 1,
         selectedExperience: prefs.selectedExperience ?? null,
         activationChecklist: prefs.activationChecklist ?? {
           addedHorse: false,
@@ -890,7 +949,9 @@ export const appRouter = router({
         const user = await db.getUserById(ctx.user.id);
         const prefs = parseUserPrefs(user?.preferences);
         prefs.onboardingStep = input.step;
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
 
@@ -924,7 +985,9 @@ export const appRouter = router({
     }),
 
     setExperience: protectedProcedure
-      .input(z.object({ experience: z.enum(["standard", "stable", "student"]) }))
+      .input(
+        z.object({ experience: z.enum(["standard", "stable", "student"]) }),
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserById(ctx.user.id);
         const prefs = parseUserPrefs(user?.preferences);
@@ -940,7 +1003,9 @@ export const appRouter = router({
           prefs.activationChecklist = {};
         }
         prefs.activationChecklist.choseExperience = true;
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
 
@@ -964,7 +1029,9 @@ export const appRouter = router({
           prefs.activationChecklist = {};
         }
         prefs.activationChecklist[input.item] = input.value;
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
 
@@ -979,7 +1046,9 @@ export const appRouter = router({
         if (!prefs.dismissedTours.includes(input.tourId)) {
           prefs.dismissedTours.push(input.tourId);
         }
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
 
@@ -994,7 +1063,9 @@ export const appRouter = router({
         if (!prefs.dismissedTips.includes(input.tipId)) {
           prefs.dismissedTips.push(input.tipId);
         }
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
   }),
@@ -1030,7 +1101,10 @@ export const appRouter = router({
           .limit(1);
 
         if (!horseRows[0]) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Horse not found",
+          });
         }
 
         const horse = horseRows[0];
@@ -1071,21 +1145,33 @@ export const appRouter = router({
 
         const link = linkRows[0];
         if (!link) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Share link not found or has been revoked" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Share link not found or has been revoked",
+          });
         }
 
         if (link.expiresAt && new Date(link.expiresAt) < new Date()) {
-          throw new TRPCError({ code: "FORBIDDEN", message: "This share link has expired" });
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "This share link has expired",
+          });
         }
 
         if (link.linkType !== "medical_passport" || !link.horseId) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid passport link" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid passport link",
+          });
         }
 
         // Increment view count (fire-and-forget)
         drizzleDb
           .update(shareLinks)
-          .set({ viewCount: (link.viewCount ?? 0) + 1, lastViewedAt: new Date() })
+          .set({
+            viewCount: (link.viewCount ?? 0) + 1,
+            lastViewedAt: new Date(),
+          })
           .where(eq(shareLinks.id, link.id))
           .catch(() => {});
 
@@ -1106,7 +1192,10 @@ export const appRouter = router({
           .limit(1);
 
         if (!horseRows[0]) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Horse not found",
+          });
         }
 
         const horse = horseRows[0];
@@ -1920,10 +2009,12 @@ export const appRouter = router({
       // Enrich with horse names
       const horsesMap: Record<number, string> = {};
       const horses = await db.getHorsesByUserId(ctx.user.id);
-      horses.forEach((h: any) => { horsesMap[h.id] = h.name; });
+      horses.forEach((h: any) => {
+        horsesMap[h.id] = h.name;
+      });
       const enriched = tasks.map((t: any) => ({
         ...t,
-        horseName: t.horseId ? (horsesMap[t.horseId] || "") : "",
+        horseName: t.horseId ? horsesMap[t.horseId] || "" : "",
       }));
       const csv = exportTasksCSV(enriched);
       return {
@@ -2419,25 +2510,29 @@ export const appRouter = router({
         // don't recognise (CSV, Word, etc.).  Falling back to extension-based
         // detection avoids a blanket "File type not allowed: " rejection.
         const EXT_TO_MIME: Record<string, string> = {
-          ".pdf":  "application/pdf",
-          ".csv":  "text/csv",
-          ".txt":  "text/plain",
-          ".doc":  "application/msword",
-          ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          ".xls":  "application/vnd.ms-excel",
-          ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          ".jpg":  "image/jpeg",
+          ".pdf": "application/pdf",
+          ".csv": "text/csv",
+          ".txt": "text/plain",
+          ".doc": "application/msword",
+          ".docx":
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          ".xls": "application/vnd.ms-excel",
+          ".xlsx":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          ".jpg": "image/jpeg",
           ".jpeg": "image/jpeg",
-          ".png":  "image/png",
-          ".gif":  "image/gif",
+          ".png": "image/png",
+          ".gif": "image/gif",
           ".webp": "image/webp",
-          ".svg":  "image/svg+xml",
+          ".svg": "image/svg+xml",
           ".heic": "image/heic",
           ".heif": "image/heif",
         };
         let resolvedFileType = input.fileType;
         if (!resolvedFileType) {
-          const ext = (input.fileName.match(/\.[^.]+$/) ?? [""])[0].toLowerCase();
+          const ext = (input.fileName.match(/\.[^.]+$/) ?? [
+            "",
+          ])[0].toLowerCase();
           resolvedFileType = EXT_TO_MIME[ext] ?? "";
         }
 
@@ -2537,7 +2632,9 @@ export const appRouter = router({
           fileUrl: url,
           fileKey,
           // Auto-classify images as "gallery" when no category is specified
-          category: input.category || (finalFileType.startsWith("image/") ? "gallery" : "other"),
+          category:
+            input.category ||
+            (finalFileType.startsWith("image/") ? "gallery" : "other"),
           description: input.description,
         });
 
@@ -3166,7 +3263,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           action: "free_access_granted",
           entityType: "user",
           entityId: input.userId,
-          details: JSON.stringify({ targetEmail: targetUser.email, tier: input.tier, freeDays: input.freeDays, reason: input.reason, customNote: input.customNote ?? null }),
+          details: JSON.stringify({
+            targetEmail: targetUser.email,
+            tier: input.tier,
+            freeDays: input.freeDays,
+            reason: input.reason,
+            customNote: input.customNote ?? null,
+          }),
         });
         // Send compensation email asynchronously (non-blocking)
         if (input.sendEmail && targetUser.email) {
@@ -3294,12 +3397,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           createdAt: users.createdAt,
         })
         .from(users)
-        .where(and(
-          eq(users.subscriptionStatus, "trial"),
-          eq(users.isActive, true),
-          lte(users.trialEndsAt, threeDaysFromNow),
-          gte(users.trialEndsAt, now),
-        ));
+        .where(
+          and(
+            eq(users.subscriptionStatus, "trial"),
+            eq(users.isActive, true),
+            lte(users.trialEndsAt, threeDaysFromNow),
+            gte(users.trialEndsAt, now),
+          ),
+        );
 
       // Overdue users (at risk of churning)
       const atRisk = await dbConn
@@ -3311,10 +3416,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           lastPaymentAt: users.lastPaymentAt,
         })
         .from(users)
-        .where(and(
-          eq(users.isActive, true),
-          eq(users.subscriptionStatus, "overdue"),
-        ));
+        .where(
+          and(
+            eq(users.isActive, true),
+            eq(users.subscriptionStatus, "overdue"),
+          ),
+        );
 
       // Inactive users (no login in 14+ days with active subscription)
       const inactive = await dbConn
@@ -3326,11 +3433,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           updatedAt: users.updatedAt,
         })
         .from(users)
-        .where(and(
-          eq(users.isActive, true),
-          or(eq(users.subscriptionStatus, "active"), eq(users.subscriptionStatus, "trial")),
-          lte(users.updatedAt, fourteenDaysAgo),
-        ));
+        .where(
+          and(
+            eq(users.isActive, true),
+            or(
+              eq(users.subscriptionStatus, "active"),
+              eq(users.subscriptionStatus, "trial"),
+            ),
+            lte(users.updatedAt, fourteenDaysAgo),
+          ),
+        );
 
       return { atRisk, trialExpiring, inactive };
     }),
@@ -3353,7 +3465,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         })
         .from(documents);
 
-      const missing: Array<{ id: number; fileName: string; fileKey: string; userId: number; category: string | null }> = [];
+      const missing: Array<{
+        id: number;
+        fileName: string;
+        fileKey: string;
+        userId: number;
+        category: string | null;
+      }> = [];
       let orphaned = 0;
 
       const uploadsDir = path.resolve(ENV.storagePath);
@@ -3363,7 +3481,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (doc.fileKey) {
           const filePath = path.resolve(uploadsDir, doc.fileKey);
           // Path traversal protection — ensure file stays within uploads dir
-          if (!filePath.startsWith(uploadsDir + path.sep) && filePath !== uploadsDir) {
+          if (
+            !filePath.startsWith(uploadsDir + path.sep) &&
+            filePath !== uploadsDir
+          ) {
             continue;
           }
           if (!fs.existsSync(filePath)) {
@@ -3527,7 +3648,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     getWhatsAppConfig: adminUnlockedProcedure.query(async () => {
       const enabled =
         process.env.ENABLE_WHATSAPP === "true" ||
-        (await getRuntimeConfig("whatsapp_enabled", "ENABLE_WHATSAPP")) === "true";
+        (await getRuntimeConfig("whatsapp_enabled", "ENABLE_WHATSAPP")) ===
+          "true";
       const hasAccountSid = !!(
         process.env.TWILIO_ACCOUNT_SID ||
         (await getRuntimeConfig("twilio_account_sid", "TWILIO_ACCOUNT_SID"))
@@ -3538,7 +3660,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       );
       const fromNumber =
         process.env.TWILIO_WHATSAPP_FROM ||
-        (await getRuntimeConfig("twilio_whatsapp_from", "TWILIO_WHATSAPP_FROM")) ||
+        (await getRuntimeConfig(
+          "twilio_whatsapp_from",
+          "TWILIO_WHATSAPP_FROM",
+        )) ||
         "";
       return {
         enabled,
@@ -3585,14 +3710,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     getEnvHealth: adminUnlockedProcedure.query(async () => {
       const aiConfigured = await isAIConfigured();
       // Check SMTP config from both env and dashboard settings (DB)
-      const smtpHost = process.env.SMTP_HOST || (await getRuntimeConfig("smtp_host", "SMTP_HOST"));
-      const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
-      const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+      const smtpHost =
+        process.env.SMTP_HOST ||
+        (await getRuntimeConfig("smtp_host", "SMTP_HOST"));
+      const smtpUser =
+        process.env.SMTP_USER ||
+        (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+      const smtpPass =
+        process.env.SMTP_PASS ||
+        (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
       const smtpConfigured = !!(smtpUser && smtpPass);
       const smtpHostSet = !!smtpHost;
-      const smtpSource = (process.env.SMTP_USER && process.env.SMTP_PASS)
-        ? "environment"
-        : smtpConfigured ? "dashboard settings" : "";
+      const smtpSource =
+        process.env.SMTP_USER && process.env.SMTP_PASS
+          ? "environment"
+          : smtpConfigured
+            ? "dashboard settings"
+            : "";
       const checks = [
         // Core required vars (always critical)
         {
@@ -3600,21 +3734,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           status: !!process.env.DATABASE_URL,
           critical: true,
           conditional: false,
-          description: "MySQL/MariaDB connection string — required for all data storage",
+          description:
+            "MySQL/MariaDB connection string — required for all data storage",
         },
         {
           name: "JWT_SECRET",
           status: !!process.env.JWT_SECRET,
           critical: true,
           conditional: false,
-          description: "Secret used to sign authentication tokens — must be long and random",
+          description:
+            "Secret used to sign authentication tokens — must be long and random",
         },
         {
           name: "ADMIN_UNLOCK_PASSWORD",
           status: !!process.env.ADMIN_UNLOCK_PASSWORD,
           critical: true,
           conditional: false,
-          description: "Password to unlock the admin panel — bcrypt hash recommended",
+          description:
+            "Password to unlock the admin panel — bcrypt hash recommended",
         },
 
         // Stripe vars (critical only if ENABLE_STRIPE=true)
@@ -3624,7 +3761,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: ENV.enableStripe,
           conditional: true,
           requiredWhen: "ENABLE_STRIPE=true",
-          description: "Stripe secret API key — required when billing is enabled",
+          description:
+            "Stripe secret API key — required when billing is enabled",
         },
         {
           name: "STRIPE_WEBHOOK_SECRET",
@@ -3632,7 +3770,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: ENV.enableStripe,
           conditional: true,
           requiredWhen: "ENABLE_STRIPE=true",
-          description: "Stripe webhook signing secret — required to verify payment events",
+          description:
+            "Stripe webhook signing secret — required to verify payment events",
         },
 
         // Upload/Storage vars (optional - falls back to local disk when not configured)
@@ -3644,7 +3783,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: false,
           conditional: true,
           requiredWhen: "ENABLE_UPLOADS=true with proxy storage",
-          description: "URL of the file storage proxy — falls back to local disk if unset",
+          description:
+            "URL of the file storage proxy — falls back to local disk if unset",
         },
         {
           name: "STORAGE_PROXY_KEY",
@@ -3654,7 +3794,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: false,
           conditional: true,
           requiredWhen: "ENABLE_UPLOADS=true with proxy storage",
-          description: "API key for the storage proxy — required alongside STORAGE_PROXY_URL",
+          description:
+            "API key for the storage proxy — required alongside STORAGE_PROXY_URL",
         },
 
         // Legacy AWS vars (optional - kept for backward compatibility)
@@ -3663,14 +3804,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           status: !!process.env.AWS_ACCESS_KEY_ID,
           critical: false,
           conditional: false,
-          description: "AWS credentials for S3 uploads (legacy — prefer storage proxy)",
+          description:
+            "AWS credentials for S3 uploads (legacy — prefer storage proxy)",
         },
         {
           name: "AWS_SECRET_ACCESS_KEY",
           status: !!process.env.AWS_SECRET_ACCESS_KEY,
           critical: false,
           conditional: false,
-          description: "AWS secret key for S3 — required alongside AWS_ACCESS_KEY_ID",
+          description:
+            "AWS secret key for S3 — required alongside AWS_ACCESS_KEY_ID",
         },
         {
           name: "AWS_S3_BUCKET",
@@ -3682,11 +3825,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // Optional features
         {
-          name: "OPENAI_API_KEY",
+          name: "CORE_AI_CONFIGURATION",
           status: aiConfigured,
           critical: false,
           conditional: false,
-          description: "OpenAI API key — enables AI chat assistant and weather analysis",
+          description:
+            "Provider-neutral Core AI endpoint, credential and model — enables server-side AI features",
         },
         {
           name: "SMTP_HOST",
@@ -3801,20 +3945,35 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .query(({ input }) => {
         const tpl = getTemplateById(input.templateId);
-        if (!tpl) throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
+        if (!tpl)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Template not found",
+          });
         const html = applyMergeFields(tpl.getHtml(), {
           firstName: input.mergeFields?.firstName || "Preview User",
           email: "preview@example.com",
           currentDate: formatDateGB(),
           subject: input.mergeFields?.subject || "Campaign Subject",
-          content: input.mergeFields?.content || "Your campaign content goes here.",
+          content:
+            input.mergeFields?.content || "Your campaign content goes here.",
         });
         return { html };
       }),
 
     getSegmentCounts: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
-      if (!dbConn) return { leads: 0, trial: 0, paid: 0, all: 0, marketing: 0, unsubscribed: 0, byCountry: [], byType: [] };
+      if (!dbConn)
+        return {
+          leads: 0,
+          trial: 0,
+          paid: 0,
+          all: 0,
+          marketing: 0,
+          unsubscribed: 0,
+          byCountry: [],
+          byType: [],
+        };
 
       const [leadsResult] = await dbConn
         .select({ count: sql<number>`COUNT(*)` })
@@ -3823,10 +3982,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         .select({ count: sql<number>`COUNT(*)` })
         .from(users)
         .where(
-          and(
-            eq(users.subscriptionStatus, "trial"),
-            eq(users.isActive, true),
-          ),
+          and(eq(users.subscriptionStatus, "trial"), eq(users.isActive, true)),
         );
       const [paidResult] = await dbConn
         .select({ count: sql<number>`COUNT(*)` })
@@ -3875,8 +4031,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         all: allResult?.count || 0,
         marketing: marketingResult?.count || 0,
         unsubscribed: unsubResult?.count || 0,
-        byCountry: byCountry.map((r) => ({ country: r.country || "Unknown", count: r.count })),
-        byType: byType.map((r) => ({ type: r.contactType || "individual", count: r.count })),
+        byCountry: byCountry.map((r) => ({
+          country: r.country || "Unknown",
+          count: r.count,
+        })),
+        byType: byType.map((r) => ({
+          type: r.contactType || "individual",
+          count: r.count,
+        })),
       };
     }),
 
@@ -3932,7 +4094,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
         const tpl = getTemplateById(input.templateId);
-        if (!tpl) throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
+        if (!tpl)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Template not found",
+          });
 
         // Apply static merge fields (content, subject) at creation time so the
         // stored htmlBody contains the admin's actual copy. Per-recipient fields
@@ -3950,7 +4116,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           segment: input.segment,
           customFilter: null,
           targetCountry: normalizeCountry(input.targetCountry) || null,
-          targetType: input.targetType ? normalizeContactType(input.targetType) : null,
+          targetType: input.targetType
+            ? normalizeContactType(input.targetType)
+            : null,
           dailyLimit: input.dailyLimit,
           sentToday: 0,
           lastSendDate: null,
@@ -3982,10 +4150,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .mutation(async ({ ctx, input }) => {
         const tpl = getTemplateById(input.templateId);
-        if (!tpl) throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
+        if (!tpl)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Template not found",
+          });
 
         const html = applyMergeFields(tpl.getHtml(), {
-          firstName: input.mergeFields?.firstName || extractFirstName(ctx.user.name) || "Admin",
+          firstName:
+            input.mergeFields?.firstName ||
+            extractFirstName(ctx.user.name) ||
+            "Admin",
           email: ctx.user.email || "",
           currentDate: formatDateGB(),
           subject: input.mergeFields?.subject || input.subject,
@@ -3993,7 +4168,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         });
 
         if (!ctx.user.email) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Admin email not found" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Admin email not found",
+          });
         }
 
         await sendEmail(ctx.user.email, `[TEST] ${input.subject}`, html);
@@ -4013,17 +4191,27 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .where(eq(emailCampaigns.id, input.campaignId));
 
         if (!campaign)
-          throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign not found",
+          });
         if (campaign.status === "sent")
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign already sent" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Campaign already sent",
+          });
         if (campaign.status === "sending")
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign is currently sending" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Campaign is currently sending",
+          });
 
         // ── WEEKDAY-ONLY CHECK ──
         if (!isWeekday()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Campaign sending is restricted to weekdays (Monday–Friday) to protect deliverability. Please try again on a weekday.",
+            message:
+              "Campaign sending is restricted to weekdays (Monday–Friday) to protect deliverability. Please try again on a weekday.",
           });
         }
 
@@ -4031,7 +4219,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!isWithinSendHours()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Campaign sending is only permitted between 08:00 and 18:00 UTC to protect deliverability. Please try again during business hours.",
+            message:
+              "Campaign sending is only permitted between 08:00 and 18:00 UTC to protect deliverability. Please try again during business hours.",
           });
         }
 
@@ -4039,7 +4228,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         // Count ALL new outreach sends today across every campaign
         const today = getTodayDateString();
         const [globalLogResult] = await dbConn
-          .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+          .select({
+            total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)`,
+          })
           .from(campaignSendLog)
           .where(eq(campaignSendLog.sendDate, today));
         const globalOutreachSentToday = Number(globalLogResult?.total ?? 0);
@@ -4048,12 +4239,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const [followupResult] = await dbConn
           .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
           .from(campaignSequenceRecipients)
-          .where(and(
-            eq(campaignSequenceRecipients.status, "sent"),
-            sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
-          ));
+          .where(
+            and(
+              eq(campaignSequenceRecipients.status, "sent"),
+              sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+            ),
+          );
         const globalFollowupSentToday = Number(followupResult?.total ?? 0);
-        const globalTotalSentToday = globalOutreachSentToday + globalFollowupSentToday;
+        const globalTotalSentToday =
+          globalOutreachSentToday + globalFollowupSentToday;
 
         if (globalTotalSentToday >= TOTAL_MAILBOX_DAILY_CAP) {
           throw new TRPCError({
@@ -4069,15 +4263,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // ── PER-CAMPAIGN DAILY LIMIT CHECK ──
-        const dailyLimit = Math.min(campaign.dailyLimit || DEFAULT_DAILY_LIMIT, NEW_OUTREACH_DAILY_CAP);
+        const dailyLimit = Math.min(
+          campaign.dailyLimit || DEFAULT_DAILY_LIMIT,
+          NEW_OUTREACH_DAILY_CAP,
+        );
         // Check how many we've already sent today for this campaign
         const [todayLog] = await dbConn
           .select({ sendCount: campaignSendLog.sendCount })
           .from(campaignSendLog)
-          .where(and(
-            eq(campaignSendLog.campaignId, input.campaignId),
-            eq(campaignSendLog.sendDate, today),
-          ));
+          .where(
+            and(
+              eq(campaignSendLog.campaignId, input.campaignId),
+              eq(campaignSendLog.sendDate, today),
+            ),
+          );
         const alreadySentToday = todayLog?.sendCount || 0;
         const remainingToday = Math.max(0, dailyLimit - alreadySentToday);
 
@@ -4095,7 +4294,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .where(eq(emailCampaigns.id, input.campaignId));
 
         // Build recipient list based on segment
-        type Recipient = { email: string; name: string | null; trialEndsAt?: Date | null; unsubscribeToken?: string };
+        type Recipient = {
+          email: string;
+          name: string | null;
+          trialEndsAt?: Date | null;
+          unsubscribeToken?: string;
+        };
         let recipients: Recipient[] = [];
 
         if (campaign.segment === "leads") {
@@ -4103,16 +4307,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           recipients = leads.map((l) => ({ email: l.email, name: l.name }));
         } else if (campaign.segment === "marketing") {
           // Marketing contacts segment — apply country/type filters
-          const mcConditions: ReturnType<typeof eq>[] = [eq(marketingContacts.status, "active")];
+          const mcConditions: ReturnType<typeof eq>[] = [
+            eq(marketingContacts.status, "active"),
+          ];
           if (campaign.targetCountry) {
-            mcConditions.push(eq(marketingContacts.country, campaign.targetCountry));
+            mcConditions.push(
+              eq(marketingContacts.country, campaign.targetCountry),
+            );
           }
           if (campaign.targetType) {
-            mcConditions.push(eq(marketingContacts.contactType, campaign.targetType));
+            mcConditions.push(
+              eq(marketingContacts.contactType, campaign.targetType),
+            );
           }
-          const contacts = await dbConn.select().from(marketingContacts)
+          const contacts = await dbConn
+            .select()
+            .from(marketingContacts)
             .where(and(...mcConditions));
-          recipients = contacts.map((c) => ({ email: c.email, name: c.name, unsubscribeToken: c.unsubscribeToken }));
+          recipients = contacts.map((c) => ({
+            email: c.email,
+            name: c.name,
+            unsubscribeToken: c.unsubscribeToken,
+          }));
         } else {
           let condition;
           if (campaign.segment === "trial") {
@@ -4141,20 +4357,38 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // ── SUPPRESSION CHECK (UK GDPR + PECR compliance) ──
-        const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
-        const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+        const suppressions = await dbConn
+          .select({ email: emailUnsubscribes.email })
+          .from(emailUnsubscribes);
+        const suppressedSet = new Set(
+          suppressions.map((s) => s.email.toLowerCase()),
+        );
         // Also exclude bounced marketing contacts
-        const bouncedContacts = await dbConn.select({ email: marketingContacts.email }).from(marketingContacts)
-          .where(or(eq(marketingContacts.status, "unsubscribed"), eq(marketingContacts.status, "bounced")));
-        for (const b of bouncedContacts) suppressedSet.add(b.email.toLowerCase());
+        const bouncedContacts = await dbConn
+          .select({ email: marketingContacts.email })
+          .from(marketingContacts)
+          .where(
+            or(
+              eq(marketingContacts.status, "unsubscribed"),
+              eq(marketingContacts.status, "bounced"),
+            ),
+          );
+        for (const b of bouncedContacts)
+          suppressedSet.add(b.email.toLowerCase());
 
         // Exclude already-sent recipients for this campaign
-        const alreadySent = await dbConn.select({ email: emailCampaignRecipients.email }).from(emailCampaignRecipients)
-          .where(and(
-            eq(emailCampaignRecipients.campaignId, input.campaignId),
-            eq(emailCampaignRecipients.status, "sent"),
-          ));
-        const alreadySentSet = new Set(alreadySent.map(r => r.email.toLowerCase()));
+        const alreadySent = await dbConn
+          .select({ email: emailCampaignRecipients.email })
+          .from(emailCampaignRecipients)
+          .where(
+            and(
+              eq(emailCampaignRecipients.campaignId, input.campaignId),
+              eq(emailCampaignRecipients.status, "sent"),
+            ),
+          );
+        const alreadySentSet = new Set(
+          alreadySent.map((r) => r.email.toLowerCase()),
+        );
 
         // Deduplicate by email, remove suppressed, remove already sent
         const seen = new Set<string>();
@@ -4168,10 +4402,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // ── ENFORCE DAILY LIMIT + GLOBAL CAP + STAGGER WINDOW ──
         // Cap: min(per-campaign remaining, global mailbox remaining, per-window stagger limit)
-        const globalMailboxRemaining = Math.max(0, TOTAL_MAILBOX_DAILY_CAP - globalTotalSentToday);
-        const sendLimit = Math.min(remainingToday, globalMailboxRemaining, NEW_OUTREACH_PER_WINDOW);
+        const globalMailboxRemaining = Math.max(
+          0,
+          TOTAL_MAILBOX_DAILY_CAP - globalTotalSentToday,
+        );
+        const sendLimit = Math.min(
+          remainingToday,
+          globalMailboxRemaining,
+          NEW_OUTREACH_PER_WINDOW,
+        );
         const recipientsToSend = uniqueRecipients.slice(0, sendLimit);
-        const recipientsDeferred = uniqueRecipients.length - recipientsToSend.length;
+        const recipientsDeferred =
+          uniqueRecipients.length - recipientsToSend.length;
 
         // Update recipient count
         await dbConn
@@ -4192,8 +4434,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             let unsubToken = recipient.unsubscribeToken || "";
             if (!unsubToken) {
               // Look up marketing contact token or generate fallback
-              const [mc] = await dbConn.select().from(marketingContacts)
-                .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
+              const [mc] = await dbConn
+                .select()
+                .from(marketingContacts)
+                .where(
+                  eq(marketingContacts.email, recipient.email.toLowerCase()),
+                );
               unsubToken = mc?.unsubscribeToken || "";
             }
             const unsubLink = unsubToken
@@ -4210,7 +4456,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               unsubscribeLink: unsubLink,
             });
 
-            await sendCampaignEmail(recipient.email, campaign.subject, html, unsubLink);
+            await sendCampaignEmail(
+              recipient.email,
+              campaign.subject,
+              html,
+              unsubLink,
+            );
 
             await dbConn.insert(emailCampaignRecipients).values({
               campaignId: input.campaignId,
@@ -4222,7 +4473,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             sentCount++;
 
             // Update lastContactedAt on marketing contact
-            await dbConn.update(marketingContacts)
+            await dbConn
+              .update(marketingContacts)
               .set({ lastContactedAt: new Date() })
               .where(eq(marketingContacts.email, recipient.email.toLowerCase()))
               .catch(() => {}); // non-critical
@@ -4241,12 +4493,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         // ── LOG DAILY SEND COUNT ──
         if (sentCount > 0) {
           if (todayLog) {
-            await dbConn.update(campaignSendLog)
+            await dbConn
+              .update(campaignSendLog)
               .set({ sendCount: alreadySentToday + sentCount })
-              .where(and(
-                eq(campaignSendLog.campaignId, input.campaignId),
-                eq(campaignSendLog.sendDate, today),
-              ));
+              .where(
+                and(
+                  eq(campaignSendLog.campaignId, input.campaignId),
+                  eq(campaignSendLog.sendDate, today),
+                ),
+              );
           } else {
             await dbConn.insert(campaignSendLog).values({
               campaignId: input.campaignId,
@@ -4289,7 +4544,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }),
         });
 
-        return { sentCount, failedCount, total: uniqueRecipients.length, deferred: recipientsDeferred, dailyLimit };
+        return {
+          sentCount,
+          failedCount,
+          total: uniqueRecipients.length,
+          deferred: recipientsDeferred,
+          dailyLimit,
+        };
       }),
 
     deleteCampaign: adminUnlockedProcedure
@@ -4320,11 +4581,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // ── Campaign Replies Inbox ─────────────────────────────────────────────
 
     getCampaignReplies: adminUnlockedProcedure
-      .input(z.object({
-        status: z.enum(["all", "new", "read", "interested", "not_interested", "follow_up", "converted", "do_not_contact"]).optional(),
-        limit: z.number().min(1).max(100).default(50),
-        offset: z.number().min(0).default(0),
-      }))
+      .input(
+        z.object({
+          status: z
+            .enum([
+              "all",
+              "new",
+              "read",
+              "interested",
+              "not_interested",
+              "follow_up",
+              "converted",
+              "do_not_contact",
+            ])
+            .optional(),
+          limit: z.number().min(1).max(100).default(50),
+          offset: z.number().min(0).default(0),
+        }),
+      )
       .query(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) return { replies: [], total: 0 };
@@ -4352,21 +4626,34 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     updateReplyStatus: adminUnlockedProcedure
-      .input(z.object({
-        replyId: z.number(),
-        status: z.enum(["new", "read", "interested", "not_interested", "follow_up", "converted", "do_not_contact"]),
-        notes: z.string().max(500).optional(),
-        stopSequence: z.boolean().optional(),
-      }))
+      .input(
+        z.object({
+          replyId: z.number(),
+          status: z.enum([
+            "new",
+            "read",
+            "interested",
+            "not_interested",
+            "follow_up",
+            "converted",
+            "do_not_contact",
+          ]),
+          notes: z.string().max(500).optional(),
+          stopSequence: z.boolean().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-        const [reply] = await dbConn.select().from(campaignReplies)
+        const [reply] = await dbConn
+          .select()
+          .from(campaignReplies)
           .where(eq(campaignReplies.id, input.replyId));
         if (!reply) throw new TRPCError({ code: "NOT_FOUND" });
 
-        await dbConn.update(campaignReplies)
+        await dbConn
+          .update(campaignReplies)
           .set({
             status: input.status,
             notes: input.notes ?? reply.notes,
@@ -4376,7 +4663,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // If do_not_contact — add to suppression list
         if (input.status === "do_not_contact" && reply.fromEmail) {
-          await dbConn.insert(emailUnsubscribes)
+          await dbConn
+            .insert(emailUnsubscribes)
             .values({
               email: reply.fromEmail.toLowerCase(),
               token: nanoid(32),
@@ -4386,7 +4674,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             })
             .onDuplicateKeyUpdate({ set: { source: "admin" } });
           // Also update marketing contact status
-          await dbConn.update(marketingContacts)
+          await dbConn
+            .update(marketingContacts)
             .set({ status: "unsubscribed" })
             .where(eq(marketingContacts.email, reply.fromEmail.toLowerCase()))
             .catch(() => {});
@@ -4394,19 +4683,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // If stopSequence — pause all pending sequence steps for this contact's campaigns
         if (input.stopSequence && reply.fromEmail) {
-          const affectedRecipients = await dbConn.selectDistinct({ campaignId: emailCampaignRecipients.campaignId })
+          const affectedRecipients = await dbConn
+            .selectDistinct({ campaignId: emailCampaignRecipients.campaignId })
             .from(emailCampaignRecipients)
-            .where(eq(emailCampaignRecipients.email, reply.fromEmail.toLowerCase()));
+            .where(
+              eq(emailCampaignRecipients.email, reply.fromEmail.toLowerCase()),
+            );
           const campaignIdSet = new Set<number>();
-          affectedRecipients.forEach(r => campaignIdSet.add(r.campaignId));
+          affectedRecipients.forEach((r) => campaignIdSet.add(r.campaignId));
           const campaignIds = Array.from(campaignIdSet);
           if (campaignIds.length > 0) {
-            await dbConn.update(campaignSequences)
+            await dbConn
+              .update(campaignSequences)
               .set({ status: "skipped" })
-              .where(and(
-                inArray(campaignSequences.campaignId, campaignIds),
-                eq(campaignSequences.status, "pending"),
-              )).catch(() => {});
+              .where(
+                and(
+                  inArray(campaignSequences.campaignId, campaignIds),
+                  eq(campaignSequences.status, "pending"),
+                ),
+              )
+              .catch(() => {});
           }
         }
 
@@ -4415,13 +4711,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
     triggerReplyFetch: adminUnlockedProcedure.mutation(async () => {
       try {
-        const { fetchCampaignReplies } = await import("./_core/campaignReplyFetcher");
+        const { fetchCampaignReplies } =
+          await import("./_core/campaignReplyFetcher");
         const count = await fetchCampaignReplies(50);
         return { fetched: count };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: err instanceof Error ? err.message : "Failed to fetch replies",
+          message:
+            err instanceof Error ? err.message : "Failed to fetch replies",
         });
       }
     }),
@@ -4434,20 +4732,41 @@ Format your response as JSON with keys: recommendation, explanation, precautions
      */
     getCampaignAssignmentPreview: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
-      if (!dbConn) return { management: 0, academy: 0, blocked: 0, alreadySent: 0, suspectedDuplicate: 0, total: 0 };
+      if (!dbConn)
+        return {
+          management: 0,
+          academy: 0,
+          blocked: 0,
+          alreadySent: 0,
+          suspectedDuplicate: 0,
+          total: 0,
+        };
 
       const contacts = await dbConn.select().from(marketingContacts);
-      const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
-      const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+      const suppressions = await dbConn
+        .select({ email: emailUnsubscribes.email })
+        .from(emailUnsubscribes);
+      const suppressedSet = new Set(
+        suppressions.map((s) => s.email.toLowerCase()),
+      );
 
       const alreadySentEmails = await dbConn
         .select({ email: emailCampaignRecipients.email })
         .from(emailCampaignRecipients)
         .where(eq(emailCampaignRecipients.status, "sent"));
-      const alreadySentSet = new Set(alreadySentEmails.map(r => r.email.toLowerCase()));
+      const alreadySentSet = new Set(
+        alreadySentEmails.map((r) => r.email.toLowerCase()),
+      );
 
-      // Types that map to academy/school family
-      const academyTypes = new Set(["school", "college", "academy", "student", "teacher", "instructor"]);
+      // Legacy data values that map to the Academy family
+      const academyTypes = new Set([
+        "school", // LEGACY_DATABASE_COMPAT_ONLY: historical contact type.
+        "college",
+        "academy",
+        "student",
+        "teacher",
+        "instructor",
+      ]);
 
       let management = 0;
       let academy = 0;
@@ -4457,11 +4776,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
       for (const c of contacts) {
         const email = c.email?.toLowerCase() || "";
-        if (!email || !email.includes("@")) { blocked++; continue; }
-        if (c.status !== "active" || suppressedSet.has(email)) { blocked++; continue; }
-        if (alreadySentSet.has(email)) { alreadySent++; continue; }
+        if (!email || !email.includes("@")) {
+          blocked++;
+          continue;
+        }
+        if (c.status !== "active" || suppressedSet.has(email)) {
+          blocked++;
+          continue;
+        }
+        if (alreadySentSet.has(email)) {
+          alreadySent++;
+          continue;
+        }
         // Contacts flagged as suspected duplicates are soft-blocked from autopilot
-        if (c.suspectedDuplicateOf != null) { suspectedDuplicate++; continue; }
+        if (c.suspectedDuplicateOf != null) {
+          suspectedDuplicate++;
+          continue;
+        }
         if (academyTypes.has(c.contactType || "")) {
           academy++;
         } else {
@@ -4488,7 +4819,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
      *   campaign email are eligible.
      * - Management contacts → enrolled into a Management Autopilot campaign
      *   using the mgmt-intro template.
-     * - Academy contacts (school/college/academy/student/teacher/instructor)
+     * - Academy contacts (LEGACY_DATABASE_COMPAT_ONLY historical organisation values map to Academy offerings)
      *   → enrolled into an Academy Autopilot campaign using the academy-intro
      *   template.
      * - For each campaign, contacts from the OTHER family are pre-marked as
@@ -4503,7 +4834,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
       // Academy family types (same set used by getCampaignAssignmentPreview)
-      const ACADEMY_TYPES = new Set(["school", "college", "academy", "student", "teacher", "instructor"]);
+      const ACADEMY_TYPES = new Set([
+        "school", // LEGACY_DATABASE_COMPAT_ONLY: historical contact type.
+        "college",
+        "academy",
+        "student",
+        "teacher",
+        "instructor",
+      ]);
 
       // ── Step 1: Find all active, non-suppressed contacts ─────────────────
       const allContacts = await dbConn
@@ -4514,14 +4852,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       const suppressions = await dbConn
         .select({ email: emailUnsubscribes.email })
         .from(emailUnsubscribes);
-      const suppressedSet = new Set(suppressions.map((s) => s.email.toLowerCase()));
+      const suppressedSet = new Set(
+        suppressions.map((s) => s.email.toLowerCase()),
+      );
 
       // ── Step 2: Find contacts already sent any campaign email ─────────────
       const alreadySentRows = await dbConn
         .select({ email: emailCampaignRecipients.email })
         .from(emailCampaignRecipients)
         .where(eq(emailCampaignRecipients.status, "sent"));
-      const alreadySentSet = new Set(alreadySentRows.map((r) => r.email.toLowerCase()));
+      const alreadySentSet = new Set(
+        alreadySentRows.map((r) => r.email.toLowerCase()),
+      );
 
       // ── Step 3: Find contacts already enrolled in any autopilot campaign ──
       // "enrolled" = already has a record in emailCampaignRecipients for a
@@ -4542,7 +4884,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }
 
       // ── Step 4: Classify unenrolled contacts (skip suspected duplicates) ──
-      const managementEmails: Array<{ email: string; name: string | null }> = [];
+      const managementEmails: Array<{ email: string; name: string | null }> =
+        [];
       const academyEmails: Array<{ email: string; name: string | null }> = [];
 
       for (const c of allContacts) {
@@ -4567,8 +4910,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
       // ── Step 5: Create Management Autopilot campaign if needed ────────────
       if (managementEmails.length > 0) {
-        const mgmtTemplate = CAMPAIGN_TEMPLATES.find((t) => t.id === "mgmt-intro");
-        if (!mgmtTemplate) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "mgmt-intro template not found" });
+        const mgmtTemplate = CAMPAIGN_TEMPLATES.find(
+          (t) => t.id === "mgmt-intro",
+        );
+        if (!mgmtTemplate)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "mgmt-intro template not found",
+          });
 
         const mgmtResult = await dbConn.insert(emailCampaigns).values({
           name: `Autopilot — Management (${today})`,
@@ -4603,19 +4952,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }));
           // Insert in batches of 500 to avoid packet size issues
           for (let i = 0; i < skipValues.length; i += 500) {
-            await dbConn.insert(emailCampaignRecipients).values(skipValues.slice(i, i + 500));
+            await dbConn
+              .insert(emailCampaignRecipients)
+              .values(skipValues.slice(i, i + 500));
           }
         }
       }
 
       // ── Step 6: Create Academy Autopilot campaign if needed ───────────────
       if (academyEmails.length > 0) {
-        const acaTemplate = CAMPAIGN_TEMPLATES.find((t) => t.id === "academy-intro");
-        if (!acaTemplate) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "academy-intro template not found" });
+        const acaTemplate = CAMPAIGN_TEMPLATES.find(
+          (t) => t.id === "academy-intro",
+        );
+        if (!acaTemplate)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "academy-intro template not found",
+          });
 
         const acaResult = await dbConn.insert(emailCampaigns).values({
           name: `Autopilot — Academy (${today})`,
-          subject: "A structured learning platform designed for equestrian schools",
+          subject:
+            "A structured learning platform designed for equestrian schools",
           htmlBody: acaTemplate.getHtml(),
           templateId: "academy-intro",
           segment: "marketing",
@@ -4644,7 +5002,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             status: "skipped" as const,
           }));
           for (let i = 0; i < skipValues.length; i += 500) {
-            await dbConn.insert(emailCampaignRecipients).values(skipValues.slice(i, i + 500));
+            await dbConn
+              .insert(emailCampaignRecipients)
+              .values(skipValues.slice(i, i + 500));
           }
         }
       }
@@ -4699,9 +5059,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
       // Only persist newly found duplicates (don't overwrite manually cleared flags)
       const alreadyFlagged = new Set(
-        contacts
-          .filter((c) => c.suspectedDuplicateOf != null)
-          .map((c) => c.id),
+        contacts.filter((c) => c.suspectedDuplicateOf != null).map((c) => c.id),
       );
 
       let newlyFlagged = 0;
@@ -4745,7 +5103,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        await dbConn.update(emailCampaigns)
+        await dbConn
+          .update(emailCampaigns)
           .set({ status: "paused", pausedAt: new Date() })
           .where(eq(emailCampaigns.id, input.campaignId));
         return { success: true };
@@ -4756,11 +5115,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        const [campaign] = await dbConn.select().from(emailCampaigns)
+        const [campaign] = await dbConn
+          .select()
+          .from(emailCampaigns)
           .where(eq(emailCampaigns.id, input.campaignId));
         if (!campaign) throw new TRPCError({ code: "NOT_FOUND" });
-        if (campaign.status !== "paused") throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign is not paused" });
-        await dbConn.update(emailCampaigns)
+        if (campaign.status !== "paused")
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Campaign is not paused",
+          });
+        await dbConn
+          .update(emailCampaigns)
           .set({ status: "draft", pausedAt: null })
           .where(eq(emailCampaigns.id, input.campaignId));
         return { success: true };
@@ -4770,18 +5136,33 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .input(z.object({ campaignId: z.number() }))
       .query(async ({ input }) => {
         const dbConn = await getDb();
-        if (!dbConn) return { sentToday: 0, dailyLimit: DEFAULT_DAILY_LIMIT, remaining: DEFAULT_DAILY_LIMIT };
+        if (!dbConn)
+          return {
+            sentToday: 0,
+            dailyLimit: DEFAULT_DAILY_LIMIT,
+            remaining: DEFAULT_DAILY_LIMIT,
+          };
         const today = getTodayDateString();
-        const [campaign] = await dbConn.select().from(emailCampaigns)
+        const [campaign] = await dbConn
+          .select()
+          .from(emailCampaigns)
           .where(eq(emailCampaigns.id, input.campaignId));
         const dailyLimit = campaign?.dailyLimit || DEFAULT_DAILY_LIMIT;
-        const [log] = await dbConn.select({ sendCount: campaignSendLog.sendCount }).from(campaignSendLog)
-          .where(and(
-            eq(campaignSendLog.campaignId, input.campaignId),
-            eq(campaignSendLog.sendDate, today),
-          ));
+        const [log] = await dbConn
+          .select({ sendCount: campaignSendLog.sendCount })
+          .from(campaignSendLog)
+          .where(
+            and(
+              eq(campaignSendLog.campaignId, input.campaignId),
+              eq(campaignSendLog.sendDate, today),
+            ),
+          );
         const sentToday = log?.sendCount || 0;
-        return { sentToday, dailyLimit, remaining: Math.max(0, dailyLimit - sentToday) };
+        return {
+          sentToday,
+          dailyLimit,
+          remaining: Math.max(0, dailyLimit - sentToday),
+        };
       }),
 
     /**
@@ -4806,7 +5187,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           nextSendWindow: nextWindow ?? "Next weekday 08:30 UTC",
           isWeekday: isWeekday(),
           isWithinSendHours: isWithinSendHours(),
-          sendWindows: SEND_WINDOWS.map(w => w.label),
+          sendWindows: SEND_WINDOWS.map((w) => w.label),
         };
       }
 
@@ -4814,7 +5195,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
       // New outreach sent today (sum across all campaigns)
       const [outreachResult] = await dbConn
-        .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+        .select({
+          total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)`,
+        })
         .from(campaignSendLog)
         .where(eq(campaignSendLog.sendDate, today));
       const newOutreachSentToday = Number(outreachResult?.total ?? 0);
@@ -4823,10 +5206,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       const [followupResult] = await dbConn
         .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
         .from(campaignSequenceRecipients)
-        .where(and(
-          eq(campaignSequenceRecipients.status, "sent"),
-          sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
-        ));
+        .where(
+          and(
+            eq(campaignSequenceRecipients.status, "sent"),
+            sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+          ),
+        );
       const followupsSentToday = Number(followupResult?.total ?? 0);
       const totalSentToday = newOutreachSentToday + followupsSentToday;
 
@@ -4841,7 +5226,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         .where(eq(emailCampaigns.status, "paused"));
 
       const queuedForNextWindow = pausedCampaigns.reduce(
-        (acc, c) => acc + Math.max(0, (c.recipientCount || 0) - (c.sentCount || 0)),
+        (acc, c) =>
+          acc + Math.max(0, (c.recipientCount || 0) - (c.sentCount || 0)),
         0,
       );
 
@@ -4854,23 +5240,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         newOutreachCap: NEW_OUTREACH_DAILY_CAP,
         totalCap: TOTAL_MAILBOX_DAILY_CAP,
         perWindowLimit: NEW_OUTREACH_PER_WINDOW,
-        newOutreachRemaining: Math.max(0, NEW_OUTREACH_DAILY_CAP - newOutreachSentToday),
+        newOutreachRemaining: Math.max(
+          0,
+          NEW_OUTREACH_DAILY_CAP - newOutreachSentToday,
+        ),
         totalRemaining: Math.max(0, TOTAL_MAILBOX_DAILY_CAP - totalSentToday),
         queuedForNextWindow,
         pausedCampaignsCount: pausedCampaigns.length,
         nextSendWindow: nextWindow ?? "Next weekday 08:30 UTC",
         isWeekday: isWeekday(),
         isWithinSendHours: isWithinSendHours(),
-        sendWindows: SEND_WINDOWS.map(w => w.label),
+        sendWindows: SEND_WINDOWS.map((w) => w.label),
       };
     }),
 
     parseImportFile: adminUnlockedProcedure
-      .input(z.object({
-        fileContent: z.string(), // base64 or raw CSV text
-        fileType: z.enum(["csv", "xlsx"]),
-        fileName: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          fileContent: z.string(), // base64 or raw CSV text
+          fileType: z.enum(["csv", "xlsx"]),
+          fileName: z.string().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         let rows: Array<Record<string, string>> = [];
 
@@ -4881,7 +5272,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             // Likely base64 encoded
             try {
               csvText = Buffer.from(csvText, "base64").toString("utf-8");
-            } catch { /* use as-is */ }
+            } catch {
+              /* use as-is */
+            }
           }
           rows = parseCSV(csvText);
         } else {
@@ -4897,7 +5290,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             const headers: string[] = [];
             const firstRow = worksheet.getRow(1);
             firstRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-              headers[colNumber - 1] = String(cell.value || `Column ${colNumber}`);
+              headers[colNumber - 1] = String(
+                cell.value || `Column ${colNumber}`,
+              );
             });
 
             worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
@@ -4936,12 +5331,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     addSuppression: adminUnlockedProcedure
-      .input(z.object({ email: z.string().email(), reason: z.string().optional() }))
+      .input(
+        z.object({ email: z.string().email(), reason: z.string().optional() }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         const email = input.email.toLowerCase();
-        const [existing] = await dbConn.select().from(emailUnsubscribes)
+        const [existing] = await dbConn
+          .select()
+          .from(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, email));
         if (existing) return { success: true, message: "Already suppressed" };
         await dbConn.insert(emailUnsubscribes).values({
@@ -4951,7 +5350,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           source: "admin",
         });
         // Also mark marketing contact as unsubscribed if exists
-        await dbConn.update(marketingContacts)
+        await dbConn
+          .update(marketingContacts)
           .set({ status: "unsubscribed" })
           .where(eq(marketingContacts.email, email))
           .catch(() => {});
@@ -4964,19 +5364,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         const email = input.email.toLowerCase();
-        await dbConn.delete(emailUnsubscribes)
+        await dbConn
+          .delete(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, email));
         // Re-activate marketing contact if it was unsubscribed
-        await dbConn.update(marketingContacts)
+        await dbConn
+          .update(marketingContacts)
           .set({ status: "active" })
-          .where(and(
-            eq(marketingContacts.email, email),
-            eq(marketingContacts.status, "unsubscribed"),
-          ))
+          .where(
+            and(
+              eq(marketingContacts.email, email),
+              eq(marketingContacts.status, "unsubscribed"),
+            ),
+          )
           .catch((err) => {
             console.error("Failed to reactivate marketing contact:", err);
           });
-        return { success: true, message: "Email removed from suppression list" };
+        return {
+          success: true,
+          message: "Email removed from suppression list",
+        };
       }),
 
     // ──────────────────────────────────────────────────────────
@@ -4984,14 +5391,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // ──────────────────────────────────────────────────────────
 
     getMarketingContacts: adminUnlockedProcedure
-      .input(z.object({
-        status: z.enum(["active", "unsubscribed", "bounced", "all"]).default("all"),
-        contactType: z.string().optional(),
-        country: z.string().optional(),
-        search: z.string().optional(),
-        limit: z.number().min(1).max(500).default(200),
-        offset: z.number().min(0).default(0),
-      }).optional())
+      .input(
+        z
+          .object({
+            status: z
+              .enum(["active", "unsubscribed", "bounced", "all"])
+              .default("all"),
+            contactType: z.string().optional(),
+            country: z.string().optional(),
+            search: z.string().optional(),
+            limit: z.number().min(1).max(500).default(200),
+            offset: z.number().min(0).default(0),
+          })
+          .optional(),
+      )
       .query(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) return [];
@@ -5016,7 +5429,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           );
         }
         const where = conditions.length > 0 ? and(...conditions) : undefined;
-        return dbConn.select().from(marketingContacts)
+        return dbConn
+          .select()
+          .from(marketingContacts)
           .where(where)
           .orderBy(desc(marketingContacts.createdAt))
           .limit(input?.limit ?? 200)
@@ -5024,30 +5439,45 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     createMarketingContact: adminUnlockedProcedure
-      .input(z.object({
-        email: z.string().email(),
-        name: z.string().optional(),
-        businessName: z.string().optional(),
-        organizationName: z.string().optional(),
-        contactType: z.string().default("individual"),
-        source: z.string().default("manual"),
-        tags: z.string().optional(), // JSON array string
-        region: z.string().optional(),
-        country: z.string().optional(),
-        leadFocus: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          email: z.string().email(),
+          name: z.string().optional(),
+          businessName: z.string().optional(),
+          organizationName: z.string().optional(),
+          contactType: z.string().default("individual"),
+          source: z.string().default("manual"),
+          tags: z.string().optional(), // JSON array string
+          region: z.string().optional(),
+          country: z.string().optional(),
+          leadFocus: z.string().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         const token = nanoid(32);
         // Check if already exists in suppression list
-        const [suppressed] = await dbConn.select().from(emailUnsubscribes)
+        const [suppressed] = await dbConn
+          .select()
+          .from(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, input.email.toLowerCase()));
-        if (suppressed) throw new TRPCError({ code: "BAD_REQUEST", message: "This email is on the suppression list (previously unsubscribed)" });
+        if (suppressed)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "This email is on the suppression list (previously unsubscribed)",
+          });
         // Check duplicate
-        const [existing] = await dbConn.select().from(marketingContacts)
+        const [existing] = await dbConn
+          .select()
+          .from(marketingContacts)
           .where(eq(marketingContacts.email, input.email.toLowerCase()));
-        if (existing) throw new TRPCError({ code: "BAD_REQUEST", message: "Contact already exists" });
+        if (existing)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Contact already exists",
+          });
 
         await dbConn.insert(marketingContacts).values({
           email: input.email.toLowerCase(),
@@ -5066,29 +5496,39 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     importMarketingContacts: adminUnlockedProcedure
-      .input(z.object({
-        contacts: z.array(z.object({
-          email: z.string().email(),
-          name: z.string().optional(),
-          businessName: z.string().optional(),
-          organizationName: z.string().optional(),
-          contactType: z.string().default("individual"),
-          tags: z.string().optional(),
-          region: z.string().optional(),
-          country: z.string().optional(),
-          leadFocus: z.string().optional(),
-        })),
-        source: z.string().default("csv_import"),
-      }))
+      .input(
+        z.object({
+          contacts: z.array(
+            z.object({
+              email: z.string().email(),
+              name: z.string().optional(),
+              businessName: z.string().optional(),
+              organizationName: z.string().optional(),
+              contactType: z.string().default("individual"),
+              tags: z.string().optional(),
+              region: z.string().optional(),
+              country: z.string().optional(),
+              leadFocus: z.string().optional(),
+            }),
+          ),
+          source: z.string().default("csv_import"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         // Get suppression list
-        const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
-        const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+        const suppressions = await dbConn
+          .select({ email: emailUnsubscribes.email })
+          .from(emailUnsubscribes);
+        const suppressedSet = new Set(
+          suppressions.map((s) => s.email.toLowerCase()),
+        );
         // Get existing contacts
-        const existing = await dbConn.select({ email: marketingContacts.email }).from(marketingContacts);
-        const existingSet = new Set(existing.map(e => e.email.toLowerCase()));
+        const existing = await dbConn
+          .select({ email: marketingContacts.email })
+          .from(marketingContacts);
+        const existingSet = new Set(existing.map((e) => e.email.toLowerCase()));
 
         let imported = 0;
         let skipped = 0;
@@ -5100,16 +5540,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const email = c.email.trim().toLowerCase();
 
           // 1. Basic email format validation
-          if (!isValidEmail(email)) { invalid++; continue; }
+          if (!isValidEmail(email)) {
+            invalid++;
+            continue;
+          }
 
           // 2. Skip suppressed / existing
-          if (suppressedSet.has(email) || existingSet.has(email)) { skipped++; continue; }
+          if (suppressedSet.has(email) || existingSet.has(email)) {
+            skipped++;
+            continue;
+          }
 
           // 3. Compliance validation: rejects disposable, B2B free-mail, etc.
-          const compliance = validateContactCompliance(email, c.contactType || "individual");
+          const compliance = validateContactCompliance(
+            email,
+            c.contactType || "individual",
+          );
           if (!compliance.valid) {
             rejected++;
-            rejections.push({ email, reason: compliance.reason || "compliance_rejected" });
+            rejections.push({
+              email,
+              reason: compliance.reason || "compliance_rejected",
+            });
             continue;
           }
 
@@ -5129,7 +5581,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           existingSet.add(email); // prevent duplicates within batch
           imported++;
         }
-        return { imported, skipped, invalid, rejected, rejections: rejections.slice(0, 100), total: input.contacts.length };
+        return {
+          imported,
+          skipped,
+          invalid,
+          rejected,
+          rejections: rejections.slice(0, 100),
+          total: input.contacts.length,
+        };
       }),
 
     deleteMarketingContact: adminUnlockedProcedure
@@ -5137,7 +5596,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        await dbConn.delete(marketingContacts).where(eq(marketingContacts.id, input.id));
+        await dbConn
+          .delete(marketingContacts)
+          .where(eq(marketingContacts.id, input.id));
         return { success: true };
       }),
 
@@ -5166,7 +5627,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             search: z.string().optional(),
             country: z.string().optional(),
             contactType: z.string().optional(),
-            status: z.enum(["active", "unsubscribed", "bounced", "all"]).optional(),
+            status: z
+              .enum(["active", "unsubscribed", "bounced", "all"])
+              .optional(),
           }),
         ]),
       )
@@ -5186,7 +5649,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!search && !country && !contactType && !status) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Provide at least one filter criterion for filter-based bulk delete",
+            message:
+              "Provide at least one filter criterion for filter-based bulk delete",
           });
         }
 
@@ -5219,9 +5683,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         if (toDelete === 0) return { deleted: 0 };
 
-        await dbConn
-          .delete(marketingContacts)
-          .where(and(...conditions));
+        await dbConn.delete(marketingContacts).where(and(...conditions));
 
         return { deleted: toDelete };
       }),
@@ -5233,7 +5695,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     getUnsubscribes: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
       if (!dbConn) return [];
-      return dbConn.select().from(emailUnsubscribes).orderBy(desc(emailUnsubscribes.unsubscribedAt));
+      return dbConn
+        .select()
+        .from(emailUnsubscribes)
+        .orderBy(desc(emailUnsubscribes.unsubscribedAt));
     }),
 
     // ──────────────────────────────────────────────────────────
@@ -5245,20 +5710,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .query(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) return [];
-        return dbConn.select().from(campaignSequences)
+        return dbConn
+          .select()
+          .from(campaignSequences)
           .where(eq(campaignSequences.campaignId, input.campaignId))
           .orderBy(campaignSequences.stepNumber);
       }),
 
     addCampaignSequenceStep: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number(),
-        stepNumber: z.number(),
-        delayDays: z.number(),
-        subject: z.string(),
-        htmlBody: z.string(),
-        templateId: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number(),
+          stepNumber: z.number(),
+          delayDays: z.number(),
+          subject: z.string(),
+          htmlBody: z.string(),
+          templateId: z.string().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
@@ -5278,15 +5747,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ ctx, input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        const [step] = await dbConn.select().from(campaignSequences).where(eq(campaignSequences.id, input.sequenceId));
+        const [step] = await dbConn
+          .select()
+          .from(campaignSequences)
+          .where(eq(campaignSequences.id, input.sequenceId));
         if (!step) throw new TRPCError({ code: "NOT_FOUND" });
-        if (step.status === "sent") throw new TRPCError({ code: "BAD_REQUEST", message: "Step already sent" });
+        if (step.status === "sent")
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Step already sent",
+          });
 
         // ── WEEKDAY-ONLY CHECK (follow-ups also weekday-only) ──
         if (!isWeekday()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Follow-up sending is restricted to weekdays (Monday–Friday). Please try again on a weekday.",
+            message:
+              "Follow-up sending is restricted to weekdays (Monday–Friday). Please try again on a weekday.",
           });
         }
 
@@ -5294,14 +5771,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!isWithinSendHours()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Follow-up sending is only permitted between 08:00 and 18:00 UTC. Please try again during business hours.",
+            message:
+              "Follow-up sending is only permitted between 08:00 and 18:00 UTC. Please try again during business hours.",
           });
         }
 
         // ── GLOBAL MAILBOX CAP CHECK ──
         const today = getTodayDateString();
         const [globalLogResult] = await dbConn
-          .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+          .select({
+            total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)`,
+          })
           .from(campaignSendLog)
           .where(eq(campaignSendLog.sendDate, today));
         const globalOutreachSentToday = Number(globalLogResult?.total ?? 0);
@@ -5309,14 +5789,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const [followupResult] = await dbConn
           .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
           .from(campaignSequenceRecipients)
-          .where(and(
-            eq(campaignSequenceRecipients.status, "sent"),
-            sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
-          ));
+          .where(
+            and(
+              eq(campaignSequenceRecipients.status, "sent"),
+              sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+            ),
+          );
         const globalFollowupSentToday = Number(followupResult?.total ?? 0);
-        const globalTotalSentToday = globalOutreachSentToday + globalFollowupSentToday;
+        const globalTotalSentToday =
+          globalOutreachSentToday + globalFollowupSentToday;
 
-        const followupRemaining = Math.max(0, TOTAL_MAILBOX_DAILY_CAP - globalTotalSentToday);
+        const followupRemaining = Math.max(
+          0,
+          TOTAL_MAILBOX_DAILY_CAP - globalTotalSentToday,
+        );
         if (followupRemaining === 0) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -5325,30 +5811,49 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // Get original campaign recipients who were successfully sent
-        const allRecipients = await dbConn.select().from(emailCampaignRecipients)
-          .where(and(
-            eq(emailCampaignRecipients.campaignId, step.campaignId),
-            eq(emailCampaignRecipients.status, "sent"),
-          ));
+        const allRecipients = await dbConn
+          .select()
+          .from(emailCampaignRecipients)
+          .where(
+            and(
+              eq(emailCampaignRecipients.campaignId, step.campaignId),
+              eq(emailCampaignRecipients.status, "sent"),
+            ),
+          );
 
         // Get suppression list
-        const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
-        const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+        const suppressions = await dbConn
+          .select({ email: emailUnsubscribes.email })
+          .from(emailUnsubscribes);
+        const suppressedSet = new Set(
+          suppressions.map((s) => s.email.toLowerCase()),
+        );
 
         // Also check marketing contact status
-        const mcBounced = await dbConn.select({ email: marketingContacts.email }).from(marketingContacts)
-          .where(or(eq(marketingContacts.status, "unsubscribed"), eq(marketingContacts.status, "bounced")));
+        const mcBounced = await dbConn
+          .select({ email: marketingContacts.email })
+          .from(marketingContacts)
+          .where(
+            or(
+              eq(marketingContacts.status, "unsubscribed"),
+              eq(marketingContacts.status, "bounced"),
+            ),
+          );
         for (const b of mcBounced) suppressedSet.add(b.email.toLowerCase());
 
         // Partition recipients: skipped vs eligible
-        const eligibleRecipients = allRecipients.filter(r => !suppressedSet.has(r.email.toLowerCase()));
+        const eligibleRecipients = allRecipients.filter(
+          (r) => !suppressedSet.has(r.email.toLowerCase()),
+        );
 
         // Cap eligible recipients to remaining daily capacity
         const recipients = eligibleRecipients.slice(0, followupRemaining);
         const deferredCount = eligibleRecipients.length - recipients.length;
 
         // Insert skipped records for suppressed addresses
-        for (const r of allRecipients.filter(r => suppressedSet.has(r.email.toLowerCase()))) {
+        for (const r of allRecipients.filter((r) =>
+          suppressedSet.has(r.email.toLowerCase()),
+        )) {
           await dbConn.insert(campaignSequenceRecipients).values({
             sequenceId: input.sequenceId,
             campaignId: step.campaignId,
@@ -5365,8 +5870,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         for (const recipient of recipients) {
           try {
             // Build unsubscribe link from marketing contact token
-            const [mc] = await dbConn.select().from(marketingContacts)
-              .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
+            const [mc] = await dbConn
+              .select()
+              .from(marketingContacts)
+              .where(
+                eq(marketingContacts.email, recipient.email.toLowerCase()),
+              );
             const unsubToken = mc?.unsubscribeToken || nanoid(32);
             const unsubLink = `${BASE_URL}/unsubscribe?token=${unsubToken}`;
 
@@ -5376,7 +5885,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               currentDate,
               unsubscribeLink: unsubLink,
             });
-            await sendCampaignEmail(recipient.email, step.subject, html, unsubLink);
+            await sendCampaignEmail(
+              recipient.email,
+              step.subject,
+              html,
+              unsubLink,
+            );
             await dbConn.insert(campaignSequenceRecipients).values({
               sequenceId: input.sequenceId,
               campaignId: step.campaignId,
@@ -5397,11 +5911,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }
         }
 
-        await dbConn.update(campaignSequences)
+        await dbConn
+          .update(campaignSequences)
           .set({ status: "sent", sentAt: new Date(), sentCount, failedCount })
           .where(eq(campaignSequences.id, input.sequenceId));
 
-        return { sentCount, failedCount, total: allRecipients.length, deferred: deferredCount };
+        return {
+          sentCount,
+          failedCount,
+          total: allRecipients.length,
+          deferred: deferredCount,
+        };
       }),
 
     // ──────────────────────────────────────────────────────────
@@ -5425,22 +5945,31 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     }),
 
     launchSequenceFromTemplate: adminUnlockedProcedure
-      .input(z.object({
-        templateId: z.string(),
-        segment: z.enum(["leads", "trial", "paid", "all", "marketing"]),
-        campaignName: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          templateId: z.string(),
+          segment: z.enum(["leads", "trial", "paid", "all", "marketing"]),
+          campaignName: z.string().optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-        const template = getSequenceTemplates().find((t) => t.id === input.templateId);
-        if (!template) throw new TRPCError({ code: "NOT_FOUND", message: "Sequence template not found" });
+        const template = getSequenceTemplates().find(
+          (t) => t.id === input.templateId,
+        );
+        if (!template)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Sequence template not found",
+          });
 
         // Create the parent campaign using step 1 as the initial email
         const step1 = template.steps[0];
         const step1Html = buildSequenceStepHtml(step1.body);
-        const campaignName = input.campaignName || `${template.name} — Sequence`;
+        const campaignName =
+          input.campaignName || `${template.name} — Sequence`;
 
         const result = await dbConn.insert(emailCampaigns).values({
           name: campaignName.slice(0, 200),
@@ -5572,7 +6101,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const [signupsResult] = await dbConn
           .select({ count: sql<number>`COUNT(*)` })
           .from(users)
-          .where(and(gte(users.createdAt, startDate), eq(users.isActive, true), eq(users.emailVerified, true)));
+          .where(
+            and(
+              gte(users.createdAt, startDate),
+              eq(users.isActive, true),
+              eq(users.emailVerified, true),
+            ),
+          );
 
         // Trial-to-paid conversions
         const [t2pResult] = await dbConn
@@ -5593,7 +6128,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           })
           .from(siteAnalytics)
           .where(gte(siteAnalytics.createdAt, startDate))
-          .groupBy(sql`COALESCE(NULLIF(${siteAnalytics.referrer}, ''), 'Direct')`)
+          .groupBy(
+            sql`COALESCE(NULLIF(${siteAnalytics.referrer}, ''), 'Direct')`,
+          )
           .orderBy(sql`COUNT(*) DESC`)
           .limit(10);
 
@@ -5720,9 +6257,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return db
         .select()
         .from(stables)
-        .where(
-          and(inArray(stables.id, stableIds), eq(stables.isActive, true)),
-        );
+        .where(and(inArray(stables.id, stableIds), eq(stables.isActive, true)));
     }),
 
     getById: stablePlanProcedure
@@ -6072,20 +6607,32 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .limit(1);
 
         if (invite.length === 0) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Invite not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Invite not found",
+          });
         }
 
         const inv = invite[0];
         if (inv.status !== "pending") {
-          throw new TRPCError({ code: "BAD_REQUEST", message: `Invite already ${inv.status}` });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Invite already ${inv.status}`,
+          });
         }
         const now = new Date();
         if (now > new Date(inv.expiresAt)) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Invite has expired" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invite has expired",
+          });
         }
 
         if (!inv.stableName) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Stable not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Stable not found",
+          });
         }
 
         return {
@@ -6111,17 +6658,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .limit(1);
 
         if (inviteRows.length === 0) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Invite not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Invite not found",
+          });
         }
 
         const invite = inviteRows[0];
 
         if (invite.status !== "pending") {
-          throw new TRPCError({ code: "BAD_REQUEST", message: `Invite already ${invite.status}` });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Invite already ${invite.status}`,
+          });
         }
         const now = new Date();
         if (now > new Date(invite.expiresAt)) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Invite has expired" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invite has expired",
+          });
         }
 
         // Check already a member
@@ -6255,7 +6811,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             };
 
             await Promise.all(
-              memberRows.map(m => publishModuleEvent("messages", "created", payload, m.userId))
+              memberRows.map((m) =>
+                publishModuleEvent("messages", "created", payload, m.userId),
+              ),
             );
           }
         } catch (err) {
@@ -6407,7 +6965,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!drizzleDb) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
         const userId = ctx.user!.id;
-        const startDate = input.startDate ? new Date(input.startDate) : undefined;
+        const startDate = input.startDate
+          ? new Date(input.startDate)
+          : undefined;
         const endDate = input.endDate ? new Date(input.endDate) : undefined;
 
         // Generate report data based on type using real data from the database
@@ -6416,44 +6976,63 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         if (input.reportType === "monthly_summary") {
           const now = new Date();
-          const monthStart = startDate ?? new Date(now.getFullYear(), now.getMonth(), 1);
-          const monthEnd = endDate ?? new Date(now.getFullYear(), now.getMonth() + 1, 0);
+          const monthStart =
+            startDate ?? new Date(now.getFullYear(), now.getMonth(), 1);
+          const monthEnd =
+            endDate ?? new Date(now.getFullYear(), now.getMonth() + 1, 0);
           reportTitle = `Monthly Summary — ${monthStart.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}`;
 
-          const [horsesData, sessions, tasksData, appointments, vaccData] = await Promise.all([
-            db.getHorsesByUserId(userId),
-            db.getTrainingSessionsByUserId(userId),
-            db.getTasksByUserId(userId),
-            db.getAppointmentsByUserId(userId),
-            db.getVaccinationsByUserId(userId),
-          ]);
+          const [horsesData, sessions, tasksData, appointments, vaccData] =
+            await Promise.all([
+              db.getHorsesByUserId(userId),
+              db.getTrainingSessionsByUserId(userId),
+              db.getTasksByUserId(userId),
+              db.getAppointmentsByUserId(userId),
+              db.getVaccinationsByUserId(userId),
+            ]);
 
           const monthSessions = sessions.filter((s) => {
             const d = new Date(s.sessionDate);
             return d >= monthStart && d <= monthEnd;
           });
-          const monthTasks = tasksData.filter((t) => t.createdAt && new Date(t.createdAt) >= monthStart && new Date(t.createdAt) <= monthEnd);
+          const monthTasks = tasksData.filter(
+            (t) =>
+              t.createdAt &&
+              new Date(t.createdAt) >= monthStart &&
+              new Date(t.createdAt) <= monthEnd,
+          );
           const monthAppointments = appointments.filter((a) => {
             const d = new Date(a.appointmentDate);
             return d >= monthStart && d <= monthEnd;
           });
 
           reportData = {
-            period: { start: monthStart.toISOString(), end: monthEnd.toISOString() },
-            horses: { total: horsesData.length, names: horsesData.map((h) => h.name) },
+            period: {
+              start: monthStart.toISOString(),
+              end: monthEnd.toISOString(),
+            },
+            horses: {
+              total: horsesData.length,
+              names: horsesData.map((h) => h.name),
+            },
             trainingSessions: {
               total: monthSessions.length,
               completed: monthSessions.filter((s) => s.isCompleted).length,
-              disciplines: Array.from(new Set(monthSessions.map((s) => s.discipline).filter(Boolean))),
+              disciplines: Array.from(
+                new Set(monthSessions.map((s) => s.discipline).filter(Boolean)),
+              ),
             },
             tasks: {
               total: monthTasks.length,
-              completed: monthTasks.filter((t) => t.status === "completed").length,
+              completed: monthTasks.filter((t) => t.status === "completed")
+                .length,
               pending: monthTasks.filter((t) => t.status === "pending").length,
             },
             appointments: {
               total: monthAppointments.length,
-              types: Array.from(new Set(monthAppointments.map((a) => a.appointmentType))),
+              types: Array.from(
+                new Set(monthAppointments.map((a) => a.appointmentType)),
+              ),
             },
             vaccinations: {
               dueSoon: vaccData.filter((v) => {
@@ -6465,15 +7044,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               }).length,
             },
           };
-
         } else if (input.reportType === "health_report") {
           reportTitle = "Health Report";
-          const [vaccData, dewormings, treatments, dentalData] = await Promise.all([
-            db.getVaccinationsByUserId(userId),
-            db.getDewormingsByUserId(userId),
-            db.getTreatmentsByUserId(userId),
-            db.getDentalCareByUserId(userId),
-          ]);
+          const [vaccData, dewormings, treatments, dentalData] =
+            await Promise.all([
+              db.getVaccinationsByUserId(userId),
+              db.getDewormingsByUserId(userId),
+              db.getTreatmentsByUserId(userId),
+              db.getDentalCareByUserId(userId),
+            ]);
 
           const now = new Date();
           const in60Days = new Date();
@@ -6484,30 +7063,60 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             vaccinations: {
               total: vaccData.length,
               upcomingDue: vaccData
-                .filter((v) => v.nextDueDate && new Date(v.nextDueDate) >= now && new Date(v.nextDueDate) <= in60Days)
-                .map((v) => ({ horse: v.horseId, vaccine: v.vaccineName, due: v.nextDueDate })),
+                .filter(
+                  (v) =>
+                    v.nextDueDate &&
+                    new Date(v.nextDueDate) >= now &&
+                    new Date(v.nextDueDate) <= in60Days,
+                )
+                .map((v) => ({
+                  horse: v.horseId,
+                  vaccine: v.vaccineName,
+                  due: v.nextDueDate,
+                })),
               overdue: vaccData
                 .filter((v) => v.nextDueDate && new Date(v.nextDueDate) < now)
-                .map((v) => ({ horse: v.horseId, vaccine: v.vaccineName, due: v.nextDueDate })),
+                .map((v) => ({
+                  horse: v.horseId,
+                  vaccine: v.vaccineName,
+                  due: v.nextDueDate,
+                })),
             },
             dewormings: {
               total: dewormings.length,
               upcomingDue: dewormings
-                .filter((d) => d.nextDueDate && new Date(d.nextDueDate) >= now && new Date(d.nextDueDate) <= in60Days)
-                .map((d) => ({ horse: d.horseId, product: d.productName, due: d.nextDueDate })),
+                .filter(
+                  (d) =>
+                    d.nextDueDate &&
+                    new Date(d.nextDueDate) >= now &&
+                    new Date(d.nextDueDate) <= in60Days,
+                )
+                .map((d) => ({
+                  horse: d.horseId,
+                  product: d.productName,
+                  due: d.nextDueDate,
+                })),
             },
             treatments: {
               total: treatments.length,
-              recent: treatments.slice(0, 5).map((t) => ({ horse: t.horseId, type: t.treatmentType, date: t.startDate })),
+              recent: treatments.slice(0, 5).map((t) => ({
+                horse: t.horseId,
+                type: t.treatmentType,
+                date: t.startDate,
+              })),
             },
             dental: {
               total: dentalData.length,
               upcomingDue: dentalData
-                .filter((d) => d.nextDueDate && new Date(d.nextDueDate) >= now && new Date(d.nextDueDate) <= in60Days)
+                .filter(
+                  (d) =>
+                    d.nextDueDate &&
+                    new Date(d.nextDueDate) >= now &&
+                    new Date(d.nextDueDate) <= in60Days,
+                )
                 .map((d) => ({ horse: d.horseId, due: d.nextDueDate })),
             },
           };
-
         } else if (input.reportType === "training_progress") {
           reportTitle = "Training Progress Report";
           const sessions = await db.getTrainingSessionsByUserId(userId);
@@ -6521,22 +7130,35 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
           const disciplineCounts: Record<string, number> = {};
           for (const s of filtered) {
-            if (s.discipline) disciplineCounts[s.discipline] = (disciplineCounts[s.discipline] ?? 0) + 1;
+            if (s.discipline)
+              disciplineCounts[s.discipline] =
+                (disciplineCounts[s.discipline] ?? 0) + 1;
           }
 
           reportData = {
             period: {
-              start: (startDate ?? new Date(new Date().getFullYear(), 0, 1)).toISOString(),
+              start: (
+                startDate ?? new Date(new Date().getFullYear(), 0, 1)
+              ).toISOString(),
               end: (endDate ?? new Date()).toISOString(),
             },
             totalSessions: filtered.length,
             completedSessions: filtered.filter((s) => s.isCompleted).length,
-            completionRate: filtered.length > 0
-              ? Math.round((filtered.filter((s) => s.isCompleted).length / filtered.length) * 100)
-              : 0,
+            completionRate:
+              filtered.length > 0
+                ? Math.round(
+                    (filtered.filter((s) => s.isCompleted).length /
+                      filtered.length) *
+                      100,
+                  )
+                : 0,
             disciplineBreakdown: disciplineCounts,
             recentSessions: filtered
-              .sort((a, b) => new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime())
+              .sort(
+                (a, b) =>
+                  new Date(b.sessionDate).getTime() -
+                  new Date(a.sessionDate).getTime(),
+              )
               .slice(0, 10)
               .map((s) => ({
                 date: s.sessionDate,
@@ -6546,18 +7168,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
                 performance: s.performance,
               })),
           };
-
         } else if (input.reportType === "cost_analysis") {
           reportTitle = "Cost Analysis Report";
-          const [feedData, appointmentData, vaccData, competitionData] = await Promise.all([
-            drizzleDb.select().from(feedCosts).where(eq(feedCosts.userId, userId)),
-            db.getAppointmentsByUserId(userId),
-            db.getVaccinationsByUserId(userId),
-            db.getCompetitionsByUserId(userId),
-          ]);
+          const [feedData, appointmentData, vaccData, competitionData] =
+            await Promise.all([
+              drizzleDb
+                .select()
+                .from(feedCosts)
+                .where(eq(feedCosts.userId, userId)),
+              db.getAppointmentsByUserId(userId),
+              db.getVaccinationsByUserId(userId),
+              db.getCompetitionsByUserId(userId),
+            ]);
 
-          const feedTotal = feedData
-            .reduce((sum, f) => sum + (f.costPerUnit ?? 0), 0);
+          const feedTotal = feedData.reduce(
+            (sum, f) => sum + (f.costPerUnit ?? 0),
+            0,
+          );
           const apptCostTotal = appointmentData
             .filter((a) => {
               if (!startDate && !endDate) return true;
@@ -6567,28 +7194,54 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               return true;
             })
             .reduce((sum, a) => sum + (a.cost ?? 0), 0);
-          const vaccCostTotal = vaccData.reduce((sum, v) => sum + (v.cost ?? 0), 0);
-          const compCostTotal = competitionData.reduce((sum, c) => sum + (c.cost ?? 0), 0);
-          const compWinnings = competitionData.reduce((sum, c) => sum + (c.winnings ?? 0), 0);
+          const vaccCostTotal = vaccData.reduce(
+            (sum, v) => sum + (v.cost ?? 0),
+            0,
+          );
+          const compCostTotal = competitionData.reduce(
+            (sum, c) => sum + (c.cost ?? 0),
+            0,
+          );
+          const compWinnings = competitionData.reduce(
+            (sum, c) => sum + (c.winnings ?? 0),
+            0,
+          );
 
           reportData = {
             currency: "GBP",
             period: {
-              start: (startDate ?? new Date(new Date().getFullYear(), 0, 1)).toISOString(),
+              start: (
+                startDate ?? new Date(new Date().getFullYear(), 0, 1)
+              ).toISOString(),
               end: (endDate ?? new Date()).toISOString(),
             },
             summary: {
-              totalCostPence: feedTotal + apptCostTotal + vaccCostTotal + compCostTotal,
-              netCostPence: feedTotal + apptCostTotal + vaccCostTotal + compCostTotal - compWinnings,
+              totalCostPence:
+                feedTotal + apptCostTotal + vaccCostTotal + compCostTotal,
+              netCostPence:
+                feedTotal +
+                apptCostTotal +
+                vaccCostTotal +
+                compCostTotal -
+                compWinnings,
             },
             breakdown: {
               feeding: { totalPence: feedTotal, entryCount: feedData.length },
-              appointments: { totalPence: apptCostTotal, entryCount: appointmentData.length },
-              vaccinations: { totalPence: vaccCostTotal, entryCount: vaccData.length },
-              competitions: { totalPence: compCostTotal, winningsPence: compWinnings, entryCount: competitionData.length },
+              appointments: {
+                totalPence: apptCostTotal,
+                entryCount: appointmentData.length,
+              },
+              vaccinations: {
+                totalPence: vaccCostTotal,
+                entryCount: vaccData.length,
+              },
+              competitions: {
+                totalPence: compCostTotal,
+                winningsPence: compWinnings,
+                entryCount: competitionData.length,
+              },
             },
           };
-
         } else if (input.reportType === "competition_summary") {
           reportTitle = "Competition Summary Report";
           const competitionData = await db.getCompetitionsByUserId(userId);
@@ -6604,22 +7257,37 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const disciplineCounts: Record<string, number> = {};
           const placementCounts: Record<string, number> = {};
           for (const c of filtered) {
-            if (c.discipline) disciplineCounts[c.discipline] = (disciplineCounts[c.discipline] ?? 0) + 1;
-            if (c.placement) placementCounts[c.placement] = (placementCounts[c.placement] ?? 0) + 1;
+            if (c.discipline)
+              disciplineCounts[c.discipline] =
+                (disciplineCounts[c.discipline] ?? 0) + 1;
+            if (c.placement)
+              placementCounts[c.placement] =
+                (placementCounts[c.placement] ?? 0) + 1;
           }
 
           reportData = {
             period: {
-              start: (startDate ?? new Date(new Date().getFullYear(), 0, 1)).toISOString(),
+              start: (
+                startDate ?? new Date(new Date().getFullYear(), 0, 1)
+              ).toISOString(),
               end: (endDate ?? new Date()).toISOString(),
             },
             totalCompetitions: filtered.length,
             disciplineBreakdown: disciplineCounts,
             placementBreakdown: placementCounts,
-            totalEntryCostPence: filtered.reduce((sum, c) => sum + (c.cost ?? 0), 0),
-            totalWinningsPence: filtered.reduce((sum, c) => sum + (c.winnings ?? 0), 0),
+            totalEntryCostPence: filtered.reduce(
+              (sum, c) => sum + (c.cost ?? 0),
+              0,
+            ),
+            totalWinningsPence: filtered.reduce(
+              (sum, c) => sum + (c.winnings ?? 0),
+              0,
+            ),
             recentResults: filtered
-              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .sort(
+                (a, b) =>
+                  new Date(b.date).getTime() - new Date(a.date).getTime(),
+              )
               .slice(0, 15)
               .map((c) => ({
                 name: c.competitionName,
@@ -6738,10 +7406,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         await db
           .delete(reports)
           .where(
-            and(
-              eq(reports.id, input.id),
-              eq(reports.userId, ctx.user!.id),
-            ),
+            and(eq(reports.id, input.id), eq(reports.userId, ctx.user!.id)),
           );
 
         return { success: true };
@@ -7171,26 +7836,33 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
             // Validate programData structure
             if (!programData.weeks || !Array.isArray(programData.weeks)) {
-              console.warn("[Templates] Invalid programData structure, skipping session creation");
+              console.warn(
+                "[Templates] Invalid programData structure, skipping session creation",
+              );
             } else {
               const baseDate = new Date(input.startDate);
               const baseDayOfWeek = baseDate.getDay();
 
               // Create sessions for first few weeks
-              for (const week of programData.weeks.slice(0, MAX_WEEKS_TO_SCHEDULE)) {
+              for (const week of programData.weeks.slice(
+                0,
+                MAX_WEEKS_TO_SCHEDULE,
+              )) {
                 if (!week.sessions || !Array.isArray(week.sessions)) continue;
-                
+
                 const weekOffset = (week.week - 1) * 7;
                 for (const session of week.sessions) {
                   if (!session.type || !session.day) continue;
                   if (session.type.toLowerCase() === "rest") continue;
-                  
+
                   // Validate day is in the mapping
                   if (!(session.day in TRAINING_DAY_OFFSET)) {
-                    console.warn(`[Templates] Unknown day: ${session.day}, skipping session`);
+                    console.warn(
+                      `[Templates] Unknown day: ${session.day}, skipping session`,
+                    );
                     continue;
                   }
-                  
+
                   const dayOffset = TRAINING_DAY_OFFSET[session.day];
                   const diff = (dayOffset - baseDayOfWeek + 7) % 7;
                   const sessionDate = new Date(baseDate);
@@ -7202,11 +7874,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
                     horseId: input.horseId,
                     sessionDate,
                     sessionType: mapTemplateSessionType(session.type),
-                    duration: session.duration || DEFAULT_SESSION_DURATION_MINUTES,
+                    duration:
+                      session.duration || DEFAULT_SESSION_DURATION_MINUTES,
                     notes: session.description || undefined,
                     isCompleted: false,
                   });
-                  
+
                   sessionsCreated++;
                 }
               }
@@ -7224,7 +7897,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const prefs = userRecord?.preferences
             ? JSON.parse(userRecord.preferences)
             : {};
-          const calIntegration = prefs?.notifications?.trainingCalendarIntegration === true;
+          const calIntegration =
+            prefs?.notifications?.trainingCalendarIntegration === true;
 
           if (calIntegration && template[0].programData) {
             const programData = JSON.parse(template[0].programData) as {
@@ -7244,16 +7918,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
             const calendarInserts: Array<typeof events.$inferInsert> = [];
 
-            for (const week of (programData.weeks ?? []).slice(0, MAX_WEEKS_TO_SCHEDULE)) {
+            for (const week of (programData.weeks ?? []).slice(
+              0,
+              MAX_WEEKS_TO_SCHEDULE,
+            )) {
               const weekOffset = (week.week - 1) * 7;
               for (const session of week.sessions ?? []) {
                 if (session.type === "rest") continue;
                 const dayOffset = TRAINING_DAY_OFFSET[session.day] ?? 0;
                 const diff = (dayOffset - baseDayOfWeek + 7) % 7;
                 const eventDate = new Date(baseDate);
-                eventDate.setDate(
-                  baseDate.getDate() + weekOffset + diff,
-                );
+                eventDate.setDate(baseDate.getDate() + weekOffset + diff);
                 eventDate.setHours(9, 0, 0, 0);
 
                 calendarInserts.push({
@@ -8331,10 +9006,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       // Enrich with horse names
       const horses = await db.getHorsesByUserId(ctx.user.id);
       const horsesMap: Record<number, string> = {};
-      horses.forEach((h: any) => { horsesMap[h.id] = h.name; });
+      horses.forEach((h: any) => {
+        horsesMap[h.id] = h.name;
+      });
       const enriched = appointments.map((a: any) => ({
         ...a,
-        horseName: a.horseId ? (horsesMap[a.horseId] || "") : "",
+        horseName: a.horseId ? horsesMap[a.horseId] || "" : "",
       }));
       const csv = exportAppointmentsCSV(enriched);
       return {
@@ -8719,11 +9396,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ ctx, input }) => {
         // Verify horse ownership
         const horse = await db.getHorseById(input.horseId, ctx.user.id);
-        if (!horse) throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+        if (!horse)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Horse not found",
+          });
 
         // Verify tag ownership
         const tag = await db.getTagById(input.tagId, ctx.user.id);
-        if (!tag) throw new TRPCError({ code: "NOT_FOUND", message: "Tag not found" });
+        if (!tag)
+          throw new TRPCError({ code: "NOT_FOUND", message: "Tag not found" });
 
         await db.attachTagToHorse(input.horseId, input.tagId, ctx.user.id);
         return { success: true };
@@ -9315,23 +9997,35 @@ Format your response as JSON with keys: recommendation, explanation, precautions
   // ────────────────────────────────────────────────────────────
   sharing: router({
     create: subscribedProcedure
-      .input(z.object({
-        linkType: z.enum(["horse", "stable", "medical_passport"]),
-        horseId: z.number().optional(),
-        expiresInDays: z.number().min(1).max(90).default(30),
-      }))
+      .input(
+        z.object({
+          linkType: z.enum(["horse", "stable", "medical_passport"]),
+          horseId: z.number().optional(),
+          expiresInDays: z.number().min(1).max(90).default(30),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const dbConn = await getDb();
-        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB unavailable" });
+        if (!dbConn)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "DB unavailable",
+          });
 
         // Verify horse ownership if horse link
         if (input.horseId) {
           const horse = await db.getHorseById(input.horseId, ctx.user.id);
-          if (!horse) throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+          if (!horse)
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Horse not found",
+            });
         }
 
         const token = nanoid(24);
-        const expiresAt = new Date(Date.now() + input.expiresInDays * 86_400_000);
+        const expiresAt = new Date(
+          Date.now() + input.expiresInDays * 86_400_000,
+        );
 
         await dbConn.insert(shareLinks).values({
           userId: ctx.user.id,
@@ -9353,7 +10047,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return dbConn
         .select()
         .from(shareLinks)
-        .where(and(eq(shareLinks.userId, ctx.user.id), eq(shareLinks.isActive, true)))
+        .where(
+          and(
+            eq(shareLinks.userId, ctx.user.id),
+            eq(shareLinks.isActive, true),
+          ),
+        )
         .orderBy(desc(shareLinks.createdAt));
     }),
 
@@ -9366,7 +10065,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         await dbConn
           .update(shareLinks)
           .set({ isActive: false })
-          .where(and(eq(shareLinks.id, input.id), eq(shareLinks.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(shareLinks.id, input.id),
+              eq(shareLinks.userId, ctx.user.id),
+            ),
+          );
 
         return { success: true };
       }),
@@ -9385,14 +10089,27 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         // Verify horse ownership
         const horse = await db.getHorseById(input.horseId, ctx.user.id);
         if (!horse) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Horse not found",
+          });
         }
 
         type TimelineEvent = {
           id: string;
           date: string;
           type: string;
-          category: "health" | "training" | "feeding" | "document" | "event" | "vaccination" | "treatment" | "appointment" | "note" | "competition";
+          category:
+            | "health"
+            | "training"
+            | "feeding"
+            | "document"
+            | "event"
+            | "vaccination"
+            | "treatment"
+            | "appointment"
+            | "note"
+            | "competition";
           title: string;
           description?: string;
           status?: string;
@@ -9410,11 +10127,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             description: healthRecords.description,
           })
           .from(healthRecords)
-          .where(and(eq(healthRecords.horseId, input.horseId), eq(healthRecords.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(healthRecords.horseId, input.horseId),
+              eq(healthRecords.userId, ctx.user.id),
+            ),
+          );
         for (const r of healthRows) {
           items.push({
             id: `health-${r.id}`,
-            date: r.recordDate instanceof Date ? r.recordDate.toISOString() : String(r.recordDate),
+            date:
+              r.recordDate instanceof Date
+                ? r.recordDate.toISOString()
+                : String(r.recordDate),
             type: r.recordType || "health",
             category: "health",
             title: r.title || "Health Record",
@@ -9432,11 +10157,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             isCompleted: trainingSessions.isCompleted,
           })
           .from(trainingSessions)
-          .where(and(eq(trainingSessions.horseId, input.horseId), eq(trainingSessions.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(trainingSessions.horseId, input.horseId),
+              eq(trainingSessions.userId, ctx.user.id),
+            ),
+          );
         for (const s of trainingRows) {
           items.push({
             id: `training-${s.id}`,
-            date: s.sessionDate instanceof Date ? s.sessionDate.toISOString() : String(s.sessionDate),
+            date:
+              s.sessionDate instanceof Date
+                ? s.sessionDate.toISOString()
+                : String(s.sessionDate),
             type: s.sessionType || "training",
             category: "training",
             title: `${(s.sessionType || "Training").charAt(0).toUpperCase() + (s.sessionType || "training").slice(1)} Session`,
@@ -9454,11 +10187,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             vetName: vaccinations.vetName,
           })
           .from(vaccinations)
-          .where(and(eq(vaccinations.horseId, input.horseId), eq(vaccinations.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(vaccinations.horseId, input.horseId),
+              eq(vaccinations.userId, ctx.user.id),
+            ),
+          );
         for (const v of vaccRows) {
           items.push({
             id: `vacc-${v.id}`,
-            date: v.dateAdministered instanceof Date ? v.dateAdministered.toISOString() : String(v.dateAdministered),
+            date:
+              v.dateAdministered instanceof Date
+                ? v.dateAdministered.toISOString()
+                : String(v.dateAdministered),
             type: "vaccination",
             category: "vaccination",
             title: v.vaccineName || "Vaccination",
@@ -9475,11 +10216,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             description: treatments.description,
           })
           .from(treatments)
-          .where(and(eq(treatments.horseId, input.horseId), eq(treatments.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(treatments.horseId, input.horseId),
+              eq(treatments.userId, ctx.user.id),
+            ),
+          );
         for (const t of treatmentRows) {
           items.push({
             id: `treat-${t.id}`,
-            date: t.startDate instanceof Date ? t.startDate.toISOString() : String(t.startDate),
+            date:
+              t.startDate instanceof Date
+                ? t.startDate.toISOString()
+                : String(t.startDate),
             type: t.treatmentType || "treatment",
             category: "treatment",
             title: `${(t.treatmentType || "Treatment").charAt(0).toUpperCase() + (t.treatmentType || "treatment").slice(1)}`,
@@ -9497,11 +10246,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             status: appointments.status,
           })
           .from(appointments)
-          .where(and(eq(appointments.horseId, input.horseId), eq(appointments.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(appointments.horseId, input.horseId),
+              eq(appointments.userId, ctx.user.id),
+            ),
+          );
         for (const a of apptRows) {
           items.push({
             id: `appt-${a.id}`,
-            date: a.appointmentDate instanceof Date ? a.appointmentDate.toISOString() : String(a.appointmentDate),
+            date:
+              a.appointmentDate instanceof Date
+                ? a.appointmentDate.toISOString()
+                : String(a.appointmentDate),
             type: a.appointmentType || "appointment",
             category: "appointment",
             title: a.title || "Appointment",
@@ -9518,11 +10275,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             category: documents.category,
           })
           .from(documents)
-          .where(and(eq(documents.horseId, input.horseId), eq(documents.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(documents.horseId, input.horseId),
+              eq(documents.userId, ctx.user.id),
+            ),
+          );
         for (const d of docRows) {
           items.push({
             id: `doc-${d.id}`,
-            date: d.createdAt instanceof Date ? d.createdAt.toISOString() : String(d.createdAt),
+            date:
+              d.createdAt instanceof Date
+                ? d.createdAt.toISOString()
+                : String(d.createdAt),
             type: d.category || "document",
             category: "document",
             title: d.fileName || "Document uploaded",
@@ -9537,11 +10302,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             createdAt: notes.createdAt,
           })
           .from(notes)
-          .where(and(eq(notes.horseId, input.horseId), eq(notes.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(notes.horseId, input.horseId),
+              eq(notes.userId, ctx.user.id),
+            ),
+          );
         for (const n of noteRows) {
           items.push({
             id: `note-${n.id}`,
-            date: n.createdAt instanceof Date ? n.createdAt.toISOString() : String(n.createdAt),
+            date:
+              n.createdAt instanceof Date
+                ? n.createdAt.toISOString()
+                : String(n.createdAt),
             type: "note",
             category: "note",
             title: n.title || "Note",
@@ -9558,11 +10331,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             placement: competitions.placement,
           })
           .from(competitions)
-          .where(and(eq(competitions.horseId, input.horseId), eq(competitions.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(competitions.horseId, input.horseId),
+              eq(competitions.userId, ctx.user.id),
+            ),
+          );
         for (const c of compRows) {
           items.push({
             id: `comp-${c.id}`,
-            date: c.date instanceof Date ? c.date.toISOString() : String(c.date),
+            date:
+              c.date instanceof Date ? c.date.toISOString() : String(c.date),
             type: c.discipline || "competition",
             category: "competition",
             title: c.competitionName || "Competition",
@@ -9571,7 +10350,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // Sort by date descending and limit
-        items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        items.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
         return items.slice(0, input.limit);
       }),
 
@@ -9586,7 +10367,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           id: string;
           horseId: number;
           horseName: string;
-          type: "vaccination_due" | "deworming_due" | "treatment_due" | "no_recent_health" | "appointment_upcoming";
+          type:
+            | "vaccination_due"
+            | "deworming_due"
+            | "treatment_due"
+            | "no_recent_health"
+            | "appointment_upcoming";
           severity: "info" | "warning" | "urgent";
           title: string;
           dueDate?: string;
@@ -9600,7 +10386,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // Get user's horses
         const userHorses = input.horseId
-          ? [await db.getHorseById(input.horseId, ctx.user.id)].filter(Boolean) as any[]
+          ? ([await db.getHorseById(input.horseId, ctx.user.id)].filter(
+              Boolean,
+            ) as any[])
           : await db.getHorsesByUserId(ctx.user.id);
 
         for (const horse of userHorses) {
@@ -9608,23 +10396,38 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
           // Check vaccination due dates
           const vaccList = await dbConn
-            .select({ id: vaccinations.id, vaccineName: vaccinations.vaccineName, nextDueDate: vaccinations.nextDueDate })
+            .select({
+              id: vaccinations.id,
+              vaccineName: vaccinations.vaccineName,
+              nextDueDate: vaccinations.nextDueDate,
+            })
             .from(vaccinations)
-            .where(and(eq(vaccinations.horseId, horse.id), eq(vaccinations.userId, ctx.user.id)));
+            .where(
+              and(
+                eq(vaccinations.horseId, horse.id),
+                eq(vaccinations.userId, ctx.user.id),
+              ),
+            );
 
           for (const v of vaccList) {
             if (v.nextDueDate) {
               const due = new Date(v.nextDueDate);
-              const daysDue = Math.ceil((due.getTime() - now.getTime()) / 86_400_000);
+              const daysDue = Math.ceil(
+                (due.getTime() - now.getTime()) / 86_400_000,
+              );
               if (daysDue <= 30) {
                 alerts.push({
                   id: `vacc-due-${v.id}`,
                   horseId: horse.id,
                   horseName: horse.name,
                   type: "vaccination_due",
-                  severity: daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
+                  severity:
+                    daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
                   title: `${v.vaccineName || "Vaccination"} ${daysDue <= 0 ? "overdue" : "due soon"} for ${horse.name}`,
-                  dueDate: v.nextDueDate instanceof Date ? v.nextDueDate.toISOString() : String(v.nextDueDate),
+                  dueDate:
+                    v.nextDueDate instanceof Date
+                      ? v.nextDueDate.toISOString()
+                      : String(v.nextDueDate),
                   daysDue,
                 });
               }
@@ -9633,23 +10436,38 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
           // Check deworming due dates
           const dewormList = await dbConn
-            .select({ id: dewormings.id, productName: dewormings.productName, nextDueDate: dewormings.nextDueDate })
+            .select({
+              id: dewormings.id,
+              productName: dewormings.productName,
+              nextDueDate: dewormings.nextDueDate,
+            })
             .from(dewormings)
-            .where(and(eq(dewormings.horseId, horse.id), eq(dewormings.userId, ctx.user.id)));
+            .where(
+              and(
+                eq(dewormings.horseId, horse.id),
+                eq(dewormings.userId, ctx.user.id),
+              ),
+            );
 
           for (const d of dewormList) {
             if (d.nextDueDate) {
               const due = new Date(d.nextDueDate);
-              const daysDue = Math.ceil((due.getTime() - now.getTime()) / 86_400_000);
+              const daysDue = Math.ceil(
+                (due.getTime() - now.getTime()) / 86_400_000,
+              );
               if (daysDue <= 30) {
                 alerts.push({
                   id: `deworm-due-${d.id}`,
                   horseId: horse.id,
                   horseName: horse.name,
                   type: "deworming_due",
-                  severity: daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
+                  severity:
+                    daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
                   title: `${d.productName || "Deworming"} ${daysDue <= 0 ? "overdue" : "due soon"} for ${horse.name}`,
-                  dueDate: d.nextDueDate instanceof Date ? d.nextDueDate.toISOString() : String(d.nextDueDate),
+                  dueDate:
+                    d.nextDueDate instanceof Date
+                      ? d.nextDueDate.toISOString()
+                      : String(d.nextDueDate),
                   daysDue,
                 });
               }
@@ -9660,11 +10478,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const recentHealth = await dbConn
             .select({ count: sql<number>`COUNT(*)` })
             .from(healthRecords)
-            .where(and(
-              eq(healthRecords.horseId, horse.id),
-              eq(healthRecords.userId, ctx.user.id),
-              gte(healthRecords.recordDate, sixtyDaysAgo),
-            ));
+            .where(
+              and(
+                eq(healthRecords.horseId, horse.id),
+                eq(healthRecords.userId, ctx.user.id),
+                gte(healthRecords.recordDate, sixtyDaysAgo),
+              ),
+            );
           if ((recentHealth[0]?.count || 0) === 0) {
             alerts.push({
               id: `no-health-${horse.id}`,
@@ -9679,14 +10499,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           // Upcoming appointments (next 7 days)
           const sevenDaysFromNow = new Date(now.getTime() + 7 * 86_400_000);
           const upcomingAppts = await dbConn
-            .select({ id: appointments.id, title: appointments.title, appointmentDate: appointments.appointmentDate })
+            .select({
+              id: appointments.id,
+              title: appointments.title,
+              appointmentDate: appointments.appointmentDate,
+            })
             .from(appointments)
-            .where(and(
-              eq(appointments.horseId, horse.id),
-              eq(appointments.userId, ctx.user.id),
-              gte(appointments.appointmentDate, now),
-              lte(appointments.appointmentDate, sevenDaysFromNow),
-            ));
+            .where(
+              and(
+                eq(appointments.horseId, horse.id),
+                eq(appointments.userId, ctx.user.id),
+                gte(appointments.appointmentDate, now),
+                lte(appointments.appointmentDate, sevenDaysFromNow),
+              ),
+            );
           for (const a of upcomingAppts) {
             alerts.push({
               id: `appt-soon-${a.id}`,
@@ -9695,14 +10521,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               type: "appointment_upcoming",
               severity: "info",
               title: `${a.title || "Appointment"} coming up for ${horse.name}`,
-              dueDate: a.appointmentDate instanceof Date ? a.appointmentDate.toISOString() : String(a.appointmentDate),
+              dueDate:
+                a.appointmentDate instanceof Date
+                  ? a.appointmentDate.toISOString()
+                  : String(a.appointmentDate),
             });
           }
         }
 
         // Sort alerts: urgent first, then warning, then info
         const severityOrder = { urgent: 0, warning: 1, info: 2 };
-        alerts.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+        alerts.sort(
+          (a, b) => severityOrder[a.severity] - severityOrder[b.severity],
+        );
         return alerts;
       }),
   }),
@@ -9716,7 +10547,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
         // Look up contact by unsubscribe token
-        const [contact] = await dbConn.select().from(marketingContacts)
+        const [contact] = await dbConn
+          .select()
+          .from(marketingContacts)
           .where(eq(marketingContacts.unsubscribeToken, input.token));
 
         if (!contact) {
@@ -9725,12 +10558,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // Mark contact as unsubscribed
-        await dbConn.update(marketingContacts)
+        await dbConn
+          .update(marketingContacts)
           .set({ status: "unsubscribed" })
           .where(eq(marketingContacts.id, contact.id));
 
         // Add to global suppression list (prevents re-adding)
-        const [existing] = await dbConn.select().from(emailUnsubscribes)
+        const [existing] = await dbConn
+          .select()
+          .from(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, contact.email.toLowerCase()));
         if (!existing) {
           await dbConn.insert(emailUnsubscribes).values({
@@ -9741,15 +10577,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           });
         }
 
-        return { success: true, message: "You have been unsubscribed. You will no longer receive marketing emails from EquiProfile." };
+        return {
+          success: true,
+          message:
+            "You have been unsubscribed. You will no longer receive marketing emails from EquiProfile.",
+        };
       }),
 
     captureLead: publicProcedure
-      .input(z.object({
-        email: z.string().email(),
-        name: z.string().optional(),
-        source: z.string().default("website"),
-      }))
+      .input(
+        z.object({
+          email: z.string().email(),
+          name: z.string().optional(),
+          source: z.string().default("website"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
@@ -9761,12 +10603,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // Check suppression
-        const [suppressed] = await dbConn.select().from(emailUnsubscribes)
+        const [suppressed] = await dbConn
+          .select()
+          .from(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, email));
         if (suppressed) return { success: true }; // silently accept, don't add
 
         // Check existing
-        const [existing] = await dbConn.select().from(marketingContacts)
+        const [existing] = await dbConn
+          .select()
+          .from(marketingContacts)
           .where(eq(marketingContacts.email, email));
         if (existing) return { success: true }; // already in system
 

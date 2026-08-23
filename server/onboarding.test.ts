@@ -190,6 +190,15 @@ describe("onboarding endpoints", () => {
       expect(savedPrefs.selectedExperience).toBe("stable");
       expect(savedPrefs.planTier).toBe("stable");
     });
+
+    it("sets Academy student experience with planTier=student", async () => {
+      await caller.user.setExperience({ experience: "student" });
+      const callArgs = vi.mocked(db.updateUser).mock.calls[0];
+      const savedPrefs = JSON.parse(callArgs[1].preferences as string);
+      expect(savedPrefs.selectedExperience).toBe("student");
+      expect(savedPrefs.planTier).toBe("student");
+      expect(savedPrefs.activationChecklist.choseExperience).toBe(true);
+    });
   });
 
   describe("user.updateActivationChecklist", () => {

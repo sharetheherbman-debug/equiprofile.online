@@ -20,12 +20,27 @@ import { nanoid } from "nanoid";
 import Stripe from "stripe";
 import * as db from "../db";
 import { getDb } from "../db";
-import { contactSubmissions, users } from "../../drizzle/schema";
+import { contactSubmissions, organizations, users } from "../../drizzle/schema";
 import { sql, eq } from "drizzle-orm";
-import { getStripe, validatePricingConfig, PRICING_PLANS } from "../stripe";
+import {
+  getStoreStripe,
+  getStripe,
+  validatePricingConfig,
+  PRICING_PLANS,
+} from "../stripe";
 import * as email from "./email";
 import { ENV } from "./env";
 import { getRuntimeConfig } from "../dynamicConfig";
+import {
+  isStoreScopedMetadata,
+  reconcilePaidStoreCheckout,
+  reconcileStoreRefund,
+} from "../commerce/paymentReconciliation";
+import {
+  academySubscriptionStatus,
+  getAcademyStripe,
+  isAcademyScopedMetadata,
+} from "../academy/billing";
 import { resolve } from "path";
 import path from "path";
 import fs from "fs";
@@ -47,14 +62,28 @@ async function startServer() {
   console.log("✅ Trust proxy enabled for reverse proxy support");
 
   // CORS configuration
+  const localAcceptanceOrigins =
+    process.env.NODE_ENV === "production"
+      ? []
+      : [
+          "http://localhost:3001",
+          "http://127.0.0.1:3001",
+          "http://academy.localhost:3001",
+          "http://shop.localhost:3001",
+          "http://academy.localhost:3002",
+        ];
   const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(",")
     : [
         "http://localhost:3000",
         "http://localhost:5173",
+        ...localAcceptanceOrigins,
         "https://equiprofile.online",
         "https://www.equiprofile.online",
+        "https://academy.equiprofile.online",
+        // LEGACY_COMPAT_ONLY: existing Academy links may still use school host.
         "https://school.equiprofile.online",
+        "https://shop.equiprofile.online",
       ];
 
   app.use(
@@ -159,7 +188,245 @@ async function startServer() {
     },
   });
 
-  // Stripe webhook - must be before body parser
+  // Store Stripe webhook — deliberately isolated from SaaS subscription billing.
+  // It remains inactive until STORE_STRIPE_WEBHOOK_SECRET is configured.
+  app.post(
+    "/api/webhooks/store-stripe",
+    express.raw({ type: "application/json" }),
+    async (req, res) => {
+      const stripe = getStoreStripe();
+      const webhookSecret = process.env.STORE_STRIPE_WEBHOOK_SECRET;
+      if (!stripe || !webhookSecret) {
+        return res
+          .status(503)
+          .json({ error: "Store payment processing is not configured" });
+      }
+      const signature = req.headers["stripe-signature"];
+      if (!signature)
+        return res.status(400).json({ error: "Missing Stripe signature" });
+      let event: Stripe.Event;
+      try {
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          signature,
+          webhookSecret,
+        );
+      } catch (error: any) {
+        return res.status(400).json({
+          error: `Store webhook signature verification failed: ${error.message}`,
+        });
+      }
+      const dbConn = await getDb();
+      if (!dbConn)
+        return res.status(503).json({ error: "Database unavailable" });
+      const existing = (
+        (await dbConn.execute(
+          sql`SELECT id FROM commercePaymentEvents WHERE provider = 'stripe' AND providerEventId = ${event.id} LIMIT 1`,
+        )) as any
+      )[0] as Array<{ id: number }>;
+      if (existing?.[0]) return res.json({ received: true, cached: true });
+      const object = event.data.object as
+        | Stripe.Checkout.Session
+        | Stripe.PaymentIntent
+        | Stripe.Charge;
+      const metadata = "metadata" in object ? object.metadata : null;
+      if (!isStoreScopedMetadata(metadata)) {
+        await dbConn.execute(
+          sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'ignored', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, ignored: true });
+      }
+      const orderId = Number(metadata.orderId);
+      const order = (
+        (await dbConn.execute(
+          sql`SELECT id, totalPence, currency, status, storePaymentStatus FROM commerceOrders WHERE id = ${orderId} LIMIT 1`,
+        )) as any
+      )[0] as Array<{
+        id: number;
+        totalPence: number;
+        currency: string;
+        status: string;
+        storePaymentStatus: string;
+      }>;
+      if (!order[0]) {
+        await dbConn.execute(
+          sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'failed', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, rejected: true });
+      }
+      const paymentReference =
+        "payment_intent" in object
+          ? String(object.payment_intent ?? "")
+          : "id" in object
+            ? object.id
+            : "";
+      await dbConn.execute(
+        sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, orderId, paymentIntentId, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, ${orderId}, ${paymentReference || null}, 'received', ${JSON.stringify(event.data.object)})`,
+      );
+
+      let reconciliationFailure: string | null = null;
+      if (event.type === "checkout.session.completed") {
+        const session = object as Stripe.Checkout.Session;
+        const decision = reconcilePaidStoreCheckout({
+          order: order[0],
+          amountTotal: session.amount_total,
+          currency: session.currency,
+          paymentStatus: session.payment_status,
+        });
+        if (!decision.accepted) reconciliationFailure = decision.reason;
+        else {
+          await dbConn.execute(
+            sql`UPDATE commerceOrders SET status = 'paid', storePaymentStatus = 'paid', storePaymentReference = ${paymentReference || null} WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+          );
+        }
+      } else if (event.type === "payment_intent.payment_failed") {
+        await dbConn.execute(
+          sql`UPDATE commerceOrders SET status = 'payment_failed', storePaymentStatus = 'failed' WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+        );
+      } else if (event.type === "checkout.session.expired") {
+        await dbConn.execute(
+          sql`UPDATE commerceOrders SET status = 'cancelled', storePaymentStatus = 'failed' WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+        );
+      } else if (event.type === "charge.refunded") {
+        const charge = object as Stripe.Charge;
+        const decision = reconcileStoreRefund({
+          order: order[0],
+          amountRefunded: charge.amount_refunded,
+          currency: charge.currency,
+        });
+        if (!decision.accepted) reconciliationFailure = decision.reason;
+        else {
+          const nextOrderStatus = decision.paymentStatus;
+          await dbConn.execute(
+            sql`UPDATE commerceOrders SET status = ${nextOrderStatus}, storePaymentStatus = ${decision.paymentStatus} WHERE id = ${orderId} AND status IN ('paid', 'acknowledged', 'processing', 'partially_fulfilled', 'fulfilled', 'dispatched', 'delivered', 'returned', 'partially_refunded')`,
+          );
+        }
+      }
+      if (reconciliationFailure) {
+        await dbConn.execute(
+          sql`UPDATE commercePaymentEvents SET status = 'failed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
+        );
+        return res.json({ received: true, rejected: true });
+      }
+      await dbConn.execute(
+        sql`UPDATE commercePaymentEvents SET status = 'processed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
+      );
+      return res.json({ received: true });
+    },
+  );
+
+  // Academy Stripe TEST webhook — isolated from SaaS subscriptions and Store payments.
+  app.post(
+    "/api/webhooks/academy-stripe",
+    express.raw({ type: "application/json" }),
+    async (req, res) => {
+      const stripe = getAcademyStripe();
+      const webhookSecret = process.env.ACADEMY_STRIPE_WEBHOOK_SECRET;
+      if (
+        !stripe ||
+        !webhookSecret ||
+        process.env.ACADEMY_STRIPE_TEST_MODE !== "true"
+      ) {
+        return res
+          .status(503)
+          .json({ error: "Academy TEST payment processing is not configured" });
+      }
+      const signature = req.headers["stripe-signature"];
+      if (!signature)
+        return res.status(400).json({ error: "Missing Stripe signature" });
+      let event: Stripe.Event;
+      try {
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          signature,
+          webhookSecret,
+        );
+      } catch (error: any) {
+        return res.status(400).json({
+          error: `Academy webhook signature verification failed: ${error.message}`,
+        });
+      }
+      const dbConn = await getDb();
+      if (!dbConn)
+        return res.status(503).json({ error: "Database unavailable" });
+      const existing = (
+        (await dbConn.execute(
+          sql`SELECT id FROM academyBillingEvents WHERE provider = 'stripe' AND providerEventId = ${event.id} LIMIT 1`,
+        )) as any
+      )[0] as Array<{ id: number }>;
+      if (existing?.[0]) return res.json({ received: true, cached: true });
+
+      const object = event.data.object as
+        | Stripe.Checkout.Session
+        | Stripe.Subscription;
+      const metadata = "metadata" in object ? object.metadata : null;
+      if (!isAcademyScopedMetadata(metadata)) {
+        await dbConn.execute(
+          sql`INSERT INTO academyBillingEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'ignored', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, ignored: true });
+      }
+      const organizationId = Number(metadata.organizationId);
+      const [organization] = await dbConn
+        .select({ id: organizations.id })
+        .from(organizations)
+        .where(eq(organizations.id, organizationId))
+        .limit(1);
+      if (!organization) {
+        await dbConn.execute(
+          sql`INSERT INTO academyBillingEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'failed', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, rejected: true });
+      }
+      await dbConn.execute(
+        sql`INSERT INTO academyBillingEvents (provider, providerEventId, eventType, organizationId, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, ${organizationId}, 'received', ${JSON.stringify(event.data.object)})`,
+      );
+
+      if (event.type === "checkout.session.completed") {
+        const session = object as Stripe.Checkout.Session;
+        await dbConn
+          .update(organizations)
+          .set({
+            academyBillingStatus: "checkout_pending",
+            academyStripeCustomerId: session.customer
+              ? String(session.customer)
+              : null,
+            academyStripeSubscriptionId: session.subscription
+              ? String(session.subscription)
+              : null,
+            academyStripeCheckoutSessionId: session.id,
+          })
+          .where(eq(organizations.id, organizationId));
+      } else if (
+        event.type === "customer.subscription.created" ||
+        event.type === "customer.subscription.updated" ||
+        event.type === "customer.subscription.deleted"
+      ) {
+        const subscription = object as Stripe.Subscription;
+        const status = academySubscriptionStatus(subscription.status);
+        const currentPeriodEnd = subscription.items.data[0]?.current_period_end;
+        const currentPeriodEndsAt = currentPeriodEnd
+          ? new Date(currentPeriodEnd * 1000)
+          : null;
+        await dbConn
+          .update(organizations)
+          .set({
+            academyBillingStatus: status,
+            academyStripeCustomerId: String(subscription.customer),
+            academyStripeSubscriptionId: subscription.id,
+            academyBillingPriceId: subscription.items.data[0]?.price.id ?? null,
+            academyBillingCurrentPeriodEndsAt: currentPeriodEndsAt,
+          })
+          .where(eq(organizations.id, organizationId));
+      }
+      await dbConn.execute(
+        sql`UPDATE academyBillingEvents SET status = 'processed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
+      );
+      return res.json({ received: true });
+    },
+  );
+
+  // SaaS Stripe webhook - must be before body parser
   app.post(
     "/api/webhooks/stripe",
     express.raw({ type: "application/json" }),
@@ -305,7 +572,10 @@ async function startServer() {
                   ? JSON.parse(userForPrefsUpdate.preferences)
                   : {};
                 await db.updateUser(userId, {
-                  preferences: JSON.stringify({ ...existingPrefs, planTier: updatedPlanTier }),
+                  preferences: JSON.stringify({
+                    ...existingPrefs,
+                    planTier: updatedPlanTier,
+                  }),
                 });
               }
 
@@ -362,9 +632,11 @@ async function startServer() {
                 if (invoice.billing_reason !== "subscription_create") {
                   const paidUser = await db.getUserById(userId);
                   if (paidUser) {
-                    const plan = paidUser.subscriptionPlan === "monthly" || paidUser.subscriptionPlan === "yearly"
-                      ? paidUser.subscriptionPlan
-                      : undefined;
+                    const plan =
+                      paidUser.subscriptionPlan === "monthly" ||
+                      paidUser.subscriptionPlan === "yearly"
+                        ? paidUser.subscriptionPlan
+                        : undefined;
                     email
                       .sendRenewalReceiptEmail(paidUser, plan)
                       .catch((err) =>
@@ -527,15 +799,22 @@ async function startServer() {
       }
 
       // Check env vars first, then fall back to DB-stored dashboard settings
-      const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
-      const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+      const smtpUser =
+        process.env.SMTP_USER ||
+        (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+      const smtpPass =
+        process.env.SMTP_PASS ||
+        (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
       const smtpConfigured = !!(smtpUser && smtpPass);
       const stripeReady =
         ENV.enableStripe &&
         !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
       const uploadsReady = true; // Local disk storage is always available on VPS
-      const aiOpenAI = !!process.env.OPENAI_API_KEY;
-      const aiHuggingFace = !!process.env.HUGGINGFACE_API_KEY;
+      const coreAiConfigured = !!(
+        process.env.CORE_AI_API_KEY &&
+        process.env.CORE_AI_BASE_URL &&
+        process.env.CORE_AI_MODEL
+      );
 
       res.json({
         db: true, // If we got here the server started successfully
@@ -543,9 +822,8 @@ async function startServer() {
         stripe: stripeReady,
         uploads: uploadsReady,
         ai: {
-          openai: aiOpenAI,
-          huggingface: aiHuggingFace,
-          anyConfigured: aiOpenAI || aiHuggingFace,
+          core: coreAiConfigured,
+          anyConfigured: coreAiConfigured,
         },
         weather: true, // Open-Meteo needs no key
         adminPasswordSet: !!process.env.ADMIN_UNLOCK_PASSWORD,
@@ -567,110 +845,121 @@ async function startServer() {
       if (!context.user || context.user.role !== "admin") {
         return res.status(403).json({ error: "Admin access required" });
       }
-    // Check env vars first, then fall back to DB-stored dashboard settings
-    const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
-    const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
-    const smtpConfigured = !!(smtpUser && smtpPass);
-    const smtpSource = (process.env.SMTP_USER && process.env.SMTP_PASS)
-      ? "environment"
-      : smtpConfigured ? "dashboard settings" : "not configured";
-    const stripeConfigured = !!(
-      process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET
-    );
-    const stripePublicKey = !!(
-      process.env.VITE_STRIPE_PUBLIC_KEY || process.env.STRIPE_PUBLIC_KEY
-    );
-    const aiOpenAI = !!process.env.OPENAI_API_KEY;
-    const aiHuggingFace = !!process.env.HUGGINGFACE_API_KEY;
-    const weatherKey = !!process.env.WEATHER_API_KEY;
-    const adminPasswordSet = !!process.env.ADMIN_UNLOCK_PASSWORD;
-    const jwtSet = !!process.env.JWT_SECRET;
+      // Check env vars first, then fall back to DB-stored dashboard settings
+      const smtpUser =
+        process.env.SMTP_USER ||
+        (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+      const smtpPass =
+        process.env.SMTP_PASS ||
+        (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+      const smtpConfigured = !!(smtpUser && smtpPass);
+      const smtpSource =
+        process.env.SMTP_USER && process.env.SMTP_PASS
+          ? "environment"
+          : smtpConfigured
+            ? "dashboard settings"
+            : "not configured";
+      const stripeConfigured = !!(
+        process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET
+      );
+      const stripePublicKey = !!(
+        process.env.VITE_STRIPE_PUBLIC_KEY || process.env.STRIPE_PUBLIC_KEY
+      );
+      const coreAiConfigured = !!(
+        process.env.CORE_AI_API_KEY &&
+        process.env.CORE_AI_BASE_URL &&
+        process.env.CORE_AI_MODEL
+      );
+      const weatherKey = !!process.env.WEATHER_API_KEY;
+      const adminPasswordSet = !!process.env.ADMIN_UNLOCK_PASSWORD;
+      const jwtSet = !!process.env.JWT_SECRET;
 
-    let dbOk = false;
-    try {
-      dbOk = !!(await db.getDb());
-    } catch {
-      /* ignore */
-    }
+      let dbOk = false;
+      try {
+        dbOk = !!(await db.getDb());
+      } catch {
+        /* ignore */
+      }
 
-    let realtimeOk = false;
-    try {
-      const { realtimeManager } = await import("./realtime");
-      realtimeOk = typeof realtimeManager?.getStats === "function";
-    } catch {
-      /* ignore */
-    }
+      let realtimeOk = false;
+      try {
+        const { realtimeManager } = await import("./realtime");
+        realtimeOk = typeof realtimeManager?.getStats === "function";
+      } catch {
+        /* ignore */
+      }
 
-    const toStatus = (ok: boolean, warn = false) =>
-      ok ? "green" : warn ? "yellow" : "red";
+      const toStatus = (ok: boolean, warn = false) =>
+        ok ? "green" : warn ? "yellow" : "red";
 
-    res.json({
-      overall: dbOk && jwtSet && adminPasswordSet ? "green" : "red",
-      services: {
-        db: {
-          status: toStatus(dbOk),
-          ok: dbOk,
-          message: dbOk
-            ? "Database connected"
-            : "DATABASE_URL not set or DB unreachable",
+      res.json({
+        overall: dbOk && jwtSet && adminPasswordSet ? "green" : "red",
+        services: {
+          db: {
+            status: toStatus(dbOk),
+            ok: dbOk,
+            message: dbOk
+              ? "Database connected"
+              : "DATABASE_URL not set or DB unreachable",
+          },
+          smtp: {
+            status: toStatus(smtpConfigured, true),
+            ok: smtpConfigured,
+            message: smtpConfigured
+              ? `SMTP configured (via ${smtpSource})`
+              : "Set SMTP_HOST, SMTP_USER, SMTP_PASS in environment or Admin → Settings to enable email",
+          },
+          stripe: {
+            status: toStatus(stripeConfigured && stripePublicKey, true),
+            ok: stripeConfigured && stripePublicKey,
+            message:
+              stripeConfigured && stripePublicKey
+                ? "Stripe configured"
+                : "Set STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, VITE_STRIPE_PUBLIC_KEY to enable billing",
+          },
+          ai: {
+            status: toStatus(coreAiConfigured, true),
+            ok: coreAiConfigured,
+            message: coreAiConfigured
+              ? "Core AI configured"
+              : "Set CORE_AI_BASE_URL, CORE_AI_API_KEY and CORE_AI_MODEL to enable AI features",
+          },
+          weather: {
+            status: "green",
+            ok: true, // Open-Meteo is free and requires no API key
+            message: weatherKey
+              ? "Weather API key configured (additional provider available)"
+              : "Using Open-Meteo (free, no key required) – weather features fully functional",
+          },
+          storage: (() => {
+            const hasProxy = !!(
+              process.env.STORAGE_PROXY_URL && process.env.STORAGE_PROXY_KEY
+            );
+            const storageOk = true; // Local disk storage is always available on VPS
+            const storageMode = hasProxy ? "proxy storage" : "local disk (VPS)";
+            return {
+              status: toStatus(storageOk, !hasProxy),
+              ok: storageOk,
+              message: `Document uploads enabled via ${storageMode} (${ENV.storagePath})`,
+            };
+          })(),
+          realtime: {
+            status: toStatus(realtimeOk),
+            ok: realtimeOk,
+            message: realtimeOk
+              ? "Realtime (SSE) active"
+              : "Realtime manager not initialised",
+          },
+          adminPassword: {
+            status: toStatus(adminPasswordSet),
+            ok: adminPasswordSet,
+            message: adminPasswordSet
+              ? "ADMIN_UNLOCK_PASSWORD is set"
+              : "Set ADMIN_UNLOCK_PASSWORD env var to secure the admin panel",
+          },
         },
-        smtp: {
-          status: toStatus(smtpConfigured, true),
-          ok: smtpConfigured,
-          message: smtpConfigured
-            ? `SMTP configured (via ${smtpSource})`
-            : "Set SMTP_HOST, SMTP_USER, SMTP_PASS in environment or Admin → Settings to enable email",
-        },
-        stripe: {
-          status: toStatus(stripeConfigured && stripePublicKey, true),
-          ok: stripeConfigured && stripePublicKey,
-          message:
-            stripeConfigured && stripePublicKey
-              ? "Stripe configured"
-              : "Set STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, VITE_STRIPE_PUBLIC_KEY to enable billing",
-        },
-        ai: {
-          status: toStatus(aiOpenAI || aiHuggingFace, true),
-          ok: aiOpenAI || aiHuggingFace,
-          message:
-            aiOpenAI || aiHuggingFace
-              ? "AI configured"
-              : "Set OPENAI_API_KEY or HUGGINGFACE_API_KEY to enable AI features",
-        },
-        weather: {
-          status: "green",
-          ok: true, // Open-Meteo is free and requires no API key
-          message: weatherKey
-            ? "Weather API key configured (additional provider available)"
-            : "Using Open-Meteo (free, no key required) – weather features fully functional",
-        },
-        storage: (() => {
-          const hasProxy = !!(process.env.STORAGE_PROXY_URL && process.env.STORAGE_PROXY_KEY);
-          const storageOk = true; // Local disk storage is always available on VPS
-          const storageMode = hasProxy ? "proxy storage" : "local disk (VPS)";
-          return {
-            status: toStatus(storageOk, !hasProxy),
-            ok: storageOk,
-            message: `Document uploads enabled via ${storageMode} (${ENV.storagePath})`,
-          };
-        })(),
-        realtime: {
-          status: toStatus(realtimeOk),
-          ok: realtimeOk,
-          message: realtimeOk
-            ? "Realtime (SSE) active"
-            : "Realtime manager not initialised",
-        },
-        adminPassword: {
-          status: toStatus(adminPasswordSet),
-          ok: adminPasswordSet,
-          message: adminPasswordSet
-            ? "ADMIN_UNLOCK_PASSWORD is set"
-            : "Set ADMIN_UNLOCK_PASSWORD env var to secure the admin panel",
-        },
-      },
-      timestamp: new Date().toISOString(),
-    });
+        timestamp: new Date().toISOString(),
+      });
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
     }
@@ -725,7 +1014,7 @@ async function startServer() {
 
   // Favicon handler - serve favicon.svg as favicon.ico with correct headers (rate limited)
   // Production: dist/index.js lives in dist/, so import.meta.dirname = dist/
-  // Vite copies client/public/* into EACH frontend build dir (management/ and school/).
+  // Vite copies client/public/* into EACH frontend build dir (management/ and academy/).
   // Both contain the same favicon, so we resolve from management/ as the canonical copy.
   app.get("/favicon.ico", healthLimiter, (req, res) => {
     const faviconPath =
@@ -756,7 +1045,10 @@ async function startServer() {
     const iconPath =
       process.env.NODE_ENV === "development"
         ? resolve(process.cwd(), "client/public/icons/icon-192x192.png")
-        : resolve(import.meta.dirname, "public/management/icons/icon-192x192.png");
+        : resolve(
+            import.meta.dirname,
+            "public/management/icons/icon-192x192.png",
+          );
 
     if (fs.existsSync(iconPath)) {
       res.setHeader("Content-Type", "image/png");
@@ -815,11 +1107,11 @@ async function startServer() {
         return res.status(400).json({ error: "Message too long" });
       }
 
-      // Source tagging — differentiate management vs school enquiries
-      const contactSource = source === "school" ? "school" : "management";
+      // Source tagging — differentiate management vs Academy enquiries
+      const contactSource = source === "academy" ? "academy" : "management";
       const subjectPrefix =
-        contactSource === "school"
-          ? "[School Enquiry] "
+        contactSource === "academy"
+          ? "[Academy Enquiry] "
           : "[Management Enquiry] ";
       const taggedSubject = subjectPrefix + subject;
 
@@ -840,7 +1132,13 @@ async function startServer() {
           .slice(0, 64);
         dbConn
           .insert(contactSubmissions)
-          .values({ name, email: fromEmail, subject: taggedSubject, message, ipHash })
+          .values({
+            name,
+            email: fromEmail,
+            subject: taggedSubject,
+            message,
+            ipHash,
+          })
           .catch((err: Error) =>
             console.warn("[Contact] DB insert failed:", err.message),
           );
@@ -868,9 +1166,8 @@ async function startServer() {
   app.use("/api", salesChatRouter);
 
   // Internal site analytics — page view tracking middleware
-  const { analyticsMiddleware, trackCtaClick } = await import(
-    "./analyticsTracker"
-  );
+  const { analyticsMiddleware, trackCtaClick } =
+    await import("./analyticsTracker");
   app.use(analyticsMiddleware());
   app.post("/api/analytics/cta", express.json(), trackCtaClick);
 
@@ -986,62 +1283,77 @@ async function startServer() {
   // WhatsApp / Twilio delivery status webhook
   // Twilio POSTs delivery status callbacks here (configure in Twilio Console → Messaging → Senders).
   // Also handles inbound opt-out STOP messages so users can self-unsubscribe.
-  app.post("/api/webhooks/whatsapp", express.urlencoded({ extended: false }), async (req, res) => {
-    try {
-      const body = req.body as Record<string, string>;
+  app.post(
+    "/api/webhooks/whatsapp",
+    express.urlencoded({ extended: false }),
+    async (req, res) => {
+      try {
+        const body = req.body as Record<string, string>;
 
-      // Delivery status update (MessageStatus field from Twilio)
-      if (body.MessageStatus) {
-        console.log(
-          `[WhatsApp] Delivery status: ${body.MessageSid} → ${body.MessageStatus}`,
-        );
-      }
+        // Delivery status update (MessageStatus field from Twilio)
+        if (body.MessageStatus) {
+          console.log(
+            `[WhatsApp] Delivery status: ${body.MessageSid} → ${body.MessageStatus}`,
+          );
+        }
 
-      // Inbound message (Body field from Twilio)
-      if (body.Body && body.From) {
-        const text = body.Body.trim().toUpperCase();
-        const from = body.From; // e.g. whatsapp:+447123456789
+        // Inbound message (Body field from Twilio)
+        if (body.Body && body.From) {
+          const text = body.Body.trim().toUpperCase();
+          const from = body.From; // e.g. whatsapp:+447123456789
 
-        console.log(`[WhatsApp] Inbound message from ${from}: ${text}`);
+          console.log(`[WhatsApp] Inbound message from ${from}: ${text}`);
 
-        if (text === "STOP" || text === "UNSUBSCRIBE" || text === "OPT OUT" || text === "OPTOUT") {
-          console.log(`[WhatsApp] Opt-out request from ${from}`);
-          try {
-            const { getDb } = await import("../db");
-            const db = await getDb();
-            if (db) {
-              // Normalise to E.164 format: strip whatsapp: prefix if present
-              const phone = from.replace(/^whatsapp:/, "");
-              const normalised = phone.startsWith("+") ? phone : `+${phone}`;
-              const matchedUsers = await db
-                .select({ id: users.id, preferences: users.preferences })
-                .from(users)
-                .where(
-                  sql`JSON_UNQUOTE(JSON_EXTRACT(${users.preferences}, '$.whatsappPhone')) = ${normalised}`,
-                );
-              for (const user of matchedUsers) {
-                const prefs = user.preferences ? JSON.parse(user.preferences) : {};
-                prefs.whatsappReminders = false;
-                await db
-                  .update(users)
-                  .set({ preferences: JSON.stringify(prefs) })
-                  .where(eq(users.id, user.id));
-                console.log(`[WhatsApp] Opted out user ${user.id}`);
+          if (
+            text === "STOP" ||
+            text === "UNSUBSCRIBE" ||
+            text === "OPT OUT" ||
+            text === "OPTOUT"
+          ) {
+            console.log(`[WhatsApp] Opt-out request from ${from}`);
+            try {
+              const { getDb } = await import("../db");
+              const db = await getDb();
+              if (db) {
+                // Normalise to E.164 format: strip whatsapp: prefix if present
+                const phone = from.replace(/^whatsapp:/, "");
+                const normalised = phone.startsWith("+") ? phone : `+${phone}`;
+                const matchedUsers = await db
+                  .select({ id: users.id, preferences: users.preferences })
+                  .from(users)
+                  .where(
+                    sql`JSON_UNQUOTE(JSON_EXTRACT(${users.preferences}, '$.whatsappPhone')) = ${normalised}`,
+                  );
+                for (const user of matchedUsers) {
+                  const prefs = user.preferences
+                    ? JSON.parse(user.preferences)
+                    : {};
+                  prefs.whatsappReminders = false;
+                  await db
+                    .update(users)
+                    .set({ preferences: JSON.stringify(prefs) })
+                    .where(eq(users.id, user.id));
+                  console.log(`[WhatsApp] Opted out user ${user.id}`);
+                }
               }
+            } catch (err) {
+              console.error("[WhatsApp] Error processing opt-out:", err);
             }
-          } catch (err) {
-            console.error("[WhatsApp] Error processing opt-out:", err);
           }
         }
-      }
 
-      // Twilio expects an empty 200 TwiML response (or plain 200)
-      res.status(200).send("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response></Response>");
-    } catch (error) {
-      console.error("[WhatsApp] Webhook error:", error);
-      res.status(200).send("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response></Response>");
-    }
-  });
+        // Twilio expects an empty 200 TwiML response (or plain 200)
+        res
+          .status(200)
+          .send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
+      } catch (error) {
+        console.error("[WhatsApp] Webhook error:", error);
+        res
+          .status(200)
+          .send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
+      }
+    },
+  );
 
   // Import trial lock middleware
   const { trialLockMiddleware } = await import("./trialLock");
@@ -1084,7 +1396,9 @@ async function startServer() {
     }
 
     if (!fs.existsSync(filePath)) {
-      console.warn(`[FileServe] 404 – file not found on disk: ${filePath} (key: ${fileKey}, uploadsDir: ${uploadsDir})`);
+      console.warn(
+        `[FileServe] 404 – file not found on disk: ${filePath} (key: ${fileKey}, uploadsDir: ${uploadsDir})`,
+      );
       return res.status(404).json({ error: "File not found" });
     }
 
@@ -1189,14 +1503,12 @@ async function startServer() {
   // first user request arrives.  Without this, the first API call (e.g.
   // calendar.getEvents) would block for the full ensureTables duration and
   // could exceed the 30 s Nginx proxy timeout.
-  getDb().catch((err) =>
-    console.error("[Startup] DB pre-warm error:", err),
-  );
+  getDb().catch((err) => console.error("[Startup] DB pre-warm error:", err));
 
   // Verify SMTP configuration — non-blocking, logs result to console
-  email.verifySmtpConfig().catch((err) =>
-    console.error("[Startup] SMTP verification error:", err),
-  );
+  email
+    .verifySmtpConfig()
+    .catch((err) => console.error("[Startup] SMTP verification error:", err));
 
   server.listen(port, host, () => {
     console.log(`✓ Server running on http://${host}:${port}/`);

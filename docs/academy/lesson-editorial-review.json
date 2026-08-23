@@ -1,0 +1,1338 @@
+{
+  "generatedAt": "2026-08-21T12:22:57.306599+00:00",
+  "reviewMethod": "AI-assisted editorial review of the complete current lesson source; not a substitute for authoritative factual evidence.",
+  "model": "gpt-5-mini",
+  "lessonCount": 105,
+  "reviewErrors": 95,
+  "reviews": [
+    {
+      "slug": "parts-of-the-horse",
+      "title": "Parts of the Horse",
+      "pathway": "Horse Care Foundations",
+      "level": "beginner",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "ISSUE",
+          "practicalApplication": "ISSUE",
+          "safetyNote": "ISSUE",
+          "commonMistakes": "PASS",
+          "keyPoints": "ISSUE",
+          "knowledgeQuestions": "PASS",
+          "answersAndExplanations": "PASS",
+          "tutorPrompts": "PASS",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "Sequence/prerequisites are not specified; add brief prerequisites (e.g., safe handling basics) and where this lesson sits in the pathway.",
+          "Ergot definition is incorrect: the ergot is a small horny/callous growth at the back of the fetlock; a tuft of hair may overlie it, but the hair itself is not the ergot. Correct wording in teaching content.",
+          "Gullet/windpipe phrasing is imprecise: gullet = esophagus; windpipe = trachea. Consider using ‘underside of the neck housing the trachea (windpipe)’ and reserve ‘throatlatch’ for the junction of head/neck.",
+          "Jaw vs jowl conflation: the jaw (mandible) is the bone along the lower edge; the jowl is the fleshy cheek area. Avoid treating them as synonyms; clarify terminology.",
+          "Coronet/coronary band phrasing is inaccurate in key points (“growth ring”): replace with ‘soft tissue band at the top of the hoof that produces the hoof wall.’ Ensure consistency across content and key points.",
+          "Safety note lacks escalation guidance: add advice to stop, avoid kneeling/squatting, keep a hand on the horse, have a competent handler, and seek veterinary/farrier advice if heat, swelling, lameness, or pain is detected.",
+          "Regulatory claim is jurisdiction-dependent: ‘Markings … are recorded on a horse’s passport alongside whorls.’ Qualify to ‘in many countries’ or cite the relevant authority; avoid universal statement or provide region-specific note.",
+          "Key point ‘hock is … prone to strain’ is a risk statement without support; consider softening (‘commonly loaded joint’) or provide an authoritative reference.",
+          "Practical application should include escalation (e.g., if heat/swelling/pain is found, do not ride and consult a vet/farrier) and safe-handling specifics (do not sit/kneel; stand to the side; keep body close; have someone hold the horse).",
+          "Competency mapping/progression is thin: map to additional competencies (e.g., basic anatomy, handling safety) and state next recommended lessons (e.g., Hoof Care Basics, Recognising Lameness)."
+        ],
+        "materialClaimTopics": [
+          "Equine external anatomical terminology and locations (poll, withers, croup, dock, fetlock, pastern, coronet/coronary band, chestnut, ergot, etc.)",
+          "Where equine height is officially measured (highest point of the withers)",
+          "Homology/equivalence claims (stifle ≈ human knee; foreleg ‘knee’/carpus ≈ human wrist)",
+          "Location of chestnuts (forelegs above the knee; hind legs below the hock)",
+          "Function of the coronary/coronet band in hoof growth",
+          "Identification practices and regulatory documentation (markings and whorls recorded on passports)",
+          "Safety guidance for handling/inspecting limbs (risk of kicking; safe positions)",
+          "Workload/strain susceptibility of the hock joint"
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "Height is measured to the highest point of the withers.",
+          "Foreleg ‘knee’ (carpus) is equivalent to the human wrist; stifle is equivalent to the human knee.",
+          "Chestnut locations: forelimb above the knee; hindlimb below the hock.",
+          "Coronary/coronet band produces hoof wall growth and injury can lead to permanent defects.",
+          "Regulatory assertion that markings and whorls are recorded on a horse’s passport (jurisdiction dependent)."
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "REQUIRES_CORRECTION",
+        "reviewRationale": "Good beginner scope and structure with accurate MCQs, but several anatomical terminology inaccuracies (ergot, gullet vs windpipe, jaw vs jowl) and an imprecise statement about the coronet/coronary band need correction. Safety content should add clear escalation guidance and concrete handling precautions. A jurisdiction-dependent passport claim should be qualified or referenced. Add sequence/prerequisites and strengthen competency mapping/progression. Editorial pass depends on these corrections; factual acceptance requires authoritative sources for the identified material claims."
+      }
+    },
+    {
+      "slug": "grooming-basics",
+      "title": "Grooming Basics",
+      "pathway": "Horse Care Foundations",
+      "level": "beginner",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "PASS",
+          "practicalApplication": "PASS",
+          "safetyNote": "ISSUE",
+          "commonMistakes": "PASS",
+          "keyPoints": "PASS",
+          "knowledgeQuestions": "PASS",
+          "answersAndExplanations": "PASS",
+          "tutorPrompts": "PASS",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "No explicit prerequisites or sequencing within the pathway; add brief prerequisite (e.g., basic safe handling/tying) and where this sits in the Horse Care Foundations sequence.",
+          "Safety note lacks clear escalation boundaries (when to stop and seek professional help from a vet or farrier for heat, swelling, lameness, wounds, signs of thrush, rain scald/mud fever, or shoe/hoof defects).",
+          "Safety note omits basic PPE guidance (sturdy closed-toe boots, gloves if needed) and a reminder to tie to a fixed, secure point with appropriate equipment (e.g., quick-release or breakaway).",
+          "Consider adding a brief hygiene/biosecurity note about not sharing grooming kit between horses with skin conditions to reduce transmission risk.",
+          "Competency mapping is minimal (single tag). Add explicit progression (what competency this completes/unlocks next) and performance criteria for ‘grooming_safely’.",
+          "Minor clarity suggestion: specify use of a softer ‘face brush’ or cloth for the head for head-shy/sensitive horses, and to avoid kneeling/crouching when picking feet."
+        ],
+        "materialClaimTopics": [
+          "Health and welfare benefits of grooming (early detection of injury/skin disease, circulation stimulation, distribution of coat oils, bonding effects).",
+          "Best-practice tool use and order (curry first; dandy brush to flick; body brush to finish; metal curry comb only to clean brushes).",
+          "Hoof-picking technique and direction (heel to toe) and associated frog protection rationale.",
+          "Recognition of hoof thrush (characteristic smell/black discharge) and need for attention.",
+          "Guidance that dandy brushes should be avoided on clipped/sensitive horses; body brush may be used on face/legs with care.",
+          "Safe tying and handling guidance (quick-release knot; stand to side; stay close when handling hind feet to reduce kick force).",
+          "Hygiene rule to use separate sponges for eyes/nostrils and dock to reduce bacterial spread.",
+          "Advice for grass-kept horses about preserving natural coat oils/waterproofing and avoiding over-grooming.",
+          "Pre-ride minimum grooming of saddle/girth areas to prevent rubs/sores."
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "Use a quick-release knot to a secure tie ring when tying for grooming.",
+          "Pick hooves from heel to toe to avoid pushing debris into the frog/sulci.",
+          "Start with near fore, then near hind, off fore, off hind when picking out feet (stated preferred order).",
+          "Do not use a rubber curry comb on bony areas (legs, spine, face).",
+          "Avoid using a dandy brush on clipped or sensitive areas.",
+          "Metal curry comb is for cleaning the body brush only; draw bristles across it after every few strokes.",
+          "Use separate, clearly labeled sponges for eyes/nostrils and dock; never mix.",
+          "For grass-kept horses: avoid thorough body brushing to preserve natural oils/waterproofing.",
+          "Stand close to the horse’s body when picking hind feet to reduce impact if kicked."
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "REQUIRES_CORRECTION",
+        "reviewRationale": "Strong, clear beginner lesson with accurate structure, objectives, and checks. However, it needs explicit safety escalation guidance (when to stop and seek vet/farrier), basic PPE/tying specifics, and clearer pathway sequencing/prerequisites. Several best-practice claims (tool use, hoof-picking direction, grass-kept grooming, thrush description, stance to reduce kick force) are material and should be supported by authoritative sources. Passing status here reflects editorial quality needs only, not factual verification."
+      }
+    },
+    {
+      "slug": "feeding-basics",
+      "title": "Feeding Basics",
+      "pathway": "Horse Care Foundations",
+      "level": "beginner",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "ISSUE",
+          "practicalApplication": "PASS",
+          "safetyNote": "PASS",
+          "commonMistakes": "PASS",
+          "keyPoints": "ISSUE",
+          "knowledgeQuestions": "ISSUE",
+          "answersAndExplanations": "ISSUE",
+          "tutorPrompts": "ISSUE",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "No explicit sequence/prerequisites provided for where this lesson sits or what prior knowledge is expected.",
+          "Competency mapping is minimal (single tag) and lacks clear progression to next competencies/lessons.",
+          "Forage intake guidance mixes dry matter basis with as‑fed hay weights; the example for a 500 kg horse (7.5–10 kg hay) conflicts with the stated DM basis. Clarify DM vs as‑fed and correct the kg figures or explicitly state assumptions.",
+          "Body Condition Scoring: scale not specified (e.g., Carroll & Huntington 0–5 vs Henneke 1–9); the “ideal 2.5–3” statement needs source/qualifiers and may vary by type/discipline.",
+          "Colloquial/unsourced analogy “stomach approximately the size of a rugby ball” — replace with a sourced anatomical volume/range or remove.",
+          "Management rule “allow at least one hour after a concentrate feed before exercise” needs authoritative source and context (meal size/type); label as guideline if retained.",
+          "Haylage storage guidance (“bags must be sealed; if punctured, contents can spoil quickly”) needs sourced best‑practice detail (e.g., safe-use window after opening/puncture) or rephrase as risk-based guidance.",
+          "“Mixes often higher in sugar” is a generalisation; add qualification or source as this varies by brand/formulation.",
+          "Safety phrasing “tie them up to prevent resource guarding” should specify safe quick‑release/breakaway methods and supervision to avoid entanglement/injury.",
+          "Common mistake about hay nets would benefit from precise safe‑tying guidance (height relative to withers, use of breakaway string) to reduce entanglement risk.",
+          "Key points omit “dry matter” for the 1.5% minimum, creating inconsistency with the main text. Align wording.",
+          "Knowledge check explanation repeats the DM/as‑fed confusion (7.5 kg hay equated to 1.5% DM); correct the explanation.",
+          "Multiple clinical risk statements (colic, laminitis, respiratory disease) are presented as facts; these require authoritative sourcing or cautious phrasing as increased risk rather than certainty.",
+          "AI tutor prompt invites ration formulation for a 500 kg horse; add boundary to discuss considerations only and advise consulting a vet/equine nutritionist for prescriptive plans."
+        ],
+        "materialClaimTopics": [
+          "Equine digestive anatomy/physiology (stomach size, hindgut fermentation)",
+          "Feeding behaviour/time grazing per day",
+          "Forage intake recommendations (percent bodyweight, dry matter basis)",
+          "Dietary change transition intervals and microbiome adaptation",
+          "Pre-exercise feeding interval after concentrate meals",
+          "Haylage storage/seal integrity and spoilage risk",
+          "Relative sugar content of mixes vs other feeds",
+          "Risks of dehydration contributing to impaction colic",
+          "Risks of sudden diet change or feed gorging contributing to colic/laminitis (potentially fatal)",
+          "Respiratory risks from mouldy/dusty forage (e.g., RAO/IBH)",
+          "Need for daily sodium/chloride and provision via salt lick/loose salt",
+          "Body Condition Scoring scale used and ideal range guidance",
+          "Feeding by weight vs volume (density differences)",
+          "Safety around feeding multiple horses (aggression/resource guarding)"
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "Spending up to 18 hours a day grazing.",
+          "Horse stomach “approximately the size of a rugby ball” in a 500 kg horse.",
+          "Minimum forage intake 1.5% to 2% of body weight per day on a dry matter basis.",
+          "Example for 500 kg horse: 7.5–10 kg hay per day (as written) — reconcile with DM basis or correct as‑fed equivalent.",
+          "Diet changes introduced over 7–14 days.",
+          "Wait at least one hour after a concentrate feed before exercise.",
+          "Dehydration increases risk of impaction colic.",
+          "Mouldy/dusty forage can cause respiratory disease.",
+          "Horses need sodium and chloride daily (and a salt lick as provision).",
+          "Body Condition Scoring scale “typically 0 to 5 in the UK” and “ideal 2.5–3 for most horses.”",
+          "Haylage bags must be sealed; punctured bags spoil quickly (define “quickly”/safe-use window).",
+          "“Mixes often higher in sugar” than alternatives."
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "REQUIRES_CORRECTION",
+        "reviewRationale": "Strong, structured beginner lesson with clear objectives and practical guidance. However, several safety‑sensitive nutrition/clinical claims and multiple precise figures/rules require authoritative sourcing or reframing as guidelines. A key editorial correction is needed to resolve the dry matter vs as‑fed forage example to avoid under/over‑feeding. Prerequisites/progression are missing, BCS scale is ambiguous, and one tutor prompt invites prescriptive rationing beyond the stated safety boundary. Add safe-tying qualifiers when advising to tie horses for feeding. These corrections are editorial; factual acceptance awaits evidence review."
+      }
+    },
+    {
+      "slug": "water-requirements",
+      "title": "Water Requirements",
+      "pathway": "Horse Care Foundations",
+      "level": "beginner",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "ISSUE",
+          "practicalApplication": "ISSUE",
+          "safetyNote": "ISSUE",
+          "commonMistakes": "PASS",
+          "keyPoints": "ISSUE",
+          "knowledgeQuestions": "PASS",
+          "answersAndExplanations": "PASS",
+          "tutorPrompts": "PASS",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "Missing sequence/prerequisites section. Add any assumed prior knowledge (e.g., basic stable safety/horse handling) and where this lesson sits in the pathway.",
+          "Causation overstatement: ‘major/leading cause of impaction colic’. Rephrase to ‘important risk factor’ and source appropriately.",
+          "Practical application advises ‘offer water in small amounts after exercise’. This is debated and may delay rehydration; revise to evidence-based guidance (e.g., allow access to cool, clean water; monitor; walk to cool if needed) and cite a veterinary authority.",
+          "Safety note claim ‘Never use boiling water or salt to melt ice, as residues can be harmful’ needs authoritative sourcing and clearer hazard mechanism (scalding risk, trough damage, excessive salinity/ingestion risk).",
+          "Multiple quantitative statements and clinical thresholds lack citations (daily intake ranges; exercise/lactation needs; feed moisture %; saliva volume; skin turgor and capillary refill times; frequency recommendations like ‘at least twice daily’). Add sources or qualify as ranges/typical values.",
+          "Key point ‘Dehydration is a leading cause of impaction colic’ overstates certainty; soften to ‘risk factor’ and align wording with teaching content.",
+          "Consider adding guidance on monitoring intake when using automatic drinkers (e.g., meter or temporary bucket checks) to align with the objective to ‘identify signs of dehydration’.",
+          "Electrolytes section: add a boundary to follow veterinary/nutritionist advice and product labels; avoid hypertonic supplementation without water access; always provide free-choice plain water.",
+          "Clarify climate context when citing daily intake (‘temperate climate’) and note variability by bodyweight/forage moisture.",
+          "Competency mapping is minimal (‘feeding_awareness’ only) and lacks progression guidance (what’s next after this lesson)."
+        ],
+        "materialClaimTopics": [
+          "Equine daily water intake at rest, in work, and during lactation",
+          "Effects of diet moisture (hay/grass/haylage) on water intake",
+          "Gastrointestinal water dynamics and risk of impaction colic from dehydration",
+          "Saliva production volumes and gastric ulcer risk",
+          "Field dehydration assessment methods (skin turgor, capillary refill time) and clinical thresholds",
+          "Best practice for stable and field water provision (cleaning frequency, placement, automatic drinkers)",
+          "Winter ice management practices and prohibitions (boiling water, salt)",
+          "Electrolyte losses in sweat and supplementation practices",
+          "Normal urine appearance in hydrated horses",
+          "Survival without food vs. water timelines"
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "A horse at rest typically drinks 25–55 litres/day (temperate climate)",
+          "Moderate to hard work: 50–80 litres/day",
+          "Lactating broodmare: up to 75 litres/day",
+          "Hay moisture ~10–15% vs. grass 60–80% (and haylage ‘more moisture than hay’)",
+          "Horses produce up to 40 litres of saliva/day when eating forage",
+          "Skin pinch test returns in 1–2 seconds if well hydrated; longer suggests dehydration",
+          "Capillary refill time should be ≤2 seconds",
+          "Buckets should be scrubbed and refilled at least twice daily",
+          "Automatic drinkers should be checked daily",
+          "In winter, break ice at least twice daily; ‘horses cannot drink through ice’",
+          "Normal urine colour: pale yellow to amber; dark/scanty may indicate low intake",
+          "Never use boiling water or salt to melt ice in drinking troughs (safety rule)",
+          "After exercise, ‘offer water in small amounts’ (practice rule—requires evidence or revision)",
+          "Electrolytes must always be offered alongside plain water; never as the only water source",
+          "Position buckets away from the hay net to prevent contamination",
+          "A horse can survive weeks without food but only a few days without water"
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "REQUIRES_CORRECTION",
+        "reviewRationale": "Well-structured beginner lesson with clear objectives and useful checks, but it lacks prerequisites/progression mapping and contains several unsourced quantitative ranges and clinical thresholds. Two safety-sensitive areas require correction: the ‘small amounts after exercise’ advice (risk of delaying rehydration) and the absolute prohibition on using salt/boiling water to melt ice without cited hazards. Colic causation language should be softened to ‘risk factor’. Add authoritative veterinary/nutrition references for all specific volumes, times, and moisture percentages, and strengthen the electrolyte-use boundary to consult professionals and follow labels. Once these issues are addressed, the lesson should meet editorial quality and safety boundaries."
+      }
+    },
+    {
+      "slug": "stable-checks",
+      "title": "Daily Stable Checks",
+      "pathway": "Horse Care Foundations",
+      "level": "beginner",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "ISSUE",
+          "practicalApplication": "PASS",
+          "safetyNote": "ISSUE",
+          "commonMistakes": "ISSUE",
+          "keyPoints": "ISSUE",
+          "knowledgeQuestions": "ISSUE",
+          "answersAndExplanations": "ISSUE",
+          "tutorPrompts": "PASS",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "Missing sequence/prerequisites; add where this lesson sits in the pathway (what to complete before/after).",
+          "Ventilation guidance is framed as an absolute: “top stable door should always be open.” This is too prescriptive and can be unsafe/incorrect in some stabling systems, weather conditions, security contexts, or biosecurity scenarios. Reframe to performance-based guidance (ensure effective ventilation, avoid draughts; follow yard policy).",
+          "Contradiction/ambiguity: Evening routine mentions “top and bottom bolts” (likely two bolts on one door), but the Safety Note says “Always bolt both the top and bottom stable door,” which reads as closing both halves of a Dutch door. Clarify to “both bolts on the lower door” or “all door bolts as fitted,” and ensure this aligns with the ventilation guidance for overnight management.",
+          "Clinical sign wording should avoid definitive diagnoses. Examples: “A horse standing with one foreleg pointed forward may have laminitis” should be softened to “could indicate laminitis or hoof pain—escalate to a vet.” Likewise for colic signs with clear escalation triggers (no droppings, persistent rolling, unresponsive pain).",
+          "Worms visible in droppings: “immediate worming advice needed” is treatment-related and should direct learners to follow a veterinary-prescribed parasite control plan or contact a vet/SQP; avoid implying ad‑hoc deworming due to resistance risks.",
+          "Banked bedding “to prevent the horse from becoming cast” is over‑stated. Change to “help reduce the risk of becoming cast; not a guarantee.” Align the MCQ option and explanation with this nuance.",
+          "Stable size figure (3.6 m × 3.6 m / 12 ft × 12 ft) is a specific standard; cite an authoritative welfare code and note that larger horses require larger boxes; ponies may require less per national guidance.",
+          "Add clear professional escalation boundaries within the routines: not drinking, absent/reduced droppings, suspected colic/laminitis, fresh lacerations/swelling, nasal discharge, or worms seen → contact a veterinarian promptly.",
+          "Consider adding basic PPE and manual handling safety for mucking out/handling bedding (sturdy footwear, gloves; dust control, avoid lifting loads beyond capability).",
+          "Knowledge Check Q1 bakes in the absolute (“top door always remain open”); revise stem and correct answer to performance-based ventilation guidance.",
+          "Knowledge Check Q3 uses “preventing the horse from becoming cast” as the correct option while the explanation uses softer language. Make the option read “help reduce the risk of becoming cast” to match the explanation.",
+          "Key Points and Common Mistakes repeat the absolute about the top door always open/never closing; revise to context-appropriate ventilation guidance and yard policy compliance.",
+          "Competency mapping/progression is minimal (only a single linked competency). Add how this maps to defined competency elements and what lesson(s) come next (e.g., feeding basics, turnout checks)."
+        ],
+        "materialClaimTopics": [
+          "Stable ventilation requirements and management of doors for airflow versus draughts/security/biosecurity",
+          "Minimum stable size for horses (3.6 m × 3.6 m / 12 ft × 12 ft) and variation by horse size",
+          "Effect of mucking out on ammonia levels and equine respiratory health",
+          "Use of banked bedding to reduce risk of a horse becoming cast",
+          "Recognition of clinical signs in routine checks (colic, laminitis, injuries, ocular/nasal discharge) and escalation thresholds",
+          "Interpretation of water intake changes as potential illness indicator",
+          "Droppings characteristics as indicators of health (loose, dry, mucus-covered, reduced/absent)",
+          "Parasite indicators (worms visible in droppings) and appropriate treatment/escalation pathways",
+          "Stable drainage needs (sloped floor toward drain)",
+          "Door security practices (bolts) when securing horses overnight"
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "Stable size should be at least 3.6 m × 3.6 m (12 ft × 12 ft) for a horse; larger for bigger breeds.",
+          "The top stable door should always be open (rule needs authoritative support or revision to performance-based guidance).",
+          "Mucking out daily reduces ammonia levels and protects the horse’s respiratory system (claim requires citation).",
+          "Banks of bedding prevent the horse from becoming cast (should be revised to risk reduction and, if retained, supported).",
+          "Reduced or absent droppings may be an early sign of colic (clinical sign; cite authoritative source).",
+          "If worms are visible in droppings, immediate worming advice is needed (treatment/escalation claim; align to veterinary/SQP guidance)."
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "REQUIRES_CORRECTION",
+        "reviewRationale": "Strong structure and clear routines, with valuable observation guidance. However, multiple absolute statements create safety and accuracy risks (notably the “top door always open” rule) and there is an ambiguity about door bolts versus door halves. Clinical/treatment references (colic/laminitis signs, worms in droppings) need explicit escalation boundaries and resistance-aware wording. One specific standard (12 × 12 ft stable size) and several health/safety claims require authoritative sourcing. Add missing sequence/prerequisites and strengthen competency progression mapping. After these corrections, the lesson would meet editorial quality without implying unsafe practices."
+      }
+    },
+    {
+      "slug": "turnout-and-rugs",
+      "title": "Turnout & Rugging",
+      "pathway": "Horse Care Foundations",
+      "level": "developing",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "ISSUE",
+          "practicalApplication": "PASS",
+          "safetyNote": "PASS",
+          "commonMistakes": "PASS",
+          "keyPoints": "PASS",
+          "knowledgeQuestions": "ISSUE",
+          "answersAndExplanations": "ISSUE",
+          "tutorPrompts": "PASS",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "No sequence/prerequisites provided. Add where this lesson sits in the pathway and any required prior knowledge (e.g., basic handling, welfare basics).",
+          "Competency progression not specified. Map how completing this lesson advances ‘stable_checks’ and ‘welfare_awareness’ and what the next lesson/assessment is.",
+          "Regional scope is inconsistent/unstated. Multiple claims are UK-specific (ragwort prevalence, plant species, acreage norms). Either state UK context explicitly or generalize and/or localize guidance by region.",
+          "Shelter section uses ‘must have access’ without citation. If this reflects a legal/welfare code, cite it; otherwise soften to ‘should’ or ‘ensure adequate protection’ and reference the relevant national Code of Practice.",
+          "Fencing: ‘Post-and-rail is the safest’ and ‘electric fencing as a secondary barrier’ are absolute statements. Either provide authoritative justification or soften (e.g., ‘commonly considered safer when well-maintained’; note that properly installed, high-visibility electric fencing is also widely used as a primary barrier).",
+          "Poisonous plants: ‘ragwort is the most common equine poison in the UK’ is a superlative that requires a source. Some entries (buttercups ‘in large quantities’) need qualification and sourcing. Consider adding scientific/common names for clarity.",
+          "Ground conditions: ‘mud fever (a bacterial skin infection...)’ and advice to ‘avoid turnout on waterlogged ground’ require sourcing and nuance (multifactorial causes; management alternatives).",
+          "Manure management: ‘collect droppings at least twice a week’ is a specific interval that requires evidence or should be framed as a yard policy example; parasite control practices vary by region and management (FEC-based programs).",
+          "Stocking density: ‘minimum of one acre per horse for year‑round turnout’ is a region/soil/productivity-dependent rule of thumb; requires citation or reframing as a context-specific guideline.",
+          "Thermoregulation: ‘healthy, unclipped horses can withstand well below freezing with shelter’ needs authoritative support or temperature ranges; currently too absolute.",
+          "Rug weight categories (0 g; 150–250 g; 300–400 g) should be identified as typical manufacturer ranges, not universal standards; provide source or label as examples.",
+          "Rug fitting guidance: ‘a hand’s width’ and ‘leg straps loop through each other’ need either manufacturer-referenced instructions or careful phrasing (only loop if designed for it; include approximate clearances or follow maker guidance).",
+          "Rug checks ‘at least twice daily’ is a specific frequency that needs support or should be framed as recommended best practice during changeable weather; otherwise suggest ‘check daily (more often in adverse weather)’.",
+          "Claim that ‘a torn turnout rug will let in rain and make the horse colder and wetter than no rug’ needs evidence or softening (e.g., ‘can’ rather than ‘will’).",
+          "Knowledge check Q2 explanation includes clinical assertions about ragwort (cumulative, irreversible liver damage; greater danger in hay). These require authoritative sourcing to retain as definitive statements."
+        ],
+        "materialClaimTopics": [
+          "Turnout benefits for welfare (exercise, mental health, socialization) and links to reduced colic risk",
+          "Stereotypic behaviours associated with excessive stabling (weaving, crib-biting, box-walking, wind-sucking)",
+          "Fencing safety hierarchy and use of electric fencing",
+          "Identification and relative risk of poisonous plants (ragwort prevalence in UK, yew, oak/acorns, deadly nightshade, foxglove, buttercups, sycamore seeds and atypical myopathy)",
+          "Ground conditions and health impacts (mud fever/dermatophilosis risk; hard ground jarring/bruising)",
+          "Shelter provision standards/requirements",
+          "Water availability as a constant requirement",
+          "Manure removal frequency and parasite burden reduction",
+          "Stocking density guideline (one acre per horse for year-round turnout)",
+          "Equine thermoregulation in cold conditions (‘well below freezing’)",
+          "Rug categories and gram-fill ranges (light/medium/heavy)",
+          "Rug fitting practices (clearances, cross-surcingles, leg-strap configuration)",
+          "Recommended rug inspection frequency (‘at least twice daily’)",
+          "Risk statement about torn turnout rugs being worse than no rug",
+          "Fly rug UV protection claims",
+          "Cooler/fleece rugs’ moisture-wicking purpose",
+          "Safe introduction of horses to groups; leading practices"
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "‘Collect droppings at least twice a week’ (interval)",
+          "‘Minimum of one acre per horse for year-round turnout’ (stocking density)",
+          "Rug fills: lightweight 0 g; medium 150–250 g; heavyweight 300–400 g (ranges)",
+          "‘Check rugs at least twice daily’ (inspection frequency)",
+          "‘Ragwort is the most common equine poison in the UK’ (superlative prevalence)",
+          "‘Sycamore seeds cause atypical myopathy’ (etiology statement)",
+          "‘Horses can comfortably withstand well below freezing with shelter’ (temperature tolerance)",
+          "‘Post-and-rail is the safest fencing’ (safety ranking)",
+          "‘Electric fencing as a secondary barrier’ (usage rule)",
+          "‘A torn turnout rug will let in rain and make the horse colder and wetter than wearing no rug’ (outcome claim)",
+          "‘Buttercups (in large quantities)’ hazardous qualifier without threshold",
+          "‘Mud fever (a bacterial skin infection)’ causation framing"
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "ADEQUATE",
+        "reviewRationale": "Clear structure, objectives, and practical guidance with a solid welfare emphasis. However, several absolute statements, region-specific assertions, and specific intervals/figures require authoritative sourcing or softening. Editorial metadata gaps remain (no sequence/prerequisites; no explicit progression mapping). Safety note is generally adequate and includes professional escalation, but adding red flags for heat stress/hypothermia under rugs would strengthen it. Address the noted issues to reach editorial PASS without asserting unsupported facts."
+      }
+    },
+    {
+      "slug": "hoof-care-awareness",
+      "title": "Hoof Care Awareness",
+      "pathway": "Horse Care Foundations",
+      "level": "developing",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "ISSUE",
+          "practicalApplication": "ISSUE",
+          "safetyNote": "ISSUE",
+          "commonMistakes": "PASS",
+          "keyPoints": "ISSUE",
+          "knowledgeQuestions": "PASS",
+          "answersAndExplanations": "PASS",
+          "tutorPrompts": "PASS",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "No explicit sequence/prerequisites provided for where this lesson sits in the pathway or what prior skills are expected (e.g., safe tying/handling, basic restraint).",
+          "Safety note omits basic PPE and environment controls: sturdy closed‑toe footwear, gloves optional, well‑lit non‑slippery area, competent handler at the head if needed.",
+          "Picking‑out guidance should add: avoid digging into or cutting the frog; use the brush end on the frog; compare heat/pulse with the opposite foot; do not hold hind feet between your knees or sit on your heels.",
+          "Clinical/treatment statements need professional‑supervision language: abscess management (“poulticing”) and remedial/therapeutic shoeing (e.g., heart‑bar for laminitis) should be “as advised by a veterinarian/farrier.”",
+          "Lost shoe guidance should add immediate hoof protection (e.g., hoof boot/taping) and caution about protruding nails; confine the horse until the farrier attends; check the hoof and limb for injury; avoid riding altogether until shod/cleared by farrier.",
+          "Laminitis signs are presented correctly at a high level, but recommend stating to restrict movement on deep bedding and provide supportive footing while awaiting the vet; avoid transporting unless directed by a vet.",
+          "Farrier visit interval (every 4–8 weeks) and hoof growth rate (6–10 mm/month) are presented as fixed; suggest qualifying as typical ranges varying by horse, season, workload, and terrain.",
+          "“Picking out feet at least twice daily—before and after exercise” is too prescriptive; better: check/clean daily and before/after riding or stabling; increase frequency in wet/muddy conditions.",
+          "Terminology: prefer “navicular syndrome” or “podotrochlosis” rather than “navicular disease,” and avoid implying a single‑cause condition.",
+          "Nutrition/condition link to cracked hooves should be qualified and not imply that hoof oils/conditioners resolve structural cracks; emphasize balanced diet and farrier/vet assessment.",
+          "Key Points mirror the prescriptive intervals (twice daily; 4–8 weeks) without qualifiers—revise for nuance.",
+          "Competency mapping lists only two broad items; add hoof‑specific competency tags if available and indicate next progression (e.g., “Hoof Care: Handling the Farrier Visit,” “Lameness First Response”)."
+        ],
+        "materialClaimTopics": [
+          "Hoof anatomy and functions (hoof wall, sole, frog, bars, white line, heel bulbs; sensitive laminae; pedal bone; navicular bone; digital cushion).",
+          "Hoof wall growth rate per month.",
+          "Frog function in shock absorption and circulation (“frog pump”).",
+          "Picking‑out frequency and technique (heel‑to‑toe; positions at shoulder/hip; checking sulci/cleft; signs to look for).",
+          "Clinical signs of laminitis and emergency management (heat, bounding digital pulse, reluctance to walk, posture).",
+          "Farrier visit/shoeing cycle frequency and procedures (remove/reset shoes, trim, rebalance).",
+          "Types/uses of shoes (steel, aluminum plates, heart‑bar, remedial/therapeutic).",
+          "Thrush cause, appearance, and prevention.",
+          "Hoof abscess presentation and treatment via poulticing.",
+          "Cracked hoof causes and management including hoof oil/conditioner claims.",
+          "Lost shoe management and riding advisories.",
+          "Heat in hoof as indicator of infection/laminitis; bruising appearance.",
+          "Terminology around navicular disease/syndrome.",
+          "White line disease/seedy toe vulnerability at the junction."
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "Hoof wall growth rate: approximately 6–10 mm per month.",
+          "Picking out feet at least twice daily (before and after exercise).",
+          "Farrier visit interval: every 4 to 8 weeks for shod and unshod horses.",
+          "Laminitis signs listed as diagnostic indicators (heat, bounding digital pulse, rocking back).",
+          "Abscess described as often non‑weight‑bearing and treatment involves poulticing.",
+          "Advisory: do not ride a horse on hard ground on an unshod foot after a lost shoe.",
+          "Heart‑bar shoes for laminitis support (therapeutic indication)."
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "REQUIRES_CORRECTION",
+        "reviewRationale": "Strong foundational structure and clear, accessible guidance. However, several safety‑sensitive and treatment‑related claims are presented without qualifiers or professional escalation, and some instructions are too prescriptive. Add PPE/environment guidance, refine clinical/treatment language to require vet/farrier oversight, temper interval/rate claims as typical ranges, and expand lost‑shoe and laminitis immediate‑care steps. Include prerequisites/sequence context and a clearer competency progression. Editorial fixes will make the lesson safe, nuanced, and pathway‑aligned."
+      }
+    },
+    {
+      "slug": "seasonal-horse-care",
+      "title": "Seasonal Horse Care",
+      "pathway": "Horse Care Foundations",
+      "level": "intermediate",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "ISSUE",
+          "practicalApplication": "PASS",
+          "safetyNote": "ISSUE",
+          "commonMistakes": "PASS",
+          "keyPoints": "PASS",
+          "knowledgeQuestions": "PASS",
+          "answersAndExplanations": "PASS",
+          "tutorPrompts": "PASS",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "Missing sequence/prerequisites. Specify where this lesson sits in the pathway and any required prior knowledge (e.g., basic stable management, handling safety).",
+          "Incorrect disease characterization: “Flies ... can transmit diseases such as sweet itch (caused by Culicoides midge bites).” Sweet itch (insect bite hypersensitivity) is an allergic reaction to Culicoides saliva, not an infectious/transmissible disease between horses. Rephrase to avoid implying transmission.",
+          "Heat management hosing advice: “particularly the large blood vessels on the inside of the hind legs” poses a handling risk (kick zone). Add safe handler positioning guidance or recommend hosing large muscle groups from a safe angle.",
+          "“Start at the feet and work upwards to avoid shocking the system” is presented as a physiological rule; provide evidence or revise to standard, evidence-based rapid cooling guidance (continuous cold hosing over large muscle groups, safe positioning).",
+          "Mud fever causation is oversimplified: stated as caused by prolonged wet/mud. Clarify that pastern dermatitis/mud fever is multifactorial (moisture predisposes; often bacterial such as Dermatophilus congolensis; secondary factors common). Avoid definitive single-cause phrasing.",
+          "Summer water intake figure (40–50 litres/day) is specific and needs sourcing or softening (typical ranges, dependence on size/diet/work/temperature).",
+          "Peak fly activity timings (dawn/dusk for midges; midday for horse flies) are region- and species-dependent. Mark as general guidance and/or provide evidence; avoid over-specificity without source.",
+          "Manure/muck heap placement to reduce flies: claim is plausible but needs either evidence or more general wording (manure management to reduce breeding sites).",
+          "Feeding adjustments: include a clear safety boundary to introduce any diet changes gradually and to seek professional nutrition/veterinary advice for laminitis/EMS/PPID or weight-loss concerns.",
+          "Studs note in autumn: add a safety caveat that studs are for ridden work on appropriate surfaces under professional guidance; not for turnout; risk of injury if misused.",
+          "Knowledge check explanation references fructans (sugars) as mechanism for spring grass laminitis risk; keep but note it as a material claim requiring sourcing.",
+          "Competency mapping/progression is minimal. Expand how linked competencies are assessed here and what progression/next lesson follows."
+        ],
+        "materialClaimTopics": [
+          "Equine hydration needs in hot weather",
+          "Heat mitigation and cooling methods after exercise",
+          "Fly biology/behaviour and peak activity times",
+          "Sweet itch (insect bite hypersensitivity) aetiology",
+          "Mud fever/pastern dermatitis aetiology and prevention",
+          "Laminitis risk with spring grass; relevance of EMS/PPID and overweight status",
+          "Feeding adjustments in winter; hay/haylage and concentrates; nutrition safety",
+          "Rugging decisions relative to weather, clip, condition (overheating risks)",
+          "Use of electrical equipment (RCD) and wet conditions when clipping (PPE/electrical safety)",
+          "Sedation as a veterinary act/escalation boundary",
+          "Manure management to reduce fly breeding",
+          "Farriery changes (studs) and associated safety",
+          "Vaccination and worming programme timing (professional guidance)",
+          "Hosing focus on inner hind-leg vessels (handling risk)"
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "Horses may drink 40–50 litres per day in hot weather.",
+          "Peak fly times: dawn/dusk for midges; midday for horse flies.",
+          "Sweet itch described as a disease that can be transmitted by flies (requires correction and sourcing if retained in any form).",
+          "Mud fever is caused by prolonged exposure to wet, muddy conditions (causation vs. predisposition).",
+          "Hosing after exercise focusing on large blood vessels on inside hind legs to aid cooling.",
+          "Start hosing at the feet and work upwards to avoid shocking the system.",
+          "Never clip a wet horse (electrical/equipment safety rationale).",
+          "Always use a residual current device (RCD) with electric clippers (PPE/electrical safety).",
+          "Feeding adjustments in winter (supplementary hay/haylage; hard feed adjusted to workload/condition) and need for gradual changes/professional advice.",
+          "Bringing horses in during peak fly times (time-specific operational rule).",
+          "Studs for slippery conditions (appropriate use limitations).",
+          "Spring grass high sugar/fructans as mechanism for laminitis risk."
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "REQUIRES_CORRECTION",
+        "reviewRationale": "Editorially solid structure with clear objectives, seasonal organization, and practical tasks. However, several safety-sensitive and clinical statements require correction or authoritative sourcing. The sweet itch transmission claim is incorrect, cooling/hosing guidance may encourage unsafe positioning and includes a physiologic assertion that needs evidence, and mud fever causation is overstated. Add prerequisites and strengthen competency mapping/progression. Maintain conservative safety boundaries (diet changes, studs, fly-time generalization) and retain the escalation-to-vet messaging for sedation/health decisions."
+      }
+    },
+    {
+      "slug": "advanced-grooming-and-coat-management",
+      "title": "Advanced Grooming & Coat Management",
+      "pathway": "Horse Care Foundations",
+      "level": "advanced",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "PASS",
+          "practicalApplication": "ISSUE",
+          "safetyNote": "ISSUE",
+          "commonMistakes": "PASS",
+          "keyPoints": "PASS",
+          "knowledgeQuestions": "PASS",
+          "answersAndExplanations": "PASS",
+          "tutorPrompts": "ISSUE",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "Sequence/prerequisites are missing. Add prerequisites such as: basic grooming and handling, safe tying (quick-release/safety tie), introductory clipper safety, and recognition of common dermatologic red flags that require veterinary referral.",
+          "Safety note: Add explicit guidance to tie with a quick-release knot or safety tie, never to bits; have an experienced handler present when clipping/trimming; avoid clipping in wet conditions; keep cables clear of limbs; consider hearing protection; and stop if the horse is distressed. Clarify RCD/GFCI terminology for regional applicability.",
+          "Safety note: If recommending a tail bandage for travelling, add cautions on correct application (not too tight/loose, check circulation, remove promptly after travel) or suggest a commercial tail guard.",
+          "Skin condition guidance: Keep advice clearly within observation/first-aid boundaries. For rainscald, avoid instructing routine scab removal without veterinary guidance; note that painful or extensive lesions warrant veterinary assessment and potential systemic therapy. Reinforce glove use and hand/equipment hygiene for any suspected infectious condition.",
+          "Rules/regulations: Ear-trimming practices vary and some showing bodies prohibit trimming inside the ear. Keep language neutral and direct learners to current discipline and breed-society rules. Maintain the welfare emphasis already given for whiskers.",
+          "Practical application: The target of seven mane plaits in 30 minutes is arbitrary and may not suit most disciplines (e.g., dressage typically uses more, smaller plaits). Replace with a discipline-appropriate, adjustable target (for example, practice producing even, secure plaits; record time and quality, aiming for consistent results).",
+          "Quartering definition/time: Present the 10–15 minute duration as an example rather than a prescription, since horse/coat conditions vary.",
+          "Nutrition section: Retain the referral boundary (vet/equine nutritionist) and add a note on balancing copper:zinc and avoiding excess supplementation. Avoid implying clinical efficacy without evidence.",
+          "Tutor prompt: Rephrase treatment-oriented prompt to emphasize assessment and referral thresholds (e.g., “What immediate management steps can you take for suspected rain scald, and when should you involve a vet?”).",
+          "Competency mapping/progression: Expand mapping beyond two tags. Indicate the specific competencies demonstrated (e.g., safe use of clippers, turnout to discipline standards, biosecurity basics) and how this lesson progresses from a prior ‘Core Grooming’ lesson and into discipline-specific turnout modules.",
+          "Minor clarity: In competition prep, caution against getting oil/shine where tack sits; add reminder to verify shoeing well in advance of competition, not just the day before."
+        ],
+        "materialClaimTopics": [
+          "Competition turnout standards and timelines for preparation",
+          "Discipline rules on trimming (ears, whiskers) including FEI whisker ban and breed/discipline variations",
+          "Recommended bridle path length for different disciplines",
+          "Definition/scope and typical duration of ‘quartering’",
+          "Nutritional influences on coat health (omega-3/6, biotin, zinc, copper, protein) and time-to-effect claims",
+          "Etiology, presentation, and first-aid/management of rain scald, sweet itch, ringworm, and mud fever",
+          "Biosecurity requirements for ringworm (isolation and environmental/equipment disinfection)",
+          "Electrical safety for clipping (use of RCD/GFCI and maintenance)",
+          "Travel equipment guidance (tail bandage/guard usage)",
+          "Plaiting conventions (odd number plus forelock; thread vs bands at higher levels)",
+          "Tail plait length recommendation (two-thirds of the dock)",
+          "Sweet itch management advice (avoiding turnout at dawn/dusk due to midge activity)"
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "Competition prep milestones: three days before, day before, on the day",
+          "Bridle path length: approximately 2–5 cm (1–2 inches)",
+          "FEI rule banning trimming/removal of vibrissae (whiskers) and national federation equivalents",
+          "Quartering duration: 10–15 minutes",
+          "Biotin time-to-effect: 6–9 months",
+          "Tail plait extent: approximately two-thirds down the dock",
+          "Practice target: seven plaits within 30 minutes",
+          "Convention: odd number of mane plaits plus forelock",
+          "Management advice: avoid turnout at dawn and dusk for sweet itch",
+          "Electrical safety prescription: use of a residual current device (RCD/GFCI) with clippers"
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "REQUIRES_CORRECTION",
+        "reviewRationale": "Well-structured, readable lesson with clear objectives and useful practical guidance. However, it lacks an explicit sequence/prerequisites, includes several discipline-rule and clinical-management assertions that require authoritative sourcing, and needs stronger safety boundaries around tying, clipping, infectious skin disease biosecurity, and travel tail bandage use. A few prescriptive figures (e.g., plait counts/timings, quartering duration, bridle path length) should be reframed as examples or evidenced. With the noted safety and editorial adjustments, this can reach PASS quality."
+      }
+    },
+    {
+      "slug": "mounting-dismounting",
+      "title": "Mounting & Dismounting",
+      "pathway": "Rider Foundations",
+      "level": "beginner",
+      "review": {
+        "overallEditorialStatus": "REQUIRES_CORRECTION",
+        "checkedComponents": {
+          "title": "PASS",
+          "pathway": "PASS",
+          "level": "PASS",
+          "sequenceAndPrerequisites": "ISSUE",
+          "objectives": "PASS",
+          "teachingContent": "ISSUE",
+          "practicalApplication": "PASS",
+          "safetyNote": "ISSUE",
+          "commonMistakes": "PASS",
+          "keyPoints": "PASS",
+          "knowledgeQuestions": "PASS",
+          "answersAndExplanations": "PASS",
+          "tutorPrompts": "PASS",
+          "competencyMappingAndProgression": "ISSUE"
+        },
+        "editorialIssues": [
+          "No explicit sequence/prerequisites. Add prerequisites such as: basic handling/leading competency, ability to tack up under supervision, PPE (certified riding helmet and heeled footwear) in place, and a safe enclosed area or a competent handler present.",
+          "Safety note omits essential PPE guidance. Specify an approved riding helmet and appropriate heeled boots as mandatory; gloves optional but advisable.",
+          "Emergency dismount step says “drop the reins” without context. This can create a loose-horse hazard. Add conditions: only in a safe, enclosed area and under qualified supervision; prioritise clearing yourself from the horse; retain a single rein only if safe and trained to do so to avoid entanglement.",
+          "Term “waist of the saddle (the far side of the seat)” is nonstandard/unclear. Replace with standard terminology: place right hand on the back of the saddle/cantle (without yanking) or on the pommel as per stable policy.",
+          "Mounting guidance would benefit from advising to hold a small pinch of mane with the left hand to reduce pressure on the horse’s mouth and minimise saddle torque, especially when mounting from the ground.",
+          "Clarify how to safely recheck/retighten the girth after mounting or after a short walk (e.g., halt in a safe area, adjust in small increments on the near side if trained; otherwise dismount or ask a helper).",
+          "Environmental check could add “level, non‑slip footing; away from gates/traffic; adequate space on both sides.”",
+          "Knowledge and key points rely on specific prescriptions (e.g., two fingers under the girth) that need sourcing or should be softened to “rule of thumb.”",
+          "Progression not stated. Add where this lesson leads (e.g., next: basic aids, halt–walk transitions; or safe arena etiquette) and how it maps to linked competencies levels."
+        ],
+        "materialClaimTopics": [
+          "Effect of mounting method on horse’s back health (risk of discomfort/back damage).",
+          "Effect of mounting from block vs ground on saddle tree torque/twisting and horse strain.",
+          "Recommended girth tightness before mounting (two-flat-fingers guideline).",
+          "Timing/practice of rechecking the girth after initial movement (after a few minutes of walking).",
+          "Rule-of-thumb method for estimating stirrup length (fingertips-to-armpit).",
+          "Relative safety of different dismount techniques (front-over dismount discouraged; feet out before sliding down).",
+          "Emergency dismount technique and whether to retain or drop reins; rolling to absorb impact.",
+          "Risk of being dragged if a foot remains in a stirrup.",
+          "Definition/use of the near (left) side convention during mounting."
+        ],
+        "specificFiguresOrRulesNeedingEvidence": [
+          "“You should be able to slide two fingers flat between the girth and the horse’s body.”",
+          "“Recheck the girth after walking for a few minutes.”",
+          "“Stirrup iron should reach approximately to your armpit.”",
+          "“Using a mounting block … reduces the pull on the saddle tree, preventing it from twisting over time.”",
+          "“Never dismount by swinging your leg over the front of the saddle …” (presented as a safety rule).",
+          "Emergency dismount instruction to “drop the reins” and to “roll” on landing."
+        ],
+        "factEvidenceRequirement": "AUTHORITATIVE_EVIDENCE_REQUIRED",
+        "safetyBoundaryAssessment": "REQUIRES_CORRECTION",
+        "reviewRationale": "Clear, well-structured beginner lesson with accurate sequencing of actions; however, it lacks prerequisite/supervision/PPE framing and contains a few technically ambiguous or potentially unsafe simplifications (notably the unconditional “drop the reins” in an emergency). Several prescriptive claims (two-finger girth, armpit stirrup length, block reducing saddle-tree torque) are safety-relevant and require authoritative sourcing or should be reframed as widely used guidelines. Editorial refinements (standard terminology, environment detail, how to safely recheck/tighten girth, and progression mapping) are needed for a PASS at EquiProfile editorial standard."
+      }
+    },
+    {
+      "slug": "rider-position-basics",
+      "title": "Rider Position Basics",
+      "pathway": "Rider Foundations",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8377875000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "arena-etiquette",
+      "title": "Arena Etiquette",
+      "pathway": "Rider Foundations",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7562249999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "walk-trot-transitions",
+      "title": "Walk to Trot Transitions",
+      "pathway": "Rider Foundations",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8046}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "basic-school-figures",
+      "title": "Basic School Figures",
+      "pathway": "Rider Foundations",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7704}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "warmup-cooldown",
+      "title": "Warm-Up & Cool-Down Routines",
+      "pathway": "Rider Foundations",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8261999999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "lesson-preparation",
+      "title": "Lesson Preparation",
+      "pathway": "Rider Foundations",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.76905}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "advanced-rider-position-analysis",
+      "title": "Advanced Rider Position Analysis",
+      "pathway": "Rider Foundations",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8902125}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "teaching-the-foundations",
+      "title": "Teaching the Foundations",
+      "pathway": "Rider Foundations",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.9474749999999998}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "safe-approach-handling",
+      "title": "Safe Approach & Handling",
+      "pathway": "Stable & Yard Safety",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.78165}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "leading-safely",
+      "title": "Leading Safely",
+      "pathway": "Stable & Yard Safety",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7369874999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "tying-up-correctly",
+      "title": "Tying Up Correctly",
+      "pathway": "Stable & Yard Safety",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7917750000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "yard-hazard-awareness",
+      "title": "Yard Hazard Awareness",
+      "pathway": "Stable & Yard Safety",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7385624999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "risk-incident-awareness",
+      "title": "Risk & Incident Awareness",
+      "pathway": "Stable & Yard Safety",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7726500000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "advanced-safety-awareness",
+      "title": "Advanced Safety Awareness",
+      "pathway": "Stable & Yard Safety",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8263125000000002}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "understanding-horse-behaviour",
+      "title": "Understanding Horse Behaviour",
+      "pathway": "Horse Behaviour & Welfare",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7702875}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "signs-of-good-health",
+      "title": "Signs of Good Health",
+      "pathway": "Horse Behaviour & Welfare",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.852975}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "behaviour-around-other-horses",
+      "title": "Behaviour Around Other Horses",
+      "pathway": "Horse Behaviour & Welfare",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7651124999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "recognising-pain-discomfort",
+      "title": "Recognising Pain & Discomfort",
+      "pathway": "Horse Behaviour & Welfare",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.79965}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "horse-welfare-under-workload",
+      "title": "Horse Welfare Under Workload",
+      "pathway": "Horse Behaviour & Welfare",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8110125}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "lameness-awareness",
+      "title": "Lameness Awareness",
+      "pathway": "Horse Behaviour & Welfare",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8747999999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "welfare-based-decision-making",
+      "title": "Welfare-Based Decision Making",
+      "pathway": "Horse Behaviour & Welfare",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.82755}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "basic-tack-identification",
+      "title": "Basic Tack Identification",
+      "pathway": "Tack & Equipment",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8609625000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "putting-on-a-headcollar",
+      "title": "Putting On a Headcollar",
+      "pathway": "Tack & Equipment",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8724375}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "tack-care-cleaning",
+      "title": "Tack Care & Cleaning",
+      "pathway": "Tack & Equipment",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8379}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "fitting-a-saddle",
+      "title": "Fitting a Saddle",
+      "pathway": "Tack & Equipment",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8035875}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "bit-selection-basics",
+      "title": "Bit Selection Basics",
+      "pathway": "Tack & Equipment",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8912250000000002}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "advanced-equipment-awareness",
+      "title": "Advanced Equipment Awareness",
+      "pathway": "Tack & Equipment",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.849375}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "walk-trot-transitions-developing",
+      "title": "Walk to Trot Transitions",
+      "pathway": "Developing Rider Skills",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6671250000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "trot-rhythm-and-balance",
+      "title": "Trot Rhythm and Balance",
+      "pathway": "Developing Rider Skills",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7651124999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "steering-and-accuracy",
+      "title": "Steering and Accuracy",
+      "pathway": "Developing Rider Skills",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7090874999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "circles-and-school-figures",
+      "title": "Circles and School Figures",
+      "pathway": "Developing Rider Skills",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7931250000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "rider-balance-independent-seat",
+      "title": "Rider Balance and Independent Seat",
+      "pathway": "Developing Rider Skills",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8302499999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "warmup-cooldown-basics",
+      "title": "Warm-Up and Cool-Down Basics",
+      "pathway": "Developing Rider Skills",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7844625}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "preparing-for-a-lesson",
+      "title": "Preparing for a Lesson",
+      "pathway": "Developing Rider Skills",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7995375}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "reflecting-on-performance",
+      "title": "Reflecting on Performance and Improvement",
+      "pathway": "Developing Rider Skills",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7714125000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "advanced-flatwork-and-collection",
+      "title": "Advanced Flatwork & Collection",
+      "pathway": "Developing Rider Skills",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.788175}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "riding-assessment-and-self-coaching",
+      "title": "Riding Assessment & Self-Coaching",
+      "pathway": "Developing Rider Skills",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.843075}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "introduction-to-polework",
+      "title": "Introduction to Polework",
+      "pathway": "Polework & Jump Foundations",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8593875}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "trot-pole-distances-and-grids",
+      "title": "Trot Pole Distances & Simple Grids",
+      "pathway": "Polework & Jump Foundations",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7626375000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "introduction-to-jumping-position",
+      "title": "The Jumping Position",
+      "pathway": "Polework & Jump Foundations",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8647874999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "first-crossrail-fences",
+      "title": "Riding Your First Cross-Rail Fences",
+      "pathway": "Polework & Jump Foundations",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8671500000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "daily-health-check-and-vital-signs",
+      "title": "Recognising Signs of Good Health",
+      "pathway": "Horse Health & First Response",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8583749999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "common-equine-ailments",
+      "title": "Common Equine Ailments",
+      "pathway": "Horse Health & First Response",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.883575}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "equine-first-aid-basics",
+      "title": "Equine First Aid Basics",
+      "pathway": "Horse Health & First Response",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8596125}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "vaccination-and-worming-schedules",
+      "title": "Vaccination & Worming Programmes",
+      "pathway": "Horse Health & First Response",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8417250000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "mucking-out-and-bedding",
+      "title": "Mucking Out & Bedding Management",
+      "pathway": "Stable Management",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8569125}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "pasture-management-basics",
+      "title": "Pasture Management Basics",
+      "pathway": "Stable Management",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7905374999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "stable-routines-and-record-keeping",
+      "title": "Stable Routines & Record Keeping",
+      "pathway": "Stable Management",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8261999999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "yard-maintenance-and-facilities",
+      "title": "Yard Maintenance & Facility Care",
+      "pathway": "Stable Management",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7458750000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "understanding-competition-types",
+      "title": "Understanding Competition Types",
+      "pathway": "Competitions & Preparation",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7422750000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "preparing-for-competition-day",
+      "title": "Preparing for Competition Day",
+      "pathway": "Competitions & Preparation",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.78165}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "dressage-test-riding",
+      "title": "Riding a Dressage Test",
+      "pathway": "Competitions & Preparation",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7857000000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "competition-etiquette-and-sportsmanship",
+      "title": "Competition Etiquette & Sportsmanship",
+      "pathway": "Competitions & Preparation",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8403749999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "why-rider-fitness-matters",
+      "title": "Why Rider Fitness Matters",
+      "pathway": "Rider Fitness & Mindset",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.883575}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "building-riding-confidence",
+      "title": "Building Riding Confidence",
+      "pathway": "Rider Fitness & Mindset",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7907625}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "core-exercises-for-riders",
+      "title": "Core Exercises for Riders",
+      "pathway": "Rider Fitness & Mindset",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7932375}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "mental-skills-for-performance",
+      "title": "Mental Skills for Riding Performance",
+      "pathway": "Rider Fitness & Mindset",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8646750000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "introduction-to-coaching-concepts",
+      "title": "Introduction to Coaching Concepts",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7320375}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "understanding-your-learners",
+      "title": "Understanding Your Learners",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7461}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "structuring-a-beginner-lesson",
+      "title": "Structuring a Beginner Lesson",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.823725}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "effective-demonstrations-and-feedback",
+      "title": "Effective Demonstrations & Feedback",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8415000000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "foundations-of-equestrian-coaching",
+      "title": "Foundations of Equestrian Coaching",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.85185}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "planning-effective-lessons",
+      "title": "Planning Effective Lessons",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8454374999999998}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "communication-and-feedback-skills",
+      "title": "Communication & Feedback Skills",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8440875000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "managing-groups-and-progression",
+      "title": "Managing Groups & Rider Progression",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.8086500000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "safe-approach-and-catching",
+      "title": "Safe Approach & Catching",
+      "pathway": "Handling & Groundwork",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6771375000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "leading-and-turning",
+      "title": "Leading & Turning Correctly",
+      "pathway": "Handling & Groundwork",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7154999999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "tying-up-safely",
+      "title": "Tying Up Safely",
+      "pathway": "Handling & Groundwork",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.67455}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "lungeing-basics",
+      "title": "Lungeing Basics",
+      "pathway": "Handling & Groundwork",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7089749999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "long-reining-introduction",
+      "title": "Long-Reining Introduction",
+      "pathway": "Handling & Groundwork",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7331625}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "advanced-groundwork-exercises",
+      "title": "Advanced Groundwork Exercises",
+      "pathway": "Handling & Groundwork",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.65295}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "understanding-equine-digestion",
+      "title": "Understanding Equine Digestion",
+      "pathway": "Nutrition & Feeding",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6936749999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "types-of-feed",
+      "title": "Types of Feed",
+      "pathway": "Nutrition & Feeding",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7027874999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "feeding-routines-and-rules",
+      "title": "Feeding Routines & Rules",
+      "pathway": "Nutrition & Feeding",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.661725}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "balancing-a-diet",
+      "title": "Balancing a Diet",
+      "pathway": "Nutrition & Feeding",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7306875}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "feeding-for-workload",
+      "title": "Feeding for Workload & Condition",
+      "pathway": "Nutrition & Feeding",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7806375000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "supplements-and-special-diets",
+      "title": "Supplements & Special Diets",
+      "pathway": "Nutrition & Feeding",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7140375}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "five-freedoms-of-animal-welfare",
+      "title": "Five Freedoms of Animal Welfare",
+      "pathway": "Equine Welfare & Ethics",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6809624999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "responsible-horse-ownership",
+      "title": "Responsible Horse Ownership",
+      "pathway": "Equine Welfare & Ethics",
+      "level": "beginner",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.696375}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "recognising-neglect-and-abuse",
+      "title": "Recognising Neglect & Abuse",
+      "pathway": "Equine Welfare & Ethics",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7064999999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "welfare-legislation-uk",
+      "title": "Welfare Legislation (UK)",
+      "pathway": "Equine Welfare & Ethics",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.673425}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "ethical-training-methods",
+      "title": "Ethical Training Methods",
+      "pathway": "Equine Welfare & Ethics",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.651825}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "end-of-life-decisions",
+      "title": "End of Life Decisions & Retirement",
+      "pathway": "Equine Welfare & Ethics",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7357500000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "grid-work-and-related-distances",
+      "title": "Grid Work & Related Distances",
+      "pathway": "Polework & Jump Foundations",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6823125000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "course-awareness-and-planning",
+      "title": "Course Awareness & Planning",
+      "pathway": "Polework & Jump Foundations",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6656625}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "when-to-call-the-vet",
+      "title": "When to Call the Vet",
+      "pathway": "Horse Health & First Response",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7536375}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "emergency-first-aid-procedures",
+      "title": "Emergency First Aid Procedures",
+      "pathway": "Horse Health & First Response",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7611749999999999}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "daily-stable-routines",
+      "title": "Daily Stable Routines",
+      "pathway": "Stable Management",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6786000000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "health-safety-in-the-yard",
+      "title": "Health & Safety in the Yard",
+      "pathway": "Stable Management",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6760125}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "cross-country-fundamentals",
+      "title": "Cross-Country Fundamentals",
+      "pathway": "Competitions & Preparation",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6849000000000001}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "competition-day-management",
+      "title": "Competition Day Management",
+      "pathway": "Competitions & Preparation",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.650475}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "stretching-for-riders",
+      "title": "Stretching for Riders",
+      "pathway": "Rider Fitness & Mindset",
+      "level": "developing",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7576874999999998}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "overcoming-fear-and-anxiety",
+      "title": "Overcoming Fear & Anxiety in Riding",
+      "pathway": "Rider Fitness & Mindset",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6975}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "safeguarding-and-duty-of-care",
+      "title": "Safeguarding & Duty of Care",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "intermediate",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.7410375}, \"error\": \"Insufficient credits\"}"
+    },
+    {
+      "slug": "inclusive-coaching-adaptive-riding",
+      "title": "Inclusive Coaching & Adaptive Riding",
+      "pathway": "Coaching & Teaching Skills",
+      "level": "advanced",
+      "reviewError": "RuntimeError: provider response has no choices: {\"details\": {\"available_credits\": -11, \"message\": \"You don't have enough credits to make this request. Please check your account balance.\", \"required_credits\": 0.6122249999999999}, \"error\": \"Insufficient credits\"}"
+    }
+  ]
+}

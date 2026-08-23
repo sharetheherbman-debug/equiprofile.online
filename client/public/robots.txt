@@ -5,4 +5,8 @@ Disallow: /api/
 Disallow: /dashboard/
 Disallow: /admin/
 
+# Management sitemap
 Sitemap: https://equiprofile.online/sitemap.xml
+
+# Academy sitemap
+Sitemap: https://academy.equiprofile.online/academy-sitemap.xml

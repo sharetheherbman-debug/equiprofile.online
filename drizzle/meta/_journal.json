@@ -92,6 +92,132 @@
       "when": 1743350400000,
       "tag": "0012_email_campaigns_analytics",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1765360049000,
+      "tag": "0013_email_verification",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "5",
+      "when": 1765360050000,
+      "tag": "0014_marketing_engine",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "5",
+      "when": 1765360051000,
+      "tag": "0015_student_system",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "5",
+      "when": 1765360052000,
+      "tag": "0016_campaign_enhancements",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1765360053000,
+      "tag": "0017_lesson_engine",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1765360054000,
+      "tag": "0018_competency_system",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1765360055000,
+      "tag": "0019_campaign_replies",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1765360056000,
+      "tag": "0020_duplicate_person_detection",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "5",
+      "when": 1765360057000,
+      "tag": "0021_academy_curriculum_integrity",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "5",
+      "when": 1765360058000,
+      "tag": "0022_commerce_foundation",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1765360059000,
+      "tag": "0023_commerce_lifecycle_integrity",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1765360060000,
+      "tag": "0024_commerce_payment_reconciliation",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1765360061000,
+      "tag": "0025_commerce_supplier_identifiers",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1765360062000,
+      "tag": "0026_academy_organization_foundation",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "5",
+      "when": 1765360063000,
+      "tag": "0027_commerce_supplier_onboarding",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "5",
+      "when": 1765360064000,
+      "tag": "0028_academy_invitation_delivery",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "5",
+      "when": 1765360065000,
+      "tag": "0029_commerce_return_policy_snapshots",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "5",
+      "when": 1765360066000,
+      "tag": "0030_academy_billing_test_mode",
+      "breakpoints": true
     }
   ]
 }

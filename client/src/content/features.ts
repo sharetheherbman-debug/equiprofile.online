@@ -93,7 +93,8 @@ export const detailedFeatures = [
   },
   {
     title: "GPS Ride Tracking & Timeline",
-    description: "Real-time GPS tracking and a complete activity timeline for every horse",
+    description:
+      "Real-time GPS tracking and a complete activity timeline for every horse",
     image: "/images/gallery/2.jpg",
     imagePosition: "left" as const,
     features: [
@@ -163,7 +164,8 @@ export const detailedFeatures = [
   },
   {
     title: "Equestrian Learning Portal",
-    description: "A complete structured learning platform for students and schools",
+    description:
+      "A complete structured learning platform for students and schools",
     image: "/images/gallery/19.jpg",
     imagePosition: "right" as const,
     features: [
@@ -177,13 +179,14 @@ export const detailedFeatures = [
   },
   {
     title: "Schools & Teacher Tools",
-    description: "Built for riding schools, colleges, and equestrian training centres",
+    description:
+      "Built for riding schools, colleges, and equestrian training centres",
     image: "/images/hero/image5.jpg",
     imagePosition: "left" as const,
     features: [
       "Teacher dashboard with student progression and weak area visibility",
       "Group management, task assignment, and feedback tools",
-      "Seat-based school pricing from £49/month for up to 10 students",
+      "Seat-based Academy pricing from £49/month for up to 10 students",
       "Automated progress reports for parents, inspectors, and accreditation bodies",
     ],
     icon: Brain,

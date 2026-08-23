@@ -7,13 +7,13 @@
 # DUAL-frontend architecture:
 #
 #   dist/public/management/  ←  equiprofile.online
-#   dist/public/school/      ←  school.equiprofile.online
+#   dist/public/academy/      ←  school.equiprofile.online
 #
 # The canonical build command is:
 #
 #   npm run build
 #
-# which runs: build:management + build:school + build:server + build-fingerprint
+# which runs: build:management + build:academy + build:server + build-fingerprint
 # as defined in package.json.
 #
 # Running this script will EXIT with a non-zero code to prevent
@@ -28,6 +28,6 @@ echo ""
 echo "   The canonical build command is:"
 echo "     npm run build"
 echo ""
-echo "   That builds both frontends (management + school) plus the server."
+echo "   That builds all three frontends (management + academy + shop) plus the server."
 echo ""
 exit 1

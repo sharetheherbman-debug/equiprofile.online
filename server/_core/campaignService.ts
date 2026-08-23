@@ -61,7 +61,9 @@ const COUNTRY_ALIASES: Record<string, string> = {
   "united arab emirates": "UAE",
 };
 
-export function normalizeCountry(raw: string | null | undefined): string | null {
+export function normalizeCountry(
+  raw: string | null | undefined,
+): string | null {
   if (!raw || !raw.trim()) return null;
   const key = raw.trim().toLowerCase();
   return COUNTRY_ALIASES[key] || raw.trim();
@@ -69,9 +71,9 @@ export function normalizeCountry(raw: string | null | undefined): string | null 
 
 // ─── Contact type normalization ──────────────────────────────
 const TYPE_ALIASES: Record<string, string> = {
-  school: "school",
+  school: "school", // LEGACY_DATABASE_COMPAT_ONLY: historical contact category.
   "riding school": "school",
-  "riding_school": "school",
+  riding_school: "school", // LEGACY_DATABASE_COMPAT_ONLY: historical contact category.
   college: "college",
   academy: "academy",
   "riding academy": "academy",
@@ -129,16 +131,40 @@ export function isValidEmail(email: string): boolean {
 
 // ─── Free-mail domain filtering (for B2B compliance) ─────────
 const FREE_MAIL_DOMAINS = new Set([
-  "gmail.com", "yahoo.com", "yahoo.co.uk", "outlook.com", "hotmail.com",
-  "hotmail.co.uk", "aol.com", "gmx.com", "icloud.com", "mail.com",
-  "live.com", "live.co.uk", "msn.com", "me.com", "protonmail.com",
-  "proton.me", "ymail.com", "rocketmail.com", "zoho.com",
+  "gmail.com",
+  "yahoo.com",
+  "yahoo.co.uk",
+  "outlook.com",
+  "hotmail.com",
+  "hotmail.co.uk",
+  "aol.com",
+  "gmx.com",
+  "icloud.com",
+  "mail.com",
+  "live.com",
+  "live.co.uk",
+  "msn.com",
+  "me.com",
+  "protonmail.com",
+  "proton.me",
+  "ymail.com",
+  "rocketmail.com",
+  "zoho.com",
 ]);
 
 const DISPOSABLE_MAIL_DOMAINS = new Set([
-  "mailinator.com", "tempmail.com", "guerrillamail.com", "throwaway.email",
-  "10minutemail.com", "trashmail.com", "fakeinbox.com", "sharklasers.com",
-  "guerrillamailblock.com", "grr.la", "dispostable.com", "yopmail.com",
+  "mailinator.com",
+  "tempmail.com",
+  "guerrillamail.com",
+  "throwaway.email",
+  "10minutemail.com",
+  "trashmail.com",
+  "fakeinbox.com",
+  "sharklasers.com",
+  "guerrillamailblock.com",
+  "grr.la",
+  "dispostable.com",
+  "yopmail.com",
 ]);
 
 export function isFreeMailDomain(email: string): boolean {
@@ -153,8 +179,17 @@ export function isDisposableEmail(email: string): boolean {
 
 // B2B contact types that should NOT use free-mail addresses
 const B2B_CONTACT_TYPES = new Set([
-  "riding_school", "stable", "school", "college", "academy",
-  "venue", "federation", "governance", "health_vet", "racing", "breeding",
+  "riding_school",
+  "stable",
+  "school", // LEGACY_DATABASE_COMPAT_ONLY: historical contact category.
+  "college",
+  "academy", // LEGACY_DATABASE_COMPAT_ONLY: historical contact categories.
+  "venue",
+  "federation",
+  "governance",
+  "health_vet",
+  "racing",
+  "breeding",
 ]);
 
 export interface ComplianceResult {
@@ -245,7 +280,7 @@ const COLUMN_MAP: Record<string, string> = {
   email: "email",
   "email address": "email",
   "e-mail": "email",
-  "email_address": "email",
+  email_address: "email",
   name: "name",
   "contact name": "name",
   "full name": "name",
@@ -321,8 +356,12 @@ export function mapRowToContact(
     name: mapped.name || undefined,
     organizationName: mapped.organizationName || undefined,
     businessName: mapped.businessName || mapped.organizationName || undefined,
-    contactType: mapped.contactType ? normalizeContactType(mapped.contactType) : undefined,
-    country: mapped.country ? normalizeCountry(mapped.country) ?? undefined : undefined,
+    contactType: mapped.contactType
+      ? normalizeContactType(mapped.contactType)
+      : undefined,
+    country: mapped.country
+      ? (normalizeCountry(mapped.country) ?? undefined)
+      : undefined,
     region: mapped.region || undefined,
     leadFocus: mapped.leadFocus || undefined,
     tags: mapped.tags || undefined,
@@ -406,7 +445,11 @@ export const DEFAULT_FOLLOWUP_SCHEDULE = [
  * Five windows per weekday, each allowing up to NEW_OUTREACH_PER_WINDOW sends.
  * Total across all windows: 5 × 5 = 25 = NEW_OUTREACH_DAILY_CAP.
  */
-export const SEND_WINDOWS: Array<{ hour: number; minute: number; label: string }> = [
+export const SEND_WINDOWS: Array<{
+  hour: number;
+  minute: number;
+  label: string;
+}> = [
   { hour: 8, minute: 30, label: "08:30 UTC" },
   { hour: 10, minute: 30, label: "10:30 UTC" },
   { hour: 12, minute: 30, label: "12:30 UTC" },
@@ -434,7 +477,10 @@ export function getScheduledDate(initialDate: Date, delayDays: number): string {
 }
 
 // ─── Segment key builder ─────────────────────────────────────
-export function buildSegmentKey(country?: string | null, type?: string | null): string {
+export function buildSegmentKey(
+  country?: string | null,
+  type?: string | null,
+): string {
   const parts: string[] = [];
   if (country) parts.push(country.replace(/\s+/g, "_"));
   if (type) parts.push(type);

@@ -31,6 +31,25 @@ export function getStripe(): Stripe | null {
   });
 }
 
+/**
+ * Store payments are a distinct product line from SaaS subscriptions.  They
+ * must never fall back to the SaaS secret or feature flag, because doing so
+ * would couple Store webhooks and customer payments to subscription billing.
+ */
+export function getStoreStripe(): Stripe | null {
+  if (process.env.ENABLE_STORE_STRIPE !== "true") {
+    return null;
+  }
+  if (!process.env.STORE_STRIPE_SECRET_KEY) {
+    console.warn("[Store Stripe] Store secret key not configured");
+    return null;
+  }
+  return new Stripe(process.env.STORE_STRIPE_SECRET_KEY, {
+    apiVersion: "2026-01-28.clover",
+    typescript: true,
+  });
+}
+
 // Pricing configuration (should match Stripe dashboard)
 // This is the SINGLE SOURCE OF TRUTH for all pricing
 export const PRICING_PLANS = {
@@ -131,9 +150,9 @@ export const PRICING_PLANS = {
       "WhatsApp support",
     ],
   },
-  // School plans — price IDs set via environment variables
+  // Academy plans — historical environment variable names remain compatible.
   school_10: {
-    name: "School (10 Students)",
+    name: "Academy (10 Students)",
     students: 10,
     monthly: {
       priceId: process.env.STRIPE_SCHOOL_10_MONTHLY_PRICE_ID || "",
@@ -149,7 +168,7 @@ export const PRICING_PLANS = {
     },
   },
   school_20: {
-    name: "School (20 Students)",
+    name: "Academy (20 Students)",
     students: 20,
     monthly: {
       priceId: process.env.STRIPE_SCHOOL_20_MONTHLY_PRICE_ID || "",
@@ -165,7 +184,7 @@ export const PRICING_PLANS = {
     },
   },
   school_50: {
-    name: "School (50 Students)",
+    name: "Academy (50 Students)",
     students: 50,
     monthly: {
       priceId: process.env.STRIPE_SCHOOL_50_MONTHLY_PRICE_ID || "",
